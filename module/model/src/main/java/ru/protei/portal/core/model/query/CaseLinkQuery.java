@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
@@ -8,6 +9,7 @@ public class CaseLinkQuery extends BaseQuery {
     private Long caseId;
     private Boolean showOnlyPrivate;
     private String remoteId;
+    private En_CaseLink type;
 
     public CaseLinkQuery() {}
 
@@ -24,6 +26,14 @@ public class CaseLinkQuery extends BaseQuery {
         this.caseId = caseId;
         this.showOnlyPrivate = showOnlyPrivate;
         this.remoteId = remoteId;
+    }
+
+    public En_CaseLink getType() {
+        return type;
+    }
+
+    public void setType( En_CaseLink type ) {
+        this.type = type;
     }
 
     public Long getCaseId() {

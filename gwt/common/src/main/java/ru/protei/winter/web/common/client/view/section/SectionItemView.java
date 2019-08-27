@@ -127,7 +127,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     Boolean isSubSectionVisible = false;
 
-    interface SectionItemViewUiBinder extends UiBinder<HTMLPanel, ru.protei.winter.web.common.client.view.section.SectionItemView> {}
+    interface SectionItemViewUiBinder extends UiBinder<HTMLPanel, SectionItemView> {}
     private static SectionItemViewUiBinder ourUiBinder = GWT.create( SectionItemViewUiBinder.class );
 
 }

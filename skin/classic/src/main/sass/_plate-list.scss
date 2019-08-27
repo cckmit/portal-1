@@ -220,6 +220,9 @@ ul.plate-list {
         & > i {
           padding-right: 5px
         }
+        & > b {
+          padding-right: 5px
+        }
         & > span > a+a:before {
           content: ', ';
         }

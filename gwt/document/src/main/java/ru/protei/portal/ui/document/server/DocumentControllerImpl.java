@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
@@ -77,6 +78,22 @@ public class DocumentControllerImpl implements DocumentController {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Boolean updateState(Long documentId, En_DocumentState state) throws RequestFailedException {
+        log.debug("change state document, id: {} | state: {}", documentId, state);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse response = documentService.updateState(descriptor.makeAuthToken(), documentId, state);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        log.debug("change state document, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        return response.getData() != null;
     }
 
     @Override

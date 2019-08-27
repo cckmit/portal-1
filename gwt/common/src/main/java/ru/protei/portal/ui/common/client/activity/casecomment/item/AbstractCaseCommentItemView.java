@@ -26,6 +26,8 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setImportanceLevel( En_ImportanceLevel importance );
 
+    void setManager( String managerShortName );
+
     void enabledEdit( boolean isEnabled );
 
     void enableReply(boolean isEnabled);

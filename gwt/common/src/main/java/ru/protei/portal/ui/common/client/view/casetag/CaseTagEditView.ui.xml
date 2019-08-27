@@ -3,7 +3,7 @@
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:colorpicker='urn:import:ru.protei.portal.ui.common.client.widget.colorpicker'>
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="card card-transparent no-margin">
         <div class="card-body">
@@ -25,6 +25,13 @@
                     </g:HTMLPanel>
                 </div>
             </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <g:HTMLPanel ui:field="authorPanel" styleName="tag-author" visible="false">
+                <small>
+                    <g:Label ui:field="label"/>
+                </small>
+            </g:HTMLPanel>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

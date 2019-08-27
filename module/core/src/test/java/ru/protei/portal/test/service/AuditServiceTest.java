@@ -62,7 +62,6 @@ public class AuditServiceTest {
         CoreResponse< List< AuditObject > > result = auditService.auditObjectList( auditQuery );
 
         Assert.assertNotNull( result );
-        Assert.assertTrue( result.getDataAmountTotal() > 0 );
 
         Assert.assertNotNull( result.getData() );
         Assert.assertTrue( result.getData().size() == 1 );

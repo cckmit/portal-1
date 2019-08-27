@@ -119,6 +119,23 @@ public class CaseCommentItemView
     }
 
     @Override
+    public void setManager(String managerShortName) {
+        if (root.getStyleName().contains("right")) {
+            owner.removeClassName("name");
+            owner.addClassName("status");
+            owner.addClassName("name");
+            owner.setInnerText(managerShortName);
+            info.setInnerText(lang.issueCommentChangeManagerTo());
+            info.removeClassName("hide");
+        } else {
+            status.addClassName("name");
+            status.setInnerText(managerShortName);
+            info.setInnerText(lang.issueCommentChangeManagerTo());
+            info.removeClassName("hide");
+        }
+    }
+
+    @Override
     public void enabledEdit( boolean isEnabled ) {
         remove.setVisible( isEnabled );
         edit.setVisible( isEnabled );

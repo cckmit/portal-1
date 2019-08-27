@@ -49,7 +49,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         search.getElement().setPropertyString("placeholder", lang.search());
-        sortField.setType( ModuleType.ISSUE);
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
@@ -181,7 +180,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         state.setValue(null);
         dateCreatedRange.setValue(null);
         dateModifiedRange.setValue(null);
-        sortField.setValue(En_SortField.creation_date);
+        sortField.setValue(En_SortField.issue_number);
         sortDir.setValue(false);
         search.setValue("");
         searchByComments.setValue(false);

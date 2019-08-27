@@ -10,12 +10,17 @@ public class HTMLRendererImpl implements HTMLRenderer {
 
     @Override
     public String plain2html(String text, En_TextMarkup textMarkup) {
+        return plain2html(text, textMarkup, true);
+    }
+
+    @Override
+    public String plain2html(String text, En_TextMarkup textMarkup, boolean renderIcons) {
         if (textMarkup == null) {
             return text;
         }
         switch (textMarkup) {
             case MARKDOWN: return markdownRenderer.plain2html(text);
-            case JIRA_WIKI_MARKUP: return jiraWikiMarkupRenderer.plain2html(text);
+            case JIRA_WIKI_MARKUP: return jiraWikiMarkupRenderer.plain2html(text, renderIcons);
             default: return text;
         }
     }

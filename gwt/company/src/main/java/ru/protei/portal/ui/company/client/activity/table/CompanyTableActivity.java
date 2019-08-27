@@ -63,7 +63,6 @@ public abstract class CompanyTableActivity implements
 
         init.parent.clear();
         init.parent.add( view.asWidget() );
-
         view.getPagerContainer().add( pagerView.asWidget() );
 
         loadTable();
@@ -101,21 +100,37 @@ public abstract class CompanyTableActivity implements
 
     @Override
     public void onEditClicked(Company value) {
-        fireEvent( new CompanyEvents.Edit ( value.getId() ));
-    }
-
-    private void showPreview (Company value ) {
-
-        if ( value == null ) {
-            animation.closeDetails();
-        } else {
-            animation.showDetails();
-            fireEvent( new CompanyEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
+        if (!value.isArchived()) {
+            fireEvent(new CompanyEvents.Edit(value.getId()));
         }
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Company>> asyncCallback ) {
+    public void onArchiveClicked(Company value) {
+        if (value == null) {
+            return;
+        }
+
+        companyService.updateState(value.getId(), !value.isArchived(), new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    loadTable();
+                    fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                }));
+    }
+
+    private void showPreview(Company value) {
+
+        if (value == null) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new CompanyEvents.ShowPreview(view.getPreviewContainer(), value, true, true));
+        }
+    }
+
+    @Override
+    public void loadData(int offset, int limit, AsyncCallback<List<Company>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
         query.setOffset(offset);
         query.setLimit(limit);
@@ -137,7 +152,9 @@ public abstract class CompanyTableActivity implements
     private CompanyQuery makeQuery() {
         CompanyQuery cq = new CompanyQuery(filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
+                true // !!TODO dont known if its needed here
+                );
 
         if(filterView.categories().getValue() != null)
             cq.setCategoryIds(

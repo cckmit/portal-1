@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroupMulti;
-import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.Set;
 
@@ -51,6 +50,9 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     }
 
     @Override
+    public HasValue<Boolean> showDeprecated() { return showDeprecated; }
+
+    @Override
     public HasValue<Set< EntityOption >> categories() {
         return categories;
     }
@@ -80,6 +82,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
 
     @Override
     public void resetFilter() {
+        showDeprecated.setValue(false);
         categories.setValue(null);
         sortField.setValue( En_SortField.comp_name );
         sortDir.setValue(true);
@@ -89,6 +92,13 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @UiHandler( "categories" )
     public void onCompanyCategorySelected( ValueChangeEvent< Set< EntityOption> > event ) {
         if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("showDeprecated")
+    public void onShowDeprecatedClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onFilterChanged();
         }
     }
@@ -129,6 +139,9 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
             }
         }
     };
+
+    @UiField
+    CheckBox showDeprecated;
 
     @Inject
     @UiField( provided = true )

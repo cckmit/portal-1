@@ -1,8 +1,14 @@
 package ru.protei.portal.mock;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.user.AuthService;
 
@@ -12,6 +18,12 @@ import java.util.Date;
 import java.util.HashSet;
 
 public class AuthServiceMock implements AuthService {
+
+    @Autowired
+    UserLoginDAO userLoginDAO;
+
+    @Autowired
+    PersonDAO personDAO;
 
     private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
@@ -46,7 +58,21 @@ public class AuthServiceMock implements AuthService {
 
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionID, String login, String pwd, String ip, String userAgent) {
-        return new CoreResponse<UserSessionDescriptor>().success(descriptor);
+        UserLogin ulogin = userLoginDAO.findByLogin(login);
+        if (ulogin == null) {
+            return new CoreResponse<UserSessionDescriptor>().success(descriptor);
+        } else {
+            Person person = personDAO.get(ulogin.getPersonId());
+            UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
+            userSessionDescriptor.init(makeUserSession(ulogin, person));
+            userSessionDescriptor.login(ulogin, person, person.getCompany());
+
+            if (!ulogin.getUpass().equalsIgnoreCase(DigestUtils.md5DigestAsHex(pwd.getBytes()))) {
+                return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+            }
+
+            return new CoreResponse<UserSessionDescriptor>().success(userSessionDescriptor);
+        }
     }
 
     @Override
@@ -82,6 +108,7 @@ public class AuthServiceMock implements AuthService {
     private HashSet<UserRole> makeRoles() {
         UserRole role = new UserRole();
         role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
+        role.setScope(En_Scope.SYSTEM);
         return new HashSet<>(Arrays.asList(role));
     }
 }

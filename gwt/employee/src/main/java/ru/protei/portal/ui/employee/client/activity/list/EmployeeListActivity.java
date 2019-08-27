@@ -17,12 +17,15 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
@@ -34,18 +37,19 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
+import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
 /**
  * Активность списка сотрудников
  */
 public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
-        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, AbstractPagerActivity, Activity {
+        AbstractEmployeeItemActivity, AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void init() {
         view.setActivity( this );
-        filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
         pagerView.setActivity( this );
     }
@@ -65,12 +69,14 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-
         requestEmployees( 0 );
     }
 
-    @Override
-    public void onFilterChanged() {
+    @Event
+    public void onFilterChange(EmployeeEvents.UpdateData event) {
+        if(event.viewType != ViewType.LIST)
+            return;
+
         requestEmployees( 0 );
     }
 
@@ -87,7 +93,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             return;
         }
 
-        fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
+        fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value, false, false ) );
         animation.showPreview( itemView, ( IsWidget ) itemView.getPreviewContainer() );
     }
 
@@ -118,16 +124,18 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 } ) );
     }
 
+
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery( false, false, true,
                 null,
                 filterView.searchPattern().getValue(),
-                filterView.workPhone().getValue(),
-                filterView.mobilePhone().getValue(),
+                normalizePhoneNumber(filterView.workPhone().getValue()),
+                normalizePhoneNumber(filterView.mobilePhone().getValue()),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
+                filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {
@@ -138,8 +146,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
-        itemView.setPhone( infoFacade.publicPhonesAsString() );
-        itemView.setEmail( infoFacade.publicEmails() );
+        itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );
+        itemView.setEmail( EmailRender.renderToHtml(infoFacade.publicEmailsStream(), false) );
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
@@ -154,6 +162,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setPosition( mainEntry.getPositionName() );
             itemView.setPhoto(AvatarUtils.getAvatarUrl(employee.getId(), En_CompanyCategory.HOME.getId(), null));
         }
+        itemView.setIP(employee.getIpAddress());
 
         return itemView;
     }

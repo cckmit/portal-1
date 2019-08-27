@@ -324,6 +324,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField
     Button cancelButton;
 
+
     @UiField
     LongBox inventoryNumber;
 

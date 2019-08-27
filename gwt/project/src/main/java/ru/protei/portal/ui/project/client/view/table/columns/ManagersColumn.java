@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.List;
 
 /**
- * Колонка с информацией о проекте
+ * Колонка со списком менеджеров проекта
  */
 public class ManagersColumn extends ClickColumn< ProjectInfo > {
 

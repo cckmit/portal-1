@@ -47,8 +47,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
-            public void onError() {
-                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError(En_FileUploadStatus status, String details) {
+                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
+                }
+                else {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+                }
             }
         });
     }
@@ -108,6 +113,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.initiator().setValue(issue.getInitiator().toFullNameShortView());
             }
         }
+    }
+
+    @Event
+    public void onRemoveTag(CaseTagEvents.Remove event) {
+        issue.getTags().remove(event.getCaseTag());
+        view.tags().setValue(issue.getTags());
     }
 
     @Override
@@ -262,6 +273,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         fillView(this.issue, false);
     }
 
+    private void requestCaseLinks( Long issueId ) {
+        issueService.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
+                view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
+        ) );
+    }
+
     private void initialRestoredView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, true);
@@ -275,6 +292,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             @Override
             public void onSuccess(CaseObject issue) {
                 successAction.accept(issue);
+                requestCaseLinks(issue.getId());
             }
         });
     }
@@ -321,6 +339,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
+        view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
+
         view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
 
         view.name().setValue(issue.getName());

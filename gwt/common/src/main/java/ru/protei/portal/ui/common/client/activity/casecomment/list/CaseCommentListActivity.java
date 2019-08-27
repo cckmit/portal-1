@@ -54,8 +54,13 @@ public abstract class CaseCommentListActivity
                 addTempAttachment(attachment);
             }
             @Override
-            public void onError() {
-                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError(En_FileUploadStatus status, String details) {
+                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
+                }
+                else {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+                }
             }
         });
         workTimeFormatter = new WorkTimeFormatter(lang);
@@ -372,8 +377,10 @@ public abstract class CaseCommentListActivity
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
+        boolean isManagerChangeComment = value.getCaseManagerId() != null;
+        boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment;
 
-        if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
+        if ( HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
             itemView.hideOptions();
         }
 
@@ -387,6 +394,10 @@ public abstract class CaseCommentListActivity
         if ( isImportanceChangeComment ) {
             En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
             itemView.setImportanceLevel(importance);
+        }
+
+        if ( isManagerChangeComment ) {
+            itemView.setManager(value.getCaseManagerShortName());
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());

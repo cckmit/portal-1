@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -24,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
@@ -86,6 +90,23 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public Boolean updateState(Long companyId, boolean isArchived) throws RequestFailedException {
+        log.debug("updateState(): companyId={} | isArchived={}", companyId, isArchived);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse response = companyService.updateState(descriptor.makeAuthToken(), companyId, isArchived);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        log.debug("updateState(): response.getData()={}", response.isOk());
+
+        return response.getData() != null;
+    }
+
+    @Override
     public Boolean isCompanyNameExists( String name, Long excludeId ) throws RequestFailedException {
 
         log.debug( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
@@ -136,7 +157,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CoreResponse< List< EntityOption > > result = companyService.companyOptionList( descriptor.makeAuthToken(), query);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -151,7 +172,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CoreResponse< List< EntityOption > > result = companyService.groupOptionList();
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -169,7 +190,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CoreResponse< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

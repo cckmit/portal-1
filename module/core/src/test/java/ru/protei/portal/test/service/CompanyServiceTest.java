@@ -73,9 +73,22 @@ public class CompanyServiceTest extends BaseServiceTest {
 //    }
 
     @Test
+    public void createdCompanyIsNotArchived () {
+        Company company = createNewCustomerCompany();
+        Assert.assertEquals("Expected company created by createNewCustomerCompany() is not archived", company.isArchived(), false);
+    }
+
+    @Test
+    public void newCompanyIsNotArchived () {
+        Assert.assertEquals("Expected new company is not archived", new Company().isArchived(), false);
+    }
+
+
+    @Test
     public void testCompanies () {
 
         Long companyId = null;
+        Long companyGroupId = null;
 
         try {
 
@@ -95,7 +108,8 @@ public class CompanyServiceTest extends BaseServiceTest {
             group.setCreated(new Date());
             group.setName("test");
             group.setInfo("test");
-            companyGroupDAO.persist(group);
+
+            companyGroupId = companyGroupDAO.persist( group );
             company.setGroupId(group.getId());
 
             CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
@@ -125,6 +139,42 @@ public class CompanyServiceTest extends BaseServiceTest {
                 companyGroupItemDAO.getCompanyToGroupLinks(companyId, null)
                         .forEach(item -> companyGroupItemDAO.remove(item));
             }
+            if (companyId != null) {
+                companyDAO.removeByCondition("id=?", companyId);
+            }
+            if(companyGroupId!=null){
+                companyGroupDAO.removeByKey( companyGroupId );
+            }
+        }
+    }
+
+    @Test
+    public void testCompanyUpdateState() {
+        Long companyId = null;
+
+        try {
+            Company company = new Company();
+            company.setCreated(new Date());
+            company.setCname("Тестовая компания " + new Date().getTime());
+
+            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
+            Company companyFromService = response.getData();
+            companyId = companyFromService.getId();
+
+            boolean startState = companyFromService.isArchived();
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), !startState);
+
+            boolean endState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertNotEquals(startState, endState);
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), !endState);
+
+            boolean changedEndState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertEquals(startState, changedEndState);
+        } finally {
             if (companyId != null) {
                 companyDAO.removeByCondition("id=?", companyId);
             }

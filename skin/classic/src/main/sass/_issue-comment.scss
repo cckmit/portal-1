@@ -146,6 +146,44 @@
   float: left;
 }
 
+.drop-zone {
+  div {
+    pointer-events: none;
+    * {
+      pointer-events: auto;
+    }
+  }
+}
+
+.drop-zone-active * {
+  pointer-events: none;
+}
+
+.drag-overlay {
+  background: white;
+  height: 100%;
+  width: 100%;
+  opacity: .95;
+  top: 0;
+  left: 0;
+  position: absolute;
+  padding: 0;
+  border-style: dashed;
+  border-width: thin;
+  border-color: $info_dark_color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chats .right .list-inline {
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
 .chats .right .name {
   float: right;
 }

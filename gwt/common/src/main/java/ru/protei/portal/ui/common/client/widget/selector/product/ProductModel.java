@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class ProductModel implements Activity, SelectorModel<ProductShortView> {
     @Event
@@ -50,13 +51,18 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         selector.clearOptions();
     }
 
-    public void subscribe(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
-        updateQuery( selector, enDevUnitState, enDevUnitType );
+    public void subscribe(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        updateQuery(selector, enDevUnitState, enDevUnitTypes);
     }
 
-    public void updateQuery(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
-        ProductQuery query = makeQuery(enDevUnitState, enDevUnitType);
+    public void updateQuery(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        ProductQuery query = makeQuery(enDevUnitState, enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()));
         selectorToQuery.put(selector, query);
+    }
+
+    public void updateQueryAndRequest(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        updateQuery(selector, enDevUnitState, enDevUnitTypes);
+        requestOptions(selector, selectorToQuery.get(selector));
     }
 
     private void clearSubscribersOptions() {
@@ -80,9 +86,9 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         } );
     }
 
-    private ProductQuery makeQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
+    private ProductQuery makeQuery(En_DevUnitState enDevUnitState, Set<En_DevUnitType> enDevUnitTypes) {
         ProductQuery query = new ProductQuery();
-        if (enDevUnitType != null) query.addType(enDevUnitType);
+        query.addTypes(enDevUnitTypes);
         query.setSortField(En_SortField.prod_name);
         query.setSortDir(En_SortDir.ASC);
         query.setState(enDevUnitState);

@@ -26,14 +26,15 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     @Event
     public void onShow( EmployeeEvents.ShowPreview event ) {
         event.parent.clear();
-        event.parent.add( view.asWidget() );
+        event.parent.add( view.asWidget(event.isForTableView) );
 
         fillView( event.employee );
+        view.watchForScroll(event.isWatchForScroll);
     }
 
     private void fillView( EmployeeShortView employee ) {
         view.setID( employee.getId().toString() );
-        view.setIP( employee.getIpAddress() );
+        view.setName( employee.getDisplayName() );
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );

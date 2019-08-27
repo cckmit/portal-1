@@ -38,6 +38,11 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return result;
     }
 
+    @Override
+    public boolean updateState(Company tempCompany) {
+        return partialMerge(tempCompany, "is_deprecated");
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );
@@ -66,6 +71,10 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and cname like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+            }
+
+            if (query.getShowDeprecated() != null && !query.getShowDeprecated()) {
+                condition.append(" and is_deprecated = false");
             }
         });
     }

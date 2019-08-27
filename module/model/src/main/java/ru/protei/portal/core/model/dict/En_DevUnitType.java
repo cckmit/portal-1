@@ -6,7 +6,8 @@ package ru.protei.portal.core.model.dict;
 public enum En_DevUnitType {
     COMPONENT(1),
     PRODUCT(2),
-    DIRECTION(3);
+    DIRECTION(3),
+    COMPLEX(4);
 
     private En_DevUnitType (int typeId) {
         this.id = typeId;
@@ -31,6 +32,6 @@ public enum En_DevUnitType {
     }
 
     public static En_DevUnitType[] getValidValues() {
-        return new En_DevUnitType[] {PRODUCT, COMPONENT};
+        return new En_DevUnitType[] {COMPLEX, PRODUCT, COMPONENT};
     }
 }

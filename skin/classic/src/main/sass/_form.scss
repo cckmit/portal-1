@@ -1,0 +1,135 @@
+/* input implementation */
+.form-group {
+  margin-bottom: 10px;
+
+  label {
+    font-weight: 600;
+  }
+
+  fieldset {
+    margin-top: 13px;
+    border: 1px solid rgba(84, 129, 193, 0.44);
+    min-height: 197px;
+
+    legend {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+
+  legend {
+    color: #5481c1;
+    padding: 2px;
+    margin-left: 14px;
+    font-weight: bold;
+    font-size: 14px;
+    /*     font-weight:00; */
+    text-transform: uppercase;
+  }
+}
+
+.label-field {
+  height: 30px;
+  max-height: 30px;
+  padding: 0px 10px;
+  line-height: 30px;
+  box-sizing: border-box;
+}
+
+input.input-field,
+textarea.input-field {
+  height: 30px;
+  max-height: 30px;
+  padding: 0px 10px;
+  line-height: 30px;
+  box-sizing: border-box;
+  color: #314157;
+  vertical-align: top;
+  border: 1px solid;
+  border-color: #ced2d7 #c5cad0 #ced2d7;
+  width: 100%;
+  -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  font-size: 12px;
+
+  &:focus {
+    outline: 0;
+    border-color: #008080;
+  }
+}
+
+textarea.input-field {
+  line-height: 1.4 !important;
+  padding: 10px;
+}
+
+
+input.input-field[disabled],
+textarea.input-field[disabled]{
+  background-color: whitesmoke;
+  cursor: not-allowed;
+}
+
+  /**
+     PANEL for create/edit pages
+  */
+.panel .body {
+  padding: 15px;
+}
+
+.panel .footer {
+  text-align: right;
+  padding: 0 15px 15px 15px;
+}
+
+.panel .under-button {
+  text-align: right;
+  padding: 0 0 15px 15px;
+}
+
+.panel.footer-fixable .footer {
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 0;
+  left: 0;
+  padding: 8px 5px;
+  background-color: #ededed;
+  border-top: 1px solid #dadada;
+}
+
+.panel.panel-default {
+  background: white;
+}
+
+.panel legend.header {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+  line-height: inherit;
+  color: #333;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  > .header-button-right {
+    display: inline-block;
+    margin: 1px 1px 1px 5px;
+    float: right;
+  }
+}
+
+.input-group {
+  width: 100%;
+}
+
+.input-group-addon-fix {
+  width: 15px !important;
+}

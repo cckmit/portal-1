@@ -14,6 +14,7 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-md-12" addonIcon="fa fa-phone"/>
                 <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddressColumnHeader}" styleName="form-group col-md-12" addon="IP"/>
                 <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmailColumnHeader}" styleName="form-group col-md-12" addon="@"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="department" placeholder="{lang.employeeDepartmentColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-sitemap"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">

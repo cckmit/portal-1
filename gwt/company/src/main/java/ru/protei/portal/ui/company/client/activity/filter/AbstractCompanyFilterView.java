@@ -14,6 +14,9 @@ public interface AbstractCompanyFilterView extends IsWidget {
 
     void setActivity( AbstractCompanyFilterActivity activity );
     HasValue< String > searchPattern();
+
+    HasValue<Boolean> showDeprecated();
+
     HasValue<Set< EntityOption >> categories();
     HasValue< En_SortField > sortField();
     HasValue< Boolean > sortDir();

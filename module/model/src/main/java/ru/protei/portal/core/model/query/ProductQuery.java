@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class ProductQuery extends BaseQuery {
 
-    En_DevUnitState state;
+    private En_DevUnitState state;
     private Set<En_DevUnitType> types;
 
     public ProductQuery() {
@@ -51,5 +51,15 @@ public class ProductQuery extends BaseQuery {
             this.types = new HashSet<>();
         }
         this.types.add(type);
+    }
+
+    public void addTypes(Set<En_DevUnitType> types) {
+        if (this.types == null) {
+            this.types = new HashSet<>();
+        }
+
+        if (types != null) {
+            this.types.addAll(types);
+        }
     }
 }

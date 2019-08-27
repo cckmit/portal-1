@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -127,13 +128,15 @@ public abstract class RegionListActivity
                         .map( (district)-> district.id )
                         .collect( Collectors.toSet() )
         );
-        query.setDirectionId(
+/*        query.setDirectionId(
                 filterView.direction().getValue() == null
                         ? null
                         : filterView.direction().getValue().id
-        );
-        query.setSortField(filterView.sortField().getValue());
-        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        );*/
+/*        query.setSortField(filterView.sortField().getValue());
+        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);*/
+        query.setSortField(En_SortField.name);
+        query.setSortDir(En_SortDir.ASC);
 
         return query;
     };
@@ -159,10 +162,9 @@ public abstract class RegionListActivity
 
         switch ( region.state ) {
             case MARKETING:
-                return details+" ("+region.details+")";
+                return details + (region.details == null ? "" : " ("+region.details+")");
             case DEPLOYMENT:
-                return region.details;
-
+                return region.details == null ? details : region.details;
             default:
                 return details;
         }

@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.collections4.CollectionUtils;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -82,8 +84,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (!result.isOk()) {
                 return result;
             }
-            log.debug("reports to process : {}", result.getDataAmountTotal());
-            if (result.getDataAmountTotal() == 0) {
+            log.debug( "reports to process : {}", size( result.getData() ) );
+            if (size( result.getData() ) == 0) {
                 return new CoreResponse().success(null);
             }
             for (final Report report : result.getData()) {
@@ -187,7 +189,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 );
             case CASE_RESOLUTION_TIME:
                 log.info( "writeReport(): Start report {}", report.getName() );
-                ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO  );
+                ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report.getCaseQuery(), caseCommentDAO  );
                 caseCompletionTimeReport.run();
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );

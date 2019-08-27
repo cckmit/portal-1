@@ -52,7 +52,7 @@ public class FileStorage {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){
 
             String currentYearMonth = YearMonth.now().toString();
-            String filePath = currentYearMonth +"/"+ encodePath(fileName);
+            String filePath = currentYearMonth +"/"+ fileName;
             HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, fileStream);
 
             CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);

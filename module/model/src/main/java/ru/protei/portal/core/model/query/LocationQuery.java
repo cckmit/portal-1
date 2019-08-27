@@ -4,12 +4,15 @@ import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.Set;
+
 /**
  * Запрос по локациям
  */
 public class LocationQuery extends BaseQuery {
 
     En_LocationType type;
+    Set<Long> districtIds;
 
     public LocationQuery() {
         sortField = En_SortField.name;
@@ -29,4 +32,8 @@ public class LocationQuery extends BaseQuery {
     public void setType( En_LocationType type ) {
         this.type = type;
     }
+
+    public Set<Long> getDistrictIds() { return districtIds; }
+
+    public void setDistrictIds(Set<Long> districtIds) { this.districtIds = districtIds; }
 }

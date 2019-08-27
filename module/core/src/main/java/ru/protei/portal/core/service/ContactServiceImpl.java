@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 /**
  * Реализация сервиса управления контактами
  */
@@ -56,7 +58,7 @@ public class ContactServiceImpl implements ContactService {
 
         List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
-        return new CoreResponse<List<PersonShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override

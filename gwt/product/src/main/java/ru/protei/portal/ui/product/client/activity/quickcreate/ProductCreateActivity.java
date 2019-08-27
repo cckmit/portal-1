@@ -42,6 +42,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
 
         productService.isNameUnique(
                 value,
+                product.getType(),
                 null,
                 new RequestCallback<Boolean>() {
                     @Override

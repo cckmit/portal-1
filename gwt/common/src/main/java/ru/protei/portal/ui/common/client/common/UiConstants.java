@@ -63,6 +63,7 @@ public class UiConstants {
         String SITE_FOLDER_APP = "site_folder_app";
         String EMPLOYEE_REGISTRATION = "employee_registration";
         String CONTRACT = "contract";
+        String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
     }
 
     public interface Styles {

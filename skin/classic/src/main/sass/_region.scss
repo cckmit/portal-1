@@ -31,6 +31,8 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  min-width: 18px;
 
   &.unknown {
     &:before {
@@ -112,6 +114,43 @@
       font-weight: 900;
     }
     color: #A0A0A0;
+  }
+
+  &.center {
+    display: block;
+    margin: 0 auto;
+  }
+
+  &.selector {
+    position: relative;
+    float: left;
+    margin: 0 6px 0 0;
+  }
+
+}
+
+/*  region state style for button selector  */
+
+.region-state-btn {
+  padding: 5px 10px 5px 5px !important;
+}
+
+.region-state-item:not(.selector-val) {
+  padding: 5px !important;
+  > span {
+    position: relative;
+    float: left;
+    line-height: 18px;
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  }
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
   }
 }
 

@@ -100,7 +100,21 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void onEditClicked(DevUnit value) {
-        fireEvent( new ProductEvents.Edit ( value.getId() ));
+        if (!value.isDeprecatedUnit()) {
+            fireEvent( new ProductEvents.Edit ( value.getId() ));
+        }
+    }
+
+    @Override
+    public void onArchiveClicked(DevUnit value) {
+        productService.updateState(value.getId(), value.getState() == En_DevUnitState.DEPRECATED ? En_DevUnitState.ACTIVE : En_DevUnitState.DEPRECATED,
+                new FluentCallback<Boolean>()
+                        .withSuccess(result -> {
+                            loadTable();
+                            fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new ProductEvents.ProductListChanged());
+                        })
+        );
     }
 
     @Override

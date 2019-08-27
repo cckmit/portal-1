@@ -4,7 +4,7 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+             xmlns:dndautoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.dndautoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -12,7 +12,7 @@
         <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats">
             <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
-                <div ui:field="messageBlock">
+                <g:HTMLPanel ui:field="messageBlock">
 
                     <div ui:field="newCommentUserImage" class="image">
                         <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
@@ -20,7 +20,7 @@
 
                     <div class="message">
 
-                        <autoresizetextarea:AutoResizeTextArea
+                        <dndautoresizetextarea:DndAutoResizeTextArea
                                 ui:field="comment"
                                 styleName="form-control form-group message-input resize-vertical"
                                 enablePasteImage="true"
@@ -70,7 +70,7 @@
                             <div ui:field="commentPreview" class="message-preview-content markdown"/>
                         </div>
                     </div>
-                </div>
+                </g:HTMLPanel>
             </g:HTMLPanel>
         </g:FlowPanel>
     </g:HTMLPanel>

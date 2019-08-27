@@ -14,13 +14,16 @@ import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
-import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
 /**
  * Реализация сервиса по работе с обращениями
@@ -34,9 +37,9 @@ public class IssueControllerImpl implements IssueController {
                         "state={} | importance={} | sortField={} | sortDir={} | caseService={}",
                 query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(),
                 query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         CoreResponse<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
-        return ServiceUtils.checkResultAndGetData(result);
+        return checkResultAndGetData(result);
     }
 
     @Override
@@ -80,14 +83,14 @@ public class IssueControllerImpl implements IssueController {
     @Override
     public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
         log.debug("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
             CaseObject saved = saveIssue(caseObject);
             return new CaseObjectWithCaseComment(saved, null);
         }
         CoreResponse<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
         log.debug("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
-        return ServiceUtils.checkResultAndGetData(response);
+        return checkResultAndGetData(response);
     }
 
     @Override
@@ -106,6 +109,12 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
+    public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
+    }
+
+    @Override
     public List<En_CaseState> getStateList() throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -116,7 +125,7 @@ public class IssueControllerImpl implements IssueController {
 
         CoreResponse< List<En_CaseState> > result = caseService.stateList( type );
 
-        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());

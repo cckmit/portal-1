@@ -235,5 +235,98 @@ public class DebugIds {
         String SEARCH_PROJECT_TAB = "document-edit-search-project-tab";
         String CREATE_PROJECT_TAB = "document-edit-create-project-tab";
         String CREATE_PRODUCT_TAB = "document-edit-create-product-tab";
+
+        interface COMMENT_LIST {
+            String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
+            String USER_ICON = "issue-preview-comment-list-user-icon";
+            String TEXT_INPUT = "issue-preview-comment-list-text-input";
+            String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
+            String SEND_BUTTON = "issue-preview-comment-list-send-button";
+            String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
+            String TIME_ELAPSED = "issue-preview-comment-list-time-elapsed";
+            String TIME_ELAPSED_TYPE = "issue-preview-comment-list-time-elapsed-type";
+        }
+
+        interface COMMENT_ITEM {
+            String PRIVACY_ICON = "issue-preview-comment-item-privacy-icon";
+            String REPLY_BUTTON = "issue-preview-comment-item-reply-button";
+            String EDIT_BUTTON = "issue-preview-comment-item-edit-button";
+            String REMOVE_BUTTON = "issue-preview-comment-item-remove-button";
+            String OWNER = "issue-preview-comment-item-owner";
+            String STATUS = "issue-preview-comment-item-status";
+            String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
+            String CREATE_DATE = "issue-preview-comment-item-create-date";
+        }
+    }
+
+    public interface PROJECT{
+        String NUMBER_INPUT = "project-number-input";
+        String NAME_INPUT = "project-name-input";
+        String DESCRIPTION_INPUT = "project-description-input";
+        String STATE_SELECTOR = "project-state-selector";
+        String REGION_SELECTOR = "project-region-selector";
+        String DIRECTION_SELECTOR = "project-direction-selector";
+        String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
+        String COMPANY_SELECTOR = "project-company-selector";
+/*        String TEAM_SELECTOR = "project-team-selector";
+        String PRODUCTS_SELECTOR = "project-products-selector";
+        String DOCUMENTS_CONTAINER = "project-documents-container";*/
+
+        String SAVE_BUTTON = "project-save-button";
+        String CANCEL_BUTTON = "project-cancel-button";
+
+        interface LABEL {
+        }
+    }
+
+    public interface PROJECT_PREVIEW {
+        String FULL_SCREEN_BUTTON = "project-preview-full-screen-button";
+        String TITLE_LABEL = "project-preview-title-label";
+        String DATE_CREATED_LABEL = "project-preview-date-created-label";
+        String STATE_LABEL = "project-preview-state-label";
+        String REGION_LABEL = "project-preview-region-label";
+        String DIRECTION_LABEL = "project-preview-direction-label";
+        String CUSTOMER_TYPE_LABEL = "project-preview-customer-type-label";
+        String COMPANY_LABEL = "project-preview-company-label";
+        String NAME_LABEL = "project-preview-name-label";
+        String INFO_LABEL = "project-preview-info-label";
+        String TEAM_LABEL = "project-preview-team-label";
+        String PRODUCTS_LABEL = "project-preview-products-label";
+        String DOCUMENTS_CONTAINER = "project-preview-documents-container";
+        String COMMENTS_CONTAINER = "project-preview-comments-container";
+    }
+
+    public interface REGION_STATE {
+        String DEFAULT = "region-state-";
+        String UNKNOWN = "region-state-unknown";
+        String MARKETING = "region-state-marketing";
+        String PRESALE = "region-state-presale";
+        String PROJECTING = "region-state-projecting";
+        String DEVELOPMENT = "region-state-development";
+        String DEPLOYMENT = "region-state-deployment";
+        String TESTING = "region-state-testing";
+        String SUPPORT = "region-state-support";
+        String FINISHED = "region-state-finished";
+        String CANCELED = "region-state-canceled";
+    }
+
+    public interface COMPANY_TABLE {
+        String LOCK_ICON = "company-table-lock-icon";
+    }
+
+    public interface COMPANY_ITEM {
+        String LOCK_ICON = "company-item-lock-icon";
+    }
+
+    public interface PRODUCT_TABLE {
+        String LOCK_ICON = "product-table-lock-icon";
+    }
+
+    public interface PRODUCT_ITEM {
+        String LOCK_ICON = "product-item-lock-icon";
+    }
+
+    public interface DOCUMENT_TABLE {
+        String LOCK_ICON = "document-table-lock-icon";
     }
 }

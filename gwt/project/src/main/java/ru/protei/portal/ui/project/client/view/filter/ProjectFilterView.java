@@ -2,7 +2,6 @@ package ru.protei.portal.ui.project.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
@@ -29,12 +29,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Представление фильтра регионов
+ * Представление фильтра проектов
  */
 public class ProjectFilterView extends Composite implements AbstractProjectFilterView {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        direction.setDefaultValue(lang.contractSelectDirection());
+        sortField.setType( ModuleType.PROJECT );
     }
 
     @Override
@@ -91,9 +93,10 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @Override
     public void resetFilter() {
-        sortField.setValue( En_SortField.prod_name );
+        sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
         search.setValue( "" );
+        direction.setValue( null );
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
         onlyMineProjects.setValue( true );

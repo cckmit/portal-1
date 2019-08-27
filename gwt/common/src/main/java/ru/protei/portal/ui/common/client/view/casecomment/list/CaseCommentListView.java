@@ -28,7 +28,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -48,6 +48,8 @@ public class CaseCommentListView
         comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
+        comment.setOverlayText(lang.dropFilesHere());
+        comment.setDropZonePanel(messageBlock);
         ensureDebugIds();
     }
 
@@ -185,7 +187,7 @@ public class CaseCommentListView
         activity.removeTempAttachment(event.getAttachment());
     }
 
-    @UiHandler("comment")
+    @UiHandler({"comment", "timeElapsed"})
     public void onCtrlEnterClicked(AddEvent event) {
         if (activity != null) {
             activity.onSendClicked();
@@ -201,7 +203,11 @@ public class CaseCommentListView
 
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
-        fileUploader.uploadBase64File(event.getJson());
+        if (event.getJsons() != null && !event.getJsons().isEmpty()) {
+            fileUploader.uploadBase64Files(event.getJsons());
+        } else {
+            fileUploader.uploadBase64File(event.getJson());
+        }
     }
 
     @UiHandler("isDisplayPreview")
@@ -265,7 +271,7 @@ public class CaseCommentListView
     @UiField
     HTMLPanel root;
     @UiField
-    AutoResizeTextArea comment;
+    DndAutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField
@@ -302,6 +308,8 @@ public class CaseCommentListView
     Element textMarkupLabel;
     @UiField
     ToggleButton isDisplayPreview;
+    @UiField
+    HTMLPanel messageBlock;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

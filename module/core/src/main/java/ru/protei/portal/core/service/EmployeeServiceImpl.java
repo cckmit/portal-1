@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 
 /**
  * Реализация сервиса управления сотрудниками
@@ -100,7 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
-        return new CoreResponse<List<PersonShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
@@ -133,7 +135,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .stream().map(p -> new WorkerView(p, our_comp))
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<WorkerView>>().success(result, result.size());
+        return ok(result);
     }
 
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){

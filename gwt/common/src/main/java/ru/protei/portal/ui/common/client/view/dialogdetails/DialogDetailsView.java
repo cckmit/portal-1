@@ -52,6 +52,15 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         getDialogAnimation().hide();
     }
 
+    @Override
+    public HasVisibility removeButtonVisibility() {
+        return remove;
+    }
+
+    @Override
+    public HasVisibility saveButtonVisibility() {
+        return save;
+    }
 
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
@@ -79,6 +88,12 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         fireCancelClicked();
     }
 
+    @UiHandler( "remove" )
+    public void onRemoveClicked( ClickEvent event ) {
+        event.preventDefault();
+        fireRemoveClicked();
+    }
+
     @Override
     protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
         super.onPreviewNativeEvent( event );
@@ -104,12 +119,20 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         }
     }
 
+    private void fireRemoveClicked() {
+        if ( activity != null ) {
+            activity.onRemoveClicked();
+        }
+    }
+
     @UiField
     HTMLPanel bodyContainer;
     @UiField
     Anchor save;
     @UiField
     Anchor cancel;
+    @UiField
+    Anchor remove;
     @UiField
     HeadingElement header;
     @UiField

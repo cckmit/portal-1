@@ -31,9 +31,7 @@
                             </div>
                         </div>
                         <div class="form-group col-md-12">
-                            <label>
-                                <ui:text from="{lang.description}"/>
-                            </label>
+                            <label ui:field="descriptionLabel"/>
                             <autoresizetextarea:AutoResizeTextArea ui:field="info"
                                                                    minRows="2"
                                                                    maxRows="10"
@@ -51,16 +49,15 @@
 
                         <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                     </div>
+
                     <div class="row">
-                        <g:HTMLPanel ui:field="componentsContainer" styleName="form-group col-md-6">
-                            <label>
-                                <ui:text from="{lang.components}"/>
-                            </label>
-                            <component:ComponentMultiSelector ui:field="components" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
+                        <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
+                            <g:Label ui:field="parentsContainerLabel"/>
+                            <devunit:DevUnitMultiSelector ui:field="parents" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
                         </g:HTMLPanel>
-                        <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-md-6">
-                            <label><ui:text from="{lang.belongsTo}"/></label>
-                            <devunit:DevUnitMultiSelector ui:field="devUnits" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
+                        <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
+                            <g:Label ui:field="childrenContainerLabel"/>
+                            <devunit:DevUnitMultiSelector ui:field="children" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
                         </g:HTMLPanel>
                     </div>
                 </div>
@@ -87,7 +84,6 @@
             <div class="card card-transparent no-margin">
                 <div class="card-body">
                     <div class="text-right">
-                        <g:Button ui:field="stateBtn" styleName="btn btn-danger" text="{lang.productToArchive}"/>
                         <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelBtn" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                     </div>

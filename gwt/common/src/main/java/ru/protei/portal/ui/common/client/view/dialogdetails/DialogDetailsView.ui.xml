@@ -14,6 +14,9 @@
                 <g:HTMLPanel ui:field="bodyContainer" styleName="modal-body" />
 
                 <div class="modal-footer">
+                    <div class="remove-button">
+                        <g:Anchor href='#' ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Anchor>
+                    </div>
                     <g:Anchor href='#' ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></g:Anchor>
                     <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
                 </div>

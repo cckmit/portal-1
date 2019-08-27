@@ -20,11 +20,17 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import java.util.Set;
+
+import static ru.protei.portal.core.model.dict.En_CaseState.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
 
@@ -59,6 +65,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
             case YT: {
                 icon.addClassName("link-you-track");
                 text.setInnerText(caseLink.getRemoteId());
+                processYouTrackInfo(value.getYouTrackInfo());
                 break;
             }
         }
@@ -108,6 +115,17 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         caseInfoPanel.setVisible(true);
     }
 
+    @UiHandler("root")
+    public void onMouseOver(MouseOverEvent event) {
+        if ( En_CaseLink.CRM_OLD.equals(caseLink.getType()) ){
+            return;
+        }
+        if ( !hasInfo(caseLink) ){
+            return;
+        }
+        caseInfoPanel.setVisible(true);
+    }
+
     @UiHandler("link")
     public void onHover(MouseOutEvent event) {
         caseInfoPanel.setVisible(false);
@@ -128,13 +146,41 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         return addHandler(handler, CloseEvent.getType());
     }
 
-    private void fillCaseInfo(CaseInfo value) {
-        header.setInnerText( value.getName() );
-        En_ImportanceLevel importanceLevel = En_ImportanceLevel.getById(value.getImpLevel());
-        importance.addClassName(ImportanceStyleProvider.getImportanceIcon( importanceLevel ));
-        state.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() + " m-r-5");
-        state.setInnerText(caseStateLang.getStateName(En_CaseState.getById(value.getStateId())));
-        info.setInnerText(value.getInfo());
+    private void fillCaseInfo( CaseInfo value ) {
+        fillPopup( value.getName(), value.getInfo(),
+                En_ImportanceLevel.getById( value.getImpLevel() ),
+                En_CaseState.getById( value.getStateId() )
+        );
+        fillCompletionState(En_CaseState.getById( value.getStateId() ));
+    }
+
+    private void processYouTrackInfo( YouTrackIssueInfo youTrackInfo ) {
+        if (youTrackInfo == null) {
+            panel.getElement().addClassName( "link-broken" );
+            return;
+        }
+        fillPopup( youTrackInfo.getSummary(), youTrackInfo.getDescription(),
+                youTrackInfo.getImportance(), youTrackInfo.getCaseState()
+        );
+        fillCompletionState(youTrackInfo.getCaseState());
+    }
+
+    private void fillCompletionState( En_CaseState caseState ) {
+        if(doneStates.contains( caseState )) {
+            panel.getElement().addClassName( "link-completed" );
+        }
+    }
+
+    private void fillPopup( String name, String description, En_ImportanceLevel importanceLevel, En_CaseState caseState ) {
+        header.setInnerText( name );
+        importance.addClassName( ImportanceStyleProvider.getImportanceIcon( importanceLevel ));
+        state.addClassName( "label label-" + caseState.toString().toLowerCase() + " m-r-5");
+        state.setInnerText(caseStateLang.getStateName(caseState));
+        info.setInnerText(description);
+    }
+
+    private boolean hasInfo( CaseLink caseLink ) {
+        return caseLink.getCaseInfo()!=null || caseLink.getYouTrackInfo()!=null;
     }
 
     @Inject
@@ -166,8 +212,10 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     @UiField
     Anchor link;
 
+   Set<En_CaseState> doneStates = setOf( DONE, VERIFIED, CANCELED, CLOSED, SOLVED_DUP, SOLVED_FIX, SOLVED_NOAP, IGNORED );
+
     private CaseLink caseLink = null;
 
-    interface CaseLinkViewUiBinder extends UiBinder<HTMLPanel, CaseLinkView> {}
+    interface CaseLinkViewUiBinder extends UiBinder<FocusPanel, CaseLinkView> {}
     private static CaseLinkViewUiBinder ourUiBinder = GWT.create(CaseLinkViewUiBinder.class);
 }

@@ -12,7 +12,6 @@
 
             <div class="card card-default">
                 <div class="card-body">
-
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
                             <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>

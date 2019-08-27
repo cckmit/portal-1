@@ -21,7 +21,6 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterV
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -67,12 +66,7 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        regionService.createNewProject(new FluentCallback<Long>()
-                .withSuccess(projectId -> {
-                    updateListAndSelect(projectId);
-                    fireEvent(new ProjectEvents.ChangeModel());
-                })
-        );
+        fireEvent(new ProjectEvents.Edit());
     }
 
     @Event
@@ -80,7 +74,7 @@ public abstract class ProjectTableActivity
         this.initDetails = initDetails;
     }
 
-    @Event
+/*    @Event
     public void onChanged( ProjectEvents.Changed event ) {
         view.updateRow( event.project );
 
@@ -100,7 +94,7 @@ public abstract class ProjectTableActivity
         if ( !Objects.equals(currentValue.getRegion(), event.project.getRegion() ) ) {
             requestProjects( currentValue );
         }
-    }
+    }*/
 
     @Event
     public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
@@ -118,8 +112,9 @@ public abstract class ProjectTableActivity
                     projectIdForRemove = null;
                 })
                 .withSuccess(result -> {
-                    fireEvent(new ProjectEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(new ProjectEvents.Show());
                 })
         );
     }
@@ -139,8 +134,7 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onEditClicked( ProjectInfo value ) {
-        //fireEvent(new ProjectEvents.Edit(value.getId()));
-        showPreview( value );
+        fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
     @Override
@@ -223,6 +217,31 @@ public abstract class ProjectTableActivity
         }
     }
 
+    @Event
+    public void onChangeRow( ProjectEvents.ChangeProject event ) {
+        regionService.getProject(event.id, new FluentCallback<ProjectInfo>()
+                .withSuccess(result -> {
+                    view.updateRow(result);
+                }));
+    }
+
+/*
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }*/
+
     private ProjectQuery getQuery() {
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(filterView.searchPattern().getValue());
@@ -261,4 +280,5 @@ public abstract class ProjectTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
+    //private Integer scrollTop;
 }

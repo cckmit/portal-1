@@ -22,10 +22,12 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -116,6 +118,10 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         caseTagSelectorPopup.setAddTagsEnabled(enabled);
     }
 
+    public void setTagsEditButtonEnabled(boolean enabled) {
+        caseTagSelectorPopup.setEditTagsEnabled(enabled);
+    }
+
     private void makeCaseLinkViewAndAddToParent(CaseLink item) {
         String linkId = isCrmLink(item) ? item.getCaseInfo().getCaseNumber().toString() : item.getRemoteId();
         item.setLink(caseLinkProvider.getLink(item.getType(), linkId));
@@ -181,13 +187,13 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
     private void toggleVisibility(Set set, HTMLPanel container, LabelElement label) {
         if (CollectionUtils.isEmpty(set)) {
-            container.addStyleName("hide");
+            container.addStyleName( HIDE );
         } else {
-            container.removeStyleName("hide");
+            container.removeStyleName( HIDE );
             if (showLabel) {
-                label.removeClassName("hide");
+                label.removeClassName( HIDE );
             } else {
-                label.addClassName("hide");
+                label.addClassName( HIDE );
             }
         }
     }
@@ -219,24 +225,59 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             tagsCreateHandlerRegistration.removeHandler();
         }
         tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
-            activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
+            CaseTag caseTag = new CaseTag();
+            caseTag.setCaseType(tagCaseType);
+            activity.fireEvent(new CaseTagEvents.Update(caseTag, true));
+        });
+        tagsCreateHandlerRegistration = caseTagSelectorPopup.addEditHandler(event -> {
+            activity.fireEvent(event.isReadOnly ? new CaseTagEvents.Readonly(event.caseTag) : new CaseTagEvents.Update(event.caseTag, true));
         });
     }
+    
+    private void addCaseLink(CaseLink caseLink) {
 
-    private void addCaseLink(CaseLink item) {
-
-        if (item == null) {
+        if (caseLink == null) {
             return;
         }
 
-        if (!isCrmLink(item)) {
-            addCaseLinkToList(item);
-            return;
+        switch (caseLink.getType()) {
+            case CRM:
+                addCrmLink( caseLink );
+                break;
+            case CRM_OLD:
+                addCaseLinkToList(caseLink);
+                break;
+            case YT:
+                addYtLink( caseLink );
+                break;
         }
 
+    }
+
+    private void addYtLink( CaseLink caseLink ) {
+        caseLinkProvider.checkExistYtLink( caseLink.getRemoteId(), new FluentCallback<YouTrackIssueInfo>()
+                .withError( throwable -> {
+                    showError( lang.issueLinkIncorrectYouTrackCaseNotFound( caseLink.getRemoteId() ) );
+                } )
+                .withSuccess( youTrackIssueInfo -> {
+                    if (youTrackIssueInfo == null) {
+                        showError( lang.issueLinkIncorrectYouTrackCaseNotFound( caseLink.getRemoteId() ) );
+                        return;
+                    }
+
+                    caseLink.setYouTrackIssueInfo(youTrackIssueInfo);
+                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), caseLink.getRemoteId()));
+
+                    addCaseLinkToList(caseLink);
+                } )
+        );
+
+    }
+
+    private void addCrmLink( CaseLink caseLink ) {
         Long crmRemoteId;
         try {
-            crmRemoteId = Long.parseLong(item.getRemoteId());
+            crmRemoteId = Long.parseLong(caseLink.getRemoteId());
         } catch (NumberFormatException ex) {
             showError(lang.issueLinkIncorrectCrmNumberFormat());
             return;
@@ -252,11 +293,11 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
                         return;
                     }
 
-                    item.setRemoteId(caseInfo.getId().toString());
-                    item.setCaseInfo(caseInfo);
-                    item.setLink(caseLinkProvider.getLink(item.getType(), crmRemoteId.toString()));
+                    caseLink.setRemoteId(caseInfo.getId().toString());
+                    caseLink.setCaseInfo(caseInfo);
+                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), crmRemoteId.toString()));
 
-                    addCaseLinkToList(item);
+                    addCaseLinkToList(caseLink);
                 })
         );
     }
@@ -381,6 +422,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     private HandlerRegistration linksPopupHandlerRegistration;
     private HandlerRegistration tagsPopupHandlerRegistration;
     private HandlerRegistration tagsCreateHandlerRegistration;
+    public static final String HIDE = "hide";
 
     interface CaseMetaViewUiBinder extends UiBinder<HTMLPanel, CaseMetaView> {}
     private static CaseMetaViewUiBinder ourUiBinder = GWT.create(CaseMetaViewUiBinder.class);

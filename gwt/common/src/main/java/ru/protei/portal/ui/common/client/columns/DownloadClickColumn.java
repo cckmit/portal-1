@@ -12,6 +12,8 @@ import ru.protei.portal.core.model.ent.Downloadable;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
+import java.util.function.Function;
+
 public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
 
 
@@ -31,8 +33,11 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
 
     @Override
     public void fillColumnValue(Element cell, T value) {
-        if (!value.isAllowedDownload())
+        if (!value.isAllowedDownload()) {
             return;
+        }
+
+        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
 
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
@@ -46,6 +51,7 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         }
         a.setTitle(lang.download());
         setDownloadEnabled(a);
+        setDownloadDeprecated(a);
         cell.appendChild(a);
     }
 
@@ -61,10 +67,15 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         this.imageUrl = url;
     }
 
+    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
+        this.archivedCheckFunction = archivedCheckFunction;
+    }
+
     private void setDownloadEnabled(AnchorElement a) {
         if (privilege == null) {
             return;
         }
+
         if (policyService.hasPrivilegeFor(privilege)) {
             a.removeClassName("link-disabled");
         } else {
@@ -72,6 +83,13 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         }
     }
 
+    private void setDownloadDeprecated(AnchorElement a) {
+        if (isArchived) {
+            a.addClassName("deprecated-entity");
+        } else {
+            a.removeClassName("deprecated-entity");
+        }
+    }
 
     @Inject
     PolicyService policyService;
@@ -79,4 +97,6 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
     private Lang lang;
     private En_Privilege privilege;
     private String imageUrl;
+    private boolean isArchived;
+    private Function<T, Boolean> archivedCheckFunction;
 }

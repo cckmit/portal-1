@@ -19,6 +19,8 @@ public class En_SortFieldLang {
                 return lang.name();
             case comp_name:
                 return lang.name();
+            case project_name:
+                return lang.name();
             case last_update:
                 return lang.updated();
             case person_full_name:
@@ -40,6 +42,8 @@ public class En_SortFieldLang {
                 return lang.equipmentNameBySldWrks();
             case birthday:
                 return lang.birthday();
+            case employee_ip:
+                return lang.employeeIPAddress();
 
             default:
                 return lang.unknownField();
