@@ -397,6 +397,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setDisplayPreview(isPreviewAllowed);
     }
 
+    @Override
+    public HasVisibility copyVisibility() {
+        return copy;
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
