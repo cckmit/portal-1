@@ -14,11 +14,11 @@ import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
 class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
     public boolean isOk() {
-        return erroratus == null || HttpStatus.OK.equals( erroratus );
+        return errorStatus == null || HttpStatus.OK.equals( errorStatus );
     }
 
     public HttpStatus getStatus() {
-        return erroratus;
+        return errorStatus;
     }
 
     @Override
@@ -29,13 +29,13 @@ class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
     @Override
     public void handleError( ClientHttpResponse httpResponse ) throws IOException {
-        erroratus = httpResponse.getStatusCode();
+        errorStatus = httpResponse.getStatusCode();
         log.warn( "handleError(): Youtrack http api request error. status code: {} : {}"
                 , httpResponse.getStatusCode()
                 , httpResponse.getStatusText()
         );
     }
 
-    private HttpStatus erroratus;
+    private HttpStatus errorStatus;
     private final static Logger log = LoggerFactory.getLogger( RestTemplateResponseErrorHandler.class );
 }

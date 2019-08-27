@@ -283,7 +283,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         }
 
         if (filterName.getValue().isEmpty()){
-            setFilterNameContainererroryle(true);
+            setFilterNameContainerErrorStyle(true);
             return;
         }
 
@@ -350,7 +350,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         }
     }
 
-    private void setFilterNameContainererroryle(boolean hasError) {
+    private void setFilterNameContainerErrorStyle(boolean hasError) {
         if (hasError) {
             filterName.addStyleName(REQUIRED);
         } else {
