@@ -1,9 +1,6 @@
 package ru.protei.portal.test.api;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +22,11 @@ import ru.protei.portal.core.model.struct.Photo;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.Properties;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {APIConfigurationContext.class, DatabaseConfiguration.class})
 public class TestWorkerController {
+
 
     @Autowired
     WebApplicationContext webApplicationContext;
@@ -48,6 +49,7 @@ public class TestWorkerController {
     public static void initClass() throws Exception {
         initJAXB();
         BASE_URI = "http://localhost:8090/api/worker/";
+
     }
 
     @Before
@@ -334,37 +336,45 @@ public class TestWorkerController {
     }
 
 
-  /*  @Test
-    public void testUpdatePhoto() {
+    @Test
+    @Ignore
+    public void testUpdatePhoto() throws Exception {
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
+        WorkerRecord worker = createWorkerRecord();
+        ServiceResult sr = addWorker(worker);
 
-        Long id = new Long (140);
+        Long id = sr.getId();
         byte[] buf = read (id);
-        logger.debug ("personId = " + id);
+        logger.debug ("personId = " + sr.getId());
         logger.debug ("photo = " + buf);
         logger.debug("photo's length = " + (buf != null ? buf.length : null));
 
-        String URI = BASE_URI + "update.photo";
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(getMessageConverters());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+        String uri = BASE_URI + "update.photo";
 
         Photo photo = new Photo();
-        photo.setId(origWorker.getId());
+        photo.setId(sr.getId());
         photo.setContent(Base64.getEncoder().encodeToString(buf));
-        HttpEntity<Photo> entity = new HttpEntity<>(photo, headers);
+        String photoXml = toXml(photo);
 
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);
-        ServiceResult sr = response.getBody();
+        ResultActions result = mockMvc.perform(
+                put(uri)
+                        .header("Accept", "application/xml")
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content(photoXml)
+        );
+        sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
 
         Assert.assertNotNull ("Result updatePhoto() is null!", sr);
         Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
         Assert.assertTrue ("updatePhoto() must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
         logger.debug ("The photo of worker is updated. id = " + sr.getId ());
-    }*/
-/*
-    @Test
+
+        deleteWorker(worker);
+        deleteDepartment(department);
+    }
+
+  /*  @Test
     public void testGetPhotos() {
         IdList list = new IdList ();
         list.getIds().add (new Long (148));
@@ -400,9 +410,9 @@ public class TestWorkerController {
                 } catch (Exception e) {}
             }
         }
-    }
+    }*/
 
-*/
+
 
     private WorkerRecord createWorkerRecord() {
         WorkerRecord worker = new WorkerRecord();
@@ -616,5 +626,49 @@ public class TestWorkerController {
 
     private Object fromXml(String xml) throws Exception {
         return unmarshaller.unmarshal(new StringReader(xml));
+    }
+
+    private byte[] read(Long id) {
+
+        ByteArrayOutputStream out = null;
+        InputStream input = null;
+
+        InputStream is = null;
+
+        try {
+            String fileName = id + ".jpg";
+            logger.debug("fileName = " + fileName);
+            File file = new File(getClass().getClassLoader().getResource("source.jpg").getFile());
+            if (file.exists()) {
+                copy(file.getAbsolutePath(), file.getParent() + "/" + id + ".jpg");
+                /*is = TestWorkerController.class.getResourceAsStream("/service.properties");
+                Properties props = new Properties();
+                props.load(is);
+                props.setProperty("dir_photos", file.getAbsolutePath());*/
+                out = new ByteArrayOutputStream();
+                input = new BufferedInputStream(new FileInputStream(file));
+                int data = 0;
+                while ((data = input.read()) != -1){
+                    out.write(data);
+                }
+                logger.debug("file exists");
+            } else {
+                logger.debug ("file doesn't exist");
+            }
+        } catch (Exception e) {
+            logger.error ("error while update photo", e);
+        }
+        finally{
+            try {
+                input.close();
+                out.close ();
+            } catch (Exception e) {}
+        }
+        return out.toByteArray();
+    }
+
+    public static void copy(String resourceFileName, String destinationFileName) throws IOException {
+        if (Files.exists(Paths.get(destinationFileName))) Files.delete(Paths.get(destinationFileName));
+        Files.copy(Paths.get(resourceFileName), Paths.get(destinationFileName));
     }
 }
