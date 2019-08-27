@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -181,35 +182,39 @@ public class BootstrapService {
         caseQuery.setSortField(En_SortField.case_name);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
-        List<ProjectInfo> result = projects.stream()
-                .map(ProjectInfo::fromCaseObject).collect(toList());
 
-        if (result.isEmpty()) {
+        jdbcManyRelationsHelper.fill(projects, "products");
+
+        if (projects.isEmpty()) {
             return;
         }
 
-        result = result
+        projects = projects
                 .stream()
                 .filter(project -> project.getProducts() != null && project.getProducts().size() > 1)
                 .collect(toList());
 
-        if (result.isEmpty()) {
+        if (projects.isEmpty()) {
             return;
         }
 
-        result.forEach(project -> {
-            if (project.getProducts().stream().anyMatch(currProduct -> currProduct.getName().contains("uniteSeveralProductsInProjectToComplex_"))) {
+        projects.forEach(project -> {
+            String complexName = project.getProducts().stream().map(DevUnit::getName).reduce((name1, name2) -> name1 + " " + name2).get();
+
+            if (project.getProducts().stream().anyMatch(currProduct -> complexName.equals(currProduct.getName() + " " + currProduct.getName()))) {
                 return;
             }
 
             DevUnit complex = new DevUnit();
-            String complexName = project.getProducts().stream().map(ProductShortView::getName).reduce((name1, name2) -> name1 + " " + name2).get();
-            complex.setName("uniteSeveralProductsInProjectToComplex_" + complexName);
+            complex.setName(complexName);
+            complex.setStateId(En_DevUnitState.ACTIVE.getId());
             complex.setTypeId(En_DevUnitType.COMPLEX.getId());
-            complex.setChildren(project.getProducts().stream().map(DevUnit::fromProductShortView).collect(toList()));
+            complex.setChildren(new ArrayList<>(project.getProducts()));
             complex.setCreated(new Date());
 
             devUnitDAO.persist(complex);
+
+            projectToProductDAO.persist(new ProjectToProduct(project.getId(), devUnitDAO.getByCondition("UNIT_NAME like ? ", complexName).getId()));
         });
     }
 
@@ -217,6 +222,7 @@ public class BootstrapService {
     UserRoleDAO userRoleDAO;
     @Inject
     DecimalNumberDAO decimalNumberDAO;
+
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
@@ -231,4 +237,8 @@ public class BootstrapService {
     PersonDAO personDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
+    @Autowired
+    ProjectToProductDAO projectToProductDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }
