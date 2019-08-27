@@ -63,6 +63,8 @@ public interface AbstractIssueEditView extends IsWidget {
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
+    HasVisibility copyVisibility();
+
     void showComments(boolean isShow);
     boolean isAttached();
 
