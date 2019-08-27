@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -39,7 +39,7 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.debug( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List< PersonShortView > > result = employeeService.shortViewList( query );
+        Result< List< PersonShortView > > result = employeeService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 

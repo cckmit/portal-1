@@ -2,19 +2,19 @@ package ru.protei.portal.api.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Created by michael on 27.06.16.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect
-public class CoreResponse<T> {
+public class Result<T> {
 
     @JsonProperty
     private En_ResultStatus status;
@@ -51,48 +51,34 @@ public class CoreResponse<T> {
         this.message = message;
     }
 
-    @JsonIgnore
-    public CoreResponse<T> error (En_ResultStatus status) {
+    public Result( En_ResultStatus status, T data, String message ) {
         this.status = status;
-        return this;
-    }
-    @JsonIgnore
-    public CoreResponse<T> error (En_ResultStatus status, String message) {
-        this.status = status;
-        this.message = message;
-        return this;
-    }
-    @JsonIgnore
-    public CoreResponse<T> redirect (String to) {
-        return this;
-    }
-
-    @JsonIgnore
-    public CoreResponse<T> success () {
-        this.status = En_ResultStatus.OK;
-        return this;
-    }
-    @JsonIgnore
-    public CoreResponse<T> success (T data) {
         this.data = data;
-        this.status = En_ResultStatus.OK;
+        this.message = message;
+    }
+
+    @JsonIgnore
+    public static <T> Result<T> error( En_ResultStatus status ) {
+        return error( status, null);
+    }
+    @JsonIgnore
+    public static <T> Result<T> error( En_ResultStatus status, String message ) {
+        return new Result<T>( status, null, message);
+    }
+
+    @JsonIgnore
+    public Result<T> redirect ( String to) {
         return this;
     }
 
-    public static <T> CoreResponse<T> ok() {
-        return new CoreResponse<T>().success();
+    @JsonIgnore
+    public static <T> Result<T> ok() {
+        return ok(null);
     }
 
-    public static <T> CoreResponse<T> ok(T result) {
-        return new CoreResponse<T>().success(result);
-    }
-
-    public static <T> CoreResponse<T> errorSt(En_ResultStatus status) {
-        return errorSt(status, null);
-    }
-
-    public static <T> CoreResponse<T> errorSt(En_ResultStatus status, String message) {
-        return new CoreResponse<T>().error( status, message );
+    @JsonIgnore
+    public static <T> Result<T> ok( T data ) {
+        return new Result<T>( En_ResultStatus.OK, data, null);
     }
 
     @Override
@@ -108,7 +94,7 @@ public class CoreResponse<T> {
      * Если результрат успешен
      */
     @JsonIgnore
-    public CoreResponse<T> ifOk( Consumer<? super T> consumer ) {
+    public Result<T> ifOk( Consumer<? super T> consumer ) {
         if (consumer != null && isOk()) {
             consumer.accept( data );
         }
@@ -116,7 +102,7 @@ public class CoreResponse<T> {
     }
 
     @JsonIgnore
-    public CoreResponse<T> ifError( Consumer<CoreResponse<T>> consumer ) {
+    public Result<T> ifError( Consumer<Result<T>> consumer ) {
         if (consumer != null && !isOk()) {
             consumer.accept( this );
         }
@@ -142,9 +128,9 @@ public class CoreResponse<T> {
      * Когда вызваемая функция возвращает не Result, а конкретное значение
      */
     @JsonIgnore
-    public <U> CoreResponse<U> map( Function<? super T, ? extends U> mapper) {
+    public <U> Result<U> map( Function<? super T, ? extends U> mapper) {
         if (mapper == null || !isOk())
-            return errorSt( status, message );
+            return error( status, message );
         else {
             return ok( mapper.apply( data ) );
         }
@@ -154,9 +140,9 @@ public class CoreResponse<T> {
      * Когда вызваемая функция возвращает Result
      */
     @JsonIgnore
-    public <U> CoreResponse<U> flatMap(Function<? super T, CoreResponse<U>> mapper) {
+    public <U> Result<U> flatMap( Function<? super T, Result<U>> mapper) {
         if (mapper == null || !isOk())
-            return errorSt( status, message );
+            return error( status, message );
         else {
             return mapper.apply(data);
         }
@@ -167,9 +153,9 @@ public class CoreResponse<T> {
      * получить тот же результат выполнив другое действие
      */
     @JsonIgnore
-    public CoreResponse<T> orElseGet( Function<CoreResponse<T>, CoreResponse<T>> mapper ) {
+    public Result<T> orElseGet( Function<Result<T>, Result<T>> mapper ) {
         if (mapper == null) {
-            return errorSt( status, message );
+            return error( status, message );
         }
         if (!isOk()) {
             return mapper.apply(this);
@@ -178,7 +164,7 @@ public class CoreResponse<T> {
     }
 
     @JsonIgnore
-    public <X extends Throwable> CoreResponse<T> orElseThrow( Function<CoreResponse<T>, ? extends X> exceptionSupplier ) throws X {
+    public <X extends Throwable> Result<T> orElseThrow( Function<Result<T>, ? extends X> exceptionSupplier ) throws X {
         if (!isOk()) {
             throw exceptionSupplier.apply( this );
         }

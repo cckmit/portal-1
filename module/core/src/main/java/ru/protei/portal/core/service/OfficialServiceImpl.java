@@ -3,9 +3,12 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -15,13 +18,15 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Реализация сервиса управления должностными лицами
  */
 public class OfficialServiceImpl implements OfficialService {
 
     @Override
-    public CoreResponse<Map<String, List<Official>>> listOfficialsByRegions(AuthToken authToken, OfficialQuery query) {
+    public Result<Map<String, List<Official>>> listOfficialsByRegions( AuthToken authToken, OfficialQuery query) {
 
         Map<String, List<Official>> officialsByRegions = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
@@ -42,26 +47,26 @@ public class OfficialServiceImpl implements OfficialService {
                 applyCaseToOfficial( caseObject, location, officialsByRegions );
             } );
         } );
-        return new CoreResponse<Map<String, List<Official>>>().success(officialsByRegions);
+        return ok(officialsByRegions);
     }
 
     @Override
-    public CoreResponse<Official> getOfficial(AuthToken authToken, Long id) {
+    public Result<Official> getOfficial( AuthToken authToken, Long id) {
 
         CaseObject caseObject = caseObjectDAO.get(id);
         helper.fillAll( caseObject );
 
-        return new CoreResponse<Official>().success(Official.fromCaseObject(caseObject));
+        return ok(Official.fromCaseObject(caseObject));
     }
 
     @Override
-    public CoreResponse<OfficialMember> getOfficialMember(AuthToken authToken, Long id) {
+    public Result<OfficialMember> getOfficialMember( AuthToken authToken, Long id) {
         CaseMember caseMember = caseMemberDAO.get(id);
-        return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));
+        return ok(OfficialMember.fromCaseMember(caseMember));
     }
 
     @Override
-    public CoreResponse<Long> createOfficialMember(AuthToken authToken, OfficialMember officialMember, Long parentId) {
+    public Result<Long> createOfficialMember( AuthToken authToken, OfficialMember officialMember, Long parentId) {
         CaseObject caseObject = caseObjectDAO.get(parentId);
 
         CaseMember caseMember = new CaseMember();
@@ -87,11 +92,11 @@ public class OfficialServiceImpl implements OfficialService {
         caseMember.setRole(officialMember.getAmplua());
         caseMemberDAO.persist(caseMember);
 
-        return new CoreResponse<Long>().success(null);
+        return ok();
     }
 
     @Override
-    public CoreResponse<OfficialMember> saveOfficialMember(AuthToken authToken, OfficialMember officialMember) {
+    public Result<OfficialMember> saveOfficialMember( AuthToken authToken, OfficialMember officialMember) {
 
         CaseMember caseMember = caseMemberDAO.get(officialMember.getId());
         Person person = caseMember.getMember();
@@ -108,13 +113,13 @@ public class OfficialServiceImpl implements OfficialService {
         caseMember.setRole(officialMember.getAmplua());
         boolean isUpdatesMember = caseMemberDAO.merge(caseMember);
         if (!isUpdatedPerson || !isUpdatesMember)
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
 
-        return new CoreResponse<OfficialMember>().success(OfficialMember.fromCaseMember(caseMember));
+        return ok(OfficialMember.fromCaseMember(caseMember));
     }
 
     @Override
-    public CoreResponse<Official> updateOfficial(AuthToken authToken, Official official) {
+    public Result<Official> updateOfficial( AuthToken authToken, Official official) {
         CaseObject caseObject = caseObjectDAO.get(official.getId());
         helper.fillAll(caseObject);
         caseObject.setProductId(official.getProduct().getId());
@@ -124,11 +129,11 @@ public class OfficialServiceImpl implements OfficialService {
         location.setLocationId(official.getRegion().getId());
         caseLocationDAO.merge(location);
 
-        return new CoreResponse<Official>().success(official);
+        return ok(official);
     }
 
     @Override
-    public CoreResponse<Long> createOfficial(AuthToken authToken, Official official, Long creatorId) {
+    public Result<Long> createOfficial( AuthToken authToken, Official official, Long creatorId) {
 //        CaseType type = caseTypeDAO.get( new Long( En_CaseType.OFFICIAL.getId() ) );
 //        Long id = type.getNextId();
 //        type.setNextId( id + 1 );
@@ -153,24 +158,24 @@ public class OfficialServiceImpl implements OfficialService {
         caseObject.setLocations(Arrays.asList(caseLocation));
         caseObjectDAO.merge(caseObject);
 
-        return new CoreResponse< Long >().success( caseId );
+        return ok(caseId );
     }
 
     @Override
-    public CoreResponse<Boolean> removeOfficial(AuthToken authToken, Long id) {
+    public Result<Boolean> removeOfficial( AuthToken authToken, Long id) {
         CaseObject caseObject = caseObjectDAO.get(id);
         helper.fillAll(caseObject);
         removeRelatedObjects(caseObject);
 
         boolean isRemoving = caseObjectDAO.remove(caseObject);
-        return new CoreResponse<Boolean>().success(isRemoving);
+        return ok(isRemoving);
     }
 
     @Override
-    public CoreResponse<Boolean> removeOfficialMember(AuthToken authToken, Long id) {
+    public Result<Boolean> removeOfficialMember( AuthToken authToken, Long id) {
         boolean isRemoving = caseMemberDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(isRemoving);
+        return ok(isRemoving);
     }
 
     private void iterateAllLocations( CaseObject official, Consumer< Location > handler ) {

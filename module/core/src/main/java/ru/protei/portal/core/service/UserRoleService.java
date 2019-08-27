@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -16,18 +16,18 @@ import java.util.List;
  * Сервис управления ролями
  */
 public interface UserRoleService {
-    CoreResponse<List<UserRole>> userRoleList( AuthToken authToken, UserRoleQuery query );
+    Result<List<UserRole>> userRoleList( AuthToken authToken, UserRoleQuery query );
 
     @Privileged( En_Privilege.ROLE_VIEW )
-    CoreResponse<UserRole> getUserRole( AuthToken authToken, Long id );
+    Result<UserRole> getUserRole( AuthToken authToken, Long id );
 
     @Privileged( requireAny = { En_Privilege.ROLE_EDIT, En_Privilege.ROLE_CREATE } )
     @Auditable( En_AuditType.ROLE_MODIFY )
-    CoreResponse<UserRole> saveUserRole( AuthToken authToken, UserRole userRole );
+    Result<UserRole> saveUserRole( AuthToken authToken, UserRole userRole );
 
-    CoreResponse<List<EntityOption>> userRoleOptionList( AuthToken token, UserRoleQuery query );
+    Result<List<EntityOption>> userRoleOptionList( AuthToken token, UserRoleQuery query );
 
     @Privileged( En_Privilege.ROLE_REMOVE )
     @Auditable( En_AuditType.ROLE_REMOVE )
-    CoreResponse<Boolean> removeRole( AuthToken authToken, Long id );
+    Result<Boolean> removeRole( AuthToken authToken, Long id );
 }

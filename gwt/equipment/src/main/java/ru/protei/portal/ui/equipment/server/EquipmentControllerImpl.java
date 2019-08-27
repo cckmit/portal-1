@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -48,7 +48,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<EquipmentShortView >> response = equipmentService.shortViewList( descriptor.makeAuthToken(), query );
+        Result<List<EquipmentShortView >> response = equipmentService.shortViewList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -62,7 +62,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Equipment> response = equipmentService.getEquipment( descriptor.makeAuthToken(), id );
+        Result<Equipment> response = equipmentService.getEquipment( descriptor.makeAuthToken(), id );
         log.debug("get equipment, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isOk()) {
@@ -89,7 +89,7 @@ public class EquipmentControllerImpl implements EquipmentController {
         }
         log.debug("store equipment, id: {} ", HelperFunc.nvl(eq.getId(), "new"));
 
-        CoreResponse<Equipment> response = equipmentService.saveEquipment( descriptor.makeAuthToken(), eq );
+        Result<Equipment> response = equipmentService.saveEquipment( descriptor.makeAuthToken(), eq );
         log.debug("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -109,7 +109,7 @@ public class EquipmentControllerImpl implements EquipmentController {
         UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
         Long authorId = session.getPerson() == null ? 0 : session.getPerson().getId();
 
-        CoreResponse<Long> response = equipmentService.copyEquipment( session.makeAuthToken(), equipmentId, newName, authorId );
+        Result<Long> response = equipmentService.copyEquipment( session.makeAuthToken(), equipmentId, newName, authorId );
         log.debug( "copy equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -126,7 +126,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Boolean> response = equipmentService.removeEquipment( descriptor.makeAuthToken(), equipmentId );
+        Result<Boolean> response = equipmentService.removeEquipment( descriptor.makeAuthToken(), equipmentId );
         log.debug( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -143,7 +143,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<DecimalNumber>> response = equipmentService.getDecimalNumbersOfEquipment(descriptor.makeAuthToken(), equipmentId);
+        Result<List<DecimalNumber>> response = equipmentService.getDecimalNumbersOfEquipment(descriptor.makeAuthToken(), equipmentId);
 
         log.debug("get decimal numbers of equipment, id: {} -> {} ", equipmentId, response.isOk() ? "ok" : response.getStatus());
 
@@ -163,7 +163,7 @@ public class EquipmentControllerImpl implements EquipmentController {
         log.debug( "check exist decimal number: organizationCode={}, classifierCode={}, regNum={}, modification={}",
                 number.getOrganizationCode(), number.getClassifierCode(), number.getRegisterNumber(), number.getModification() );
 
-        CoreResponse<Boolean> response = equipmentService.checkIfExistDecimalNumber( number );
+        Result<Boolean> response = equipmentService.checkIfExistDecimalNumber( number );
         if (response.isOk()) {
             log.debug("check exist decimal number, result: {}", response.getData());
             return response.getData();
@@ -177,7 +177,7 @@ public class EquipmentControllerImpl implements EquipmentController {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug("find decimal number: decimal number={}", decimalNumber);
-        CoreResponse<DecimalNumber> response = equipmentService.findDecimalNumber(descriptor.makeAuthToken(), decimalNumber);
+        Result<DecimalNumber> response = equipmentService.findDecimalNumber(descriptor.makeAuthToken(), decimalNumber);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -191,7 +191,7 @@ public class EquipmentControllerImpl implements EquipmentController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        Result<Integer> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -207,7 +207,7 @@ public class EquipmentControllerImpl implements EquipmentController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        Result<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -232,7 +232,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
+        Result<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
         log.debug("getDocument: id={} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -254,7 +254,7 @@ public class EquipmentControllerImpl implements EquipmentController {
         log.debug("saveDocument: id={}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Document> response;
+        Result<Document> response;
         if (document.getId() == null) {
             FileItem fileItem = sessionService.getFileItem(httpRequest);
             if (fileItem == null) {

@@ -1,11 +1,11 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.service.auth;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -20,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 29.06.16.
@@ -161,10 +162,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+    public Result<UserSessionDescriptor> login( String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+        logger.info( "login(): {} {} {} {} {}",  appSessionId,  ulogin,  makePasswordString(pwd),  ip,  userAgent );
         if ( StringUtils.isEmpty(ulogin) || StringUtils.isEmpty(pwd) ) {
             logger.debug("null login or pwd, auth-failed");
-            return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+            return error( En_ResultStatus.INVALID_LOGIN_OR_PWD);
         }
         String loginSuffix = config.data().getLoginSuffix();
 
@@ -193,7 +195,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if ( loginResponse != En_ResultStatus.OK ) {
-            return new CoreResponse<UserSessionDescriptor>().error(loginResponse);
+            return error( loginResponse);
         }
 
         jdbcManyRelationsHelper.fill(login, "roles");
@@ -204,12 +206,12 @@ public class AuthServiceImpl implements AuthService {
                 logger.warn("Security exception, client " + login.getUlogin() + " from host " + ip
                         + " is trying to accessType session " + descriptor.getSessionId()
                         + " created for " + descriptor.getLogin().getUlogin() + "@" + descriptor.getSession().getClientIp());
-                return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
+                return error( En_ResultStatus.INVALID_SESSION_ID);
             }
 
             if (!descriptor.getSession().getClientIp().equals(ip)) {
                 logger.warn("Security exception, host " + ip + " is trying to accessType session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
-                return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
+                return error( En_ResultStatus.INVALID_SESSION_ID);
             }
         } else {
             descriptor = new UserSessionDescriptor();
@@ -218,7 +220,7 @@ public class AuthServiceImpl implements AuthService {
         Person person = personDAO.get(login.getPersonId());
         if (person.isFired() || person.isDeleted()) {
             logger.debug("login [{}] - person {}, access denied", ulogin, person.isFired() ? "fired" : "deleted");
-            return new CoreResponse().error(En_ResultStatus.PERMISSION_DENIED);
+            return error( En_ResultStatus.PERMISSION_DENIED);
         }
 
         Company company = companyDAO.get(person.getCompanyId());
@@ -245,11 +247,12 @@ public class AuthServiceImpl implements AuthService {
         sessionDAO.persist(descriptor.getSession());
 
         sessionCache.put(descriptor.getSessionId(), descriptor);
-        return new CoreResponse().success(descriptor);
+        return ok( descriptor);
     }
 
     @Override
     public boolean logout(String appSessionId, String ip, String userAgent) {
+        logger.info( "logout(): {} {} {} ", appSessionId, ip, userAgent );
         UserSessionDescriptor descriptor = getSessionDescriptor(appSessionId);
 
         if (descriptor == null) return false;
@@ -266,6 +269,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request) {
+        logger.info( "getUserSessionDescriptor(): {}", request );
         return ((UserSessionDescriptor)request.getSession().getAttribute( "auth-session-data" ));
     }
 
@@ -273,5 +277,13 @@ public class AuthServiceImpl implements AuthService {
         sessionDAO.remove(descriptor.getSession());
         sessionCache.remove(descriptor.getSessionId());
         descriptor.close();
+    }
+
+    public static String makePasswordString(String password) {
+        if (isEmpty(password)) {
+            return password;
+        } else {
+            return "********";
+        }
     }
 }

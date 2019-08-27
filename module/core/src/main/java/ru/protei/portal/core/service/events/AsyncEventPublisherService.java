@@ -1,10 +1,11 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.events;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import ru.protei.portal.core.service.EventPublisherService;
 
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;

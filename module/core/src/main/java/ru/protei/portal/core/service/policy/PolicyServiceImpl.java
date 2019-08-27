@@ -1,19 +1,39 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.policy;
 
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 
 import java.util.*;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Сервис для работы с привилегиями
  */
 public class PolicyServiceImpl implements PolicyService {
+
+
+    @Override
+    public boolean hasAccessForCaseObject( UserSessionDescriptor descriptor, En_Privilege privilege, CaseObject caseObject ) {
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (!hasGrantAccessFor( roles, privilege ) && hasScopeForPrivilege( roles, privilege, En_Scope.COMPANY )) {
+            if (caseObject == null) {
+                return false;
+            }
+
+            Collection<Long> companyIds = descriptor.getAllowedCompaniesIds();
+            if (!companyIds.contains( caseObject.getInitiatorCompanyId() )) {
+                return false;
+            }
+
+            if (caseObject.isPrivateCase()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public boolean hasPrivilegeFor( En_Privilege privilege, Set< UserRole > roles ) {

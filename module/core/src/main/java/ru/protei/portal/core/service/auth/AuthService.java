@@ -1,6 +1,6 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.service.auth;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 
@@ -19,7 +19,7 @@ public interface AuthService {
 
     public UserSessionDescriptor findSession (String appSessionId, String ip, String userAgent);
     public UserSessionDescriptor findSession (AuthToken token);
-    public CoreResponse<UserSessionDescriptor> login (String appSessionID, String login, String pwd, String ip, String userAgent);
+    public Result<UserSessionDescriptor> login ( String appSessionID, String login, String pwd, String ip, String userAgent);
     public boolean logout (String appSessionId, String ip, String userAgent);
     public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request);
 }

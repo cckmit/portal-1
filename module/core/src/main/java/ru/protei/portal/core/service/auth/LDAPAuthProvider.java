@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.service.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,8 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchResult;
 import java.util.Hashtable;
 
+import static ru.protei.portal.core.service.auth.AuthServiceImpl.makePasswordString;
+
 /**
  * Created by michael on 30.06.16.
  */
@@ -29,6 +31,7 @@ public class LDAPAuthProvider {
     Logger logger = LoggerFactory.getLogger("logger-security");
 
     public En_ResultStatus checkAuth (String username, String pwd) {
+        logger.info( "checkAuth(): username={} password={}", username, makePasswordString(pwd) );
         Hashtable<Object,Object> env = new Hashtable<>();
 
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
