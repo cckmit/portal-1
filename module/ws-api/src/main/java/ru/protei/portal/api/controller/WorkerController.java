@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.controller.api.Credentials;
+import ru.protei.portal.core.controller.auth.SecurityDefs;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.dao.*;
@@ -22,6 +27,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.Inet4Address;
 import java.text.ParseException;
@@ -31,6 +38,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
@@ -38,6 +46,12 @@ import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private SessionIdGen sidGen;
 
     @Autowired
     private PersonDAO personDAO;
@@ -100,9 +114,17 @@ public class WorkerController {
      * @return WorkerRecord
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
+    WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
+                           HttpServletRequest request,
+                           HttpServletResponse response) {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+
+        if (userSessionDescriptorAPIResult.isError()) {
+            return null;
+        }
 
         try {
             return withHomeCompany(companyCode,
@@ -1312,5 +1334,36 @@ public class WorkerController {
         private WorkerEntry getFirstEntry() {
             return workers == null ? null : workers.stream().findFirst().orElse(null);
         }
+    }
+
+    private Result<UserSessionDescriptor> authenticate(HttpServletRequest request, HttpServletResponse response ) {
+        Credentials cr = null;
+        try {
+            cr = Credentials.parse( request.getHeader( "Authorization" ) );
+            if ((cr == null) || (!cr.isValid())) {
+                String logMsg = "Basic authentication required";
+                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
+                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
+                logger.error( "API | {}", logMsg );
+                return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
+            }
+
+        } catch (IllegalArgumentException | IOException ex) {
+            logger.error( "Can`t authenticate {}", ex.getMessage() );
+            return error( En_ResultStatus.AUTH_FAILURE );
+        } catch (Exception ex) {
+            logger.error( "Can`t authenticate {} unexpected exception: ", ex );
+            return error( En_ResultStatus.AUTH_FAILURE );
+        }
+
+        String ip = request.getRemoteAddr();
+        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
+
+        logger.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
+        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent )
+                .ifError( result -> {
+                    result.setMessage( "Authentification error" );
+                    logger.error( "API | error {}", result );
+                } );
     }
 }

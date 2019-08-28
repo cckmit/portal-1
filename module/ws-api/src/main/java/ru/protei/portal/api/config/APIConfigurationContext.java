@@ -14,6 +14,11 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.auth.AuthServiceImpl;
+import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.utils.SessionIdGen;
+import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
@@ -30,6 +35,22 @@ import java.util.List;
 @ComponentScan(basePackages = "ru.protei.portal.api.controller")
 @Import({CoreConfigurationContext.class, JdbcConfigurationContext.class})
 public class APIConfigurationContext extends WebMvcConfigurerAdapter {
+
+    @Bean
+    public SessionIdGen getSessionIdGenerator() { return new SimpleSidGenerator(); }
+
+    @Bean
+    public AuthService getAuthService() { return new AuthServiceImpl(); }
+
+    @Bean
+    public LDAPAuthProvider getLDAPAuthProvider() {
+        return new LDAPAuthProvider();
+    }
+
+    @Bean
+    public UserSessionDAO getUserSessionDAO() {
+        return new UserSessionDAO_Impl();
+    }
 
     @Bean
     public EmployeeSqlBuilder employeeSqlBuilder() {
