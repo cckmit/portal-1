@@ -43,17 +43,12 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setName(String name) {
-        this.name.setInnerText(name);
+        this.productName.setInnerText(name);
     }
 
     @Override
     public void setTypeImage(String image) {
         typeImage.setSrc(image);
-    }
-
-    @Override
-    public void setType(String type) {
-        typeLabel.setText(type);
     }
 
     @Override
@@ -94,8 +89,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         }else {
             rootWrapper.removeStyleName("preview-wrapper");
         }
-
-        nameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -110,19 +103,13 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     HeadingElement productName;
     @UiField
-    SpanElement name;
-    @UiField
     AnchorElement wikiLink;
-    @UiField
-    HTMLPanel nameBlock;
     @UiField
     HTMLPanel configuration;
     @UiField
     HTMLPanel historyVersion;
     @UiField
     HTMLPanel cdrDescription;
-    @UiField
-    Label typeLabel;
 
     @Inject
     FixedPositioner positioner;

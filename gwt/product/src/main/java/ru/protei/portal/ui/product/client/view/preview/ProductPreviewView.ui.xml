@@ -12,16 +12,6 @@
                 <a ui:field="wikiLink" href="#" target="_blank"/>
             </div>
 
-            <g:HTMLPanel ui:field="nameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend>
-                    <g:Label ui:field="typeLabel"/>
-                </legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.name}"/></label>
-                    <span class="col-xs-7" ui:field="name"></span>
-                </div>
-            </g:HTMLPanel>
-
             <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
 
             <tab:TabWidget tabNames="{lang.productHistoryVersion}|{lang.productConfiguration}|{lang.productCDRDescription}" styleName="">
