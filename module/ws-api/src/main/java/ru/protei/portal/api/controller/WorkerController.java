@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,9 +96,17 @@ public class WorkerController {
      * @return WorkerRecord
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
-    WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
+    WorkerRecord getPerson(@RequestParam(name = "id") Long id,
+                           HttpServletRequest request,
+                           HttpServletResponse response) {
 
         logger.debug("getPerson(): id={}", id);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         try {
             return new WorkerRecord(personDAO.get(id));
@@ -120,11 +129,12 @@ public class WorkerController {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
 
-        if (userSessionDescriptorAPIResult.isError()) {
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
             return null;
         }
+
 
         try {
             return withHomeCompany(companyCode,
@@ -147,9 +157,17 @@ public class WorkerController {
      * @return DepartmentRecord
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
+    DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
         logger.debug("getDepartment(): id={}, companyCode={}", id, companyCode);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         try {
 
@@ -169,9 +187,17 @@ public class WorkerController {
      * @return WorkerRecordList
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
-    WorkerRecordList getPersons(@RequestParam(name = "expr") String expr) {
+    WorkerRecordList getPersons(@RequestParam(name = "expr") String expr,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
 
         logger.debug("getPersons(): expr={}", expr);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         WorkerRecordList persons = new WorkerRecordList();
 
@@ -195,9 +221,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
-    ServiceResult addWorker(@RequestBody WorkerRecord rec) {
+    ServiceResult addWorker(@RequestBody WorkerRecord rec,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
 
         logger.debug("addWorker(): rec={}", rec);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         ServiceResult isValid = isValidWorkerRecord(rec);
         if (!isValid.isSuccess()) {
@@ -308,9 +342,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
-    ServiceResult updateWorker(@RequestBody WorkerRecord rec) {
+    ServiceResult updateWorker(@RequestBody WorkerRecord rec,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
 
         logger.debug("updateWorker(): rec={}", rec);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         ServiceResult isValid = isValidWorkerRecord(rec);
         if (!isValid.isSuccess()) {
@@ -426,16 +468,24 @@ public class WorkerController {
      * @return ServiceResultList
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
-    ServiceResultList updateWorkers(@RequestBody WorkerRecordList list) {
+    ServiceResultList updateWorkers(@RequestBody WorkerRecordList list,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
 
         logger.debug("updateWorkers(): list={}", list);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         ServiceResultList results = new ServiceResultList();
 
         try {
 
             list.getWorkerRecords().forEach(
-                    p -> results.append(updateWorker(p))
+                    p -> results.append(updateWorker(p, request, response))
             );
 
         } catch (Exception e) {
@@ -451,9 +501,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
-    ServiceResult deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
+    ServiceResult deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
 
         logger.debug("deleteWorker(): externalId={}, companyCode={}", externalId, companyCode);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         try {
 
@@ -509,9 +567,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    ServiceResult updatePhoto(@RequestBody Photo photo) {
+    ServiceResult updatePhoto(@RequestBody Photo photo,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
 
         logger.debug("updatePhoto(): photo={}", photo);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         if (HelperFunc.isEmpty(photo.getContent())) {
             logger.debug("error result: {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
@@ -550,9 +616,17 @@ public class WorkerController {
      * @return PhotoList
      */
     @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
-    PhotoList getPhotos(@RequestBody IdList list) {
+    PhotoList getPhotos(@RequestBody IdList list,
+                        HttpServletRequest request,
+                        HttpServletResponse response) {
 
         logger.debug("getPhotos(): list={}", list);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         Base64InputStream in = null;
         PhotoList photos = new PhotoList();
@@ -597,9 +671,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
-    ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
+    ServiceResult updateDepartment(@RequestBody DepartmentRecord rec,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
         logger.debug("updateDepartment(): rec={}", rec);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         ServiceResult isValid = isValidDepartmentRecord(rec);
         if (!isValid.isSuccess()) {
@@ -650,9 +732,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
-    ServiceResult deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
+    ServiceResult deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
         logger.debug("deleteDepartment(): externalId={}, companyCode={}", externalId, companyCode);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         try {
 
@@ -686,9 +776,18 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
-    ServiceResult updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName") String newName, @RequestParam(name = "companyCode") String companyCode) {
+    ServiceResult updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName")
+            String newName, @RequestParam(name = "companyCode") String companyCode,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
 
         logger.debug("updatePosition(): oldName={}, newName={}, companyCode={}", oldName, newName, companyCode);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         if (HelperFunc.isEmpty(oldName) || HelperFunc.isEmpty(newName)) {
             logger.debug("error result: " + En_ErrorCode.EMPTY_POS.getMessage());
@@ -727,9 +826,17 @@ public class WorkerController {
      * @return ServiceResult
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
-    ServiceResult deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode) {
+    ServiceResult deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
 
         logger.debug("deletePosition(): name={}, companyCode={}", name, companyCode);
+
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            return null;
+        }
 
         try {
 
@@ -1336,34 +1443,5 @@ public class WorkerController {
         }
     }
 
-    private Result<UserSessionDescriptor> authenticate(HttpServletRequest request, HttpServletResponse response ) {
-        Credentials cr = null;
-        try {
-            cr = Credentials.parse( request.getHeader( "Authorization" ) );
-            if ((cr == null) || (!cr.isValid())) {
-                String logMsg = "Basic authentication required";
-                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
-                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
-                logger.error( "API | {}", logMsg );
-                return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
-            }
 
-        } catch (IllegalArgumentException | IOException ex) {
-            logger.error( "Can`t authenticate {}", ex.getMessage() );
-            return error( En_ResultStatus.AUTH_FAILURE );
-        } catch (Exception ex) {
-            logger.error( "Can`t authenticate {} unexpected exception: ", ex );
-            return error( En_ResultStatus.AUTH_FAILURE );
-        }
-
-        String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
-
-        logger.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
-        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent )
-                .ifError( result -> {
-                    result.setMessage( "Authentification error" );
-                    logger.error( "API | error {}", result );
-                } );
-    }
 }

@@ -22,6 +22,7 @@ import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
+import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +73,7 @@ public class PortalApiController {
         log.debug("API | getCaseList(): query={}", query);
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
             if (userSessionDescriptorAPIResult.isError()) {
                 return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -105,7 +106,7 @@ public class PortalApiController {
         }
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
             if (userSessionDescriptorAPIResult.isError()) {
                 return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -143,7 +144,7 @@ public class PortalApiController {
         }
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
             if (userSessionDescriptorAPIResult.isError()) {
                 return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -176,7 +177,7 @@ public class PortalApiController {
                                                 @PathVariable("youtrackId") String youtrackId ) {
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
                 .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
@@ -190,7 +191,7 @@ public class PortalApiController {
                                                       @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
                 .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
@@ -205,7 +206,7 @@ public class PortalApiController {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
         // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
                 .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
@@ -239,37 +240,6 @@ public class PortalApiController {
                     .collect(Collectors.toList());
         }
         return stateIds;
-    }
-
-    private Result<UserSessionDescriptor> authenticate( HttpServletRequest request, HttpServletResponse response ) {
-        Credentials cr = null;
-        try {
-            cr = Credentials.parse( request.getHeader( "Authorization" ) );
-            if ((cr == null) || (!cr.isValid())) {
-                String logMsg = "Basic authentication required";
-                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
-                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
-                log.error( "API | {}", logMsg );
-                return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
-            }
-
-        } catch (IllegalArgumentException | IOException ex) {
-            log.error( "Can`t authenticate {}", ex.getMessage() );
-            return error( En_ResultStatus.AUTH_FAILURE );
-        } catch (Exception ex) {
-            log.error( "Can`t authenticate {} unexpected exception: ", ex );
-            return error( En_ResultStatus.AUTH_FAILURE );
-        }
-
-        String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
-
-        log.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
-        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent )
-                .ifError( result -> {
-                    result.setMessage( "Authentification error" );
-                    log.error( "API | error {}", result );
-                } );
     }
 
     private Date parseDate(String date) {
