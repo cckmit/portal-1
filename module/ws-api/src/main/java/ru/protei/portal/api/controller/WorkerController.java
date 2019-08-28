@@ -102,11 +102,7 @@ public class WorkerController {
 
         logger.debug("getPerson(): id={}", id);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         try {
             return new WorkerRecord(personDAO.get(id));
@@ -129,12 +125,7 @@ public class WorkerController {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
-
+        if (!checkAuth(request, response)) return null;
 
         try {
             return withHomeCompany(companyCode,
@@ -163,11 +154,7 @@ public class WorkerController {
 
         logger.debug("getDepartment(): id={}, companyCode={}", id, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         try {
 
@@ -193,11 +180,7 @@ public class WorkerController {
 
         logger.debug("getPersons(): expr={}", expr);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         WorkerRecordList persons = new WorkerRecordList();
 
@@ -227,11 +210,7 @@ public class WorkerController {
 
         logger.debug("addWorker(): rec={}", rec);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         ServiceResult isValid = isValidWorkerRecord(rec);
         if (!isValid.isSuccess()) {
@@ -348,11 +327,7 @@ public class WorkerController {
 
         logger.debug("updateWorker(): rec={}", rec);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         ServiceResult isValid = isValidWorkerRecord(rec);
         if (!isValid.isSuccess()) {
@@ -474,11 +449,7 @@ public class WorkerController {
 
         logger.debug("updateWorkers(): list={}", list);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         ServiceResultList results = new ServiceResultList();
 
@@ -507,11 +478,7 @@ public class WorkerController {
 
         logger.debug("deleteWorker(): externalId={}, companyCode={}", externalId, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         try {
 
@@ -573,11 +540,7 @@ public class WorkerController {
 
         logger.debug("updatePhoto(): photo={}", photo);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         if (HelperFunc.isEmpty(photo.getContent())) {
             logger.debug("error result: {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
@@ -622,11 +585,7 @@ public class WorkerController {
 
         logger.debug("getPhotos(): list={}", list);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         Base64InputStream in = null;
         PhotoList photos = new PhotoList();
@@ -677,11 +636,7 @@ public class WorkerController {
 
         logger.debug("updateDepartment(): rec={}", rec);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         ServiceResult isValid = isValidDepartmentRecord(rec);
         if (!isValid.isSuccess()) {
@@ -738,11 +693,7 @@ public class WorkerController {
 
         logger.debug("deleteDepartment(): externalId={}, companyCode={}", externalId, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         try {
 
@@ -783,11 +734,7 @@ public class WorkerController {
 
         logger.debug("updatePosition(): oldName={}, newName={}, companyCode={}", oldName, newName, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         if (HelperFunc.isEmpty(oldName) || HelperFunc.isEmpty(newName)) {
             logger.debug("error result: " + En_ErrorCode.EMPTY_POS.getMessage());
@@ -832,11 +779,7 @@ public class WorkerController {
 
         logger.debug("deletePosition(): name={}, companyCode={}", name, companyCode);
 
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
-        if (userSessionDescriptorAPIResult.isError() || !userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
-            return null;
-        }
+        if (!checkAuth(request, response)) return null;
 
         try {
 
@@ -1441,6 +1384,29 @@ public class WorkerController {
         private WorkerEntry getFirstEntry() {
             return workers == null ? null : workers.stream().findFirst().orElse(null);
         }
+    }
+
+    private boolean checkAuth (HttpServletRequest request, HttpServletResponse response){
+        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+
+        if (userSessionDescriptorAPIResult.isError()){
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+            try {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return true;
     }
 
 
