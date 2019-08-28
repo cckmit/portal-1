@@ -196,15 +196,8 @@ public class ProjectInfo extends AuditableObject implements Removable {
         this.deleted = deleted;
     }
 
-    public ProductShortView getComplex() {
-        ProductShortView lastShortView = products.stream().findFirst().get();
-        for (ProductShortView currProduct : products) {
-            if (currProduct.getId() > lastShortView.getId()) {
-                lastShortView = currProduct;
-            }
-        }
-
-        return lastShortView;
+    public ProductShortView getSingleProduct() {
+        return products.size() == 1 ? products.stream().findFirst().get() : Collections.max(products, Comparator.comparingInt(prod -> prod.getName().length()));
     }
 
     @Override

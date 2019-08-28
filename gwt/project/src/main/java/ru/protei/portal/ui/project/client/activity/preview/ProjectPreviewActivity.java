@@ -108,7 +108,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         }
 
         if( value.getProducts() != null ) {
-            view.setProducts( value.getProducts().stream().map( ProductShortView::getName ).collect( Collectors.joining(", ")) );
+            view.setProducts( value.getSingleProduct().getName() );
         }
 
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));

@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.service.ProductServiceImpl;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -199,11 +200,20 @@ public class BootstrapService {
         }
 
         projects.forEach(project -> {
-            String complexName = project.getProducts().stream().map(DevUnit::getName).reduce((name1, name2) -> name1 + " " + name2).get();
+            DevUnit productMaybeWithCompositeName = Collections.max(project.getProducts(), Comparator.comparingInt(prod -> prod.getName().length()));
 
-            if (project.getProducts().stream().anyMatch(currProduct -> complexName.equals(currProduct.getName() + " " + currProduct.getName()))) {
+            String complexName = project.getProducts()
+                    .stream()
+                    .filter(prod -> !prod.getId().equals(productMaybeWithCompositeName.getId()))
+                    .map(DevUnit::getName)
+                    .reduce((name1, name2) -> name1 + " " + name2)
+                    .get();
+
+            if (productMaybeWithCompositeName.getName().equals(complexName)) {
                 return;
             }
+
+            complexName += " " + productMaybeWithCompositeName.getName();
 
             DevUnit complex = new DevUnit();
             complex.setName(complexName);
@@ -212,9 +222,11 @@ public class BootstrapService {
             complex.setChildren(new ArrayList<>(project.getProducts()));
             complex.setCreated(new Date());
 
-            devUnitDAO.persist(complex);
+            Long complexId = devUnitDAO.persist(complex);
+            complex.setId(complexId);
+            jdbcManyRelationsHelper.persist(complex, "children");
 
-            projectToProductDAO.persist(new ProjectToProduct(project.getId(), devUnitDAO.getByCondition("UNIT_NAME like ? ", complexName).getId()));
+            projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
         });
     }
 
@@ -237,6 +249,8 @@ public class BootstrapService {
     PersonDAO personDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
+    @Autowired
+    DevUnitChildRefDAO devUnitChildRefDAO;
     @Autowired
     ProjectToProductDAO projectToProductDAO;
     @Autowired

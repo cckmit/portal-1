@@ -134,7 +134,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         Company customer = projectInfo.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.description().setText(projectInfo.getDescription());
-        view.setProduct(projectInfo.getComplex());
+        view.setProduct(projectInfo.getSingleProduct());
         view.customerType().setValue(projectInfo.getCustomerType());
 
         view.numberVisibility().setVisible( true );
