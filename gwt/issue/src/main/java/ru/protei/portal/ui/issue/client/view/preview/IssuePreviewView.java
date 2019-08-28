@@ -142,20 +142,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setPlatform(String value) {
         this.platform.setInnerText(value);
+        platformExtLink.setVisible(!value.isEmpty());
     }
 
     @Override
-    public HasVisibility platformExtLinkButtonVisibility() {
-        return platformExtLink;
-    }
-
-    @Override
-    public void setPlatformVisibility(boolean isVisible) {
-        if (!isVisible) {
-            this.platformContainer.setAttribute("style", "display: none;");
-        } else {
-            this.platformContainer.removeAttribute("style");
-        }
+    public HasVisibility platformVisibility() {
+        return platformContainer;
     }
 
     @Override
@@ -299,7 +291,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement platform;
     @UiField
-    DivElement platformContainer;
+    HTMLPanel platformContainer;
     @UiField
     SpanElement info;
     @Inject

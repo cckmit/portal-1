@@ -72,7 +72,7 @@
                             </div>
                         </fieldset>
 
-                        <div ui:field="platformContainer">
+                        <g:HTMLPanel ui:field="platformContainer">
                             <fieldset class="header">
                                 <legend><ui:text from="{lang.issuePlatformHeader}"/></legend>
                                 <div class="col-xs-12">
@@ -82,7 +82,7 @@
                                     <span ui:field="platform"></span>
                                 </div>
                             </fieldset>
-                        </div>
+                        </g:HTMLPanel>
 
                         <fieldset class="header">
                             <legend><ui:text from="{lang.issueInfoHeader}"/></legend>

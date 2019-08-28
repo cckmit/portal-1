@@ -47,7 +47,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         if (isFullScreen) {
             preview.addStyleName("platform-fullscreen col-md-12 m-t-10");
         } else {
-            preview.setStyleName("preview");
+            preview.setStyleName("preview site-folder");
         }
     }
 

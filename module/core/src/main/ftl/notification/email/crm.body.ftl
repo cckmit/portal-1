@@ -27,6 +27,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
 <@set name="_privateComment" value="${privateComment}"/>
+<@set name="_platform" value="${siteFolderPlatform}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -187,6 +188,18 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if showPrivacy>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                        ${_platform}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                        <#if platformChanged>
+                            <@changeTo old="${(oldPlatform)!'?'}" new="${(platform)!'?'}"/>
+                        <#else>
+                            ${platform}
+                        </#if>
+                    </td>
+                </#if>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_description}

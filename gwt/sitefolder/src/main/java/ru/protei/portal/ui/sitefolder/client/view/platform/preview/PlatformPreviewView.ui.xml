@@ -6,7 +6,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel footer-fixable-bottom">
-        <g:HTMLPanel styleName="preview-wrapper">
             <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
                 <div class="actions col-xs-12">
                     <g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}">
@@ -60,7 +59,6 @@
                 <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
                                              legend="{lang.siteFolderCompanyContacts}"/>
 
-            </g:HTMLPanel>
         </g:HTMLPanel>
         <div class="footer">
             <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>

@@ -170,8 +170,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setName( value.getName() == null ? "" : value.getName() );
         view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
-        view.platformExtLinkButtonVisibility().setVisible(value.getPlatformId() != null);
-        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+        view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
         Company initiator = value.getInitiatorCompany();
         if ( initiator == null ) {

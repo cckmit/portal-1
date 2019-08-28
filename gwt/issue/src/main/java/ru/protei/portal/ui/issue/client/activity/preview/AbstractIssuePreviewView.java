@@ -38,9 +38,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setPlatform(String value);
 
-    HasVisibility platformExtLinkButtonVisibility();
-
-    void setPlatformVisibility(boolean isVisible);
+    HasVisibility platformVisibility();
 
     void setInfo(String value );
     void setSubscriptionEmails( String value );

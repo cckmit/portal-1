@@ -31,7 +31,6 @@
             <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.sitefolder</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

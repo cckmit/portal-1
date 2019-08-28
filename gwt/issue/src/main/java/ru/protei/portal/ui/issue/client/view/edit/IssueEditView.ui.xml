@@ -44,7 +44,7 @@
                     </label>
                     <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
                 </div>
-                <div ui:field="platformContainer" class="form-group col-xs-4" style="display: none;">
+                <div ui:field="platformContainer" class="form-group col-xs-4">
                     <label ui:field="platformLabel">
                         <ui:text from="{lang.siteFolderPlatform}"/>
                     </label>

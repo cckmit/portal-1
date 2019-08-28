@@ -368,11 +368,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setPlatformDefaultValue(String value) {
-        platform.setDefaultValue(value);
-    }
-
-    @Override
     public void setPlatformVisibility(boolean isVisible) {
         if (!isVisible) {
             stateContainer.replaceClassName("col-xs-4", "col-xs-6");
