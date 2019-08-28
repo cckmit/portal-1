@@ -200,7 +200,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator, false);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
 
         if (objectResultData.isUpdated()) {
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -224,7 +224,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator, caseComment != null);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
         CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
 
         if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
@@ -250,7 +250,7 @@ public class CaseServiceImpl implements CaseService {
         );
     }
 
-    private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator, boolean isWithCommentUpdate ) {
+    private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -329,13 +329,6 @@ public class CaseServiceImpl implements CaseService {
             Long messageId = createAndPersistManagerMessage(initiator, caseObject.getId(), caseObject.getManager().getId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseObject.getId());
-            }
-        }
-
-        if (!isWithCommentUpdate && isCaseChangedExceptStateImpLevelManager(oldState, caseObject)) {
-            Long messageId = createAndPersistChangeLogMessage(initiator, caseObject.getId());
-            if (messageId == null) {
-                log.error("Change log message for the issue {} isn't saved!", caseObject.getId());
             }
         }
 
@@ -555,14 +548,6 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(managerChangeMessage);
     }
 
-    private Long createAndPersistChangeLogMessage(Person author, Long caseId) {
-        CaseComment managerChangeMessage = new CaseComment();
-        managerChangeMessage.setAuthor(author);
-        managerChangeMessage.setCreated(new Date());
-        managerChangeMessage.setCaseId(caseId);
-        return caseCommentDAO.persist(managerChangeMessage);
-    }
-
     private void applyFilterByScope( AuthToken token, CaseQuery query ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
@@ -595,24 +580,19 @@ public class CaseServiceImpl implements CaseService {
     private boolean isCaseChanged(CaseObject co1, CaseObject co2){
         // without notifiers
         // without links
-        return     !Objects.equals(co1.getState(), co2.getState())
-                || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
-                || !Objects.equals(co1.getManagerId(), co2.getManagerId())
-                || isCaseChangedExceptStateImpLevelManager(co1, co2);
-    }
-
-    private boolean isCaseChangedExceptStateImpLevelManager(CaseObject co1, CaseObject co2) {
-        // without notifiers
-        // without links
         // without state
         // without imp level
         // without manager
+        // without links
         return     !Objects.equals(co1.getName(), co2.getName())
                 || !Objects.equals(co1.getInfo(), co2.getInfo())
                 || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
                 || !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
-                || !Objects.equals(co1.getProductId(), co2.getProductId());
+                || !Objects.equals(co1.getProductId(), co2.getProductId())
+                || !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                || !Objects.equals(co1.getManagerId(), co2.getManagerId());
     }
 
     @Override

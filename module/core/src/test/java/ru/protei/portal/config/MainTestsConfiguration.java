@@ -32,6 +32,7 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
