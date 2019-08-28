@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;

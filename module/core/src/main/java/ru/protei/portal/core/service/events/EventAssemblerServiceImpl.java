@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.EventExpirationControl;
+import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.service.EventPublisherService;
 
 import java.util.Collection;
