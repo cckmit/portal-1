@@ -96,7 +96,7 @@ public class WorkerController {
      * @return WorkerRecord
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
-    WorkerRecord getPerson(@RequestParam(name = "id") Long id,
+    Result<WorkerRecord> getPerson(@RequestParam(name = "id") Long id,
                            HttpServletRequest request,
                            HttpServletResponse response) {
 
@@ -105,11 +105,11 @@ public class WorkerController {
         if (!checkAuth(request, response)) return null;
 
         try {
-            return new WorkerRecord(personDAO.get(id));
+            return new Result<>(En_ResultStatus.OK, new WorkerRecord(personDAO.get(id)), "");
         } catch (Throwable e) {
             logger.error("error while get worker", e);
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-        return null;
     }
 
     /**
@@ -119,26 +119,26 @@ public class WorkerController {
      * @return WorkerRecord
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
+    Result<WorkerRecord> getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
                            HttpServletRequest request,
                            HttpServletResponse response) {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
-        if (!checkAuth(request, response)) return null;
+        //if (!checkAuth(request, response)) return null;
 
         try {
             return withHomeCompany(companyCode,
                     item -> {
                         WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
                         EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
-                        return new WorkerRecord(entry, registration);
+                        return new Result<>(En_ResultStatus.OK, new WorkerRecord(entry, registration), "");
                     });
 
         } catch (Throwable e) {
             logger.error("error while get worker", e.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-        return null;
     }
 
     /**
@@ -148,7 +148,7 @@ public class WorkerController {
      * @return DepartmentRecord
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
+    Result<DepartmentRecord> getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
 
@@ -159,13 +159,12 @@ public class WorkerController {
         try {
 
             return withHomeCompany(companyCode,
-                    item -> new DepartmentRecord(companyDepartmentDAO.getByExternalId(id, item.getCompanyId())));
+                    item -> new Result<>(En_ResultStatus.OK, new DepartmentRecord(companyDepartmentDAO.getByExternalId(id, item.getCompanyId())), ""));
 
         } catch (Exception e) {
             logger.error("error while get department", e);
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-
-        return null;
     }
 
     /**
@@ -174,7 +173,7 @@ public class WorkerController {
      * @return WorkerRecordList
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
-    WorkerRecordList getPersons(@RequestParam(name = "expr") String expr,
+    Result<WorkerRecordList> getPersons(@RequestParam(name = "expr") String expr,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
 
@@ -194,8 +193,9 @@ public class WorkerController {
 
         } catch (Exception e) {
             logger.error("error while get persons", e);
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-        return persons;
+        return new Result<>(En_ResultStatus.OK, persons, "");
     }
 
     /**
@@ -310,6 +310,7 @@ public class WorkerController {
 
         } catch (Exception e) {
             logger.error("error while add worker's record", e);
+           // return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
 
         return ServiceResult.failResult(En_ErrorCode.NOT_CREATE.getCode(), En_ErrorCode.NOT_CREATE.getMessage(), null);

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.struct.Photo;
 
 import java.io.*;
@@ -140,8 +141,8 @@ public class TestRestService {
                 .queryParam("companyCode", origWorker.getCompanyCode());
         String uriBuilder = builder.build().toUriString();
 
-        ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
-        WorkerRecord wr = response.getBody();
+        ResponseEntity<Result> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, Result.class);
+        WorkerRecord wr = (WorkerRecord) response.getBody().getData();
 
         Assert.assertNotNull ("Result of get.worker is null!", wr);
         logger.debug ("The worker is received.");

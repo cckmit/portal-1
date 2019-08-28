@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -14,15 +16,19 @@ import java.util.function.Function;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect
+@XmlRootElement(name = "Result")
 public class Result<T> {
 
     @JsonProperty
+    @XmlElement(name="status")
     private En_ResultStatus status;
 
     @JsonProperty
+    @XmlElement(name="data")
     private T data;
 
     @JsonProperty
+    @XmlElement(name="message")
     private String message;
 
     @JsonIgnore

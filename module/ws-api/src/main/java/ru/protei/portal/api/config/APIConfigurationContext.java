@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
@@ -165,7 +166,8 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
                 WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
                 Photo.class, PhotoList.class,
-                ServiceResult.class, ServiceResultList.class);
+                ServiceResult.class, ServiceResultList.class,
+                Result.class);
         return new MarshallingHttpMessageConverter(oxmMarshaller);
     }
 
