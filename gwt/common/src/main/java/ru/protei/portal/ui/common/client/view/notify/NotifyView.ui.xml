@@ -1,18 +1,25 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
+    <!--
+        Классы
+        "portal-notification-icon-success", "portal-notification-icon-error",
+        "portal-notification-content-title", "portal-notification-content-message"
+        без согласования с QA не трогать, поедут автотесты
+    -->
+
     <g:HTMLPanel ui:field="notify" styleName="gritter-item-wrapper">
         <div class="gritter-top"></div>
         <div class="gritter-item">
             <g:HTMLPanel styleName="gritter-image" ui:field="iconContainer">
-                <g:HTMLPanel styleName="swal-icon swal-icon--success" ui:field="iconSuccess">
+                <g:HTMLPanel styleName="swal-icon swal-icon--success portal-notification-icon-success" ui:field="iconSuccess">
                     <span class="swal-icon--success__line swal-icon--success__line--long"></span>
                     <span class="swal-icon--success__line swal-icon--success__line--tip"></span>
 
                     <div class="swal-icon--success__ring"></div>
                     <div class="swal-icon--success__hide-corners"></div>
                 </g:HTMLPanel>
-                <g:HTMLPanel styleName="swal-icon swal-icon--error" ui:field="iconError">
+                <g:HTMLPanel styleName="swal-icon swal-icon--error portal-notification-icon-error" ui:field="iconError">
                     <div class="swal-icon--error__x-mark">
                         <span class="swal-icon--error__line swal-icon--error__line--left"></span>
                         <span class="swal-icon--error__line swal-icon--error__line--right"></span>
@@ -20,8 +27,8 @@
                 </g:HTMLPanel>
             </g:HTMLPanel>
             <div class="gritter-with-image">
-                <span class="gritter-title" ui:field="title"/>
-                <p ui:field="message"/>
+                <span class="gritter-title portal-notification-content-title" ui:field="title"/>
+                <p class="portal-notification-content-message" ui:field="message"/>
             </div>
             <div style="clear:both"></div>
         </div>
