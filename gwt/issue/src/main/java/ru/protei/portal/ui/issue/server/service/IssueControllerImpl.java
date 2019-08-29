@@ -63,6 +63,7 @@ public class IssueControllerImpl implements IssueController {
 
         CoreResponse< CaseObject > response;
         if ( caseObject.getId() == null ) {
+            caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
             caseObject.setCreatorId(getCurrentPerson().getId());
 
             response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );

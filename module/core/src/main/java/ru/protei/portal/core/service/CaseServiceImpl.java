@@ -148,7 +148,6 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
-        caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
         if (!validateFields(caseObject)) {
             return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -311,7 +310,6 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         caseObject.setCreated(oldState.getCreated());
-        caseObject.setCaseType(oldState.getCaseType());
         caseObject.setCaseNumber(oldState.getCaseNumber());
 
         if (!validateFields(caseObject)) {
@@ -722,6 +720,7 @@ public class CaseServiceImpl implements CaseService {
     private boolean validateFields(CaseObject caseObject) {
         return caseObject.getName() != null
                 && !caseObject.getName().isEmpty()
+                && En_CaseType.find(caseObject.getTypeId()) != null
                 && caseObject.getImpLevel() != null
                 && En_ImportanceLevel.find(caseObject.getImpLevel()) != null
                 && En_CaseState.getById(caseObject.getStateId()) != null
