@@ -148,6 +148,11 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
+        caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        if (!validateFields(caseObject)) {
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Date now = new Date();
         caseObject.setCreated(now);
         caseObject.setModified(now);
@@ -305,6 +310,13 @@ public class CaseServiceImpl implements CaseService {
         }
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+        caseObject.setCreated(oldState.getCreated());
+        caseObject.setCaseType(oldState.getCaseType());
+        caseObject.setCaseNumber(oldState.getCaseNumber());
+
+        if (!validateFields(caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         CoreResponse mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         if (mergeLinksResponse.isError()) {
@@ -705,5 +717,24 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
+    }
+
+    private boolean validateFields(CaseObject caseObject) {
+        return caseObject.getName() != null
+                && !caseObject.getName().isEmpty()
+                && caseObject.getImpLevel() != null
+                && En_ImportanceLevel.find(caseObject.getImpLevel()) != null
+                && En_CaseState.getById(caseObject.getStateId()) != null
+                && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
+                || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
+                || caseObject.getManagerId() != null)
+                && (caseObject.getInitiatorId() == null
+                || (caseObject.getInitiatorCompanyId() != null && personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId())));
+    }
+
+    private boolean personBelongsToCompany(Long personId, Long companyId) {
+        return personDAO.getListByCondition("company_id = ?", companyId)
+                .stream()
+                .anyMatch(person -> personId.equals(person.getId()));
     }
 }
