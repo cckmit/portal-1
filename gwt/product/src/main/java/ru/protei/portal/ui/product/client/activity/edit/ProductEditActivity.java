@@ -180,6 +180,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.parents().setValue(null);
         view.children().setValue(null);
         view.info().setValue("");
+        view.wikiLink().setValue("");
+        view.historyVersion().setValue("");
+        view.configuration().setValue("");
+        view.cdrDescription().setValue("");
         view.productSubscriptions().setValue(new ArrayList<>());
     }
 
