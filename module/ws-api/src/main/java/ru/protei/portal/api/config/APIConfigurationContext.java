@@ -5,6 +5,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
+import org.springframework.oxm.GenericUnmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -163,11 +164,12 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     private MarshallingHttpMessageConverter getMarshallingHttpMessageConverter() {
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
         oxmMarshaller.setClassesToBeBound(
+                Result.class,
                 WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
                 Photo.class, PhotoList.class,
-                ServiceResult.class, ServiceResultList.class,
-                Result.class);
+                ServiceResult.class, ServiceResultList.class
+                );
         return new MarshallingHttpMessageConverter(oxmMarshaller);
     }
 

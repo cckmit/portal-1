@@ -16,19 +16,19 @@ import java.util.function.Function;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect
-@XmlRootElement(name = "Result")
+@XmlRootElement(name = "result")
 public class Result<T> {
 
+    public Result() {
+    }
+
     @JsonProperty
-    @XmlElement(name="status")
     private En_ResultStatus status;
 
     @JsonProperty
-    @XmlElement(name="data")
     private T data;
 
     @JsonProperty
-    @XmlElement(name="message")
     private String message;
 
     @JsonIgnore
@@ -40,15 +40,15 @@ public class Result<T> {
     public boolean isError () {
         return status != En_ResultStatus.OK;
     }
-
+    @XmlElement(name="status")
     public En_ResultStatus getStatus () {
         return status;
     }
-
+    @XmlElement(name="data")
     public T getData () {
         return data;
     }
-
+    @XmlElement(name="message")
     public String getMessage() {
         return message;
     }
@@ -89,12 +89,13 @@ public class Result<T> {
 
     @Override
     public String toString() {
-        return "CoreResponse{" +
+        return "Result{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
                 ", data=" + data +
                 '}';
     }
+
 
     /**
      * Если результрат успешен

@@ -132,7 +132,8 @@ public class WorkerController {
                     item -> {
                         WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
                         EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
-                        return new Result<>(En_ResultStatus.OK, new WorkerRecord(entry, registration), "");
+                        Result<WorkerRecord> recordResult = new Result<>(En_ResultStatus.OK, new WorkerRecord(entry, registration), "");
+                        return recordResult;
                     });
 
         } catch (Throwable e) {
@@ -140,6 +141,24 @@ public class WorkerController {
             return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
     }
+   /* @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
+    WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
+
+        logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
+
+        try {
+            return withHomeCompany(companyCode,
+                    item -> {
+                        WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
+                        EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
+                        return new WorkerRecord(entry, registration);
+                    });
+
+        } catch (Throwable e) {
+            logger.error("error while get worker", e.getMessage());
+        }
+        return null;
+    }*/
 
     /**
      * Получить данные об отделе
@@ -210,7 +229,7 @@ public class WorkerController {
 
         logger.debug("addWorker(): rec={}", rec);
 
-        if (!checkAuth(request, response)) return null;
+        //if (!checkAuth(request, response)) return null;
 
         ServiceResult isValid = isValidWorkerRecord(rec);
         if (!isValid.isSuccess()) {
@@ -637,7 +656,7 @@ public class WorkerController {
 
         logger.debug("updateDepartment(): rec={}", rec);
 
-        if (!checkAuth(request, response)) return null;
+       // if (!checkAuth(request, response)) return null;
 
         ServiceResult isValid = isValidDepartmentRecord(rec);
         if (!isValid.isSuccess()) {

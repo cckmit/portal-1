@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -140,9 +141,12 @@ public class TestRestService {
                 .queryParam("id", origWorker.getWorkerId())
                 .queryParam("companyCode", origWorker.getCompanyCode());
         String uriBuilder = builder.build().toUriString();
+//        ResponseEntity<String> st = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, String.class);
+        ResponseEntity<Result<WorkerRecord>> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, new ParameterizedTypeReference<Result<WorkerRecord>>(){});
+        WorkerRecord wr = response.getBody().getData();
 
-        ResponseEntity<Result> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, Result.class);
-        WorkerRecord wr = (WorkerRecord) response.getBody().getData();
+       /* ResponseEntity<WorkerRecord> response = restTemplate.exchange(uriBuilder, HttpMethod.GET, entity, WorkerRecord.class);
+        WorkerRecord wr = response.getBody();*/
 
         Assert.assertNotNull ("Result of get.worker is null!", wr);
         logger.debug ("The worker is received.");
@@ -475,7 +479,8 @@ public class TestRestService {
                 WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
                 Photo.class, PhotoList.class,
-                ServiceResult.class, ServiceResultList.class);
+                ServiceResult.class, ServiceResultList.class,
+        Result.class);
         MarshallingHttpMessageConverter marshallingHttpMessageConverter = new MarshallingHttpMessageConverter(oxmMarshaller);
         return marshallingHttpMessageConverter;
     }
