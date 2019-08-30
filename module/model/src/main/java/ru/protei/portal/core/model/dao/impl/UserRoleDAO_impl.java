@@ -109,11 +109,7 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
 
     @Override
     public int removeByRoleCodeLike(String code) {
-        if (code != null && !code.isEmpty()) {
-            removeByCondition("role_code like ?", "%" + code + "%");
-        }
-
-        return -1;
+        return removeByCondition("role_code like ?", "%" + code + "%");
     }
 
     @Override

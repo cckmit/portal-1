@@ -160,12 +160,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
     @Override
     public int removeByCaseIds(List<Long> ids) {
-        String condition = ids.stream().map(String::valueOf).reduce((str1, str2) -> str1 + ", " + str2).get();
-        if (!condition.isEmpty()) {
-            return removeByCondition("CASE_ID in " + HelperFunc.makeInArg(ids));
-        }
-
-        return -1;
+        return removeByCondition("CASE_ID in " + HelperFunc.makeInArg(ids));
     }
 
     private String makeAndPartFromListIds(final List<?> list, final String field){

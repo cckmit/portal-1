@@ -128,11 +128,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public int removeByNameLike(String name) {
-        if (name != null && !name.isEmpty()) {
-            return removeByCondition("CASE_NAME like ?", "%" + name + "%");
-        }
-
-        return -1;
+        return removeByCondition("CASE_NAME like ?", "%" + name + "%");
     }
 
     @Override
