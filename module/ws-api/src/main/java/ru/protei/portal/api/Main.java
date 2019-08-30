@@ -20,11 +20,8 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-
-            int port = args.length > 1 ? Integer.parseInt(args[0],10) : DEFAULT_PORT;
-
             logger.debug("run portal-api");
-            logger.debug("using port : " + port);
+            logger.debug("using port : " + DEFAULT_PORT);
 
             Server server = new Server(DEFAULT_PORT);
 

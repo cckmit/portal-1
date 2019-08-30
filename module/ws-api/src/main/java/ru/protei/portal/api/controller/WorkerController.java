@@ -36,7 +36,6 @@ import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber
 
 @RestController
 @RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
-@EnableWebMvc
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);

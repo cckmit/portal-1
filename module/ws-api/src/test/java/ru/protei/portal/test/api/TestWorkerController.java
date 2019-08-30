@@ -96,7 +96,6 @@ public class TestWorkerController {
         Assert.assertEquals("update.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
 
         worker.setFireDate("2019-05-05");
-        worker.setDeleted(true);
         sr = updateWorker(worker);
         Assert.assertEquals("update.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
 
@@ -111,12 +110,6 @@ public class TestWorkerController {
         ServiceResult sr;
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
-
-        WorkerRecord emptyWorker = new WorkerRecord();
-        emptyWorker.setWorkerId(worker.getWorkerId());
-        emptyWorker.setCompanyCode(worker.getCompanyCode());
-        sr = deleteWorker(emptyWorker);
-        Assert.assertEquals("delete.worker: empty worker was deleted! ", false, sr.isSuccess());
 
         addWorker(worker);
         sr = deleteWorker(worker);
