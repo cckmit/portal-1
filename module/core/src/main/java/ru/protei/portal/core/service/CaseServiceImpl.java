@@ -725,11 +725,8 @@ public class CaseServiceImpl implements CaseService {
                 && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
                 || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
                 || caseObject.getManagerId() != null)
-                && (caseObject.getInitiatorCompanyId() != null || caseObject.getInitiatorCompany() != null)
-                && (caseObject.getInitiatorId() == null && caseObject.getInitiator() == null
-                || personBelongsToCompany(
-                        caseObject.getInitiator() == null ? caseObject.getInitiatorId() : caseObject.getInitiator().getId(),
-                        caseObject.getInitiatorCompany() == null ? caseObject.getInitiatorCompanyId() : caseObject.getInitiatorCompany().getId()));
+                && (caseObject.getInitiatorCompanyId() != null)
+                && (caseObject.getInitiatorId() == null || personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId()));
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
