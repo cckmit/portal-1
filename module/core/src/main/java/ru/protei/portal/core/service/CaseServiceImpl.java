@@ -140,16 +140,13 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
-        if (caseObject == null)
+        if (!validateFields(caseObject)) {
             return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         applyCaseByScope( token, caseObject );
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
-        }
-
-        if (!validateFields(caseObject)) {
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Date now = new Date();
@@ -304,16 +301,16 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
-        }
-
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         caseObject.setCreated(oldState.getCreated());
         caseObject.setCaseNumber(oldState.getCaseNumber());
 
         if (!validateFields(caseObject)) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
         CoreResponse mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
@@ -718,7 +715,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        return caseObject.getName() != null
+        return caseObject != null
+                && caseObject.getName() != null
                 && !caseObject.getName().isEmpty()
                 && En_CaseType.find(caseObject.getTypeId()) != null
                 && caseObject.getImpLevel() != null
@@ -727,8 +725,9 @@ public class CaseServiceImpl implements CaseService {
                 && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
                 || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
                 || caseObject.getManagerId() != null)
+                && caseObject.getInitiatorCompanyId() != null
                 && (caseObject.getInitiatorId() == null
-                || (caseObject.getInitiatorCompanyId() != null && personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId())));
+                || (personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId())));
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {

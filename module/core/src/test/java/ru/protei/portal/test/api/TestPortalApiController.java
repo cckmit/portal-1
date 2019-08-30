@@ -1,6 +1,7 @@
 package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.poi.util.StringUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -21,10 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dao.UserRoleDAO;
-import ru.protei.portal.core.model.dao.impl.UserLoginDAO_Impl;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
@@ -57,13 +55,16 @@ public class TestPortalApiController extends BaseServiceTest {
     private static UserLoginDAO userLoginDAO;
     private static CaseService caseService;
     private static AuthService authService;
+    private static CaseObjectDAO caseObjectDAO;
     private static UserRoleDAO userRoleDAO;
+    private static CaseCommentDAO caseCommentDAO;
     private static Person person;
     private static final Logger log = LoggerFactory.getLogger(TestPortalApiController.class);
-    private static final int COUNT_OF_ISSUES_WITH_MANAGER = new Random().nextInt(10);
-    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = new Random().nextInt(10);
-    private static final int COUNT_OF_PRIVATE_ISSUES = new Random().nextInt(10);
+    private static final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
+    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
+    private static final int COUNT_OF_PRIVATE_ISSUES = 5;
     private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER;
+    private static final List<Long> issuesIds = new ArrayList<>();
     private static UserRole mainRole;
 
     @BeforeClass
@@ -81,6 +82,8 @@ public class TestPortalApiController extends BaseServiceTest {
         authService = applicationContext.getBean(AuthService.class);
         userLoginDAO = applicationContext.getBean(UserLoginDAO.class);
         userRoleDAO = applicationContext.getBean(UserRoleDAO.class);
+        caseObjectDAO = applicationContext.getBean(CaseObjectDAO.class);
+        caseCommentDAO = applicationContext.getBean(CaseCommentDAO.class);
 
         createAndPersistPerson();
         createAndPersistUserRoles();
@@ -139,9 +142,22 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    public void _1_testGetThreeResults() throws Exception {
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setLimit(3);
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(3)));
+    }
+
+    @Test
     public void _2_testCreateIssue() throws Exception {
         CaseObject caseObject = createNewCaseObject(person);
-        String issueName = "API_Test_Issue_from_test_create_issue";
+        String issueName = ISSUES_PREFIX + "test_create";
         caseObject.setName(issueName);
         caseObject.setImpLevel(3);
         caseObject.setInitiator(person);
@@ -158,6 +174,8 @@ public class TestPortalApiController extends BaseServiceTest {
                 .count();
 
         Assert.assertEquals("Expected 1 new created issue", 1, countOfIssues);
+
+        issuesIds.add(caseObjectDAO.getByCondition("CASE_NAME like ?", issueName).getId());
     }
 
     @Test
@@ -180,6 +198,16 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
         Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
         Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
+    }
+
+    @AfterClass
+    public static void destroy() {
+        String condition = StringUtil.join(issuesIds.stream().map(String::valueOf).toArray(String[]::new), ", ");
+        caseCommentDAO.removeByCondition("CASE_ID in (" + condition + ")");
+        caseObjectDAO.removeByCondition("CASE_NAME like ?", "%" + ISSUES_PREFIX + "%");
+        userLoginDAO.removeByCondition("personId = ?", person.getId());
+        userRoleDAO.removeByCondition("role_code like ?", "%" + PORTAL_API_TEST_ROLE_CODE + "%");
+        personDAO.removeByKey(person.getId());
     }
 
     private static void createAndPersistPerson() {
@@ -243,7 +271,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setStateId(1);
             caseObject.setImpLevel(3);
             caseObject.setInitiator(person);
-            caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person);
+            issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -255,7 +283,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setImpLevel(3);
             caseObject.setInitiator(person);
             caseObject.setManager(manager);
-            caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person);
+            issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -267,7 +295,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setImpLevel(3);
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
-            caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person);
+            issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -281,7 +309,7 @@ public class TestPortalApiController extends BaseServiceTest {
         );
     }
 
-    private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
+    private static final En_Privilege[] PRIVILEGES = new En_Privilege[]{
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
     };
 
