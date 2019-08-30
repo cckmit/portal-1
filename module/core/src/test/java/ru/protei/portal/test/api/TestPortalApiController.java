@@ -1,7 +1,6 @@
 package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.poi.util.StringUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -33,7 +32,8 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -179,7 +179,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertEquals("Expected 1 new created issue", 1, countOfIssues);
 
-        issuesIds.add(caseObjectDAO.getByCondition("CASE_NAME like ?", issueName).getId());
+        issuesIds.add(caseObjectDAO.getByCaseNameLike(issueName).getId());
     }
 
     @Test
@@ -206,11 +206,10 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @AfterClass
     public static void destroy() {
-        String condition = StringUtil.join(issuesIds.stream().map(String::valueOf).toArray(String[]::new), ", ");
-        caseCommentDAO.removeByCondition("CASE_ID in (" + condition + ")");
-        caseObjectDAO.removeByCondition("CASE_NAME like ?", "%" + ISSUES_PREFIX + "%");
-        userLoginDAO.removeByCondition("personId = ?", person.getId());
-        userRoleDAO.removeByCondition("role_code like ?", "%" + PORTAL_API_TEST_ROLE_CODE + "%");
+        caseCommentDAO.removeByCaseIds(issuesIds);
+        caseObjectDAO.removeByNameLike(ISSUES_PREFIX);
+        userLoginDAO.removeByPersonId(person.getId());
+        userRoleDAO.removeByRoleCodeLike(PORTAL_API_TEST_ROLE_CODE);
         personDAO.removeByKey(person.getId());
     }
 
@@ -253,7 +252,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         userRoleDAO.persist(role);
 
-        mainRole = userRoleDAO.getByCondition("role_code like ?", "%" + PORTAL_API_TEST_ROLE_CODE + "%");
+        mainRole = userRoleDAO.getByRoleCodeLike(PORTAL_API_TEST_ROLE_CODE);
     }
 
     private static void createAndPersistUserLogin() throws Exception {

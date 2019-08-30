@@ -35,4 +35,6 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
     List<CaseResolutionTimeReportDto> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
                                                                 List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
                                                                 List<Long> tagsIds);
+
+    int removeByCaseIds(List<Long> ids);
 }

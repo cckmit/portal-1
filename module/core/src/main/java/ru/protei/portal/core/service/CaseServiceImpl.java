@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
@@ -730,8 +731,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
-        return personDAO.getListByCondition("company_id = ?", companyId)
-                .stream()
-                .anyMatch(person -> personId.equals(person.getId()));
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setCompanyIds(Collections.singleton(companyId));
+        return personDAO.getPersons(personQuery).stream().anyMatch(person -> personId.equals(person.getId()));
     }
 }

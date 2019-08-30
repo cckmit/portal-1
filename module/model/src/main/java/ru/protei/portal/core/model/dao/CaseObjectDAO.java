@@ -35,6 +35,10 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     boolean updateNullCreatorByExtAppType(String extAppType);
 
+    int removeByNameLike(String name);
+
+    CaseObject getByCaseNameLike(String name);
+
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
 

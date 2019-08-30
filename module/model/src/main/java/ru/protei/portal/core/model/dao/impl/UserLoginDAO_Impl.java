@@ -53,6 +53,15 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         return getSearchResult(parameters);
     }
 
+    @Override
+    public int removeByPersonId(Long id) {
+        if (id != null) {
+            return removeByCondition("personId = ?", id);
+        }
+
+        return -1;
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(AccountQuery query) {
 
         SqlCondition where = createSqlCondition( query );
