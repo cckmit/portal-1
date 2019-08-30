@@ -1,5 +1,7 @@
 package ru.protei.portal.test.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.xstream.XStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -20,6 +23,7 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 //import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.Photo;
 
 import javax.xml.bind.JAXBContext;
@@ -36,6 +40,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {APIConfigurationContext.class})
+/*@RunWith(SpringRunner.class)
+@SpringBootTest*/
 public class TestWorkerController {
 
     @Autowired
@@ -152,15 +158,35 @@ public class TestWorkerController {
         //createOrUpdateDepartment(department);
         //addWorker(worker);
 
+
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
                 .queryParam("id", worker.getWorkerId())
                 .queryParam("companyCode", worker.getCompanyCode());
         String uriBuilder = builder.build().toUriString();
 
-        Result<WorkerRecord> wr = getWorkerByUri(uriBuilder);
+        WorkerRecord wr = getWorkerByUri(uriBuilder).getData();
 
-       // Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());
+        Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());
     }
+
+    private Result<WorkerRecord> getWorkerByUri(String uri) throws Exception {
+        logger.debug("result URI = " + uri);
+
+        ResultActions result = mockMvc.perform(
+                get(uri)
+                        .header("Accept", "application/xml")
+                        .contentType(MediaType.APPLICATION_XML)
+        );
+
+        logger.debug("xml = " + result.andReturn().getResponse().getContentAsString());
+
+        Result<WorkerRecord> workerRecord = (Result<WorkerRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
+
+        logger.debug("WorkerRecord = " + workerRecord);
+
+        return workerRecord;
+    }
+
 
    /* @Test
     public void testGetDepartment() throws Exception {
@@ -439,30 +465,6 @@ public class TestWorkerController {
         return serviceResult;
     }
 
-    private Result<WorkerRecord> getWorkerByUri(String uri) throws Exception {
-        logger.debug("result URI = " + uri);
-
-        ResultActions result = mockMvc.perform(
-                get(uri)
-                        .header("Accept", "application/xml")
-                        .contentType(MediaType.APPLICATION_XML)
-        );
-
-
-
-        String temp = result.andReturn().getResponse().getContentAsString();
-        logger.debug("temp = " + temp);
-
-        Object o = fromXml(result.andReturn().getResponse().getContentAsString());
-
-        logger.debug("object = " + o);
-
-        Result<WorkerRecord> workerRecord = (Result<WorkerRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
-
-        logger.debug("WorkerRecord = " + workerRecord);
-
-        return workerRecord;
-    }
 
     private ServiceResult createOrUpdateDepartment(DepartmentRecord department) throws Exception {
         logger.debug("department input = " + department);
