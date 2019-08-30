@@ -94,20 +94,20 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseObject> getCaseObject( AuthToken token, long number ) {
+    public CoreResponse<CaseObject> getCaseObject(AuthToken token, long number) {
 
-        CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
+        CaseObject caseObject = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, number);
 
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
             return new CoreResponse<CaseObject>().error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if(caseObject == null)
+        if (caseObject == null)
             return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_FOUND);
 
-        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
-        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+        jdbcManyRelationsHelper.fillAll(caseObject.getInitiatorCompany());
+        jdbcManyRelationsHelper.fill(caseObject, "attachments");
+        jdbcManyRelationsHelper.fill(caseObject, "notifiers");
 
         CoreResponse<List<CaseLink>> caseLinks = caseLinkService.getLinks(token, caseObject.getId());
         if (caseLinks.isOk()) {
@@ -120,16 +120,16 @@ public class CaseServiceImpl implements CaseService {
         }
 
         // RESET PRIVACY INFO
-        if ( caseObject.getInitiator() != null ) {
+        if (caseObject.getInitiator() != null) {
             caseObject.getInitiator().resetPrivacyInfo();
         }
-        if ( caseObject.getCreator() != null ) {
+        if (caseObject.getCreator() != null) {
             caseObject.getCreator().resetPrivacyInfo();
         }
-        if ( caseObject.getManager() != null ) {
+        if (caseObject.getManager() != null) {
             caseObject.getManager().resetPrivacyInfo();
         }
-        if ( CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+        if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
             caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
         }
 
@@ -138,15 +138,15 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public CoreResponse<CaseObject> saveCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
 
         if (!validateFields(caseObject)) {
             return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        applyCaseByScope( token, caseObject );
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
+        applyCaseByScope(token, caseObject);
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         Date now = new Date();
@@ -188,7 +188,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
+        if (CollectionUtils.isNotEmpty(caseObject.getAttachments())) {
             caseAttachmentDAO.persistBatch(
                     caseObject.getAttachments()
                             .stream()
@@ -197,7 +197,7 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())){
+        if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
             caseNotifierDAO.persistBatch(
                     caseObject.getNotifiers()
                             .stream()
@@ -206,10 +206,10 @@ public class CaseServiceImpl implements CaseService {
 
             // update partially filled objects
             caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers()
-                                    .stream()
-                                    .map(person ->  person.getId())
-                                    .collect(Collectors.toList()), "id", "contactInfo"))
+                    caseObject.getNotifiers()
+                            .stream()
+                            .map(person -> person.getId())
+                            .collect(Collectors.toList()), "id", "contactInfo"))
             );
         }
 
@@ -236,12 +236,12 @@ public class CaseServiceImpl implements CaseService {
                 .withPerson(initiator)
                 .build());
 
-        return new CoreResponse<CaseObject>().success( newState );
+        return new CoreResponse<CaseObject>().success(newState);
     }
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public CoreResponse<CaseObject> updateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -359,7 +359,7 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        if(oldState.getState() != caseObject.getState()){
+        if (oldState.getState() != caseObject.getState()) {
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
             if (messageId == null) {
                 log.error("State message for the issue {} isn't saved!", caseObject.getId());
@@ -374,7 +374,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (oldState.getManager() != null && caseObject.getManager() != null &&
-            !Objects.equals(oldState.getManager().getId(), caseObject.getManager().getId())) {
+                !Objects.equals(oldState.getManager().getId(), caseObject.getManager().getId())) {
             Long messageId = createAndPersistManagerMessage(initiator, caseObject.getId(), caseObject.getManager().getId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseObject.getId());
@@ -409,7 +409,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<List<En_CaseState>> stateList( En_CaseType caseType ) {
+    public CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType) {
         List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
@@ -419,12 +419,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
-        if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
+    public CoreResponse<Boolean> updateCaseModified(AuthToken token, Long caseId, Date modified) {
+        if (caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = new CaseObject(caseId);
-        caseObject.setModified(modified == null? new Date(): modified);
+        caseObject.setModified(modified == null ? new Date() : modified);
 
         boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "MODIFIED");
 
@@ -432,21 +432,21 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag){
-        if(caseId == null)
+    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag) {
+        if (caseId == null)
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = new CaseObject(caseId);
         caseObject.setAttachmentExists(flag);
         boolean result = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
 
-        if(!result)
+        if (!result)
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_UPDATED);
         return new CoreResponse<Boolean>().success(true);
     }
 
     @Override
-    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId){
+    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId) {
         return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
     }
 
@@ -477,13 +477,13 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
-            return new CoreResponse<CaseInfo>().error( En_ResultStatus.PERMISSION_DENIED );
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber))) {
+            return new CoreResponse<CaseInfo>().error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
+        CaseShortView caseObject = caseShortViewDAO.getCase(caseNumber);
 
-        if(caseObject == null)
+        if (caseObject == null)
             return new CoreResponse<CaseInfo>().error(En_ResultStatus.NOT_FOUND);
 
         CaseInfo info = new CaseInfo();
@@ -502,10 +502,10 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
         CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return new CoreResponse<Long>().error( En_ResultStatus.PERMISSION_DENIED );
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            return new CoreResponse<Long>().error(En_ResultStatus.PERMISSION_DENIED);
         }
-        return attachToCaseId( attachment, caseObject.getId() );
+        return attachToCaseId(attachment, caseObject.getId());
     }
 
     @Override
@@ -514,7 +514,7 @@ public class CaseServiceImpl implements CaseService {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
-        if(caseAttachId == null)
+        if (caseAttachId == null)
             return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
 
         CaseObject caseObject = new CaseObject(caseId);
@@ -522,7 +522,7 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setModified(new Date());
         boolean isCaseUpdated = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS", "MODIFIED");
 
-        if(!isCaseUpdated)
+        if (!isCaseUpdated)
             throw new RuntimeException("failed to update case object");
 
         return new CoreResponse<Long>().success(caseAttachId);
@@ -556,15 +556,15 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setTags(allTags.stream().collect(Collectors.toSet()));
     }
 
-    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
+    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId((long)state.getId());
+        stateChangeMessage.setCaseStateId((long) state.getId());
         if (timeElapsed != null && timeElapsed > 0L) {
             stateChangeMessage.setTimeElapsed(timeElapsed);
-            stateChangeMessage.setTimeElapsedType(timeElapsedType!=null?timeElapsedType:En_TimeElapsedType.NONE);
+            stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
         }
         return caseCommentDAO.persist(stateChangeMessage);
     }
@@ -595,39 +595,39 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(managerChangeMessage);
     }
 
-    private void applyFilterByScope( AuthToken token, CaseQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
-            query.setAllowViewPrivate( false );
-            query.setCustomerSearch( true );
+    private void applyFilterByScope(AuthToken token, CaseQuery query) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds()));
+            query.setAllowViewPrivate(false);
+            query.setCustomerSearch(true);
         }
     }
 
-    private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
-        if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
-        ArrayList allowedCompanies = new ArrayList( companyIds );
-        allowedCompanies.retainAll( allowedCompaniesIds );
-        return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
+    private List<Long> acceptAllowedCompanies(List<Long> companyIds, Collection<Long> allowedCompaniesIds) {
+        if (companyIds == null) return new ArrayList<>(allowedCompaniesIds);
+        ArrayList allowedCompanies = new ArrayList(companyIds);
+        allowedCompanies.retainAll(allowedCompaniesIds);
+        return allowedCompanies.isEmpty() ? new ArrayList<>(allowedCompaniesIds) : allowedCompanies;
     }
 
-    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
-            caseObject.setPrivateCase( false );
-            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                caseObject.setInitiatorCompany( descriptor.getCompany() );
+    private void applyCaseByScope(AuthToken token, CaseObject caseObject) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_CREATE) && policyService.hasScopeForPrivilege(roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY)) {
+            caseObject.setPrivateCase(false);
+            if (!descriptor.getAllowedCompaniesIds().contains(caseObject.getInitiatorCompanyId())) {
+                caseObject.setInitiatorCompany(descriptor.getCompany());
             }
-            caseObject.setManagerId( null );
+            caseObject.setManagerId(null);
         }
     }
 
-    private boolean isCaseChanged(CaseObject co1, CaseObject co2){
+    private boolean isCaseChanged(CaseObject co1, CaseObject co2) {
         // without notifiers
         // without links
-        return     !Objects.equals(co1.getState(), co2.getState())
+        return !Objects.equals(co1.getState(), co2.getState())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || isCaseChangedExceptStateImpLevelManager(co1, co2);
@@ -639,7 +639,7 @@ public class CaseServiceImpl implements CaseService {
         // without state
         // without imp level
         // without manager
-        return     !Objects.equals(co1.getName(), co2.getName())
+        return !Objects.equals(co1.getName(), co2.getName())
                 || !Objects.equals(co1.getInfo(), co2.getInfo())
                 || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
                 || !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
@@ -648,20 +648,20 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, privilege ) && policyService.hasScopeForPrivilege( roles, privilege, En_Scope.COMPANY ) ) {
-            if ( caseObject == null ) {
+    public boolean hasAccessForCaseObject(AuthToken token, En_Privilege privilege, CaseObject caseObject) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (!policyService.hasGrantAccessFor(roles, privilege) && policyService.hasScopeForPrivilege(roles, privilege, En_Scope.COMPANY)) {
+            if (caseObject == null) {
                 return false;
             }
 
             Collection<Long> companyIds = descriptor.getAllowedCompaniesIds();
-            if ( !companyIds.contains( caseObject.getInitiatorCompanyId() ) ) {
+            if (!companyIds.contains(caseObject.getInitiatorCompanyId())) {
                 return false;
             }
 
-            if ( caseObject.isPrivateCase() ) {
+            if (caseObject.isPrivateCase()) {
                 return false;
             }
         }
@@ -725,9 +725,11 @@ public class CaseServiceImpl implements CaseService {
                 && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
                 || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
                 || caseObject.getManagerId() != null)
-                && caseObject.getInitiatorCompanyId() != null
-                && (caseObject.getInitiatorId() == null
-                || (personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId())));
+                && (caseObject.getInitiatorCompanyId() != null || caseObject.getInitiatorCompany() != null)
+                && (caseObject.getInitiatorId() == null && caseObject.getInitiator() == null
+                || personBelongsToCompany(
+                        caseObject.getInitiator() == null ? caseObject.getInitiatorId() : caseObject.getInitiator().getId(),
+                        caseObject.getInitiatorCompany() == null ? caseObject.getInitiatorCompanyId() : caseObject.getInitiatorCompany().getId()));
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {

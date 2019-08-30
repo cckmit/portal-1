@@ -34,8 +34,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +83,9 @@ public class TestPortalApiController extends BaseServiceTest {
         userRoleDAO = applicationContext.getBean(UserRoleDAO.class);
         caseObjectDAO = applicationContext.getBean(CaseObjectDAO.class);
         caseCommentDAO = applicationContext.getBean(CaseCommentDAO.class);
+
+        caseCommentDAO.removeAll();
+        caseObjectDAO.removeAll();
 
         createAndPersistPerson();
         createAndPersistUserRoles();
@@ -159,7 +161,6 @@ public class TestPortalApiController extends BaseServiceTest {
         CaseObject caseObject = createNewCaseObject(person);
         String issueName = ISSUES_PREFIX + "test_create";
         caseObject.setName(issueName);
-        caseObject.setImpLevel(3);
         caseObject.setInitiator(person);
 
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
@@ -236,7 +237,7 @@ public class TestPortalApiController extends BaseServiceTest {
         person = personDAO
                 .getAll()
                 .stream()
-                .filter(currPerson -> currPerson.getFirstName().equals(personFirstName))
+                .filter(currPerson -> currPerson.getFirstName() != null && currPerson.getFirstName().equals(personFirstName))
                 .findFirst().get();
     }
 
@@ -269,7 +270,6 @@ public class TestPortalApiController extends BaseServiceTest {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setStateId(1);
-            caseObject.setImpLevel(3);
             caseObject.setInitiator(person);
             issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
@@ -280,8 +280,6 @@ public class TestPortalApiController extends BaseServiceTest {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setStateId(1);
-            caseObject.setImpLevel(3);
-            caseObject.setInitiator(person);
             caseObject.setManager(manager);
             issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
