@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
@@ -42,7 +43,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
-
         applyFilterByScope(token, query);
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
@@ -92,8 +92,9 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public Result< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
-        if (caseObject == null)
+        if (!validateFields(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         applyCaseByScope( token, caseObject );
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
@@ -259,6 +260,13 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        caseObject.setCreated(oldState.getCreated());
+        caseObject.setCaseNumber(oldState.getCaseNumber());
+
+        if (!validateFields(caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -334,15 +342,6 @@ public class CaseServiceImpl implements CaseService {
                 log.error("Manager message for the issue {} isn't saved!", caseObject.getId());
             }
         }
-
-/*
-        if (!isWithCommentUpdate && isCaseChangedExceptStateImpLevelManager(oldState, caseObject)) {
-            Long messageId = createAndPersistChangeLogMessage(initiator, caseObject.getId());
-            if (messageId == null) {
-                log.error("Change log message for the issue {} isn't saved!", caseObject.getId());
-            }
-        }
-*/
 
         return new CaseObjectUpdateResult(caseObject, true);
     }
@@ -544,7 +543,7 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseStateId((long)state.getId());
         if (timeElapsed != null && timeElapsed > 0L) {
             stateChangeMessage.setTimeElapsed(timeElapsed);
-            stateChangeMessage.setTimeElapsedType(timeElapsedType!=null?timeElapsedType:En_TimeElapsedType.NONE);
+            stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
         }
         return caseCommentDAO.persist(stateChangeMessage);
     }
@@ -584,18 +583,6 @@ public class CaseServiceImpl implements CaseService {
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }
 
-    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
-            caseObject.setPrivateCase( false );
-            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                caseObject.setInitiatorCompany( descriptor.getCompany() );
-            }
-            caseObject.setManagerId( null );
-        }
-    }
-
     private boolean isCaseChanged(CaseObject co1, CaseObject co2){
         // without notifiers
         // without links
@@ -612,6 +599,18 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getState(), co2.getState())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId());
+    }
+
+    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
+            caseObject.setPrivateCase( false );
+            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
+                caseObject.setInitiatorCompany( descriptor.getCompany() );
+            }
+            caseObject.setManagerId( null );
+        }
     }
 
     private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
@@ -664,6 +663,27 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
+    }
+
+    private boolean validateFields(CaseObject caseObject) {
+        return caseObject != null
+                && caseObject.getName() != null
+                && !caseObject.getName().isEmpty()
+                && En_CaseType.find(caseObject.getTypeId()) != null
+                && caseObject.getImpLevel() != null
+                && En_ImportanceLevel.find(caseObject.getImpLevel()) != null
+                && En_CaseState.getById(caseObject.getStateId()) != null
+                && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
+                || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
+                || caseObject.getManagerId() != null)
+                && (caseObject.getInitiatorCompanyId() != null)
+                && (caseObject.getInitiatorId() == null || personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId()));
+    }
+
+    private boolean personBelongsToCompany(Long personId, Long companyId) {
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setCompanyIds(Collections.singleton(companyId));
+        return personDAO.getPersons(personQuery).stream().anyMatch(person -> personId.equals(person.getId()));
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {

@@ -27,4 +27,8 @@ public interface UserRoleDAO extends PortalBaseDAO<UserRole> {
     Set<UserRole> getDefaultCustomerRoles ();
 
     void trimScopeToSingleValue();
+
+    int removeByRoleCodeLike(String code);
+
+    UserRole getByRoleCodeLike(String code);
 }

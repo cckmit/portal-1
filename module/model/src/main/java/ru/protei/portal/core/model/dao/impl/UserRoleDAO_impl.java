@@ -107,6 +107,16 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
         return _getUserRoleSet(ROLE_SETUP_EMPL_MANAGER);
     }
 
+    @Override
+    public int removeByRoleCodeLike(String code) {
+        return removeByCondition("role_code like ?", "%" + code + "%");
+    }
+
+    @Override
+    public UserRole getByRoleCodeLike(String code) {
+        return getByCondition("role_code like ?", "%" + code + "%");
+    }
+
 
     static final DefRoleSetup ROLE_SETUP_EMPLOYEE = new DefRoleSetup("Сотрудник", En_Scope.SYSTEM,
             En_Privilege.ISSUE_CREATE,
