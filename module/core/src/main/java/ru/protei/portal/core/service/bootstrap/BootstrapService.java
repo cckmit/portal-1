@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service.bootstrap;
 
+import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,7 +220,7 @@ public class BootstrapService {
             complex.setName(complexName);
             complex.setStateId(En_DevUnitState.ACTIVE.getId());
             complex.setTypeId(En_DevUnitType.COMPLEX.getId());
-            complex.setChildren(new ArrayList<>(project.getProducts()));
+            complex.setChildren(project.getProducts().stream().filter(DevUnit::isProduct).collect(toList()));
             complex.setCreated(new Date());
 
             Long complexId = devUnitDAO.persist(complex);
@@ -227,6 +228,16 @@ public class BootstrapService {
             jdbcManyRelationsHelper.persist(complex, "children");
 
             projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
+
+            String componentIds = StringUtil.join(project.getProducts()
+                    .stream()
+                    .filter(DevUnit::isComponent)
+                    .map(product -> String.valueOf(product.getId()))
+                    .toArray(String[]::new), ", ");
+
+            if (!componentIds.isEmpty()) {
+                projectToProductDAO.removeByCondition("project_id = ? and product_id in (" + componentIds + ")", project.getId());
+            }
         });
     }
 
