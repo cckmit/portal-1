@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
@@ -89,8 +90,9 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
-        if (caseObject == null)
+        if (!validateFields(caseObject)) {
             return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         applyCaseByScope( token, caseObject );
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
@@ -253,6 +255,13 @@ public class CaseServiceImpl implements CaseService {
     private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
 
         if (caseObject == null) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        caseObject.setCreated(oldState.getCreated());
+        caseObject.setCaseNumber(oldState.getCaseNumber());
+
+        if (!validateFields(caseObject)) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -666,6 +675,27 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
+    }
+
+    private boolean validateFields(CaseObject caseObject) {
+        return caseObject != null
+                && caseObject.getName() != null
+                && !caseObject.getName().isEmpty()
+                && En_CaseType.find(caseObject.getTypeId()) != null
+                && caseObject.getImpLevel() != null
+                && En_ImportanceLevel.find(caseObject.getImpLevel()) != null
+                && En_CaseState.getById(caseObject.getStateId()) != null
+                && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
+                || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
+                || caseObject.getManagerId() != null)
+                && (caseObject.getInitiatorCompanyId() != null)
+                && (caseObject.getInitiatorId() == null || personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId()));
+    }
+
+    private boolean personBelongsToCompany(Long personId, Long companyId) {
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setCompanyIds(Collections.singleton(companyId));
+        return personDAO.getPersons(personQuery).stream().anyMatch(person -> personId.equals(person.getId()));
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {

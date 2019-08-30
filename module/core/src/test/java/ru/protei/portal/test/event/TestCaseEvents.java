@@ -14,6 +14,7 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
@@ -58,6 +59,7 @@ public class TestCaseEvents extends BaseServiceTest {
         object.setCreatorInfo("junit-test-events");
         object.setName("Event-publisher test");
         object.setExtAppType("junit-test");
+        object.setImpLevel(En_ImportanceLevel.BASIC.getId());
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
         CoreResponse<CaseObject> response = service.saveCaseObject(getAuthToken(), object, person);
