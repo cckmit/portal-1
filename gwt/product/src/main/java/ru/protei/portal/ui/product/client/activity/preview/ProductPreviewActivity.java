@@ -7,6 +7,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,15 +29,43 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     }
 
     @Event
+    public void onInit(AppEvents.InitDetails event) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow( ProductEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget(event.isShouldWrap) );
 
         fillView( event.product );
         view.watchForScroll( event.isWatchForScroll);
+        view.showFullScreen(false);
     }
 
-    private void fillView( DevUnit product ) {
+    @Event
+    public void onShow(ProductEvents.ShowFullScreen event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget(false));
+
+        this.product = event.product;
+
+        fillView(product);
+        view.showFullScreen(true);
+    }
+
+    @Override
+    public void onFullScreenClicked() {
+        fireEvent(new ProductEvents.ShowFullScreen(product));
+    }
+
+    @Override
+    public void onBackButtonClicked() {
+        fireEvent(new ProductEvents.Show());
+    }
+
+    private void fillView(DevUnit product ) {
+        this.product = product;
         view.setName(product.getName());
         view.setType(typeLang.getName(product.getType()));
         view.setInfo( product.getInfo() );
@@ -62,6 +92,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         );
     }
 
+
     @Inject
     Lang lang;
     @Inject
@@ -70,4 +101,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     TextRenderControllerAsync textRenderController;
     @Inject
     En_DevUnitTypeLang typeLang;
+
+    private AppEvents.InitDetails initDetails;
+    private DevUnit product;
 }

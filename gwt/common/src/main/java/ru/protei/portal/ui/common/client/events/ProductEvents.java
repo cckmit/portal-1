@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -48,6 +50,23 @@ public class ProductEvents {
         public DevUnit product;
         public boolean isWatchForScroll;
         public boolean isShouldWrap;
+    }
+
+    @Url(value = "product_preview", primary = true)
+    public static class ShowFullScreen {
+        public ShowFullScreen() {
+        }
+
+        public ShowFullScreen(DevUnit product) {
+            this.product = product;
+            this.productId = product.getId();
+        }
+
+        @Name("id")
+        public Long productId;
+
+        @Omit
+        public DevUnit product;
     }
 
     @Url( value = "product", primary = false )

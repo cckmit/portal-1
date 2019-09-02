@@ -3,40 +3,50 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview">
-            <g:HTMLPanel ui:field="nameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend>
-                    <g:Label ui:field="typeLabel"/>
-                </legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.name}"/></label>
-                    <span class="col-xs-7" ui:field="name"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.productWikiLink}"/></label>
-                    <span class="col-xs-7" ui:field="wikiLink"/>
-                </div>
-            </g:HTMLPanel>
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend>
-                    <ui:text from="{lang.description}"/>
-                </legend>
-                <span ui:field="info" class="pre-formatted-info"></span>
-            </g:HTMLPanel>
+    <g:HTMLPanel styleName="panel footer-fixable">
+        <div class="body">
+            <g:HTMLPanel styleName="preview grid">
+                <g:HTMLPanel ui:field="rootWrapper">
+                    <div class="col-xs-12">
+                        <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
+                    </div>
+                    <g:HTMLPanel ui:field="nameBlock" tag="fieldset" styleName="header" visible="false">
+                        <legend>
+                            <g:Label ui:field="typeLabel"/>
+                        </legend>
+                        <div class="col-xs-12">
+                            <label class="col-xs-5"><ui:text from="{lang.name}"/></label>
+                            <span class="col-xs-7" ui:field="name"></span>
+                        </div>
+                        <div class="col-xs-12">
+                            <label class="col-xs-5"><ui:text from="{lang.productWikiLink}"/></label>
+                            <span class="col-xs-7" ui:field="wikiLink"/>
+                        </div>
+                    </g:HTMLPanel>
+                    <g:HTMLPanel tag="fieldset" styleName="header">
+                        <legend>
+                            <ui:text from="{lang.description}"/>
+                        </legend>
+                        <span ui:field="info" class="pre-formatted-info"></span>
+                    </g:HTMLPanel>
 
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productConfiguration}"/></legend>
-                <div class="col-xs-12 markdown" ui:field="configuration"/>
+                    <g:HTMLPanel tag="fieldset" styleName="header">
+                        <legend><ui:text from="{lang.productConfiguration}"/></legend>
+                        <div class="col-xs-12 markdown" ui:field="configuration"/>
+                    </g:HTMLPanel>
+                    <g:HTMLPanel tag="fieldset" styleName="header">
+                        <legend><ui:text from="{lang.productHistoryVersion}"/></legend>
+                        <div class="col-xs-12 markdown" ui:field="historyVersion"/>
+                    </g:HTMLPanel>
+                    <g:HTMLPanel tag="fieldset" styleName="header">
+                        <legend><ui:text from="{lang.productCDRDescription}"/></legend>
+                        <div class="col-xs-12 markdown" ui:field="cdrDescription"/>
+                    </g:HTMLPanel>
+                </g:HTMLPanel>
             </g:HTMLPanel>
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productHistoryVersion}"/></legend>
-                <div class="col-xs-12 markdown" ui:field="historyVersion"/>
-            </g:HTMLPanel>
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productCDRDescription}"/></legend>
-                <div class="col-xs-12 markdown" ui:field="cdrDescription"/>
-            </g:HTMLPanel>
+        </div>
+        <g:HTMLPanel ui:field="backButtonPanel" class="footer">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProducts}"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

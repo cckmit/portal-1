@@ -107,8 +107,10 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                     roleTypeLang.getName(entry.getRole()) + ": " + entry.getDisplayShortName() ).collect( Collectors.joining(", ")) );
         }
 
-        if( value.getProducts() != null ) {
-            view.setProducts( value.getSingleProduct().getName() );
+        if (value.getProducts() != null && !value.getProducts().isEmpty()) {
+            view.setProducts(value.getSingleProduct().getName());
+        } else {
+            view.setProducts("");
         }
 
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service.bootstrap;
 
-import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,6 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.service.ProductServiceImpl;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -201,20 +197,11 @@ public class BootstrapService {
         }
 
         projects.forEach(project -> {
-            DevUnit productMaybeWithCompositeName = Collections.max(project.getProducts(), Comparator.comparingInt(prod -> prod.getName().length()));
-
             String complexName = project.getProducts()
                     .stream()
-                    .filter(prod -> !prod.getId().equals(productMaybeWithCompositeName.getId()))
                     .map(DevUnit::getName)
                     .reduce((name1, name2) -> name1 + " " + name2)
                     .get();
-
-            if (productMaybeWithCompositeName.getName().equals(complexName)) {
-                return;
-            }
-
-            complexName += " " + productMaybeWithCompositeName.getName();
 
             DevUnit complex = new DevUnit();
             complex.setName(complexName);
@@ -227,17 +214,8 @@ public class BootstrapService {
             complex.setId(complexId);
             jdbcManyRelationsHelper.persist(complex, "children");
 
+            projectToProductDAO.removeProductsInProject(project.getId(), project.getProducts().stream().map(DevUnit::getId).collect(toList()));
             projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
-
-            String componentIds = StringUtil.join(project.getProducts()
-                    .stream()
-                    .filter(DevUnit::isComponent)
-                    .map(product -> String.valueOf(product.getId()))
-                    .toArray(String[]::new), ", ");
-
-            if (!componentIds.isEmpty()) {
-                projectToProductDAO.removeByCondition("project_id = ? and product_id in (" + componentIds + ")", project.getId());
-            }
         });
     }
 

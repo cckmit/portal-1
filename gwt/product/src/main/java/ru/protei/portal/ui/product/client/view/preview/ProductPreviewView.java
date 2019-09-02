@@ -3,12 +3,11 @@ package ru.protei.portal.ui.product.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -76,6 +75,20 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void showFullScreen(boolean isFullScreen) {
+        fullScreen.setVisible(!isFullScreen);
+        backButtonPanel.setVisible(isFullScreen);
+
+        if (isFullScreen) {
+            rootWrapper.addStyleName("issue-fullscreen col-md-12 m-t-10");
+        } else {
+            rootWrapper.setStyleName("preview");
+        }
+
+        nameBlock.setVisible(true);
+    }
+
+    @Override
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
             rootWrapper.addStyleName("preview-wrapper");
@@ -87,6 +100,26 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         return asWidget();
     }
 
+    @UiHandler("fullScreen")
+    public void onFullScreenClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onFullScreenClicked();
+        }
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onBackButtonClicked();
+        }
+    }
+
+    @UiField
+    Anchor fullScreen;
     @UiField
     Lang lang;
     @UiField
@@ -107,6 +140,10 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     DivElement cdrDescription;
     @UiField
     Label typeLabel;
+    @UiField
+    HTMLPanel backButtonPanel;
+    @UiField
+    Button backButton;
 
     @Inject
     FixedPositioner positioner;

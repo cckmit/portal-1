@@ -1744,4 +1744,6 @@ public interface Lang extends Messages, ContactItemLang {
     String componentDescription();
 
     String complexDescription();
+
+    String goToProducts();
 }
