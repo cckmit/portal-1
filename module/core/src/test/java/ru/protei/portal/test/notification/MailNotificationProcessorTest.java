@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.TestNotificationConfiguration;
@@ -28,7 +28,6 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import javax.mail.internet.MimeMessage;
 import java.util.Collections;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Тесты для
@@ -87,7 +86,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         object.setInfo( "some text is here" );
         object.setExtAppType( "junit-test" );
 
-        CoreResponse<CaseObject> response = caseService.saveCaseObject(getAuthToken(), object, initiator);
+        Result<CaseObject> response = caseService.saveCaseObject(getAuthToken(), object, initiator);
         Assert.assertTrue(response.isOk());
         object = response.getData();
 
@@ -106,7 +105,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         comment.setText("A new comment, publishing test");
         comment.setCaseAttachments(Collections.emptyList());
 
-        CoreResponse<CaseComment> r2 = caseCommentService.addCaseComment( getAuthToken(), caseType, comment, initiator );
+        Result<CaseComment> r2 = caseCommentService.addCaseComment( getAuthToken(), caseType, comment, initiator );
         Assert.assertTrue(r2.isOk());
 
         // wait for async event

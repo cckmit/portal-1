@@ -12,6 +12,12 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
@@ -23,14 +29,22 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.AccountService;
+import ru.protei.portal.core.service.AccountServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
-import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.core.service.user.AuthServiceImpl;
-import ru.protei.portal.core.service.user.LDAPAuthProvider;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.auth.AuthServiceImpl;
+import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -487,6 +501,21 @@ public class MainConfiguration {
     @Bean
     public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
         return  new WorkerEntryShortViewDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackRestClient getYoutrackRestDAO() {
+        return new YoutrackRestClientImpl();
+    }
+
+    @Bean
+    public YoutrackApiClient getYoutrackApiDAO() {
+        return new YoutrackApiClientImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
     }
 
     /* SERVICES */

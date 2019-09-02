@@ -27,6 +27,8 @@ public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
 
     boolean isUnique (String login);
 
+    int removeByPersonId(Long id);
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition ( AccountQuery query );
 

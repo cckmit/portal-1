@@ -19,7 +19,7 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.struct.UploadResult;
@@ -33,8 +33,8 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EventAssemblerService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.auth.AuthService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -134,7 +134,7 @@ public class FileController {
 
                 if (caseNumber != null) {
                     En_CaseType caseType = En_CaseType.find(caseTypeId);
-                    CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
                     if (caseAttachId.isError()) {
                         logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                         result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
@@ -271,7 +271,7 @@ public class FileController {
             throw new SQLException("unable to save link to file");
         }
 
-        CoreResponse<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
+        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
         if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
@@ -291,7 +291,7 @@ public class FileController {
     }
 
     private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
-        CoreResponse<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
+        Result<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
         if (issue.isError()) {
             logger.error("Notification error! Database exception: " + issue.getStatus().name());
             return;
@@ -380,7 +380,7 @@ public class FileController {
     }
 
     private String getRealFileName(String filePath, String encodedFileName) {
-        CoreResponse<String> nameResult = attachmentService.getAttachmentNameByExtLink(filePath);
+        Result<String> nameResult = attachmentService.getAttachmentNameByExtLink(filePath);
         if (nameResult.isOk() && StringUtils.isNotBlank(nameResult.getData())) {
             return nameResult.getData();
         }

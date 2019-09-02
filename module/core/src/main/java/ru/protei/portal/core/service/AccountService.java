@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -16,27 +16,27 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 public interface AccountService {
 
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
-    CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query);
+    Result<SearchResult<UserLogin>> getAccounts( AuthToken token, AccountQuery query);
 
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
-    CoreResponse< UserLogin > getAccount( AuthToken authToken, long id );
+    Result< UserLogin > getAccount( AuthToken authToken, long id );
 
     @Privileged({ En_Privilege.CONTACT_VIEW })
-    CoreResponse< UserLogin > getContactAccount(AuthToken authToken, long personId );
+    Result< UserLogin > getContactAccount( AuthToken authToken, long personId );
 
     @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
+    Result< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
 
     @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
+    Result< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
 
-    CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
+    Result< Boolean > checkUniqueLogin( String login, Long excludeId );
 
     @Privileged({ En_Privilege.ACCOUNT_REMOVE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< Boolean > removeAccount( AuthToken authToken, Long accountId );
+    Result< Boolean > removeAccount( AuthToken authToken, Long accountId );
 
-    CoreResponse<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword );
+    Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword );
 }

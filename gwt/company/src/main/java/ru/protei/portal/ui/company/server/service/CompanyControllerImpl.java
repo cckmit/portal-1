@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.core.service.CompanyService;
-import ru.protei.portal.core.service.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
@@ -56,7 +57,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CompanyGroupQuery query = new CompanyGroupQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        CoreResponse< List<CompanyGroup> > result = companyService.groupList(query);
+        Result< List<CompanyGroup> > result = companyService.groupList(query);
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());
@@ -74,7 +75,7 @@ public class CompanyControllerImpl implements CompanyController {
         if (isCompanyNameExists(company.getCname(), company.getId()))
             throw new RequestFailedException(En_ResultStatus.ALREADY_EXIST);
         
-        CoreResponse< Company > response;
+        Result< Company > response;
 
         if ( company.getId() == null )
             response = companyService.createCompany( descriptor.makeAuthToken(), company );
@@ -94,7 +95,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = companyService.updateState(descriptor.makeAuthToken(), companyId, isArchived);
+        Result response = companyService.updateState(descriptor.makeAuthToken(), companyId, isArchived);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -110,7 +111,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         log.debug( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
 
-        CoreResponse<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
+        Result<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
 
         log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
@@ -124,7 +125,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         log.debug( "isGroupNameExists(): name={} | excludeId={}", name, excludeId );
 
-        CoreResponse<Boolean> response = companyService.isGroupNameExists(name, excludeId);
+        Result<Boolean> response = companyService.isGroupNameExists(name, excludeId);
 
         log.debug( "isGroupNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
@@ -140,7 +141,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Company> response = companyService.getCompany( descriptor.makeAuthToken(),  id );
+        Result<Company> response = companyService.getCompany( descriptor.makeAuthToken(),  id );
 
         log.debug( "getCompany(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
@@ -154,9 +155,9 @@ public class CompanyControllerImpl implements CompanyController {
         log.debug( "getCompanyOptionList()" );
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< List< EntityOption > > result = companyService.companyOptionList( descriptor.makeAuthToken(), query);
+        Result< List< EntityOption > > result = companyService.companyOptionList( descriptor.makeAuthToken(), query);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -169,9 +170,9 @@ public class CompanyControllerImpl implements CompanyController {
 
         log.debug( "getGroupOptionList()" );
 
-        CoreResponse< List< EntityOption > > result = companyService.groupOptionList();
+        Result< List< EntityOption > > result = companyService.groupOptionList();
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -187,9 +188,9 @@ public class CompanyControllerImpl implements CompanyController {
         Set<UserRole> availableRoles = getDescriptorAndCheckSession().getLogin().getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
-        CoreResponse< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
+        Result< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -202,13 +203,13 @@ public class CompanyControllerImpl implements CompanyController {
         log.debug( "updateSelfCompanySubscription()" );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse< Boolean > updateResult = companyService.updateCompanySubscriptions( descriptor.getCompany().getId(), value );
+        Result< Boolean > updateResult = companyService.updateCompanySubscriptions( descriptor.getCompany().getId(), value );
 
         if ( updateResult.isError() ) {
             throw new RequestFailedException( updateResult.getStatus() );
         }
 
-        CoreResponse< List<CompanySubscription> > companySubscriptionResult = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
+        Result< List<CompanySubscription> > companySubscriptionResult = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
         if ( companySubscriptionResult.isError() ) {
             throw new RequestFailedException( updateResult.getStatus() );
         }
@@ -222,7 +223,7 @@ public class CompanyControllerImpl implements CompanyController {
     public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
         log.debug( "getCompanySubscription()" );
 
-        CoreResponse< List< CompanySubscription > > result = companyService.getCompanySubscriptions( companyId );
+        Result< List< CompanySubscription > > result = companyService.getCompanySubscriptions( companyId );
 
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );

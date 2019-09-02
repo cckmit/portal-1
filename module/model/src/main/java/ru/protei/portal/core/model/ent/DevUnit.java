@@ -240,6 +240,10 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return En_DevUnitType.COMPONENT.equals(getType());
     }
 
+    public boolean isComplex() {
+        return En_DevUnitType.COMPLEX.equals(getType());
+    }
+
 
     public String getWikiLink() {
         return wikiLink;

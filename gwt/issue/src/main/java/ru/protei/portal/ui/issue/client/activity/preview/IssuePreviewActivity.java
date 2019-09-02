@@ -239,9 +239,17 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 isPrivateCase = caseObject.isPrivateCase();
                 textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);
 
+                requestCaseLinks(issueId);
+
                 fillView( caseObject );
             }
         } );
+    }
+
+    private void requestCaseLinks( Long issueId ) {
+        issueService.getCaseLinks(issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
+                view.setLinks(caseLinks == null ? null : new HashSet<>(caseLinks))
+        ));
     }
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){

@@ -4,13 +4,16 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.ReportContent;
 
 import java.io.*;
 import java.util.List;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ReportStorageServiceImpl implements ReportStorageService {
 
@@ -20,7 +23,7 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     PortalConfig config;
 
     @Override
-    public CoreResponse saveContent(ReportContent reportContent) {
+    public Result saveContent( ReportContent reportContent) {
         String reportPath = makeReportPath(reportContent.getReportId(), config.data().reportConfig().getStoragePath());
         FileOutputStream outputStream = null;
         try {
@@ -36,46 +39,46 @@ public class ReportStorageServiceImpl implements ReportStorageService {
             }
         } catch (IOException e) {
             logger.warn("Failed to save content", e);
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
         } finally {
             IOUtils.closeQuietly(outputStream);
         }
-        return new CoreResponse().success(null);
+        return ok();
     }
 
     @Override
-    public CoreResponse<ReportContent> getContent(Long reportId) {
+    public Result<ReportContent> getContent( Long reportId) {
         String reportPath = makeReportPath(reportId, config.data().reportConfig().getStoragePath());
         try {
             ReportContent content = new ReportContent(reportId);
             content.setContent(new FileInputStream(reportPath));
-            return new CoreResponse<ReportContent>().success(content);
+            return ok(content);
         } catch (FileNotFoundException e) {
             logger.warn("Failed to get content", e);
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
     }
 
     @Override
-    public CoreResponse removeContent(Long reportId) {
+    public Result removeContent( Long reportId) {
         String reportPath = makeReportPath(reportId, config.data().reportConfig().getStoragePath());
         try {
             File file = new File(reportPath);
             if (file.exists() && file.isFile()) {
                 file.delete();
             }
-            return new CoreResponse().success(null);
+            return ok();
         } catch (Throwable t) {
             logger.warn("Failed to remove content", t);
-            return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_REMOVED);
         }
     }
 
     @Override
-    public CoreResponse removeContent(List<Long> reportIds) {
-        CoreResponse coreResponse = new CoreResponse().success(null);
+    public Result removeContent( List<Long> reportIds) {
+        Result coreResponse = ok();
         for (Long reportId : reportIds) {
-            CoreResponse result = removeContent(reportId);
+            Result result = removeContent(reportId);
             if (result.isError()) {
                 coreResponse = result;
             }
@@ -84,8 +87,8 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     }
 
     @Override
-    public CoreResponse<String> getFileName(String reportId) {
-        return new CoreResponse<String>().success("report-" + reportId + ".xlsx");
+    public Result<String> getFileName( String reportId) {
+        return ok("report-" + reportId + ".xlsx");
     }
 
     private String makeReportPath(Long reportId, String rootPath) {

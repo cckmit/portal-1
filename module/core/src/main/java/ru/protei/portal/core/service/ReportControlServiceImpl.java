@@ -1,11 +1,11 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.collections4.CollectionUtils;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
@@ -28,6 +28,9 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
@@ -63,44 +66,44 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @Scheduled(fixedRate = 30 * 1000) // every 30 seconds
     public void processNewReportsSchedule() {
-        CoreResponse response = processNewReports();
+        Result response = processNewReports();
         if (!response.isOk()) {
             log.warn("fail to process reports : status={}", response.getStatus());
         }
     }
 
     @Override
-    public CoreResponse processNewReports() {
+    public Result processNewReports() {
         synchronized (sync) {
             int reportThreadsNumber = config.data().reportConfig().getThreadsNumber();
             int activeThreads = reportExecutorService.getActiveCount();
             if (activeThreads >= reportThreadsNumber) {
                 log.debug("all threads to process reports are busy");
-                return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
+                return error(En_ResultStatus.NOT_AVAILABLE);
             }
-            CoreResponse<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
+            Result<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
             if (!result.isOk()) {
                 return result;
             }
-            log.debug("reports to process : {}", result.getDataAmountTotal());
-            if (result.getDataAmountTotal() == 0) {
-                return new CoreResponse().success(null);
+            log.debug( "reports to process : {}", size( result.getData() ) );
+            if (size( result.getData() ) == 0) {
+                return ok();
             }
             for (final Report report : result.getData()) {
                 reportExecutorService.submit(() -> processReport(report));
             }
-            return new CoreResponse().success(null);
+            return ok();
         }
     }
 
-    private CoreResponse<List<Report>> getReportsToProcess(final int limit) {
+    private Result<List<Report>> getReportsToProcess( final int limit) {
         try {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.CREATED),
                     limit
             );
             if (CollectionUtils.isEmpty(reports)) {
-                return new CoreResponse<List<Report>>().success(reports);
+                return ok(reports);
             }
             Date now = new Date();
             for (Report report : reports) {
@@ -108,10 +111,10 @@ public class ReportControlServiceImpl implements ReportControlService {
                 report.setModified(now);
             }
             reportDAO.mergeBatch(reports);
-            return new CoreResponse<List<Report>>().success(reports);
+            return ok(reports);
         } catch (Throwable t) {
             log.info("fail get reports to process", t);
-            return new CoreResponse<List<Report>>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
     }
 
@@ -122,13 +125,13 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
         }
-        CoreResponse storageResult = null;
+        Result storageResult = null;
         try {
             log.debug("start process report : reportId={}", report.getId());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             if (!writeReport(report, buffer)) {
-                mergeErrorStatus(report);
+                mergeerroratus(report);
                 return;
             }
 
@@ -136,7 +139,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             storageResult = reportStorageService.saveContent(reportContent);
 
             if (!storageResult.isOk()) {
-                mergeErrorStatus(report);
+                mergeerroratus(report);
                 return;
             }
 
@@ -147,7 +150,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (storageResult != null) {
                 reportStorageService.removeContent(report.getId());
             }
-            mergeErrorStatus(report);
+            mergeerroratus(report);
         } finally {
             reportsInProcess.remove(report.getId());
         }
@@ -160,7 +163,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         log.debug("process report : reportId={}, status={}", report.getId(), status.name());
     }
 
-    private void mergeErrorStatus(Report report) {
+    private void mergeerroratus(Report report) {
         report.setStatus(En_ReportStatus.ERROR);
         report.setModified(new Date());
         reportDAO.partialMerge(report, "status", "modified");
@@ -202,25 +205,25 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @Scheduled(cron = "0 0 5 * * ?") // at 05:00:00 am every day
     public void processOldReportsSchedule() {
-        CoreResponse response = processOldReports();
+        Result response = processOldReports();
         if (!response.isOk()) {
             log.warn("fail to process reports : status={}", response.getStatus());
         }
     }
 
     @Override
-    public CoreResponse processOldReports() {
+    public Result processOldReports() {
         List<Report> reports = reportDAO.getReportsByStatuses(
                 Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
                 new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime())
         );
         if (CollectionUtils.isEmpty(reports)) {
             log.debug("old reports to process : 0");
-            return new CoreResponse().success(null);
+            return ok();
         }
         log.info("old reports to process : {}", reports.size());
         removeReports(reports);
-        return new CoreResponse().success(null);
+        return ok();
     }
 
     private void removeReports(List<Report> reports) {
@@ -239,14 +242,14 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
     public void processHangReportsSchedule() {
-        CoreResponse response = processHangReports();
+        Result response = processHangReports();
         if (!response.isOk()) {
             log.warn("fail to process reports : status={}", response.getStatus());
         }
     }
 
     @Override
-    public CoreResponse processHangReports() {
+    public Result processHangReports() {
         synchronized (reportsInProcess) {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.PROCESS),
@@ -254,7 +257,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             );
             if (CollectionUtils.isEmpty(reports)) {
                 log.debug("hang reports to process : 0");
-                return new CoreResponse().success(null);
+                return ok();
             }
             log.debug("hang reports to process : {}", reports.size());
             Date currentDate = new Date();
@@ -270,7 +273,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 }
             }
             reportDAO.mergeBatch(reports);
-            return new CoreResponse().success(null);
+            return ok();
         }
     }
 }

@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +24,7 @@ public interface ReportService {
      * @return идентификатор отчета
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse<Long> createReport(AuthToken authToken, Report report);
+    Result<Long> createReport( AuthToken authToken, Report report);
 
     /**
      * Запрос повторного создания отчета, если он не создался
@@ -35,7 +34,7 @@ public interface ReportService {
      * @return идентификатор отчета
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse recreateReport(AuthToken authToken, Long id);
+    Result recreateReport( AuthToken authToken, Long id);
 
     /**
      * Получение отчёта по идентификатору
@@ -45,7 +44,7 @@ public interface ReportService {
      * @return отчёт
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse<Report> getReport(AuthToken authToken, Long id);
+    Result<Report> getReport( AuthToken authToken, Long id);
 
     /**
      * Получение информации об отчетах по фильтру
@@ -55,7 +54,7 @@ public interface ReportService {
      * @return
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse<SearchResult<Report>> getReports(AuthToken token, ReportQuery query);
+    Result<SearchResult<Report>> getReports( AuthToken token, ReportQuery query);
 
     /**
      * Получение файла отчета
@@ -65,7 +64,7 @@ public interface ReportService {
      * @return файловый контент
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse<ReportContent> downloadReport(AuthToken authToken, Long id);
+    Result<ReportContent> downloadReport( AuthToken authToken, Long id);
 
     /**
      * Запрос на удаление отчётов по идентификаторам
@@ -75,7 +74,7 @@ public interface ReportService {
      * @param exclude   набор идентификаторов отчётов, исключаемых из удаления
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse removeReports(AuthToken authToken, Set<Long> include, Set<Long> exclude);
+    Result removeReports( AuthToken authToken, Set<Long> include, Set<Long> exclude);
 
     /**
      * Запрос на удаление отчётов по фильтру
@@ -85,5 +84,5 @@ public interface ReportService {
      * @param exclude   набор идентификаторов отчётов, исключаемых из удаления
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse removeReports(AuthToken authToken, ReportQuery query, Set<Long> exclude);
+    Result removeReports( AuthToken authToken, ReportQuery query, Set<Long> exclude);
 }

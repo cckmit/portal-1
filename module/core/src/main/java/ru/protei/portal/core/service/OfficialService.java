@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -23,60 +23,60 @@ public interface OfficialService {
      * @param query    параметры запроса
      */
     @Privileged({ En_Privilege.OFFICIAL_VIEW })
-    CoreResponse<Map<String, List<Official>>> listOfficialsByRegions(AuthToken authToken, OfficialQuery query);
+    Result<Map<String, List<Official>>> listOfficialsByRegions( AuthToken authToken, OfficialQuery query);
 
 
     /**
      * Возвращает матрицу принятия решений
      */
     @Privileged({ En_Privilege.OFFICIAL_VIEW })
-    CoreResponse<Official> getOfficial(AuthToken authToken, Long id);
+    Result<Official> getOfficial( AuthToken authToken, Long id);
 
     /**
      * Возвращает должностное лицо
      */
     @Privileged({ En_Privilege.OFFICIAL_VIEW })
-    CoreResponse<OfficialMember> getOfficialMember(AuthToken authToken, Long id);
+    Result<OfficialMember> getOfficialMember( AuthToken authToken, Long id);
 
     /**
      * Создает должностное лицо
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<Long> createOfficialMember(AuthToken authToken, OfficialMember officialMember, Long parentId);
+    Result<Long> createOfficialMember( AuthToken authToken, OfficialMember officialMember, Long parentId);
 
     /**
      * Сохраняет должностное лицо
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<OfficialMember> saveOfficialMember(AuthToken authToken, OfficialMember officialMember);
+    Result<OfficialMember> saveOfficialMember( AuthToken authToken, OfficialMember officialMember);
 
     /**
      * Сохраняет матрицу принятия решений
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<Official> updateOfficial(AuthToken authToken, Official official);
+    Result<Official> updateOfficial( AuthToken authToken, Official official);
 
     /**
      * Создает матрицу принятия решений
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<Long> createOfficial(AuthToken authToken, Official official, Long creatorId);
+    Result<Long> createOfficial( AuthToken authToken, Official official, Long creatorId);
 
     /**
      * Удаляет матрицу принятия решений
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<Boolean> removeOfficial(AuthToken authToken, Long id);
+    Result<Boolean> removeOfficial( AuthToken authToken, Long id);
 
     /**
      * Удаляет должностное лицо из матрицы принятия решений
      */
     @Privileged({ En_Privilege.OFFICIAL_EDIT })
     @Auditable( En_AuditType.OFFICIAL_MODIFY)
-    CoreResponse<Boolean> removeOfficialMember(AuthToken authToken, Long id);
+    Result<Boolean> removeOfficialMember( AuthToken authToken, Long id);
 }

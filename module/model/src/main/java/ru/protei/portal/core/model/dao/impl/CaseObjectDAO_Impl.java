@@ -55,6 +55,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public Long getCaseIdByNumber( long number ) {
+        CaseObject obj = partialGetByCondition("caseno=?", Arrays.asList(number), getIdColumnName());
+        return obj != null ? obj.getId() : null;
+    }
+
+    @Override
     public Long getCaseNo(long caseId) {
         CaseObject obj = partialGetByCondition("id=?", Collections.singletonList(caseId), "CASENO");
         return obj != null ? obj.getCaseNumber() : null;
@@ -124,6 +130,16 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     public Long getEmailLastId(Long caseId) {
         String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, caseId);
+    }
+
+    @Override
+    public int removeByNameLike(String name) {
+        return removeByCondition("CASE_NAME like ?", "%" + name + "%");
+    }
+
+    @Override
+    public CaseObject getByCaseNameLike(String name) {
+        return getByCondition("CASE_NAME like ?", "%" + name + "%");
     }
 
     @SqlConditionBuilder

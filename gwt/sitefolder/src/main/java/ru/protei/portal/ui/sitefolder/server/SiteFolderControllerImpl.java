@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
@@ -58,7 +58,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("getPlatformsOptionList(): query={}", query);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<EntityOption>> response = siteFolderService.listPlatformsOptionList(descriptor.makeAuthToken(), query);
+        Result<List<EntityOption>> response = siteFolderService.listPlatformsOptionList(descriptor.makeAuthToken(), query);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -70,7 +70,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("getServersOptionList(): query={}", query);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<EntityOption>> response = siteFolderService.listServersOptionList(descriptor.makeAuthToken(), query);
+        Result<List<EntityOption>> response = siteFolderService.listServersOptionList(descriptor.makeAuthToken(), query);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -82,7 +82,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("getPlatform(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Platform> response = siteFolderService.getPlatform(descriptor.makeAuthToken(), id);
+        Result<Platform> response = siteFolderService.getPlatform(descriptor.makeAuthToken(), id);
         log.debug("getPlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -95,7 +95,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("getServer(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Server> response = siteFolderService.getServer(descriptor.makeAuthToken(), id);
+        Result<Server> response = siteFolderService.getServer(descriptor.makeAuthToken(), id);
         log.debug("getServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -108,7 +108,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("getApplication(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Application> response = siteFolderService.getApplication(descriptor.makeAuthToken(), id);
+        Result<Application> response = siteFolderService.getApplication(descriptor.makeAuthToken(), id);
         log.debug("getApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -121,7 +121,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("savePlatform(): platform={}", platform);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Platform> response;
+        Result<Platform> response;
         if (platform.getId() == null) {
             response = siteFolderService.createPlatform(descriptor.makeAuthToken(), platform);
         } else {
@@ -139,7 +139,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("saveServer(): server={}", server);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Server> response;
+        Result<Server> response;
         if (server.getId() == null) {
             if (serverIdOfAppsToBeCloned == null) {
                 response = siteFolderService.createServer(descriptor.makeAuthToken(), server);
@@ -161,7 +161,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("saveApplication(): application={}", application);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Application> response;
+        Result<Application> response;
         if (application.getId() == null) {
             response = siteFolderService.createApplication(descriptor.makeAuthToken(), application);
         } else {
@@ -179,7 +179,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("removePlatform(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Boolean> response = siteFolderService.removePlatform(descriptor.makeAuthToken(), id);
+        Result<Boolean> response = siteFolderService.removePlatform(descriptor.makeAuthToken(), id);
         log.debug("removePlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -192,7 +192,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("removeServer(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Boolean> response = siteFolderService.removeServer(descriptor.makeAuthToken(), id);
+        Result<Boolean> response = siteFolderService.removeServer(descriptor.makeAuthToken(), id);
         log.debug("removeServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -205,7 +205,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
         log.debug("removeApplication(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Boolean> response = siteFolderService.removeApplication(descriptor.makeAuthToken(), id);
+        Result<Boolean> response = siteFolderService.removeApplication(descriptor.makeAuthToken(), id);
         log.debug("removeApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

@@ -6,21 +6,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.*;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -41,41 +45,44 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     PortalConfig portalConfig;
 
+    @Autowired
+    YoutrackService youtrackService;
+
     @Override
-    public CoreResponse<Map<En_CaseLink, String>> getLinkMap() {
+    public Result<Map<En_CaseLink, String>> getLinkMap() {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
         linkMap.put(En_CaseLink.CRM, portalConfig.data().getCaseLinkConfig().getLinkCrm());
         linkMap.put(En_CaseLink.CRM_OLD, portalConfig.data().getCaseLinkConfig().getLinkOldCrm());
         linkMap.put(En_CaseLink.YT, portalConfig.data().getCaseLinkConfig().getLinkYouTrack());
-        return new CoreResponse<Map<En_CaseLink, String>>().success(linkMap);
+        return ok(linkMap);
     }
 
     @Override
-    public CoreResponse<List<CaseLink>> getLinks(AuthToken token, Long caseId) {
+    public Result<List<CaseLink>> getLinks( AuthToken token, Long caseId) {
         if ( caseId == null ) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivateLinks(token)));
-        return new CoreResponse<List<CaseLink>>().success(caseLinks);
+        return ok(caseLinks);
     }
 
     @Override
     @Transactional
-    public CoreResponse mergeLinks(AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
+    public Result mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
         if (caseLinks == null) {
-            return new CoreResponse<>().success();
+            return ok();
         }
 
         caseLinks.forEach(link -> link.setCaseId(caseId));
         if ( caseId == null || caseNumber == null || !checkLinksIsValid(caseLinks)) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         boolean isShowOnlyPrivate = isShowOnlyPrivateLinks(token);
         // запрещено изменение ссылок вне зоны видимости
         if ( isShowOnlyPrivate && caseLinks.stream().anyMatch(CaseLink::isPrivate) ) {
-            return new CoreResponse().error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         // работаем только с пулом доступных линков по приватности
@@ -116,7 +123,72 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.persistBatch(toAddLinks);
         }
 
-        return new CoreResponse<>().success();
+        return ok();
+    }
+
+    @Override
+    public Result<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
+        return youtrackService.getIssueInfo( ytId );
+    }
+
+    @Override
+    public Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId( caseId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+        Long caseId = getCaseIdByCaseNumber( caseNumber );
+        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
+                CaseLink::getCaseId ).orElseGet( ignore ->
+                addCaseLinkOnToYoutrack( caseId, youtrackId ) );
+    }
+
+    @Override
+    public Result<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+        Long caseId = getCaseIdByCaseNumber( caseNumber );
+        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
+                removeCaseLinkOnToYoutrack( caseLink )).orElseGet( ignore ->
+                ok( true )
+        );
+    }
+
+    private Long getCaseIdByCaseNumber( Long caseNumber ) {
+        return caseObjectDAO.getCaseIdByNumber( caseNumber );
+    }
+
+    private Result<CaseLink> findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
+        return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
+                .map( Result::ok )
+                .orElse( error( En_ResultStatus.NOT_FOUND ) );
+    }
+
+    private Result<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+        CaseLink newLink = new CaseLink();
+        newLink.setCaseId( caseNumber );
+        newLink.setType( En_CaseLink.YT );
+        newLink.setRemoteId( youtrackId );
+        Long id = caseLinkDAO.persist( newLink );
+        if (id == null) {
+            log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
+            throw new RuntimeException( "addCaseLinkOnToYoutrack(): rollback transaction" );
+        }
+        return ok( id );
+    }
+
+    private Result<Boolean> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+        if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
+            log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
+            throw new RuntimeException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+        }
+        log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
+        return ok(true);
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

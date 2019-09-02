@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import protei.utils.common.CollectionUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -43,7 +43,7 @@ public class ReportControllerImpl implements ReportController {
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
-        CoreResponse<Long> response = reportService.createReport(descriptor.makeAuthToken(), report);
+        Result<Long> response = reportService.createReport(descriptor.makeAuthToken(), report);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -58,7 +58,7 @@ public class ReportControllerImpl implements ReportController {
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
-        CoreResponse<Report> response = reportService.getReport(descriptor.makeAuthToken(), id);
+        Result<Report> response = reportService.getReport(descriptor.makeAuthToken(), id);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -83,7 +83,7 @@ public class ReportControllerImpl implements ReportController {
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
-        CoreResponse response = reportService.removeReports(descriptor.makeAuthToken(), include, exclude);
+        Result response = reportService.removeReports(descriptor.makeAuthToken(), include, exclude);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -96,7 +96,7 @@ public class ReportControllerImpl implements ReportController {
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
-        CoreResponse response = reportService.recreateReport(descriptor.makeAuthToken(), id);
+        Result response = reportService.recreateReport(descriptor.makeAuthToken(), id);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

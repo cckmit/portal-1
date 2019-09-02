@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -22,40 +22,40 @@ import java.util.List;
 public interface CompanyService {
 
     @Privileged({ En_Privilege.COMPANY_VIEW })
-    CoreResponse<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query);
+    Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query);
 
-    CoreResponse<Long> countGroups (CompanyGroupQuery query);
+    Result<Long> countGroups ( CompanyGroupQuery query);
 
-    CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
+    Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
-    CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
+    Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
 
-    CoreResponse<List<EntityOption>> groupOptionList();
-    CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
-    CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
+    Result<List<EntityOption>> groupOptionList();
+    Result<List<CompanyGroup>> groupList( CompanyGroupQuery query);
+    Result<List<EntityOption>> categoryOptionList( boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
-    CoreResponse<Company> getCompany(AuthToken token, Long id );
+    Result<Company> getCompany( AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
     @Auditable( En_AuditType.COMPANY_CREATE )
-    CoreResponse<Company> createCompany( AuthToken token, Company company );
+    Result<Company> createCompany( AuthToken token, Company company );
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
-    CoreResponse<Company> updateCompany( AuthToken token, Company company );
+    Result<Company> updateCompany( AuthToken token, Company company );
 
-    CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId);
-    CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId);
+    Result<Boolean> isCompanyNameExists( String name, Long excludeId);
+    Result<Boolean> isGroupNameExists( String name, Long excludeId);
 
-    CoreResponse<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
-    CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
-    CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
+    Result<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
+    Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
+    Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
 
     /**
      * methods below are for testing purpose only
      */
-    CoreResponse<CompanyGroup> createGroup(String name, String info);
+    Result<CompanyGroup> createGroup( String name, String info);
 }

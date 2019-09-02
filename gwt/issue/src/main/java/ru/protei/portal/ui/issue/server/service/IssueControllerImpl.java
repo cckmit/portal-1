@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -14,13 +14,16 @@ import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
-import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
 /**
  * Реализация сервиса по работе с обращениями
@@ -34,9 +37,9 @@ public class IssueControllerImpl implements IssueController {
                         "state={} | importance={} | sortField={} | sortDir={} | caseService={}",
                 query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(),
                 query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        CoreResponse<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
-        return ServiceUtils.checkResultAndGetData(result);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
+        return checkResultAndGetData(result);
     }
 
     @Override
@@ -45,7 +48,7 @@ public class IssueControllerImpl implements IssueController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
+        Result<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
         log.debug("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -61,7 +64,7 @@ public class IssueControllerImpl implements IssueController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< CaseObject > response;
+        Result< CaseObject > response;
         if ( caseObject.getId() == null ) {
             caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
             caseObject.setCreatorId(getCurrentPerson().getId());
@@ -80,14 +83,14 @@ public class IssueControllerImpl implements IssueController {
     @Override
     public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
         log.debug("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
             CaseObject saved = saveIssue(caseObject);
             return new CaseObjectWithCaseComment(saved, null);
         }
-        CoreResponse<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
+        Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
         log.debug("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
-        return ServiceUtils.checkResultAndGetData(response);
+        return checkResultAndGetData(response);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class IssueControllerImpl implements IssueController {
         log.debug("getIssueShortInfo(): number: {}", caseNumber);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
+        Result<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
         log.debug("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -103,6 +106,12 @@ public class IssueControllerImpl implements IssueController {
         }
 
         return response.getData();
+    }
+
+    @Override
+    public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
     }
 
     @Override
@@ -114,9 +123,9 @@ public class IssueControllerImpl implements IssueController {
 
         log.debug( "getStatesByCaseType: caseType={} ", type );
 
-        CoreResponse< List<En_CaseState> > result = caseService.stateList( type );
+        Result< List<En_CaseState> > result = caseService.stateList( type );
 
-        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());

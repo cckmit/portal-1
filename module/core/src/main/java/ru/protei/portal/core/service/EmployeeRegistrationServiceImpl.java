@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
@@ -18,13 +18,14 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -60,45 +61,45 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     @Override
-    public CoreResponse<SearchResult<EmployeeRegistration>> getEmployeeRegistrations(AuthToken token, EmployeeRegistrationQuery query) {
+    public Result<SearchResult<EmployeeRegistration>> getEmployeeRegistrations( AuthToken token, EmployeeRegistrationQuery query) {
         SearchResult<EmployeeRegistration> sr = employeeRegistrationDAO.getSearchResult(query);
-        return new CoreResponse<SearchResult<EmployeeRegistration>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<EmployeeRegistration> getEmployeeRegistration(AuthToken token, Long id) {
+    public Result<EmployeeRegistration> getEmployeeRegistration( AuthToken token, Long id) {
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
-            return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         jdbcManyRelationsHelper.fillAll(employeeRegistration);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
         }
-        return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
+        return ok(employeeRegistration);
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration) {
+    public Result<Long> createEmployeeRegistration( AuthToken token, EmployeeRegistration employeeRegistration) {
         if (employeeRegistration == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = createCaseObjectFromEmployeeRegistration(employeeRegistration);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
 
         if (employeeRegistrationId == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         // Заполнить связанные поля
         employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
 
         if(employeeRegistration == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
 
@@ -108,7 +109,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return new CoreResponse<Long>().success(id);
+        return ok(id);
     }
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
@@ -141,8 +142,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
         ).toString();
 
-        String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private void createPhoneYoutrackIssueIfNeeded( EmployeeRegistration employeeRegistration) {
@@ -164,8 +166,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
         ).toString();
 
-        String issueId = youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
@@ -182,8 +185,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 
-        String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( EQUIPMENT_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private Set<En_EmployeeEquipment> getEquipmentsListFurniture(Set<En_EmployeeEquipment> employeeRegistration) {

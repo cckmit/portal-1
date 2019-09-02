@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.ServiceInterceptorConfiguration;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -24,7 +24,7 @@ public class ServiceInterceptorTest {
     @Test
     public void testHandleWrongRequest() {
 
-        CoreResponse<Boolean> response = smokeyService.throwException();
+        Result<Boolean> response = smokeyService.throwException();
 
         Assert.assertNotNull(response);
         Assert.assertTrue(response.isError());

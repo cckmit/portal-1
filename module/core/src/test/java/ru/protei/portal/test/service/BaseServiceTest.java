@@ -1,13 +1,13 @@
 package ru.protei.portal.test.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
@@ -61,6 +61,8 @@ public class BaseServiceTest {
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
+        caseObject.setInitiatorCompanyId(1L);
+        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
         return caseObject;
     }
 
@@ -111,12 +113,12 @@ public class BaseServiceTest {
         return caseTag;
     }
 
-    public static void checkResult( CoreResponse result ) {
+    public static void checkResult( Result result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );
     }
 
-    public static <T> T checkResultAndGetData( CoreResponse<T> result ) {
+    public static <T> T checkResultAndGetData( Result<T> result ) {
         checkResult( result );
         return result.getData();
     }

@@ -2409,13 +2409,29 @@ a {
     float: left;
   }
 
+  &:hover .case-link-close{
+    color: inherit;
+    transition: color 0.8s; ;
+  }
+
   .case-link-close {
     height: 12px;
     width: 12px;
     padding: 5px 2px 5px 4px;
     font-size: 0.8em;
-    color: inherit;
+    color: lightgrey;
     cursor: pointer;
+  }
+
+  &.link-broken .case-link-text{
+    background-color: lightgrey;
+    &:hover {
+      cursor:not-allowed
+    }
+  }
+
+  &.link-completed .case-link-text{
+    text-decoration: line-through;
   }
 
   .case-link-text {

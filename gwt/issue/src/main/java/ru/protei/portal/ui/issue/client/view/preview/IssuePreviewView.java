@@ -165,9 +165,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         fullScreen.setVisible( !value );
         backButton.setVisible( value );
         if ( value ) {
+            previewMain.setStyleName("panel footer-fixable");
+            previewWrapper.setStyleName("preview grid");
             preview.addStyleName( "issue-fullscreen col-md-12 m-t-10" );
         } else {
+            previewMain.setStyleName(" preview-wrapper grid");
+            previewWrapper.setStyleName("");
             preview.setStyleName( "preview" );
+            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+
         }
     }
 
@@ -260,6 +266,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @UiField
     HTMLPanel preview;
+    @UiField
+    HTMLPanel previewWrapper;
+    @UiField
+    HTMLPanel previewMain;
     @UiField
     Anchor fullScreen;
     @UiField

@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
@@ -16,11 +16,15 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.error;
 
 /**
  * Реализация сервиса управления контактами
@@ -42,42 +46,42 @@ public class ContactServiceImpl implements ContactService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<SearchResult<Person>> getContactsSearchResult(AuthToken token, ContactQuery query) {
+    public Result<SearchResult<Person>> getContactsSearchResult( AuthToken token, ContactQuery query) {
         SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
-        return new CoreResponse<SearchResult<Person>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query) {
+    public Result<List<PersonShortView>> shortViewList( AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
-            return new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
-        return new CoreResponse<List<PersonShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Person> getContact( AuthToken token, long id ) {
+    public Result<Person> getContact( AuthToken token, long id ) {
 
         Person person = personDAO.getContact(id);
 
-        return person != null ? new CoreResponse<Person>().success(person)
-                : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
+        return person != null ? ok( person)
+                : error( En_ResultStatus.NOT_FOUND);
     }
 
     @Override
-    public CoreResponse<Person> saveContact( AuthToken token, Person p ) {
+    public Result<Person> saveContact( AuthToken token, Person p ) {
         if (personDAO.isEmployee(p)) {
             log.warn("person with id = {} is employee",p.getId());
-            return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
                 || p.getCompanyId() == null)
-            return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            return error(En_ResultStatus.VALIDATION_ERROR);
 
         // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
         // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
@@ -85,11 +89,11 @@ public class ContactServiceImpl implements ContactService {
             Person personOld = personDAO.getContact(p.getId());
             if (personOld.isFired() != p.isFired()) {
                 log.warn("prevented change of person.isFired attr, person with id = {}", p.getId());
-                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+                return error(En_ResultStatus.VALIDATION_ERROR);
             }
             if (personOld.isDeleted() != p.isDeleted()) {
                 log.warn("prevented change of person.isDeleted attr, person with id = {}", p.getId());
-                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+                return error(En_ResultStatus.VALIDATION_ERROR);
             }
         }
 
@@ -120,19 +124,19 @@ public class ContactServiceImpl implements ContactService {
             p.setGender(En_Gender.UNDEFINED);
 
         if (personDAO.saveOrUpdate(p)) {
-            return new CoreResponse<Person>().success(p);
+            return ok(p);
         }
 
-        return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);
+        return error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     @Override
-    public CoreResponse<Boolean> fireContact(AuthToken token, long id) {
+    public Result<Boolean> fireContact( AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
 
         if (person == null) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         person.setFired(true);
@@ -143,16 +147,16 @@ public class ContactServiceImpl implements ContactService {
             removePersonEmailsFromCompany(person);
         }
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Boolean> removeContact(AuthToken token, long id) {
+    public Result<Boolean> removeContact( AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
 
         if (person == null) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         person.setDeleted(true);
@@ -163,7 +167,7 @@ public class ContactServiceImpl implements ContactService {
             removePersonEmailsFromCompany(person);
         }
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     private void removePersonEmailsFromCompany(Person person) {

@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.mime.MimeUtils;
 
 import javax.servlet.ServletContext;

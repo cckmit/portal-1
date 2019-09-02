@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -21,15 +21,18 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
+
 public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
-    public CoreResponse<SearchResult<Platform>> getPlatforms(AuthToken token, PlatformQuery query) {
+    public Result<SearchResult<Platform>> getPlatforms( AuthToken token, PlatformQuery query) {
 
         SearchResult<Platform> sr = platformDAO.getSearchResultByQuery(query);
 
         if ( CollectionUtils.isEmpty(sr.getResults())) {
-            return new CoreResponse<SearchResult<Platform>>().success(sr);
+            return ok(sr);
         }
 
         Map<Long, Long> map = serverDAO.countByPlatformIds(sr.getResults().stream()
@@ -45,16 +48,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             }
         });
 
-        return new CoreResponse<SearchResult<Platform>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<SearchResult<Server>> getServers(AuthToken token, ServerQuery query) {
+    public Result<SearchResult<Server>> getServers( AuthToken token, ServerQuery query) {
 
         SearchResult<Server> sr = serverDAO.getSearchResultByQuery(query);
 
         if (CollectionUtils.isEmpty(sr.getResults())) {
-            return new CoreResponse<SearchResult<Server>>().success(sr);
+            return ok(sr);
         }
 
         Map<Long, Long> map = applicationDAO.countByServerIds(sr.getResults().stream()
@@ -66,21 +69,21 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             server.setApplicationsCount(count);
         });
 
-        return new CoreResponse<SearchResult<Server>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<SearchResult<Application>> getApplications(AuthToken token, ApplicationQuery query) {
+    public Result<SearchResult<Application>> getApplications( AuthToken token, ApplicationQuery query) {
         SearchResult<Application> sr = applicationDAO.getSearchResultByQuery(query);
-        return new CoreResponse<SearchResult<Application>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<SearchResult<Server>> getServersWithAppsNames(AuthToken token, ServerQuery query) {
+    public Result<SearchResult<Server>> getServersWithAppsNames( AuthToken token, ServerQuery query) {
 
         SearchResult<ServerApplication> serverApplications = serverApplicationDAO.getSearchResultByQuery(query);
         if (serverApplications == null) {
-            return new CoreResponse<SearchResult<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         Map<Long, Server> servers = new HashMap<>();
@@ -95,85 +98,85 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         });
 
         SearchResult<Server> sr = new SearchResult<>(new ArrayList<>(servers.values()));
-        return new CoreResponse<SearchResult<Server>>().success(sr);
+        return ok(sr);
     }
 
 
     @Override
-    public CoreResponse<List<EntityOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query) {
+    public Result<List<EntityOption>> listPlatformsOptionList( AuthToken token, PlatformQuery query) {
 
         List<Platform> result = platformDAO.listByQuery(query);
 
         if (result == null) {
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         List<EntityOption> options = result.stream()
                 .map(p -> new EntityOption(p.getName(), p.getId()))
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(options, options.size());
+        return ok(options);
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> listServersOptionList(AuthToken token, ServerQuery query) {
+    public Result<List<EntityOption>> listServersOptionList( AuthToken token, ServerQuery query) {
 
         List<Server> result = serverDAO.listByQuery(query);
 
         if (result == null) {
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         List<EntityOption> options = result.stream()
                 .map(p -> new EntityOption(p.getName(), p.getId()))
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(options, options.size());
+        return ok(options);
     }
 
 
     @Override
-    public CoreResponse<Platform> getPlatform(AuthToken token, long id) {
+    public Result<Platform> getPlatform( AuthToken token, long id) {
 
         Platform result = platformDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         jdbcManyRelationsHelper.fill(result, "attachments");
 
-        return new CoreResponse<Platform>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Server> getServer(AuthToken token, long id) {
+    public Result<Server> getServer( AuthToken token, long id) {
 
         Server result = serverDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return new CoreResponse<Server>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Application> getApplication(AuthToken token, long id) {
+    public Result<Application> getApplication( AuthToken token, long id) {
 
         Application result = applicationDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return new CoreResponse<Application>().success(result);
+        return ok(result);
     }
 
 
     @Override
     @Transactional
-    public CoreResponse<Platform> createPlatform(AuthToken token, Platform platform) {
+    public Result<Platform> createPlatform( AuthToken token, Platform platform) {
 
         Long id = platformDAO.persist(platform);
 
@@ -207,31 +210,31 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Platform>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Server> createServer(AuthToken token, Server server) {
+    public Result<Server> createServer( AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
 
         if (id == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.NOT_CREATED, null);
+            return error(En_ResultStatus.NOT_CREATED);
         }
 
         Server result = serverDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Server>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Server> createServerAndCloneApps(AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
+    public Result<Server> createServerAndCloneApps( AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
 
-        CoreResponse<Server> response = createServer(token, server);
+        Result<Server> response = createServer(token, server);
 
         if (response.isOk() && response.getData() != null) {
             cloneApplicationsForServer(response.getData().getId(), serverIdOfAppsToBeCloned);
@@ -241,101 +244,101 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Application> createApplication(AuthToken token, Application application) {
+    public Result<Application> createApplication( AuthToken token, Application application) {
 
         Long id = applicationDAO.persist(application);
 
         if (id == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.NOT_CREATED, null);
+            return error(En_ResultStatus.NOT_CREATED);
         }
 
         Application result = applicationDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Application>().success(result);
+        return ok(result);
     }
 
 
     @Override
-    public CoreResponse<Platform> updatePlatform(AuthToken token, Platform platform) {
+    public Result<Platform> updatePlatform( AuthToken token, Platform platform) {
 
         boolean status = platformDAO.merge(platform);
 
         if (!status) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.NOT_UPDATED, null);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Platform result = platformDAO.get(platform.getId());
 
         if (result == null) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Platform>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Server> updateServer(AuthToken token, Server server) {
+    public Result<Server> updateServer( AuthToken token, Server server) {
 
         boolean status = serverDAO.merge(server);
 
         if (!status) {
-            return new CoreResponse<Server>().error(En_ResultStatus.NOT_UPDATED, null);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Server result = serverDAO.get(server.getId());
 
         if (result == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Server>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Application> updateApplication(AuthToken token, Application application) {
+    public Result<Application> updateApplication( AuthToken token, Application application) {
 
         boolean status = applicationDAO.merge(application);
 
         if (!status) {
-            return new CoreResponse<Application>().error(En_ResultStatus.NOT_UPDATED, null);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Application result = applicationDAO.get(application.getId());
 
         if (result == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Application>().success(result);
+        return ok(result);
     }
 
 
     @Override
-    public CoreResponse<Boolean> removePlatform(AuthToken token, long id) {
+    public Result<Boolean> removePlatform( AuthToken token, long id) {
 
         boolean result = platformDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Boolean> removeServer(AuthToken token, long id) {
+    public Result<Boolean> removeServer( AuthToken token, long id) {
 
         boolean result = serverDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Boolean> removeApplication(AuthToken token, long id) {
+    public Result<Boolean> removeApplication( AuthToken token, long id) {
 
         boolean result = applicationDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
 

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
@@ -59,10 +59,9 @@ public class AuditServiceTest {
 
         AuditQuery auditQuery = new AuditQuery(  );
         auditQuery.setId( id );
-        CoreResponse< List< AuditObject > > result = auditService.auditObjectList( auditQuery );
+        Result< List< AuditObject > > result = auditService.auditObjectList( auditQuery );
 
         Assert.assertNotNull( result );
-        Assert.assertTrue( result.getDataAmountTotal() > 0 );
 
         Assert.assertNotNull( result.getData() );
         Assert.assertTrue( result.getData().size() == 1 );

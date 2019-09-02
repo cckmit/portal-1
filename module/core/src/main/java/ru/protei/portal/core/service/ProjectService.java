@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -23,21 +23,21 @@ public interface ProjectService {
      * @param query    параметры запроса
      */
     @Privileged( En_Privilege.REGION_VIEW )
-    CoreResponse<List<RegionInfo>> listRegions(AuthToken token, ProjectQuery query );
+    Result<List<RegionInfo>> listRegions( AuthToken token, ProjectQuery query );
 
     /**
      * Возвращает список проектов сгруппированных по регионам
      * @param query    параметры запроса
      */
     @Privileged({ En_Privilege.PROJECT_VIEW, En_Privilege.REGION_VIEW })
-    CoreResponse<Map<String, List<ProjectInfo>>> listProjectsByRegions( AuthToken token, ProjectQuery query );
+    Result<Map<String, List<ProjectInfo>>> listProjectsByRegions( AuthToken token, ProjectQuery query );
 
     /**
      * Получает информацию о проекте
      * @param id
      */
     @Privileged( En_Privilege.PROJECT_VIEW )
-    CoreResponse<ProjectInfo> getProject( AuthToken token, Long id );
+    Result<ProjectInfo> getProject( AuthToken token, Long id );
 
     /**
      * Изменяем проект
@@ -45,7 +45,7 @@ public interface ProjectService {
      */
     @Privileged( En_Privilege.PROJECT_EDIT )
     @Auditable( En_AuditType.PROJECT_MODIFY )
-    CoreResponse saveProject( AuthToken token, ProjectInfo project );
+    Result saveProject( AuthToken token, ProjectInfo project );
 
     /**
      * Создает новый проект
@@ -53,18 +53,18 @@ public interface ProjectService {
      */
     @Privileged(En_Privilege.PROJECT_CREATE)
     @Auditable(En_AuditType.PROJECT_CREATE)
-    CoreResponse<Long> createProject(AuthToken token, ProjectInfo project);
+    Result<Long> createProject( AuthToken token, ProjectInfo project);
 
     /**
      * Создает новый проект
      * @param creatorId
      */
     @Privileged( En_Privilege.PROJECT_CREATE )
-    CoreResponse<Long> createProject( AuthToken token, Long creatorId );
+    Result<Long> createProject( AuthToken token, Long creatorId );
 
     @Privileged( En_Privilege.PROJECT_REMOVE )
     @Auditable( En_AuditType.PROJECT_REMOVE )
-    CoreResponse<Boolean> removeProject( AuthToken token, Long projectId );
+    Result<Boolean> removeProject( AuthToken token, Long projectId );
 
-    CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken);
+    Result<List<ProjectInfo>> listProjects( AuthToken authToken);
 }

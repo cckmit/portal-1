@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -69,7 +69,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         Assert.assertNotNull(comments);
         log.info("case " + caseObject.getId() + " comment list size = " + comments.size());
 
-        CoreResponse<List<CaseComment>> result = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
+        Result<List<CaseComment>> result = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
@@ -90,8 +90,8 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     @Test
     public void CRUDCaseCommentTest () {
 
-        CoreResponse<CaseComment> result;
-        CoreResponse<List<CaseComment>> resultList;
+        Result<CaseComment> result;
+        Result<List<CaseComment>> resultList;
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
@@ -130,7 +130,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         log.info("Size after update = " + resultList.getData().size());
 
         // delete
-        CoreResponse<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment, person);
+        Result<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment, person);
         Assert.assertNotNull(result2);
         Assert.assertTrue(result2.isOk());
         log.info("{}", result2.getData());

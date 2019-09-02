@@ -10,4 +10,9 @@ public interface YtFields {
     String equipmentStateRus = "Статус заказа";
     String acrmStateRus = "Статус заявки";
     String updaterName = "updaterName";
+    String description = "description";
+    String summary = "summary";
+    String priority = "Priority";
+    String crmNumber = "Номер обращения в CRM";
+    String crmNumberEmptyValue = "Нет: номера обращений в crm";
 }

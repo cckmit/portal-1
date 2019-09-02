@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -18,12 +18,16 @@ import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ReportServiceImpl implements ReportService {
 
@@ -46,13 +50,13 @@ public class ReportServiceImpl implements ReportService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<Long> createReport(AuthToken token, Report report) {
+    public Result<Long> createReport( AuthToken token, Report report) {
         if (report == null || report.getReportType() == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (isQueryNotValid(report.getCaseQuery())) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         applyFilterByScope(token, report);
@@ -82,20 +86,20 @@ public class ReportServiceImpl implements ReportService {
 
         reportControlService.processNewReports();
 
-        return new CoreResponse<Long>().success(id);
+        return ok(id);
     }
 
     @Override
-    public CoreResponse recreateReport(AuthToken token, Long id) {
+    public Result recreateReport( AuthToken token, Long id) {
         if (id == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
 
         if (report == null || report.getStatus() != En_ReportStatus.ERROR) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         report.setStatus(En_ReportStatus.CREATED);
@@ -106,66 +110,66 @@ public class ReportServiceImpl implements ReportService {
 
         reportControlService.processNewReports();
 
-        return new CoreResponse<>().success(null);
+        return ok();
     }
 
     @Override
-    public CoreResponse<Report> getReport(AuthToken token, Long id) {
+    public Result<Report> getReport( AuthToken token, Long id) {
         if (id == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
 
-        return new CoreResponse<Report>().success(report);
+        return ok(report);
     }
 
     @Override
-    public CoreResponse<SearchResult<Report>> getReports(AuthToken token, ReportQuery query) {
+    public Result<SearchResult<Report>> getReports( AuthToken token, ReportQuery query) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, null);
-        return new CoreResponse<SearchResult<Report>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<ReportContent> downloadReport(AuthToken token, Long id) {
+    public Result<ReportContent> downloadReport( AuthToken token, Long id) {
         if (id == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
 
         if (report == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
         if (report.getStatus() != En_ReportStatus.READY) {
-            return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         return reportStorageService.getContent(report.getId());
     }
 
     @Override
-    public CoreResponse removeReports(AuthToken token, Set<Long> include, Set<Long> exclude) {
+    public Result removeReports( AuthToken token, Set<Long> include, Set<Long> exclude) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         List<Report> reports = reportDAO.getReportsByIds(descriptor.getPerson().getId(), include, exclude);
         removeReports(reports);
 
-        return new CoreResponse<>().success(null);
+        return ok();
     }
 
     @Override
-    public CoreResponse removeReports(AuthToken token, ReportQuery query, Set<Long> exclude) {
+    public Result removeReports( AuthToken token, ReportQuery query, Set<Long> exclude) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, exclude);
         removeReports(sr.getResults());
 
-        return new CoreResponse<>().success(null);
+        return ok();
     }
 
     private void removeReports(List<Report> reports) {

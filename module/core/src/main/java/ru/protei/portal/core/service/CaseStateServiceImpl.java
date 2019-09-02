@@ -1,7 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -13,7 +13,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
-
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 public class CaseStateServiceImpl implements CaseStateService {
 
     @Inject
@@ -23,38 +24,38 @@ public class CaseStateServiceImpl implements CaseStateService {
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public CoreResponse<List<CaseState>> caseStateList(AuthToken authToken) {
+    public Result<List<CaseState>> caseStateList( AuthToken authToken) {
         List<CaseState> list = caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT );
 
         if ( list == null )
-            return new CoreResponse<List<CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return new CoreResponse<List<CaseState>>().success(list);
+        return ok(list);
     }
 
     @Override
-    public CoreResponse<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
+    public Result<List<CaseState>> getCaseStatesOmitPrivileges( AuthToken authToken) {
         return caseStateList(authToken);
     }
 
     @Override
-    public CoreResponse<CaseState> getCaseState(AuthToken authToken, long id) {
+    public Result<CaseState> getCaseState( AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
         if (state == null)
-            return new CoreResponse<CaseState>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         if (SELECTED.equals(state.getUsageInCompanies())) {
             jdbcManyRelationsHelper.fill(state, "companies");
         }
 
-        return new CoreResponse<CaseState>().success(state);
+        return ok(state);
     }
 
     @Override
     @Transactional
-    public CoreResponse saveCaseState(AuthToken authToken, CaseState state) {
+    public Result saveCaseState( AuthToken authToken, CaseState state) {
         if (state == null)
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         Long id = caseStateDAO.persist(state);
 
@@ -64,14 +65,14 @@ public class CaseStateServiceImpl implements CaseStateService {
 
         jdbcManyRelationsHelper.persist(state, "companies");
 
-        return new CoreResponse<CaseState>().success(state);
+        return ok(state);
     }
 
     @Override
     @Transactional
-    public CoreResponse<CaseState> updateCaseState(AuthToken authToken, CaseState state) {
+    public Result<CaseState> updateCaseState( AuthToken authToken, CaseState state) {
         if (state == null)
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!caseStateDAO.merge(state)) {
             throw new RuntimeException( "Can't update case state. DAO return false." );
@@ -79,16 +80,16 @@ public class CaseStateServiceImpl implements CaseStateService {
 
         jdbcManyRelationsHelper.persist(state, "companies");
 
-        return new CoreResponse<CaseState>().success(state);
+        return ok(state);
     }
 
     @Override
-    public CoreResponse<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId) {
+    public Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges( Long companyId) {
         if (companyId == null)
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         List<CaseState> caseStates = caseStateDAO.getCaseStatesForCompany(companyId);
 
-        return new CoreResponse<List<CaseState>>().success(caseStates);
+        return ok(caseStates);
     }
 }

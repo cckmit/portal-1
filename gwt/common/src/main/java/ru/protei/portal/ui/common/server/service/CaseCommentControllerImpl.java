@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -24,7 +24,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.debug("getCaseComments(): caseType={}, issueId={}", caseType, caseId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<CaseComment>> response = caseCommentService.getCaseCommentList(descriptor.makeAuthToken(), caseType, caseId);
+        Result<List<CaseComment>> response = caseCommentService.getCaseCommentList(descriptor.makeAuthToken(), caseType, caseId);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -37,7 +37,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.debug("saveCaseComment(): caseType={}, comment={}", caseType, comment);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<CaseComment> response;
+        Result<CaseComment> response;
         if (comment.getId() == null) {
             response = caseCommentService.addCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());
         } else {
@@ -55,7 +55,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.debug("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());
+        Result<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

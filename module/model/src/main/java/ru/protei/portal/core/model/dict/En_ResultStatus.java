@@ -128,5 +128,7 @@ public enum En_ResultStatus {
     /**
      * неверный текущий пароль при изменении пароля
      */
-    INVALID_CURRENT_PASSWORD
+    INVALID_CURRENT_PASSWORD,
+
+    AUTH_FAILURE
 }

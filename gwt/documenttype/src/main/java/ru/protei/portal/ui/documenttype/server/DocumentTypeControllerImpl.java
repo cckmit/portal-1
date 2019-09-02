@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -27,7 +27,7 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
         log.debug("get document type list");
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<DocumentType>> response = documentTypeService.documentTypeList(descriptor.makeAuthToken(), query);
+        Result<List<DocumentType>> response = documentTypeService.documentTypeList(descriptor.makeAuthToken(), query);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -44,7 +44,7 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        CoreResponse<DocumentType> response = documentTypeService.saveDocumentType( descriptor.makeAuthToken(), type );
+        Result<DocumentType> response = documentTypeService.saveDocumentType( descriptor.makeAuthToken(), type );
         log.debug("store document type, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
