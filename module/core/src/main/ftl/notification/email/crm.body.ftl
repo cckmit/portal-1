@@ -27,7 +27,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
 <@set name="_privateComment" value="${privateComment}"/>
-<@set name="_platform" value="${siteFolderPlatform}"/>
+<@set name="_platform" value="${issuePlatform}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -196,7 +196,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         <#if platformChanged>
                             <@changeTo old="${(oldPlatform)!'?'}" new="${(platform)!'?'}"/>
                         <#else>
-                            ${platform}
+                            ${(platform)!'?'}
                         </#if>
                     </td>
                 </#if>
