@@ -26,7 +26,6 @@ public class TestSvnUploading {
 
 
     @Test
-    @Ignore
     public void testSvnConnection() {
         DAVRepositoryFactory.setup();
         try {
