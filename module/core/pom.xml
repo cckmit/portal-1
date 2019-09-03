@@ -128,7 +128,10 @@
                 <directory>src/test/resources</directory>
                 <includes>
                     <include>*.properties</include>
+                    <include>**/*.properties</include>
+
                     <include>*.pdf</include>
+                    <include>**/*.pdf</include>
                 </includes>
             </testResource>
         </testResources>
