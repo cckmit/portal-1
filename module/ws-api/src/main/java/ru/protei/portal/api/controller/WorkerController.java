@@ -126,7 +126,7 @@ public class WorkerController {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
-        //if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
             return withHomeCompany(companyCode,
