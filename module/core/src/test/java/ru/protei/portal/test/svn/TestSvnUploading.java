@@ -1,6 +1,7 @@
 package ru.protei.portal.test.svn;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ public class TestSvnUploading {
 
 
     @Test
+    @Ignore
     public void testSvnConnection() {
         DAVRepositoryFactory.setup();
         try {

@@ -18,6 +18,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class FullTextSearchTest {
     public static final String BAD_QUERY = "gshingvisoiwutinorvwgurhgniwu";
 
     @Test
+    @Ignore
     public void testReadPdfDocument() {
         try {
             String content = getPdfContent(TEST_PDF_FILE_PATHS[0]);
@@ -47,6 +49,7 @@ public class FullTextSearchTest {
     }
 
     @Test
+    @Ignore
     public void testIndexPdfDocument() {
         try {
             index(createIndexWriter(), TEST_PDF_FILE_PATHS);
@@ -57,6 +60,7 @@ public class FullTextSearchTest {
     }
 
     @Test
+    @Ignore
     public void testFullTextSearch() {
         try {
             IndexWriter writer = createIndexWriter();
@@ -74,6 +78,7 @@ public class FullTextSearchTest {
     }
 
     @Test
+    @Ignore
     public void testFullTextSearchBadQuery() {
         try {
             IndexWriter writer = createIndexWriter();
