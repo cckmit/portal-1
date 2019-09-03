@@ -82,6 +82,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     @JdbcColumn(name = "isfired")
     private boolean isFired;
 
+    @JdbcColumn(name = "firedate")
+    private Date fireDate;
+
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
@@ -279,6 +282,15 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     public boolean isFired() {
         return isFired;
+    }
+
+    public void setFired(boolean isFired, Date fireDate) {
+        this.isFired = isFired;
+        this.fireDate = fireDate;
+    }
+
+    public Date getFireDate() {
+        return fireDate;
     }
 
     public void setFired(boolean isFired) {

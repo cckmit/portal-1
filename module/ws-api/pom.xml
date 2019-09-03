@@ -30,9 +30,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -277,13 +274,19 @@
             <version>4.3.0.RELEASE</version>
             <scope>test</scope>
         </dependency>
+
+        <!--EmbeddedDB-->
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.2</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wix</groupId>
+            <artifactId>wix-embedded-mysql</artifactId>
+            <version>4.1.2</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>

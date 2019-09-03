@@ -1,6 +1,8 @@
 package ru.protei.portal.mock;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.Result;
@@ -21,7 +23,6 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.api.struct.Result.error;
 
 public class AuthServiceMock implements AuthService {
-
     @Autowired
     UserLoginDAO userLoginDAO;
 

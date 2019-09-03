@@ -44,6 +44,7 @@ import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.schedule.PortalScheduleTasks;

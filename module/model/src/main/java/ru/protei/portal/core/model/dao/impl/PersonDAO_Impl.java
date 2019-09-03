@@ -16,17 +16,14 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 

@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -156,6 +157,11 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             return comment;
         }
     };
+
+    @Override
+    public int removeByCaseIds(List<Long> ids) {
+        return removeByCondition("CASE_ID in " + HelperFunc.makeInArg(ids));
+    }
 
     private String makeAndPartFromListIds(final List<?> list, final String field){
         return list == null ? "" : " and " + field + " in " + makeInArg(list);

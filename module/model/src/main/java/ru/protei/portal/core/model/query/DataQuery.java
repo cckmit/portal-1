@@ -12,16 +12,12 @@ public interface DataQuery {
     @JsonIgnore
     DataQuery useSort (En_SortField sortField, En_SortDir sortDir);
 
-    @JsonIgnore
     int getLimit();
 
-    @JsonIgnore
     void setLimit(int limit);
 
-    @JsonIgnore
     int getOffset();
 
-    @JsonIgnore
     void setOffset(int offset);
 
     En_SortField getSortField();

@@ -126,7 +126,7 @@ public class WorkerController {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
-        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+        //if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
             return withHomeCompany(companyCode,
@@ -366,7 +366,7 @@ public class WorkerController {
                         workerEntryDAO.remove(worker);
 
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            person.setFired(rec.isFired());
+                            person.setFired(rec.isFired(), HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null);
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
