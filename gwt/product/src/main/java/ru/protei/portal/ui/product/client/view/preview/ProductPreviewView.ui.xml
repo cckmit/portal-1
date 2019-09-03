@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel footer-fixable">
+    <g:HTMLPanel styleName="panel footer-fixable-bottom">
         <div class="body">
             <g:HTMLPanel styleName="preview grid">
                 <g:HTMLPanel ui:field="rootWrapper">
@@ -45,7 +45,7 @@
                 </g:HTMLPanel>
             </g:HTMLPanel>
         </div>
-        <g:HTMLPanel ui:field="backButtonPanel" class="footer">
+        <g:HTMLPanel ui:field="backButtonPanel" styleName="footer">
             <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProducts}"/>
         </g:HTMLPanel>
     </g:HTMLPanel>

@@ -57,16 +57,12 @@ public class ProductEvents {
         public ShowFullScreen() {
         }
 
-        public ShowFullScreen(DevUnit product) {
-            this.product = product;
-            this.productId = product.getId();
+        public ShowFullScreen(Long productId) {
+            this.productId = productId;
         }
 
         @Name("id")
         public Long productId;
-
-        @Omit
-        public DevUnit product;
     }
 
     @Url( value = "product", primary = false )

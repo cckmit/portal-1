@@ -57,7 +57,12 @@
 
             <fieldset class="header grid grid-indent">
                 <legend><ui:text from="{lang.projectProducts}"/></legend>
-                <div class="col-xs-12" ui:field="products"></div>
+                <div class="col-xs-12">
+                    <g:Anchor styleName="m-r-5" ui:field="primaryUseLink" target="_blank" href="">
+                        <i class="fa fa-external-link"/>
+                    </g:Anchor>
+                    <span ui:field="products"></span>
+                </div>
             </fieldset>
 
             <fieldset class="header">

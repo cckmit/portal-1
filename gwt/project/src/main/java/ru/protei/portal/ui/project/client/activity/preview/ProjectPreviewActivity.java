@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -71,7 +68,14 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
     }
 
-    private void fillView( Long id ) {
+    @Override
+    public void onProductLinkClicked() {
+        if (project.getSingleProduct() != null) {
+            fireEvent(new ProductEvents.ShowFullScreen(project.getSingleProduct().getId()));
+        }
+    }
+
+    private void fillView(Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;

@@ -75,7 +75,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setRegion( String value ) { this.projectRegion.setInnerText( value ); }
 
     @Override
-    public void setProducts( String value ) { this.products.setInnerText( value ); }
+    public void setProducts( String value ) {
+        this.products.setInnerText( value );
+        primaryUseLink.setVisible(!value.isEmpty());
+    }
 
     @Override
     public void setCompany( String value ) { this.company.setInnerText( value ); }
@@ -120,6 +123,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void onGoToProjectClicked ( ClickEvent event) {
         if ( activity != null ) {
             activity.onGoToProjectClicked();
+        }
+    }
+
+    @UiHandler("primaryUseLink")
+    public void onPrimaryUseLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onProductLinkClicked();
         }
     }
 
@@ -172,13 +184,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement state;
     @UiField
-    DivElement products;
+    SpanElement products;
     @UiField
     DivElement team;
     @UiField
     HTMLPanel documents;
     @UiField
     HTMLPanel commentsContainer;
+    @UiField
+    Anchor primaryUseLink;
 
     @Inject
     @UiField

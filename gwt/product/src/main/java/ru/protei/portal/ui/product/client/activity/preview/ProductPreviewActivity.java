@@ -7,11 +7,13 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -46,17 +48,18 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     @Event
     public void onShow(ProductEvents.ShowFullScreen event) {
         initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget(false));
+        initDetails.parent.add(view.asWidget(true));
 
-        this.product = event.product;
-
-        fillView(product);
-        view.showFullScreen(true);
+        productService.getProduct(event.productId, new FluentCallback<DevUnit>()
+                .withSuccess(product -> {
+                    fillView(product);
+                    view.showFullScreen(true);
+                }));
     }
 
     @Override
     public void onFullScreenClicked() {
-        fireEvent(new ProductEvents.ShowFullScreen(product));
+        fireEvent(new ProductEvents.ShowFullScreen(productId));
     }
 
     @Override
@@ -65,7 +68,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     }
 
     private void fillView(DevUnit product ) {
-        this.product = product;
+        this.productId = product.getId();
         view.setName(product.getName());
         view.setType(typeLang.getName(product.getType()));
         view.setInfo( product.getInfo() );
@@ -101,7 +104,9 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     TextRenderControllerAsync textRenderController;
     @Inject
     En_DevUnitTypeLang typeLang;
+    @Inject
+    ProductControllerAsync productService;
 
     private AppEvents.InitDetails initDetails;
-    private DevUnit product;
+    private Long productId;
 }

@@ -84,8 +84,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         } else {
             rootWrapper.setStyleName("preview");
         }
-
-        nameBlock.setVisible(true);
     }
 
     @Override
