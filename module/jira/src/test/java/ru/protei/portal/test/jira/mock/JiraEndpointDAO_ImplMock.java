@@ -13,6 +13,6 @@ public class JiraEndpointDAO_ImplMock extends JiraEnpointDAO_Impl {
         endpoint.setProjectId(id.toString());
         endpoint.setPriorityMapId(1);
         endpoint.setStatusMapId(1);
-        return new JiraEndpoint();
+        return endpoint;
     }
 }
