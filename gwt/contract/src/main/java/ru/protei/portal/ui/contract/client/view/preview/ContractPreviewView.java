@@ -4,8 +4,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -118,6 +121,21 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         this.contractChild.setInnerText(value);
     }
 
+    @Override
+    public void setProject(String value) {
+        project.setInnerText(value);
+        toProjectLink.setVisible(!value.isEmpty());
+    }
+
+    @UiHandler("toProjectLink")
+    public void onProjectLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onProjectLinkClicked();
+        }
+    }
+
     @UiField
     Lang lang;
     @UiField
@@ -150,6 +168,10 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     SpanElement contractParent;
     @UiField
     SpanElement contractChild;
+    @UiField
+    SpanElement project;
+    @UiField
+    Anchor toProjectLink;
 
     @Inject
     private FixedPositioner positioner;

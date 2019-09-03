@@ -117,4 +117,5 @@
   <include file="2019-08-13-add-cmanager_id-column-to-case_comment.xml" relativeToChangelogFile="true"/>
   <include file="2019-08-14-add-firedata-column-to-person.xml" relativeToChangelogFile="true"/>
   <include file="2019-08-22-add-complex-dev-unit-type.xml" relativeToChangelogFile="true"/>
+  <include file="2019-09-03-add-project_id-column-to-contract.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

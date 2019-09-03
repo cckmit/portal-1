@@ -3,10 +3,7 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.ent.CaseLocation;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Removable;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -56,6 +53,10 @@ public class ProjectInfo extends AuditableObject implements Removable {
      * продуктовое направление
      */
     EntityOption productDirection;
+
+    private Person manager;
+
+    private Company contrAgent;
 
     /**
      * Дата создания
@@ -199,6 +200,22 @@ public class ProjectInfo extends AuditableObject implements Removable {
         this.deleted = deleted;
     }
 
+    public Person getManager() {
+        return manager;
+    }
+
+    public void setManager(Person manager) {
+        this.manager = manager;
+    }
+
+    public Company getContrAgent() {
+        return contrAgent;
+    }
+
+    public void setContrAgent(Company contrAgent) {
+        this.contrAgent = contrAgent;
+    }
+
     @Override
     public boolean isAllowedRemove() {
         return id != null && !deleted;
@@ -244,6 +261,9 @@ public class ProjectInfo extends AuditableObject implements Removable {
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
+
+        projectInfo.setManager(project.getManager());
+        projectInfo.setContrAgent(project.getInitiatorCompany());
         return projectInfo;
     }
 

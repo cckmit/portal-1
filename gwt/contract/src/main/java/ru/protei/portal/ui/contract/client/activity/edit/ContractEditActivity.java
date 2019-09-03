@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -112,6 +113,14 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
+
+        EntityOption entityOption = null;
+
+        if (value.getProjectId() != null) {
+            entityOption = new EntityOption(value.getProjectName(), value.getProjectId());
+        }
+
+        view.project().setValue(entityOption);
     }
 
     private void fillDto() {
@@ -133,6 +142,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
+
+        contract.setProjectId(view.project().getValue().getId());
     }
 
     private void showValidationError() {

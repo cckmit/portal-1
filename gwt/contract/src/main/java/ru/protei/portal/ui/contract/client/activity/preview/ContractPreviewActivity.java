@@ -10,9 +10,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.ContractEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -38,6 +36,13 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         loadDetails(event.id);
     }
 
+    @Override
+    public void onProjectLinkClicked() {
+        if (projectId != null) {
+            fireEvent(new ProjectEvents.ShowFullScreen(projectId));
+        }
+    }
+
     private void loadDetails(Long id) {
         contractController.getContract(id, new RequestCallback<Contract>() {
             @Override
@@ -56,6 +61,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     private void fillView( Contract value ) {
+        this.projectId = value.getProjectId();
         view.setHeader(lang.contractNum(value.getNumber()));
         view.setState(stateLang.getName(value.getState()));
         view.setType(typeLang.getName(value.getContractType()));
@@ -72,6 +78,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
@@ -103,6 +110,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private AbstractContractPreviewView view;
     @Inject
     private ContractControllerAsync contractController;
+
+    private Long projectId;
 
     private DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
 }
