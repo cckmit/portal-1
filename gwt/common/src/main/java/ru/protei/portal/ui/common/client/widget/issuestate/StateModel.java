@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Модель статусов
@@ -106,31 +108,34 @@ public abstract class StateModel implements Activity {
     private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseStatesList;
+            return caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
         }
 
         Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
                 .filter(csw -> csw.isMatched(workflow))
                 .findFirst();
 
-        Set<En_CaseState> nextCaseStates = new HashSet<>();
-        nextCaseStates.add(currentCaseState);
+        Set<CaseState> nextCaseStates = new HashSet<>();
+        Optional<CaseState> currentState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == currentCaseState).findFirst();
+        if (currentState.isPresent()) {
+            nextCaseStates.add(currentState.get());
+        }
 
         if (caseStateWorkflow.isPresent()) {
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
                 if (caseStateWorkflowLink.getCaseStateFrom() != currentCaseState) {
                     continue;
                 }
-                if (caseStatesList.contains(caseStateWorkflowLink.getCaseStateTo())) {
-                    nextCaseStates.add(caseStateWorkflowLink.getCaseStateTo());
+
+                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == caseStateWorkflowLink.getCaseStateTo()).findFirst();
+
+                if (caseState.isPresent()) {
+                    nextCaseStates.add(caseState.get());
                 }
             }
         }
 
-        List<En_CaseState> availableCaseStates = new ArrayList<>(caseStatesList);
-        availableCaseStates.retainAll(nextCaseStates); // если возвращать nextCaseStates, список статусов не отсортировани в нужном порядке
-
-        return availableCaseStates;
+        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
     }
 
     @Inject
@@ -139,7 +144,7 @@ public abstract class StateModel implements Activity {
     CaseStateWorkflowControllerAsync caseStateWorkflowController;
 
     private boolean isRefreshing = false;
-    private List<En_CaseState> caseStatesList = new ArrayList<>();
+    private List<CaseState> caseStatesList = new ArrayList<>();
     private List<CaseStateWorkflow> caseStateWorkflowList = new ArrayList<>();
     private Map<SelectorWithModel<En_CaseState>, WorkflowWithState> subscriberMap = new HashMap<>();
 
