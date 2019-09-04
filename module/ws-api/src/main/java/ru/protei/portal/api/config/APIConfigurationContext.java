@@ -167,9 +167,7 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
                 Result.class,
                 WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
-                Photo.class, PhotoList.class,
-                ServiceResultList.class
-                );
+                Photo.class, PhotoList.class);
         return new MarshallingHttpMessageConverter(oxmMarshaller);
     }
 

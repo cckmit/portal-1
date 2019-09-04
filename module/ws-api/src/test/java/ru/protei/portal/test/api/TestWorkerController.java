@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.APIConfigurationContext;
@@ -20,6 +21,15 @@ import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.UserRoleDAO;
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.Photo;
 
 import javax.xml.bind.JAXBContext;
@@ -29,6 +39,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -41,10 +53,17 @@ public class TestWorkerController {
     @Autowired
     WebApplicationContext webApplicationContext;
     private static Logger logger = LoggerFactory.getLogger(TestWorkerController.class);
-    private static MockMvc mockMvc;
+    private MockMvc mockMvc;
     private static String BASE_URI;
     private static Marshaller marshaller;
     private static Unmarshaller unmarshaller;
+    private UserRoleDAO userRoleDAO;
+    private UserLoginDAO userLoginDAO;
+    private PersonDAO personDAO;
+    private String WS_API_TEST_ROLE_CODE = "ws_api_test_role" + System.currentTimeMillis();
+    private String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
+    private UserRole userRole;
+    private Person person;
 
     @BeforeClass
     public static void initClass() throws Exception {
@@ -53,31 +72,44 @@ public class TestWorkerController {
     }
 
     @Before
-    public void initMockMvc() {
+    public void createPersonToAuth() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        personDAO = webApplicationContext.getBean(PersonDAO.class);
+        userLoginDAO = webApplicationContext.getBean(UserLoginDAO.class);
+        userRoleDAO = webApplicationContext.getBean(UserRoleDAO.class);
+        createAndPersistPerson();
+        createAndPersistUserRoles();
+        createAndPersistUserLogin();
+    }
+
+    @After
+    public void removePersonToAuth(){
+        removeUserLogin();
+        removeUserRoles();
+        removePerson();
     }
 
     @Test
     public void testAddWorker() throws Exception {
         WorkerRecord worker = createWorkerRecord();
-        ServiceResult sr;
+        Result result;
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
-        sr = addWorker(new WorkerRecord());
-        Assert.assertEquals("add.worker: empty worker was added! ", false, sr.isSuccess());
+        result = addWorker(new WorkerRecord());
+        Assert.assertEquals("add.worker: empty worker was added! ", true, result.isError());
 
         worker.setFireDate("2019-05-05");
-        sr = addWorker(worker);
-        Assert.assertEquals("add.worker: fired worker was added! ", false, sr.isSuccess());
+        result = addWorker(worker);
+        Assert.assertEquals("add.worker: fired worker was added! ", true, result.isError());
 
         worker.setFireDate(null);
         worker.setFired(false);
-        sr = addWorker(worker);
-        Assert.assertEquals("add.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        result = addWorker(worker);
+        Assert.assertEquals("add.worker is not success! " + result.getMessage(), true, result.isOk());
 
-        sr = addWorker(worker);
-        Assert.assertEquals("add.worker: already exist worker was added! " + sr.getErrInfo(), false, sr.isSuccess());
+        result = addWorker(worker);
+        Assert.assertEquals("add.worker: already exist worker was added! " + result.getMessage(), true, result.isError());
     }
 
 
@@ -86,38 +118,38 @@ public class TestWorkerController {
         WorkerRecord worker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
-        ServiceResult successServiceResult = addWorker(worker);
-        ServiceResult sr;
+        Result<Long> successResult = addWorker(worker);
+        Result result;
 
-        sr = updateWorker(worker);
-        Assert.assertEquals("update.worker worker with nonexistent personId was updated!", false, sr.isSuccess());
+        result = updateWorker(worker);
+        Assert.assertEquals("update.worker worker with nonexistent personId was updated!", true, result.isError());
 
-        worker.setId(successServiceResult.getId());
-        sr = updateWorker(worker);
-        Assert.assertEquals("update.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        worker.setId(successResult.getData());
+        result = updateWorker(worker);
+        Assert.assertEquals("update.worker is not success! " + result.getMessage(), true, result.isOk());
 
         worker.setFireDate("2019-05-05");
-        sr = updateWorker(worker);
-        Assert.assertEquals("update.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        result = updateWorker(worker);
+        Assert.assertEquals("update.worker is not success! " + result.getMessage(), true, result.isOk());
 
-        sr = updateWorker(worker);
-        Assert.assertEquals("update.worker fired worker was updated!", false, sr.isSuccess());
+        result = updateWorker(worker);
+        Assert.assertEquals("update.worker fired worker was updated!", true, result.isError());
     }
 
 
     @Test
     public void testDeleteWorker() throws Exception {
         WorkerRecord worker = createWorkerRecord();
-        ServiceResult sr;
+        Result result;
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
         addWorker(worker);
-        sr = deleteWorker(worker);
-        Assert.assertEquals("delete.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        result = deleteWorker(worker);
+        Assert.assertEquals("delete.worker is not success! " + result.getMessage(), true, result.isOk());
 
-        sr = deleteWorker(worker);
-        Assert.assertEquals("delete.worker: already deleted worker was deleted! ", false, sr.isSuccess());
+        result = deleteWorker(worker);
+        Assert.assertEquals("delete.worker: already deleted worker was deleted! ", true, result.isError());
     }
 
     @Test
@@ -127,19 +159,19 @@ public class TestWorkerController {
         WorkerRecord worker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
-        ServiceResult sr = addWorker(worker);
+        Result<Long> result = addWorker(worker);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", sr.getId());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", result.getData());
         String uriBuilder = builder.build().toUriString();
 
         WorkerRecord wr = getWorkerByUri(uriBuilder).getData();
 
-        Assert.assertEquals("get.person: added and got person are different", sr.getId(), wr.getId());
+        Assert.assertEquals("get.person: added and got person are different", result.getData(), wr.getId());
     }
 
     @Test
     public void testGetWorker() throws Exception {
-       /* String uri = BASE_URI + "get.worker";
+        String uri = BASE_URI + "get.worker";
         WorkerRecord worker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
@@ -148,22 +180,11 @@ public class TestWorkerController {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
                 .queryParam("id", worker.getWorkerId())
                 .queryParam("companyCode", worker.getCompanyCode());
+
         String uriBuilder = builder.build().toUriString();
 
-        WorkerRecord wr = getWorkerByUri(uriBuilder);
-
-        Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());*/
-
-        String uri = BASE_URI + "get.worker";
-        WorkerRecord worker = createWorkerRecord();
-        DepartmentRecord department = createDepartmentRecord();
-        //createOrUpdateDepartment(department);
-        //addWorker(worker);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
-                .queryParam("id", worker.getWorkerId())
-                .queryParam("companyCode", worker.getCompanyCode());
-        String uriBuilder = builder.build().toUriString();
         WorkerRecord wr = getWorkerByUri(uriBuilder).getData();
+
         Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());
     }
 
@@ -172,7 +193,7 @@ public class TestWorkerController {
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
-        DepartmentRecord dr = getDepartment(department);
+        DepartmentRecord dr = getDepartment(department).getData();
 
         Assert.assertEquals("get.department: added and got worker are different", department.getDepartmentId(), dr.getDepartmentId());
     }
@@ -181,9 +202,9 @@ public class TestWorkerController {
     public void testUpdateDepartment() throws Exception {
         DepartmentRecord department = createDepartmentRecord();
 
-        ServiceResult sr = createOrUpdateDepartment(department);
+        Result result = createOrUpdateDepartment(department);
 
-        Assert.assertEquals("update.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertEquals("update.department is not success! " + result.getMessage(), true, result.isOk());
     }
 
     @Test
@@ -191,9 +212,9 @@ public class TestWorkerController {
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
-        ServiceResult sr = deleteDepartment(department);
+        Result result = deleteDepartment(department);
 
-        Assert.assertEquals("delete.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertEquals("delete.department is not success! " + result.getMessage(), true, result.isOk());
     }
 
 
@@ -214,16 +235,17 @@ public class TestWorkerController {
 
         logger.debug("result URI = " + uriBuilder);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 put(uriBuilder)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
-        ServiceResult sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + sr);
+        logger.debug("ServiceResult = " + result);
 
-        Assert.assertEquals("update.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertEquals("update.position is not success! " + result.getMessage(), true, result.isOk());
     }
 
     @Test
@@ -241,16 +263,17 @@ public class TestWorkerController {
 
         logger.debug("result URI = " + uriBuilder);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
-        ServiceResult sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + sr);
+        logger.debug("ServiceResult = " + result);
 
-        Assert.assertEquals("delete.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertEquals("delete.position is not success! " + result.getMessage(), true, result.isOk());
     }
 
 
@@ -260,27 +283,28 @@ public class TestWorkerController {
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
         WorkerRecord worker = createWorkerRecord();
-        ServiceResult sr = addWorker(worker);
+        Result<Long> result = addWorker(worker);
 
-        Long id = sr.getId();
+        Long id = result.getData();
         byte[] buf = read (id);
 
         String uri = BASE_URI + "update.photo";
 
         Photo photo = new Photo();
-        photo.setId(sr.getId());
+        photo.setId(result.getData());
         photo.setContent(Base64.getEncoder().encodeToString(buf));
         String photoXml = toXml(photo);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 put(uri)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(photoXml)
         );
-        sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
+        Assert.assertEquals ("updatePhoto() is not success! " + result.getMessage (), true, result.isOk ());
     }
 
     @Test
@@ -294,6 +318,7 @@ public class TestWorkerController {
         ResultActions result = mockMvc.perform(
                 get(uri)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
 
@@ -372,14 +397,13 @@ public class TestWorkerController {
         JAXBContext context = JAXBContext.newInstance(WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
                 Photo.class, PhotoList.class,
-                Result.class, ServiceResultList.class);
+                Result.class);
         marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         unmarshaller = context.createUnmarshaller();
     }
 
-
-    private ServiceResult addWorker(WorkerRecord worker) throws Exception {
+   private Result<Long> addWorker(WorkerRecord worker) throws Exception {
         logger.debug("worker input = " + worker);
 
         String uri = BASE_URI + "add.worker";
@@ -389,10 +413,11 @@ public class TestWorkerController {
         ResultActions result = mockMvc.perform(
                 post(uri)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
         );
-        ServiceResult serviceResult = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result<Long> serviceResult = (Result<Long>) fromXml(result.andReturn().getResponse().getContentAsString());
 
         logger.debug("ServiceResult = " + serviceResult);
 
@@ -400,28 +425,29 @@ public class TestWorkerController {
     }
 
 
-    private ServiceResult updateWorker(WorkerRecord worker) throws Exception {
+     private Result updateWorker(WorkerRecord worker) throws Exception {
         logger.debug("worker input = " + worker);
 
         String uri = BASE_URI + "update.worker";
 
         String workerXml = toXml(worker);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 put(uri)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
         );
-        ServiceResult serviceResult = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + serviceResult);
+        logger.debug("ServiceResult = " + result);
 
-        return serviceResult;
+        return result;
     }
 
 
-    private ServiceResult deleteWorker(WorkerRecord worker) throws Exception {
+    private Result deleteWorker(WorkerRecord worker) throws Exception {
         String uri = BASE_URI + "delete.worker";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
@@ -431,34 +457,38 @@ public class TestWorkerController {
 
         logger.debug("result URI = " + uriBuilder);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
 
-        ServiceResult serviceResult = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + serviceResult);
+        logger.debug("ServiceResult = " + result);
 
-        return serviceResult;
+        return result;
     }
 
     private Result<WorkerRecord> getWorkerByUri(String uri) throws Exception {
         logger.debug("result URI = " + uri);
+
         ResultActions result = mockMvc.perform(
                 get(uri)
                         .header("Accept", "application/xml")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString(("1c_api" + ":" + "QuaZ3$rE").getBytes()))
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
-        logger.debug("xml = " + result.andReturn().getResponse().getContentAsString());
+
         Result<WorkerRecord> workerRecord = (Result<WorkerRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
+
         logger.debug("WorkerRecord = " + workerRecord);
+
         return workerRecord;
     }
 
-    private ServiceResult createOrUpdateDepartment(DepartmentRecord department) throws Exception {
+    private Result createOrUpdateDepartment(DepartmentRecord department) throws Exception {
         logger.debug("department input = " + department);
 
         String uri = BASE_URI + "update.department";
@@ -468,18 +498,19 @@ public class TestWorkerController {
         ResultActions result = mockMvc.perform(
                 put(uri)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(departmentXml)
         );
 
-        ServiceResult serviceResult = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result serviceResult = (Result) fromXml(result.andReturn().getResponse().getContentAsString());
 
         logger.debug("ServiceResult = " + serviceResult);
 
         return serviceResult;
     }
 
-    private ServiceResult deleteDepartment(DepartmentRecord department) throws Exception {
+    private Result deleteDepartment(DepartmentRecord department) throws Exception {
         String uri = BASE_URI + "delete.department";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
@@ -489,19 +520,20 @@ public class TestWorkerController {
 
         logger.debug("result URI = " + uriBuilder);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
-        ServiceResult serviceResult = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + serviceResult);
+        logger.debug("ServiceResult = " + result);
 
-        return serviceResult;
+        return result;
     }
 
-    private DepartmentRecord getDepartment(DepartmentRecord department) throws Exception {
+    private Result<DepartmentRecord> getDepartment(DepartmentRecord department) throws Exception {
         logger.debug("department input = " + department);
 
         String uri = BASE_URI + "get.department";
@@ -514,9 +546,10 @@ public class TestWorkerController {
         ResultActions result = mockMvc.perform(
                 get(uriBuilder)
                         .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
-        DepartmentRecord departmentRecord = (DepartmentRecord) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result<DepartmentRecord> departmentRecord = (Result<DepartmentRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
 
         logger.debug("DepartmentRecord = " + departmentRecord);
 
@@ -570,5 +603,63 @@ public class TestWorkerController {
     public static void copy(String resourceFileName, String destinationFileName) throws IOException {
         if (Files.exists(Paths.get(destinationFileName))) Files.delete(Paths.get(destinationFileName));
         Files.copy(Paths.get(resourceFileName), Paths.get(destinationFileName));
+    }
+
+    private void createAndPersistPerson() {
+        Person p = new Person();
+        String personFirstName = "1c_api";
+
+        p.setCompany(new Company(1L));
+        p.setCompanyId(1L);
+        p.setFirstName(personFirstName);
+        p.setLastName("API");
+        p.setDisplayName(personFirstName);
+        p.setCreated(new Date());
+        p.setCreator("");
+        p.setGender(En_Gender.MALE);
+        logger.debug("person = " + person);
+
+        personDAO.persist(p);
+
+        person = personDAO
+                .getAll()
+                .stream()
+                .filter(currPerson -> currPerson.getFirstName() != null && currPerson.getFirstName().equals(personFirstName))
+                .findFirst().get();
+    }
+
+    private void createAndPersistUserRoles() {
+        UserRole role = new UserRole();
+        role.setCode(WS_API_TEST_ROLE_CODE);
+        role.setInfo(WS_API_TEST_ROLE_CODE);
+        role.setScope(En_Scope.SYSTEM);
+        logger.debug("userRole = " + userRole);
+
+        userRoleDAO.persist(role);
+
+        userRole =  userRoleDAO.getByRoleCodeLike(WS_API_TEST_ROLE_CODE);
+    }
+
+    private  void createAndPersistUserLogin() throws Exception {
+        UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
+        userLogin.setUlogin(person.getFirstName());
+        userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
+        userLogin.setPersonId(person.getId());
+        userLogin.setAuthTypeId(1);
+        userLogin.setAdminStateId(2);
+        userLogin.setRoles(Collections.singleton(userRole));
+        logger.debug("userLogin = " + userLogin);
+
+        userLoginDAO.persist(userLogin);
+    }
+
+    private void removeUserLogin(){
+        userLoginDAO.removeByPersonId(person.getId());
+    }
+    private void removeUserRoles(){
+        userRoleDAO.removeByRoleCodeLike(WS_API_TEST_ROLE_CODE);
+    }
+    private void removePerson() {
+        personDAO.remove(person);
     }
 }
