@@ -1,21 +1,20 @@
 {
-  "timestamp":1567071209601,
-  "webhookEvent":"jira:issue_updated",
-  "issue_event_type_name":"issue_generic",
+  "timestamp":1567069658106,
+  "webhookEvent":"jira:issue_created",
+  "issue_event_type_name":"issue_created",
   "user":{
-    "self":"https://jira.billing.ru/rest/api/2/user?username=protei_tech_user",
-    "name":"protei_tech_user",
-    "key":"protei_tech_user",
-    "emailAddress":"jira_protei_test@protei.ru",
+    "self":"https://jira.billing.ru/rest/api/2/user?username=protei_sync_user",
+    "name":"protei_sync_user",
+    "key":"protei_sync_user",
+    "emailAddress":"",
     "avatarUrls":{
       "48x48":"https://jira.billing.ru/secure/useravatar?avatarId=10122",
       "24x24":"https://jira.billing.ru/secure/useravatar?size=small&avatarId=10122",
       "16x16":"https://jira.billing.ru/secure/useravatar?size=xsmall&avatarId=10122",
       "32x32":"https://jira.billing.ru/secure/useravatar?size=medium&avatarId=10122"
     },
-    "displayName":"protei_tech_user",
-    "active":true,
-    "timeZone":"Europe/Moscow"
+    "displayName":"protei_sync_user",
+    "active":true,"timeZone":"Europe/Moscow"
   },
   "issue":{
     "id":"1564083",
@@ -26,7 +25,7 @@
       "customfield_17700":null,
       "fixVersions":[],
       "customfield_12375":null,
-      "customfield_19600":null,
+      "customfield_19600": null,
       "resolution":null,
       "customfield_12410":null,
       "customfield_12413":{
@@ -46,7 +45,7 @@
       "customfield_18504":null,
       "customfield_18505":null,
       "customfield_18506":null,
-      "priority":{
+      "priority": {
         "self":"https://jira.billing.ru/rest/api/2/priority/10100",
         "iconUrl":"https://jira.billing.ru/images/icons/priorities/medium.svg",
         "name":"Medium",
@@ -64,20 +63,7 @@
       "assignee":null,
       "customfield_20412":null,
       "customfield_21104":null,
-      "status":{
-        "self":"https://jira.billing.ru/rest/api/2/status/11109",
-        "description":"",
-        "iconUrl":"https://jira.billing.ru/images/icons/statuses/generic.png",
-        "name":"Studying",
-        "id":"11109",
-        "statusCategory":{
-          "self":"https://jira.billing.ru/rest/api/2/statuscategory/4",
-          "id":4,
-          "key":"indeterminate",
-          "colorName":"yellow",
-          "name":"In Progress"
-        }
-      },
+      "status":{},
       "customfield_21103":null,
       "customfield_20410":null,
       "customfield_21102":null,
@@ -110,14 +96,13 @@
           "48x48":"https://jira.billing.ru/secure/useravatar?avatarId=10122",
           "24x24":"https://jira.billing.ru/secure/useravatar?size=small&avatarId=10122",
           "16x16":"https://jira.billing.ru/secure/useravatar?size=xsmall&avatarId=10122",
-          "32x32":"https://jira.billing.ru/secure/useravatar?size=medium&avatarId=10122"
-        },
+          "32x32":"https://jira.billing.ru/secure/useravatar?size=medium&avatarId=10122"},
         "displayName":"protei_sync_user",
         "active":true,
         "timeZone":"Europe/Moscow"
       },
       "subtasks":[],
-      "customfield_18603":[],
+      "customfield_18603": [],
       "reporter":{
         "self":"https://jira.billing.ru/rest/api/2/user?username=Alexey.Menkov",
         "name":"Alexey.Menkov",
@@ -166,7 +151,7 @@
         "self":"https://jira.billing.ru/rest/api/2/issuetype/10508",
         "id":"10508",
         "description":"",
-        "iconUrl":"https://jira.billing.ru/secure/viewavatar?size=xsmall&avatarId=21103&avatarType=issuetype",
+        "iconUrl": "https://jira.billing.ru/secure/viewavatar?size=xsmall&avatarId=21103&avatarType=issuetype",
         "name":"Error",
         "subtask":false,
         "avatarId":21103
@@ -197,20 +182,20 @@
       "customfield_18315":null,
       "customfield_17503":null,
       "customfield_18316":null,
-      "customfield_20906":null,
+      "customfield_20906": null,
       "resolutiondate":null,
       "workratio":-1,
       "watches":{
         "self":"https://jira.billing.ru/rest/api/2/issue/PRT-82/watchers",
-        "watchCount":1,
+        "watchCount":0,
         "isWatching":false
       },
-      "created":"2019-08-29T12:07:37.957+0300",
+      "created":"2019-08-29T12:07:37.956+0300",
       "customfield_10300":null,
       "customfield_20734":null,
       "customfield_20732":null,
       "customfield_20733":null,
-      "updated":"2019-08-29T12:33:29.593+0300",
+      "updated":"2019-08-29T12:07:37.956+0300",
       "customfield_19100":null,
       "timeoriginalestimate":null,
       "customfield_15422":null,
@@ -224,7 +209,7 @@
       "customfield_15419":null,
       "customfield_15418":null,
       "attachment":[],
-      "summary":"Тестирование интеграции CLM<>PRT. Данный CLM будет удален",
+      "summary":"ТЕСТ  PROTEI. Будет удален",
       "customfield_18003":{
         "self":"https://jira.billing.ru/rest/api/2/customFieldOption/18410",
         "value":"Studying",
@@ -249,16 +234,5 @@
         "startAt":0
       }
     }
-  },
-  "changelog":{
-    "id":"18238368",
-    "items":[{
-      "field":"status",
-      "fieldtype":"jira",
-      "from":"11111",
-      "fromString":"Authorized",
-      "to":"11109",
-      "toString":"Studying"
-    }]
   }
 }
