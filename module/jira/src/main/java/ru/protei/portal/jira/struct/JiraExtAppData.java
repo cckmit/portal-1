@@ -1,4 +1,4 @@
-package ru.protei.portal.jira.service;
+package ru.protei.portal.jira.struct;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -9,26 +9,39 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class IssueMergeState {
-    Set<Long> commentIds;
-    Set<String> attachmentIds;
+public class JiraExtAppData {
 
-    public IssueMergeState () {
+    private String issueType;
+    private String severity;
+    private Set<Long> commentIds;
+    private Set<String> attachmentIds;
+
+    public JiraExtAppData() {
         commentIds = new HashSet<>();
         attachmentIds = new HashSet<>();
     }
 
-    public IssueMergeState appendComment (long id) {
+    public JiraExtAppData setIssueType(String issueType) {
+        this.issueType = issueType;
+        return this;
+    }
+
+    public JiraExtAppData setSeverity(String severity) {
+        this.severity = severity;
+        return this;
+    }
+
+    public JiraExtAppData appendComment (long id) {
         commentIds.add(id);
         return this;
     }
 
-    public IssueMergeState appendAttachment (String id) {
+    public JiraExtAppData appendAttachment (String id) {
         attachmentIds.add(id);
         return this;
     }
 
-    public IssueMergeState appendAttachment (URI uri) {
+    public JiraExtAppData appendAttachment (URI uri) {
         attachmentIds.add(uri.toString());
         return this;
     }
@@ -36,6 +49,14 @@ public class IssueMergeState {
     @Override
     public String toString() {
         return toJSON(this);
+    }
+
+    public String issueType() {
+        return issueType;
+    }
+
+    public String severity() {
+        return severity;
     }
 
     public int commentsCount () {
@@ -58,11 +79,13 @@ public class IssueMergeState {
         return attachmentIds.contains(uri.toString());
     }
 
-    public static String toJSON (IssueMergeState state) {
+    public static String toJSON (JiraExtAppData state) {
         try {
             JSONObject jsObj = new JSONObject();
             jsObj.put("cid", new JSONArray(state.commentIds));
             jsObj.put("aid", new JSONArray(state.attachmentIds));
+            jsObj.put("issueType", state.issueType);
+            jsObj.put("severity", state.severity);
             return jsObj.toString();
         }
         catch (JSONException e) {
@@ -70,9 +93,8 @@ public class IssueMergeState {
         }
     }
 
-
-    public static IssueMergeState fromJSON (String val) {
-        IssueMergeState state = new IssueMergeState();
+    public static JiraExtAppData fromJSON (String val) {
+        JiraExtAppData state = new JiraExtAppData();
 
         if (val == null || val.isEmpty())
             return state;
@@ -82,6 +104,8 @@ public class IssueMergeState {
 
             readArrayOfLong(json, "cid", state.commentIds);
             readArrayOfString(json, "aid", state.attachmentIds);
+            state.issueType = readString(json, "issueType");
+            state.severity = readString(json, "severity");
 
             return state;
         }
@@ -107,5 +131,12 @@ public class IssueMergeState {
         JSONArray array = obj.getJSONArray(key);
         for (int i = 0; i < array.length(); i++)
             to.add(array.getString(i));
+    }
+
+    private static String readString (JSONObject obj, String key) throws JSONException {
+        if (!obj.has(key))
+            return null;
+
+        return obj.getString(key);
     }
 }
