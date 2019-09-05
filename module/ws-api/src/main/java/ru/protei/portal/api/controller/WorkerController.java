@@ -1401,7 +1401,7 @@ public class WorkerController {
             return false;
         }
 
-        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("portal_1c_api")) {
+        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("ws_api")) {
             try {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
             } catch (IOException e) {
