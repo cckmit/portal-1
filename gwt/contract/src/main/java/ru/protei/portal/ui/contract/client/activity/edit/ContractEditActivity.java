@@ -102,10 +102,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.cost().setValue(new CostWithCurrency(contract.getCost(), contract.getCurrency()));
         view.description().setValue(contract.getDescription());
 
-        view.contragent().setValue(createOptionOrNull(contract.getContragentId(), contract.getContragentName()));
-        view.manager().setValue(createPersonOrNull(contract.getManagerId(), contract.getManagerShortName()));
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
-        view.direction().setValue(createProductOrNull(contract.getDirectionId(), contract.getDirectionName()));
 
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValid().setValue(contract.getDateValid());
@@ -131,10 +128,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setCurrency(view.cost().getValue().getCurrency());
         contract.setDescription(view.description().getValue());
 
-        contract.setContragentId(getOptionIdOrNull(view.contragent().getValue()));
-        contract.setManagerId(getPersonIdOrNull(view.manager().getValue()));
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
-        contract.setDirectionId(getProductIdOrNull(view.direction().getValue()));
 
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValid().getValue());

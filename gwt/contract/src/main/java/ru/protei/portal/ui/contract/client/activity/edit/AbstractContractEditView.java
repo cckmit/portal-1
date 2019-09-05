@@ -33,12 +33,6 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<PersonShortView> curator();
 
-    HasValue<PersonShortView> manager();
-
-    HasValue<EntityOption> contragent();
-
-    HasValue<ProductDirectionInfo> direction();
-
     HasValue<Date> dateSigning();
 
     HasValue<Date> dateValid();

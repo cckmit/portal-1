@@ -85,21 +85,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<PersonShortView> manager() {
-        return manager;
-    }
-
-    @Override
-    public HasValue<EntityOption> contragent() {
-        return contragent;
-    }
-
-    @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
-    }
-
-    @Override
     public HasValue<Date> dateSigning() {
         return dateSigning;
     }
@@ -159,15 +144,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     @UiField
     Lang lang;
-    @Inject
-    @UiField(provided = true)
-    CompanySelector contragent;
-    @Inject
-    @UiField(provided = true)
-    ProductDirectionButtonSelector direction;
-    @Inject
-    @UiField(provided = true)
-    EmployeeButtonSelector manager;
     @Inject
     @UiField(provided = true)
     HomeCompanyButtonSelector organization;

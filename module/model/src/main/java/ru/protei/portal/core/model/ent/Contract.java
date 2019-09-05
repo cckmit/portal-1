@@ -48,7 +48,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     })
     private Long managerId;
 
-    //    TODO: refactor
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
             @JdbcJoinPath(table = "case_member", joinData = {
                     @JdbcJoinData(localColumn = "project_id", remoteColumn = "CASE_ID"),
@@ -73,12 +72,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Контрагент (компания)
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company")
     private Long contragentId;
 
-    //    TODO: refactor
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
     }, mappedColumn = "cname")
     private String contragentName;
@@ -86,12 +84,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Направление
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id")
     private Long directionId;
 
-    //    TODO: refactor
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
     }, mappedColumn = "UNIT_NAME")
     private String directionName;

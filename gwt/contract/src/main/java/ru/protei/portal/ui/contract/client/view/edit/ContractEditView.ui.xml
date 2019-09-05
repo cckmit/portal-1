@@ -29,10 +29,6 @@
                         <validatefield:ValidableTextBox ui:field="number" styleName="input-field" notNull="true"/>
                     </div>
                     <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractDirection}"/></label>
-                        <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
-                    </div>
-                    <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractParent}"/></label>
                         <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
                     </div>
@@ -57,15 +53,6 @@
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractCurator}"/></label>
                         <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractManager}"/></label>
-                        <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" defaultValue="{lang.selectAccountPerson}"/>
-                    </div>
-
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractContragent}"/></label>
-                        <company:CompanySelector hasNullValue="false" ui:field="contragent" defaultValue="{lang.selectAccountCompany}"/>
                     </div>
 
                     <div class="form-group col-xs-4">
