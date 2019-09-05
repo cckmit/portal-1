@@ -54,10 +54,6 @@ public class ProjectInfo extends AuditableObject implements Removable {
      */
     EntityOption productDirection;
 
-    private Person manager;
-
-    private Company contrAgent;
-
     /**
      * Дата создания
      */
@@ -200,22 +196,6 @@ public class ProjectInfo extends AuditableObject implements Removable {
         this.deleted = deleted;
     }
 
-    public Person getManager() {
-        return manager;
-    }
-
-    public void setManager(Person manager) {
-        this.manager = manager;
-    }
-
-    public Company getContrAgent() {
-        return contrAgent;
-    }
-
-    public void setContrAgent(Company contrAgent) {
-        this.contrAgent = contrAgent;
-    }
-
     @Override
     public boolean isAllowedRemove() {
         return id != null && !deleted;
@@ -261,9 +241,6 @@ public class ProjectInfo extends AuditableObject implements Removable {
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
-
-        projectInfo.setManager(project.getManager());
-        projectInfo.setContrAgent(project.getInitiatorCompany());
         return projectInfo;
     }
 
