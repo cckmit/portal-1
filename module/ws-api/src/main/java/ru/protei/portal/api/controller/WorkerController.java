@@ -543,7 +543,10 @@ public class WorkerController {
                         Date currentDate = person.getFireDate();
                         Date newDate = HelperService.DATE.parse(rec.getFireDate());
 
-                        if (currentDate.before(newDate)) person.setFired(true, newDate);
+                        if (currentDate == null || currentDate.before(newDate)) {
+                            person.setFired(true, newDate);
+                            mergePerson(person);
+                        }
                     }
 
                     logger.debug("success result, personId={}", person.getId());

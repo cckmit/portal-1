@@ -38,10 +38,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -83,7 +80,7 @@ public class TestWorkerController {
     }
 
     @After
-    public void removePersonToAuth(){
+    public void removePersonToAuth() {
         removeUserLogin();
         removeUserRoles();
         removePerson();
@@ -134,6 +131,95 @@ public class TestWorkerController {
 
         result = updateWorker(worker);
         Assert.assertEquals("update.worker fired worker was updated!", true, result.isError());
+    }
+
+    @Test
+    public void testUpdateFireDate() throws Exception {
+        WorkerRecord worker = createWorkerRecord();
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
+        Result<Long> successResult = addWorker(worker);
+        Result result;
+
+        worker.setId(successResult.getData());
+
+        worker.setFired(true);
+        result = updateWorker(worker);
+        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+
+        String uri = BASE_URI + "get.person";
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", successResult.getData());
+        String uriBuilder = builder.build().toUriString();
+
+        WorkerRecord resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertEquals("update.fire.date: worker is not fired!", worker.isFired(), resultWorker.isFired());
+
+        worker.setFireDate("2019-05-05");
+        result = updateFireDate(worker);
+        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+
+        resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertEquals("update.fire.date: fire date are different!", worker.getFireDate(), resultWorker.getFireDate());
+
+        worker.setFireDate("2018-05-05");
+        updateFireDate(worker);
+        resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertNotEquals("update.fire.date: earlier fire date was set!", worker.getFireDate(), resultWorker.getFireDate());
+
+        worker.setFireDate("2019-06-06");
+        updateFireDate(worker);
+        resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertEquals("update.fire.date: fire date are different!", worker.getFireDate(), resultWorker.getFireDate());
+    }
+
+
+    @Test
+    public void testUpdateFireDates() throws Exception {
+        WorkerRecord worker = createWorkerRecord();
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
+        Result<Long> successResult = addWorker(worker);
+        Result result;
+
+        worker.setId(successResult.getData());
+
+        worker.setFired(true);
+        result = updateWorker(worker);
+        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+
+        String uri = BASE_URI + "get.person";
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", successResult.getData());
+        String uriBuilder = builder.build().toUriString();
+
+        WorkerRecord resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertEquals("update.fire.date: worker is not fired!", worker.isFired(), resultWorker.isFired());
+
+        resultWorker.setFireDate("2019-05-05");
+        worker.setFireDate("2019-06-06");
+
+        WorkerRecordList list = new WorkerRecordList();
+        list.append(worker);
+        list.append(resultWorker);
+
+        ResultList resultList = updateFireDates(list);
+
+        List<Result> results = resultList.getResults();
+
+        for (Result result1 : results) {
+            Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+        }
+
+        updateFireDate(worker);
+        resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertEquals("update.fire.date: fire date are different!", worker.getFireDate(), resultWorker.getFireDate());
     }
 
 
@@ -243,7 +329,7 @@ public class TestWorkerController {
         );
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + result);
+        logger.debug("result = " + result);
 
         Assert.assertEquals("update.position is not success! " + result.getMessage(), true, result.isOk());
     }
@@ -271,7 +357,7 @@ public class TestWorkerController {
         );
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + result);
+        logger.debug("result = " + result);
 
         Assert.assertEquals("delete.position is not success! " + result.getMessage(), true, result.isOk());
     }
@@ -286,7 +372,7 @@ public class TestWorkerController {
         Result<Long> result = addWorker(worker);
 
         Long id = result.getData();
-        byte[] buf = read (id);
+        byte[] buf = read(id);
 
         String uri = BASE_URI + "update.photo";
 
@@ -304,15 +390,15 @@ public class TestWorkerController {
         );
         result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        Assert.assertEquals ("updatePhoto() is not success! " + result.getMessage (), true, result.isOk ());
+        Assert.assertEquals("updatePhoto() is not success! " + result.getMessage(), true, result.isOk());
     }
 
     @Test
     @Ignore
-    public void testGetPhotos() throws Exception{
-        IdList list = new IdList ();
-        list.getIds().add (new Long (148));
-        list.getIds().add (new Long (149));
+    public void testGetPhotos() throws Exception {
+        IdList list = new IdList();
+        list.getIds().add(new Long(148));
+        list.getIds().add(new Long(149));
 
         String uri = BASE_URI + "get.photos";
         ResultActions result = mockMvc.perform(
@@ -325,27 +411,27 @@ public class TestWorkerController {
 
         PhotoList pl = (PhotoList) fromXml(result.andReturn().getResponse().getContentAsString());
 
-        Assert.assertNotNull ("Result getPhotos() is null!", pl);
+        Assert.assertNotNull("Result getPhotos() is null!", pl);
         for (Photo p : pl.getPhotos()) {
-            logger.debug ("Photo for id = " + p.getId () + " exist. Length of photo = " + p.getContent ().length());
+            logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
             logger.debug("Photo's content in Base64 = " + p.getContent());
-            String newFileName = WSConfig.getInstance ().getDirPhotos () + "new/" + p.getId() + ".jpg";
+            String newFileName = WSConfig.getInstance().getDirPhotos() + "new/" + p.getId() + ".jpg";
             Base64OutputStream out = null;
             try {
-                out = new Base64OutputStream(new FileOutputStream(newFileName),false);
-                out.write (p.getContent().getBytes());
+                out = new Base64OutputStream(new FileOutputStream(newFileName), false);
+                out.write(p.getContent().getBytes());
                 //out.write (p.getContent());
-            } catch (Exception e){
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             } finally {
                 try {
                     if (out != null)
                         out.close();
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
         }
     }
-
 
 
     private WorkerRecord createWorkerRecord() {
@@ -403,29 +489,29 @@ public class TestWorkerController {
         unmarshaller = context.createUnmarshaller();
     }
 
-   private Result<Long> addWorker(WorkerRecord worker) throws Exception {
+    private Result<Long> addWorker(WorkerRecord worker) throws Exception {
         logger.debug("worker input = " + worker);
 
         String uri = BASE_URI + "add.worker";
 
         String workerXml = toXml(worker);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 post(uri)
                         .header("Accept", "application/xml")
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
         );
-        Result<Long> serviceResult = (Result<Long>) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result<Long> result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + serviceResult);
+        logger.debug("result = " + result);
 
-        return serviceResult;
+        return result;
     }
 
 
-     private Result updateWorker(WorkerRecord worker) throws Exception {
+    private Result updateWorker(WorkerRecord worker) throws Exception {
         logger.debug("worker input = " + worker);
 
         String uri = BASE_URI + "update.worker";
@@ -441,7 +527,49 @@ public class TestWorkerController {
         );
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + result);
+        logger.debug("result = " + result);
+
+        return result;
+    }
+
+    private Result updateFireDate (WorkerRecord worker) throws Exception {
+        logger.debug("worker input = " + worker);
+
+        String uri = BASE_URI + "update.fire.date";
+
+        String workerXml = toXml(worker);
+
+        ResultActions resultActions = mockMvc.perform(
+                put(uri)
+                        .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content(workerXml)
+        );
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
+
+        logger.debug("result = " + result);
+
+        return result;
+    }
+
+    private ResultList updateFireDates (WorkerRecordList list) throws Exception {
+        logger.debug("worker input = " + list);
+
+        String uri = BASE_URI + "update.fire.date";
+
+        String listXml = toXml(list);
+
+        ResultActions resultActions = mockMvc.perform(
+                put(uri)
+                        .header("Accept", "application/xml")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content(listXml)
+        );
+        ResultList result = (ResultList) fromXml(resultActions.andReturn().getResponse().getContentAsString());
+
+        logger.debug("result = " + result);
 
         return result;
     }
@@ -466,7 +594,7 @@ public class TestWorkerController {
 
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + result);
+        logger.debug("result = " + result);
 
         return result;
     }
@@ -495,7 +623,7 @@ public class TestWorkerController {
 
         String departmentXml = toXml(department);
 
-        ResultActions result = mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 put(uri)
                         .header("Accept", "application/xml")
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
@@ -503,11 +631,11 @@ public class TestWorkerController {
                         .content(departmentXml)
         );
 
-        Result serviceResult = (Result) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + serviceResult);
+        logger.debug("result = " + result);
 
-        return serviceResult;
+        return result;
     }
 
     private Result deleteDepartment(DepartmentRecord department) throws Exception {
@@ -528,7 +656,7 @@ public class TestWorkerController {
         );
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("ServiceResult = " + result);
+        logger.debug("result = " + result);
 
         return result;
     }
@@ -581,21 +709,21 @@ public class TestWorkerController {
                 out = new ByteArrayOutputStream();
                 input = new BufferedInputStream(new FileInputStream(file));
                 int data = 0;
-                while ((data = input.read()) != -1){
+                while ((data = input.read()) != -1) {
                     out.write(data);
                 }
                 logger.debug("file exists");
             } else {
-                logger.debug ("file doesn't exist");
+                logger.debug("file doesn't exist");
             }
         } catch (Exception e) {
-            logger.error ("error while update photo", e);
-        }
-        finally{
+            logger.error("error while update photo", e);
+        } finally {
             try {
                 input.close();
-                out.close ();
-            } catch (Exception e) {}
+                out.close();
+            } catch (Exception e) {
+            }
         }
         return out.toByteArray();
     }
@@ -637,10 +765,10 @@ public class TestWorkerController {
 
         userRoleDAO.persist(role);
 
-        userRole =  userRoleDAO.getByRoleCodeLike(WS_API_TEST_ROLE_CODE);
+        userRole = userRoleDAO.getByRoleCodeLike(WS_API_TEST_ROLE_CODE);
     }
 
-    private  void createAndPersistUserLogin() throws Exception {
+    private void createAndPersistUserLogin() throws Exception {
         UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
         userLogin.setUlogin(person.getFirstName());
         userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
@@ -653,12 +781,14 @@ public class TestWorkerController {
         userLoginDAO.persist(userLogin);
     }
 
-    private void removeUserLogin(){
+    private void removeUserLogin() {
         userLoginDAO.removeByPersonId(person.getId());
     }
-    private void removeUserRoles(){
+
+    private void removeUserRoles() {
         userRoleDAO.removeByRoleCodeLike(WS_API_TEST_ROLE_CODE);
     }
+
     private void removePerson() {
         personDAO.remove(person);
     }
