@@ -12,19 +12,17 @@ import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.controller.api.Credentials;
-import ru.protei.portal.core.controller.auth.SecurityDefs;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
-import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.HelperService;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -94,7 +92,7 @@ public class WorkerController {
     /**
      * Получить данные о физическом лице
      * @param id идентификатор физического лица на портале
-     * @return WorkerRecord
+     * @return Result<WorkerRecord>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
     Result<WorkerRecord> getPerson(@RequestParam(name = "id") Long id,
@@ -117,7 +115,7 @@ public class WorkerController {
      * Получить данные о сотруднике
      * @param id идентификатор сотрудника в 1С
      * @param companyCode код компании
-     * @return WorkerRecord
+     * @return Result<WorkerRecord>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
     Result<WorkerRecord> getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
@@ -146,7 +144,7 @@ public class WorkerController {
      * Получить данные об отделе
      * @param id идентификатор отдела в 1С
      * @param companyCode код компании
-     * @return DepartmentRecord
+     * @return Result<DepartmentRecord>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
     Result<DepartmentRecord> getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
@@ -171,7 +169,7 @@ public class WorkerController {
     /**
      * Получить список физических лиц
      * @param expr строка для поиска с использованием шаблонных символов
-     * @return WorkerRecordList
+     * @return Result<WorkerRecordList>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
     Result<WorkerRecordList> getPersons(@RequestParam(name = "expr") String expr,
@@ -202,7 +200,7 @@ public class WorkerController {
     /**
      * Добавить сотрудника
      * @param rec данные о сотруднике
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
     Result<Long> addWorker(@RequestBody WorkerRecord rec,
@@ -320,7 +318,7 @@ public class WorkerController {
     /**
      * Обновить сотрудника
      * @param rec данные о сотруднике
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
     Result<Long> updateWorker(@RequestBody WorkerRecord rec,
@@ -442,7 +440,7 @@ public class WorkerController {
     /**
      * Обновить сотрудников
      * @param list список сотрудников
-     * @return ServiceResultList
+     * @return ResultList
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
     ResultList updateWorkers(@RequestBody WorkerRecordList list,
@@ -474,7 +472,7 @@ public class WorkerController {
      * Удалить сотрудника
      * @param externalId идентификатор сотрудника в 1С
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
     Result<Long> deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
@@ -536,7 +534,7 @@ public class WorkerController {
     /**
      * Обновить фотографию сотрудника
      * @param photo фоторгафия
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
     Result<Long> updatePhoto(@RequestBody Photo photo,
@@ -581,7 +579,7 @@ public class WorkerController {
     /**
      * Получить фотографии сотрудников
      * @param list список идентификаторов физических лиц
-     * @return PhotoList
+     * @return Result<PhotoList>
      */
     @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
     Result<PhotoList> getPhotos(@RequestBody IdList list,
@@ -632,7 +630,7 @@ public class WorkerController {
     /**
      * Создать/обновить отдел
      * @param rec данные об отделе
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
     Result<Long> updateDepartment(@RequestBody DepartmentRecord rec,
@@ -689,7 +687,7 @@ public class WorkerController {
      * Удалить отдел
      * @param externalId идентификатор отдела в 1С
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
     Result<Long> deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
@@ -729,7 +727,7 @@ public class WorkerController {
      * @param oldName наименование должности
      * @param newName новое наименование должности
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
     Result<Long> updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName")
@@ -775,7 +773,7 @@ public class WorkerController {
      * Удалить должность
      * @param name наименование должности
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
     Result<Long> deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode,
@@ -1403,7 +1401,7 @@ public class WorkerController {
             return false;
         }
 
-        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("1c_api")) {
+        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("portal_1c_api")) {
             try {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
             } catch (IOException e) {

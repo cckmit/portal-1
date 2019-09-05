@@ -607,7 +607,7 @@ public class TestWorkerController {
 
     private void createAndPersistPerson() {
         Person p = new Person();
-        String personFirstName = "1c_api";
+        String personFirstName = "portal_1c_api";
 
         p.setCompany(new Company(1L));
         p.setCompanyId(1L);
