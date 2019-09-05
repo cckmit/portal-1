@@ -469,6 +469,99 @@ public class WorkerController {
     }
 
     /**
+     * Обновить даты увольнения
+     * @param list список сотрудников
+     * @return ResultList
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.dates")
+    ResultList updateFireDates(@RequestBody WorkerRecordList list,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+
+        logger.debug("updateFireDates(): list={}", list);
+
+        ResultList results = new ResultList();
+
+        if (!checkAuth(request, response))  {
+            results.append(error(En_ResultStatus.INVALID_LOGIN_OR_PWD));
+            return results;
+        };
+
+        try {
+
+            list.getWorkerRecords().forEach(
+                    p -> results.append(updateWorker(p, request, response))
+            );
+
+        } catch (Exception e) {
+            logger.error("error while update fire dates", e);
+        }
+        return results;
+    }
+
+    /**
+     * Обновить дату увольнения
+     * @param rec данные о сотруднике
+     * @return Result<Long>
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.date")
+    Result<Long> updateFireDate(@RequestBody WorkerRecord rec,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
+
+        logger.debug("updateFireDate(): rec={}", rec);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValidFired = isValidFiredPerson(rec);
+        Result<Long> isValid = isValidWorkerRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: {}", isValid.getMessage());
+            return isValid;
+        }
+
+        if (isValidFired.isError()) {
+            logger.debug("error result: {}", isValidFired.getMessage());
+            return isValidFired;
+        }
+
+        try {
+
+            OperationData operationData = new OperationData(rec)
+                    .requirePerson(null);
+
+            if (!operationData.isValid())
+                return operationData.failResult();
+
+            return transactionTemplate.execute(transactionStatus -> {
+
+                try {
+
+                    Person person = operationData.person();
+
+                    if (person.isFired()){
+                        Date currentDate = person.getFireDate();
+                        Date newDate = HelperService.DATE.parse(rec.getFireDate());
+
+                        if (currentDate.before(newDate)) person.setFired(true, newDate);
+                    }
+
+                    logger.debug("success result, personId={}", person.getId());
+                    return ok(person.getId());
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        } catch (Exception e) {
+            logger.error("error while update worker's record", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
+    /**
      * Удалить сотрудника
      * @param externalId идентификатор сотрудника в 1С
      * @param companyCode код компании
@@ -846,6 +939,28 @@ public class WorkerController {
                 !rec.getIpAddress().trim().matches("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$")) {
             return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.INV_FORMAT_IP.getMessage());
         }
+
+        return ok(rec.getId());
+    }
+
+    private Result<Long> isValidFiredPerson(WorkerRecord rec) {
+
+        if (HelperFunc.isEmpty(rec.getFirstName())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_FIRST_NAME.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(rec.getLastName())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_LAST_NAME.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(rec.getBirthday())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(rec.getFireDate())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_FIRE_DATE.getMessage());
+        }
+
 
         return ok(rec.getId());
     }

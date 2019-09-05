@@ -34,6 +34,8 @@ public enum En_ErrorCode {
     INV_FORMAT_DEP_CODE("Invalid department code."),
     INV_FORMAT_WOR_CODE("Invalid worker code."),
     DELETED_OR_FIRED_RECORD("Deleted or fired record."),
+    EMPTY_BIRTHDAY("The birthday is empty."),
+    EMPTY_FIRE_DATE("The fire date is empty."),
     UNKNOWN_REG("Unknown EmployeeRegistration.");
 
     En_ErrorCode (String message) {
