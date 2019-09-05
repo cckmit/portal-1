@@ -7,7 +7,7 @@
     <changeSet id="add-project_id-column-to-contract" author="fomin">
         <addColumn tableName="contract">
             <column name="project_id" type="BIGINT">
-                <constraints nullable="true"/>
+                <constraints nullable="true" unique="true"/>
             </column>
         </addColumn>
     </changeSet>
