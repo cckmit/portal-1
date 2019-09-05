@@ -57,7 +57,7 @@
 
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractProject}"/></label>
-                        <project:ProjectEOButtonSelector hasNullValue="false" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
+                        <project:ProjectEntityOptionButtonSelector hasNullValue="false" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
                     </div>
 
                     <div class="form-group col-xs-12">

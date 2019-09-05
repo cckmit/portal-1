@@ -13,20 +13,15 @@ import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.project.ProjectEOButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectEntityOptionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
@@ -177,7 +172,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractButtonSelector contractParent;
     @Inject
     @UiField(provided = true)
-    ProjectEOButtonSelector project;
+    ProjectEntityOptionButtonSelector project;
 
     private AbstractContractEditActivity activity;
 

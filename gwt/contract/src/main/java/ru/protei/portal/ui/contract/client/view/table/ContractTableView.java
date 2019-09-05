@@ -12,15 +12,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.service.CaseServiceImpl;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -31,7 +25,6 @@ import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +39,6 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
     @Override
     public void setActivity(AbstractContractTableActivity activity) {
-        this.activity = activity;
-
         clickColumns.forEach(col -> {
             col.setHandler(activity);
             col.setColumnProvider(columnProvider);
@@ -112,9 +103,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
         DynamicColumn<Contract> numTypeColumn = new DynamicColumn<>(lang.contractNumber(), "num-column",
                 contract -> "<b>" + lang.contractNum(contract.getNumber()) + "</b><br/>"
-                + "<small>" + contractTypeLang.getName(contract.getContractType()) + "<br/>"
-                + "<b>" + lang.contractDateSigning() + ":</b> " + (contract.getDateSigning() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateSigning())) + "<br/>"
-                + "<b>" + lang.contractDateValid() + ":</b> " + (contract.getDateValid() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateValid()))  + "</small>");
+                        + "<small>" + contractTypeLang.getName(contract.getContractType()) + "<br/>"
+                        + "<b>" + lang.contractDateSigning() + ":</b> " + (contract.getDateSigning() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateSigning())) + "<br/>"
+                        + "<b>" + lang.contractDateValid() + ":</b> " + (contract.getDateValid() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateValid()))  + "</small>");
         clickColumns.add(numTypeColumn);
 
         DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
@@ -123,9 +114,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",
                 contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
-                +  "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
-                +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
-                +  "<b>" + lang.contractContragent() + ":</b> " + StringUtils.emptyIfNull(contract.getContragentName()) + "</b>");
+                        +  "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
+                        +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
+                        +  "<b>" + lang.contractContragent() + ":</b> " + StringUtils.emptyIfNull(contract.getContragentName()) + "</b>");
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
@@ -138,7 +129,6 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.forEach(c -> table.addColumn(c.header, c.values));
         table.addColumn(editClickColumn.header, editClickColumn.values);
     }
-
 
     @UiField
     InfiniteTableWidget<Contract> table;
@@ -159,8 +149,6 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     private En_ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
-
-    private AbstractContractTableActivity activity;
 
     private ClickColumnProvider<Contract> columnProvider = new ClickColumnProvider<>();
     private List<ClickColumn<Contract>> clickColumns = new LinkedList<>();

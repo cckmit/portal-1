@@ -8,11 +8,11 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class ProjectEOButtonSelector extends ButtonSelector<EntityOption>
+public class ProjectEntityOptionButtonSelector extends ButtonSelector<EntityOption>
         implements SelectorWithModel<EntityOption> {
 
     @Inject
-    public void init(ProjectEOModel model) {
+    public void init(ProjectEntityOptionModel model) {
         setSelectorModel(model);
         setSearchEnabled(true);
         setHasNullValue(false);

@@ -284,6 +284,23 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(result );
     }
 
+    @Override
+    public Result<List<EntityOption>> listFreeProjectsAsEntityOptions(AuthToken authToken) {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+        caseQuery.setSortDir(En_SortDir.ASC);
+        caseQuery.setSortField(En_SortField.case_name);
+        caseQuery.setFreeProjects(true);
+
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        List<EntityOption> result = projects
+                .stream()
+                .map(project -> new EntityOption(project.getName(), project.getId()))
+                .collect(toList());
+
+        return ok(result);
+    }
+
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
 
         List<PersonProjectMemberView> toAdd = new ArrayList<>(team);
