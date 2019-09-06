@@ -16,6 +16,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
@@ -115,7 +116,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
             caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
-            caseObj.setExtAppType("jira");
+            caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
 //            caseObj.setName(issue.getSummary()); -- update it with priority and info
             caseObj.setLocal(0);
             caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
@@ -155,7 +156,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         // TODO for what? initiator is null at the moment
         caseObj.setCreatorId(caseObj.getInitiatorId());
 
-        caseObj.setExtAppType("jira");
+        caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
 //        caseObj.setName(issue.getSummary()); -- update it with priority and info
         caseObj.setLocal(0);
         caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
