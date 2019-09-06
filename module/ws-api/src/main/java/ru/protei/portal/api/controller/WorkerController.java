@@ -513,16 +513,10 @@ public class WorkerController {
 
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        Result<Long> isValidFired = isValidFiredPerson(rec);
         Result<Long> isValid = isValidWorkerRecord(rec);
         if (isValid.isError()) {
             logger.debug("error result: {}", isValid.getMessage());
             return isValid;
-        }
-
-        if (isValidFired.isError()) {
-            logger.debug("error result: {}", isValidFired.getMessage());
-            return isValidFired;
         }
 
         try {
@@ -539,7 +533,7 @@ public class WorkerController {
 
                     Person person = operationData.person();
 
-                    if (person.isFired()){
+                    if (person.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())){
                         Date currentDate = person.getFireDate();
                         Date newDate = HelperService.DATE.parse(rec.getFireDate());
 
@@ -942,28 +936,6 @@ public class WorkerController {
                 !rec.getIpAddress().trim().matches("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$")) {
             return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.INV_FORMAT_IP.getMessage());
         }
-
-        return ok(rec.getId());
-    }
-
-    private Result<Long> isValidFiredPerson(WorkerRecord rec) {
-
-        if (HelperFunc.isEmpty(rec.getFirstName())) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_FIRST_NAME.getMessage());
-        }
-
-        if (HelperFunc.isEmpty(rec.getLastName())) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_LAST_NAME.getMessage());
-        }
-
-        if (HelperFunc.isEmpty(rec.getBirthday())) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
-        }
-
-        if (HelperFunc.isEmpty(rec.getFireDate())) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_FIRE_DATE.getMessage());
-        }
-
 
         return ok(rec.getId());
     }

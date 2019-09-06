@@ -141,18 +141,28 @@ public class TestWorkerController {
         Result<Long> successResult = addWorker(worker);
         Result result;
 
-        worker.setId(successResult.getData());
-
-        worker.setFired(true);
-        result = updateWorker(worker);
-        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
-
         String uri = BASE_URI + "get.person";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", successResult.getData());
         String uriBuilder = builder.build().toUriString();
 
-        WorkerRecord resultWorker = getWorkerByUri(uriBuilder).getData();
+        WorkerRecord resultWorker;
+
+        worker.setId(successResult.getData());
+
+        worker.setFireDate("2019-05-05");
+        updateFireDate(worker);
+        resultWorker = getWorkerByUri(uriBuilder).getData();
+        Assert.assertEquals("update.fire.date: the fire date is saved when isFired = false in database!", null, resultWorker.getFireDate());
+        Assert.assertEquals("update.fire.date: is fired became true when fire-date is not null", false, resultWorker.isFired());
+
+
+        worker.setFireDate(null);
+        worker.setFired(true);
+        result = updateWorker(worker);
+        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+
+        resultWorker = getWorkerByUri(uriBuilder).getData();
 
         Assert.assertEquals("update.fire.date: worker is not fired!", worker.isFired(), resultWorker.isFired());
 
