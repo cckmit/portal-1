@@ -9,4 +9,6 @@ import java.util.List;
 public interface SLAService {
 
     Result<List<JiraSLAMapEntry>> getJiraSLAEntries(AuthToken token, long mapId);
+
+    Result<JiraSLAMapEntry> getJiraSLAEntry(AuthToken token, long mapId, String issueType, String severity);
 }

@@ -20,6 +20,12 @@ public class SLAServiceImpl implements SLAService {
         return result == null ? error(NOT_FOUND) : ok(result);
     }
 
+    @Override
+    public Result<JiraSLAMapEntry> getJiraSLAEntry(AuthToken token, long mapId, String issueType, String severity) {
+        JiraSLAMapEntry result = jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(mapId, issueType, severity);
+        return result == null ? error(NOT_FOUND) : ok(result);
+    }
+
     @Autowired
     JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
 }

@@ -4,21 +4,17 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_FileUploadStatus;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -51,6 +47,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 }
             }
         });
+        workTimeFormatter = new WorkTimeFormatter(lang);
     }
 
     @Event
@@ -186,6 +183,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                     .withSuccess(rendered -> view.setInfo(rendered)));
         }
 
+        fillViewForJira(value);
+
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withCaseId(value.getId())
@@ -195,6 +194,38 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withPrivateCase(isPrivateCase)
                 .withTextMarkup(textMarkup)
                 .build());
+    }
+
+    private void fillViewForJira(CaseObject value) {
+
+        view.setJiraVisible(false);
+
+        if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
+            return;
+        }
+
+        JiraMetaData meta = value.getJiraMetaData();
+        boolean isSeverityEditable = En_JiraSLAIssueTypeEditable.forIssueType(meta.getIssueType()) != null;
+
+        view.setJiraVisible(true);
+        view.setJiraIssueType(meta.getIssueType());
+        view.setJiraSeverity(meta.getSeverity());
+
+        slaController.getJiraSLAEntry(meta.getSlaMapId(), meta.getIssueType(), meta.getSeverity(), new FluentCallback<JiraSLAMapEntry>()
+            .withError(throwable -> {
+                view.setJiraTimeOfReaction(null);
+                view.setJiraTimeOfDecision(null);
+            })
+            .withSuccess(entry -> {
+                view.setJiraTimeOfReaction(entry.getTimeOfReactionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfReactionMinutes()));
+                view.setJiraTimeOfDecision(entry.getTimeOfDecisionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfDecisionMinutes()));
+                boolean isDescriptionAvailable = StringUtils.isNotBlank(entry.getDescription());
+                if (isSeverityEditable) {
+                    view.setJiraSeverity(isDescriptionAvailable ? entry.getDescription() : meta.getSeverity());
+                } else {
+                    view.setJiraSeverity(meta.getSeverity() + (isDescriptionAvailable ? " (" + entry.getDescription() + ")" : ""));
+                }
+            }));
     }
 
     private void fillSubscriptions( CaseObject value ) {
@@ -279,10 +310,13 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     CompanyControllerAsync companyService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    SLAControllerAsync slaController;
 
     private Long issueCaseNumber;
     private Long issueId;
     private boolean isPrivateCase;
     private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;
+    private WorkTimeFormatter workTimeFormatter;
 }

@@ -23,11 +23,11 @@ public class JiraSLAMapEntry implements Serializable {
     @JdbcColumn(name = "description")
     private String description;
 
-    @JdbcColumn(name = "time_of_reaction_hours")
-    private Long timeOfReactionHours;
+    @JdbcColumn(name = "time_of_reaction_min")
+    private Long timeOfReactionMinutes;
 
-    @JdbcColumn(name = "time_of_decision_days")
-    private Long timeOfDecisionDays;
+    @JdbcColumn(name = "time_of_decision_min")
+    private Long timeOfDecisionMinutes;
 
     public JiraSLAMapEntry() {}
 
@@ -35,55 +35,27 @@ public class JiraSLAMapEntry implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public long getMapId() {
         return mapId;
-    }
-
-    public void setMapId(long mapId) {
-        this.mapId = mapId;
     }
 
     public String getIssueType() {
         return issueType;
     }
 
-    public void setIssueType(String issueType) {
-        this.issueType = issueType;
-    }
-
     public String getSeverity() {
         return severity;
-    }
-
-    public void setSeverity(String severity) {
-        this.severity = severity;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public Long getTimeOfReactionMinutes() {
+        return timeOfReactionMinutes;
     }
 
-    public Long getTimeOfReactionHours() {
-        return timeOfReactionHours;
-    }
-
-    public void setTimeOfReactionHours(Long timeOfReactionHours) {
-        this.timeOfReactionHours = timeOfReactionHours;
-    }
-
-    public Long getTimeOfDecisionDays() {
-        return timeOfDecisionDays;
-    }
-
-    public void setTimeOfDecisionDays(Long timeOfDecisionDays) {
-        this.timeOfDecisionDays = timeOfDecisionDays;
+    public Long getTimeOfDecisionMinutes() {
+        return timeOfDecisionMinutes;
     }
 }

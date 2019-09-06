@@ -1744,4 +1744,12 @@ public interface Lang extends Messages, ContactItemLang {
     String componentDescription();
 
     String complexDescription();
+
+    String jiraIssueType();
+
+    String jiraSeverity();
+
+    String jiraTimeOfReaction();
+
+    String jiraTimeOfDecision();
 }

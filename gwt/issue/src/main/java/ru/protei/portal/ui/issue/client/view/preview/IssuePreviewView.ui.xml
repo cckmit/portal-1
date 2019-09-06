@@ -41,6 +41,24 @@
                                 <div ui:field="state"></div>
                             </span>
                         </div>
+                        <g:HTMLPanel ui:field="jiraMetaDataContainer" visible="false">
+                            <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-xs-6">
+                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraIssueType}"/></label>
+                                <span class="col-xs-7 col-md-7" ui:field="jiraIssueType"/>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-xs-6">
+                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraSeverity}"/></label>
+                                <span class="col-xs-7 col-md-7" ui:field="jiraSeverity"/>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-xs-6">
+                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
+                                <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfReaction"/>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-xs-6">
+                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
+                                <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfDecision"/>
+                            </g:HTMLPanel>
+                        </g:HTMLPanel>
                         <g:HTMLPanel ui:field="timeElapsedContainer" styleName="col-xs-6">
                             <label class="col-xs-5 col-md-5">
                                 <ui:text from="{lang.timeElapsed}"/>

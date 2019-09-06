@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -43,6 +44,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<Set<PersonShortView>> notifiers();
     HasValue<Set<CaseLink>> links();
     HasValue<Set<CaseTag>> tags();
+    HasValue<JiraMetaData> jiraSlaSelector();
 
     HasValidable nameValidator();
     HasValidable stateValidator();
@@ -58,6 +60,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled initiatorState();
 
     HasVisibility numberVisibility();
+    HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<Integer> number();
 

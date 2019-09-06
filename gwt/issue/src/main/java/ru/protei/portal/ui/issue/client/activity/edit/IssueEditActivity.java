@@ -386,7 +386,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
+        fillViewForJira(issue, isRestoredIssue);
+
         unlockSave();
+    }
+
+    private void fillViewForJira(CaseObject issue, boolean isRestoredIssue) {
+
+        view.jiraSlaSelectorVisibility().setVisible(false);
+
+        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
+            return;
+        }
+
+        view.jiraSlaSelectorVisibility().setVisible(true);
+        view.jiraSlaSelector().setValue(issue.getJiraMetaData());
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -414,6 +428,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
             issue.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
         }
+
+        fillIssueObjectWithJira(issue);
+    }
+
+    private void fillIssueObjectWithJira(CaseObject issue) {
+
+        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
+            return;
+        }
+
+        issue.setJiraMetaData(view.jiraSlaSelector().getValue());
     }
 
     private boolean validateView() {

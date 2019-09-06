@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -192,6 +193,51 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setJiraVisible(boolean isVisible) {
+        jiraMetaDataContainer.setVisible(isVisible);
+    }
+
+    @Override
+    public void setJiraIssueType(String value) {
+        if (StringUtils.isBlank(value)) {
+            jiraIssueTypeContainer.setVisible(false);
+        } else {
+            jiraIssueType.setInnerText(value);
+            jiraIssueTypeContainer.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setJiraSeverity(String value) {
+        if (StringUtils.isBlank(value)) {
+            jiraSeverityContainer.setVisible(false);
+        } else {
+            jiraSeverity.setInnerText(value);
+            jiraSeverityContainer.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setJiraTimeOfReaction(String value) {
+        if (StringUtils.isBlank(value)) {
+            jiraTimeOfReactionContainer.setVisible(false);
+        } else {
+            jiraTimeOfReaction.setInnerText(value);
+            jiraTimeOfReactionContainer.setVisible(true);
+        }
+    }
+
+    @Override
+    public void setJiraTimeOfDecision(String value) {
+        if (StringUtils.isBlank(value)) {
+            jiraTimeOfDecisionContainer.setVisible(false);
+        } else {
+            jiraTimeOfDecision.setInnerText(value);
+            jiraTimeOfDecisionContainer.setVisible(true);
+        }
+    }
+
+    @Override
     public HasTime timeElapsed() {
         return timeElapsed;
     }
@@ -290,6 +336,24 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     AttachmentList attachmentContainer;
     @UiField
     DivElement subscriptions;
+    @UiField
+    HTMLPanel jiraMetaDataContainer;
+    @UiField
+    HTMLPanel jiraIssueTypeContainer;
+    @UiField
+    HTMLPanel jiraSeverityContainer;
+    @UiField
+    HTMLPanel jiraTimeOfReactionContainer;
+    @UiField
+    HTMLPanel jiraTimeOfDecisionContainer;
+    @UiField
+    SpanElement jiraIssueType;
+    @UiField
+    SpanElement jiraSeverity;
+    @UiField
+    SpanElement jiraTimeOfReaction;
+    @UiField
+    SpanElement jiraTimeOfDecision;
     @UiField
     HTMLPanel timeElapsedContainer;
     @Inject
