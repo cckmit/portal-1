@@ -490,7 +490,7 @@ public class WorkerController {
         try {
 
             list.getWorkerRecords().forEach(
-                    p -> results.append(updateWorker(p, request, response))
+                    p -> results.append(updateFireDate(p, request, response))
             );
 
         } catch (Exception e) {

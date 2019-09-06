@@ -164,7 +164,7 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     private MarshallingHttpMessageConverter getMarshallingHttpMessageConverter() {
         Jaxb2Marshaller oxmMarshaller = new Jaxb2Marshaller();
         oxmMarshaller.setClassesToBeBound(
-                Result.class,
+                Result.class, ResultList.class,
                 WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
                 Photo.class, PhotoList.class);

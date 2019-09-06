@@ -201,6 +201,10 @@ public class TestWorkerController {
 
         Assert.assertEquals("update.fire.date: worker is not fired!", worker.isFired(), resultWorker.isFired());
 
+        resultWorker.setCompanyCode(worker.getCompanyCode());
+        resultWorker.setDepartmentId(worker.getDepartmentId());
+        resultWorker.setPositionName(worker.getPositionName());
+        resultWorker.setWorkerId(worker.getWorkerId());
         resultWorker.setFireDate("2019-05-05");
         worker.setFireDate("2019-06-06");
 
@@ -210,10 +214,8 @@ public class TestWorkerController {
 
         ResultList resultList = updateFireDates(list);
 
-        List<Result> results = resultList.getResults();
-
-        for (Result result1 : results) {
-            Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+        for (Result res : resultList.getResults()) {
+            Assert.assertEquals("update.fire.date is not success! " + res.getMessage(), true, res.isOk());
         }
 
         updateFireDate(worker);
@@ -483,7 +485,7 @@ public class TestWorkerController {
         JAXBContext context = JAXBContext.newInstance(WorkerRecord.class, WorkerRecordList.class,
                 DepartmentRecord.class, IdList.class,
                 Photo.class, PhotoList.class,
-                Result.class);
+                Result.class, ResultList.class);
         marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         unmarshaller = context.createUnmarshaller();
@@ -556,7 +558,7 @@ public class TestWorkerController {
     private ResultList updateFireDates (WorkerRecordList list) throws Exception {
         logger.debug("worker input = " + list);
 
-        String uri = BASE_URI + "update.fire.date";
+        String uri = BASE_URI + "update.fire.dates";
 
         String listXml = toXml(list);
 
@@ -567,11 +569,12 @@ public class TestWorkerController {
                         .contentType(MediaType.APPLICATION_XML)
                         .content(listXml)
         );
-        ResultList result = (ResultList) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        logger.debug("result = " + result);
+        ResultList resultList = (ResultList) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
-        return result;
+        logger.debug("resultList = " + resultList);
+
+        return resultList;
     }
 
 

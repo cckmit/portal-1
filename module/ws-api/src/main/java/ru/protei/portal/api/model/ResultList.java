@@ -25,4 +25,15 @@ public class ResultList {
     public void setResults(List<Result> results) {
         this.results = results;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("ResultList{");
+        for (Result result : results) {
+            stringBuilder.append(result);
+        }
+
+        return stringBuilder.toString();
+    }
 }

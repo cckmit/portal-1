@@ -206,7 +206,6 @@ public class UserLogin extends AuditableObject implements Removable {
         return "UserLogin{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
-                ", upass='" + upass + '\'' +
                 ", created=" + created +
                 ", lastPwdChange=" + lastPwdChange +
                 ", pwdExpired=" + pwdExpired +
