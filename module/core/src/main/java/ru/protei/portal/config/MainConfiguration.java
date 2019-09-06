@@ -402,6 +402,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
     public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }

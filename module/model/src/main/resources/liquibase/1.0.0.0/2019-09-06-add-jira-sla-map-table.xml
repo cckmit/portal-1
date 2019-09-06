@@ -1,0 +1,50 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-jira-sla-map-tables" author="buchmastov">
+
+        <createTable tableName="jira_sla_map">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(128)"/>
+        </createTable>
+
+        <createTable tableName="jira_sla_map_entry">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="MAP_ID" type="BIGINT"/>
+            <column name="issue_type" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity" type="VARCHAR(256)"/>
+            <column name="description" type="VARCHAR(1024)"/>
+            <column name="time_of_reaction_hours" type="BIGINT"/>
+            <column name="time_of_decision_days" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addColumn tableName="jira_endpoint">
+            <column name="SLA_MAP_ID" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-fk-on-jira-sla-map-tables" author="buchmastov">
+
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_SLA_ENTRY"
+                                 baseTableName="jira_sla_map_entry" baseColumnNames="MAP_ID"
+                                 referencedTableName="jira_sla_map" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_SLA"
+                                 baseTableName="jira_endpoint" baseColumnNames="SLA_MAP_ID"
+                                 referencedTableName="jira_sla_map" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
