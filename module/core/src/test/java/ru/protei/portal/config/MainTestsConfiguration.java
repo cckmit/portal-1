@@ -596,6 +596,11 @@ public class MainTestsConfiguration {
         return new CaseStateWorkflowServiceImpl();
     }
 
+    @Bean
+    public SLAService getSLAService() {
+        return new SLAServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {

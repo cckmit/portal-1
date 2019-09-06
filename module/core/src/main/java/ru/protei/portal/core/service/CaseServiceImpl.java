@@ -11,12 +11,12 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.JiraUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
-import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -70,6 +70,8 @@ public class CaseServiceImpl implements CaseService {
         if (caseTags.isOk()) {
             caseObject.setTags(new HashSet<>(caseTags.getData()));
         }
+
+        withJiraSLAInformation(caseObject);
 
         // RESET PRIVACY INFO
         if ( caseObject.getInitiator() != null ) {
@@ -287,6 +289,8 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
 
         applyStateBasedOnManager(caseObject);
+
+        persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
             return new CaseObjectUpdateResult(caseObject, false);
@@ -695,6 +699,77 @@ public class CaseServiceImpl implements CaseService {
         return caseLinks;
     }
 
+    private CaseObject withJiraSLAInformation(CaseObject caseObject) {
+
+        if (!En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+            return caseObject;
+        }
+
+        try {
+            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObject.getId());
+            JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
+            JiraUtils.JiraIssueData issueData = JiraUtils.convert(appData);
+            JiraEndpoint endpoint = jiraEndpointDAO.get(issueData.endpointId);
+            caseObject.setJiraMetaData(new JiraMetaData(
+                extAppData.issueType(),
+                extAppData.severity(),
+                endpoint.getSlaMapId()
+            ));
+        } catch (Exception e) {
+            log.warn("Failed to fill jira SLA information", e);
+            caseObject.setJiraMetaData(new JiraMetaData());
+            return caseObject;
+        }
+
+        return caseObject;
+    }
+
+    private CaseObject persistJiraSLAInformation(CaseObject caseObject) {
+
+        if (!En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+            return caseObject;
+        }
+
+        if (caseObject.getJiraMetaData() == null) {
+            log.warn("Got caseObject with 'jira' extAppType and null jiraMetaData");
+            return caseObject;
+        }
+
+        JiraMetaData metaData = caseObject.getJiraMetaData();
+
+        if (metaData.getSlaMapId() == null || StringUtils.isEmpty(metaData.getIssueType())) {
+            log.warn("Got caseObject with 'jira' extAppType and empty jiraMetaData field(s): {}", metaData);
+            return caseObject;
+        }
+
+        if (En_JiraSLAIssueTypeEditable.forIssueType(metaData.getIssueType()) == null) {
+            return caseObject;
+        }
+
+        try {
+            JiraSLAMapEntry slaMapEntry = jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(metaData.getSlaMapId(), metaData.getIssueType(), metaData.getSeverity());
+            if (slaMapEntry == null) {
+                log.warn("Got caseObject with 'jira' extAppType and invalid issueType/severity: {}", metaData);
+                return caseObject;
+            }
+
+            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObject.getId());
+            JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
+            extAppData.setSeverity(metaData.getSeverity());
+            appData.setExtAppData(JiraExtAppData.toJSON(extAppData));
+            if (!externalCaseAppDAO.saveExtAppData(appData)) {
+                log.warn("Failed to save extAppData with jira SLA information");
+                return caseObject;
+            }
+            // TODO Is jira endpoint update required or it's only portal-side update?
+        } catch (Exception e) {
+            log.warn("Failed to persist jira SLA information", e);
+            return caseObject;
+        }
+
+        return caseObject;
+    }
+
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
@@ -726,7 +801,16 @@ public class CaseServiceImpl implements CaseService {
     CaseObjectTagDAO caseObjectTagDAO;
 
     @Autowired
+    ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
     CaseTagDAO caseTagDAO;
+
+    @Autowired
+    JiraEndpointDAO jiraEndpointDAO;
+
+    @Autowired
+    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
 
     @Autowired
     PolicyService policyService;

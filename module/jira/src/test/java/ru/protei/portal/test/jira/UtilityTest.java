@@ -2,7 +2,7 @@ package ru.protei.portal.test.jira;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.jira.struct.JiraExtAppData;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
 
 public class UtilityTest {
 
@@ -37,9 +37,9 @@ public class UtilityTest {
                 .appendAttachment("4")
                 .appendAttachment("7");
 
-        System.out.println(mergeState.toString());
+//        System.out.println(mergeState.toString());
 
-        Assert.assertEquals("{\"cid\":[1,2,3],\"aid\":[\"4\",\"7\"]}", mergeState.toString());
+        Assert.assertEquals("{\"issueType\":null,\"severity\":null,\"cid\":[1,2,3],\"aid\":[\"4\",\"7\"]}", mergeState.toString());
 
     }
 
@@ -51,6 +51,6 @@ public class UtilityTest {
         Assert.assertEquals("10", state.severity());
 
         String json = state.toString();
-        Assert.assertEquals("{\"cid\":[],\"aid\":[],\"issueType\":\"Error\",\"severity\":\"10\"}", json);
+        Assert.assertEquals("{\"issueType\":\"Error\",\"severity\":\"10\",\"cid\":[],\"aid\":[]}", json);
     }
 }

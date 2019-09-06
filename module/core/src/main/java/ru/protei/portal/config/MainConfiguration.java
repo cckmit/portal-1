@@ -760,6 +760,11 @@ public class MainConfiguration {
         return new CaseStateWorkflowServiceImpl();
     }
 
+    @Bean
+    public SLAService getSLAService() {
+        return new SLAServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {
