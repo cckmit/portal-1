@@ -384,18 +384,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setImpLevel(jiraPriorityEntry.getLocalPriorityId());
         }
 
-
         // update info (description)
-        StringBuilder infoValue = new StringBuilder("Тип: " + issue.getIssueType().getName());
 
-        if (jiraPriorityEntry != null) {
-            infoValue.append("\r\n")
-                    .append("SLA: ")
-                    .append(jiraPriorityEntry.getSlaInfo());
-        }
-
-        infoValue.append("\r\n").append(issue.getDescription());
-
-        caseObj.setInfo(infoValue.toString());
+        caseObj.setInfo(issue.getDescription());
     }
 }
