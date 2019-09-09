@@ -40,7 +40,9 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject p, CaseComment c, Person initiator );
 
-    Result<List<En_CaseState>> stateList( En_CaseType caseType);
+    Result<List<En_CaseState>> stateList(En_CaseType caseType);
+
+    Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
 
     Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 

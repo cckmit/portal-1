@@ -339,6 +339,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String canceledCaseState();
 
+    String requestNXCaseState();
+
+    String requestCustomerCaseState();
+
     String criticalImportance();
 
     String importantImportance();

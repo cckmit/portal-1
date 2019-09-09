@@ -6,6 +6,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
 import ru.protei.portal.core.service.CaseService;
@@ -29,8 +30,8 @@ public class CaseStateWorkflowControllerImpl implements CaseStateWorkflowControl
         List<CaseStateWorkflow> caseStateWorkflowList = ServiceUtils.checkResultAndGetData(result1);
 
         En_CaseType type = En_CaseType.CRM_SUPPORT;
-        Result<List<En_CaseState>> result2 = caseService.stateList(type);
-        List<En_CaseState> caseStateList = ServiceUtils.checkResultAndGetData(result2);
+        Result<List<CaseState>> result2 = caseService.stateListWithViewOrder(type);
+        List<CaseState> caseStateList = ServiceUtils.checkResultAndGetData(result2);
 
         return new CaseStateAndWorkflowList(caseStateList, caseStateWorkflowList);
     }

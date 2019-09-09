@@ -382,7 +382,17 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
-        List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
+        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
+
+        if (states == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        return ok(states.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
+        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
             return error(En_ResultStatus.GET_DATA_ERROR);

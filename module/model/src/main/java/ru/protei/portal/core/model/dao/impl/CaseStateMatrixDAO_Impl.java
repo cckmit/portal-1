@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateMatrix;
 
 import java.util.ArrayList;
@@ -27,12 +27,12 @@ public class CaseStateMatrixDAO_Impl extends PortalBaseJdbcDAO<CaseStateMatrix> 
     }
 
     @Override
-    public List<En_CaseState> getStatesByCaseType(En_CaseType caseType) {
+    public List<CaseState> getStatesByCaseType(En_CaseType caseType) {
         List<CaseStateMatrix> caseStateMatrix = getListByCondition("CASE_TYPE=? ORDER BY VIEW_ORDER", caseType.getId());
 
-        List<En_CaseState> caseStateList = new ArrayList<>(caseStateMatrix.size());
+        List<CaseState> caseStateList = new ArrayList<>(caseStateMatrix.size());
         caseStateMatrix.forEach(csm ->
-            caseStateList.add(En_CaseState.getById(csm.getCaseStateId()))
+            caseStateList.add(csm.getCaseState().withViewOrder(csm.getViewOrder()))
         );
 
         return caseStateList;

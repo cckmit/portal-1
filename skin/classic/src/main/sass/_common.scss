@@ -1894,13 +1894,14 @@ td.info {
   font-weight: bold;
 }
 
-
 .label-opened, .label-workaround, .label-info_request,
-.label-technical_project,
+.label-technical_project, .label-nx_request, .label-cust_request,
 .option-technical_project .option-name,
 .option-opened .option-name,
 .option-workaround .option-name,
-.option-info_request .option-name {
+.option-info_request .option-name,
+.option-nx_request .option-name,
+.option-cust_request .option-name {
   background-color: $info_color;
 }
 
@@ -1913,7 +1914,8 @@ td.info {
   font-weight: bold;
 }
 
-.case-opened, .case-workaround, .case-info_request {
+.case-opened, .case-workaround, .case-info_request,
+.case-nx_request, .case-cust_request {
   color: $info_color;
   font-weight: bold;
 }
@@ -1966,7 +1968,7 @@ td.info {
 }
 
 .option-canceled .option-name, .label-canceled,
-.label-paused, .option-paused {
+.label-paused, .option-paused .option-name {
   background-color: #868686;
 }
 
