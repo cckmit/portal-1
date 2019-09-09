@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.HelperFunc.isEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
@@ -79,9 +80,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
 
-        String projectName = StringUtils.emptyIfNull(value.getProjectName());
-        view.setProject(projectName);
-        view.setProjectVisible(!projectName.isEmpty());
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()));
+        view.setProjectVisible(!isEmpty(value.getProjectName()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
