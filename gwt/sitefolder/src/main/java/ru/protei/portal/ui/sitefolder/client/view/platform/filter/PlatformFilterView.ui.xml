@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <div class="card-footer">
+        <div class="card-footer text-right">
             <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>

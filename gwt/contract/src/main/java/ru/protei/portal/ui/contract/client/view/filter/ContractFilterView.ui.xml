@@ -53,10 +53,8 @@
                                                       addStyleNames="form-group col-md-12"/>
             </div>
         </div>
-        <div class="card-footer">
-            <div class="text-right">
-                <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
-            </div>
+        <div class="card-footer text-right">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

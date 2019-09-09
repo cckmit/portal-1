@@ -8,6 +8,7 @@
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -16,14 +17,8 @@
         <div class="card-body">
             <div class="row p-b-10">
                 <h5 class="no-margin col-md-12">
-                    <g:HTMLPanel ui:field="nameContainer" styleName="number-copy-panel">
-                        <g:ToggleButton ui:field="local" styleName="btn private-btn m-r-5 inline-block"/>
-                        <g:Label ui:field="number" styleName="inline-block"/>
-                        <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
-                            <i class="far fa-clone fa-xs"/>
-                        </g:Anchor>
-                        <validablefield:ValidableTextBox ui:field="projectName" styleName="input-field" notNull="true"/>
-                    </g:HTMLPanel>
+                    <g:Label ui:field="number" styleName="inline-block"/>
+                    <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
                 </h5>
             </div>
 
@@ -50,11 +45,11 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.projectProducts}"/></label>
-                    <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false" addStyleNames="form-group col-md-12"/>
+                    <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
                 </div>
                 <div class="form-group col-md-12">
                     <label ui:field="descriptionLabel"><ui:text from="{lang.projectDescription}"/></label>
-                    <g:TextArea ui:field="description" styleName="input-field description" />
+                    <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="form-control" maxRows="10"/>
                 </div>
 
                 <div class="form-group col-md-12">

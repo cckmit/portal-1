@@ -42,7 +42,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
         company.setDefaultValue(lang.selectIssueCompany());
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
@@ -133,13 +132,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         }
     }
 
-    @UiHandler("copy")
-    public void onCopyClick(ClickEvent event) {
-        if (activity != null) {
-            // activity.onCopyClicked();
-        }
-    }
-
     @Override
     public void showComments(boolean isShow) {
         if (isShow)
@@ -160,15 +152,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-
-        local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
-        number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
-        company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
-        description.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
-        saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
-        copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
-
         number.ensureDebugId(DebugIds.PROJECT.NUMBER_INPUT);
         projectName.ensureDebugId(DebugIds.PROJECT.NAME_INPUT);
         description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
@@ -196,17 +179,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @UiField
     ValidableTextBox projectName;
     @UiField
-    HTMLPanel nameContainer;
-
-    @UiField
-    ToggleButton local;
-
-    @UiField
-    Anchor copy;
-
-    @UiField
     TextArea description;
-
     @Inject
     @UiField(provided = true)
     TeamSelector team;

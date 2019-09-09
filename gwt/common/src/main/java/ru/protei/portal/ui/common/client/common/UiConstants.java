@@ -31,8 +31,8 @@ public class UiConstants {
         String CONTRACT = "fa fa-file-signature";
     }
     public interface Icons {
-        String APPROVED = "fa-check-circle-o";
-        String NOT_APPROVED = "fa-file-text-o";
+        String APPROVED = "fa-clipboard-check";
+        String NOT_APPROVED = "fa-clipboard";
     }
 
     public interface ActionBarIcons {

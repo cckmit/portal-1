@@ -4,88 +4,114 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="preview" styleName="preview project">
-        <div class="card card-default no-border">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-1 p-r-0">
-                        <g:Anchor ui:field="fullScreenBtn" styleName="fa fa-lg fa-external-link-alt m-t-5" href="#"/>
-                        <g:Anchor ui:field="backButton" styleName="fas fa-lg fa-times m-t-5" href="#"/>
+    <g:HTMLPanel styleName="preview-wrapper">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+
+            <div class="card card-default">
+                <div class="card-body">
+                    <h4 class="no-margin inline">
+                        <g:Anchor ui:field="name" styleName="full-screen-link" href="#"/>
+                    </h4>
+                    <g:Anchor ui:field="backButton" styleName="fas fa-lg fa-times m-t-5" href="#"/>
+
+                    <div class="inline pull-right">
+                        <small>
+                            <ui:text from="{lang.createBy}"/>
+                        </small>
+                        <small ui:field="author" class="name no-margin bold"/>
+                        <small class="m-l-5 m-r-5">
+                            <ui:text from="{lang.in}"/>
+                        </small>
+                        <small ui:field="creationDate" class="datetime no-margin"/>
                     </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <h5><lable ui:field="header"/></h5>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectState}"/></label>
-                            <span class="col-xs-7 col-md-7">
-                                <i ui:field="iconState"></i>
-                                <span ui:field="state"></span>
-                            </span>
+
+                    <div class="form-group-attached">
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectState}"/>
+                                    </label>
+                                    <div>
+                                        <i ui:field="iconState"></i>
+                                        <span ui:field="state"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectCustomerType}"/>
+                                    </label>
+                                    <span ui:field="customerType"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectCustomerCompany}"/>
+                                    </label>
+                                    <span ui:field="company"></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreateBy}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="initiatorShortName"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectRegion}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="projectRegion"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="projectDirection"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerType}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="customerType"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="company"></span>
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectRegion}"/>
+                                    </label>
+                                    <span ui:field="projectRegion"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectDirection}"/>
+                                    </label>
+                                    <span ui:field="projectDirection"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectProducts}"/>
+                                    </label>
+                                    <span ui:field="products"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <legend><ui:text from="{lang.projectName}"/></legend>
-                        <div class="col-xs-12" ui:field="projectName"></div>
+
+                    <div class="form-group small hint-text pre-formatted-info m-t-10" ui:field="description"/>
+
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.projectTeam}"/>
+                            </h5>
+                            <div class="col-xs-12" ui:field="team"/>
+                        </div>
                     </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <h5><ui:text from="{lang.projectDescription}"/></h5>
-                        <div class="col-xs-12" ui:field="description"></div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.equipmentDocuments}"/>
+                            </h5>
+                            <g:HTMLPanel ui:field="documents"
+                                         styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
+                        </div>
                     </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <h5><ui:text from="{lang.projectTeam}"/></h5>
-                        <div class="col-xs-12" ui:field="team"></div>
-                    </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <h5><ui:text from="{lang.projectProducts}"/></h5>
-                        <div class="col-xs-12" ui:field="products"></div>
-                    </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <h5><ui:text from="{lang.equipmentDocuments}"/></h5>
-                        <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
-                    </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-12">
-                        <h5><ui:text from="{lang.comments}"/></h5>
-                        <g:HTMLPanel ui:field="commentsContainer"/>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.comments}"/>
+                            </h5>
+                            <g:HTMLPanel ui:field="commentsContainer"/>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

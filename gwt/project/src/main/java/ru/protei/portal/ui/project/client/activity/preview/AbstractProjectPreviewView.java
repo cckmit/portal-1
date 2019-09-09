@@ -12,9 +12,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void watchForScroll( boolean isWatch );
 
-    void setHeader( String value );
-
-    void setInitiatorShortName(String value);
+    void setAuthor(String value);
 
     void setCreationDate( String value );
 

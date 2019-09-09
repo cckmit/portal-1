@@ -5,7 +5,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="card card-default issue-filter filter-collapsable">
-
         <div class="filter-header">
             <label><ui:text from="{lang.filters}"/></label>
             <g:Anchor ui:field="filterCollapseBtn" styleName="btn btn-default btn-sm filter-btn-collapse">
@@ -20,7 +19,7 @@
             <issuefilter:IssueFilterParamView ui:field="issueFilterParamView" styleName="row"/>
         </div>
 
-        <div class="card-footer filter-content">
+        <div class="card-footer filter-content text-right">
             <div class="user-filter-name hide" ui:field="filterNameContainer">
                 <label class="bold">
                     <ui:text from="{lang.issueFilterName}"/>

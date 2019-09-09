@@ -5,17 +5,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 
@@ -73,7 +70,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     @Override
     public void hideElements() {
         filterContainer.setVisible( false );
-        //hideColumn.setVisibility( false );
         tableContainer.removeStyleName( "col-md-9" );
         tableContainer.addStyleName( "col-md-12" );
     }
@@ -81,7 +77,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     @Override
     public void showElements() {
         filterContainer.setVisible( true );
-        //hideColumn.setVisibility( true );
         tableContainer.removeStyleName( "col-md-12" );
         tableContainer.addStyleName( "col-md-9" );
     }
@@ -99,6 +94,9 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.CONTACT_EDIT );
 
+        ClickColumn gender = new DynamicColumn<Person>(null, "column_img-35", value -> "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>");
+        columns.add(gender);
+
         ClickColumn<Person> displayName = getDisplayNameColumn( lang );
         columns.add( displayName );
 
@@ -108,6 +106,7 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
         ClickColumn<Person> contact = getContactColumn( lang );
         columns.add(contact);
 
+        table.addColumn( gender.header, gender.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( company.header, company.values );
         table.addColumn( contact.header, contact.values );
@@ -131,16 +130,12 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     @UiField
     Lang lang;
 
+    private ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
+    private EditClickColumn<Person > editClickColumn;
+    private RemoveClickColumn<Person> removeClickColumn;
+    private List<ClickColumn > columns = new ArrayList<>();
 
-    AbstractColumn hideColumn;
-    ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
-    SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
-    EditClickColumn<Person > editClickColumn;
-    RemoveClickColumn<Person> removeClickColumn;
-    List<ClickColumn > columns = new ArrayList<>();
-
-
-    AbstractContactTableActivity activity;
+    private AbstractContactTableActivity activity;
 
     private static ContactTableViewUiBinder ourUiBinder = GWT.create( ContactTableViewUiBinder.class );
     interface ContactTableViewUiBinder extends UiBinder< HTMLPanel, ContactTableView> {}

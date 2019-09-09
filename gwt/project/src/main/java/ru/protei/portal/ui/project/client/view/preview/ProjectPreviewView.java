@@ -50,15 +50,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setName( String value ) { this.projectName.setInnerText( value ); }
+    public void setName( String value ) { this.name.setText( value ); }
 
     @Override
-    public void setInitiatorShortName(String value) {
-        this.initiatorShortName.setInnerHTML( value );
+    public void setAuthor(String value) {
+        this.author.setInnerHTML( value );
     }
-
-    @Override
-    public void setHeader( String value ) { this.header.setInnerText( value ); }
 
     @Override
     public void setCreationDate( String value ) { this.creationDate.setInnerText( value ); }
@@ -89,11 +86,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setCustomerType( String value ) { this.customerType.setInnerText( value );}
 
     @Override
-    public void setTeam( String value ) { this.team.setInnerText( value ); }
+    public void setTeam( String value ) { this.team.setInnerHTML( value ); }
 
     @Override
     public void showFullScreen( boolean value ) {
-        fullScreenBtn.setVisible( !value );
         backButton.setVisible( value );
         if ( value ) {
             preview.addStyleName( "col-md-12 col-lg-6" );
@@ -112,7 +108,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return documents;
     }
 
-    @UiHandler( "fullScreenBtn" )
+    @UiHandler("name")
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
         if ( activity != null ) {
@@ -132,10 +128,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
             return;
         }
 
-        fullScreenBtn.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
-        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
+        name.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
+        name.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
         creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DATE_CREATED_LABEL);
-        projectName.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.NAME_LABEL);
+        name.ensureDebugId(DebugIds.PROJECT_PREVIEW.NAME_LABEL);
         description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.INFO_LABEL);
         state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.STATE_LABEL);
         projectRegion.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.REGION_LABEL);
@@ -150,20 +146,14 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @UiField
     HTMLPanel preview;
-
     @UiField
-    Anchor fullScreenBtn;
+    Element author;
     @UiField
     Anchor backButton;
-
     @UiField
-    Element header;
+    Element creationDate;
     @UiField
-    SpanElement creationDate;
-    @UiField
-    SpanElement initiatorShortName;
-    @UiField
-    DivElement projectName;
+    Anchor name;
     @UiField
     DivElement description;
     @UiField
@@ -179,7 +169,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement state;
     @UiField
-    DivElement products;
+    SpanElement products;
     @UiField
     DivElement team;
     @UiField

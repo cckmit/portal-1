@@ -41,43 +41,12 @@ public class ProjectDocumentsListItemView extends Composite implements AbstractP
 
     @Override
     public void setDecimalNumber(String number) {
-        if (StringUtils.isNotBlank(number)) {
-            decimalNumber.setInnerText(number.trim());
-            decimalNumber.removeClassName(Styles.HIDE);
-        } else {
-            decimalNumber.addClassName(Styles.HIDE);
-        }
+        decimalNumber.setInnerText(number.trim());
     }
 
     @Override
     public void setInfo(String info) {
-        if (StringUtils.isNotBlank(info)) {
-            information.setInnerText(info.trim());
-            information.removeClassName(Styles.HIDE);
-        } else {
-            information.addClassName(Styles.HIDE);
-        }
-    }
-
-    @Override
-    public void setDocumentType(String type) {
-        if (StringUtils.isNotBlank(type)) {
-            documentType.setInnerText(type.trim());
-            documentType.removeClassName(Styles.HIDE);
-        } else {
-            documentType.addClassName(Styles.HIDE);
-        }
-    }
-
-    @Override
-    public void setCreated(Date date) {
-        String created = DateFormatter.formatDateOnly(date);
-        if (StringUtils.isNotBlank(created)) {
-            documentCreated.setInnerText(created.trim());
-            documentCreated.removeClassName(Styles.HIDE);
-        } else {
-            documentCreated.addClassName(Styles.HIDE);
-        }
+        information.setInnerText(info.trim());
     }
 
     @Override
@@ -107,10 +76,6 @@ public class ProjectDocumentsListItemView extends Composite implements AbstractP
     SpanElement decimalNumber;
     @UiField
     SpanElement information;
-    @UiField
-    SpanElement documentType;
-    @UiField
-    SpanElement documentCreated;
     @UiField
     Anchor edit;
     @UiField

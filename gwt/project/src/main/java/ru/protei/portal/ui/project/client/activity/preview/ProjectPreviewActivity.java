@@ -91,9 +91,9 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     private void fillView(ProjectInfo value) {
         this.project = value;
-        view.setName( value.getName() );
-        view.setInitiatorShortName( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
-        view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
+        view.setName( lang.projectHeader(value.getId().toString()) + " " + value.getName() );
+        view.setAuthor( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
+        view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() )  );
         view.setState( value.getState().getId() );
         view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
@@ -102,7 +102,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         if( value.getTeam() != null ) {
             view.setTeam( value.getTeam().stream().map( entry ->
-                    roleTypeLang.getName(entry.getRole()) + ": " + entry.getDisplayShortName() ).collect( Collectors.joining(", ")) );
+                    "<b>" + roleTypeLang.getName(entry.getRole()) + "</b>: " + entry.getDisplayShortName() ).collect( Collectors.joining("<br/>")) );
         }
 
         if( value.getProducts() != null ) {

@@ -755,24 +755,6 @@ label.bordered:after {
         }
       }
     }
-    .company-name {
-      font-weight: bold;
-    }
-    .company-main-info {
-      width: 80%;
-    }
-    .company-category {
-      vertical-align: top !important;
-      width: 15%;
-      img {
-        height: 35px;
-        padding: 0 8px;
-      }
-    }
-    .company-group {
-      vertical-align: top !important;
-      width: 25%;
-    }
     .contacts {
       i {
         padding-right: 5px;
@@ -3341,6 +3323,7 @@ div.select2-container {
 
 div.select2-container {
   border: 1px solid #f0f0f0;
+  background: white;
   width: initial;
   border-radius: 4px;
 }
@@ -4190,4 +4173,30 @@ form-group .verifiable-after
   position: absolute;
   right: 12px;
   top: 6px;
+}
+
+// table images default style
+table {
+  thead {
+    th.column_img-35 {
+      width: 70px;
+    }
+  }
+  tbody {
+    td.column_img-35 {
+      height: 35px;
+      max-height: 35px;
+      width: 35px;
+      max-width: 35px;
+      white-space: pre-line;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+
+      img {
+        max-height: 35px;
+        max-width: 35px;
+      }
+    }
+  }
 }

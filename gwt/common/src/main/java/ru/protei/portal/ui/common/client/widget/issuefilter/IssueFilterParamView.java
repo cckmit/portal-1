@@ -302,11 +302,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         //userFilter.addDisplayOption(value);
     }
 
-    @Override
-    public void addBodyStyles(String styles) {
-        body.addStyleName(styles);
-    }
-
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
@@ -442,8 +437,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     IssueFilterSelector userFilter;
-    @UiField
-    HTMLPanel body;
     @UiField
     CleanableSearchBox search;
     @UiField
