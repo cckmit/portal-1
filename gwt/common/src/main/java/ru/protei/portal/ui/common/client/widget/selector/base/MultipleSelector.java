@@ -25,6 +25,10 @@ public abstract class MultipleSelector<T>
         SelectorWithModel<T>
 {
 
+    public interface SelectorFilter<T> {
+        boolean isDisplayed( T value );
+    }
+
     protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
 
     public void setValue( Set<T> values ) {
@@ -63,7 +67,6 @@ public abstract class MultipleSelector<T>
     public void setHasAnyValue( boolean hasAnyValue ) {
         this.hasAnyValue = hasAnyValue;
     }
-
     public void addOption( String name, T value ) {
         addOption(name, null, value);
     }
@@ -144,6 +147,10 @@ public abstract class MultipleSelector<T>
         }
     }
 
+    public void setFilter( SelectorFilter<T> selectorFilter ) {
+        filter = selectorFilter;
+    }
+
     public abstract void fillSelectorView( List<T> selectedItems );
 
     @Override
@@ -182,6 +189,10 @@ public abstract class MultipleSelector<T>
         popup.getChildContainer().clear();
 
         for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
+            if ( filter != null && !filter.isDisplayed( entry.getKey() ) ) {
+                continue;
+            }
+
             String entryText = entry.getValue().getName().toLowerCase() + (entry.getValue().getInfo() == null ? "" : entry.getValue().getInfo().toLowerCase());
             if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectableItem itemView = itemToViewModel.get( entry.getKey() );
@@ -287,6 +298,7 @@ public abstract class MultipleSelector<T>
     private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private SelectorModel<T> selectorModel;
+    private SelectorFilter<T> filter;
 
     protected Map<T, String> itemToNameModel = new HashMap<T, String>();
 

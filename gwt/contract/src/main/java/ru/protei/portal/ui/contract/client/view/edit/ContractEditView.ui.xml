@@ -10,7 +10,8 @@
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money"
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
-             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract">
+             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -26,10 +27,6 @@
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractNumber}"/></label>
                         <validatefield:ValidableTextBox ui:field="number" styleName="input-field" notNull="true"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractDirection}"/></label>
-                        <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
                     </div>
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractParent}"/></label>
@@ -57,14 +54,10 @@
                         <label><ui:text from="{lang.contractCurator}"/></label>
                         <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
                     </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractManager}"/></label>
-                        <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" defaultValue="{lang.selectAccountPerson}"/>
-                    </div>
 
                     <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractContragent}"/></label>
-                        <company:CompanySelector hasNullValue="false" ui:field="contragent" defaultValue="{lang.selectAccountCompany}"/>
+                        <label><ui:text from="{lang.contractProject}"/></label>
+                        <project:ProjectEntityOptionButtonSelector validation="true" hasNullValue="true" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
                     </div>
 
                     <div class="form-group col-xs-12">

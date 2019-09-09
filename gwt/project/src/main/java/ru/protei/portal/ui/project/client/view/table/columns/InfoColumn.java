@@ -2,6 +2,7 @@ package ru.protei.portal.ui.project.client.view.table.columns;
 
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -23,7 +24,7 @@ public class InfoColumn extends ClickColumn< ProjectInfo > {
 
         StringBuilder content = new StringBuilder();
         content.append( "<b>" ).append( value.getName() ).append( "</b><br/>" )
-                .append( value.getDescription() );
+                .append(StringUtils.emptyIfNull(value.getDescription()));
 
         cell.setInnerHTML( content.toString() );
     }

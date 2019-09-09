@@ -89,7 +89,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public void showFullScreen( boolean value ) {
         fullScreen.setVisible( !value );
-        backButton.setVisible( value );
+        footer.setVisible( value );
         if ( value ) {
             preview.addStyleName( "col-md-12 m-t-10" );
         } else {
@@ -179,6 +179,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel documents;
     @UiField
     HTMLPanel commentsContainer;
+    @UiField
+    HTMLPanel footer;
 
     @Inject
     @UiField

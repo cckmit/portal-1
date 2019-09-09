@@ -1755,5 +1755,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String complexDescription();
 
+    String contractProject();
+
+    String contractProjectNotDefined();
+
     String errSaveIssueNeedSelectPlatform();
 }

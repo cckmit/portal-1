@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 import java.util.Map;
@@ -67,4 +68,6 @@ public interface ProjectService {
     Result<Boolean> removeProject( AuthToken token, Long projectId );
 
     Result<List<ProjectInfo>> listProjects( AuthToken authToken);
+
+    Result<List<EntityOption>> listFreeProjectsAsEntityOptions(AuthToken authToken);
 }

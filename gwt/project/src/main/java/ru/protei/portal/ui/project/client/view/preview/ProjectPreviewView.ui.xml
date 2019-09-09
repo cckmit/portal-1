@@ -3,76 +3,76 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
-            <div class="pull-right">
-                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
-            </div>
+    <g:HTMLPanel styleName="panel footer-fixable-bottom">
+            <g:HTMLPanel styleName="preview-wrapper">
+                <g:HTMLPanel ui:field="preview" styleName="preview">
+                    <div class="pull-right">
+                        <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
+                    </div>
 
-            <fieldset class="header grid grid-indent">
-                <legend><lable ui:field="header"/></legend>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectState}"/></label>
-                    <span class="col-xs-7 col-md-7">
-                        <i ui:field="iconState"></i>
-                        <span ui:field="state"></span>
-                    </span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectRegion}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="projectRegion"></span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="projectDirection"></span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerType}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="customerType"></span>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="company"></span>
-                </div>
-            </fieldset>
+                    <fieldset class="header grid grid-indent">
+                        <legend><lable ui:field="header"/></legend>
+                        <div class="col-xs-6">
+                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectState}"/></label>
+                            <span class="col-xs-7 col-md-7">
+                                <i ui:field="iconState"></i>
+                                <span ui:field="state"></span>
+                            </span>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
+                            <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectRegion}"/></label>
+                            <span class="col-xs-7 col-md-7" ui:field="projectRegion"></span>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
+                            <span class="col-xs-7 col-md-7" ui:field="projectDirection"></span>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerType}"/></label>
+                            <span class="col-xs-7 col-md-7" ui:field="customerType"></span>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerCompany}"/></label>
+                            <span class="col-xs-7 col-md-7" ui:field="company"></span>
+                        </div>
+                    </fieldset>
 
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectName}"/></legend>
-                <div class="col-xs-12" ui:field="projectName"></div>
-            </fieldset>
+                    <fieldset class="header grid grid-indent">
+                        <legend><ui:text from="{lang.projectName}"/></legend>
+                        <div class="col-xs-12" ui:field="projectName"></div>
+                    </fieldset>
 
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectDescription}"/></legend>
-                <div class="col-xs-12" ui:field="description"></div>
-            </fieldset>
+                    <fieldset class="header grid grid-indent">
+                        <legend><ui:text from="{lang.projectDescription}"/></legend>
+                        <div class="col-xs-12" ui:field="description"></div>
+                    </fieldset>
 
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectTeam}"/></legend>
-                <div class="col-xs-12" ui:field="team"></div>
-            </fieldset>
+                    <fieldset class="header grid grid-indent">
+                        <legend><ui:text from="{lang.projectTeam}"/></legend>
+                        <div class="col-xs-12" ui:field="team"></div>
+                    </fieldset>
 
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectProducts}"/></legend>
-                <div class="col-xs-12" ui:field="products"></div>
-            </fieldset>
+                    <fieldset class="header grid grid-indent">
+                        <legend><ui:text from="{lang.projectProducts}"/></legend>
+                        <div class="col-xs-12" ui:field="products"></div>
+                    </fieldset>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
-                <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
-            </fieldset>
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
-            </fieldset>
-            <div class="panel">
-                <div class="footer">
-                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
-                </div>
-            </div>
+                    <fieldset class="header">
+                        <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
+                        <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
+                    </fieldset>
+                    <fieldset class="header grid grid-indent">
+                        <legend><ui:text from="{lang.comments}"/></legend>
+                        <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+                    </fieldset>
+                </g:HTMLPanel>
+            </g:HTMLPanel>
+        <g:HTMLPanel ui:field="footer" styleName="footer">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

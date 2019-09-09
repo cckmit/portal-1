@@ -91,6 +91,15 @@
                 </div>
             </fieldset>
             <fieldset class="header">
+                <legend><ui:text from="{lang.contractProject}"/></legend>
+                <div class="col-xs-12">
+                    <g:Anchor styleName="m-r-5" ui:field="toProjectLink" href="">
+                        <i class="fa fa-external-link"/>
+                    </g:Anchor>
+                    <span ui:field="project"></span>
+                </div>
+            </fieldset>
+            <fieldset class="header">
                 <legend>
                     <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
                 </legend>

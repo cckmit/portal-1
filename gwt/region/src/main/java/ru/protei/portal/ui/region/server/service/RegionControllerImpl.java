@@ -160,6 +160,18 @@ public class RegionControllerImpl implements RegionController {
         throw new RequestFailedException(response.getStatus());
     }
 
+    @Override
+    public List<EntityOption> getFreeProjectsAsEntityOptions() throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        Result<List<EntityOption>> response = projectService.listFreeProjectsAsEntityOptions(descriptor.makeAuthToken());
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

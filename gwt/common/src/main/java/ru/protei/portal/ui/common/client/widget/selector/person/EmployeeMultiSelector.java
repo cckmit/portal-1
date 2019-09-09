@@ -20,10 +20,14 @@ public class EmployeeMultiSelector
     @Inject
     public void init(EmployeeModel model, Lang lang ) {
         this.lang = lang;
+        this.model = model;
+
+        model.setFired(false);
 
         setSelectorModel( model );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
+        setFilter(personView -> !personView.isFired());
     }
 
     @Override
@@ -33,8 +37,8 @@ public class EmployeeMultiSelector
         if ( hasWithoutValue ) {
             addOption(lang.employeeWithoutManager(), new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
-        for ( PersonShortView type : options ) {
-            addOption( type.getDisplayShortName(), type );
+        for ( PersonShortView personView : options ) {
+            addOption( personView.getDisplayShortName(), personView );
         }
     }
 
@@ -42,6 +46,13 @@ public class EmployeeMultiSelector
         this.hasWithoutValue = hasWithoutValue;
     }
 
+    public void setFiredEmployeesVisible(boolean firedEmployeesVisible) {
+        if (firedEmployeesVisible) {
+            model.setFired(null);
+        }
+    }
+
     private Lang lang;
     private boolean hasWithoutValue = false;
+    private EmployeeModel model;
 }

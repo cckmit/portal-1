@@ -176,6 +176,10 @@ public class CaseObjectSqlBuilder {
 
                 condition.append(")");
             }
+
+            if (query.isFreeProjects()) {
+                condition.append(" and case_object.id not in (SELECT contract.project_id FROM contract where contract.project_id is not null)");
+            }
         });
     }
 }
