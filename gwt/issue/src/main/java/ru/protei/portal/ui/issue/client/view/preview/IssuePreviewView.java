@@ -140,6 +140,17 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setPlatform(String value) {
+        this.platform.setInnerText(value);
+        platformExtLink.setVisible(!value.isEmpty());
+    }
+
+    @Override
+    public HasVisibility platformVisibility() {
+        return platformContainer;
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerHTML( value );
     }
@@ -213,6 +224,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
+    @UiHandler("platformExtLink")
+    public void onPlatformExtLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onPlatformExtLinkClicked();
+        }
+    }
+
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
@@ -238,6 +258,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER_LABEL);
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION_LABEL);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME_LABEL);
+        platform.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PLATFORM_LABEL);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO_LABEL);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
@@ -275,6 +296,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     SpanElement name;
+    @UiField
+    Anchor platformExtLink;
+    @UiField
+    SpanElement platform;
+    @UiField
+    HTMLPanel platformContainer;
     @UiField
     SpanElement info;
     @Inject

@@ -74,6 +74,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "manager", newState.getManager() );
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
+        templateModel.put("platform", newState.getPlatformName());
 
         templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup) );
         templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup) );
@@ -99,6 +100,9 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "infoChanged", event.isInfoChanged() );
         templateModel.put( "nameChanged", event.isNameChanged() );
         templateModel.put( "privacyChanged", event.isPrivacyChanged() );
+
+        templateModel.put("platformChanged", event.isPlatformChanged());
+        templateModel.put("oldPlatform", oldState == null ? null : oldState.getPlatformName());
 
         Collection<Attachment> existingAttachments = new ArrayList<>((oldState == null? newState.getAttachments(): oldState.getAttachments()));
         existingAttachments.removeIf(a -> event.getRemovedAttachments().contains(a) || event.getAddedAttachments().contains(a));

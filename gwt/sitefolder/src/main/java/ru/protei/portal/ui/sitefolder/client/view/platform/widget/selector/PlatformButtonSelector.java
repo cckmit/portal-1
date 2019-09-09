@@ -16,13 +16,24 @@ public class PlatformButtonSelector extends ButtonSelector<EntityOption> impleme
         setSearchEnabled(true);
         setHasNullValue(true);
 
-        setDisplayOptionCreator(value -> new DisplayOption(value == null ? null : value.getDisplayText()));
+        setDisplayOptionCreator(value -> new DisplayOption(value == null ? defaultValue : value.getDisplayText()));
     }
 
     @Override
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
+
+        if (defaultValue != null) {
+            addOption(null);
+        }
+
         options.forEach(this::addOption);
         reselectValueIfNeeded();
     }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    private String defaultValue = null;
 }

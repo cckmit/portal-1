@@ -6,10 +6,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
@@ -41,6 +38,17 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     protected void onDetach() {
         super.onDetach();
         positioner.ignore(this);
+    }
+
+    @Override
+    public void showFullScreen(boolean isFullScreen) {
+        fullScreen.setVisible(!isFullScreen);
+        backButton.setVisible(isFullScreen);
+        if (isFullScreen) {
+            preview.addStyleName("platform-fullscreen col-md-12 m-t-10");
+        } else {
+            preview.setStyleName("preview site-folder");
+        }
     }
 
     @Override
@@ -90,6 +98,26 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
+    @UiHandler("fullScreen")
+    public void fullScreenClick(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onFullScreenClicked();
+        }
+    }
+
+    @UiHandler( "backButton" )
+    public void onGoToIssuesClicked ( ClickEvent event) {
+        if ( activity != null ) {
+            activity.onGoToIssuesClicked();
+        }
+    }
+
+    @UiField
+    HTMLPanel preview;
+    @UiField
+    Button fullScreen;
     @UiField
     SpanElement name;
     @UiField
@@ -109,6 +137,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
+    @UiField
+    Button backButton;
 
     @Inject
     FixedPositioner positioner;

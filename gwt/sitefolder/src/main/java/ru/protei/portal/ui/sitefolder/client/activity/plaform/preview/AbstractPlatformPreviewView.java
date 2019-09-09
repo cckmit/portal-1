@@ -8,6 +8,8 @@ public interface AbstractPlatformPreviewView extends IsWidget {
 
     void setActivity(AbstractPlatformPreviewActivity activity);
 
+    void showFullScreen(boolean isFullScreen);
+
     void setName(String value);
 
     void setCompany(String value);

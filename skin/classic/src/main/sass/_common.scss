@@ -3038,6 +3038,13 @@ a {
 }
 
 .preview.site-folder {
+  &.platform-fullscreen {
+    fieldset {
+      min-width: 0;
+      margin-left: 0 !important;
+      width: calc(100% - 20px);
+    }
+  }
 
   fieldset {
     min-width: 0;

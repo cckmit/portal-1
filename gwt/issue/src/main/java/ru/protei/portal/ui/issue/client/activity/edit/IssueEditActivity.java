@@ -385,6 +385,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
+        view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption(issue.getPlatformName(), issue.getPlatformId()));
+        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
         unlockSave();
     }
@@ -408,6 +410,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
         issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
         issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
+        issue.setPlatformId(view.platform().getValue() == null ? null : view.platform().getValue().getId());
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             issue.setTimeElapsed(view.timeElapsedInput().getTime());
