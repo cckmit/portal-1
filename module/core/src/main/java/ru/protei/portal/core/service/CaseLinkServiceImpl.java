@@ -11,7 +11,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -21,6 +20,10 @@ import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.*;
+
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -40,6 +43,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Autowired
     PortalConfig portalConfig;
+
+    @Autowired
+    YoutrackService youtrackService;
 
     @Override
     public CoreResponse<Map<En_CaseLink, String>> getLinkMap() {
@@ -117,6 +123,71 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         return new CoreResponse<>().success();
+    }
+
+    @Override
+    public CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
+        return youtrackService.getIssueInfo( ytId );
+    }
+
+    @Override
+    public CoreResponse<List<CaseLink>> getYoutrackLinks( Long caseId ) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId( caseId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+        Long caseId = getCaseIdByCaseNumber( caseNumber );
+        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
+                CaseLink::getCaseId ).orElseGet( ignore ->
+                addCaseLinkOnToYoutrack( caseId, youtrackId ) );
+    }
+
+    @Override
+    public CoreResponse<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+        Long caseId = getCaseIdByCaseNumber( caseNumber );
+        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
+                removeCaseLinkOnToYoutrack( caseLink )).orElseGet( ignore ->
+                ok( true )
+        );
+    }
+
+    private Long getCaseIdByCaseNumber( Long caseNumber ) {
+        return caseObjectDAO.getCaseIdByNumber( caseNumber );
+    }
+
+    private CoreResponse<CaseLink> findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
+        return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
+                .map( CoreResponse::ok )
+                .orElse( errorSt( En_ResultStatus.NOT_FOUND ) );
+    }
+
+    private CoreResponse<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+        CaseLink newLink = new CaseLink();
+        newLink.setCaseId( caseNumber );
+        newLink.setType( En_CaseLink.YT );
+        newLink.setRemoteId( youtrackId );
+        Long id = caseLinkDAO.persist( newLink );
+        if (id == null) {
+            log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
+            throw new RuntimeException( "addCaseLinkOnToYoutrack(): rollback transaction" );
+        }
+        return ok( id );
+    }
+
+    private CoreResponse<Boolean> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+        if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
+            log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
+            throw new RuntimeException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+        }
+        log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
+        return ok(true);
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

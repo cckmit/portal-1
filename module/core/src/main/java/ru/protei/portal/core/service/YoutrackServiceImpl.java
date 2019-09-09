@@ -3,121 +3,116 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriTemplateHandler;
-import org.springframework.web.util.UriComponentsBuilder;
-import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.yt.AttachmentResponse;
+import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
-import ru.protei.portal.util.UriUtils;
+import ru.protei.portal.core.model.yt.api.IssueApi;
 
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Created by admin on 15/11/2017.
  */
 public class YoutrackServiceImpl implements YoutrackService {
-    private RestTemplate ytClient;
 
-    private HttpHeaders authHeaders;
-    private String BASE_URL;
-
-    @Autowired
-    private PortalConfig portalConfig;
-
-    @PostConstruct
-    public void initAuthHeadersAndUrl() {
-        authHeaders = new HttpHeaders();
-        authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        authHeaders.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
-
-        ytClient = new RestTemplate();
-        ((DefaultUriTemplateHandler)ytClient.getUriTemplateHandler()).setStrictEncoding( true );
-
-        BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
+    @Override
+    public CoreResponse<ChangeResponse> getIssueChanges( String issueId ) {
+        return restDao.getIssueChanges( issueId );
     }
 
     @Override
-    public ChangeResponse getIssueChanges(String issue) {
-        log.debug("requesting changes of {}", issue);
-
-        ResponseEntity<ChangeResponse> resp = ytClient.exchange(
-                BASE_URL + "/issue/" + issue + "/changes",
-                HttpMethod.GET, new HttpEntity<>(authHeaders), ChangeResponse.class
-        );
-        return resp.getBody();
+    public CoreResponse<List<YtAttachment>> getIssueAttachments( String issueId ) {
+        return restDao.getIssueAttachments( issueId );
     }
 
     @Override
-    public List<YtAttachment> getIssueAttachments(String issueId) {
-        log.debug("requesting attachments of {}", issueId);
-
-        ResponseEntity<AttachmentResponse> resp = ytClient.exchange(
-                BASE_URL + "/issue/" + issueId + "/attachment",
-                HttpMethod.GET, new HttpEntity<>(authHeaders), AttachmentResponse.class
-        );
-        return resp.getBody().getAttachments();
+    public CoreResponse<String> createIssue( String project, String summary, String description ) {
+        return restDao.createIssue( project, summary, description );
     }
 
     @Override
-    public String createIssue(String project, String summary, String description) {
-        log.info("creating issue: project={}, summary={}, description={}", project, summary, description);
+    public CoreResponse<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectId, Date updatedAfter ) {
+        return restDao.getIssuesByProjectAndUpdated( projectId, updatedAfter )
+                .map( issues -> stream( issues ).map( Issue::getId )
+                        .collect( Collectors.toSet() ) );
+    }
 
-        String uri = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue")
-                .queryParam("project", project)
-                .queryParam("summary", summary)
-                .queryParam("description", StringUtils.emptyIfNull(description))
-                .build()
-                .encode()
-                .toUriString();
-
-        ResponseEntity<String> response = ytClient.exchange(
-                uri,
-                HttpMethod.PUT,
-                new HttpEntity<>(authHeaders),
-                String.class
-        );
-
-        String issueId = UriUtils.getLastPathSegment(response.getHeaders().getLocation());
+    @Override
+    public CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId ) {
         if (issueId == null) {
-            log.error("failed to create issue: failed to extract issue id from response Location header: {}", response.getHeaders().getLocation());
-            throw new RuntimeException();
+            log.warn( "getIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
+            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        log.debug("created issue with id = {}", issueId);
-        return issueId;
+        return restDao.getIssue( issueId ).map(
+                this::convertToInfo );
     }
 
     @Override
-    public Set<String> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue/byproject/" + projectId)
-                .queryParam("with", "id")
-                .queryParam("max", MAX_ISSUES_IN_RESPONSE);
+    public CoreResponse<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber ) {
+        if (issueId == null || caseNumber == null) {
+            log.warn( "setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
+            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+        }
 
-        if (updatedAfter != null)
-            builder.queryParam("updatedAfter", updatedAfter.getTime());
-
-        String uri = builder.build()
-                .encode()
-                .toUriString();
-
-        ResponseEntity<Issue[]> response = ytClient.exchange(
-                uri, HttpMethod.GET, new HttpEntity<>(authHeaders), Issue[].class
-        );
-        return Arrays.stream(response.getBody())
-                .map(Issue::getId)
-                .collect(Collectors.toSet());
+        return apiDao.getIssue( issueId ).flatMap( issue ->
+                replaceCrmNumberIfDifferent( issue, issue.getCrmNumber(), caseNumber ) );
     }
 
-    private final static Logger log = LoggerFactory.getLogger(YoutrackServiceImpl.class);
-    private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;
+    @Override
+    public CoreResponse<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
+        if (issueId == null || caseNumber == null) {
+            log.warn( "removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber  );
+            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
+        return apiDao.getIssue( issueId ).flatMap( issue ->
+                removeCrmNumberIfSame( issue, issue.getCrmNumber(), caseNumber ) );
+    }
+
+    private CoreResponse<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {
+        if (Objects.equals( crmNumber, caseNumber )) {
+            return apiDao.removeCrmNumber( issue );
+        }
+        return ok();
+    }
+
+    private CoreResponse<String> replaceCrmNumberIfDifferent(IssueApi issue, Long crmNumber, Long caseNumber ) {
+        if (Objects.equals( crmNumber, caseNumber )) {
+            return ok();
+        }
+        return apiDao.setCrmNumber( issue, caseNumber );
+    }
+
+    private YouTrackIssueInfo convertToInfo( Issue issue ) {
+        if (issue == null) return null;
+        YouTrackIssueInfo issueInfo = new YouTrackIssueInfo();
+        issueInfo.setId( issue.getId() );
+        issueInfo.setSummary( issue.getSummary() );
+        issueInfo.setDescription( issue.getDescription() );
+        issueInfo.setState( YoutrackConstansMapping.toCaseState( issue.getStateId() ) );
+        issueInfo.setImportance( YoutrackConstansMapping.toCaseImportance( issue.getPriority() ) );
+        return issueInfo;
+    }
+
+    @Autowired
+    YoutrackRestClient restDao;
+
+    @Autowired
+    YoutrackApiClient apiDao;
+
+    private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
+
 }
+

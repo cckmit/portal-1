@@ -10,6 +10,8 @@ import ru.protei.portal.core.model.ent.Downloadable;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
+import java.util.function.Function;
+
 public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
 
     public interface DownloadHandler<T> extends AbstractColumnHandler<T> {
@@ -28,14 +30,18 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
 
     @Override
     public void fillColumnValue(Element cell, T value) {
-        if (!value.isAllowedDownload())
+        if (!value.isAllowedDownload()) {
             return;
+        }
+
+        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
 
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
         a.addClassName("fa fa-lg fa-cloud-download");
         a.setTitle(lang.download());
         setDownloadEnabled(a);
+        setDownloadDeprecated(a);
         cell.appendChild(a);
     }
 
@@ -47,14 +53,27 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         setActionHandler(downloadHandler::onDownloadClicked);
     }
 
+    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
+        this.archivedCheckFunction = archivedCheckFunction;
+    }
+
     private void setDownloadEnabled(AnchorElement a) {
         if (privilege == null) {
             return;
         }
+
         if (policyService.hasPrivilegeFor(privilege)) {
             a.removeClassName("link-disabled");
         } else {
             a.addClassName("link-disabled");
+        }
+    }
+
+    private void setDownloadDeprecated(AnchorElement a) {
+        if (isArchived) {
+            a.addClassName("deprecated-entity");
+        } else {
+            a.removeClassName("deprecated-entity");
         }
     }
 
@@ -63,4 +82,7 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
 
     Lang lang;
     En_Privilege privilege;
+
+    private boolean isArchived;
+    private Function<T, Boolean> archivedCheckFunction;
 }

@@ -13,11 +13,9 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
@@ -30,10 +28,16 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn) {
+    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn, ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.downloadClickColumn = downloadClickColumn;
+        this.archiveClickColumn = archiveClickColumn;
+        this.documentNameColumn = documentNameColumn;
+
+        editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
+        archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
+        downloadClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         initTable();
     }
 
@@ -46,6 +50,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         editClickColumn.setColumnProvider(columnProvider);
 
         downloadClickColumn.setDownloadHandler(activity);
+
+        archiveClickColumn.setArchiveHandler(activity);
+        archiveClickColumn.setColumnProvider(columnProvider);
+
+        documentNameColumn.setColumnProvider(columnProvider);
 
         project.setActionHandler(activity::onProjectColumnClicked);
 
@@ -107,18 +116,86 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 
         columns.add(id);
-        columns.add(documentName);
+        columns.add(documentNameColumn);
         columns.add(decimalNumber);
 
         table.addColumn(id.header, id.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
-        table.addColumn(documentName.header, documentName.values);
+        table.addColumn(documentNameColumn.header, documentNameColumn.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
+        table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
     }
+
+
+
+    private final ClickColumn<Document> id = new ClickColumn<Document>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.documentIdColumnHeader());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            cell.setInnerText(value.getId().toString());
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("deprecated-entity");
+            }
+        }
+    };
+
+    private final ClickColumn<Document> decimalNumber = new ClickColumn<Document>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.designation());
+            columnHeader.addClassName("document-number-column");
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (!StringUtils.isEmpty(value.getDecimalNumber())) {
+                html
+                        .append("<div class=\"decimal-number\">")
+                        .append(value.getDecimalNumber())
+                        .append("</div> ");
+            }
+
+            cell.setInnerHTML(html.toString());
+
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("deprecated-entity");
+            }
+        }
+    };
+
+    private final ClickColumn<Document> project = new ClickColumn<Document>() {
+        @Override
+        protected void fillColumnHeader(Element element) {
+            element.setInnerText(lang.equipmentProject());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            ProjectInfo project = value.getProjectInfo();
+            if (project == null) {
+                return;
+            }
+
+            cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
+
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("deprecated-entity");
+            }
+        }
+    };
+
 
     @UiField
     InfiniteTableWidget<Document> table;
@@ -139,93 +216,13 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     ClickColumnProvider<Document> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Document> editClickColumn;
     DownloadClickColumn<Document> downloadClickColumn;
+    ArchiveClickColumn<Document> archiveClickColumn;
+    DocumentNameColumn<Document> documentNameColumn;
     List<ClickColumn<Document>> columns = new LinkedList<>();
 
     AbstractDocumentTableActivity activity;
-
-
-    private final ClickColumn<Document> id = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.documentIdColumnHeader());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            cell.setInnerText(value.getId().toString());
-        }
-    };
-
-    private final ClickColumn<Document> decimalNumber = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.designation());
-            columnHeader.addClassName("document-number-column");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            String html = "";
-
-            if (!StringUtils.isEmpty(value.getDecimalNumber())) {
-                html += "<div class=\"decimal-number\">" + value.getDecimalNumber() + "</div> ";
-            }
-
-            cell.setInnerHTML(html);
-        }
-    };
-    private final ClickColumn<Document> documentName = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.documentName());
-            columnHeader.addClassName("document-number-column");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            StringBuilder sb = new StringBuilder();
-
-            if (!value.isActiveUnit()){
-                sb
-                        .append("<div class =\"document-name text-danger\">")
-                        .append("<i class=\"fa fa-ban m-r-5\"></i> ")
-                        .append(value.getName())
-                        .append("</div>");
-            }
-            else
-                sb.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
-            if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
-                sb.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
-            }
-            sb.append( "<br/>" );
-            sb.append( "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>" );
-            sb.append( "<br/>" );
-            sb.append( value.getApproved() ? lang.documentApproved() : lang.documentNotApproved() );
-            sb.append( "<br/>" );
-            sb.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + " " + DateFormatter.formatTimeOnly(value.getCreated()) + "</small>" );
-
-            cell.setInnerHTML(sb.toString());
-        }
-    };
-
-    private final ClickColumn<Document> project = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element element) {
-            element.setInnerText(lang.equipmentProject());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            ProjectInfo project = value.getProjectInfo();
-            if (project == null)
-                return;
-            cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
-        }
-    };
-
-
     private static DocumentTableViewUiBinder ourUiBinder = GWT.create(DocumentTableViewUiBinder.class);
-
     interface DocumentTableViewUiBinder extends UiBinder<HTMLPanel, DocumentTableView> {
+
     }
 }

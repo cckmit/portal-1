@@ -19,6 +19,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+
 /**
  * Реализация сервиса по работе с сотрудниками
  */
@@ -39,7 +41,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         CoreResponse< List< PersonShortView > > result = employeeService.shortViewList( query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

@@ -23,6 +23,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -80,7 +81,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
                 .map(Company::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return new CoreResponse<List<EntityOption>>().success(result);
     }
 
     @Override
@@ -131,6 +132,27 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<List<CompanySubscription>>().success( result );
     }
 
+    @Override
+    public CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
+        if (companyId == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Company company = companyDAO.get(companyId);
+
+        if (company == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        company.setArchived(isDeprecated);
+
+        if (companyDAO.updateState(company)) {
+            return new CoreResponse().success();
+        } else {
+            return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -145,7 +167,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<EntityOption> result = list.stream().map(CompanyGroup::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
@@ -171,7 +193,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override

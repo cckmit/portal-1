@@ -1,12 +1,13 @@
 package ru.protei.portal.ui.product.client.activity.list;
 
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -22,10 +23,10 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
+import ru.protei.portal.ui.product.client.view.item.ProductItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -85,7 +86,31 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
 
     @Override
     public void onEditClicked( AbstractProductItemView itemView ) {
-        fireEvent( new ProductEvents.Edit( itemViewToModel.get( itemView ).getId()  ) );
+        DevUnit value = itemViewToModel.get(itemView);
+        if (!value.isDeprecatedUnit()) {
+            fireEvent(new ProductEvents.Edit(value.getId()));
+        }
+    }
+
+    @Override
+    public void onLockClicked(ProductItemView itemView) {
+        DevUnit devUnit = itemViewToModel.get(itemView);
+        if (devUnit == null) {
+            return;
+        }
+
+        productService.updateState(devUnit.getId(), devUnit.getState() == En_DevUnitState.DEPRECATED ? En_DevUnitState.ACTIVE : En_DevUnitState.DEPRECATED, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                requestProducts();
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new ProductEvents.ProductListChanged());
+            }
+        });
     }
 
     @Override
@@ -96,9 +121,10 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
         AbstractProductItemView itemView = factory.get();
         itemView.setName(product.getName());
         itemView.setType(product.getType());
-        itemView.setDeprecated(product.getStateId() > 1);
+        itemView.setArchived(product.getStateId() > 1);
         itemView.setActivity(this);
         itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
+        itemView.setArchived(product.isDeprecatedUnit());
 
         return itemView;
     }

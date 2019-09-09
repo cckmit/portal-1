@@ -16,5 +16,5 @@ public interface DocumentDAO extends PortalBaseDAO<Document> {
 
     boolean checkDecimalNumberExists(String decimalNumber);
 
-    void updateState(Document document);
+    boolean updateState(Document document);
 }

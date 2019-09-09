@@ -36,9 +36,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.comp_name );
                 break;
             case ISSUE:
-                addOption( En_SortField.creation_date );
-                addOption( En_SortField.last_update );
                 addOption( En_SortField.issue_number );
+                addOption( En_SortField.last_update );
                 break;
             case EQUIPMENT:
                 addOption( En_SortField.name );

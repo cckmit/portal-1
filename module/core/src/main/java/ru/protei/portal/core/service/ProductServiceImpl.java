@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 /**
  * Реализация сервиса управления продуктами
  */
@@ -71,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductShortView> result = list.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
 
-        return new CoreResponse<List<ProductShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
@@ -84,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
 
-        return new CoreResponse<List<ProductDirectionInfo>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
@@ -110,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!checkUniqueProduct(product.getName(), product.getId()))
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         product.setCreated(new Date());
@@ -139,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
         if( product == null || product.getId() == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!checkUniqueProduct(product.getName(), product.getId()))
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         DevUnit oldProduct = devUnitDAO.get(product.getId());
@@ -166,31 +168,37 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public CoreResponse changeProductState(AuthToken token, DevUnit product) {
+    public CoreResponse<En_DevUnitState> updateState(AuthToken makeAuthToken, Long productId, En_DevUnitState state) {
+        if (productId == null) {
+            return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        DevUnit product = devUnitDAO.get(productId);
+
         if (product == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (devUnitDAO.get(product.getId()) == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        product.setStateId(state.getId());
+
+        if (devUnitDAO.updateState(product)) {
+            return new CoreResponse<En_DevUnitState>().success(state);
+        } else {
+            return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.INTERNAL_ERROR);
         }
-
-        devUnitDAO.updateState(product);
-
-        return new CoreResponse().success();
     }
 
     @Override
-    public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
+    public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, En_DevUnitType type, Long excludeId) {
 
         if( name == null || name.isEmpty() )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse<Boolean>().success(checkUniqueProduct(name, excludeId));
+        return new CoreResponse<Boolean>().success(checkUniqueProduct(name, type, excludeId));
     }
 
-    private boolean checkUniqueProduct (String name, Long excludeId) {
-        DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
+    private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {
+        DevUnit product = devUnitDAO.checkExistsByName(type, name);
 
         return product == null || product.getId().equals(excludeId);
     }

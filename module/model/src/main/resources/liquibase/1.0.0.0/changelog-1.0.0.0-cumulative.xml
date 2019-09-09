@@ -114,4 +114,8 @@
   <include file="2019-07-29-add-is-deleted-column-to-company.xml" relativeToChangelogFile="true"/>
   <include file="2019-07-29-add-state-column-to-document.xml" relativeToChangelogFile="true"/>
   <include file="2019-08-08-modify-employee_registration-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-08-13-add-cmanager_id-column-to-case_comment.xml" relativeToChangelogFile="true"/>
+  <include file="2019-08-22-add-complex-dev-unit-type.xml" relativeToChangelogFile="true"/>
+  <include file="2019-08-23-add-case-object-states.xml" relativeToChangelogFile="true"/>
+  <include file="2019-09-09-add-paused-state-to-issues.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

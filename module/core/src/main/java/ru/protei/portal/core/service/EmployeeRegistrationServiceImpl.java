@@ -18,7 +18,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
@@ -141,8 +140,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
         ).toString();
 
-        String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private void createPhoneYoutrackIssueIfNeeded( EmployeeRegistration employeeRegistration) {
@@ -164,8 +164,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
         ).toString();
 
-        String issueId = youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
@@ -182,8 +183,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 
-        String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( EQUIPMENT_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private Set<En_EmployeeEquipment> getEquipmentsListFurniture(Set<En_EmployeeEquipment> employeeRegistration) {

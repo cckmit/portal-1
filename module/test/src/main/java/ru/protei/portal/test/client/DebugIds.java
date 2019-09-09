@@ -139,6 +139,8 @@ public class DebugIds {
         String INFO_REQUEST = "issue-state-info-request";
         String CANCELED = "issue-state-canceled";
         String CUST_PENDING = "issue-state-cust-pending";
+        String NX_REQUEST = "issue-state-nx-request";
+        String CUST_REQUEST = "issue-state-cust-request";
     }
 
     public interface ISSUE {
@@ -276,5 +278,25 @@ public class DebugIds {
         String SUPPORT = "region-state-support";
         String FINISHED = "region-state-finished";
         String CANCELED = "region-state-canceled";
+    }
+
+    public interface COMPANY_TABLE {
+        String LOCK_ICON = "company-table-lock-icon";
+    }
+
+    public interface COMPANY_ITEM {
+        String LOCK_ICON = "company-item-lock-icon";
+    }
+
+    public interface PRODUCT_TABLE {
+        String LOCK_ICON = "product-table-lock-icon";
+    }
+
+    public interface PRODUCT_ITEM {
+        String LOCK_ICON = "product-item-lock-icon";
+    }
+
+    public interface DOCUMENT_TABLE {
+        String LOCK_ICON = "document-table-lock-icon";
     }
 }

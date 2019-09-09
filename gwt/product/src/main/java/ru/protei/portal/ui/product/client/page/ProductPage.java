@@ -22,7 +22,7 @@ public abstract class ProductPage
 
     @PostConstruct
     public void onInit() {
-        ТAB = lang.products();
+        ТAB = lang.complexesAndProducts();
     }
 
     @Event

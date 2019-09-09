@@ -53,6 +53,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Override
     public void fillReportTypes(List<En_ReportType> options) {
         reportType.fillOptions(options);
+        reportType.setEnabled(options.size() > 1);
     }
 
     @UiHandler("reportType")

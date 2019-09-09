@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-cmanager_id-column-to-case_comment" author="buchmastov">
+        <addColumn tableName="case_comment">
+            <column name="cmanager_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-cmanager_id-at-case_comment-constraint" author="buchmastov">
+        <addForeignKeyConstraint constraintName="cmanager_id_to_person_fk"
+                                 baseTableName="case_comment" baseColumnNames="cmanager_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onDelete="NO ACTION" onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

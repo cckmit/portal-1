@@ -65,4 +65,9 @@ public class ProductShortView implements Serializable {
             return null;
         return new ProductShortView( product.getId(), product.getName(), product.getStateId() );
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

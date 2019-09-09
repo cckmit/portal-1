@@ -13,7 +13,9 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ArchiveClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -27,9 +29,12 @@ import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView
  */
 public class CompanyTableView extends Composite implements AbstractCompanyTableView{
     @Inject
-    public void onInit(EditClickColumn<Company> editClickColumn) {
-        initWidget(ourUiBinder.createAndBindUi(this));
+    public void onInit(EditClickColumn<Company> editClickColumn, ArchiveClickColumn<Company> archiveClickColumn) {
         this.editClickColumn = editClickColumn;
+        this.archiveClickColumn = archiveClickColumn;
+        editClickColumn.setArchivedCheckFunction(Company::isArchived);
+        archiveClickColumn.setArchivedCheckFunction(Company::isArchived);
+        initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
     }
 
@@ -40,6 +45,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+
+        archiveClickColumn.setArchiveHandler(activity);
+        archiveClickColumn.setColumnProvider(columnProvider);
 
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
@@ -110,22 +118,50 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
+        archiveClickColumn.setPrivilege(En_Privilege.COMPANY_EDIT);
+
         name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
         category = new DynamicColumn<>(
-            lang.companyCategory(),
-            "company-category",
-            company -> company.getCategory() != null? company.getCategory().getName(): ""
+                lang.companyCategory(),
+                "company-category",
+                company -> {
+                    if (company.getCategory() == null) {
+                        return "";
+                    } else {
+                        Element cCategory = DOM.createDiv();
+                        cCategory.setInnerText(company.getCategory().getName());
+                        if (company.isArchived()) {
+                            cCategory.addClassName("deprecated-entity");
+                        }
+
+                        return cCategory.getString();
+                    }
+                }
         );
+
         group = new DynamicColumn<>(
                 lang.companyGroup(),
                 "company-group",
-                company -> company.getCompanyGroup() != null? company.getCompanyGroup().getName(): ""
+                company -> {
+                    if (company.getCompanyGroup() == null) {
+                        return "";
+                    } else {
+                        Element cGroup = DOM.createDiv();
+                        cGroup.setInnerText(company.getCategory().getName());
+                        if (company.isArchived()) {
+                            cGroup.addClassName("deprecated-entity");
+                        }
+
+                        return cGroup.getString();
+                    }
+                }
         );
 
         table.addColumn( name.header, name.values );
         table.addColumn( category.header, category.values );
         table.addColumn( group.header, group.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
     }
 
     private String getCompanyInfoBlock(Company company){
@@ -133,7 +169,23 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
         Element cName = DOM.createDiv();
         cName.addClassName("company-name");
-        cName.setInnerText(company.getCname());
+
+        if (company.isArchived()) {
+            companyInfo.addClassName("deprecated-entity");
+
+            Element banIcon = DOM.createElement("i");
+            banIcon.addClassName("fa fa-lock m-r-5");
+            banIcon.setId(DEBUG_ID_PREFIX + DebugIds.COMPANY_TABLE.LOCK_ICON);
+
+            Element label = DOM.createLabel();
+            label.setInnerText(company.getCname());
+
+            cName.appendChild(banIcon);
+            cName.appendChild(label);
+        } else {
+            cName.setInnerText(company.getCname());
+        }
+
         companyInfo.appendChild(cName);
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
@@ -199,6 +251,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     ClickColumnProvider< Company > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< Company > editClickColumn;
+    ArchiveClickColumn<Company> archiveClickColumn;
     DynamicColumn<Company> name;
     DynamicColumn<Company> category;
     DynamicColumn<Company> group;

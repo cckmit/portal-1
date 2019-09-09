@@ -1,8 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-
     <g:HTMLPanel tag="li">
         <div class="header-block">
             <h2 ui:field="name"></h2>
@@ -10,6 +8,7 @@
                 <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
                 <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil" href="#"/>
                 <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
+                <g:Anchor ui:field="lock" href="#"/>
             </p>
             <g:Image ui:field="typeImg" styleName="dev-unit-type-list-image"/>
         </div>

@@ -339,6 +339,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String canceledCaseState();
 
+    String requestNXCaseState();
+
+    String requestCustomerCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -390,6 +394,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentChangeStatusTo();
 
     String issueCommentChangeImportanceTo();
+
+    String issueCommentChangeManagerTo();
 
     String errNotRemoved();
 
@@ -1728,7 +1734,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String passwordUpdatedSuccessful();
 
+    String issueLinkIncorrectYouTrackCaseNotFound( String p0 );
     String dropFilesHere();
 
     String productChangeStateConfirmMessage();
+
+    String complexName();
+
+    String devUnitComplex();
+
+    String complexesAndProducts();
+
+    String componentDescription();
+
+    String complexDescription();
 }

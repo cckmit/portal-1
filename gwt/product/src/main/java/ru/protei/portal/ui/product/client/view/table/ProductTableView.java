@@ -13,23 +13,24 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DynamicColumn;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 public class ProductTableView extends Composite implements AbstractProductTableView{
 
     @Inject
-    public void onInit(EditClickColumn<DevUnit> editClickColumn) {
+    public void onInit(EditClickColumn<DevUnit> editClickColumn, ArchiveClickColumn<DevUnit> archiveClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
+        this.archiveClickColumn = archiveClickColumn;
+
+        editClickColumn.setArchivedCheckFunction(DevUnit::isDeprecatedUnit);
+        archiveClickColumn.setArchivedCheckFunction(DevUnit::isDeprecatedUnit);
         initTable();
     }
 
@@ -40,6 +41,9 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+
+        archiveClickColumn.setArchiveHandler(activity);
+        archiveClickColumn.setColumnProvider(columnProvider);
 
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
@@ -103,17 +107,21 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
-        name = new DynamicColumn<>(lang.productName(), "product-name", devUnit ->{
+        archiveClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
+        
+        name = new DynamicColumn<>(lang.name(), "product-name", devUnit -> {
             StringBuilder stringBuilder = new StringBuilder();
-            if(!devUnit.isActiveUnit()) {
+
+            if (devUnit.isActiveUnit()) {
+                stringBuilder.append(devUnit.getName());
+            } else {
                 stringBuilder
-                        .append("<div class = text-danger>")
-                        .append("<i class=\"fa fa-ban m-r-5\"></i> ")
+                        .append("<div class=\"deprecated-entity\">")
+                        .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_TABLE.LOCK_ICON + "\"></i> ")
                         .append(devUnit.getName())
                         .append("</div>");
             }
-            else
-                stringBuilder.append(devUnit.getName());
+
             return stringBuilder.toString();
         });
         type = new ClickColumn<DevUnit>() {
@@ -138,6 +146,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
     }
 
     @UiField
@@ -159,6 +168,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
     ClickColumnProvider< DevUnit > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< DevUnit > editClickColumn;
+    ArchiveClickColumn<DevUnit> archiveClickColumn;
     DynamicColumn<DevUnit> name;
     ClickColumn<DevUnit> type;
 

@@ -21,7 +21,6 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import javax.validation.constraints.AssertTrue;
 import java.util.Date;
 
 /**
@@ -41,7 +40,6 @@ public class ProductServiceTest {
         CoreResponse<SearchResult<DevUnit>> result = productService.getProducts( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
-        Assert.assertTrue(result.getDataAmountTotal() > 0);
 
         Assert.assertNotNull(result.getData());
         Assert.assertNotNull(result.getData().getResults());
@@ -63,7 +61,7 @@ public class ProductServiceTest {
 
         log.info(" product with " + name + " is not exist | product " + product);
 
-        CoreResponse<Boolean> result = productService.checkUniqueProductByName( null, name, 1L);
+        CoreResponse<Boolean> result = productService.checkUniqueProductByName( null, name, En_DevUnitType.PRODUCT, 1L);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
@@ -78,7 +76,7 @@ public class ProductServiceTest {
 
         log.info(" product with " + name + " is not exist");
 
-        result = productService.checkUniqueProductByName( null, name, null);
+        result = productService.checkUniqueProductByName( null, name, En_DevUnitType.PRODUCT,null);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
@@ -94,7 +92,7 @@ public class ProductServiceTest {
         Assert.assertNotNull(devUnitDAO.persist(product));
 
         product.setStateId(En_DevUnitState.DEPRECATED.getId());
-        CoreResponse toDeprecated = productService.changeProductState(null, product);
+        CoreResponse toDeprecated = productService.updateState(null, product.getId(), En_DevUnitState.DEPRECATED);
         DevUnit productDeprecated =  devUnitDAO.get(product.getId());
 
         Assert.assertNotNull(toDeprecated);
@@ -102,7 +100,7 @@ public class ProductServiceTest {
 
 
         product.setStateId(En_DevUnitState.ACTIVE.getId());
-        CoreResponse toActive = productService.changeProductState(null, product);
+        CoreResponse toActive = productService.updateState(null, product.getId(), En_DevUnitState.ACTIVE);
         DevUnit productActive =  devUnitDAO.get(product.getId());
 
         Assert.assertNotNull(toActive);

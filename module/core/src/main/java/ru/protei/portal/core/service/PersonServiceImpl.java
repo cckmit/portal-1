@@ -15,6 +15,8 @@ import ru.protei.portal.core.service.user.AuthService;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 /**
  * Сервис управления person
  */
@@ -34,7 +36,7 @@ public class PersonServiceImpl implements PersonService {
 
         List< PersonShortView > result = list.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
 
-        return new CoreResponse< List< PersonShortView > >().success( result,result.size() );
+        return ok(result);
     }
 
     @Override

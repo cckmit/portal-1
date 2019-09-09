@@ -15,8 +15,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Активность карточки просмотра продукта
@@ -69,7 +67,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     @Inject
     AbstractProductPreviewView view;
     @Inject
-    En_DevUnitTypeLang typeLang;
-    @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    En_DevUnitTypeLang typeLang;
 }

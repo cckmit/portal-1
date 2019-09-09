@@ -38,6 +38,11 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return result;
     }
 
+    @Override
+    public boolean updateState(Company tempCompany) {
+        return partialMerge(tempCompany, "is_deprecated");
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );

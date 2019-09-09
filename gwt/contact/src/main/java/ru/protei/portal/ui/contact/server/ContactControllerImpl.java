@@ -24,6 +24,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+
 /**
  * Реализация сервиса по работе с контактами
  */
@@ -109,7 +111,7 @@ public class ContactControllerImpl implements ContactController {
 
         CoreResponse< List<PersonShortView> > result = contactService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

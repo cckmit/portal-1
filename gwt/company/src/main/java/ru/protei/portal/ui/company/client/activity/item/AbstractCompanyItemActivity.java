@@ -11,4 +11,6 @@ public interface AbstractCompanyItemActivity {
     void onFavoriteClicked( AbstractCompanyItemView itemView );
 
     void onPreviewClicked( AbstractCompanyItemView itemView );
+
+    void onLockClicked(AbstractCompanyItemView itemView);
 }

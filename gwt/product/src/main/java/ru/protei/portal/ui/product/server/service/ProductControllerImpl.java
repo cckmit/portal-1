@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -22,6 +23,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления продуктами
@@ -64,7 +67,7 @@ public class ProductControllerImpl implements ProductController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        if ( product == null || !isNameUnique( product.getName(), product.getId() ) )
+        if ( product == null || !isNameUnique( product.getName(), product.getType(), product.getId() ) )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
         CoreResponse response = product.getId() == null
@@ -80,32 +83,33 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public Boolean changeState(DevUnit product) throws RequestFailedException {
+    public Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException {
 
-        log.debug( "changeState(): product={}", product);
+        log.debug( "updateState(): productId={} | state={}", productId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = productService.changeProductState(descriptor.makeAuthToken(), product);
+        CoreResponse<En_DevUnitState> response = productService.updateState(descriptor.makeAuthToken(), productId, state);
 
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
 
-        log.debug( "changeState(): response.getData()={}", response.getData() );
+        log.debug( "updateState(): response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }
 
 
     @Override
-    public boolean isNameUnique( String name, Long excludeId ) throws RequestFailedException {
+    public boolean isNameUnique(String name, En_DevUnitType type, Long excludeId ) throws RequestFailedException {
 
         log.debug( "isNameUnique(): name={}", name );
 
         if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
 
-        CoreResponse< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, excludeId );
+        CoreResponse< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, type, excludeId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -123,7 +127,7 @@ public class ProductControllerImpl implements ProductController {
 
         CoreResponse< List<ProductShortView> > result = productService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
