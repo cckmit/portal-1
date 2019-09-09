@@ -177,34 +177,37 @@ public class BootstrapService {
     private void createProjectsForContracts() {
         List<Contract> contracts = contractDAO.getAll();
 
-        contracts
-                .stream()
-                .filter(contract -> contract.getProjectId() == null)
-                .forEach(contract -> {
-                    CaseObject caseObject = caseObjectDAO.get(contract.getId());
+        if (contracts != null) {
+            contracts
+                    .stream()
+                    .filter(contract -> contract.getProjectId() == null)
+                    .forEach(contract -> {
+                        CaseObject contractAsCaseObject = caseObjectDAO.get(contract.getId());
 
-                    CaseObject project = new CaseObject();
-                    project.setName("Проект для договора №" + contract.getNumber());
-                    project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-                    project.setTypeId(En_CaseType.PROJECT.getId());
-                    project.setCreated(new Date());
-                    project.setStateId(En_RegionState.UNKNOWN.getId());
-                    project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());
-                    project.setInitiatorCompanyId(caseObject.getInitiatorCompanyId()); // Контрагент
-                    project.setProductId(caseObject.getProductId()); // Продуктовое направление
+                        CaseObject project = new CaseObject();
+                        project.setName("Проект для договора №" + contract.getNumber());
+                        project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+                        project.setTypeId(En_CaseType.PROJECT.getId());
+                        project.setCreated(new Date());
+                        project.setStateId(En_RegionState.UNKNOWN.getId());
+                        project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());
+                        project.setInitiatorCompanyId(contractAsCaseObject.getInitiatorCompanyId());
+                        project.setProductId(contractAsCaseObject.getProductId());
+                        project.setManagerId(contractAsCaseObject.getManagerId());
 
-                    Long caseId = caseObjectDAO.persist(project);
+                        Long caseId = caseObjectDAO.persist(project);
 
-                    CaseMember caseMember = new CaseMember();
-                    caseMember.setCaseId(caseId);
-                    caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER); // менеджер
-                    caseMember.setMemberId(caseObject.getManagerId());
+                        CaseMember caseMember = new CaseMember();
+                        caseMember.setCaseId(caseId);
+                        caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
+                        caseMember.setMemberId(contractAsCaseObject.getManagerId());
 
-                    caseMemberDAO.persist(caseMember);
+                        caseMemberDAO.persist(caseMember);
 
-                    contract.setProjectId(caseId);
-                    contractDAO.saveOrUpdate(contract);
-                });
+                        contract.setProjectId(caseId);
+                        contractDAO.saveOrUpdate(contract);
+                    });
+        }
     }
 
     @Inject

@@ -37,10 +37,10 @@ public class EmployeeMultiSelector
             addOption(lang.employeeWithoutManager(), new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
         for ( PersonShortView type : options ) {
-            if (!type.isFired()) {
-                addOption( type.getDisplayShortName(), type );
-            } else {
-                addOptionAndClearSelector(type.getDisplayShortName(), type);
+            addOption( type.getDisplayShortName(), type );
+
+            if (type.isFired()) {
+                itemToViewModel.remove(type);
             }
         }
     }

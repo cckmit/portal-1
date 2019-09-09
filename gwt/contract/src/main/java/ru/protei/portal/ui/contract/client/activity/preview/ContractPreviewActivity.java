@@ -55,13 +55,13 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     onError(null);
                     return;
                 }
+                projectId = result.getProjectId();
                 fillView(result);
             }
         });
     }
 
     private void fillView( Contract value ) {
-        this.projectId = value.getProjectId();
         view.setHeader(lang.contractNum(value.getNumber()));
         view.setState(stateLang.getName(value.getState()));
         view.setType(typeLang.getName(value.getContractType()));
@@ -78,7 +78,10 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()));
+
+        String projectName = StringUtils.emptyIfNull(value.getProjectName());
+        view.setProject(projectName);
+        view.setProjectVisible(!projectName.isEmpty());
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)

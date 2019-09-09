@@ -111,13 +111,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
 
-        EntityOption entityOption = null;
-
-        if (value.getProjectId() != null) {
-            entityOption = new EntityOption(value.getProjectName(), value.getProjectId());
-        }
-
-        view.project().setValue(entityOption);
+        view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
     }
 
     private void fillDto() {

@@ -2,13 +2,13 @@ package ru.protei.portal.ui.contract.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
 
 public interface AbstractContractPreviewView extends IsWidget {
     void setActivity(AbstractContractPreviewActivity activity);
 
     HasWidgets getCommentsContainer();
+
+    void setProjectVisible(boolean isProjectVisible);
 
     void setHeader(String value);
 

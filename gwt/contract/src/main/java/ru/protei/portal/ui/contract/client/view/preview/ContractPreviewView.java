@@ -118,9 +118,13 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public void setProjectVisible(boolean isProjectVisible) {
+        toProjectLink.setVisible(isProjectVisible);
+    }
+
+    @Override
     public void setProject(String value) {
         project.setInnerText(value);
-        toProjectLink.setVisible(!value.isEmpty());
     }
 
     @UiHandler("toProjectLink")

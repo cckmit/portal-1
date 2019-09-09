@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -161,6 +162,14 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName( project.getName() );
         caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );
+        caseObject.setManagerId(project.getTeam()
+                .stream()
+                .filter(personProjectMemberView -> personProjectMemberView.getRole().getId() == En_DevUnitPersonRoleType.HEAD_MANAGER.getId())
+                .map(PersonShortView::getId)
+                .findFirst()
+                .orElse(null)
+        );
+
         if (project.getCustomerType() != null)
             caseObject.setLocal(project.getCustomerType().getId());
 
@@ -225,6 +234,13 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setCreatorId(project.getCreatorId());
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
+        caseObject.setManagerId(project.getTeam()
+                .stream()
+                .filter(personProjectMemberView -> personProjectMemberView.getRole() == En_DevUnitPersonRoleType.HEAD_MANAGER)
+                .map(PersonShortView::getId)
+                .findFirst()
+                .orElse(null)
+        );
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());

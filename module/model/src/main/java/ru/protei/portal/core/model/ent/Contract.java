@@ -42,18 +42,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(mappedColumn = "MEMBER_ID", table = "case_member", joinData = {
-            @JdbcJoinData(localColumn = "project_id", remoteColumn = "CASE_ID"),
-            @JdbcJoinData(remoteColumn = "MEMBER_ROLE_ID", value = "1")
-    })
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER")
     private Long managerId;
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
-            @JdbcJoinPath(table = "case_member", joinData = {
-                    @JdbcJoinData(localColumn = "project_id", remoteColumn = "CASE_ID"),
-                    @JdbcJoinData(remoteColumn = "MEMBER_ROLE_ID", value = "1")
-            }),
-            @JdbcJoinPath(localColumn = "MEMBER_ID", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
     })
     private String managerShortName;
 
