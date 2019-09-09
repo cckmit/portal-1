@@ -42,6 +42,8 @@ public interface CaseService {
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
+    CoreResponse<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
+
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
     @Privileged(forCases = {

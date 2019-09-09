@@ -1,0 +1,65 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-nx.request-and-customer.request-state-to-issues" author="turik">
+
+        <insert tableName="case_state">
+            <column name="ID" value="35" />
+            <column name="STATE" value="nx.request" />
+            <column name="INFO" value="request to NX" />
+        </insert>
+
+        <insert tableName="case_state">
+            <column name="ID" value="36" />
+            <column name="STATE" value="customer.request" />
+            <column name="INFO" value="request to customer" />
+        </insert>
+
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="4" />
+            <column name="CASE_STATE" value="35" />
+            <column name="view_order" value="4" />
+            <column name="info" value="request to NX" />
+        </insert>
+
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="4" />
+            <column name="CASE_STATE" value="36" />
+            <column name="view_order" value="4" />
+            <column name="info" value="request to customer" />
+        </insert>
+
+    </changeSet>
+
+    <changeSet id="change-nx-jira-workflow-links" author="turik">
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="35"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="36"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="35"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="36"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <delete tableName="case_state_workflow_link">
+            <where>workflow_id = 1 AND (
+                (state_from = 31 AND state_to = 2) OR
+                (state_from = 2 AND state_to = 31)
+                )</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>
