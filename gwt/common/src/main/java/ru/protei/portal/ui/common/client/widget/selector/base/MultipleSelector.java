@@ -64,6 +64,11 @@ public abstract class MultipleSelector<T>
         this.hasAnyValue = hasAnyValue;
     }
 
+    public void addOptionAndClearSelector(String name, T value) {
+        addOption(name, value);
+        itemToDisplayOptionModel.remove(value);
+    }
+
     public void addOption( String name, T value ) {
         addOption(name, null, value);
     }
