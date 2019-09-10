@@ -5,7 +5,6 @@ import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snmp4j.smi.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -529,8 +528,31 @@ public class WorkerController {
             OperationData operationData = new OperationData(rec)
                     .requirePerson(null);
 
-            if (!operationData.isValid())
-                return operationData.failResult();
+            if (!operationData.isValid()){
+                try {
+
+                    List<Person> personList = personDAO.getAll();
+
+                    Date newDate = HelperService.DATE.parse(rec.getFireDate());
+                    Date birthday = HelperService.DATE.parse(rec.getBirthday());
+
+                    for (Person person : personList) {
+                        if (person.isFired()
+                                && rec.getLastName().equals(person.getLastName())
+                                && rec.getFirstName().equals(person.getFirstName())
+                                && birthday.equals(person.getBirthday())
+                                && (person.getFireDate() == null || person.getFireDate().before(newDate))) {
+                            person.setFired(true, newDate);
+                            mergePerson(person);
+                            logger.debug("success result, personId={}", person.getId());
+                            return ok(person.getId());
+                        }
+                    }
+                } catch (Exception e){
+                    logger.error("error while update worker's record", e);
+                }
+            }
+
 
             return transactionTemplate.execute(transactionStatus -> {
 
