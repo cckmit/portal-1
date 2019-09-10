@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -30,11 +31,28 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     @Event
+    public void onInit( AppEvents.InitDetails event ) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow( ContractEvents.ShowPreview event ) {
         event.parent.clear();
+
+        view.showFullScreen(false);
         event.parent.add( view.asWidget() );
 
         loadDetails(event.id);
+    }
+
+    @Event
+    public void onShow(ContractEvents.ShowFullScreen event) {
+        initDetails.parent.clear();
+
+        view.showFullScreen(true);
+        initDetails.parent.add(view.asWidget());
+
+        loadDetails(event.contractId);
     }
 
     @Override
@@ -42,6 +60,16 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         if (projectId != null) {
             fireEvent(new ProjectEvents.ShowFullScreen(projectId));
         }
+    }
+
+    @Override
+    public void onFullScreenClicked() {
+        fireEvent(new ContractEvents.ShowFullScreen(contractId));
+    }
+
+    @Override
+    public void onGoToContractsClicked() {
+        fireEvent(new ContractEvents.Show());
     }
 
     private void loadDetails(Long id) {
@@ -57,6 +85,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     return;
                 }
                 projectId = result.getProjectId();
+                contractId = result.getId();
                 fillView(result);
             }
         });
@@ -115,6 +144,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private ContractControllerAsync contractController;
 
     private Long projectId;
+    private Long contractId;
 
     private DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+    private AppEvents.InitDetails initDetails;
 }

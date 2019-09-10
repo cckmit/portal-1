@@ -6,14 +6,13 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -71,7 +70,12 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
     }
 
-    private void fillView( Long id ) {
+    @Override
+    public void onContractLinkClicked() {
+        fireEvent(new ContractEvents.ShowFullScreen(contract.getId()));
+    }
+
+    private void fillView(Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -86,6 +90,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             @Override
             public void onSuccess( ProjectInfo project ) {
                 fireEvent( new AppEvents.InitPanelName( project.getName() ) );
+                contract = project.getContract();
                 fillView( project );
             }
         } );
@@ -101,6 +106,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
+        view.setContractNumber(contract == null ? "" : lang.contractNum(contract.getDisplayText()));
+        view.setContractVisible(contract != null);
 
         if( value.getTeam() != null ) {
             view.setTeam( value.getTeam().stream().map( entry ->
@@ -136,6 +143,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     private Long projectId;
     ProjectInfo project;
+    private EntityOption contract;
 
     private AppEvents.InitDetails initDetails;
 }

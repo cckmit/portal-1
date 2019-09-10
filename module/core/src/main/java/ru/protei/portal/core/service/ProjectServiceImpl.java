@@ -64,6 +64,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    ContractDAO contractDAO;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
@@ -148,8 +151,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseObject caseObject = caseObjectDAO.get( id );
         helper.fillAll( caseObject );
+        Contract contract = contractDAO.getByProjectId(id);
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObject);
+        projectInfo.setContract(contract == null ? null : new EntityOption(contract.getNumber(), contract.getId()));
 
-        return ok(ProjectInfo.fromCaseObject( caseObject ) );
+        return ok(projectInfo);
     }
 
     @Override

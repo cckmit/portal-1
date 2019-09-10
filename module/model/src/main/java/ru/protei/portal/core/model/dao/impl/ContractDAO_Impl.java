@@ -31,6 +31,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         return getObjectsCount(where.condition, where.args);
     }
 
+    @Override
+    public Contract getByProjectId(Long id) {
+        return getByCondition("contract.project_id = ?", id);
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();

@@ -76,6 +76,8 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     Set<ProductShortView> products;
 
+    private EntityOption contract;
+
     private boolean deleted;
 
     public Long getId() {
@@ -204,7 +206,15 @@ public class ProjectInfo extends AuditableObject implements Removable {
         return id != null && !deleted;
     }
 
-    public static ProjectInfo fromCaseObject( CaseObject project ) {
+    public EntityOption getContract() {
+        return contract;
+    }
+
+    public void setContract(EntityOption contract) {
+        this.contract = contract;
+    }
+
+    public static ProjectInfo fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
 
