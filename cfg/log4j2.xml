@@ -4,6 +4,7 @@
         <Property name="basePath" value="${sys:catalina.home}/logs/portal"/>
         <Property name="archivePath" value="${basePath}/archive"/>
         <Property name="extension" value=".log"/>
+        <Property name="errorsFileName" value="errors"/>
         <Property name="appFileName" value="portal.app"/>
         <Property name="migrateFileName" value="portal.migrate"/>
         <Property name="appServiceFileName" value="portal.app.service"/>
@@ -14,7 +15,9 @@
     </Properties>
 
     <Loggers>
-        <Root level="DEBUG"/>
+        <Root level="DEBUG">
+            <AppenderRef ref="ERRORS"/>
+        </Root>
 
         <Logger name="ru.protei" level="DEBUG">
             <AppenderRef ref="COMMON"/>
@@ -66,6 +69,15 @@
         <Console name="CONSOLE">
             <PatternLayout pattern="${pattern}"/>
         </Console>
+
+        <RollingFile name="ERRORS" fileName="${basePath}/${errorsFileName}${extension}"
+                     filePattern="${archivePath}/${errorsFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
 
         <RollingFile name="COMMON" fileName="${basePath}/${appFileName}${extension}"
                      filePattern="${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">

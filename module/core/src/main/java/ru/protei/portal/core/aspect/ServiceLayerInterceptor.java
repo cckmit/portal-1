@@ -86,7 +86,7 @@ public class ServiceLayerInterceptor {
             return result;
         }
         catch (Throwable e) {
-            logger.warn("service layer unhandled exception", e);
+            logger.error("service layer unhandled exception", e);
 
             if (JdbcHelper.isTemporaryDatabaseError (e)) {
                 return error( En_ResultStatus.DB_TEMP_ERROR);
