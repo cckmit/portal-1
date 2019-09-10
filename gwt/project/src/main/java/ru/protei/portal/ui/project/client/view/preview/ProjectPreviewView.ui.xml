@@ -6,14 +6,11 @@
 
     <g:HTMLPanel styleName="preview-wrapper">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-
             <div class="card card-default">
                 <div class="card-body">
                     <h4 class="no-margin inline">
-                        <g:Anchor ui:field="name" styleName="full-screen-link" href="#"/>
+                        <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
                     </h4>
-                    <g:Anchor ui:field="backButton" styleName="fas fa-lg fa-times m-t-5" href="#"/>
-
                     <div class="inline pull-right">
                         <small>
                             <ui:text from="{lang.createBy}"/>
@@ -24,6 +21,7 @@
                         </small>
                         <small ui:field="creationDate" class="datetime no-margin"/>
                     </div>
+                    <h5 ui:field="name"/>
 
                     <div class="form-group-attached">
                         <div class="row clearfix">
@@ -112,6 +110,9 @@
                     </div>
                 </div>
             </div>
+            <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
+                <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
+            </g:HTMLPanel>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

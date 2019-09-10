@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -12,11 +13,13 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void watchForScroll( boolean isWatch );
 
+    void setName(String value);
+
     void setAuthor(String value);
 
     void setCreationDate( String value );
 
-    void setName( String name );
+    void setHeader(String name );
 
     void setState( long value );
 
@@ -34,7 +37,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setCustomerType( String value );
 
-    void showFullScreen(boolean value );
+    HasVisibility backButtonVisibility();
 
     HasWidgets getCommentsContainer();
     HasWidgets getDocumentsContainer();

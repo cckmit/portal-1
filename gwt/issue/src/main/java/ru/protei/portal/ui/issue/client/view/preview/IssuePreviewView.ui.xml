@@ -9,7 +9,6 @@
 
     <g:HTMLPanel styleName="preview-wrapper">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-
             <div class="card card-default">
                 <div class="card-body">
                     <h4 class="no-margin inline">

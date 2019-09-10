@@ -5,8 +5,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -20,6 +22,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +53,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         fillView( projectId );
         view.watchForScroll( true );
-        view.showFullScreen( false );
+        view.backButtonVisibility().setVisible( false );
     }
 
     @Event
@@ -57,7 +64,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         this.projectId = event.projectId;
 
         fillView( projectId );
-        view.showFullScreen( true );
+        view.backButtonVisibility().setVisible( true );
     }
 
     @Override
@@ -91,7 +98,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     private void fillView(ProjectInfo value) {
         this.project = value;
-        view.setName( lang.projectHeader(value.getId().toString()) + " " + value.getName() );
+        view.setHeader( lang.projectHeader(value.getId().toString()) );
+        view.setName( value.getName() );
         view.setAuthor( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() )  );
         view.setState( value.getState().getId() );
@@ -101,8 +109,18 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
 
         if( value.getTeam() != null ) {
-            view.setTeam( value.getTeam().stream().map( entry ->
-                    "<b>" + roleTypeLang.getName(entry.getRole()) + "</b>: " + entry.getDisplayShortName() ).collect( Collectors.joining("<br/>")) );
+            StringBuilder teamBuilder = new StringBuilder();
+            value.getTeam().stream()
+                    .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
+                            Collectors.mapping(PersonProjectMemberView::getDisplayShortName, Collectors.joining(", "))))
+                    .forEach((role, team) ->
+                            teamBuilder.append("<b>")
+                                    .append(roleTypeLang.getName(role))
+                                    .append("</b>: ")
+                                    .append(team)
+                                    .append("<br/>"));
+
+            view.setTeam(teamBuilder.toString());
         }
 
         if( value.getProducts() != null ) {
