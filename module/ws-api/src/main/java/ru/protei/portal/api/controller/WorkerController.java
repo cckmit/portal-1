@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.smi.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -134,9 +135,13 @@ public class WorkerController {
                         return  ok(new WorkerRecord(entry, registration));
                     });
 
-        } catch (Throwable e) {
-            logger.error("error while get worker", e.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
+        } catch (NullPointerException e){
+            logger.error("error while get worker", En_ErrorCode.UNKNOWN_WOR.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS,  En_ErrorCode.UNKNOWN_WOR.getMessage());
+        }
+        catch (Throwable e) {
+            logger.error("error while get worker", e.toString());
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.toString());
         }
     }
 

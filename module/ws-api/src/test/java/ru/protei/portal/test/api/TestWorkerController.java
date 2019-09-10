@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {APIConfigurationContext.class, DatabaseConfiguration.class})
+@ContextConfiguration(classes = {APIConfigurationContext.class})
 public class TestWorkerController {
 
     @Autowired
@@ -74,9 +74,9 @@ public class TestWorkerController {
         personDAO = webApplicationContext.getBean(PersonDAO.class);
         userLoginDAO = webApplicationContext.getBean(UserLoginDAO.class);
         userRoleDAO = webApplicationContext.getBean(UserRoleDAO.class);
-        createAndPersistPerson();
+        /*createAndPersistPerson();
         createAndPersistUserRoles();
-        createAndPersistUserLogin();
+        createAndPersistUserLogin();*/
     }
 
     @After
@@ -156,16 +156,20 @@ public class TestWorkerController {
         Assert.assertEquals("update.fire.date: the fire date is saved when isFired = false in database!", null, resultWorker.getFireDate());
         Assert.assertEquals("update.fire.date: is fired became true when fire-date is not null", false, resultWorker.isFired());
 
+        updateWorker(worker);
+
+        result = deleteWorker(worker);
+        Assert.assertEquals("delete.worker: already deleted worker was deleted! ", true, result.isError());
 
         worker.setFireDate(null);
-        worker.setFired(true);
+       /* worker.setFired(true);
         result = updateWorker(worker);
         Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
 
         resultWorker = getWorkerByUri(uriBuilder).getData();
 
         Assert.assertEquals("update.fire.date: worker is not fired!", worker.isFired(), resultWorker.isFired());
-
+*/
         worker.setFireDate("2019-05-05");
         result = updateFireDate(worker);
         Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
@@ -173,6 +177,9 @@ public class TestWorkerController {
         resultWorker = getWorkerByUri(uriBuilder).getData();
 
         Assert.assertEquals("update.fire.date: fire date are different!", worker.getFireDate(), resultWorker.getFireDate());
+
+        result = deleteWorker(worker);
+        Assert.assertEquals("delete.worker: already deleted worker was deleted! ", true, result.isError());
 
         worker.setFireDate("2018-05-05");
         updateFireDate(worker);
@@ -348,6 +355,43 @@ public class TestWorkerController {
 
     @Test
     public void testDeletePosition() throws Exception {
+        String uri = BASE_URI + "update.position";
+        WorkerRecord worker = (WorkerRecord) fromXml("<worker>\n" +
+                "<active>1</active>\n" +
+                "<address>428025, Чувашская Республика - Чувашия, Чебоксары г, Мичмана Павлова ул, дом № 46, кв.86</address>\n" +
+                "<address-home></address-home>\n" +
+                "<birthday>1981-01-17</birthday>\n" +
+                "<company-code>protei</company-code>\n" +
+                "<deleted>false</deleted>\n" +
+                "<department-id>000000002</department-id>\n" +
+                "<email></email>\n" +
+                "<email-own></email-own>\n" +
+                "<fax></fax>\n" +
+                "<fire-date></fire-date>\n" +
+                "<first-name>Артем</first-name>\n" +
+                "<gender>1</gender>\n" +
+                "<head>false</head>\n" +
+                "<hire-date>2005-07-15</hire-date>\n" +
+                "<hire-order>ПР00-000079</hire-order>\n" +
+                "<id>144</id>\n" +
+                "<info></info>\n" +
+                "<ip>192.168.100.229</ip>\n" +
+                "<last-name>Бурков</last-name>\n" +
+                "<passport-info>Паспорт гражданина РФ, серия: 97 01, № 261699, выдан: 24 мая 2001 года, Московским РОВД гор. Чебоксары Чувашской Республики, код подр. 212-026</passport-info>\n" +
+                "<phone-home></phone-home>\n" +
+                "<phone-mobile></phone-mobile>\n" +
+                "<phone-work></phone-work>\n" +
+                "<position-name>ведущий инженер-конструктор</position-name>\n" +
+                "<registration-id></registration-id>\n" +
+                "<second-name>Анатольевич</second-name>\n" +
+                "<worker-id>0000000090</worker-id>\n" +
+                "</worker>");
+        Result result = updateWorker(worker);
+        Assert.assertEquals("update.worker is not success! " + result.getMessage(), true, result.isOk());
+    }
+
+    @Test
+    public void testRealUpdate() throws Exception {
         String uri = BASE_URI + "delete.position";
         WorkerRecord worker = createWorkerRecord();
         worker.setPositionName("Unique position for delete test");
@@ -533,7 +577,7 @@ public class TestWorkerController {
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
                         .header("Accept", "application/xml")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString(("ws_api" + ":" + "QuaZ3$rE").getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
         );
@@ -758,7 +802,7 @@ public class TestWorkerController {
         p.setCreated(new Date());
         p.setCreator("");
         p.setGender(En_Gender.MALE);
-        logger.debug("person = " + person);
+        logger.debug("person = " + p);
 
         personDAO.persist(p);
 
@@ -774,7 +818,7 @@ public class TestWorkerController {
         role.setCode(WS_API_TEST_ROLE_CODE);
         role.setInfo(WS_API_TEST_ROLE_CODE);
         role.setScope(En_Scope.SYSTEM);
-        logger.debug("userRole = " + userRole);
+        logger.debug("userRole = " + role);
 
         userRoleDAO.persist(role);
 
