@@ -16,6 +16,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import java.io.FileInputStream;
 import java.util.Date;
 
+@Ignore
 public class TestSvnUploading {
 
     private static final Logger log = LoggerFactory.getLogger(TestSvnUploading.class);

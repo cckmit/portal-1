@@ -23,6 +23,7 @@ public interface AbstractProductPreviewView extends IsWidget {
 
     void setCdrDescription(String value);
 
-    Widget asWidget(boolean isForTableView);
+    void showFullScreen(boolean isFullScreen);
 
+    Widget asWidget(boolean isForTableView);
 }

@@ -16,6 +16,7 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
 
     @Inject
     public void init( ProductModel model) {
+        this.model = model;
         model.subscribe(this, En_DevUnitState.ACTIVE, null);
         setSelectorModel( model );
         setSearchEnabled( true );
@@ -31,9 +32,9 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );
     }
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
         if ( model != null ) {
-            model.updateQuery(this, enDevUnitState, enDevUnitType);
+            model.updateQuery(this, enDevUnitState, enDevUnitTypes);
         }
     }
 

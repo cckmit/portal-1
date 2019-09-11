@@ -75,7 +75,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setRegion( String value ) { this.projectRegion.setInnerText( value ); }
 
     @Override
-    public void setProducts( String value ) { this.products.setInnerText( value ); }
+    public void setProduct(String value ) {
+        this.product.setInnerText( value );
+        primaryUseLink.setVisible(!value.isEmpty());
+    }
 
     @Override
     public void setCompany( String value ) { this.company.setInnerText( value ); }
@@ -123,6 +126,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    @UiHandler("primaryUseLink")
+    public void onPrimaryUseLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onProductLinkClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -139,7 +151,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         customerType.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CUSTOMER_TYPE_LABEL);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.COMPANY_LABEL);
         team.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TEAM_LABEL);
-        products.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
+        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
     }
@@ -172,7 +184,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement state;
     @UiField
-    DivElement products;
+    SpanElement product;
     @UiField
     DivElement team;
     @UiField
@@ -181,6 +193,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel commentsContainer;
     @UiField
     HTMLPanel footer;
+    @UiField
+    Anchor primaryUseLink;
 
     @Inject
     @UiField

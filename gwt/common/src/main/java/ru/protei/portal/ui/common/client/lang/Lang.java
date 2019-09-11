@@ -1760,4 +1760,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractProjectNotDefined();
 
     String errSaveIssueNeedSelectPlatform();
+
+    String goToProducts();
 }

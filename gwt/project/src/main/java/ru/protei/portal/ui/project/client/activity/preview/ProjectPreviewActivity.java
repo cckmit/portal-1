@@ -7,13 +7,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -71,7 +67,14 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
     }
 
-    private void fillView( Long id ) {
+    @Override
+    public void onProductLinkClicked() {
+        if (project.getSingleProduct() != null) {
+            fireEvent(new ProductEvents.ShowFullScreen(project.getSingleProduct().getId()));
+        }
+    }
+
+    private void fillView(Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -107,8 +110,10 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                     roleTypeLang.getName(entry.getRole()) + ": " + entry.getDisplayShortName() ).collect( Collectors.joining(", ")) );
         }
 
-        if( value.getProducts() != null ) {
-            view.setProducts( value.getProducts().stream().map( ProductShortView::getName ).collect( Collectors.joining(", ")) );
+        if (value.getProducts() != null && !value.getProducts().isEmpty()) {
+            view.setProduct(value.getSingleProduct().getName());
+        } else {
+            view.setProduct("");
         }
 
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
