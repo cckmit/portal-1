@@ -8,13 +8,10 @@
 
     <g:HTMLPanel styleName="preview-wrapper">
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
-
             <div class="card card-default">
-
                 <div class="card-body">
-
                     <h4 class="col-md-12 no-margin no-padding">
-                        <g:InlineLabel ui:field="name"/>
+                        <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
                         <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
                     </h4>
 
@@ -49,7 +46,11 @@
                         </tab:pane.TabWidgetPane>
                     </tab:TabWidget>
                 </div>
+                <div class="card-footer">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>
+                </div>
             </div>
         </g:HTMLPanel>
+
     </g:HTMLPanel>
 </ui:UiBinder>

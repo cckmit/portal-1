@@ -87,6 +87,11 @@
                     </h5>
                     <small ui:field="subscriptions"/>
 
+                    <h5>
+                        <ui:text from="{lang.issuePlatformHeader}"/>
+                    </h5>
+                    <g:Anchor ui:field="platform" styleName="full-screen-link small" href="#"/>
+
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
                         <h5 class="col-md-12">
                             <ui:text from="{lang.timeElapsed}"/>

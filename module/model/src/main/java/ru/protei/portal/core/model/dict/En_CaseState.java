@@ -29,8 +29,9 @@ public enum En_CaseState implements HasId {
     WORKAROUND(30, "workaround"),
     INFO_REQUEST(31, "info request"),
     CANCELED(33, "canceled"),
-    CUST_PENDING(34, "customer pending")
-    ;
+    CUST_PENDING(34, "customer pending"),
+    NX_REQUEST(35, "request to NX"),
+    CUST_REQUEST(36, "request to customer");
 
     public static En_CaseState getById(Long id) {
         if(id == null)
@@ -59,8 +60,6 @@ public enum En_CaseState implements HasId {
 
     private int id;
     private String name;
-
-
 }
 
 

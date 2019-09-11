@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -15,8 +15,8 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Перевод исключений от RestTemplate в CoreResponse
@@ -32,35 +32,35 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     }
 
     @Override
-    public <T> CoreResponse<T> read( String url, Class<T> clazz ) {
+    public <T> Result<T> read( String url, Class<T> clazz ) {
         return execute( (ytClient, headers) ->
                 ytClient.exchange( url, HttpMethod.GET, new HttpEntity<>( headers ), clazz ) ).map(
                 ResponseEntity::getBody );
     }
 
     @Override
-    public <T> CoreResponse<T> create( String url, Class<T> clazz ) {
+    public <T> Result<T> create( String url, Class<T> clazz ) {
         return execute((ytClient, headers) ->
                 ytClient.exchange( url, HttpMethod.PUT, new HttpEntity<>( headers ), clazz ) ).map(
                 ResponseEntity::getBody );
     }
 
     @Override
-    public <T> CoreResponse<T> update( String url, Class<T> clazz ) {
+    public <T> Result<T> update( String url, Class<T> clazz ) {
         return execute( (ytClient, headers) ->
                 ytClient.exchange( url, HttpMethod.POST, new HttpEntity<>( headers ), clazz ) ).map(
                 ResponseEntity::getBody );
     }
 
     @Override
-    public <T, BodyObject> CoreResponse<T> update( String url, Class<T> clazz, BodyObject body ) {
+    public <T, BodyObject> Result<T> update( String url, Class<T> clazz, BodyObject body ) {
         return execute( ( ytClient, headers ) ->
                 ytClient.postForEntity( url, new HttpEntity<>( body, headers ), clazz ) ).map(
                 ResponseEntity::getBody );
     }
 
     @Override
-    public <T> CoreResponse<ResponseEntity<T>> execute( BiFunction<RestTemplate, HttpHeaders, ResponseEntity<T>> work ) {
+    public <T> Result<ResponseEntity<T>> execute( BiFunction<RestTemplate, HttpHeaders, ResponseEntity<T>> work ) {
         RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
         RestTemplate ytClient = makeClient( errorHandler );
 
@@ -70,23 +70,23 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
             response = work.apply( ytClient, authHeaders );
         } catch (Exception e) {
             log.warn( "execute(): Can't execute youtrack request, unexpected exception: {}", e );
-            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+            return error( En_ResultStatus.GET_DATA_ERROR );
         }
         if (response == null) {
             log.warn( "execute(): Can't execute youtrack request, result is null" );
-            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+            return error( En_ResultStatus.GET_DATA_ERROR );
         }
         if (HttpStatus.NOT_FOUND.equals( response.getStatusCode() )) {
             log.warn( "execute(): Can't get data from youtrack, NOT_FOUND. " );
-            return errorSt( En_ResultStatus.NOT_FOUND );
+            return error( En_ResultStatus.NOT_FOUND );
         }
         if (!errorHandler.isOk()) {
             if (HttpStatus.NOT_FOUND.equals( errorHandler.getStatus() )) {
                 log.warn( "execute(): Can't get data from youtrack, request failed with error NOT_FOUND. message: {}", response.getBody() );
-                return errorSt( En_ResultStatus.NOT_FOUND );
+                return error( En_ResultStatus.NOT_FOUND );
             }
             log.warn( "execute(): Can't execute youtrack request, request failed with status {}. message: {} ", errorHandler.getStatus(), response.getBody() );
-            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+            return error( En_ResultStatus.GET_DATA_ERROR );
         }
 
         return ok( response );

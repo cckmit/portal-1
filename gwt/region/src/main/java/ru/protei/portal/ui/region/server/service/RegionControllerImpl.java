@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -39,7 +39,7 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< List< RegionInfo > > response = projectService.listRegions( descriptor.makeAuthToken(), query );
+        Result< List< RegionInfo > > response = projectService.listRegions( descriptor.makeAuthToken(), query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -49,7 +49,7 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public List< DistrictInfo > getDistrictList() throws RequestFailedException {
 
-        CoreResponse< List< DistrictInfo > > result = locationService.districtList( getDescriptorAndCheckSession().makeAuthToken(), new DistrictQuery() );
+        Result< List< DistrictInfo > > result = locationService.districtList( getDescriptorAndCheckSession().makeAuthToken(), new DistrictQuery() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -60,7 +60,7 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public List< EntityOption > getRegionList() throws RequestFailedException {
 
-        CoreResponse< List< EntityOption > > result = locationService.regionShortList( getDescriptorAndCheckSession().makeAuthToken() );
+        Result< List< EntityOption > > result = locationService.regionShortList( getDescriptorAndCheckSession().makeAuthToken() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -75,7 +75,7 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Map< String, List< ProjectInfo > > > response = projectService.listProjectsByRegions( descriptor.makeAuthToken(), query );
+        Result< Map< String, List< ProjectInfo > > > response = projectService.listProjectsByRegions( descriptor.makeAuthToken(), query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -88,7 +88,7 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< ProjectInfo > response = projectService.getProject( descriptor.makeAuthToken(), id );
+        Result< ProjectInfo > response = projectService.getProject( descriptor.makeAuthToken(), id );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -102,7 +102,7 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<ProjectInfo> response;
+        Result<ProjectInfo> response;
         if (project.getId() == null) {
             project.setCreated(new Date());
             project.setCreatorId(descriptor.getPerson().getId());
@@ -125,7 +125,7 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Long > response = projectService.createProject( descriptor.makeAuthToken(), descriptor.getPerson().getId() );
+        Result< Long > response = projectService.createProject( descriptor.makeAuthToken(), descriptor.getPerson().getId() );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -147,7 +147,7 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Boolean> response = projectService.removeProject(descriptor.makeAuthToken(), projectId);
+        Result<Boolean> response = projectService.removeProject(descriptor.makeAuthToken(), projectId);
         log.debug("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -155,6 +155,18 @@ public class RegionControllerImpl implements RegionController {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List<EntityOption> getFreeProjectsAsEntityOptions() throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        Result<List<EntityOption>> response = projectService.listFreeProjectsAsEntityOptions(descriptor.makeAuthToken());
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

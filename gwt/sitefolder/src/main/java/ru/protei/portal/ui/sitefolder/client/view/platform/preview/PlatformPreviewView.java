@@ -41,6 +41,16 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
+    public void showFullScreen(boolean isFullScreen) {
+        backButton.setVisible(isFullScreen);
+        if (isFullScreen) {
+            preview.addStyleName("platform-fullscreen col-md-12 m-t-10");
+        } else {
+            preview.setStyleName("preview site-folder");
+        }
+    }
+
+    @Override
     public void setName(String value) {
         name.setText(value);
     }
@@ -87,8 +97,26 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
+    @UiHandler("name")
+    public void fullScreenClick(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onFullScreenClicked();
+        }
+    }
+
+    @UiHandler( "backButton" )
+    public void onGoToIssuesClicked ( ClickEvent event) {
+        if ( activity != null ) {
+            activity.onGoToIssuesClicked();
+        }
+    }
+
     @UiField
-    InlineLabel name;
+    HTMLPanel preview;
+    @UiField
+    Anchor name;
     @UiField
     SpanElement company;
     @UiField
@@ -106,6 +134,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
+    @UiField
+    Button backButton;
 
     @Inject
     FixedPositioner positioner;

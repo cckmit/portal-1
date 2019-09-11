@@ -8,15 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.PolicyService;
 import ru.protei.winter.core.utils.mime.MimeUtils;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 @RestController
 public class AvatarController {
@@ -48,7 +40,6 @@ public class AvatarController {
 
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
-
 
     private boolean loadFile( String pathname, HttpServletResponse response ) throws IOException {
 

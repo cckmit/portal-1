@@ -185,6 +185,16 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         return timeElapsed;
     }
 
+    @Override
+    public void setPlatform(String value) {
+        this.platform.setText(value);
+    }
+
+    @Override
+    public HasVisibility platformVisibility() {
+        return platform;
+    }
+
     @UiHandler( "number" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -198,6 +208,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     public void onGoToIssuesClicked ( ClickEvent event) {
         if ( activity != null ) {
             activity.onGoToIssuesClicked();
+        }
+    }
+
+    @UiHandler("platform")
+    public void onPlatformExtLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onPlatformExtLinkClicked();
         }
     }
 
@@ -230,6 +249,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER_LABEL);
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION_LABEL);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME_LABEL);
+        platform.ensureDebugId(DebugIds.ISSUE_PREVIEW.PLATFORM_LABEL);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO_LABEL);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
@@ -256,6 +276,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     HeadingElement name;
+    @UiField
+    Anchor platform;
     @UiField
     DivElement info;
     @Inject

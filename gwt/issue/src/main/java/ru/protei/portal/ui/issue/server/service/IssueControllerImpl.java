@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -38,7 +38,7 @@ public class IssueControllerImpl implements IssueController {
                 query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(),
                 query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        CoreResponse<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
+        Result<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
         return checkResultAndGetData(result);
     }
 
@@ -48,7 +48,7 @@ public class IssueControllerImpl implements IssueController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
+        Result<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
         log.debug("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -64,7 +64,7 @@ public class IssueControllerImpl implements IssueController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< CaseObject > response;
+        Result< CaseObject > response;
         if ( caseObject.getId() == null ) {
             caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
             caseObject.setCreatorId(getCurrentPerson().getId());
@@ -88,7 +88,7 @@ public class IssueControllerImpl implements IssueController {
             CaseObject saved = saveIssue(caseObject);
             return new CaseObjectWithCaseComment(saved, null);
         }
-        CoreResponse<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
+        Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
         log.debug("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response);
     }
@@ -98,7 +98,7 @@ public class IssueControllerImpl implements IssueController {
         log.debug("getIssueShortInfo(): number: {}", caseNumber);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
+        Result<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
         log.debug("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -123,7 +123,7 @@ public class IssueControllerImpl implements IssueController {
 
         log.debug( "getStatesByCaseType: caseType={} ", type );
 
-        CoreResponse< List<En_CaseState> > result = caseService.stateList( type );
+        Result< List<En_CaseState> > result = caseService.stateList( type );
 
         log.debug("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
 

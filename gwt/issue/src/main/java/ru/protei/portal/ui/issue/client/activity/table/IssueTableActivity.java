@@ -437,7 +437,9 @@ public abstract class IssueTableActivity
     }
 
     private void updateCaseStatesFilter() {
-        filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+        if (!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)) {
+            filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+        }
     }
 
     private void toggleFilterCollapseState() {

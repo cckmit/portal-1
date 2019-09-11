@@ -3,7 +3,6 @@ package ru.protei.portal.test.hpsm;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
@@ -13,6 +12,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import java.util.ArrayList;

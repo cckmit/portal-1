@@ -25,6 +25,8 @@ public interface RegionControllerAsync {
 
     void getProject(Long id, AsyncCallback<ProjectInfo> callback);
 
+    void getFreeProjectsAsEntityOptions( AsyncCallback<List<EntityOption>> callback );
+
     void saveProject(ProjectInfo project, AsyncCallback<ProjectInfo> callback);
 
     void createNewProject(AsyncCallback<Long> callback);

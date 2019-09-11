@@ -11,7 +11,8 @@
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -40,18 +41,25 @@
                                        tagCaseType="CRM_SUPPORT"/>
             </div>
             <div class="row">
-                <div class="form-group col-md-6">
+                <div  ui:field="stateContainer" class="form-group col-md-6">
                     <label ui:field="stateLabel">
                         <ui:text from="{lang.issueState}"/>
                     </label>
                     <issuestate:IssueStateButtonSelector ui:field="state" validation="true"/>
                 </div>
-                <div class="form-group col-md-6">
+                <div ui:field="importanceContainer" class="form-group col-md-6">
                     <label ui:field="importanceLabel">
                         <ui:text from="{lang.issueImportance}"/>
                     </label>
                     <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
                 </div>
+                <div ui:field="platformContainer" class="form-group col-xs-4">
+                    <label ui:field="platformLabel">
+                        <ui:text from="{lang.siteFolderPlatform}"/>
+                    </label>
+                    <selector:PlatformButtonSelector ui:field="platform" validation="false" styleName="btn-selector"/>
+                </div>
+
                 <div class="form-group col-md-3">
                     <label ui:field="companyLabel">
                         <ui:text from="{lang.issueCompany}"/>
@@ -117,6 +125,7 @@
                     </label>
                     <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers" buttonStyle="btn-info btn-xs"/>
                 </g:HTMLPanel>
+
 
                 <div class="form-group col-md-12">
                     <label ui:field="attachmentsLabel">

@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -38,7 +38,7 @@ public class DocumentControllerImpl implements DocumentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
+        Result<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
         log.debug("get document, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -57,7 +57,7 @@ public class DocumentControllerImpl implements DocumentController {
         log.debug("save document, id: {}", HelperFunc.nvlt(document.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Document> response;
+        Result<Document> response;
         if (document.getId() == null) {
             FileItem fileItem = sessionService.getFileItem(httpRequest);
             if (fileItem == null) {
@@ -85,7 +85,7 @@ public class DocumentControllerImpl implements DocumentController {
         log.debug("change state document, id: {} | state: {}", documentId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse response = documentService.updateState(descriptor.makeAuthToken(), documentId, state);
+        Result response = documentService.updateState(descriptor.makeAuthToken(), documentId, state);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -100,7 +100,7 @@ public class DocumentControllerImpl implements DocumentController {
     public SearchResult<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
         log.debug("get projectDocuments, id: {}", projectId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        CoreResponse<SearchResult<Document>> response = documentService.getProjectDocuments(token, projectId);
+        Result<SearchResult<Document>> response = documentService.getProjectDocuments(token, projectId);
         log.debug("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
         return ServiceUtils.checkResultAndGetData(response);
     }

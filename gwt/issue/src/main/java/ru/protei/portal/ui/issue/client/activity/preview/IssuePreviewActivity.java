@@ -145,6 +145,13 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
+    public void onPlatformExtLinkClicked() {
+        if (caseObject != null && caseObject.getPlatformId() != null) {
+            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(caseObject.getPlatformId()));
+        }
+    }
+
+    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
@@ -178,6 +185,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         String manager = value.getManager() == null ? "" : value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")";
         view.setManager( manager );
         view.setName( value.getName() == null ? "" : value.getName() );
+        view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
+        view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
         view.setAuthorName( StringUtils.emptyIfNull(value.getCreator().getDisplayShortName()));
 

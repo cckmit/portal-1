@@ -132,6 +132,16 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return jdbcTemplate.queryForObject(sql, Long.class, caseId);
     }
 
+    @Override
+    public int removeByNameLike(String name) {
+        return removeByCondition("CASE_NAME like ?", "%" + name + "%");
+    }
+
+    @Override
+    public CaseObject getByCaseNameLike(String name) {
+        return getByCondition("CASE_NAME like ?", "%" + name + "%");
+    }
+
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition (CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);

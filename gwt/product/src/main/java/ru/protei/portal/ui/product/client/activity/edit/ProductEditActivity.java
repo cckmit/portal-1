@@ -21,7 +21,7 @@ import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -179,7 +179,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.parents().setValue(null);
         view.children().setValue(null);
         view.info().setValue("");
-        view.productSubscriptions().setValue(Collections.emptyList());
+        view.wikiLink().setValue("");
+        view.historyVersion().setValue("");
+        view.configuration().setValue("");
+        view.cdrDescription().setValue("");
+        view.productSubscriptions().setValue(new ArrayList<>());
     }
 
     private void fillView(DevUnit devUnit) {

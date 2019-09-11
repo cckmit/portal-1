@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateMatrix;
@@ -14,5 +13,5 @@ import java.util.Map;
 public interface CaseStateMatrixDAO extends PortalBaseDAO<CaseStateMatrix> {
     Map<Long,Long> getOldToNewStateMap (En_CaseType caseType);
 
-    List<En_CaseState> getStatesByCaseType (En_CaseType caseType);
+    List<CaseState> getStatesByCaseType (En_CaseType caseType);
 }

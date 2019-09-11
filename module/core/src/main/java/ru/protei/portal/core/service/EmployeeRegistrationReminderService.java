@@ -1,12 +1,12 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 
 public interface EmployeeRegistrationReminderService {
 
-    CoreResponse<Boolean> notifyAboutProbationPeriod();
+    Result<Boolean> notifyAboutProbationPeriod();
 
-    CoreResponse<Boolean> notifyAboutEmployeeFeedback();
+    Result<Boolean> notifyAboutEmployeeFeedback();
 
-    CoreResponse<Boolean> notifyAboutDevelopmentAgenda();
+    Result<Boolean> notifyAboutDevelopmentAgenda();
 }

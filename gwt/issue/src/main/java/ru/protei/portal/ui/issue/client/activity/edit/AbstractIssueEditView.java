@@ -67,7 +67,11 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void showComments(boolean isShow);
     boolean isAttached();
+    HasValue<EntityOption> platform();
 
+    void setPlatformVisibility(boolean isVisible);
+
+    HasValidable platformValidable();
 
     HasVisibility saveVisibility();
 

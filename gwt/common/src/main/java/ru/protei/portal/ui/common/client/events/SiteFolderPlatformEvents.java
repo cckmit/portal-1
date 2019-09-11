@@ -44,6 +44,18 @@ public class SiteFolderPlatformEvents {
         }
     }
 
+    @Url(value = "sfplatform_preview", primary = true)
+    public static class ShowFullScreen {
+        public ShowFullScreen() {}
+
+        public ShowFullScreen(Long platformId) {
+            this.platformId = platformId;
+        }
+
+        @Name("id")
+        public Long platformId;
+    }
+
     public static class Changed {
         public ru.protei.portal.core.model.ent.Platform platform;
         public Changed(ru.protei.portal.core.model.ent.Platform platform) {

@@ -25,6 +25,8 @@ public class CaseState implements Serializable {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
 
+    private int viewOrder;
+
     public CaseState() {
     }
 
@@ -70,6 +72,15 @@ public class CaseState implements Serializable {
 
     public void setUsageInCompanies(En_CaseStateUsageInCompanies usageInCompanies) {
         this.usageInCompanies = usageInCompanies;
+    }
+
+    public int getViewOrder() {
+        return viewOrder;
+    }
+
+    public CaseState withViewOrder(int viewOrder) {
+        this.viewOrder = viewOrder;
+        return this;
     }
 
     public static En_CaseState asState(CaseState state) {

@@ -339,6 +339,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String canceledCaseState();
 
+    String requestNXCaseState();
+
+    String requestCustomerCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -786,6 +790,8 @@ public interface Lang extends Messages, ContactItemLang {
     String table();
 
     String issueNameHeader();
+
+    String issuePlatformHeader();
 
     String noChanges();
 
@@ -1271,6 +1277,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectManager();
 
+    String selectPlatform();
+
     String employees();
 
     String privilegeCategoryEmployee();
@@ -1497,6 +1505,8 @@ public interface Lang extends Messages, ContactItemLang {
     String type();
 
     String goToIssues();
+
+    String goToPlatforms();
 
     String employeeWithoutManager();
 
@@ -1828,4 +1838,10 @@ public interface Lang extends Messages, ContactItemLang {
     String componentDescription();
 
     String complexDescription();
+
+    String contractProject();
+
+    String contractProjectNotDefined();
+
+    String errSaveIssueNeedSelectPlatform();
 }

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -32,7 +32,7 @@ public class RoleControllerImpl implements RoleController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<UserRole>> response = roleService.userRoleList( descriptor.makeAuthToken(), query );
+        Result<List<UserRole>> response = roleService.userRoleList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -46,7 +46,7 @@ public class RoleControllerImpl implements RoleController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<UserRole> response = roleService.getUserRole( descriptor.makeAuthToken(), id );
+        Result<UserRole> response = roleService.getUserRole( descriptor.makeAuthToken(), id );
 
         log.debug("get role, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
@@ -64,7 +64,7 @@ public class RoleControllerImpl implements RoleController {
 
         log.debug("store role, id: {} ", HelperFunc.nvl(role.getId(), "new"));
 
-        CoreResponse<UserRole> response = roleService.saveUserRole( descriptor.makeAuthToken(), role );
+        Result<UserRole> response = roleService.saveUserRole( descriptor.makeAuthToken(), role );
 
         log.debug("store role, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -83,7 +83,7 @@ public class RoleControllerImpl implements RoleController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<EntityOption>> response = roleService.userRoleOptionList( descriptor.makeAuthToken(), query );
+        Result<List<EntityOption>> response = roleService.userRoleOptionList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -97,7 +97,7 @@ public class RoleControllerImpl implements RoleController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Boolean > response = roleService.removeRole( descriptor.makeAuthToken(), id );
+        Result< Boolean > response = roleService.removeRole( descriptor.makeAuthToken(), id );
         log.debug( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {

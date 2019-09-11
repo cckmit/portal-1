@@ -1,24 +1,28 @@
 package ru.protei.portal.mock;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-public class AuthServiceMock implements AuthService {
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.error;
 
+public class AuthServiceMock implements AuthService {
     @Autowired
     UserLoginDAO userLoginDAO;
 
@@ -57,10 +61,10 @@ public class AuthServiceMock implements AuthService {
     }
 
     @Override
-    public CoreResponse<UserSessionDescriptor> login(String appSessionID, String login, String pwd, String ip, String userAgent) {
+    public Result<UserSessionDescriptor> login( String appSessionID, String login, String pwd, String ip, String userAgent) {
         UserLogin ulogin = userLoginDAO.findByLogin(login);
         if (ulogin == null) {
-            return new CoreResponse<UserSessionDescriptor>().success(descriptor);
+            return ok( descriptor);
         } else {
             Person person = personDAO.get(ulogin.getPersonId());
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
@@ -68,10 +72,10 @@ public class AuthServiceMock implements AuthService {
             userSessionDescriptor.login(ulogin, person, person.getCompany());
 
             if (!ulogin.getUpass().equalsIgnoreCase(DigestUtils.md5DigestAsHex(pwd.getBytes()))) {
-                return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+                return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
             }
 
-            return new CoreResponse<UserSessionDescriptor>().success(userSessionDescriptor);
+            return ok( userSessionDescriptor);
         }
     }
 

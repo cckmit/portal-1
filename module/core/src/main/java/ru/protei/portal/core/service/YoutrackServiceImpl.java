@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
@@ -17,8 +17,8 @@ import ru.protei.portal.core.model.yt.api.IssueApi;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
@@ -27,32 +27,32 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
-    public CoreResponse<ChangeResponse> getIssueChanges( String issueId ) {
+    public Result<ChangeResponse> getIssueChanges( String issueId ) {
         return restDao.getIssueChanges( issueId );
     }
 
     @Override
-    public CoreResponse<List<YtAttachment>> getIssueAttachments( String issueId ) {
+    public Result<List<YtAttachment>> getIssueAttachments( String issueId ) {
         return restDao.getIssueAttachments( issueId );
     }
 
     @Override
-    public CoreResponse<String> createIssue( String project, String summary, String description ) {
+    public Result<String> createIssue( String project, String summary, String description ) {
         return restDao.createIssue( project, summary, description );
     }
 
     @Override
-    public CoreResponse<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectId, Date updatedAfter ) {
+    public Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectId, Date updatedAfter ) {
         return restDao.getIssuesByProjectAndUpdated( projectId, updatedAfter )
                 .map( issues -> stream( issues ).map( Issue::getId )
                         .collect( Collectors.toSet() ) );
     }
 
     @Override
-    public CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId ) {
+    public Result<YouTrackIssueInfo> getIssueInfo( String issueId ) {
         if (issueId == null) {
             log.warn( "getIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return restDao.getIssue( issueId ).map(
@@ -60,10 +60,10 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public CoreResponse<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber ) {
+    public Result<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
             log.warn( "setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return apiDao.getIssue( issueId ).flatMap( issue ->
@@ -71,24 +71,24 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public CoreResponse<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
+    public Result<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
             log.warn( "removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber  );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return apiDao.getIssue( issueId ).flatMap( issue ->
                 removeCrmNumberIfSame( issue, issue.getCrmNumber(), caseNumber ) );
     }
 
-    private CoreResponse<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {
+    private Result<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
             return apiDao.removeCrmNumber( issue );
         }
         return ok();
     }
 
-    private CoreResponse<String> replaceCrmNumberIfDifferent(IssueApi issue, Long crmNumber, Long caseNumber ) {
+    private Result<String> replaceCrmNumberIfDifferent( IssueApi issue, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
             return ok();
         }

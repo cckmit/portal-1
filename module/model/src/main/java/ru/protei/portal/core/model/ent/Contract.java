@@ -42,13 +42,13 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER")
     private Long managerId;
 
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
-    }, mappedColumn = "displayShortName")
+    })
     private String managerShortName;
 
     /**
@@ -66,7 +66,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Контрагент (компания)
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company")
     private Long contragentId;
 
     @JdbcJoinedColumn(joinPath = {
@@ -78,7 +78,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Направление
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id")
     private Long directionId;
 
     @JdbcJoinedColumn(joinPath = {
@@ -149,6 +149,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcOneToMany(table = "Contract", localColumn = "id", remoteColumn = "parent_contract_id")
     private List<Contract> childContracts;
 
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
+    private String projectName;
 
     @Override
     public String getAuditType() {
@@ -348,6 +353,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return childContracts;
     }
 
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
     @Override
     public String toString() {
         return "Contract{" +
@@ -377,6 +398,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", parentContractId=" + parentContractId +
                 ", parentContractNumber='" + parentContractNumber + '\'' +
                 ", childContracts=" + childContracts +
+                ", projectId=" + projectId +
+                ", projectName=" + projectName +
                 '}';
     }
 

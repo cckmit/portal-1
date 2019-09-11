@@ -3,12 +3,9 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
-
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 
@@ -174,6 +171,10 @@ public class CaseObjectSqlBuilder {
             if (query.getLocal() != null) {
                 condition.append( " and case_object.islocal = ?" );
                 args.add(query.getLocal());
+            }
+
+            if (query.isFreeProjects()) {
+                condition.append(" and case_object.id not in (SELECT contract.project_id FROM contract where contract.project_id is not null)");
             }
         });
     }

@@ -8,12 +8,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
@@ -58,9 +59,10 @@ public class TestCaseEvents extends BaseServiceTest {
         object.setCreatorInfo("junit-test-events");
         object.setName("Event-publisher test");
         object.setExtAppType("junit-test");
+        object.setImpLevel(En_ImportanceLevel.BASIC.getId());
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
-        CoreResponse<CaseObject> response = service.saveCaseObject(getAuthToken(), object, person);
+        Result<CaseObject> response = service.saveCaseObject(getAuthToken(), object, person);
         Assert.assertTrue(response.isOk());
 
         // wait for async event
@@ -75,7 +77,7 @@ public class TestCaseEvents extends BaseServiceTest {
         comment.setText("A new comment, publishing test");
         comment.setCaseAttachments(Collections.emptyList());
 
-        CoreResponse<CaseComment> r2 = caseCommentService.addCaseComment(getAuthToken(), caseType, comment, person);
+        Result<CaseComment> r2 = caseCommentService.addCaseComment(getAuthToken(), caseType, comment, person);
 
         Assert.assertTrue(r2.isOk());
 
