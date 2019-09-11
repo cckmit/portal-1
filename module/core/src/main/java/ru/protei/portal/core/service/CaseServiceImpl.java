@@ -712,7 +712,7 @@ public class CaseServiceImpl implements CaseService {
             JiraEndpoint endpoint = jiraEndpointDAO.get(issueData.endpointId);
             caseObject.setJiraMetaData(new JiraMetaData(
                 extAppData.issueType(),
-                extAppData.severity(),
+                extAppData.slaSeverity(),
                 endpoint.getSlaMapId()
             ));
         } catch (Exception e) {
@@ -742,7 +742,9 @@ public class CaseServiceImpl implements CaseService {
             return caseObject;
         }
 
-        if (En_JiraSLAIssueTypeEditable.forIssueType(metaData.getIssueType()) == null) {
+        boolean isSeverityCanBeChanged = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(metaData.getIssueType()));
+
+        if (!isSeverityCanBeChanged) {
             return caseObject;
         }
 
@@ -755,13 +757,12 @@ public class CaseServiceImpl implements CaseService {
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObject.getId());
             JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
-            extAppData.setSeverity(metaData.getSeverity());
+            extAppData.setSlaSeverity(metaData.getSeverity());
             appData.setExtAppData(JiraExtAppData.toJSON(extAppData));
             if (!externalCaseAppDAO.saveExtAppData(appData)) {
                 log.warn("Failed to save extAppData with jira SLA information");
                 return caseObject;
             }
-            // TODO Is jira endpoint update required or it's only portal-side update?
         } catch (Exception e) {
             log.warn("Failed to persist jira SLA information", e);
             return caseObject;

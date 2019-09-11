@@ -9,7 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_JiraSLAIssueTypeEditable;
+import ru.protei.portal.core.model.dict.En_JiraSLAIssueType;
 import ru.protei.portal.core.model.ent.JiraSLAMapEntry;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.JiraMetaData;
@@ -48,7 +48,7 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     public void setValue(JiraMetaData value, boolean fireEvents) {
         clearCache();
         this.value = value;
-        render();
+        renderView();
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
@@ -59,31 +59,22 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @UiHandler("issueType")
-    public void issueTypeChanged(ValueChangeEvent<String> event) {
-        changed();
-        render();
-    }
-
     @UiHandler("severity")
     public void severityChanged(ValueChangeEvent<String> event) {
-        changed();
-        render();
+        fillValueFromView();
+        renderView();
     }
 
-    private void render() {
+    private void renderView() {
 
-        issueType.fillOptions(Collections.emptyList());
-        issueType.setEnabled(false);
-        severity.fillOptions(Collections.emptyList());
-        severity.setEnabled(false);
+        renderViewDisableAll();
 
         if (value == null) {
             return;
         }
 
         if (!isCached()) {
-            loadCache(value.getSlaMapId(), this::render);
+            loadCache(value.getSlaMapId(), this::renderView);
             return;
         }
 
@@ -91,30 +82,52 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
         String currentSeverity = value.getSeverity();
         Long currentTimeOfReaction = collectTimeOfReaction(cache, currentIssueType, currentSeverity);
         Long currentTimeOfDecision = collectTimeOfDecision(cache, currentIssueType, currentSeverity);
-        boolean isSeverityEditable = En_JiraSLAIssueTypeEditable.forIssueType(currentIssueType) != null;
 
-        issueType.fillOptions(collectIssueTypes(cache));
+        renderViewIssueType(currentIssueType);
+        renderViewSeverity(currentIssueType, currentSeverity);
+        renderViewTimeOfReaction(currentTimeOfReaction);
+        renderViewTimeOfDecision(currentTimeOfDecision);
+    }
+
+    private void renderViewDisableAll() {
+        issueType.setValue("");
+        issueType.setEnabled(false);
+        severity.fillOptions(Collections.emptyList());
+        severity.setEnabled(false);
+        severityContainer.setVisible(false);
+        timeOfReactionContainer.setVisible(false);
+        timeOfDecisionContainer.setVisible(false);
+    }
+
+    private void renderViewIssueType(String currentIssueType) {
         issueType.setValue(currentIssueType);
         issueType.setEnabled(false);
+    }
 
-        if (!isSeverityEditable && StringUtils.isBlank(currentSeverity)) {
+    private void renderViewSeverity(String currentIssueType, String currentSeverity) {
+        boolean isSeverityEditable = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(currentIssueType));
+        if (!isSeverityEditable) {
             severity.setEnabled(false);
             severityContainer.setVisible(false);
         } else {
-            severity.setDisplayOptionCreator(makeSeverityDisplayOptionCreator(currentIssueType, isSeverityEditable));
+            severity.setDisplayOptionCreator(makeSeverityDisplayOptionCreator(cache, currentIssueType));
             severity.fillOptions(collectSeverities(cache, currentIssueType));
             severity.setValue(currentSeverity);
-            severity.setEnabled(isSeverityEditable);
+            severity.setEnabled(true);
             severityContainer.setVisible(true);
         }
+    }
 
+    private void renderViewTimeOfReaction(Long currentTimeOfReaction) {
         if (currentTimeOfReaction == null) {
             timeOfReactionContainer.setVisible(false);
         } else {
             timeOfReaction.setValue(workTimeFormatter.asString(currentTimeOfReaction));
             timeOfReactionContainer.setVisible(true);
         }
+    }
 
+    private void renderViewTimeOfDecision(Long currentTimeOfDecision) {
         if (currentTimeOfDecision == null) {
             timeOfDecisionContainer.setVisible(false);
         } else {
@@ -123,7 +136,7 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
         }
     }
 
-    private void changed() {
+    private void fillValueFromView() {
         value.setIssueType(issueType.getValue());
         value.setSeverity(severity.getValue());
     }
@@ -143,13 +156,6 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
 
     private void clearCache() {
         cache = null;
-    }
-
-    private List<String> collectIssueTypes(List<JiraSLAMapEntry> data) {
-        return data.stream()
-            .map(JiraSLAMapEntry::getIssueType)
-            .distinct()
-            .collect(Collectors.toList());
     }
 
     private List<String> collectSeverities(List<JiraSLAMapEntry> data, String issueType) {
@@ -180,21 +186,21 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
             .orElse(null);
     }
 
-    private DisplayOptionCreator<String> makeSeverityDisplayOptionCreator(String issueType, boolean isSeverityEditable) {
-        return (value) -> {
-            String description = cache.stream()
-                .filter(entry -> Objects.equals(entry.getIssueType(), issueType))
-                .filter(entry -> Objects.equals(entry.getSeverity(), value))
-                .map(JiraSLAMapEntry::getDescription)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse("");
-            boolean isDescriptionAvailable = StringUtils.isNotBlank(description);
-            if (isSeverityEditable) {
-                return new DisplayOption(isDescriptionAvailable ? description : value);
-            } else {
-                return new DisplayOption(value + (isDescriptionAvailable ? " (" + description + ")" : ""));
-            }
+    private String collectDescriptionForSeverity(List<JiraSLAMapEntry> data, String issueType, String severity) {
+        return data.stream()
+            .filter(entry -> Objects.equals(entry.getIssueType(), issueType))
+            .filter(entry -> Objects.equals(entry.getSeverity(), severity))
+            .map(JiraSLAMapEntry::getDescription)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse("");
+    }
+
+    private DisplayOptionCreator<String> makeSeverityDisplayOptionCreator(List<JiraSLAMapEntry> data, String issueType) {
+        return (severity) -> {
+            String description = collectDescriptionForSeverity(data, issueType, severity);
+            String value = StringUtils.isNotBlank(description) ? description : severity;
+            return new DisplayOption(value);
         };
     }
 
@@ -205,9 +211,8 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     @UiField
     Lang lang;
 
-    @Inject
-    @UiField(provided = true)
-    RawTextButtonSelector issueType;
+    @UiField
+    TextBox issueType;
     @Inject
     @UiField(provided = true)
     RawTextButtonSelector severity;

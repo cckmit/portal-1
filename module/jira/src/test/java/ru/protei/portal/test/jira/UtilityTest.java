@@ -48,7 +48,7 @@ public class UtilityTest {
 
         JiraExtAppData state = JiraExtAppData.fromJSON("{\"issueType\":\"Error\",\"severity\":\"10\"}");
         Assert.assertEquals("Error", state.issueType());
-        Assert.assertEquals("10", state.severity());
+        Assert.assertEquals("10", state.slaSeverity());
 
         String json = state.toString();
         Assert.assertEquals("{\"issueType\":\"Error\",\"severity\":\"10\",\"cid\":[],\"aid\":[]}", json);

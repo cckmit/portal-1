@@ -14,10 +14,7 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.struct.FileStream;
@@ -126,8 +123,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             caseObjectDAO.saveOrUpdate(caseObj);
 
-            jiraExtAppData.setIssueType(issue.getIssueType().getName());
-            jiraExtAppData.setSeverity(CommonUtils.getIssueSeverity(issue));
+            addIssueTypeAndSeverity(jiraExtAppData, issue);
 
             caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
             caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, jiraExtAppData, personMapper));
@@ -171,8 +167,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
-        jiraExtAppData.setIssueType(issue.getIssueType().getName());
-        jiraExtAppData.setSeverity(CommonUtils.getIssueSeverity(issue));
+        addIssueTypeAndSeverity(jiraExtAppData, issue);
 
         caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
         caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, jiraExtAppData, personMapper));
@@ -282,7 +277,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return id + filename.substring(i);
     }
 
-
     private void storeAttachment (ru.protei.portal.core.model.ent.Attachment attachment, InputStreamSource content, long caseId) throws Exception {
 
         if(attachmentService.saveAttachment(attachment).isError()) {
@@ -310,8 +304,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         logger.debug("new attachment id {}", caseAttachId.getData());
     }
 
-
-
     private ru.protei.portal.core.model.ent.Attachment convertAttachment(PersonMapper personMapper, Attachment jiraAttachment) {
         ru.protei.portal.core.model.ent.Attachment a = new ru.protei.portal.core.model.ent.Attachment();
         a.setCreated(jiraAttachment.getCreationDate().toDate());
@@ -322,7 +314,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         a.setLabelText(jiraAttachment.getFilename());
         return a;
     }
-
 
     class JiraAttachmentSource implements InputStreamSource {
 
@@ -339,7 +330,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return client.getIssueClient().getAttachment(contentURI).claim();
         }
     }
-
 
     private CaseComment convertComment(CaseObject caseObj, PersonMapper personMapper, Comment comment) {
         CaseComment our = new CaseComment();
@@ -387,5 +377,16 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         // update info (description)
 
         caseObj.setInfo(issue.getDescription());
+    }
+
+    private JiraExtAppData addIssueTypeAndSeverity(JiraExtAppData jiraExtAppData, Issue issue) {
+        String issueType = issue.getIssueType().getName();
+        jiraExtAppData.setIssueType(issueType);
+        boolean isSeverityShouldBeSaved = En_JiraSLAIssueType.byJira().contains(En_JiraSLAIssueType.forIssueType(issueType));
+        if (isSeverityShouldBeSaved) {
+            String severity = CommonUtils.getIssueSeverity(issue);
+            jiraExtAppData.setSlaSeverity(severity);
+        }
+        return jiraExtAppData;
     }
 }

@@ -11,8 +11,8 @@ public class JiraExtAppData {
 
     @JsonProperty("issueType")
     private String issueType;
-    @JsonProperty("severity")
-    private String severity;
+    @JsonProperty("sla-severity")
+    private String slaSeverity;
     @JsonProperty("cid")
     private Set<Long> commentIds;
     @JsonProperty("aid")
@@ -28,8 +28,8 @@ public class JiraExtAppData {
         return this;
     }
 
-    public JiraExtAppData setSeverity(String severity) {
-        this.severity = severity;
+    public JiraExtAppData setSlaSeverity(String slaSeverity) {
+        this.slaSeverity = slaSeverity;
         return this;
     }
 
@@ -52,8 +52,8 @@ public class JiraExtAppData {
         return issueType;
     }
 
-    public String severity() {
-        return severity;
+    public String slaSeverity() {
+        return slaSeverity;
     }
 
     public int commentsCount () {

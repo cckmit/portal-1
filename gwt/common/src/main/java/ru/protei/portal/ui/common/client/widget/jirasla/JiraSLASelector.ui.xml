@@ -8,17 +8,17 @@
         <div class="grid grid-indent">
             <g:HTMLPanel styleName="form-group col-xs-3">
                 <label><ui:text from="{lang.jiraIssueType}"/></label>
-                <text:RawTextButtonSelector ui:field="issueType"/>
+                <g:TextBox ui:field="issueType" styleName="input-field" enabled="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="severityContainer" styleName="form-group col-xs-3">
+            <g:HTMLPanel ui:field="severityContainer" styleName="form-group col-xs-3" visible="false">
                 <label><ui:text from="{lang.jiraSeverity}"/></label>
-                <text:RawTextButtonSelector ui:field="severity"/>
+                <text:RawTextButtonSelector ui:field="severity" enabled="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="timeOfReactionContainer" styleName="form-group col-xs-3">
+            <g:HTMLPanel ui:field="timeOfReactionContainer" styleName="form-group col-xs-3" visible="false">
                 <label><ui:text from="{lang.jiraTimeOfReaction}"/></label>
                 <g:TextBox ui:field="timeOfReaction" styleName="input-field" enabled="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="timeOfDecisionContainer" styleName="form-group col-xs-3">
+            <g:HTMLPanel ui:field="timeOfDecisionContainer" styleName="form-group col-xs-3" visible="false">
                 <label><ui:text from="{lang.jiraTimeOfDecision}"/></label>
                 <g:TextBox ui:field="timeOfDecision" styleName="input-field" enabled="false"/>
             </g:HTMLPanel>

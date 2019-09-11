@@ -205,11 +205,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         }
 
         JiraMetaData meta = value.getJiraMetaData();
-        boolean isSeverityEditable = En_JiraSLAIssueTypeEditable.forIssueType(meta.getIssueType()) != null;
+        boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
 
         view.setJiraVisible(true);
         view.setJiraIssueType(meta.getIssueType());
-        view.setJiraSeverity(meta.getSeverity());
+        view.setJiraSeverity(isSeverityDisplayed ? meta.getSeverity() : null);
 
         slaController.getJiraSLAEntry(meta.getSlaMapId(), meta.getIssueType(), meta.getSeverity(), new FluentCallback<JiraSLAMapEntry>()
             .withError(throwable -> {
@@ -217,14 +217,13 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 view.setJiraTimeOfDecision(null);
             })
             .withSuccess(entry -> {
-                view.setJiraTimeOfReaction(entry.getTimeOfReactionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfReactionMinutes()));
-                view.setJiraTimeOfDecision(entry.getTimeOfDecisionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfDecisionMinutes()));
-                boolean isDescriptionAvailable = StringUtils.isNotBlank(entry.getDescription());
-                if (isSeverityEditable) {
-                    view.setJiraSeverity(isDescriptionAvailable ? entry.getDescription() : meta.getSeverity());
-                } else {
-                    view.setJiraSeverity(meta.getSeverity() + (isDescriptionAvailable ? " (" + entry.getDescription() + ")" : ""));
-                }
+                String timeOfReaction = entry.getTimeOfReactionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfReactionMinutes());
+                String timeOfDecision = entry.getTimeOfDecisionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfDecisionMinutes());
+                String description = entry.getDescription();
+                String severity = StringUtils.isNotBlank(description) ? description : meta.getSeverity();
+                view.setJiraTimeOfReaction(timeOfReaction);
+                view.setJiraTimeOfDecision(timeOfDecision);
+                view.setJiraSeverity(severity);
             }));
     }
 
