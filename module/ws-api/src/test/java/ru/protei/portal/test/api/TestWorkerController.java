@@ -148,6 +148,14 @@ public class TestWorkerController {
 
         WorkerRecord resultWorker;
 
+        worker.setFireDate("");
+        worker.setId(null);
+        result = updateFireDate(worker);
+        resultWorker = getWorkerByUri(uriBuilder).getData();
+
+        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+        Assert.assertEquals("update.fire.date: fire date are changed!", null, resultWorker.getFireDate());
+
         worker.setId(successResult.getData());
 
         worker.setFireDate("2019-05-05");

@@ -533,8 +533,11 @@ public class WorkerController {
 
                     List<Person> personList = personDAO.getAll();
 
-                    Date newDate = HelperService.DATE.parse(rec.getFireDate());
-                    Date birthday = HelperService.DATE.parse(rec.getBirthday());
+                    Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
+                    Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
+
+                    if (newDate == null) return ok();
+                    if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
 
                     for (Person person : personList) {
                         if (person.isFired()
