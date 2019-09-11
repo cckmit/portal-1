@@ -531,24 +531,24 @@ public class WorkerController {
             if (!operationData.isValid()){
                 try {
 
-                    List<Person> personList = personDAO.getAll();
-
                     Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
                     Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
 
                     if (newDate == null) return ok();
                     if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
 
+                    List<Person> personList = personDAO.getListByCondition(
+                            "person.isFired=true and person.lastname=? and person.firstname=? and person.birthday=?",
+                            rec.getLastName(), rec.getFirstName(), rec.getBirthday());
+
+                    if (personList.isEmpty()) return ok();
+
                     for (Person person : personList) {
-                        if (person.isFired()
-                                && rec.getLastName().equals(person.getLastName())
-                                && rec.getFirstName().equals(person.getFirstName())
-                                && birthday.equals(person.getBirthday())
-                                && (person.getFireDate() == null || person.getFireDate().before(newDate))) {
-                            person.setFired(true, newDate);
+                        if (person.getFireDate() == null || person.getFireDate().before(newDate)) {
+                            person.setFired(newDate);
                             mergePerson(person);
                             logger.debug("success result, personId={}", person.getId());
-                            return ok();
+                            return ok(person.getId());
                         }
                     }
                     return ok();
@@ -570,7 +570,7 @@ public class WorkerController {
                             Date newDate = HelperService.DATE.parse(rec.getFireDate());
 
                             if (currentDate == null || currentDate.before(newDate)) {
-                                person.setFired(true, newDate);
+                                person.setFired(newDate);
                                 mergePerson(person);
                             }
                         }
