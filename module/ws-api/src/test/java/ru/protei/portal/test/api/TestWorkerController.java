@@ -156,6 +156,14 @@ public class TestWorkerController {
         Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
         Assert.assertEquals("update.fire.date: fire date are changed!", null, resultWorker.getFireDate());
 
+        WorkerRecord secondWorker = createWorkerRecord();
+        secondWorker.setFirstName("111");
+        secondWorker.setFireDate("2019-05-05");
+        secondWorker.setId(null);
+        result = updateFireDate(secondWorker);
+
+        Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
+
         worker.setId(successResult.getData());
 
         worker.setFireDate("2019-05-05");

@@ -548,42 +548,46 @@ public class WorkerController {
                             person.setFired(true, newDate);
                             mergePerson(person);
                             logger.debug("success result, personId={}", person.getId());
-                            return ok(person.getId());
+                            return ok();
                         }
                     }
+                    return ok();
                 } catch (Exception e){
                     logger.error("error while update worker's record", e);
                 }
             }
+            else {
 
 
-            return transactionTemplate.execute(transactionStatus -> {
+                return transactionTemplate.execute(transactionStatus -> {
 
-                try {
+                    try {
 
-                    Person person = operationData.person();
+                        Person person = operationData.person();
 
-                    if (person.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())){
-                        Date currentDate = person.getFireDate();
-                        Date newDate = HelperService.DATE.parse(rec.getFireDate());
+                        if (person.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
+                            Date currentDate = person.getFireDate();
+                            Date newDate = HelperService.DATE.parse(rec.getFireDate());
 
-                        if (currentDate == null || currentDate.before(newDate)) {
-                            person.setFired(true, newDate);
-                            mergePerson(person);
+                            if (currentDate == null || currentDate.before(newDate)) {
+                                person.setFired(true, newDate);
+                                mergePerson(person);
+                            }
                         }
+
+                        logger.debug("success result, personId={}", person.getId());
+                        return ok(person.getId());
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
-
-                    logger.debug("success result, personId={}", person.getId());
-                    return ok(person.getId());
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                });
+            }
 
         } catch (Exception e) {
             logger.error("error while update worker's record", e);
         }
+
 
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
