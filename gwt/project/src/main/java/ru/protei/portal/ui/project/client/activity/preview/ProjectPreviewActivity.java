@@ -72,7 +72,9 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Override
     public void onContractLinkClicked() {
-        fireEvent(new ContractEvents.ShowFullScreen(contract.getId()));
+        if (project.getContract() != null) {
+            fireEvent(new ContractEvents.ShowFullScreen(project.getContract().getId()));
+        }
     }
 
     private void fillView(Long id ) {
@@ -90,14 +92,13 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             @Override
             public void onSuccess( ProjectInfo project ) {
                 fireEvent( new AppEvents.InitPanelName( project.getName() ) );
-                contract = project.getContract();
+                ProjectPreviewActivity.this.project = project;
                 fillView( project );
             }
         } );
     }
 
     private void fillView( ProjectInfo value ) {
-        this.project = value;
         view.setName( value.getName() );
         view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
@@ -106,8 +107,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContractNumber(contract == null ? "" : lang.contractNum(contract.getDisplayText()));
-        view.setContractVisible(contract != null);
+        view.setContractNumber(value.getContract() == null ? "" : lang.contractNum(value.getContract().getDisplayText()));
+        view.setContractVisible(value.getContract() != null);
 
         if( value.getTeam() != null ) {
             view.setTeam( value.getTeam().stream().map( entry ->
@@ -143,7 +144,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     private Long projectId;
     ProjectInfo project;
-    private EntityOption contract;
 
     private AppEvents.InitDetails initDetails;
 }

@@ -162,6 +162,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
         contractNumber.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
+        toContractLink.ensureDebugId(DebugIds.PROJECT_PREVIEW.TO_CONTRACT_BUTTON);
     }
 
     @UiField

@@ -1761,8 +1761,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveIssueNeedSelectPlatform();
 
-    String contractSelect();
-
     String goToContracts();
 
     String contract();
