@@ -6,7 +6,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -68,13 +71,20 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     }
 
     @Override
+    public void onContractLinkClicked() {
+        if (project.getContractId() != null) {
+            fireEvent(new ContractEvents.ShowFullScreen(project.getContractId()));
+        }
+    }
+
+    @Override
     public void onProductLinkClicked() {
         if (project.getSingleProduct() != null) {
             fireEvent(new ProductEvents.ShowFullScreen(project.getSingleProduct().getId()));
         }
     }
 
-    private void fillView(Long id ) {
+    private void fillView( Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -89,13 +99,13 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             @Override
             public void onSuccess( ProjectInfo project ) {
                 fireEvent( new AppEvents.InitPanelName( project.getName() ) );
+                ProjectPreviewActivity.this.project = project;
                 fillView( project );
             }
         } );
     }
 
     private void fillView( ProjectInfo value ) {
-        this.project = value;
         view.setName( value.getName() );
         view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
@@ -104,6 +114,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
+        view.setContractNumber(value.getContractId() == null ? "" : lang.contractNum(value.getContractNumber()));
+        view.setContractVisible(value.getContractId() != null);
 
         if( value.getTeam() != null ) {
             view.setTeam( value.getTeam().stream().map( entry ->

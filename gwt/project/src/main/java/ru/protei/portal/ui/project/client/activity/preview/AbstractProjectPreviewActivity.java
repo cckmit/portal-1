@@ -7,5 +7,7 @@ public interface AbstractProjectPreviewActivity {
     void onFullScreenPreviewClicked();
     void onGoToProjectClicked();
 
+    void onContractLinkClicked();
+
     void onProductLinkClicked();
 }

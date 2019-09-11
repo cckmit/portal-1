@@ -64,6 +64,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    ContractDAO contractDAO;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
@@ -146,10 +149,20 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result< ProjectInfo > getProject( AuthToken token, Long id ) {
 
-        CaseObject caseObject = caseObjectDAO.get( id );
-        helper.fillAll( caseObject );
+        CaseObject project = caseObjectDAO.get( id );
 
-        return ok(ProjectInfo.fromCaseObject( caseObject ) );
+        if (project == null) {
+            return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+        }
+
+        helper.fillAll( project );
+        Contract contract = contractDAO.getByProjectId(id);
+        if (contract != null) {
+            project.setContractId(contract.getId());
+            project.setContractNumber(contract.getNumber());
+        }
+
+        return ok(ProjectInfo.fromCaseObject(project));
     }
 
     @Override

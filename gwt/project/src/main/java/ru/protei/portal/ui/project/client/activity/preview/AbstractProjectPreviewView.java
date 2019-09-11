@@ -27,4 +27,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     HasWidgets getCommentsContainer();
     HasWidgets getDocumentsContainer();
+
+    void setContractNumber(String contractNumber);
+
+    void setContractVisible(boolean isContractVisible);
 }

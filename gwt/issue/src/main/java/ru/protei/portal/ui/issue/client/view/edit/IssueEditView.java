@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -372,7 +373,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         if (!isVisible) {
             stateContainer.replaceClassName("col-xs-4", "col-xs-6");
             importanceContainer.replaceClassName("col-xs-4", "col-xs-6");
-            platformContainer.setAttribute("style", "display: none;");
+            platformContainer.getStyle().setDisplay(Style.Display.NONE);
         } else {
             stateContainer.replaceClassName("col-xs-6", "col-xs-4");
             importanceContainer.replaceClassName("col-xs-6", "col-xs-4");

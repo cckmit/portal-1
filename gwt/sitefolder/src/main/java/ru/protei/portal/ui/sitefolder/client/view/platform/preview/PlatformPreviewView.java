@@ -43,7 +43,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Override
     public void showFullScreen(boolean isFullScreen) {
         fullScreen.setVisible(!isFullScreen);
-        backButton.setVisible(isFullScreen);
+        footer.setVisible(isFullScreen);
         if (isFullScreen) {
             preview.addStyleName("platform-fullscreen col-md-12 m-t-10");
         } else {
@@ -139,6 +139,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     AttachmentList attachmentContainer;
     @UiField
     Button backButton;
+    @UiField
+    HTMLPanel footer;
 
     @Inject
     FixedPositioner positioner;

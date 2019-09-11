@@ -110,6 +110,16 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return documents;
     }
 
+    @Override
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber.setInnerText(contractNumber);
+    }
+
+    @Override
+    public void setContractVisible(boolean isContractVisible) {
+        toContractLink.setVisible(isContractVisible);
+    }
+
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -135,6 +145,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    @UiHandler("toContractLink")
+    public void onToContractLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onContractLinkClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -154,6 +173,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
+        contractNumber.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
+        toContractLink.ensureDebugId(DebugIds.PROJECT_PREVIEW.TO_CONTRACT_BUTTON);
     }
 
     @UiField
@@ -169,6 +190,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SpanElement creationDate;
     @UiField
     DivElement projectName;
+    @UiField
+    SpanElement contractNumber;
     @UiField
     DivElement description;
     @UiField
@@ -193,6 +216,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel commentsContainer;
     @UiField
     HTMLPanel footer;
+    @UiField
+    Anchor toContractLink;
     @UiField
     Anchor primaryUseLink;
 

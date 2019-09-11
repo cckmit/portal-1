@@ -47,6 +47,16 @@
                     </fieldset>
 
                     <fieldset class="header grid grid-indent">
+                        <legend><ui:text from="{lang.contract}"/></legend>
+                        <div class="col-xs-12">
+                            <g:Anchor styleName="m-r-5" ui:field="toContractLink" href="#">
+                                <i class="fa fa-external-link"/>
+                            </g:Anchor>
+                            <span ui:field="contractNumber"></span>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="header grid grid-indent">
                         <legend><ui:text from="{lang.projectDescription}"/></legend>
                         <div class="col-xs-12" ui:field="description"></div>
                     </fieldset>

@@ -1762,4 +1762,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveIssueNeedSelectPlatform();
 
     String goToProducts();
+
+    String goToContracts();
+
+    String contract();
 }
