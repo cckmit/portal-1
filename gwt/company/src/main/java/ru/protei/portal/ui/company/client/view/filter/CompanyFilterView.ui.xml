@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
-             xmlns:companygroup='urn:import:ru.protei.portal.ui.company.client.widget.group.buttonselector'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -21,7 +20,7 @@
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>
                 </div>
                 <div class="form-group col-md-12">

@@ -68,7 +68,7 @@
                     <keyword:StringSelectInput ui:field="keywords"/>
                 </div>
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.documentShowDeprecated}"/>
                 </div>
             </div>

@@ -278,7 +278,6 @@ public abstract class DocumentEditActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.executionType().setValue(document.getExecutionType());
-        view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.inventoryNumber().setValue(document.getInventoryNumber());

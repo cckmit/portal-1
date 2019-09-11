@@ -8,8 +8,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
+            <div class="card card-default no-margin">
                 <div class="card-body">
                     <div class="row">
                         <div class="form-group col-md-4">
@@ -34,16 +33,13 @@
                         <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
                         <g:Anchor href='#' ui:field="reset" styleName="btn btn-white" text="{lang.buttonReset}"/>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div ui:field="projectsContainer" class="container-fluid padding-15 bg-white hide">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <projectlist:ProjectList ui:field="project"/>
+                    <div ui:field="projectsContainer" class="hide">
+                        <projectlist:ProjectList ui:field="project"/>
+                    </div>
                 </div>
             </div>
-        </div>
+
+
     </g:HTMLPanel>
 </ui:UiBinder>

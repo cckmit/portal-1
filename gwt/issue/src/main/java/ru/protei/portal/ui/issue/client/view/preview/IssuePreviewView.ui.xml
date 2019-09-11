@@ -7,7 +7,7 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-wrapper">
+    <g:HTMLPanel styleName="preview-wrapper footer-fixable">
         <g:HTMLPanel ui:field="preview" styleName="preview">
             <div class="card card-default">
                 <div class="card-body">

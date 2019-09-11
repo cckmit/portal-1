@@ -50,7 +50,7 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUser( event.profile.getName(),
+        view.setUser( event.profile.getShortName(),
                 event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(),
                 AvatarUtils.getAvatarUrl(event.profile));
 
@@ -88,7 +88,6 @@ public abstract class AppActivity
         fireEvent( new NotifyEvents.Init( view.getNotifyContainer() ) );
         fireEvent( new ActionBarEvents.Init( view.getActionBarContainer() ) );
     }
-
 
     private void pingServer() {
         pingService.ping( new AsyncCallback<Void>() {

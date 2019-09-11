@@ -116,11 +116,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public void setCreated(String date) {
-        created.setInnerText(date);
-    }
-
-    @Override
     public HasValue<Long> inventoryNumber() {
         return inventoryNumber;
     }
@@ -339,9 +334,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector registrar;
-
-    @UiField
-    Element created;
 
     @UiField
     TextBox version;

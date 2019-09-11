@@ -88,7 +88,7 @@
                             <h5>
                                 <ui:text from="{lang.projectTeam}"/>
                             </h5>
-                            <div class="col-xs-12" ui:field="team"/>
+                            <div class="col-md-12" ui:field="team"/>
                         </div>
                     </div>
                     <div class="row form-group">
@@ -97,7 +97,7 @@
                                 <ui:text from="{lang.equipmentDocuments}"/>
                             </h5>
                             <g:HTMLPanel ui:field="documents"
-                                         styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
+                                         styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
                         </div>
                     </div>
                     <div class="row form-group">

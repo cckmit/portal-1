@@ -22,20 +22,27 @@
                     <div class="card-title">
                         <ui:text from="{lang.contractCommonHeader}"/>
                     </div>
+                    <p class="small hint-text">
+                        <ui:text from="{lang.contractProjectHint}"/>
+                    </p>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3">
                             <label><ui:text from="{lang.contractNumber}"/></label>
                             <validatefield:ValidableTextBox ui:field="number" styleName="form-control" notNull="true"/>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3">
                             <label><ui:text from="{lang.contractType}"/></label>
                             <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}"/>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3">
                             <label><ui:text from="{lang.contractState}"/></label>
                             <selector:ContractStateSelector ui:field="state"/>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label><ui:text from="{lang.contractParent}"/></label>
+                            <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
                         </div>
 
                         <div class="form-group col-md-12">
@@ -43,14 +50,14 @@
                             <textarea:AutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
                         </div>
 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label>
                                 <ui:text from="{lang.contractDateSigning}"/>
                             </label>
                             <single:SinglePicker ui:field="dateSigning" formatValue="dd.MM.yyyy" />
                         </div>
 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label class="">
                                 <ui:text from="{lang.contractDateValid}"/>
                             </label>
@@ -58,17 +65,18 @@
                         </div>
 
                         <div class="form-group col-md-4">
-                            <label><ui:text from="{lang.contractDirection}"/></label>
-                            <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label><ui:text from="{lang.contractParent}"/></label>
-                            <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
-                        </div>
-
-                        <div class="form-group col-md-4">
                             <label><ui:text from="{lang.contractCost}"/></label>
                             <money:CostWithCurrencyView ui:field="costWithCurrency" defaultCurrency="RUB"/>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label><ui:text from="{lang.contractProject}"/></label>
+                            <project:ProjectEntityOptionButtonSelector validation="true" hasNullValue="true" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label><ui:text from="{lang.contractDirection}"/></label>
+                            <productdirection:ProductDirectionButtonSelector ui:field="direction" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
                         </div>
                     </div>
                 </div>
@@ -94,19 +102,14 @@
                             <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
                         </div>
 
-                        <div class="form-group col-xs-4">
-                            <label><ui:text from="{lang.contractProject}"/></label>
-                            <project:ProjectEntityOptionButtonSelector validation="true" hasNullValue="true" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
-                        </div>
-
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractManager}"/></label>
-                            <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" defaultValue="{lang.selectAccountPerson}"/>
+                            <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" enabled="false" defaultValue="{lang.selectAccountPerson}"/>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractContragent}"/></label>
-                            <company:CompanySelector hasNullValue="false" ui:field="contragent" defaultValue="{lang.selectAccountCompany}"/>
+                            <company:CompanySelector hasNullValue="false" ui:field="contragent" enabled="false" defaultValue="{lang.selectAccountCompany}"/>
                         </div>
                     </div>
                 </div>
