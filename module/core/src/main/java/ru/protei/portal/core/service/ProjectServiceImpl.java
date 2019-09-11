@@ -149,13 +149,20 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result< ProjectInfo > getProject( AuthToken token, Long id ) {
 
-        CaseObject caseObject = caseObjectDAO.get( id );
-        helper.fillAll( caseObject );
-        Contract contract = contractDAO.getByProjectId(id);
-        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObject);
-        projectInfo.setContract(contract == null ? null : new EntityOption(contract.getNumber(), contract.getId()));
+        CaseObject project = caseObjectDAO.get( id );
 
-        return ok(projectInfo);
+        if (project == null) {
+            return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+        }
+
+        helper.fillAll( project );
+        Contract contract = contractDAO.getByProjectId(id);
+        if (contract != null) {
+            project.setContractId(contract.getId());
+            project.setContractNumber(contract.getNumber());
+        }
+
+        return ok(ProjectInfo.fromCaseObject(project));
     }
 
     @Override

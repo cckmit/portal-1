@@ -76,7 +76,9 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     Set<ProductShortView> products;
 
-    private EntityOption contract;
+    private Long contractId;
+
+    private String contractNumber;
 
     private boolean deleted;
 
@@ -206,12 +208,20 @@ public class ProjectInfo extends AuditableObject implements Removable {
         return id != null && !deleted;
     }
 
-    public EntityOption getContract() {
-        return contract;
+    public Long getContractId() {
+        return contractId;
     }
 
-    public void setContract(EntityOption contract) {
-        this.contract = contract;
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
     }
 
     public static ProjectInfo fromCaseObject(CaseObject project ) {
@@ -254,6 +264,9 @@ public class ProjectInfo extends AuditableObject implements Removable {
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
+
+        projectInfo.setContractId(project.getContractId());
+        projectInfo.setContractNumber(project.getContractNumber());
         return projectInfo;
     }
 

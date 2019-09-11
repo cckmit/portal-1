@@ -72,8 +72,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Override
     public void onContractLinkClicked() {
-        if (project.getContract() != null) {
-            fireEvent(new ContractEvents.ShowFullScreen(project.getContract().getId()));
+        if (project.getContractId() != null) {
+            fireEvent(new ContractEvents.ShowFullScreen(project.getContractId()));
         }
     }
 
@@ -107,8 +107,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContractNumber(value.getContract() == null ? "" : lang.contractNum(value.getContract().getDisplayText()));
-        view.setContractVisible(value.getContract() != null);
+        view.setContractNumber(value.getContractId() == null ? "" : lang.contractNum(value.getContractNumber()));
+        view.setContractVisible(value.getContractId() != null);
 
         if( value.getTeam() != null ) {
             view.setTeam( value.getTeam().stream().map( entry ->
