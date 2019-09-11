@@ -111,7 +111,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(null);
         view.company().setValue(null);
         view.team().setValue(null);
-        view.products().setValue(null);
+        view.product().setValue(null);
 
         view.getDocumentsContainer().clear();
         view.getCommentsContainer().clear();
@@ -134,7 +134,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         Company customer = projectInfo.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.description().setText(projectInfo.getDescription());
-        view.products().setValue(projectInfo.getSingleProduct());
+        view.product().setValue(projectInfo.getSingleProduct());
         view.customerType().setValue(projectInfo.getCustomerType());
 
         view.numberVisibility().setVisible( true );
@@ -157,7 +157,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         projectInfo.setState(view.state().getValue());
         projectInfo.setCustomer(Company.fromEntityOption(view.company().getValue()));
         projectInfo.setCustomerType(view.customerType().getValue());
-        projectInfo.setProducts(new HashSet<>(Collections.singleton(view.products().getValue())));
+        projectInfo.setProducts(new HashSet<>(Collections.singleton(view.product().getValue())));
         projectInfo.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         projectInfo.setRegion(view.region().getValue());
         projectInfo.setTeam(new ArrayList<>(view.team().getValue()));

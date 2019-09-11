@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateButtonSelector;
@@ -45,7 +44,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        products.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
@@ -84,8 +83,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue< EntityOption > region() { return projectRegion; }
 
     @Override
-    public HasValue<ProductShortView> products() {
-        return products;
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
@@ -201,7 +200,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Inject
     @UiField(provided = true)
-    DevUnitButtonSelector products;
+    DevUnitButtonSelector product;
 
     @Inject
     @UiField(provided = true)

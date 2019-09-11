@@ -201,9 +201,7 @@ public class BootstrapService {
                     .map(DevUnit::getName)
                     .reduce((name1, name2) -> name1 + " " + name2)
                     .get();
-
-            projectToProductDAO.removeAllProductsFromProject(project.getId());
-
+            
             DevUnit complex = new DevUnit();
             complex.setName(complexName);
             complex.setStateId(En_DevUnitState.ACTIVE.getId());
@@ -215,6 +213,7 @@ public class BootstrapService {
             complex.setId(complexId);
             jdbcManyRelationsHelper.persist(complex, "children");
 
+            projectToProductDAO.removeAllProductsFromProject(project.getId());
             projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
         });
     }
