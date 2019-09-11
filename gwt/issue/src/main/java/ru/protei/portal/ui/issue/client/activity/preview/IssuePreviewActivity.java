@@ -223,7 +223,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 String severity = StringUtils.isNotBlank(description) ? description : meta.getSeverity();
                 view.setJiraTimeOfReaction(timeOfReaction);
                 view.setJiraTimeOfDecision(timeOfDecision);
-                view.setJiraSeverity(severity);
+                view.setJiraSeverity(isSeverityDisplayed ? severity : null);
             }));
     }
 
