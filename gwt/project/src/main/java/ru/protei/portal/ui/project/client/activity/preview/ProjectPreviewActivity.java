@@ -7,7 +7,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -112,9 +111,9 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         }
 
         if (value.getProducts() != null && !value.getProducts().isEmpty()) {
-            view.setProducts(value.getSingleProduct().getName());
+            view.setProduct(value.getSingleProduct().getName());
         } else {
-            view.setProducts("");
+            view.setProduct("");
         }
 
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));

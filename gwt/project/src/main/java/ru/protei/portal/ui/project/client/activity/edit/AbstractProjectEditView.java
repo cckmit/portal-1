@@ -24,11 +24,7 @@ public interface AbstractProjectEditView extends IsWidget {
     HasValue<En_RegionState> state();
     HasValue<EntityOption> region();
     HasValue<ProductDirectionInfo> direction();
-    HasValue<Set<ProductShortView>> products();
-
-    ProductShortView getProduct();
-
-    void setProduct(ProductShortView product);
+    HasValue<ProductShortView> products();
 
     HasValue<EntityOption> company();
     HasValue<En_CustomerType> customerType();

@@ -17,7 +17,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -203,6 +202,8 @@ public class BootstrapService {
                     .reduce((name1, name2) -> name1 + " " + name2)
                     .get();
 
+            projectToProductDAO.removeAllProductsFromProject(project.getId());
+
             DevUnit complex = new DevUnit();
             complex.setName(complexName);
             complex.setStateId(En_DevUnitState.ACTIVE.getId());
@@ -214,7 +215,6 @@ public class BootstrapService {
             complex.setId(complexId);
             jdbcManyRelationsHelper.persist(complex, "children");
 
-            projectToProductDAO.removeProductsInProject(project.getId(), project.getProducts().stream().map(DevUnit::getId).collect(toList()));
             projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
         });
     }

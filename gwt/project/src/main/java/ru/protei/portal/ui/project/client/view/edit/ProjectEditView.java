@@ -84,19 +84,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue< EntityOption > region() { return projectRegion; }
 
     @Override
-    public HasValue<Set<ProductShortView>> products() {
-//        return products;
-        return null;
-    }
-
-    @Override
-    public ProductShortView getProduct() {
-        return products.getValue();
-    }
-
-    @Override
-    public void setProduct(ProductShortView product) {
-        products.setValue(product);
+    public HasValue<ProductShortView> products() {
+        return products;
     }
 
     @Override

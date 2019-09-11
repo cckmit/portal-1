@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.ent.ProjectToProduct;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
-
-import java.util.List;
 
 public class ProjectToProductDAO_Impl extends JdbcBaseDAO<ProjectToProduct, ProjectToProduct> implements ProjectToProductDAO {
     @Override
@@ -13,7 +10,7 @@ public class ProjectToProductDAO_Impl extends JdbcBaseDAO<ProjectToProduct, Proj
     }
 
     @Override
-    public boolean removeProductsInProject(Long projectId, List<Long> productIds) {
-        return removeByCondition("project_id = ? and product_id in " + HelperFunc.makeInArg(productIds), projectId) > 0;
+    public boolean removeAllProductsFromProject(Long projectId) {
+        return removeByCondition("project_id = ?", projectId) > 0;
     }
 }

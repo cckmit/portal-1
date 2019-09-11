@@ -197,7 +197,7 @@ public class ProjectInfo extends AuditableObject implements Removable {
     }
 
     public ProductShortView getSingleProduct() {
-        return products.size() == 1 ? products.stream().findFirst().get() : Collections.max(products, Comparator.comparingInt(prod -> prod.getName().length()));
+        return products.stream().findAny().orElse(null);
     }
 
     @Override

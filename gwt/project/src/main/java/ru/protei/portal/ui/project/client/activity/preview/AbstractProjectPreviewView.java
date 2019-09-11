@@ -19,7 +19,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setTeam( String value );
     void setDescription( String value );
     void setRegion( String value );
-    void setProducts( String value );
+    void setProduct(String value );
     void setCompany( String value );
     void setCustomerType( String value );
 
