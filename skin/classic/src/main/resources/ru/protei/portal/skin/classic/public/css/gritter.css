@@ -6,17 +6,17 @@
     width: 350px;
     z-index:9999;
 }
-.gritter-notice-wrapper.top-left {
+.gritter-notice-wrapper.top-notice-left {
     left: 20px;
     right: auto;
 }
-.gritter-notice-wrapper.bottom-right {
+.gritter-notice-wrapper.bottom-notice-right {
     top: auto;
     left: auto;
     bottom: 20px;
     right: 20px;
 }
-.gritter-notice-wrapper.bottom-left {
+.gritter-notice-wrapper.bottom-notice-left {
     top: auto;
     right: auto;
     bottom: 20px;
