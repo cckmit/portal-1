@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
@@ -32,20 +31,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
-    }
-
-    @Override
     public void setActivity( AbstractProjectPreviewActivity activity ) {
         this.activity = activity;
     }
@@ -58,7 +43,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public void setAuthor(String value) {
-        this.author.setInnerHTML( value );
+        this.author.setInnerText( value );
     }
 
     @Override
@@ -212,9 +197,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel backButtonContainer;
     @Inject
     En_RegionStateLang regionStateLang;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractProjectPreviewActivity activity;
 

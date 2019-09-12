@@ -154,7 +154,7 @@ public abstract class ProductTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
+            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true ) );
         }
     }
 

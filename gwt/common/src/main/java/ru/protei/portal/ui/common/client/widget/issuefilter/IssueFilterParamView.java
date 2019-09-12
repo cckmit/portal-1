@@ -386,6 +386,28 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    public void watchForScrollOf(Widget widget) {
+        userFilter.watchForScrollOf(widget);
+        sortField.watchForScrollOf(widget);
+        products.watchForScrollOf(widget);
+        companies.watchForScrollOf(widget);
+        initiators.watchForScrollOf(widget);
+        managers.watchForScrollOf(widget);
+        commentAuthors.watchForScrollOf(widget);
+        tags.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        userFilter.stopWatchForScrollOf(widget);
+        sortField.stopWatchForScrollOf(widget);
+        products.stopWatchForScrollOf(widget);
+        companies.stopWatchForScrollOf(widget);
+        initiators.stopWatchForScrollOf(widget);
+        managers.stopWatchForScrollOf(widget);
+        commentAuthors.stopWatchForScrollOf(widget);
+        tags.stopWatchForScrollOf(widget);
+    }
+
     private void ensureDebugIds() {
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);

@@ -46,7 +46,7 @@ public class CollapsablePanel extends Composite implements HasWidgets {
     }
 
     public void setLegend(String legend) {
-        this.legend.getElement().setInnerHTML(legend);
+        this.legend.getElement().setInnerText(legend);
     }
 
     @UiField

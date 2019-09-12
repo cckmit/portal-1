@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewActivity;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewView;
@@ -21,18 +20,6 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch( this, FixedPositioner.NAVBAR_TOP_OFFSET );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore( this );
     }
 
     @Override
@@ -188,9 +175,6 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     Anchor project;
     @UiField
     HTMLPanel footerContainer;
-
-    @Inject
-    private FixedPositioner positioner;
 
     private AbstractContractPreviewActivity activity;
 

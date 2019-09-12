@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -26,18 +25,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -147,9 +134,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     PasswordTextBox newPassword;
     @UiField
     PasswordTextBox confirmPassword;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractProfilePageActivity activity;
 

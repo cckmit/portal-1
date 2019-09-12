@@ -21,16 +21,14 @@ public class CompanyEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, Company company, boolean isWatchForScroll, boolean isShouldWrap ) {
+        public ShowPreview( HasWidgets parent, Company company, boolean isShouldWrap ) {
             this.parent = parent;
             this.company = company;
-            this.isWatchForScroll = isWatchForScroll;
             this.isShouldWrap = isShouldWrap;
         }
 
         public HasWidgets parent;
         public Company company;
-        public boolean isWatchForScroll;
         public boolean isShouldWrap;
     }
 

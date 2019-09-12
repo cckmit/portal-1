@@ -13,7 +13,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
@@ -29,18 +28,6 @@ public class ApplicationFilterView extends Composite implements AbstractApplicat
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -160,9 +147,6 @@ public class ApplicationFilterView extends Composite implements AbstractApplicat
     ToggleButton sortDir;
     @UiField
     TextArea comment;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractApplicationFilterActivity activity;
 

@@ -43,7 +43,6 @@ public abstract class CompanyPreviewActivity
         event.parent.add(view.asWidget(event.isShouldWrap));
 
         fillView( event.company );
-        view.watchForScroll( event.isWatchForScroll);
     }
 
     private void fillView( Company value ) {

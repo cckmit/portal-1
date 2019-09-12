@@ -1,13 +1,15 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
@@ -22,20 +24,6 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
     }
 
     @Override
@@ -163,9 +151,6 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @Inject
     @UiField(provided = true)
     CaseMetaView caseMetaView;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractCompanyPreviewActivity activity;
 

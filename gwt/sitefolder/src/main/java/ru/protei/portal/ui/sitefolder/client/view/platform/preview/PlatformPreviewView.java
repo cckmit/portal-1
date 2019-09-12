@@ -8,7 +8,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
@@ -26,18 +25,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Override
     public void setActivity(AbstractPlatformPreviewActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -133,9 +120,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     Button backButton;
     @UiField
     HTMLPanel footerContainer;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractPlatformPreviewActivity activity;
 

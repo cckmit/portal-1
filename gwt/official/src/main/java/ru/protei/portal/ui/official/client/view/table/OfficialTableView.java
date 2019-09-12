@@ -54,7 +54,7 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
                 cell.appendChild( root );
 
                 Element productElement = DOM.createDiv();
-                productElement.setInnerHTML(value.getProduct().getName() );
+                productElement.setInnerText(value.getProduct().getName() );
                 root.appendChild( productElement );
             }
         };

@@ -2,8 +2,6 @@ package ru.protei.portal.ui.casestate.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.LegendElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,7 +14,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewActivity;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewView;
 import ru.protei.portal.ui.casestate.client.view.btngroup.UsageInCompaniesBtnGroup;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 
@@ -33,18 +30,6 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -116,9 +101,6 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     UsageInCompaniesBtnGroup usageInCompanies;
     @UiField
     Button saveButton;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractCaseStatePreviewActivity activity;
 

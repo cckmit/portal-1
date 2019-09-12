@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
@@ -34,18 +33,6 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         initWidget( ourUiBinder.createAndBindUi( this ) );
 /*        direction.setDefaultValue(lang.contractSelectDirection());*/
 /*        sortField.setType( ModuleType.REGION );*/
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -179,9 +166,6 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 /*    @Inject
     @UiField( provided = true )
     ProductDirectionButtonSelector direction;*/
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractRegionFilterActivity activity;
 

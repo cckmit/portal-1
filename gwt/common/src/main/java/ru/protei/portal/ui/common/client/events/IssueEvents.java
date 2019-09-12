@@ -18,12 +18,23 @@ public class IssueEvents {
 
         public Show () {}
 
+        public Show (Boolean clearSelection) {
+            this.clearSelection = clearSelection;
+        }
+
         public Show (CaseQuery query) {
             this.query = query;
         }
 
+        public Show (CaseQuery query, Boolean clearSelection) {
+            this.query = query;
+            this.clearSelection = clearSelection;
+        }
+
         @Omit
         public CaseQuery query;
+        @Omit
+        public Boolean clearSelection = false;
     }
 
     /**

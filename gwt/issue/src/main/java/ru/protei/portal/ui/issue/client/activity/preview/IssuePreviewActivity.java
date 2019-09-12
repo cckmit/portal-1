@@ -85,7 +85,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         isPrivateCase = false;
 
         fillView(issueCaseNumber);
-        view.watchForScroll( true );
         view.backBtnVisibility().setVisible(false);
     }
 

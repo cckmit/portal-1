@@ -8,10 +8,10 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.common.ScrollWatcher;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -34,7 +34,6 @@ public abstract class Selector<T>
         extends Composite
         implements HasValue<T>,
         ClickHandler, ValueChangeHandler<String>,
-        Window.ScrollHandler,
         HasSelectorChangeValHandlers,
         HasAddHandlers,
         SelectorWithModel<T>
@@ -109,6 +108,14 @@ public abstract class Selector<T>
 
     public void setAddButtonText(String addButtonText) {
         this.addButtonText = addButtonText;
+    }
+
+    public void watchForScrollOf(Widget widget) {
+        scrollWatcher.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        scrollWatcher.stopWatchForScrollOf(widget);
     }
 
     @Override
@@ -228,9 +235,7 @@ public abstract class Selector<T>
         }
     }
 
-
-    @Override
-    public void onWindowScroll(Window.ScrollEvent event) {
+    private void onScroll() {
         if (popup.isAttached()) {
             popup.showNear(relative);
         }
@@ -253,7 +258,7 @@ public abstract class Selector<T>
 
     @Override
     protected void onLoad() {
-        scrollRegistration = Window.addWindowScrollHandler(this);
+        scrollWatcher.startWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorLoad(this);
         }
@@ -261,12 +266,11 @@ public abstract class Selector<T>
 
     @Override
     protected void onUnload() {
-        scrollRegistration.removeHandler();
+        scrollWatcher.stopWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorUnload(this);
         }
     }
-
 
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
@@ -389,10 +393,10 @@ public abstract class Selector<T>
 
     private SelectorModel<T> selectorModel;
 
-    private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
     protected SelectorFilter<T> filter = null;
+    private final ScrollWatcher scrollWatcher = new ScrollWatcher(this::onScroll);
 }

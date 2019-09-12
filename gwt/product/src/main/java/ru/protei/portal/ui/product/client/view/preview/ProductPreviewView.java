@@ -1,16 +1,14 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
@@ -26,21 +24,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
     public void setActivity(AbstractProductPreviewActivity activity) { this.activity = activity; }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
-    }
 
     @Override
     public void setName(String name) {
@@ -139,9 +123,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     HTMLPanel backButtonPanel;
     @UiField
     Button backButton;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractProductPreviewActivity activity;
 

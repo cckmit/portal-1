@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.contact.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -10,7 +9,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewActivity;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewView;
@@ -26,24 +24,12 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
-    @Override
     public void setActivity(AbstractContactPreviewActivity activity) {
         this.activity = activity;
     }
 
     @Override
-    public void setDisplayName(String value) { this.displayName.setText( value ); }
+    public void setDisplayName(String value) { this.displayName.setHTML( value ); }
 
     @Override
     public void setBirthday(String value) { this.birthday.setInnerText( value ); }
@@ -61,13 +47,13 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setEmail(String value) { this.emailAnchor.setInnerHTML(value); }
 
     @Override
-    public void setAddress(String value) { this.address.setInnerHTML( value ); }
+    public void setAddress(String value) { this.address.setInnerText( value ); }
 
     @Override
-    public void setHomeAddress(String value) { this.homeAddress.setInnerHTML( value ); }
+    public void setHomeAddress(String value) { this.homeAddress.setInnerText( value ); }
 
     @Override
-    public void setInfo(String value) { this.info.setText( value ); }
+    public void setInfo(String value) { this.info.setInnerHTML( value ); }
 
     @Override
     public HasVisibility firedMsgVisibility() {
@@ -99,7 +85,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     SpanElement birthday;
     @UiField
-    InlineLabel info;
+    SpanElement info;
     @UiField
     SpanElement phone;
     @UiField
@@ -122,9 +108,6 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     Lang lang;
     @UiField
     ImageElement genderImage;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractContactPreviewActivity activity;
 

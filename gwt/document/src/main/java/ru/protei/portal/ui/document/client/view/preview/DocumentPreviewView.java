@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
@@ -20,18 +19,6 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
 
     public DocumentPreviewView() {
         initWidget(uiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -140,9 +127,6 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractDocumentPreviewActivity activity;
 
