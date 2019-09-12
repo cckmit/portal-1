@@ -65,7 +65,7 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
             }
             @Override
             public DisplayOption makeDisplaySelectedOption(En_CaseState caseState) {
-                return new DisplayOption(makeCaseStateName(caseState), "", "fa fa-dot-circle-o case-state-item");
+                return new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
             }
         };
     }
