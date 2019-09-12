@@ -32,13 +32,13 @@ public class AccountPreviewView
     }
 
     @Override
-    public void setLogin( String value ) { this.login.setInnerHTML( value ); }
+    public void setLogin( String value ) { this.login.setInnerText( value ); }
 
     @Override
-    public void setRoles( String value ) { this.roles.setInnerHTML( value ); }
+    public void setRoles( String value ) { this.roles.setInnerText( value ); }
 
     @Override
-    public void setPersonInfo( String value ) { this.personInfo .setInnerHTML( value ); }
+    public void setPersonInfo( String value ) { this.personInfo .setInnerText( value ); }
 
     @Override
     public void setTypeImage(String value) { this.typeImage.setSrc( value ); }

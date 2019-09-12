@@ -61,10 +61,10 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setEmail(String value) { this.emailAnchor.setInnerHTML(value); }
 
     @Override
-    public void setAddress(String value) { this.address.setInnerHTML( value ); }
+    public void setAddress(String value) { this.address.setInnerText( value ); }
 
     @Override
-    public void setHomeAddress(String value) { this.homeAddress.setInnerHTML( value ); }
+    public void setHomeAddress(String value) { this.homeAddress.setInnerText( value ); }
 
     @Override
     public void setInfo(String value) { this.info.setText( value ); }

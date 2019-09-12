@@ -58,7 +58,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public void setAuthor(String value) {
-        this.author.setInnerHTML( value );
+        this.author.setInnerText( value );
     }
 
     @Override

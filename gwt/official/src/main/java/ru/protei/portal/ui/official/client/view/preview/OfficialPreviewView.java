@@ -52,7 +52,7 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
 
     @Override
     public void setInfo(String value) {
-        info.setInnerHTML(value);
+        info.setInnerText(value);
     }
 
     @Override

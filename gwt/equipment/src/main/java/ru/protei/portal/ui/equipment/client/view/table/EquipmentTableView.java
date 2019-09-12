@@ -143,7 +143,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
-                    numElem.setInnerHTML( DecimalNumberFormatter.formatNumber( number ) );
+                    numElem.setInnerText( DecimalNumberFormatter.formatNumber( number ) );
                     numElem.setClassName("decimal-number");
                     if ( number.isReserve() ) {
                         Element isReserveEl = DOM.createElement("i");

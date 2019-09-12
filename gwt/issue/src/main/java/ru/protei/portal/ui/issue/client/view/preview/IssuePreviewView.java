@@ -116,7 +116,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setContact( String value ) {
-        this.contact.setInnerHTML( value );
+        this.contact.setInnerText( value );
     }
 
     @Override

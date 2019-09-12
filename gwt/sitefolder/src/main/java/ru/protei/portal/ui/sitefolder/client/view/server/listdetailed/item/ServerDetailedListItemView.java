@@ -39,7 +39,7 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     @Override
     public void setParameters(String parameters) {
         if (HelperFunc.isNotEmpty(parameters)) {
-            this.param.setInnerHTML(parameters);
+            this.param.setInnerText(parameters);
         } else {
             this.param.addClassName("hide");
         }
