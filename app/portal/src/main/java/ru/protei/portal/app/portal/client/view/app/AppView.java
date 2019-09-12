@@ -5,12 +5,15 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
@@ -63,6 +66,11 @@ public class AppView extends Composite
     @Override
     public HasWidgets getActionBarContainer() {
         return actionBarContainer;
+    }
+
+    @Override
+    public HasValue<LocaleImage> locale() {
+        return locale;
     }
 
     @UiHandler( "logout" )
@@ -119,6 +127,12 @@ public class AppView extends Composite
         menuBar.removeStyleName("show");
     }
 
+
+    @UiHandler("locale")
+    public void onLocaleChanged(ValueChangeEvent<LocaleImage> event) {
+        activity.onLocaleChanged(event.getValue().getLocale());
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent event ) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
@@ -139,6 +153,7 @@ public class AppView extends Composite
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
         profile.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
         notifyContainer.ensureDebugId(DebugIds.APP_VIEW.NOTIFICATION_CONTAINER);
+        locale.ensureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
     }
 
     private void initHandlers() {
@@ -194,6 +209,9 @@ public class AppView extends Composite
     HTMLPanel menuBar;
     @UiField
     Button profile;
+    @Inject
+    @UiField(provided = true)
+    LocaleSelector locale;
 
     AbstractAppActivity activity;
 

@@ -1,18 +1,24 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.localeselector"
-             xmlns:locale2="urn:import:ru.protei.portal.app.portal.client.widget.locale">
+             xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.locale">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
 
     <g:HTMLPanel ui:field="globalContainer">
         <g:HTMLPanel ui:field="navbar" styleName="page-sidebar">
-            <g:Anchor ui:field="logo" styleName="sidebar-header">
-                <img class="brand" height="30" src="./images/logo.svg" width="30"/>
-                <b class="m-l-5" style="">PROTEI</b>
-                <span> LTD</span>
-            </g:Anchor>
+            <div class="sidebar-header">
+                <g:Anchor ui:field="logo" >
+                    <img class="brand" height="30" src="./images/logo.svg" width="30"/>
+                    <b class="m-l-5" style="">PROTEI</b>
+                    <span> LTD</span>
+                </g:Anchor>
+
+                <div class="sidebar-header-controls">
+                    <button type="button" class="hide btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" data-toggle-pin="sidebar"><i class="fa fs-12"></i>
+                    </button>
+                </div>
+            </div>
 
             <div class="sidebar-menu">
                 <div class="scroll-wrapper menu-items" style="position: relative;">
@@ -37,6 +43,7 @@
 
 
             <div class="d-flex align-items-center">
+                <locale:LocaleSelector ui:field="locale" addStyleNames="m-r-20"/>
                 <div class="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
                     <span class="semi-bold" ui:field="username"/>
                 </div>
@@ -70,7 +77,6 @@
                 <g:HTMLPanel ui:field="container" styleName="content"/>
             </div>
         </div>
-
         <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar" visible="false">
             <section class="sidebar">
                 <ul class="sidebar-menu">

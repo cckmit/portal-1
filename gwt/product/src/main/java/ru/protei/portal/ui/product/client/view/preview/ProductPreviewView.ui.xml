@@ -4,7 +4,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default card-fixed">
+    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <h4 class="m-r-50">
                 <g:Anchor ui:field="productName" href="#"/>

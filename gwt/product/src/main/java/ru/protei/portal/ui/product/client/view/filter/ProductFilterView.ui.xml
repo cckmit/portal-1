@@ -5,7 +5,7 @@
              xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card card-default card-fixed">
+    <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>

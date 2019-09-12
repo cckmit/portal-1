@@ -13,7 +13,5 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     void setID( String value );
     HasWidgets getPositionsContainer();
 
-    Widget asWidget(boolean isForTableView);
-
     void setName(String name);
 }

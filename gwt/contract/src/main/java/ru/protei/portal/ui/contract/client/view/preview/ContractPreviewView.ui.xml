@@ -4,10 +4,10 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <div class="card card-default card-fixed no-border">
+        <div class="card card-default no-border card-fixed no-border">
             <div class="card-body">
                 <h4 class="m-r-50">
-                    <g:Anchor ui:field="header"/>
+                    <g:Anchor href="#" ui:field="header"/>
                 </h4>
 
                 <img ui:field="state" src="" class="preview-title-image_right"/>

@@ -5,11 +5,8 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid card-fixed">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-
-            <div class="card card-default">
-
+            <div class="card card-default no-border">
                 <div class="card-body">
-
                     <h4 class="col-md-12 no-margin no-padding">
                         <g:InlineLabel ui:field="name"/>
                         <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openAppsButton" text="{lang.siteFolderApps}"/>

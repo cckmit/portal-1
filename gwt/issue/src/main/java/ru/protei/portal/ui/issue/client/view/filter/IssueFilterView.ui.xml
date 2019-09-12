@@ -4,7 +4,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card card-default card-fixed issue-filter filter-collapsable">
+    <g:HTMLPanel ui:field="root" styleName="card card-default no-border card-fixed issue-filter filter-collapsable">
         <div class="filter-header">
             <label><ui:text from="{lang.filters}"/></label>
             <g:Anchor ui:field="filterCollapseBtn" styleName="btn btn-default btn-sm filter-btn-collapse">

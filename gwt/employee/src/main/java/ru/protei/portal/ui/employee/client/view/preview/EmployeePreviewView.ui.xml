@@ -3,10 +3,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview p-l-20">
-
-            <g:HTMLPanel ui:field="employeeNameBlock" tag="fieldset" visible="false">
+    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default no-border">
+        <div class="card-body">
+            <g:HTMLPanel ui:field="employeeNameBlock" visible="false">
                 <h5><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></h5>
                 <div class="small">
                     <span ui:field="employeeName"/>
@@ -24,8 +23,7 @@
             </div>
 
             <h5><ui:text from="{lang.employeePositionsHeader}"/></h5>
-            <g:HTMLPanel ui:field="positionsContainer" styleName="col-md-12"/>
-
-        </g:HTMLPanel>
+            <g:HTMLPanel ui:field="positionsContainer"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

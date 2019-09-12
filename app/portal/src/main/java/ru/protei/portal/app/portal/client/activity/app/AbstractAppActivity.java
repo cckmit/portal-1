@@ -9,5 +9,7 @@ public interface AbstractAppActivity {
 
     void onLogoClicked();
 
+    void onLocaleChanged(String locale);
+
     void onSettingsClicked();
 }

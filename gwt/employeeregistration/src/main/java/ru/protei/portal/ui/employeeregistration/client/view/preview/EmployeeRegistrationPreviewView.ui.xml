@@ -4,7 +4,7 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="card card-default card-fixed">
+    <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
                 <h4 class="col-md-12 m-t-0 m-b-0" ui:field="fullName"/>

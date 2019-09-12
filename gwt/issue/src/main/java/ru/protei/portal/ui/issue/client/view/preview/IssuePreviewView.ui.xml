@@ -9,7 +9,7 @@
 
     <g:HTMLPanel styleName="preview-wrapper footer-fixable card-fixed">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-            <div class="card card-default">
+            <div class="card card-default no-border">
                 <div class="card-body">
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">

@@ -26,7 +26,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     @Event
     public void onShow( EmployeeEvents.ShowPreview event ) {
         event.parent.clear();
-        event.parent.add( view.asWidget(event.isForTableView) );
+        event.parent.add( view.asWidget() );
 
         fillView( event.employee );
     }
@@ -49,7 +49,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         itemView.setDepartment( workerEntry.getDepartmentName() );
         itemView.setPosition( workerEntry.getPositionName() );
-        //itemView.showMainInfo( workerEntry.isMain() );
 
         return itemView;
     }

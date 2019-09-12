@@ -43,17 +43,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return positionsContainer;
     }
 
-    @Override
-    public Widget asWidget(boolean isForTableView) {
-        if (isForTableView) {
-            rootWrapper.addStyleName("preview-wrapper");
-            employeeNameBlock.setVisible(true);
-        } else {
-            rootWrapper.removeStyleName("preview-wrapper");
-        }
-        return asWidget();
-    }
-
     @UiField
     HTMLPanel rootWrapper;
 

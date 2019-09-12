@@ -6,7 +6,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="rootWrapper">
-        <div class="card card-default card-fixed">
+        <div class="card card-default no-border card-fixed">
             <div class="card-body">
                 <h4 ui:field="companyName" class="m-r-50"/>
                 <img ui:field="categoryImage" src="" class="preview-title-image_right"/>

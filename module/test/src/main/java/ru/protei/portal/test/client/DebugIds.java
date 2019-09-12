@@ -14,7 +14,7 @@ public class DebugIds {
     public interface APP_VIEW {
         String GLOBAL_CONTAINER = "global-container";
         String LOGOUT_BUTTON = "app-logout-button";
-        @Deprecated String LOCALE_SELECTOR = "app-locale-selector";
+        String LOCALE_SELECTOR = "app-locale-selector";
         String TOGGLE_SIDEBAR_BUTTON = "app-toggle-sidebar-button";
         String USER_PANEL = "app-user-panel";
         String NOTIFICATION_CONTAINER = "app-notification-container";

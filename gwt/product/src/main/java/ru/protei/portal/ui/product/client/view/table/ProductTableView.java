@@ -1,11 +1,8 @@
 package ru.protei.portal.ui.product.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -13,7 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
@@ -47,8 +44,6 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
-        description.setHandler( activity );
-        description.setColumnProvider( columnProvider );
         type.setHandler( activity );
         type.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
@@ -111,48 +106,26 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         archiveClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
 
-        description = new DynamicColumn<>(lang.productDescription(), null, DevUnit::getInfo);
-        
         name = new DynamicColumn<>(lang.name(), "product-name", devUnit -> {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            if (devUnit.isActiveUnit()) {
-                stringBuilder.append(devUnit.getName());
-            } else {
-                stringBuilder
-                        .append("<div class=\"deprecated-entity\">")
-                        .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_TABLE.LOCK_ICON + "\"></i> ")
-                        .append(devUnit.getName())
-                        .append("</div>");
+            StringBuilder builder = new StringBuilder();
+            builder.append(devUnit.isActiveUnit() ? "<div>" : "<div class='deprecated-entity'><i class='fa fa-lock m-r-5'></i> ")
+                    .append(devUnit.getName())
+                    .append("</div>");
+            if (StringUtils.isNotEmpty(devUnit.getInfo())) {
+                builder.append("<small><i>")
+                        .append(devUnit.getInfo())
+                        .append("</i></small>");
             }
 
-            return stringBuilder.toString();
+            return builder.toString();
         });
 
-        type = new ClickColumn<DevUnit>() {
-            @Override
-            protected void fillColumnHeader(Element element) {
-                element.addClassName("dev-unit-type-column");
-            }
-
-            @Override
-            public void fillColumnValue(Element cell, DevUnit value) {
-                Element root = DOM.createDiv();
-                root.addClassName("dev-unit-type-column");
-                cell.appendChild(root);
-                ImageElement imageElement = DOM.createImg().cast();
-                imageElement.setSrc(value.getType().getImgSrc());
-                imageElement.setTitle(typeLang.getName(value.getType()));
-                imageElement.setAlt(typeLang.getName(value.getType()));
-                root.appendChild(imageElement);
-            }
-        };
+        type = new DynamicColumn<>(null, "column_img-35", value -> "<img src='" + value.getType().getImgSrc() + "' title='" + typeLang.getName(value.getType()) + "'></img>");
 
         table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );
-        table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
-        table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
+        table.addColumn( archiveClickColumn.header, archiveClickColumn.values );
     }
 
     @UiField
@@ -176,7 +149,6 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     EditClickColumn< DevUnit > editClickColumn;
     ArchiveClickColumn<DevUnit> archiveClickColumn;
     DynamicColumn<DevUnit> name;
-    DynamicColumn<DevUnit> description;
     ClickColumn<DevUnit> type;
 
     AbstractProductTableActivity activity;
