@@ -13,13 +13,13 @@
 .gritter-notice-wrapper.bottom-notice-right {
     top: auto;
     left: auto;
-    bottom: 20px;
+    bottom: 40px;
     right: 20px;
 }
 .gritter-notice-wrapper.bottom-notice-left {
     top: auto;
     right: auto;
-    bottom: 20px;
+    bottom: 40px;
     left: 20px;
 }
 .gritter-item-wrapper {
