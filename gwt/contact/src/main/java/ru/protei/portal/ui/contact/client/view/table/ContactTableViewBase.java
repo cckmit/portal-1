@@ -27,7 +27,7 @@ public abstract class ContactTableViewBase extends Composite {
                 cell.appendChild(root);
 
                 Element fioElement = DOM.createDiv();
-                fioElement.setInnerText(value.getDisplayName());
+                fioElement.setInnerHTML(value.getDisplayName());
                 root.appendChild(fioElement);
 
                 if (value.isFired() || value.isDeleted()) {

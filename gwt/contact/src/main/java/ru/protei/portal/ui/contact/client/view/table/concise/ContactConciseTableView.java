@@ -111,7 +111,7 @@ public class ContactConciseTableView extends Composite implements AbstractContac
         @Override
         public void fillColumnValue(Element cell, Person value) {
             Element fioElement = DOM.createDiv();
-            fioElement.setInnerText(value.getDisplayName());
+            fioElement.setInnerHTML(value.getDisplayName());
             cell.appendChild(fioElement);
 
             if ( value.getPosition() != null ) {

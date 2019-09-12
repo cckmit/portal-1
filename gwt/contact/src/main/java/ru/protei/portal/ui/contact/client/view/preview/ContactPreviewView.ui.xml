@@ -28,7 +28,7 @@
                     <g:InlineLabel styleName="small" ui:field="position"/>
                 </p>
                 <div class="small hint-text pre-formatted-info">
-                    <g:InlineLabel ui:field="info"/>
+                    <span ui:field="info"/>
                 </div>
 
                 <h5><ui:text from="{lang.contactInfo}"/></h5>

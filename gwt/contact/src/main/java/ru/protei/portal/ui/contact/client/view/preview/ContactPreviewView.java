@@ -29,7 +29,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setDisplayName(String value) { this.displayName.setText( value ); }
+    public void setDisplayName(String value) { this.displayName.setHTML( value ); }
 
     @Override
     public void setBirthday(String value) { this.birthday.setInnerText( value ); }
@@ -53,7 +53,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setHomeAddress(String value) { this.homeAddress.setInnerText( value ); }
 
     @Override
-    public void setInfo(String value) { this.info.setText( value ); }
+    public void setInfo(String value) { this.info.setInnerHTML( value ); }
 
     @Override
     public HasVisibility firedMsgVisibility() {
@@ -85,7 +85,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     SpanElement birthday;
     @UiField
-    InlineLabel info;
+    SpanElement info;
     @UiField
     SpanElement phone;
     @UiField
