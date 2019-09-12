@@ -5,22 +5,22 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <div class="grid grid-indent">
-            <g:HTMLPanel styleName="form-group col-xs-3">
+        <div class="row">
+            <g:HTMLPanel styleName="form-group col-md-3">
                 <label><ui:text from="{lang.jiraIssueType}"/></label>
-                <g:TextBox ui:field="issueType" styleName="input-field" enabled="false"/>
+                <g:TextBox ui:field="issueType" styleName="form-control" enabled="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="severityContainer" styleName="form-group col-xs-3" visible="false">
+            <g:HTMLPanel ui:field="severityContainer" styleName="form-group col-md-3" visible="false">
                 <label><ui:text from="{lang.jiraSeverity}"/></label>
                 <text:RawTextButtonSelector ui:field="severity" enabled="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="timeOfReactionContainer" styleName="form-group col-xs-3" visible="false">
+            <g:HTMLPanel ui:field="timeOfReactionContainer" styleName="form-group col-md-3" visible="false">
                 <label><ui:text from="{lang.jiraTimeOfReaction}"/></label>
-                <g:TextBox ui:field="timeOfReaction" styleName="input-field" enabled="false"/>
+                <g:TextBox ui:field="timeOfReaction" styleName="form-control" enabled="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="timeOfDecisionContainer" styleName="form-group col-xs-3" visible="false">
+            <g:HTMLPanel ui:field="timeOfDecisionContainer" styleName="form-group col-md-3" visible="false">
                 <label><ui:text from="{lang.jiraTimeOfDecision}"/></label>
-                <g:TextBox ui:field="timeOfDecision" styleName="input-field" enabled="false"/>
+                <g:TextBox ui:field="timeOfDecision" styleName="form-control" enabled="false"/>
             </g:HTMLPanel>
         </div>
     </g:HTMLPanel>

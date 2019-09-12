@@ -61,26 +61,6 @@
                                     <span ui:field="product"/>
                                 </div>
                             </div>
-
-                            <g:HTMLPanel ui:field="jiraMetaDataContainer" visible="false">
-                                <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-xs-6">
-                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraIssueType}"/></label>
-                                    <span class="col-xs-7 col-md-7" ui:field="jiraIssueType"/>
-                                </g:HTMLPanel>
-                                <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-xs-6">
-                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraSeverity}"/></label>
-                                    <span class="col-xs-7 col-md-7" ui:field="jiraSeverity"/>
-                                </g:HTMLPanel>
-                                <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-xs-6">
-                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
-                                    <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfReaction"/>
-                                </g:HTMLPanel>
-                                <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-xs-6">
-                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
-                                    <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfDecision"/>
-                                </g:HTMLPanel>
-                            </g:HTMLPanel>
-
                         </div>
                         <div class="row clearfix">
                             <div class="col-md-6">
@@ -97,6 +77,33 @@
                             </div>
                         </div>
                     </div>
+
+                    <g:HTMLPanel ui:field="jiraMetaDataContainer" styleName="form-group-attached" visible="false">
+                        <br/>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="form-group form-group-default">
+                                    <label>JIRA</label>
+                                    <g:HTMLPanel ui:field="jiraIssueTypeContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraIssueType}"/>: </b>
+                                        <span ui:field="jiraIssueType"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="jiraSeverityContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraSeverity}"/>: </b>
+                                        <span ui:field="jiraSeverity"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraTimeOfReaction}"/>: </b>
+                                        <span ui:field="jiraTimeOfReaction"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraTimeOfDecision}"/>: </b>
+                                        <span ui:field="jiraTimeOfDecision"/>
+                                    </g:HTMLPanel>
+                                </div>
+                            </div>
+                        </div>
+                    </g:HTMLPanel>
 
                     <h5 ui:field="name"/>
 

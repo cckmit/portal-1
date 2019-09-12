@@ -88,7 +88,7 @@
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
-                <jirasla:JiraSLASelector ui:field="jiraSlaSelector" styleName="form-group col-xs-12" visible="false"/>
+                <jirasla:JiraSLASelector ui:field="jiraSlaSelector" styleName="form-group col-md-12" visible="false"/>
 
                 <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group col-md-12">
                     <div class="row">
