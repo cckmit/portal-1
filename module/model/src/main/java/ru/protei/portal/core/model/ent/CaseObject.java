@@ -133,6 +133,12 @@ public class CaseObject extends AuditableObject {
     private String platformName;
 
     // not db column
+    private Long contractId;
+
+    // not db column
+    private String contractNumber;
+
+    // not db column
     private List<CaseLink> links;
 
     // not db column
@@ -497,6 +503,22 @@ public class CaseObject extends AuditableObject {
 
     public void setPlatformName(String platformName) {
         this.platformName = platformName;
+    }
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
     }
 
     @Override

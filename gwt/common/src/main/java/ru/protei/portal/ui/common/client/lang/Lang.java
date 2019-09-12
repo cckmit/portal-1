@@ -1849,4 +1849,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractProjectHint();
 
     String goToProducts();
+
+    String goToContracts();
+
+    String contract();
 }

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -30,7 +29,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         platformId = event.platform.getId();
 
         request(event.platform.getId(), this::fillView);
-        view.showFullScreen(false);
+        view.footerContainerVisibility().setVisible(false);
     }
 
     @Event
@@ -39,7 +38,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         initDetails.parent.add(view.asWidget());
 
         request(event.platformId, this::fillView);
-        view.showFullScreen(true);
+        view.footerContainerVisibility().setVisible(true);
     }
 
     @Event

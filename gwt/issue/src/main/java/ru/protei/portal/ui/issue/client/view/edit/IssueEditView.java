@@ -385,7 +385,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         } else {
             stateContainer.replaceClassName("col-md-6", "col-md-4");
             importanceContainer.replaceClassName("col-md-6", "col-md-4");
-            platformContainer.removeAttribute("style");
             platformContainer.getStyle().setDisplay(Style.Display.INITIAL);
         }
     }

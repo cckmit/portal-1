@@ -6,7 +6,9 @@
     <g:HTMLPanel>
         <div class="card card-default no-border">
             <div class="card-body">
-                <h4 ui:field="header" class="m-r-50"/>
+                <h4 class="m-r-50">
+                    <g:Anchor ui:field="header"/>
+                </h4>
 
                 <img ui:field="state" src="" class="preview-title-image_right"/>
 
@@ -66,10 +68,7 @@
 
                 <div class="small">
                     <b><ui:text from="{lang.contractProject}: "/></b>
-                    <g:Anchor styleName="m-r-5" ui:field="toProjectLink" href="">
-                        <i class="fa fa-external-link"/>
-                    </g:Anchor>
-                    <span ui:field="project"/>
+                    <g:Anchor ui:field="project" href="#"/>
                 </div>
 
                 <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>
@@ -80,6 +79,9 @@
 
                 <g:HTMLPanel ui:field="commentContainer"/>
             </div>
+            <g:HTMLPanel ui:field="footerContainer" styleName="card-footer">
+                <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToContracts}"/>
+            </g:HTMLPanel>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

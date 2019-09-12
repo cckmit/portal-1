@@ -97,13 +97,9 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
 
     @Inject
-    Lang lang;
-    @Inject
     AbstractProductPreviewView view;
     @Inject
     TextRenderControllerAsync textRenderController;
-    @Inject
-    En_DevUnitTypeLang typeLang;
     @Inject
     ProductControllerAsync productService;
 

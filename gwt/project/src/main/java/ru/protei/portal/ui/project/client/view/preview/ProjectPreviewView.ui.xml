@@ -88,9 +88,19 @@
                             <h5>
                                 <ui:text from="{lang.projectTeam}"/>
                             </h5>
-                            <div class="col-md-12" ui:field="team"/>
+                            <div ui:field="team"/>
                         </div>
                     </div>
+
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.contract}"/>
+                            </h5>
+                            <g:Anchor ui:field="contract" href="#"/>
+                        </div>
+                    </div>
+
                     <div class="row form-group">
                         <div class="col-md-12">
                             <h5>
@@ -109,10 +119,11 @@
                         </div>
                     </div>
                 </div>
+                <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
+                </g:HTMLPanel>
             </div>
-            <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
-                <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
-            </g:HTMLPanel>
+
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

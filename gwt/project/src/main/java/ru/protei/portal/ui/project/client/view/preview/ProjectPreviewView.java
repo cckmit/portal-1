@@ -109,7 +109,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return documents;
     }
 
-    @UiHandler("header")
+    @Override
+    public void setContractNumber(String value) {
+        this.contract.setText(value);
+    }
+
+    @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
         if ( activity != null ) {
@@ -132,6 +137,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    @UiHandler("contract")
+    public void onToContractLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onContractLinkClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -151,6 +165,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         product.ensureDebugId(DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
+        contract.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
     }
 
     @UiField
@@ -163,6 +178,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Element creationDate;
     @UiField
     Anchor header;
+    @UiField
+    Anchor contract;
     @UiField
     DivElement description;
     @UiField

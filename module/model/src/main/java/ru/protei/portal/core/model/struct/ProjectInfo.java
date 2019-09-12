@@ -72,6 +72,10 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     private Person creator;
 
+    private Long contractId;
+
+    private String contractNumber;
+
     private boolean deleted;
 
     public Long getId() {
@@ -212,7 +216,23 @@ public class ProjectInfo extends AuditableObject implements Removable {
         return id != null && !deleted;
     }
 
-    public static ProjectInfo fromCaseObject( CaseObject project ) {
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+    }
+
+    public static ProjectInfo fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
 
@@ -253,6 +273,9 @@ public class ProjectInfo extends AuditableObject implements Removable {
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
+
+        projectInfo.setContractId(project.getContractId());
+        projectInfo.setContractNumber(project.getContractNumber());
         return projectInfo;
     }
 

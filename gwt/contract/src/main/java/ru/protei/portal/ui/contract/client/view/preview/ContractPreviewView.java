@@ -9,11 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -51,7 +47,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
 
     @Override
     public void setHeader(String value) {
-        this.header.setInnerText(value);
+        this.header.setText(value);
     }
 
     @Override
@@ -120,21 +116,39 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setProjectVisible(boolean isProjectVisible) {
-        toProjectLink.setVisible(isProjectVisible);
+    public void setProject(String value) {
+        project.setText(value);
     }
 
     @Override
-    public void setProject(String value) {
-        project.setInnerText(value);
+    public HasVisibility footerVisibility() {
+        return footerContainer;
     }
 
-    @UiHandler("toProjectLink")
-    public void onProjectLinkClicked(ClickEvent event) {
+    @UiHandler("project")
+    public void onProjectClicked(ClickEvent event) {
         event.preventDefault();
 
         if (activity != null) {
-            activity.onProjectLinkClicked();
+            activity.onProjectClicked();
+        }
+    }
+
+    @UiHandler("header")
+    public void onFullScreenClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onFullScreenClicked();
+        }
+    }
+
+    @UiHandler("backButton")
+    public void onGoToContractsClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onGoToContractsClicked();
         }
     }
 
@@ -163,7 +177,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement contragent;
     @UiField
-    Element header;
+    Anchor header;
     @UiField
     LabelElement dates;
     @UiField
@@ -171,9 +185,9 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement contractChild;
     @UiField
-    SpanElement project;
+    Anchor project;
     @UiField
-    Anchor toProjectLink;
+    HTMLPanel footerContainer;
 
     @Inject
     private FixedPositioner positioner;

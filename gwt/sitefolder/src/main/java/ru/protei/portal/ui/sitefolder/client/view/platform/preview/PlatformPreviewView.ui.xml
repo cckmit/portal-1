@@ -4,7 +4,7 @@
              xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
 >
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="preview-wrapper">
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
@@ -12,27 +12,36 @@
                 <div class="card-body">
                     <h4 class="col-md-12 no-margin no-padding">
                         <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
-                        <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
+                        <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton"
+                                  text="{lang.siteFolderServers}"/>
                     </h4>
 
                     <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
 
                     <div class="small">
-                        <b><ui:text from="{lang.siteFolderCompany}: "/></b>
+                        <b>
+                            <ui:text from="{lang.siteFolderCompany}: "/>
+                        </b>
                         <span ui:field="company"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.siteFolderManager}: "/></b>
+                        <b>
+                            <ui:text from="{lang.siteFolderManager}: "/>
+                        </b>
                         <span ui:field="manager"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.siteFolderParams}: "/></b>
+                        <b>
+                            <ui:text from="{lang.siteFolderParams}: "/>
+                        </b>
                         <span class="pre-formatted-info" ui:field="parameters"/>
                     </div>
 
-                    <h5><ui:text from="{lang.siteFolderAttachments}"/></h5>
+                    <h5>
+                        <ui:text from="{lang.siteFolderAttachments}"/>
+                    </h5>
                     <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
 
                     <tab:TabWidget tabNames="{lang.siteFolderServers}|{lang.siteFolderCompanyContacts}" styleName="">
@@ -46,11 +55,10 @@
                         </tab:pane.TabWidgetPane>
                     </tab:TabWidget>
                 </div>
-                <div class="card-footer">
+                <g:HTMLPanel ui:field="footerContainer" styleName="card-footer text-right">
                     <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>
-                </div>
+                </g:HTMLPanel>
             </div>
         </g:HTMLPanel>
-
     </g:HTMLPanel>
 </ui:UiBinder>

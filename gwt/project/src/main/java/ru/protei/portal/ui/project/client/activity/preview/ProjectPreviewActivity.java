@@ -5,11 +5,9 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -41,9 +39,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.projectId = event.projectId;
+        fillView( event.projectId );
 
-        fillView( projectId );
         view.watchForScroll( true );
         view.backButtonVisibility().setVisible( false );
     }
@@ -53,9 +50,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        this.projectId = event.projectId;
+        fillView( event.projectId );
 
-        fillView( projectId );
         view.backButtonVisibility().setVisible( true );
     }
 
@@ -66,7 +62,14 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Override
     public void onFullScreenPreviewClicked() {
-        fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
+        if ( project == null ) return;
+        fireEvent( new ProjectEvents.ShowFullScreen( project.getId() ) );
+    }
+
+    @Override
+    public void onContractLinkClicked() {
+        if (project == null || project.getContractId() == null ) return;
+        fireEvent(new ContractEvents.ShowFullScreen(project.getContractId()));
     }
 
     @Override
@@ -76,7 +79,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         }
     }
 
-    private void fillView(Long id ) {
+    private void fillView( Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -89,14 +92,15 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             }
 
             @Override
-            public void onSuccess( ProjectInfo project ) {
-                fillView( project );
+            public void onSuccess( ProjectInfo value ) {
+                fillView( value );
             }
         } );
     }
 
     private void fillView(ProjectInfo value) {
         this.project = value;
+
         view.setHeader( lang.projectHeader(value.getId().toString()) );
         view.setName( value.getName() );
         view.setAuthor( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
@@ -106,6 +110,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
+        view.setContractNumber(value.getContractId() == null ? "" : lang.contractNum(value.getContractNumber()));
 
         if( value.getTeam() != null ) {
             StringBuilder teamBuilder = new StringBuilder();
@@ -151,8 +156,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     @Inject
     PolicyService policyService;
 
-    private Long projectId;
-    ProjectInfo project;
+    private ProjectInfo project;
 
     private AppEvents.InitDetails initDetails;
 }
