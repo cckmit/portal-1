@@ -402,6 +402,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
     public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }
@@ -753,6 +758,11 @@ public class MainConfiguration {
     @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
+    }
+
+    @Bean
+    public SLAService getSLAService() {
+        return new SLAServiceImpl();
     }
 
 

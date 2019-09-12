@@ -12,7 +12,8 @@
              xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
-             xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector">
+             xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector"
+             xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -86,6 +87,8 @@
                     </label>
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
+
+                <jirasla:JiraSLASelector ui:field="jiraSlaSelector" styleName="form-group col-md-12" visible="false"/>
 
                 <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group col-md-12">
                     <div class="row">

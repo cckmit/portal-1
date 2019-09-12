@@ -399,7 +399,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
 
+        fillViewForJira(issue);
+
         unlockSave();
+    }
+
+    private void fillViewForJira(CaseObject issue) {
+
+        view.jiraSlaSelectorVisibility().setVisible(false);
+
+        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
+            return;
+        }
+
+        view.jiraSlaSelectorVisibility().setVisible(true);
+        view.jiraSlaSelector().setValue(issue.getJiraMetaData());
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -428,6 +442,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
             issue.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
         }
+
+        fillIssueObjectWithJira(issue);
+    }
+
+    private void fillIssueObjectWithJira(CaseObject issue) {
+
+        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
+            return;
+        }
+
+        issue.setJiraMetaData(view.jiraSlaSelector().getValue());
     }
 
     private boolean validateView() {

@@ -16,6 +16,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
@@ -69,7 +70,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         // TODO why no check if its jira issue (by ExternalCaseAppData.extAppType)
 
-        final CommonUtils.IssueData issueData = CommonUtils.convert(extCaseData);
+        final JiraUtils.JiraIssueData issueData = CommonUtils.convert(extCaseData);
 
         final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
         if (endpoint == null) {

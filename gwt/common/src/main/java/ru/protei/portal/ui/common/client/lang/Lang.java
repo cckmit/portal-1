@@ -1840,6 +1840,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String complexDescription();
 
+    String jiraIssueType();
+
+    String jiraSeverity();
+
+    String jiraTimeOfReaction();
+
+    String jiraTimeOfDecision();
+
     String contractProject();
 
     String contractProjectNotDefined();

@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -143,6 +144,9 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
+
+    // not db column
+    private JiraMetaData jiraMetaData;
 
     public CaseObject() {
 
@@ -489,6 +493,14 @@ public class CaseObject extends AuditableObject {
         this.tags = tags;
     }
 
+    public JiraMetaData getJiraMetaData() {
+        return jiraMetaData;
+    }
+
+    public void setJiraMetaData(JiraMetaData jiraMetaData) {
+        this.jiraMetaData = jiraMetaData;
+    }
+
     public Long getPlatformId() {
         return platformId;
     }
@@ -565,6 +577,9 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
                 ", tags=" + tags +
+                ", links=" + links +
+                ", timeElapsedType=" + timeElapsedType +
+                ", jiraMetaData=" + jiraMetaData +
                 ", platformId=" + platformId +
                 ", platformName=" + platformName +
                 ", links=" + links +

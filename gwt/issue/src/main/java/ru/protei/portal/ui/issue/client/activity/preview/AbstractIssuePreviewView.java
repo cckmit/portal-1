@@ -45,6 +45,11 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setSubscriptionEmails( String value );
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();
+    void setJiraVisible(boolean isVisible);
+    void setJiraIssueType(String value);
+    void setJiraSeverity(String value);
+    void setJiraTimeOfReaction(String value);
+    void setJiraTimeOfDecision(String value);
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
