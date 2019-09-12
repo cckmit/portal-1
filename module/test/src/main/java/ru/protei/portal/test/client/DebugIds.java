@@ -11,6 +11,14 @@ public class DebugIds {
         String LOGIN_BUTTON = "auth-login-button";
     }
 
+    public interface NOTIFY {
+        String NOTIFY_ITEM = "notify-item";
+        String NOTIFY_ICON_SUCCESS = "notify-icon-success";
+        String NOTIFY_ICON_ERROR = "notify-icon-error";
+        String NOTIFY_CONTENT_TITLE = "notify-content-title";
+        String NOTIFY_CONTENT_MESSAGE = "notify-content-message";
+    }
+
     public interface APP_VIEW {
         String GLOBAL_CONTAINER = "global-container";
         String LOGOUT_BUTTON = "app-logout-button";
