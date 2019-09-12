@@ -39,18 +39,18 @@ public class UtilityTest {
 
 //        System.out.println(mergeState.toString());
 
-        Assert.assertEquals("{\"issueType\":null,\"severity\":null,\"cid\":[1,2,3],\"aid\":[\"4\",\"7\"]}", mergeState.toString());
+        Assert.assertEquals("{\"issueType\":null,\"sla-severity\":null,\"cid\":[1,2,3],\"aid\":[\"4\",\"7\"]}", mergeState.toString());
 
     }
 
     @Test
     public void testIssueTypeAndSeverity () {
 
-        JiraExtAppData state = JiraExtAppData.fromJSON("{\"issueType\":\"Error\",\"severity\":\"10\"}");
+        JiraExtAppData state = JiraExtAppData.fromJSON("{\"issueType\":\"Error\",\"sla-severity\":\"10\"}");
         Assert.assertEquals("Error", state.issueType());
         Assert.assertEquals("10", state.slaSeverity());
 
         String json = state.toString();
-        Assert.assertEquals("{\"issueType\":\"Error\",\"severity\":\"10\",\"cid\":[],\"aid\":[]}", json);
+        Assert.assertEquals("{\"issueType\":\"Error\",\"sla-severity\":\"10\",\"cid\":[],\"aid\":[]}", json);
     }
 }

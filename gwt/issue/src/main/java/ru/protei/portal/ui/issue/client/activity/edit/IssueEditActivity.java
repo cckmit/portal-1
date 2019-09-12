@@ -386,12 +386,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
-        fillViewForJira(issue, isRestoredIssue);
+        fillViewForJira(issue);
 
         unlockSave();
     }
 
-    private void fillViewForJira(CaseObject issue, boolean isRestoredIssue) {
+    private void fillViewForJira(CaseObject issue) {
 
         view.jiraSlaSelectorVisibility().setVisible(false);
 
