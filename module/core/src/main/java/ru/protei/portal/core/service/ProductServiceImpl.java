@@ -108,7 +108,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Result<Long> createProduct( AuthToken token, DevUnit product) {
+    public Result<DevUnit> createProduct( AuthToken token, DevUnit product) {
 
         if (product == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -126,18 +126,18 @@ public class ProductServiceImpl implements ProductService {
 
         product.setId(productId);
 
-        updateProductSubscriptions( product.getId(), product.getSubscriptions() );
+        updateProductSubscriptions(product.getId(), product.getSubscriptions());
 
         helper.persist(product, "parents");
         helper.persist(product, "children");
 
-        return ok(productId);
+        return ok(product);
 
     }
 
     @Override
     @Transactional
-    public Result<Boolean> updateProduct( AuthToken token, DevUnit product ) {
+    public Result<DevUnit> updateProduct( AuthToken token, DevUnit product ) {
 
         if( product == null || product.getId() == null )
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -164,7 +164,7 @@ public class ProductServiceImpl implements ProductService {
         helper.persist(product, "parents");
         helper.persist(product, "children");
 
-        return ok(result);
+        return ok(product);
     }
 
     @Override

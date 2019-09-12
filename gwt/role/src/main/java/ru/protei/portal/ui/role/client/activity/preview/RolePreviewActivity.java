@@ -36,7 +36,6 @@ public abstract class RolePreviewActivity
     }
 
     private void fillView( UserRole value ) {
-        view.setHeader( lang.role( value.getId() ) );
         view.setName( value.getCode() );
         view.setDescription( value.getInfo() );
     }

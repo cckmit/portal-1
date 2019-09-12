@@ -5,15 +5,12 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.activity.edit.CompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
-import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
-import ru.protei.portal.ui.company.client.activity.list.*;
+import ru.protei.portal.ui.company.client.activity.table.*;
 import ru.protei.portal.ui.company.client.activity.page.CompanyPage;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
 import ru.protei.portal.ui.company.client.activity.preview.CompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.view.edit.CompanyEditView;
 import ru.protei.portal.ui.company.client.view.filter.CompanyFilterView;
-import ru.protei.portal.ui.company.client.view.item.CompanyItemView;
-import ru.protei.portal.ui.company.client.view.list.CompanyListView;
 import ru.protei.portal.ui.company.client.view.preview.CompanyPreviewView;
 import ru.protei.portal.ui.company.client.view.table.CompanyTableView;
 import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupModel;
@@ -27,11 +24,7 @@ public class CompanyClientModule extends AbstractGinModule {
         bind( CompanyPage.class ).asEagerSingleton();
         bind( GroupModel.class ).asEagerSingleton();
 
-        bind( CompanyGridActivity.class ).asEagerSingleton();
         bind( CompanyTableActivity.class ).asEagerSingleton();
-        bind( CompanyListActivity.class ).asEagerSingleton();
-        bind( AbstractCompanyListView.class ).to( CompanyListView.class ).in( Singleton.class );
-        bind ( AbstractCompanyItemView.class ).to( CompanyItemView.class );
         bind( AbstractCompanyTableView.class ).to( CompanyTableView.class ).in( Singleton.class );
 
         bind( CompanyEditActivity.class ).asEagerSingleton();

@@ -74,3 +74,9 @@ $spinner-height-md:       $spinner-width-md !default;
   width: $spinner-width-md;
   height: $spinner-height-md;
 }
+
+.spinner-loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+}

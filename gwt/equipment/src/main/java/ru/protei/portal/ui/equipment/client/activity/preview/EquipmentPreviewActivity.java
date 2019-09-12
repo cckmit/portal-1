@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -52,8 +54,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         }
 
         fillView( event.equipment );
-
-        view.showFullScreen(false);
     }
 
     @Event
@@ -62,8 +62,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         initDetails.parent.add( view.asWidget() );
 
         fillView( event.equipmentId );
-
-        view.showFullScreen(true);
     }
 
     @Event
@@ -104,19 +102,23 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     private void fillView( Equipment value ) {
         this.equipment = value;
 
-        view.setHeader( "#" + value.getId() );
-        view.setName( value.getName() );
-        view.setCreatedDate(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
+        view.setHeader( value.getName() + " (#" + value.getId() + ")");
+        view.setAuthorName( value.getAuthorShortName() == null ? "" : value.getAuthorShortName() );
+        view.setCreatedDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
-        view.setType( typeLang.getName( value.getType() ) );
+        String typeImage = null;
+        if ( value.getType() != null ) {
+            typeImage = "./images/eq_" + value.getType().name().toLowerCase() + ".png";
+        }
+        view.setType( typeImage );
+
         view.setProject( value.getProjectName() );
         view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
         boolean isLinkedEqPresent = value.getLinkedEquipmentId() != null;
-        view.linkedEquipmentLinkVisibility().setVisible(isLinkedEqPresent);
         if ( isLinkedEqPresent ) {
             view.setLinkedEquipmentExternalLink(GWT.getHostPageBaseURL() + "#equipment_preview:id=" + value.getLinkedEquipmentId() );
         }

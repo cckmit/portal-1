@@ -1,51 +1,54 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'>
+             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="panel">
-        <div class="body">
-            <div class="grid grid-indent">
-                <div class="form-group col-xs-4">
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin footer-fixable">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderServerName}"/></label>
-                    <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                    <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                 </div>
 
-                <div class="form-group col-xs-4">
+                <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderIP}"/></label>
-                    <g:TextBox ui:field="ip" styleName="input-field"/>
+                    <g:TextBox ui:field="ip" styleName="form-control"/>
                 </div>
 
-                <div class="form-group col-xs-4">
+                <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderPlatform}"/></label>
-                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="btn-selector"/>
+                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="dropdown-selector"/>
                 </div>
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderParamsLocal}"/></label>
-                    <g:TextArea ui:field="parameters" styleName="input-field resize-vertical sf-parameters"/>
+                    <g:TextArea ui:field="parameters" styleName="form-control sf-parameters resize-vertical"/>
                 </div>
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <g:TextArea ui:field="comment" styleName="input-field resize-vertical sf-comment"/>
+                    <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
                 </div>
-
-                <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
-                    <label><ui:text from="{lang.siteFolderApps}"/></label>
-                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
-                    <g:Button ui:field="createButton" styleName="btn btn-white pull-right m-l-10" text="{lang.siteFolderAppCreate}"/>
-                </g:HTMLPanel>
-
-                <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>
-
+            </div>
+            <div class="row">
+                <tab:TabWidget tabNames="{lang.siteFolderApps}">
+                    <tab:pane.TabWidgetPane tabName="{lang.siteFolderApps}">
+                        <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">
+                            <g:Button ui:field="openButton" styleName="btn btn-default m-r-10" text="{lang.openTableView}"/>
+                            <g:Button ui:field="createButton" styleName="btn btn-default m-r-10" text="{lang.siteFolderAppCreate}"/>
+                        </g:HTMLPanel>
+                        <g:HTMLPanel ui:field="listContainer"/>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
             </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

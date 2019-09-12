@@ -3,114 +3,83 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <div class="preview">
+    <g:HTMLPanel>
+        <div class="card card-default no-border">
+            <div class="card-body">
+                <h4 ui:field="header" class="m-r-50"/>
 
-            <fieldset class="header">
-                <legend>
-                    <label ui:field="header"/>
-                </legend>
+                <img ui:field="state" src="" class="preview-title-image_right"/>
 
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contractDateSigning}"/></label>
-                    <span class="col-xs-7 col-md-7 preview-value-label" ui:field="dateSigning"/>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contractDateValid}"/></label>
-                    <span class="col-xs-7 preview-value-label" ui:field="dateValid"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractType}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="type"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractState}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="state"/>
+                <small ui:field="type"/>
+
+                <div class="small hint-text pre-formatted-info">
+                    <g:InlineLabel ui:field="description" styleName="m-l--3"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractDirection}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="direction"/>
+                <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
+
+                <div class="small">
+                    <b><ui:text from="{lang.contractDateSigning}: "/></b>
+                    <span ui:field="dateSigning"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.contractDateValid}: "/></b>
+                    <span ui:field="dateValid"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractDescription}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="description"/>
+                <div class="small">
+                    <b><ui:text from="{lang.contractDirection}: "/></b>
+                    <span ui:field="direction"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractParent}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="contractParent"/>
+                <div class="small">
+                    <b><ui:text from="{lang.contractParent}: "/></b>
+                    <span ui:field="contractParent"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractChild}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="contractChild"/>
+                <div class="small">
+                    <b><ui:text from="{lang.contractChild}: "/></b>
+                    <span ui:field="contractChild"/>
                 </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend>
-                    <ui:text from="{lang.contractWorkGroup}"/>
-                </legend>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractOrganization}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="organization"/>
+                <h5><ui:text from="{lang.contractWorkGroup}"/></h5>
+
+                <div class="small">
+                    <b><ui:text from="{lang.contractOrganization}: "/></b>
+                    <span ui:field="organization"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractManager}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="manager"/>
+
+                <div class="small">
+                    <b><ui:text from="{lang.contractManager}: "/></b>
+                    <span ui:field="manager"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractCurator}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="curator"/>
+
+                <div class="small">
+                    <b><ui:text from="{lang.contractCurator}: "/></b>
+                    <span ui:field="curator"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5">
-                        <ui:text from="{lang.contractContragent}"/>
-                    </label>
-                    <span class="col-xs-7 col-md-7" ui:field="contragent"/>
+
+                <div class="small">
+                    <b><ui:text from="{lang.contractContragent}: "/></b>
+                    <span ui:field="contragent"/>
                 </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.contractProject}"/></legend>
-                <div class="col-xs-12">
+
+                <div class="small">
+                    <b><ui:text from="{lang.contractProject}: "/></b>
                     <g:Anchor styleName="m-r-5" ui:field="toProjectLink" href="">
                         <i class="fa fa-external-link"/>
                     </g:Anchor>
-                    <span ui:field="project"></span>
+                    <span ui:field="project"/>
                 </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend>
-                    <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
-                </legend>
-                <label class="col-xs-12" ui:field="dates"/>
-            </fieldset>
-            <fieldset class="header">
-                <legend>
-                    <ui:text from="{lang.comments}"/>
-                </legend>
+
+                <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>
+
+                <label ui:field="dates"/>
+
+                <h5><ui:text from="{lang.comments}"/></h5>
+
                 <g:HTMLPanel ui:field="commentContainer"/>
-            </fieldset>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

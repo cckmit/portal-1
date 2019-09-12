@@ -1,79 +1,64 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
              xmlns:casemeta='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
->
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview grid">
-            <g:HTMLPanel ui:field="companyNameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend><ui:text from="{lang.company}"/></legend>
-                <span ui:field="companyName"></span>
-            </g:HTMLPanel>
-            <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
-                <div class="col-xs-12">
-                    <label><ui:text from="{lang.companyCategory}"/></label>
-                    <span ui:field="category"></span>
+        <div class="card card-default">
+            <div class="card-body">
+                <h4 ui:field="companyName" class="m-r-50"/>
+                <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
+                <div class="small hint-text no-margin">
+                    <a ui:field="site" href="#" target="_blank"/>
                 </div>
-                <div class="col-xs-12">
-                    <label><ui:text from="{lang.companyParentLabel}"/></label>
-                    <span ui:field="parentCompany"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label><ui:text from="{lang.companyChildrenLabel}"/>
-                    </label>
-                    <span ui:field="childrenCompanies"></span>
-                </div>
-            </g:HTMLPanel>
 
-            <fieldset ui:field="contacts" class="contacts">
-                <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="phone"></span>
+                <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
+
+                <p class="small">
+                    <g:InlineLabel ui:field="companyLinksMessage"/>
+                </p>
+
+                <p class="small">
+                    <span class="bold"><ui:text from="{lang.tags}"/></span>
+                    <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false"/>
+                </p>
+
+                <p class="small">
+                    <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
+                    <g:InlineLabel ui:field="subscription"/>
+                </p>
+
+                <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
+
+                <div class="small">
+                    <b><ui:text from="{lang.phone}: "/></b>
+                    <span ui:field="phone"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyWebSite}"/></label>
-                    <a class="col-xs-7 col-md-7" ui:field="site" href="#" target="_blank"></a>
+                <div class="small">
+                    <b><ui:text from="{lang.email}: "/></b>
+                    <span ui:field="email"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
+                <div class="small">
+                    <b><ui:text from="{lang.companyActualAddress}: "/></b>
+                    <span ui:field="addressFact"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyActualAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="addressFact"></span>
+                <div class="small">
+                    <b><ui:text from="{lang.companyLegalAddress}: "/></b>
+                    <span ui:field="addressDejure"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyLegalAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="addressDejure"></span>
-                </div>
-            </fieldset>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.tags}"/></legend>
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12" enabled="false" showLabel="false"/>
-            </fieldset>
+                <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
+                    <tab:pane.TabWidgetPane tabName="{lang.contacts}">
+                        <g:HTMLPanel ui:field="contactsContainer"/>
+                    </tab:pane.TabWidgetPane>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.companySubscription}"/></legend>
-                <span ui:field="subscription"/>
-            </fieldset>
-
-            <fieldset ui:field="comments" class="comments">
-                <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
-                <span ui:field="info" class="pre-formatted-info"></span>
-            </fieldset>
-
-            <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
-                                         legend="{lang.contacts}"/>
-
-            <w:collapse.CollapsablePanel ui:field="siteFolderContainer" styleName="collapsable header"
-                                         legend="{lang.siteFolder}"/>
-
-        </g:HTMLPanel>
+                    <tab:pane.TabWidgetPane tabName="{lang.siteFolder}">
+                        <g:HTMLPanel ui:field="siteFolderContainer"/>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
+            </div>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

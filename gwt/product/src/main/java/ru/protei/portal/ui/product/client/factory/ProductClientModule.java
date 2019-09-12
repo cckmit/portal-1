@@ -5,16 +5,16 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.activity.edit.ProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
-import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
-import ru.protei.portal.ui.product.client.activity.list.*;
+import ru.protei.portal.ui.product.client.activity.quickcreate.AbstractProductCreateView;
+import ru.protei.portal.ui.product.client.activity.quickcreate.ProductCreateActivity;
+import ru.protei.portal.ui.product.client.activity.table.*;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
 import ru.protei.portal.ui.product.client.activity.preview.ProductPreviewActivity;
 import ru.protei.portal.ui.product.client.page.ProductPage;
 import ru.protei.portal.ui.product.client.view.edit.ProductEditView;
 import ru.protei.portal.ui.product.client.view.filter.ProductFilterView;
-import ru.protei.portal.ui.product.client.view.item.ProductItemView;
-import ru.protei.portal.ui.product.client.view.list.ProductListView;
 import ru.protei.portal.ui.product.client.view.preview.ProductPreviewView;
+import ru.protei.portal.ui.product.client.view.quickcreate.ProductCreateView;
 import ru.protei.portal.ui.product.client.view.table.ProductTableView;
 
 /**
@@ -25,11 +25,7 @@ public class ProductClientModule extends AbstractGinModule {
     protected void configure()    {
         bind( ProductPage.class ).asEagerSingleton();
 
-        bind( ProductGridActivity.class ).asEagerSingleton ();
         bind( ProductTableActivity.class ).asEagerSingleton ();
-        bind( ProductListActivity.class ).asEagerSingleton ();
-        bind( AbstractProductListView.class ).to(ProductListView.class).in(Singleton.class);
-        bind( AbstractProductItemView.class).to(ProductItemView.class);
         bind( AbstractProductTableView.class ).to(ProductTableView.class).in(Singleton.class);
 
         bind( ProductEditActivity.class ).asEagerSingleton();
@@ -39,6 +35,9 @@ public class ProductClientModule extends AbstractGinModule {
         bind( AbstractProductPreviewView.class ).to( ProductPreviewView.class ).in( Singleton.class );
 
         bind( AbstractProductFilterView.class ).to( ProductFilterView.class ).in( Singleton.class );
+
+        bind( ProductCreateActivity.class ).asEagerSingleton();
+        bind( AbstractProductCreateView.class ).to( ProductCreateView.class ).in( Singleton.class );
     }
 }
 

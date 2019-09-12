@@ -152,6 +152,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         timer.schedule( 300 );
     }
 
+
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;

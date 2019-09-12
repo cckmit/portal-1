@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.mime.MimeUtils;
 
 import javax.servlet.ServletContext;
@@ -24,31 +21,24 @@ import java.io.InputStream;
 @RestController
 public class AvatarController {
 
-    @Autowired
-    PortalConfig portalConfig;
-
-    @Autowired
-    PolicyService policyService;
-
-    @Autowired
-    ServletContext context;
-
     private static final String NOPHOTO_PATH = "/images/nophoto.png";
-
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
 
+    @Autowired
+    private PortalConfig portalConfig;
+
+    @Autowired
+    private ServletContext context;
+
+
     @RequestMapping( value = "/avatars/{fileName:.+}" )
-    public void getAvatar( @PathVariable String fileName,
-                           HttpServletRequest request,
-                           HttpServletResponse response ) throws IOException {
+    public void getAvatar(@PathVariable String fileName,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response ) throws IOException {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
-    }
-
-    private UserSessionDescriptor getDescriptor( HttpServletRequest request ) {
-        return  (UserSessionDescriptor) request.getSession().getAttribute( CrmConstants.Auth.SESSION_DESC );
     }
 
     private boolean loadFile( String pathname, HttpServletResponse response ) throws IOException {

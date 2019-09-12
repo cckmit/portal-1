@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -50,10 +51,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setName( String value ) { this.projectName.setInnerText( value ); }
+    public void setHeader(String value ) { this.header.setText( value ); }
 
     @Override
-    public void setHeader( String value ) { this.header.setInnerText( value ); }
+    public void setName(String value) { this.name.setInnerText( value ); }
+
+    @Override
+    public void setAuthor(String value) {
+        this.author.setInnerHTML( value );
+    }
 
     @Override
     public void setCreationDate( String value ) { this.creationDate.setInnerText( value ); }
@@ -61,7 +67,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public void setState( long value) {
         En_RegionState regionState = En_RegionState.forId( value );
-        this.iconState.setClassName(regionStateLang.getStateIcon( regionState )+" fa-lg");
+        this.iconState.setClassName(regionStateLang.getStateIcon( regionState )+ " fa-lg");
         this.state.setInnerText( regionStateLang.getStateName( regionState ) );
     }
 
@@ -76,8 +82,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public void setProduct(String value ) {
-        this.product.setInnerText( value );
-        primaryUseLink.setVisible(!value.isEmpty());
+        this.product.setText( value );
     }
 
     @Override
@@ -87,17 +92,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setCustomerType( String value ) { this.customerType.setInnerText( value );}
 
     @Override
-    public void setTeam( String value ) { this.team.setInnerText( value ); }
+    public void setTeam( String value ) { this.team.setInnerHTML( value ); }
 
     @Override
-    public void showFullScreen( boolean value ) {
-        fullScreen.setVisible( !value );
-        footer.setVisible( value );
-        if ( value ) {
-            preview.addStyleName( "col-md-12 m-t-10" );
-        } else {
-            preview.setStyleName( "preview" );
-        }
+    public HasVisibility backButtonVisibility() {
+        return backButtonContainer;
     }
 
     @Override
@@ -110,10 +109,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return documents;
     }
 
-    @UiHandler( "fullScreen" )
+    @UiHandler("header")
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
-
         if ( activity != null ) {
             activity.onFullScreenPreviewClicked();
         }
@@ -126,10 +124,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-    @UiHandler("primaryUseLink")
-    public void onPrimaryUseLinkClicked(ClickEvent event) {
+    @UiHandler("product")
+    public void onProductLinkClicked(ClickEvent event) {
         event.preventDefault();
-
         if (activity != null) {
             activity.onProductLinkClicked();
         }
@@ -140,10 +137,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
             return;
         }
 
-        fullScreen.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
-        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
+        header.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
+        header.ensureDebugId(DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
         creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DATE_CREATED_LABEL);
-        projectName.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.NAME_LABEL);
+        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.NAME_LABEL);
         description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.INFO_LABEL);
         state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.STATE_LABEL);
         projectRegion.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.REGION_LABEL);
@@ -151,7 +148,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         customerType.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CUSTOMER_TYPE_LABEL);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.COMPANY_LABEL);
         team.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TEAM_LABEL);
-        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
+        product.ensureDebugId(DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
     }
@@ -159,16 +156,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     HTMLPanel preview;
     @UiField
-    Anchor fullScreen;
+    Element author;
     @UiField
     Button backButton;
-
     @UiField
-    Element header;
+    Element creationDate;
     @UiField
-    SpanElement creationDate;
-    @UiField
-    DivElement projectName;
+    Anchor header;
     @UiField
     DivElement description;
     @UiField
@@ -184,21 +178,21 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement state;
     @UiField
-    SpanElement product;
+    Anchor product;
     @UiField
     DivElement team;
     @UiField
     HTMLPanel documents;
     @UiField
     HTMLPanel commentsContainer;
-    @UiField
-    HTMLPanel footer;
-    @UiField
-    Anchor primaryUseLink;
 
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    HeadingElement name;
+    @UiField
+    HTMLPanel backButtonContainer;
     @Inject
     En_RegionStateLang regionStateLang;
 

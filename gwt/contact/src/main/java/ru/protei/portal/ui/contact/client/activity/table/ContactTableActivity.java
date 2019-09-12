@@ -54,14 +54,12 @@ public abstract class ContactTableActivity
 
     @Event
     public void onShow( ContactEvents.Show event ) {
-
-        this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) :
+                new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.CONTACT ) :
                 new ActionBarEvents.Clear()
         );
 

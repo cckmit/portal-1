@@ -8,14 +8,16 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 public class TableAnimation {
 
     public void showDetails() {
-        tableContainer.removeStyleName( "col-xs-9" );
+        tableContainer.removeStyleName( tableStyleWithoutDetails );
         tableContainer.removeStyleName( "filter-collapsed" );
-        tableContainer.addStyleName( "col-xs-5 short-table-view" );
+        tableContainer.addStyleName( "col-md-5 short-table-view" );
 
         detailsContainer.removeStyleName( "no-width" );
-        detailsContainer.addStyleName( "col-xs-7" );
+        detailsContainer.addStyleName( "col-md-7" );
 
-        filterContainer.removeStyleName( "col-xs-3" );
+        if ( noFilter ) return;
+
+        filterContainer.removeStyleName( "col-md-3" );
         filterContainer.removeStyleName( "collapsed" );
         filterContainer.addStyleName( "no-display" );
     }
@@ -23,41 +25,59 @@ public class TableAnimation {
     public void closeDetails() {
         detailsContainer.clear();
 
-        tableContainer.removeStyleName( "col-xs-5" );
+        tableContainer.removeStyleName( "col-md-5" );
         tableContainer.removeStyleName( "short-table-view" );
-        tableContainer.addStyleName( filterCollapsed ? "filter-collapsed" : "col-xs-9" );
 
-        detailsContainer.removeStyleName( "col-xs-7" );
+        tableContainer.addStyleName( tableStyleWithoutDetails );
+
+        detailsContainer.removeStyleName( "col-md-7" );
         detailsContainer.addStyleName( "no-width" );
 
+        if ( noFilter ) return;
         filterContainer.removeStyleName( "no-display" );
-        filterContainer.addStyleName( filterCollapsed ? "collapsed" : "col-xs-3" );
+        filterContainer.addStyleName( filterCollapsed ? "collapsed" : "col-md-3" );
     }
 
     public void filterCollapse() {
         filterCollapsed = true;
-        tableContainer.removeStyleName( "col-xs-9" );
+        tableContainer.removeStyleName( tableStyleWithoutDetails );
         tableContainer.addStyleName( "filter-collapsed" );
-        filterContainer.removeStyleName( "col-xs-3" );
+
+        if ( noFilter ) return;
+
+        filterContainer.removeStyleName( "col-md-3" );
         filterContainer.addStyleName( "collapsed" );
     }
 
     public void filterRestore() {
         filterCollapsed = false;
         tableContainer.removeStyleName( "filter-collapsed" );
-        tableContainer.addStyleName( "col-xs-9" );
+        tableContainer.addStyleName( tableStyleWithoutDetails );
+
+        if ( noFilter ) return;
         filterContainer.removeStyleName( "collapsed" );
-        filterContainer.addStyleName( "col-xs-3" );
+        filterContainer.addStyleName( "col-md-3" );
     }
 
     public void setContainers( HTMLPanel tableContainer, HTMLPanel detailsContainer,  HTMLPanel filterContainer) {
         this.tableContainer = tableContainer;
         this.detailsContainer = detailsContainer;
         this.filterContainer = filterContainer;
+        this.noFilter = filterContainer == null;
+
+        if ( noFilter ) {
+            tableStyleWithoutDetails = "col-md-12";
+        } else {
+            tableStyleWithoutDetails = "col-md-9";
+        }
+
     }
 
     private HTMLPanel tableContainer;
     private HTMLPanel detailsContainer;
     private HTMLPanel filterContainer;
     private boolean filterCollapsed = false;
+
+    private boolean noFilter = false;
+    private String tableStyleWithoutDetails;
 }

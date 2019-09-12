@@ -5,22 +5,20 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-
-        <div class="form-group grid grid-indent">
-            <div class="col-xs-5">
-                <label><ui:text from="{lang.issueReportsType}"/></label>
-                <reporttype:ReportTypeButtonSelector ui:field="reportType"/>
+    <g:HTMLPanel styleName="card card-transparent m-b-0">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.issueReportsType}"/></label>
+                    <reporttype:ReportTypeButtonSelector ui:field="reportType"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.issueReportsTitle}"/></label>
+                    <g:TextBox ui:field="name" styleName="form-control"/>
+                </div>
             </div>
-            <div class="col-xs-7">
-                <label><ui:text from="{lang.issueReportsTitle}"/></label>
-                <g:TextBox ui:field="name" styleName="input-field"/>
-            </div>
-        </div>
 
-        <div class="form-group grid grid-indent report-issue-filter">
-            <issuefilter:IssueFilter ui:field="issueFilter" styleName="col-xs-12 m-b-10"/>
+            <issuefilter:IssueFilter ui:field="issueFilter" styleName="row"/>
         </div>
-
     </g:HTMLPanel>
 </ui:UiBinder>

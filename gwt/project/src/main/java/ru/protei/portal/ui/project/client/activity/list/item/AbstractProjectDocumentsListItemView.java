@@ -15,8 +15,4 @@ public interface AbstractProjectDocumentsListItemView extends IsWidget {
     void setInfo(String info);
 
     void setEditVisible(boolean visible);
-
-    void setDocumentType(String type);
-
-    void setCreated(Date date);
 }

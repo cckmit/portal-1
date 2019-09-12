@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.activity.notify;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
 /**
  *  Абстрактное уведомление
@@ -22,5 +23,5 @@ public interface AbstractNotifyView extends IsWidget {
     /**
      * Задает тип уведомления
      */
-    void setType( String type );
+    void setType(NotifyEvents.NotifyType type);
 }

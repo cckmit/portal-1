@@ -4,23 +4,27 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview grid">
-            <g:HTMLPanel ui:field="employeeNameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></legend>
-                <span ui:field="employeeName"></span>
-            </g:HTMLPanel>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.employeeAdditionalInfoHeader}"/></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.employeeID}"/></label>
-                    <span class="col-xs-7" ui:field="id"></span>
-                </div>
-            </fieldset>
+        <g:HTMLPanel styleName="preview p-l-20">
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.employeePositionsHeader}"/></legend>
-                <g:HTMLPanel ui:field="positionsContainer" styleName="col-xs-12"/>
-            </fieldset>
+            <g:HTMLPanel ui:field="employeeNameBlock" tag="fieldset" visible="false">
+                <h5><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></h5>
+                <div class="small">
+                    <span ui:field="employeeName"/>
+                </div>
+            </g:HTMLPanel>
+
+            <h5><ui:text from="{lang.employeeAdditionalInfoHeader}"/></h5>
+            <div class="small">
+                <b><ui:text from="{lang.employeeID}: "/></b>
+                <span ui:field="id"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.employeeIPAddress}:"/></b>
+                <span ui:field="ip"/>
+            </div>
+
+            <h5><ui:text from="{lang.employeePositionsHeader}"/></h5>
+            <g:HTMLPanel ui:field="positionsContainer" styleName="col-md-12"/>
 
         </g:HTMLPanel>
     </g:HTMLPanel>

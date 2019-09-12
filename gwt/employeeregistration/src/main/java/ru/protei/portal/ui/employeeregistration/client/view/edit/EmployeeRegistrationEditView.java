@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Set;
 
 public class EmployeeRegistrationEditView extends Composite implements AbstractEmployeeRegistrationEditView {
+
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -177,9 +178,8 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @UiField(provided =  true)
     EmploymentTypeSelector employmentType;
 
-    @Inject
-    @UiField(provided = true)
-    OptionItem withRegistration;
+    @UiField
+    CheckBox withRegistration;
 
     @UiField
     ValidableTextBox position;

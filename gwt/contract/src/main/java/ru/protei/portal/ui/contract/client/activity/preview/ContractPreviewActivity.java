@@ -64,7 +64,12 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     private void fillView( Contract value ) {
         view.setHeader(lang.contractNum(value.getNumber()));
-        view.setState(stateLang.getName(value.getState()));
+        String stateImage = null;
+        if ( value.getState() != null ) {
+            stateImage = "./images/contract_" + value.getState().name().toLowerCase() + ".png";
+        }
+        view.setState( stateImage );
+
         view.setType(typeLang.getName(value.getContractType()));
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
@@ -86,6 +91,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
                 .withCaseId(value.getId())
+                .withModifyEnabled(true)
                 .build());
     }
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -11,7 +12,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewView;
 
@@ -42,7 +42,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void showFullScreen(boolean isFullScreen) {
-        fullScreen.setVisible(!isFullScreen);
         backButton.setVisible(isFullScreen);
         if (isFullScreen) {
             preview.addStyleName("platform-fullscreen col-md-12 m-t-10");
@@ -53,7 +52,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setName(String value) {
-        name.setInnerText(value);
+        name.setText(value);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setComment(String value) {
-        comment.setInnerText(value);
+        comment.setText(value);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
-    @UiHandler("fullScreen")
+    @UiHandler("name")
     public void fullScreenClick(ClickEvent event) {
         event.preventDefault();
 
@@ -117,9 +116,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     HTMLPanel preview;
     @UiField
-    Button fullScreen;
-    @UiField
-    SpanElement name;
+    Anchor name;
     @UiField
     SpanElement company;
     @UiField
@@ -127,11 +124,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     SpanElement parameters;
     @UiField
-    SpanElement comment;
+    Label comment;
     @UiField
-    CollapsablePanel contactsContainer;
+    HTMLPanel contactsContainer;
     @UiField
-    CollapsablePanel serversContainer;
+    HTMLPanel serversContainer;
     @UiField
     Button openServersButton;
     @Inject

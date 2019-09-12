@@ -15,14 +15,14 @@ import java.util.List;
 public class ContactTypeButtonSelector extends ButtonSelector<En_ContactItemType> {
 
     @Inject
-    public void init( Lang lang ) {
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getMessage( lang ) ) );
+    public void init(Lang lang) {
+        setDisplayOptionCreator(value -> new DisplayOption(value == null ? defaultValue : value.getMessage(lang)));
     }
 
-    public void fillOptions( List<En_ContactItemType> items){
+    public void fillOptions(List<En_ContactItemType> items){
         clearOptions();
 
-        if( defaultValue != null ) {
+        if(defaultValue != null) {
             addOption(null);
             setValue(null);
         }
@@ -30,7 +30,7 @@ public class ContactTypeButtonSelector extends ButtonSelector<En_ContactItemType
         items.forEach(this::addOption);
     }
 
-    public void setDefaultValue( String value ) {
+    public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
 

@@ -315,7 +315,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -366,8 +366,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
-    @UiField
-    OptionItem searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
@@ -407,6 +405,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
+    @UiField
+    CheckBox searchByComments;
 
     private Timer timer = null;
     private AbstractIssueFilterParamActivity activity = null;

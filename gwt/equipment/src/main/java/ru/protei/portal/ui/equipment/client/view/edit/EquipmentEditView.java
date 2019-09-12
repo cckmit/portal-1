@@ -159,16 +159,12 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public void setVisibilitySettingsForCreated(boolean isVisible) {
         if (!isVisible) {
-            projectBox.removeStyleName("col-xs-5");
-            projectBox.addStyleName("col-xs-7");
-            managerBox.removeStyleName("col-xs-4");
-            managerBox.addStyleName("col-xs-5");
+            projectBox.removeStyleName("col-md-4");
+            projectBox.addStyleName("col-md-8");
         }
         else {
-            projectBox.removeStyleName("col-xs-7");
-            projectBox.addStyleName("col-xs-5");
-            managerBox.removeStyleName("col-xs-5");
-            managerBox.addStyleName("col-xs-4");
+            projectBox.removeStyleName("col-md-8");
+            projectBox.addStyleName("col-md-4");
         }
         date.setVisible(isVisible);
         dateTextBox.setEnabled(false);

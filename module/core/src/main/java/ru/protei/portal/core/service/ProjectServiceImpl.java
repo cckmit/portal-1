@@ -70,7 +70,7 @@ public class ProjectServiceImpl implements ProjectService {
         List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
         /*  здесь на выходе получается мапа с сортировкой по id по возрастанию */
         Map< Long, RegionInfo > regionInfos = regions.stream().collect(
-                Collectors.toMap( Location::getId, Location::toRegionInfo)
+                Collectors.toMap( Location::getId, Location::toRegionInfo )
         );
 
         CaseQuery caseQuery = new CaseQuery();
@@ -108,28 +108,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Result< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setSearchString(query.getSearchString());
-        caseQuery.setType( En_CaseType.PROJECT );
-        caseQuery.setStateIds( query.getStates().stream()
-                .map( ( state ) -> new Long( state.getId() ).intValue() )
-                .collect( toList() )
-        );
-        List<Long> productIds = null;
-        if (query.getDirectionId() != null){
-            productIds = new ArrayList<>();
-            productIds.add( query.getDirectionId() );
-        }
-        caseQuery.setProductIds( productIds );
-        caseQuery.setDistrictIds( new ArrayList<>(query.getDistrictIds()) );
-
-        if (query.isOnlyMineProjects()) {
-            UserSessionDescriptor descriptor = authService.findSession(token);
-            if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
-            }
-        }
-
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
         caseQuery.setSortField(query.getSortField());
         caseQuery.setSortDir(query.getSortDir());
 
@@ -154,7 +133,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public Result saveProject( AuthToken token, ProjectInfo project ) {
+    public Result<ProjectInfo> saveProject( AuthToken token, ProjectInfo project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -196,12 +175,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return ok();
+        return ok(ProjectInfo.fromCaseObject( caseObject ));
     }
 
     @Override
     @Transactional
-    public Result<Long> createProject( AuthToken token, ProjectInfo project) {
+    public Result<ProjectInfo> createProject(AuthToken token, ProjectInfo project) {
 
         if (project == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -222,7 +201,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         caseObjectDAO.merge( caseObject );
 
-        return ok(id);
+        return ok(ProjectInfo.fromCaseObject(caseObject));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
@@ -287,14 +266,14 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<ProjectInfo>> listProjects( AuthToken authToken) {
-
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-        caseQuery.setSortDir(En_SortDir.ASC);
-        caseQuery.setSortField(En_SortField.case_name);
+    public Result<List<ProjectInfo>> listProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        helper.fill(projects, "members");
+        helper.fill(projects, "products");
+
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
         return ok(result );
@@ -415,7 +394,7 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
-        if ( locations == null || locations.isEmpty()) {
+        if ( locations == null || locations.isEmpty() ) {
             handler.accept( null );
             return;
         }
@@ -470,6 +449,49 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
+    }
+
+    private CaseQuery applyProjectQueryToCaseQuery(AuthToken authToken, ProjectQuery projectQuery) {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
+            caseQuery.setStateIds(projectQuery.getStates().stream()
+                    .map((state) -> new Long(state.getId()).intValue())
+                    .collect(toList())
+            );
+        }
+
+        List<Long> productIds = null;
+        if (projectQuery.getDirectionId() != null) {
+            productIds = new ArrayList<>();
+            productIds.add(projectQuery.getDirectionId());
+        }
+        if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
+            productIds = new ArrayList<>();
+            productIds.addAll(projectQuery.getProductIds());
+        }
+        caseQuery.setProductIds(productIds);
+
+        if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
+            UserSessionDescriptor descriptor = authService.findSession(authToken);
+            if (descriptor != null && descriptor.getPerson() != null) {
+                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+            }
+        }
+
+        if (projectQuery.getCustomerType() != null) {
+            caseQuery.setLocal(projectQuery.getCustomerType().getId());
+        }
+
+        caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
+        caseQuery.setCreatedTo(projectQuery.getCreatedTo());
+
+        caseQuery.setSearchString(projectQuery.getSearchString());
+        caseQuery.setSortDir(projectQuery.getSortDir());
+        caseQuery.setSortField(projectQuery.getSortField());
+
+        return caseQuery;
     }
 
     private LocationQuery makeLocationQuery( ProjectQuery query, boolean isSortByFilter ) {

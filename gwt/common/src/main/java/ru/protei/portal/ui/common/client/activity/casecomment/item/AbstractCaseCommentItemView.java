@@ -46,7 +46,5 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setRemoteLink(CaseLink remoteLink);
 
-    void setPrivateComment(Boolean value);
-
-    HasVisibility getPrivacyVisibility();
+    void setPrivacyFlag(Boolean value);
 }

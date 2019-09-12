@@ -51,15 +51,10 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility timeElapsedContainerVisibility();
 
     HasValidable companyValidator();
-    HasValidable initiatorValidator();
-    HasValidable productValidator();
-    HasValidable managerValidator();
 
     HasEnabled initiatorState();
 
     HasVisibility numberVisibility();
-
-    HasValue<Integer> number();
 
     void setSubscriptionEmails(String value);
 
@@ -68,15 +63,15 @@ public interface AbstractIssueEditView extends IsWidget {
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
+    HasVisibility copyVisibility();
+
+    void showComments(boolean isShow);
+    boolean isAttached();
     HasValue<EntityOption> platform();
 
     void setPlatformVisibility(boolean isVisible);
 
     HasValidable platformValidable();
-
-    void showComments(boolean isShow);
-    boolean isAttached();
-
 
     HasVisibility saveVisibility();
 
@@ -84,6 +79,10 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
     HasEnabled stateEnabled();
+
+    void setNumber(Integer num);
+
+    String getNumber();
 
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();

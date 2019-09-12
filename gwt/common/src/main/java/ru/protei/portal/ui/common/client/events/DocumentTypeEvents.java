@@ -21,10 +21,14 @@ public class DocumentTypeEvents {
     }
 
     public static class Changed {
-        public Changed(DocumentType doctype) {
+        public Changed(DocumentType doctype, boolean needRefreshList) {
             this.doctype = doctype;
+            this.needRefreshList = needRefreshList;
         }
 
         public DocumentType doctype;
+        public boolean needRefreshList = false;
     }
+
+    public static class ClosePreview {}
 }

@@ -1,67 +1,56 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
              xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel footer-fixable-bottom">
-            <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
-                <div class="actions col-xs-12">
-                    <g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}">
-                        <i class="fa fa-external-link"></i>
-                    </g:Button>
-                    <g:Button styleName="btn btn-white m-r-5" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
+    <g:HTMLPanel styleName="preview-wrapper">
+        <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
+            <div class="card card-default">
+                <div class="card-body">
+                    <h4 class="col-md-12 no-margin no-padding">
+                        <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
+                        <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
+                    </h4>
+
+                    <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderCompany}: "/></b>
+                        <span ui:field="company"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderManager}: "/></b>
+                        <span ui:field="manager"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderParams}: "/></b>
+                        <span class="pre-formatted-info" ui:field="parameters"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.siteFolderAttachments}"/></h5>
+                    <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
+
+                    <tab:TabWidget tabNames="{lang.siteFolderServers}|{lang.siteFolderCompanyContacts}" styleName="">
+
+                        <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
+                            <g:HTMLPanel ui:field="serversContainer"/>
+                        </tab:pane.TabWidgetPane>
+
+                        <tab:pane.TabWidgetPane tabName="{lang.siteFolderCompanyContacts}">
+                            <g:HTMLPanel ui:field="contactsContainer"/>
+                        </tab:pane.TabWidgetPane>
+                    </tab:TabWidget>
                 </div>
-
-                <fieldset class="header">
-                    <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>
-
-                    <div class="col-xs-12">
-                        <label class="col-xs-4"><ui:text from="{lang.siteFolderName}"/></label>
-                        <span class="col-xs-8" ui:field="name"/>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <label class="col-xs-4"><ui:text from="{lang.siteFolderCompany}"/></label>
-                        <span class="col-xs-8" ui:field="company"/>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <label class="col-xs-4"><ui:text from="{lang.siteFolderManager}"/></label>
-                        <span class="col-xs-8" ui:field="manager"/>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <label class="col-xs-4"><ui:text from="{lang.siteFolderParams}"/></label>
-                        <span class="col-xs-8 pre-formatted-info" ui:field="parameters"/>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <label class="col-xs-4"><ui:text from="{lang.siteFolderComment}"/></label>
-                        <span class="col-xs-8 pre-formatted-info" ui:field="comment"/>
-                    </div>
-
-                </fieldset>
-
-                <fieldset class="header">
-                    <legend><ui:text from="{lang.siteFolderAttachments}"/></legend>
-                    <div class="col-xs-12 col-md-12">
-                        <div class="panel">
-                            <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <w:collapse.CollapsablePanel ui:field="serversContainer" styleName="collapsable header"
-                                             legend="{lang.siteFolderServers}"/>
-
-                <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
-                                             legend="{lang.siteFolderCompanyContacts}"/>
-
+                <div class="card-footer">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>
+                </div>
+            </div>
         </g:HTMLPanel>
-        <div class="footer">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>
-        </div>
+
     </g:HTMLPanel>
 </ui:UiBinder>

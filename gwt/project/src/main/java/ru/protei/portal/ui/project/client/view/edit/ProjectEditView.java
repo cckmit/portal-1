@@ -52,17 +52,14 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-    }
-
-    @Override
     public void setActivity(AbstractProjectEditActivity activity) {
         this.activity = activity;
     }
 
     @Override
-    public HasValue<Integer> number() { return number; }
+    public void setNumber(Integer number) {
+        this.number.setText(number == null ? "" : number.toString());
+    }
 
     @Override
     public HasValue<String> name() { return projectName; }
@@ -77,6 +74,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue<ProductDirectionInfo> direction() { return projectDirection; }
 
     @Override
+    public HasValidable nameValidator() {
+        return projectName;
+    }
+
+    @Override
     public HasValue<Set<PersonProjectMemberView>> team() { return team; }
 
     @Override
@@ -85,6 +87,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Override
     public HasValue<ProductShortView> product() {
         return product;
+    }
+
+    @Override
+    public HasVisibility numberVisibility() {
+        return number;
     }
 
     @Override
@@ -99,36 +106,35 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasVisibility saveVisibility() {
+        return saveButton;
+    }
+
+    @Override
     public HasWidgets getDocumentsContainer() { return documentsContainer; }
 
     @Override
-    public HasValidable nameValidator() { return projectName; }
+    public HasEnabled saveEnabled() {
+        return saveButton;
+    }
 
-    @Override
-    public HasVisibility numberVisibility() { return number; }
-
-    @Override
-    public HasVisibility saveVisibility() { return saveButton; }
-
-    @Override
-    public HasEnabled saveEnabled() { return saveButton; }
-
-    @UiHandler( "saveButton" )
-    public void onSaveClicked( ClickEvent event ) {
-        if ( activity != null ) {
+    @UiHandler("saveButton")
+    public void onSaveClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onSaveClicked();
         }
     }
-    @UiHandler( "cancelButton" )
-    public void onCancelClicked( ClickEvent event ) {
-        if ( activity != null ) {
+
+    @UiHandler("cancelButton")
+    public void onCancelClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onCancelClicked();
         }
     }
 
     @Override
     public void showComments(boolean isShow) {
-        if(isShow)
+        if (isShow)
             comments.removeClassName(UiConstants.Styles.HIDE);
         else
             comments.addClassName(UiConstants.Styles.HIDE);
@@ -154,13 +160,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         projectDirection.setEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
         company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
-/*
-        products.setEnsureDebugId(DebugIds.PROJECT.PRODUCTS_SELECTOR);
-        team.setEnsureDebugId(DebugIds.PROJECT.TEAM_SELECTOR);
-        documentsContainer.setEnsureDebugIdContainer(DebugIds.PROJECT.DOCUMENTS_CONTAINER);
-        commentsContainer.setEnsureDebugIdContainer(DebugIds.PROJECT.COMMENTS_CONTAINER);
-        */
-
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
@@ -169,15 +168,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     HTMLPanel root;
 
     @UiField
-    IntegerBox number;
+    Label number;
     @UiField
     ValidableTextBox projectName;
     @UiField
-    HTMLPanel nameContainer;
-
-    @UiField
     TextArea description;
-
     @Inject
     @UiField(provided = true)
     TeamSelector team;

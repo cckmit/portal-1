@@ -57,7 +57,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
         if (event.documentId != null) {
             drawView();
-            fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
             equipmentController.getDocument(event.documentId, new FluentCallback<Document>()
                     .withError(throwable -> {
                         errorHandler.accept(throwable);
@@ -75,7 +74,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         }
 
         drawView();
-        fireEvent(new AppEvents.InitPanelName(lang.documentCreate()));
 
         Document document = new Document();
         document.setApproved(false);
@@ -164,7 +162,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         boolean approveMode = isNew || !document.getApproved();
 
         view.setApprovedMode(approveMode);
-        view.setCreated(isNew ? lang.documentCreate() : document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
+        view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();

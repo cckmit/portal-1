@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.role.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -8,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -41,29 +43,22 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
-
-    @Override
     public void setName( String value ) {
         this.name.setInnerText( value );
     }
 
     @Override
     public void setDescription( String value ) {
-        this.description.setInnerText( value );
+        this.description.setText( value );
     }
 
     @Inject
     @UiField
     Lang lang;
     @UiField
-    SpanElement name;
+    HeadingElement name;
     @UiField
-    SpanElement description;
-    @UiField
-    LegendElement header;
+    Label description;
 
     @Inject
     FixedPositioner positioner;

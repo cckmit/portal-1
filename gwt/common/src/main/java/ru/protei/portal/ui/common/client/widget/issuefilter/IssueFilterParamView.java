@@ -301,11 +301,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         //userFilter.addDisplayOption(value);
     }
 
-    @Override
-    public void addBodyStyles(String styles) {
-        body.addStyleName(styles);
-    }
-
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
@@ -395,7 +390,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -442,15 +437,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField(provided = true)
     IssueFilterSelector userFilter;
     @UiField
-    HTMLPanel body;
-    @UiField
     CleanableSearchBox search;
     @UiField
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
     @UiField
-    OptionItem searchByComments;
+    CheckBox searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;

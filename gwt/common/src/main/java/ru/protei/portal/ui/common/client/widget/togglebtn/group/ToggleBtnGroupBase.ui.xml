@@ -3,5 +3,5 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="btn-group" ui:field="root"></g:HTMLPanel>
+    <g:HTMLPanel ui:field="root"/>
 </ui:UiBinder>

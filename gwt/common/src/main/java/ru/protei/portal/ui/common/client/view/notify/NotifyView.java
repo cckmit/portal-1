@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyActivity;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
 /**
  * Представление уведомление
@@ -26,6 +27,8 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
         initWidget( ourUiBinder.createAndBindUi( this ) );
         notify.sinkEvents(Event.ONCLICK);
         notify.addHandler(this, ClickEvent.getType());
+
+        iconContainer.clear();
     }
 
     @Override
@@ -39,8 +42,17 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
     }
 
     @Override
-    public void setType(String type) {
-        notify.addStyleName(type);
+    public void setType(NotifyEvents.NotifyType type) {
+        iconContainer.clear();
+        switch ( type ) {
+            case INFO:
+                return;
+            case ERROR:
+                iconContainer.add( iconError );
+                return;
+            case SUCCESS:
+                iconContainer.add( iconSuccess );
+        }
     }
 
     @Override
@@ -51,9 +63,17 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
     }
 
     @UiField
-    SpanElement message;
+    ParagraphElement message;
     @UiField
     HTMLPanel notify;
+    @UiField
+    SpanElement title;
+    @UiField
+    HTMLPanel iconSuccess;
+    @UiField
+    HTMLPanel iconError;
+    @UiField
+    HTMLPanel iconContainer;
 
     AbstractNotifyActivity activity;
 

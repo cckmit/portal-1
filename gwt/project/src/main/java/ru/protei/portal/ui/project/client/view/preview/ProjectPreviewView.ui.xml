@@ -1,83 +1,118 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
 >
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel footer-fixable-bottom">
-            <g:HTMLPanel styleName="preview-wrapper">
-                <g:HTMLPanel ui:field="preview" styleName="preview">
-                    <div class="pull-right">
-                        <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="preview-wrapper">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+            <div class="card card-default">
+                <div class="card-body">
+                    <h4 class="no-margin inline">
+                        <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
+                    </h4>
+                    <div class="inline pull-right">
+                        <small>
+                            <ui:text from="{lang.createBy}"/>
+                        </small>
+                        <small ui:field="author" class="name no-margin bold"/>
+                        <small class="m-l-5 m-r-5">
+                            <ui:text from="{lang.in}"/>
+                        </small>
+                        <small ui:field="creationDate" class="datetime no-margin"/>
+                    </div>
+                    <h5 ui:field="name"/>
+
+                    <div class="form-group-attached">
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectState}"/>
+                                    </label>
+                                    <div>
+                                        <i ui:field="iconState"/>
+                                        <span ui:field="state"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectCustomerType}"/>
+                                    </label>
+                                    <span ui:field="customerType"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectCustomerCompany}"/>
+                                    </label>
+                                    <span ui:field="company"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectRegion}"/>
+                                    </label>
+                                    <span ui:field="projectRegion"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectDirection}"/>
+                                    </label>
+                                    <span ui:field="projectDirection"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.projectProducts}"/>
+                                    </label>
+                                    <g:Anchor href="#" ui:field="product"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <fieldset class="header grid grid-indent">
-                        <legend><lable ui:field="header"/></legend>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectState}"/></label>
-                            <span class="col-xs-7 col-md-7">
-                                <i ui:field="iconState"></i>
-                                <span ui:field="state"></span>
-                            </span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectRegion}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="projectRegion"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="projectDirection"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerType}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="customerType"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="company"></span>
-                        </div>
-                    </fieldset>
+                    <div class="form-group small hint-text pre-formatted-info m-t-10" ui:field="description"/>
 
-                    <fieldset class="header grid grid-indent">
-                        <legend><ui:text from="{lang.projectName}"/></legend>
-                        <div class="col-xs-12" ui:field="projectName"></div>
-                    </fieldset>
-
-                    <fieldset class="header grid grid-indent">
-                        <legend><ui:text from="{lang.projectDescription}"/></legend>
-                        <div class="col-xs-12" ui:field="description"></div>
-                    </fieldset>
-
-                    <fieldset class="header grid grid-indent">
-                        <legend><ui:text from="{lang.projectTeam}"/></legend>
-                        <div class="col-xs-12" ui:field="team"></div>
-                    </fieldset>
-
-                    <fieldset class="header grid grid-indent">
-                        <legend><ui:text from="{lang.projectProducts}"/></legend>
-                        <div class="col-xs-12">
-                            <g:Anchor styleName="m-r-5" ui:field="primaryUseLink" target="_blank" href="">
-                                <i class="fa fa-external-link"/>
-                            </g:Anchor>
-                            <span ui:field="product"></span>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.projectTeam}"/>
+                            </h5>
+                            <div class="col-md-12" ui:field="team"/>
                         </div>
-                    </fieldset>
-
-                    <fieldset class="header">
-                        <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
-                        <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
-                    </fieldset>
-                    <fieldset class="header grid grid-indent">
-                        <legend><ui:text from="{lang.comments}"/></legend>
-                        <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
-                    </fieldset>
-                </g:HTMLPanel>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.equipmentDocuments}"/>
+                            </h5>
+                            <g:HTMLPanel ui:field="documents"
+                                         styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.comments}"/>
+                            </h5>
+                            <g:HTMLPanel ui:field="commentsContainer"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
+                <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
             </g:HTMLPanel>
-        <g:HTMLPanel ui:field="footer" styleName="footer">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProjects}"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

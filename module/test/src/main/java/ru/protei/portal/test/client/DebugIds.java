@@ -14,9 +14,10 @@ public class DebugIds {
     public interface APP_VIEW {
         String GLOBAL_CONTAINER = "global-container";
         String LOGOUT_BUTTON = "app-logout-button";
-        String LOCALE_SELECTOR = "app-locale-selector";
+        @Deprecated String LOCALE_SELECTOR = "app-locale-selector";
         String TOGGLE_SIDEBAR_BUTTON = "app-toggle-sidebar-button";
         String USER_PANEL = "app-user-panel";
+        String NOTIFICATION_CONTAINER = "app-notification-container";
     }
 
     public interface ACTION_BAR {
@@ -45,6 +46,7 @@ public class DebugIds {
         @Deprecated String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
         @Deprecated String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";
         @Deprecated String SITE_FOLDER_APPS = "sidebar-menu-site-folder-apps";
+        String ICON_SUFFIX = "-icon";
     }
 
     public interface SELECTOR_POPUP {
@@ -69,7 +71,7 @@ public class DebugIds {
         String SEARCH_BY_COMMENTS_TOGGLE = "filter-search-by-comments-toggle";
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
-        String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
+        @Deprecated String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
         String DATE_RANGE_SELECTOR = "filter-date-range-selector";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
@@ -169,6 +171,7 @@ public class DebugIds {
         String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
         String SAVE_BUTTON = "issue-save-button";
         String CANCEL_BUTTON = "issue-cancel-button";
+        String COPY_TO_CLIPBOARD_BUTTON = "issue-copy-to-clipboard-button";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -191,16 +194,16 @@ public class DebugIds {
     public interface ISSUE_PREVIEW {
         String PRIVACY_ICON = "issue-preview-privacy-icon";
         String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
-        String TITLE_LABEL = "issue-preview-title-label";
+        @Deprecated String TITLE_LABEL = "issue-preview-title-label";
         String LINKS_CONTAINER = "issue-preview-links-container";
         String DATE_CREATED_LABEL = "issue-preview-date-created-label";
         String IMPORTANCE_LABEL = "issue-preview-importance-label";
         String PRODUCT_LABEL = "issue-preview-product-label";
         String STATE_LABEL = "issue-preview-state-label";
         String TIME_ELAPSED_LABEL = "issue-preview-time-elapsed-label";
-        String COMPANY_LABEL = "issue-preview-company-label";
+        @Deprecated String COMPANY_LABEL = "issue-preview-company-label";
         String CONTACT_LABEL = "issue-preview-contact-label";
-        String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
+        @Deprecated String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
         String MANAGER_LABEL = "issue-preview-manager-label";
         String SUBSCRIPTION_LABEL = "issue-preview-subscription-label";
         String NAME_LABEL = "issue-preview-name-label";
@@ -208,6 +211,36 @@ public class DebugIds {
         String INFO_LABEL = "issue-preview-info-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
+        String COPY_TO_CLIPBOARD_BUTTON = "issue-preview-copy-to-clipboard-button";
+
+        interface COMMENT_LIST {
+            String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
+            String USER_ICON = "issue-preview-comment-list-user-icon";
+            String TEXT_INPUT = "issue-preview-comment-list-text-input";
+            String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
+            String SEND_BUTTON = "issue-preview-comment-list-send-button";
+            String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
+            String TIME_ELAPSED = "issue-preview-comment-list-time-elapsed";
+            String TIME_ELAPSED_TYPE = "issue-preview-comment-list-time-elapsed-type";
+        }
+
+        interface COMMENT_ITEM {
+            String PRIVACY_ICON = "issue-preview-comment-item-privacy-icon";
+            String REPLY_BUTTON = "issue-preview-comment-item-reply-button";
+            String EDIT_BUTTON = "issue-preview-comment-item-edit-button";
+            String REMOVE_BUTTON = "issue-preview-comment-item-remove-button";
+            String OWNER = "issue-preview-comment-item-owner";
+            String STATUS = "issue-preview-comment-item-status";
+            String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
+            String CREATE_DATE = "issue-preview-comment-item-create-date";
+        }
+    }
+
+    public interface DOCUMENT_EDIT {
+        String COMMON_TAB = "document-edit-common-tab";
+        String SEARCH_PROJECT_TAB = "document-edit-search-project-tab";
+        String CREATE_PROJECT_TAB = "document-edit-create-project-tab";
+        String CREATE_PRODUCT_TAB = "document-edit-create-product-tab";
 
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";

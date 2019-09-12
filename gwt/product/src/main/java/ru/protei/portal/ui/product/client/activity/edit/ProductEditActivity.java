@@ -56,7 +56,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             product = new DevUnit();
             resetView();
             resetValidationStatus();
-            fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
         }
 
@@ -86,6 +85,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     @Override
                     public void onSuccess(Boolean isUnique) {
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
+                        isNameUnique = isUnique;
                     }
                 });
     }
@@ -98,12 +98,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         fillDto(product);
 
-        productService.saveProduct(product, new RequestCallback<Boolean>() {
+        productService.saveProduct(product, new RequestCallback<DevUnit>() {
             @Override
             public void onError(Throwable throwable) {}
 
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(DevUnit result) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
                 resetView();
@@ -166,7 +166,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             @Override
             public void onSuccess( DevUnit devUnit ) {
                 product = devUnit;
-                fireEvent( new AppEvents.InitPanelName( product.getName() ) );
                 fillView( product );
                 resetValidationStatus();
             }
@@ -266,7 +265,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private boolean isValid() {
         return view.nameValidator().isValid() &&
-                view.type().getValue() != null;
+                view.type().getValue() != null &&
+                isNameUnique;
     }
 
     @Inject
@@ -282,6 +282,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private Long productId;
     private DevUnit product;
+    private boolean isNameUnique = true;
     private En_DevUnitType currType;
 
     private AppEvents.InitDetails init;

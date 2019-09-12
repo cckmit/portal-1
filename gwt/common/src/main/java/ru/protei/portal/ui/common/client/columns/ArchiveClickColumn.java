@@ -65,11 +65,11 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
     private void setMutableAttributes(boolean isArchived) {
         if (isArchived) {
             lock.addClassName("archive-lock");
-            lock.replaceClassName("fa-2x fa fa-unlock-alt", "fa-2x fa fa-lock");
+            lock.replaceClassName("fa-lg fa fa-archive", "fa-lg fa fa-history");
             lock.setTitle(lang.buttonFromArchive());
         } else {
             lock.removeClassName("archive-lock");
-            lock.replaceClassName("fa-2x fa fa-lock", "fa-2x fa fa-unlock-alt");
+            lock.replaceClassName("fa-lg fa fa-history", "fa-lg fa fa-archive");
             lock.setTitle(lang.buttonToArchive());
         }
     }

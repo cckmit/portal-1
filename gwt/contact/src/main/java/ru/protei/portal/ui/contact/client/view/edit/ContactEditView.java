@@ -255,7 +255,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiHandler("login")
     public void onChangeContactLogin( KeyUpEvent keyUpEvent ) {
-        verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle());
+        verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle() );
         changeContactLoginTimer.cancel();
         changeContactLoginTimer.schedule( 300 );
     }

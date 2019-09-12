@@ -21,7 +21,7 @@ public class ProjectRoleButtonSelector extends ButtonSelector<En_DevUnitPersonRo
             }
             @Override
             public DisplayOption makeDisplaySelectedOption(En_DevUnitPersonRoleType value) {
-                return new DisplayOption(value == null ? lang.projectSelectRole() : "<b>" + roleTypeLang.getName(value) + "</b>");
+                return new DisplayOption(value == null ? lang.projectSelectRole() : roleTypeLang.getName(value));
             }
         });
     }

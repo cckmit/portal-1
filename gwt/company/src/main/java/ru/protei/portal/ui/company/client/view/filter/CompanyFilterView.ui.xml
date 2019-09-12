@@ -3,27 +3,37 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.btngroup'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
-            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12"/>
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="COMPANY"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-default">
+        <div class="card-body">
+            <div class="row">
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}"
+                                                       styleName="form-group col-md-12"/>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.sortBy}"/>
+                    </label>
+                    <div class="control-group">
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="COMPANY"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.companyCategory}"/>
+                    </label>
+                    <companycategory:CategoryBtnGroupMulti ui:field="categories"/>
                 </div>
             </div>
-            <div class="form-group col-xs-12">
-                <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.productShowDeprecated}"/>
-            </div>
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.companyCategory}"/></label>
-                <companycategory:CategoryBtnGroupMulti ui:field="categories" styleName="btn-group btn-group-justified"/>
-            </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default pull-right" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
+
 </ui:UiBinder>

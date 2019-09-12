@@ -38,21 +38,21 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
+    public void onInitDetails(AppEvents.InitDetails event) {
+        this.initDetails = event;
     }
 
     @Event
-    public void onShow(ProjectEvents.Edit event) {
+    public void onShow (ProjectEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         resetView();
 
         if (event.id == null) {
             project = new ProjectInfo();
-            fireEvent(new AppEvents.InitPanelName(lang.newProject()));
+            //fireEvent(new AppEvents.InitPanelName(lang.newProject()));
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
+            //fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
             requestProject(event.id, this::fillView);
         }
     }
@@ -67,21 +67,23 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveEnabled().setEnabled(false);
 
-        regionService.saveProject( project, new RequestCallback<Void>(){
+        regionService.saveProject( project, new RequestCallback<ProjectInfo>(){
             @Override
             public void onError( Throwable throwable ) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Void aVoid ) {
+            public void onSuccess( ProjectInfo aVoid ) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProjectEvents.ChangeModel());
                 fireEvent(new ProjectEvents.Show());
                 return;
             }
         });
-}
+    }
 
     @Override
     public void onCancelClicked() {
@@ -102,7 +104,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private void resetView () {
-        view.number().setValue(null);
+        view.setNumber(null);
         view.name().setValue("");
         view.description().setText("");
         view.state().setValue(En_RegionState.UNKNOWN);
@@ -125,7 +127,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private void fillView(ProjectInfo projectInfo) {
-        view.number().setValue( projectInfo.getId().intValue() );
+        view.setNumber( projectInfo.getId().intValue() );
         view.name().setValue(projectInfo.getName());
         view.state().setValue( projectInfo.getState() );
         view.direction().setValue( projectInfo.getProductDirection() == null ? null : new ProductDirectionInfo( projectInfo.getProductDirection() ) );
@@ -205,6 +207,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 /*    @Inject
     LocalStorageService localStorageService;*/
 
+    private boolean isNameUnique = true;
     private ProjectInfo project;
 
     private AppEvents.InitDetails initDetails;

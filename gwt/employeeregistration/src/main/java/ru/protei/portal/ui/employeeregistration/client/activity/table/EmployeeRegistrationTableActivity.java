@@ -50,7 +50,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         init.parent.add(view.asWidget());
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_CREATE) ?
-                new ActionBarEvents.Add(lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.EMPLOYEE_REGISTRATION) :
+                new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.EMPLOYEE_REGISTRATION) :
                 new ActionBarEvents.Clear()
         );
 

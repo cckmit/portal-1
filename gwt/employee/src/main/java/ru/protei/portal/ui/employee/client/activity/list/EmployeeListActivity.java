@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -64,17 +65,10 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onShow( EmployeeEvents.ShowDefinite event ) {
-        if (event.viewType != ViewType.LIST) {
-            return;
-        }
-
+    public void onShow( EmployeeEvents.Show event ) {
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-
-        view.getFilterContainer().add(event.filter);
-
         requestEmployees( 0 );
     }
 
@@ -166,10 +160,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             }
 
             itemView.setPosition( mainEntry.getPositionName() );
+            itemView.setPhoto(AvatarUtils.getAvatarUrl(employee.getId(), En_CompanyCategory.HOME.getId(), null));
         }
         itemView.setIP(employee.getIpAddress());
-
-        itemView.setPhoto( LOAD_AVATAR_URL + employee.getId() + ".jpg" );
 
         return itemView;
     }
@@ -186,19 +179,14 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     @Inject
     PlateListAnimation animation;
-
     @Inject
     AbstractEmployeeListView view;
-
     @Inject
     AbstractEmployeeFilterView filterView;
-
     @Inject
     Provider< AbstractEmployeeItemView > factory;
-
     @Inject
     EmployeeControllerAsync employeeService;
-
     @Inject
     AbstractPagerView pagerView;
 
@@ -208,6 +196,5 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     private long marker;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
-    private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

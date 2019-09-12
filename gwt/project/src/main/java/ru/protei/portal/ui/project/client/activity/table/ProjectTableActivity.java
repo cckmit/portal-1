@@ -48,13 +48,11 @@ public abstract class ProjectTableActivity
 
     @Event
     public void onShow( ProjectEvents.Show event ) {
-
-        this.fireEvent( new AppEvents.InitPanelName( lang.projects() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
-            new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PROJECT ) :
+            new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.PROJECT ) :
             new ActionBarEvents.Clear()
         );
 

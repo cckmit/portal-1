@@ -51,7 +51,6 @@ public abstract class RegionListActivity
 
     @Event
     public void onShow( RegionEvents.Show event ) {
-        this.fireEvent(new AppEvents.InitPanelName(lang.regions()));
         init.parent.clear();
         init.parent.add(view.asWidget());
 

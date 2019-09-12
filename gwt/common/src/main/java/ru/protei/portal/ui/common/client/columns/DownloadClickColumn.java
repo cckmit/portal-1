@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.columns;
 
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
@@ -13,6 +15,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.function.Function;
 
 public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
+
 
     public interface DownloadHandler<T> extends AbstractColumnHandler<T> {
         void onDownloadClicked(T value);
@@ -38,7 +41,14 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
 
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
-        a.addClassName("fa fa-lg fa-cloud-download");
+        if ( imageUrl == null ) {
+            a.addClassName("fa fa-lg fa-cloud-download-alt");
+        } else {
+            ImageElement img = DOM.createImg().cast();
+            img.setSrc(imageUrl);
+            img.setHeight(40);
+            a.appendChild(img);
+        }
         a.setTitle(lang.download());
         setDownloadEnabled(a);
         setDownloadDeprecated(a);
@@ -51,6 +61,10 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
 
     public void setDownloadHandler(DownloadHandler<T> downloadHandler) {
         setActionHandler(downloadHandler::onDownloadClicked);
+    }
+
+    public void setDownloadCustomImage(String url) {
+        this.imageUrl = url;
     }
 
     public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
@@ -80,9 +94,9 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
     @Inject
     PolicyService policyService;
 
-    Lang lang;
-    En_Privilege privilege;
-
+    private Lang lang;
+    private En_Privilege privilege;
+    private String imageUrl;
     private boolean isArchived;
     private Function<T, Boolean> archivedCheckFunction;
 }

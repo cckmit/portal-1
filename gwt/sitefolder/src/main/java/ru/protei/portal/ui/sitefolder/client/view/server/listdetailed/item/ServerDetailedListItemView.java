@@ -31,6 +31,8 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     public void setName(String name) {
         if (HelperFunc.isNotEmpty(name)) {
             this.name.setInnerHTML("<b>" + name + "</b>");
+        } else {
+            this.name.addClassName("hide");
         }
     }
 
@@ -38,6 +40,8 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     public void setParameters(String parameters) {
         if (HelperFunc.isNotEmpty(parameters)) {
             this.param.setInnerHTML(parameters);
+        } else {
+            this.param.addClassName("hide");
         }
     }
 

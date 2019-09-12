@@ -32,11 +32,11 @@ public interface ProductService {
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
     @Auditable( En_AuditType.PRODUCT_CREATE )
-    Result createProduct( AuthToken token, DevUnit product);
+    Result<DevUnit> createProduct( AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
-    Result<Boolean> updateProduct( AuthToken token, DevUnit product );
+    Result<DevUnit> updateProduct( AuthToken token, DevUnit product );
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )

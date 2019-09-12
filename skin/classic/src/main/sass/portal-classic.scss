@@ -1,94 +1,132 @@
-@import "colors";
-@import "style";
 @import "common";
 @import "plate-list";
-@import "preview";
-@import "app";
-@import "button";
-@import "form";
 @import "issue-comment";
 @import "attachment";
 @import "region";
 @import "confirm";
-@import "auth";
 @import "color-palette";
 @import "spinners";
-//@import "select2";
-//@import "select2-bootstrap";
+@import "display-table";
 
-
-/**** RANGE PICKER ****/
-.date {
-  .form-control {
-    @extend .input-field;
-    min-height: auto;
-    border-radius: 0;
-    background-clip: initial;
-    -webkit-background-clip: initial;
+/**
+ * Overrides
+ */
+.page-sidebar {
+  .sidebar-header {
+    color: white !important;
+    font-size: 24px;
   }
+  .sidebar-menu .menu-items {
+    margin-top: 10px !important;
+    -ms-overflow-style: none;  // IE 10+
+    scrollbar-width: none;  // Firefox
+    &::-webkit-scrollbar {
+      display: none;  // Safari and Chrome
+    }
+    & li {
+      & a {
+        padding-left: 20px !important;
+        width: 75% !important;
 
-  .btn-default {
-    @extend .btn-white;
+        & .title {
+          width: 100% !important;
+        }
+      }
+    }
   }
 }
 
-.input-group[class*="col-"] {
-  float: none;
-  padding-right: 0;
-  padding-left: 0;
+.form-group-default div.cs-select {
+  max-width: none !important;
 }
 
-.input-group {
-  position: relative;
-  display: table;
-  border-collapse: separate;
+.form-control {
+  padding-left: 17px;
+  color: #5e5e5e;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+}
 
-  .form-control,
-  .input-field {
-    width: 100%;
-    margin-bottom: 0;
+.input-group-text {
+  border-radius: 3px;
+}
+
+.rounded-right-3 {
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.rounded-left-3 {
+  border-top-left-radius: 3px !important;
+  border-bottom-left-radius: 3px !important;
+}
+
+.btn-xs, .btn-group-xs > .btn {
+  font-size: 12px !important;
+}
+
+.form-group-attached .disabled label {
+  color: #b2b2b2;
+  opacity: 1;
+}
+
+.login-wrapper {
+  background-color: #257ac07a !important;
+
+  .login-container-wrapper {
+    padding: 100px 60px 0;
   }
 
-  .input-group-btn,
-  .input-group-addon,
-  .form-control,
-  .input-field {
-    display: table-cell;
+  .icon {
+    top: 85px;
+    right: 70px;
+    position: absolute;
+    opacity: .05;
+    font-size: 5em;
   }
 
-  .input-group-btn,
-  .input-group-addon {
-    width: 1%;
-    white-space: nowrap;
-    vertical-align: middle;
-    position: relative;
-  }
-
-  .input-group-btn .btn {
-    border-left: 0;
-    max-height: 30px;
-  }
-
-  .input-group-addon {
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1;
-    text-align: center;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    color: $success_dark_color;
-  }
-
-  .input-group-addon:first-child {
-    border-right: 0;
-  }
-
-  .input-group-addon:last-child {
-    border-left: 0;
+  .brand {
+    span {
+      font-size: 34px;
+      font-weight: 600;
+      margin-left: 10px;
+      color: #257ac0;
+      text-transform: uppercase;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 50px;
+      vertical-align: middle;
+    }
   }
 }
 
 .inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >* {
   color: inherit;
+}
+
+.checkbox input[type=checkbox]:checked+label::after {
+  font-family: "Font Awesome 5 Free", serif;
+  font-weight: 900;
+}
+
+.full-screen-link{
+  position: relative;
+}
+
+.card-fixed {
+  position: sticky;
+  top: calc(60px + 1rem) !important;
+}
+
+div.select2-container ul.select2-choices li.select2-search-choice a.select2-search-choice-close {
+  font-weight: 900;
+}
+
+.card .card-body > .row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+blockquote::before {
+  content: '';
 }
