@@ -83,7 +83,7 @@
         </g:HTMLPanel>
 
 
-        <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-right"/>
+        <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-notice-right"/>
     </g:HTMLPanel>
 
 </ui:UiBinder>
