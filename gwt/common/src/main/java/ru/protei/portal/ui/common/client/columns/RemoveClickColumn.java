@@ -28,10 +28,11 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
+        cell.addClassName("remove");
         if ( ((Removable) value).isAllowedRemove() ) {
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref( "#" );
-            a.addClassName( "fa-1-9x fa fa-trash-o" );
+            a.addClassName("far fa-trash-alt fa-lg");
             a.setTitle( lang.remove() );
             setRemoveEnabled( a );
             cell.appendChild( a );

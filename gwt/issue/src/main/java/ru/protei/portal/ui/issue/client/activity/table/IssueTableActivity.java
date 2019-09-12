@@ -81,14 +81,17 @@ public abstract class IssueTableActivity
     public void onShow( IssueEvents.Show event ) {
         applyFilterViewPrivileges();
 
-        this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
+        if (event.clearSelection) {
+            view.clearSelection();
+            event.clearSelection = false;
+        }
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) :
+                new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
                 new ActionBarEvents.Clear()
         );
 
@@ -438,7 +441,9 @@ public abstract class IssueTableActivity
     }
 
     private void updateCaseStatesFilter() {
-        filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+        if (!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)) {
+            filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+        }
     }
 
     private void toggleFilterCollapseState() {

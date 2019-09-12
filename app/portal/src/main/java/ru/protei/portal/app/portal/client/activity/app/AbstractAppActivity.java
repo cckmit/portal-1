@@ -5,11 +5,9 @@ package ru.protei.portal.app.portal.client.activity.app;
  */
 public interface AbstractAppActivity {
 
-    void onUserClicked();
-
     void onLogoutClicked();
 
-    void onLocaleChanged( String value );
-
     void onLogoClicked();
+
+    void onSettingsClicked();
 }

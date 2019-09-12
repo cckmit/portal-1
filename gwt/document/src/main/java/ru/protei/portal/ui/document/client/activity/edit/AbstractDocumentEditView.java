@@ -36,8 +36,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<EquipmentShortView> equipment();
 
-    void setCreated(String date);
-
     HasValue<Long> inventoryNumber();
 
     HasValue<List<String>> keywords();
@@ -73,6 +71,14 @@ public interface AbstractDocumentEditView extends IsWidget {
 
 
     AbstractDocumentUploader documentUploader();
+
+
+    HasWidgets searchProjectContainer();
+
+    HasWidgets createProjectContainer();
+
+    HasWidgets createProductContainer();
+
 
     void resetFilename();
 

@@ -115,6 +115,12 @@ public class DebugIdsHelper {
             if (id == 34) {
                 return DebugIds.ISSUE_STATE.CUST_PENDING;
             }
+            if (id == 35) {
+                return DebugIds.ISSUE_STATE.NX_REQUEST;
+            }
+            if (id == 36) {
+                return DebugIds.ISSUE_STATE.CUST_REQUEST;
+            }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }
     }

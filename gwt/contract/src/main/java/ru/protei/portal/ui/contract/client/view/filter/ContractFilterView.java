@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
@@ -32,8 +31,6 @@ import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilte
 import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -134,12 +131,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
     @UiHandler("managers")
     public void onManagersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
         restartChangeTimer();
@@ -168,12 +159,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @UiHandler("direction")
     public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
         restartChangeTimer();
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     private void restartChangeTimer() {
@@ -220,9 +205,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractContractFilterActivity activity;
 

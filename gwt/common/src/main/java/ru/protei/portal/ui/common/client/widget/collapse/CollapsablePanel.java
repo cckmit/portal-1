@@ -1,15 +1,13 @@
 package ru.protei.portal.ui.common.client.widget.collapse;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.Iterator;
 
@@ -17,14 +15,12 @@ public class CollapsablePanel extends Composite implements HasWidgets {
 
     public CollapsablePanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        legend.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (getElement().hasClassName("collapsed")) {
-                    getElement().removeClassName("collapsed");
-                } else {
-                    getElement().addClassName("collapsed");
-                }
+        legend.addDomHandler(event -> {
+            event.preventDefault();
+            if (collapseContainer.hasClassName("show")) {
+                collapseContainer.removeClassName("show");
+            } else {
+                collapseContainer.addClassName("show");
             }
         }, ClickEvent.getType());
     }
@@ -50,13 +46,15 @@ public class CollapsablePanel extends Composite implements HasWidgets {
     }
 
     public void setLegend(String legend) {
-        this.legend.getElement().setInnerHTML(legend);
+        this.legend.getElement().setInnerText(legend);
     }
 
     @UiField
     HTMLPanel container;
     @UiField
-    HTMLPanel legend;
+    Anchor legend;
+    @UiField
+    DivElement collapseContainer;
 
     interface CollapseContainerUiBinder extends UiBinder<HTMLPanel, CollapsablePanel> {}
 

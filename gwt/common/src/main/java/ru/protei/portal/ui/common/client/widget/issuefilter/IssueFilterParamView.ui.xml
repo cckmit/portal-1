@@ -8,83 +8,79 @@
              xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
-             xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
-             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist"
+             xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="user-filter">
+        <div class="user-filter form-group col-md-12">
             <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
         </div>
 
-        <g:HTMLPanel ui:field="body" styleName="body">
-
-            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
-            <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-xs-12 local-search-options-container">
-                <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
-                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
-            </g:HTMLPanel>
-
-            <div class="col-xs-12 resize-xs-6">
-                <label class="bold"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-
-            <div class="col-xs-12 resize-xs-6">
-                <label class="bold"><ui:text from="{lang.updated}"/></label>
-                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-
-            <div class="form-group col-xs-12 resize-xs-6">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
-                    <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
-                </div>
-            </div>
-
-            <productselector:devunit.DevUnitMultiSelector ui:field="products"
-                                                          header="{lang.issueProduct}"
-                                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
-
-            <companyselector:CompanyMultiSelector ui:field="companies"
-                                                  header="{lang.issueCompany}"
-                                                  addStyleNames="form-group col-xs-12 resize-xs-6"/>
-
-            <person:InitiatorMultiSelector ui:field="initiators"
-                                           header="{lang.issueInitiator}"
-                                           addStyleNames="form-group col-xs-12 resize-xs-6"/>
-
-            <person:EmployeeMultiSelector ui:field="managers"
-                                          header="{lang.issueManager}"
-                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
-
-            <person:EmployeeMultiSelector ui:field="commentAuthors"
-                                          header="{lang.issueCommentAuthor}"
-                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
-
-            <casetag:CaseTagMultiSelector ui:field="tags"
-                                          caseType="CRM_SUPPORT"
-                                          header="{lang.tags}"
-                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
-
-            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12 resize-xs-6">
-                <label><ui:text from="{lang.searchPrivate}"/></label>
-                <threestate:ThreeStateButton ui:field="searchPrivate"/>
-            </g:HTMLPanel>
-
-            <div class="form-group col-xs-12 resize-xs-6">
-                <label><ui:text from="{lang.issueImportance}"/></label>
-                <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.issueState}"/></label>
-                <optionlist:IssueStatesOptionList ui:field="state"/>
-            </div>
+        <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
+        <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-md-12 local-search-options-container">
+            <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
+            <g:CheckBox ui:field="searchByComments" text="{lang.searchByComments}" styleName="checkbox"/>
         </g:HTMLPanel>
+
+        <div class="form-group col-md-12 resize-md-6">
+            <label><ui:text from="{lang.created}"/></label>
+            <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
+        </div>
+
+        <div class="form-group col-md-12 resize-md-6">
+            <label><ui:text from="{lang.updated}"/></label>
+            <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
+        </div>
+
+        <div class="form-group col-md-12 resize-md-6">
+            <label><ui:text from="{lang.sortBy}"/></label>
+            <div class="control-group">
+                <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
+                <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-default sorting_button"/>
+            </div>
+        </div>
+
+        <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                                                      header="{lang.issueProduct}"
+                                                      addStyleNames="form-group col-md-12 resize-md-6"/>
+
+        <companyselector:CompanyMultiSelector ui:field="companies"
+                                              header="{lang.issueCompany}"
+                                              addStyleNames="form-group col-md-12 resize-md-6"/>
+
+        <person:InitiatorMultiSelector ui:field="initiators"
+                                       header="{lang.issueInitiator}"
+                                       addStyleNames="form-group col-md-12 resize-md-6"/>
+
+        <person:EmployeeMultiSelector ui:field="managers"
+                                      header="{lang.issueManager}"
+                                      addStyleNames="form-group col-md-12 resize-md-6"/>
+
+        <person:EmployeeMultiSelector ui:field="commentAuthors"
+                                      header="{lang.issueCommentAuthor}"
+                                      addStyleNames="form-group col-md-12 resize-md-6"/>
+
+        <casetag:CaseTagMultiSelector ui:field="tags"
+                                      caseType="CRM_SUPPORT"
+                                      header="{lang.tags}"
+                                      addStyleNames="form-group col-md-12 resize-md-6"/>
+
+        <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-12 resize-md-6">
+            <label><ui:text from="{lang.searchPrivate}"/></label>
+            <threestate:ThreeStateButton ui:field="searchPrivate"/>
+        </g:HTMLPanel>
+
+        <div class="form-group col-md-12 resize-md-6">
+            <label><ui:text from="{lang.issueImportance}"/></label>
+            <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+        </div>
+
+        <div class="form-group col-md-12">
+            <label><ui:text from="{lang.issueState}"/></label>
+            <optionlist:IssueStatesOptionList ui:field="state"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

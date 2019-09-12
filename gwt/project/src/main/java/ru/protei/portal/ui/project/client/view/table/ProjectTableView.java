@@ -11,19 +11,21 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
+import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
+import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
-import ru.protei.portal.ui.project.client.view.table.columns.InfoColumn;
-import ru.protei.portal.ui.project.client.view.table.columns.ManagersColumn;
-import ru.protei.portal.ui.project.client.view.table.columns.NumberColumn;
-import ru.protei.portal.ui.project.client.view.table.columns.StatusColumn;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -43,20 +45,13 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     public void setActivity( AbstractProjectTableActivity activity ) {
         this.activity = activity;
 
-        editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
-        editClickColumn.setColumnProvider( columnProvider );
-        removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
-        removeClickColumn.setColumnProvider( columnProvider );
-        number.setHandler( activity );
-        number.setColumnProvider( columnProvider );
-        status.setHandler( activity );
-        status.setColumnProvider( columnProvider );
-        info.setHandler( activity );
-        info.setColumnProvider( columnProvider );
-        manager.setHandler( activity );
-        manager.setColumnProvider( columnProvider );
+
+        columns.forEach(clickColumn -> {
+            clickColumn.setHandler( activity );
+            clickColumn.setColumnProvider( columnProvider );
+        });
     }
     
     @Override
@@ -69,7 +64,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
-
 
     @Override
     public void clearSelection() {
@@ -107,19 +101,68 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.PROJECT_EDIT );
-        removeClickColumn.setPrivilege( En_Privilege.PROJECT_REMOVE );
+        columns.add(editClickColumn);
 
-        table.addColumn( status.header, status.values );
-        table.addColumn( number.header, number.values );
-        table.addColumn( info.header, info.values );
-        table.addColumn( manager.header, manager.values );
+        removeClickColumn.setPrivilege( En_Privilege.PROJECT_REMOVE );
+        columns.add(removeClickColumn);
+
+        DynamicColumn<ProjectInfo> statusColumn = new DynamicColumn<>(null, "status",
+                value -> "<i class='"+ regionStateLang.getStateIcon( value.getState() )+" fa-2x"+"'></i>");
+        columns.add(statusColumn);
+
+        DynamicColumn<ProjectInfo> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
+                value -> {
+                    StringBuilder content = new StringBuilder();
+                    content.append("<b>").append(value.getId()).append("</b>");
+
+                    if (value.getProductDirection() != null) {
+                        content.append("<br/>").append(value.getProductDirection().getDisplayText());
+                    }
+                    if (value.getCustomerType() != null) {
+                        content.append("<br/><i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>");
+                    }
+                    return content.toString();
+                });
+        columns.add(numberColumn);
+
+        DynamicColumn<ProjectInfo> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
+                value -> "<b>" + value.getName() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
+        columns.add(infoColumn);
+
+        DynamicColumn<ProjectInfo> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
+                value -> {
+                    if (value.getTeam() == null) return null;
+
+                    Optional<PersonProjectMemberView> leader = value.getTeam().stream()
+                            .filter(ppm -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))
+                            .findFirst();
+
+                    int teamSize = value.getTeam().size() - (leader.isPresent() ? 1 : 0);
+
+                    StringBuilder content = new StringBuilder();
+                    leader.ifPresent(lead -> content.append(lead.getDisplayShortName()));
+
+                    if (teamSize > 0) {
+                        leader.ifPresent(lead -> content.append(" + "));
+                        content.append(teamSize).append(" ").append(lang.membersCount());
+                    }
+
+                    return content.toString();
+                });
+        columns.add(managerColumn);
+
+        table.addColumn( statusColumn.header, statusColumn.values );
+        table.addColumn( numberColumn.header, numberColumn.values );
+        table.addColumn( infoColumn.header, infoColumn.values );
+        table.addColumn( managerColumn.header, managerColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( removeClickColumn.header, removeClickColumn.values );
     }
 
     @UiField
+    Lang lang;
+    @UiField
     TableWidget<ProjectInfo> table;
-
     @UiField
     HTMLPanel tableContainer;
     @UiField
@@ -128,22 +171,19 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     HTMLPanel filterContainer;
 
     @Inject
-    @UiField
-    Lang lang;
+    En_RegionStateLang regionStateLang;
+    @Inject
+    En_CustomerTypeLang customerTypeLang;
 
-    ClickColumnProvider<ProjectInfo> columnProvider = new ClickColumnProvider<>();
+    @Inject
     EditClickColumn< ProjectInfo > editClickColumn;
+    @Inject
     RemoveClickColumn<ProjectInfo> removeClickColumn;
-    @Inject
-    NumberColumn number;
-    @Inject
-    StatusColumn status;
-    @Inject
-    ManagersColumn manager;
-    @Inject
-    InfoColumn info;
 
-    AbstractProjectTableActivity activity;
+    private AbstractProjectTableActivity activity;
+
+    private List<ClickColumn> columns = new ArrayList<>();
+    private ClickColumnProvider<ProjectInfo> columnProvider = new ClickColumnProvider<>();
 
     private static ProjectTableViewUiBinder ourUiBinder = GWT.create( ProjectTableViewUiBinder.class );
     interface ProjectTableViewUiBinder extends UiBinder< HTMLPanel, ProjectTableView> {}

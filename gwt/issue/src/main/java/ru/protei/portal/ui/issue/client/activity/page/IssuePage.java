@@ -30,7 +30,7 @@ public abstract class IssuePage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.ISSUE_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ISSUE, DebugIds.SIDEBAR_MENU.ISSUE ) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( new IssueEvents.Show(true) ) );
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class IssuePage
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new IssueEvents.Show(true) );
     }
 
     private void fireSelectTab() {
@@ -63,6 +63,5 @@ public abstract class IssuePage
     Lang lang;
 
     private String ТAB;
-    private IssueEvents.Show show = new IssueEvents.Show();
 }
 

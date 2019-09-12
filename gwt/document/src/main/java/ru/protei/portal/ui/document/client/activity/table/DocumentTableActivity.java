@@ -55,7 +55,7 @@ public abstract class DocumentTableActivity
         view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE) ?
-                new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DOCUMENT) :
+                new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DOCUMENT) :
                 new ActionBarEvents.Clear()
         );
 

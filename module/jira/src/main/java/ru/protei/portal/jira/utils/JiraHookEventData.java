@@ -40,6 +40,11 @@ public class JiraHookEventData {
         this.eventType = eventType;
     }
 
+    public JiraHookEventData(JiraHookEventType eventType, Issue issue) {
+        this (System.currentTimeMillis(), eventType);
+        this.issue = issue;
+    }
+
     public boolean isCreateIssueEvent () {
         return this.eventType == JiraHookEventType.ISSUE_CREATED;
     }

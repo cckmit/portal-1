@@ -29,11 +29,9 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         event.parent.add( view.asWidget(event.isForTableView) );
 
         fillView( event.employee );
-        view.watchForScroll(event.isWatchForScroll);
     }
 
     private void fillView( EmployeeShortView employee ) {
-
         view.setID( employee.getId().toString() );
         view.setName( employee.getDisplayName() );
 

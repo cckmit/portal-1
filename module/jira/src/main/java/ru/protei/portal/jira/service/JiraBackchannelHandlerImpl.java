@@ -94,7 +94,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
             if (event.getCaseComment() != null && !event.getCaseComment().isPrivateComment()) {
                 logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
-                issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment()))
+                issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment(), event.getInitiator()))
                         .claim();
             }
 
@@ -104,8 +104,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         });
     }
 
-    private Comment convertComment (CaseComment ourComment) {
-        return Comment.valueOf(ourComment.getAuthor().getDisplayShortName() + "\r\n" + ourComment.getText());
+    private Comment convertComment (CaseComment ourComment, Person initiator) {
+        return Comment.valueOf(initiator.getDisplayShortName() + "\r\n" + ourComment.getText());
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

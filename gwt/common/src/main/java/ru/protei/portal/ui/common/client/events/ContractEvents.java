@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
 
 public class ContractEvents {
@@ -29,6 +30,18 @@ public class ContractEvents {
 
         public Long id;
         public HasWidgets parent;
+    }
+
+    @Url(value = "contract_preview", primary = true)
+    public static class ShowFullScreen {
+        public ShowFullScreen() {}
+
+        public ShowFullScreen(Long contractId) {
+            this.contractId = contractId;
+        }
+
+        @Name("id")
+        public Long contractId;
     }
 
     public static class ChangeModel {}

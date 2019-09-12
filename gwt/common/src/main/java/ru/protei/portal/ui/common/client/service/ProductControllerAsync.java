@@ -20,9 +20,9 @@ public interface ProductControllerAsync {
 
     void getProductList(ProductQuery query, AsyncCallback<SearchResult<DevUnit>> async);
 
-    void getProduct( Long productId, AsyncCallback<DevUnit> async );
+    void getProduct(Long productId, AsyncCallback<DevUnit> async);
 
-    void saveProduct(DevUnit product, AsyncCallback<Boolean> async);
+    void saveProduct(DevUnit product, AsyncCallback<DevUnit> async);
 
     void updateState(Long productId, En_DevUnitState state, AsyncCallback<Boolean> async);
 
@@ -31,14 +31,14 @@ public interface ProductControllerAsync {
      * @param query запрос
      * @param callback
      */
-    void getProductViewList( ProductQuery query, AsyncCallback< List<ProductShortView> > callback );
+    void getProductViewList(ProductQuery query, AsyncCallback<List<ProductShortView>> callback);
 
     /**
      * Получение списка продуктовых направлений
      * @param query
      * @param callback
      */
-    void getProductDirectionList( ProductDirectionQuery query, AsyncCallback<List<ProductDirectionInfo>> callback );
+    void getProductDirectionList(ProductDirectionQuery query, AsyncCallback<List<ProductDirectionInfo>> callback);
 
     void isNameUnique(String name, En_DevUnitType type, Long exceptId, AsyncCallback<Boolean> async);
 }

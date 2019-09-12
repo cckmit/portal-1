@@ -7,32 +7,34 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
+    <g:HTMLPanel styleName="card card-default card-fixed">
+        <div class="card-body">
+            <div class="row">
+                <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.siteFolderName}" styleName="form-group col-md-12"/>
 
-            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.siteFolderName}" styleName="form-group col-xs-12"/>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.sortBy}"/></label>
+                    <div class="control-group">
+                        <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER" hasNullValue="false"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+                    </div>
+                </div>
 
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER" hasNullValue="false"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                <server:ServerMultiSelector ui:field="servers" header="{lang.siteFolderServer}" addStyleNames="form-group col-md-12"/>
+
+                <component:ComponentMultiSelector ui:field="components" header="{lang.devUnitComponent}" addStyleNames="form-group col-md-12"/>
+
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.siteFolderComment}"/>
+                    </label>
+                    <g:TextArea ui:field="comment" styleName="form-control resize-vertical sf-comment"/>
                 </div>
             </div>
-
-            <server:ServerMultiSelector ui:field="servers" header="{lang.siteFolderServer}" addStyleNames="form-group col-xs-12"/>
-
-            <component:ComponentMultiSelector ui:field="components" header="{lang.devUnitComponent}" addStyleNames="form-group col-xs-12"/>
-
-            <div class="form-group col-xs-12">
-                <label>
-                    <ui:text from="{lang.siteFolderComment}"/>
-                </label>
-                <g:TextArea ui:field="comment" styleName="input-field resize-vertical description"/>
-            </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer text-right">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
+
 </ui:UiBinder>

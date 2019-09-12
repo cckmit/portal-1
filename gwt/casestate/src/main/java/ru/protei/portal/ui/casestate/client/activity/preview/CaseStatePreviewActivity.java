@@ -82,6 +82,11 @@ public abstract class CaseStatePreviewActivity
                 }));
     }
 
+    @Override
+    public void onCancelClicked() {
+        fireEvent(new CaseStateEvents.ClosePreview());
+    }
+
     private void requestData(Long id) {
         service.getCaseState(id, new ShortRequestCallback<CaseState>().setErrorMessage(lang.errGetItem())
                 .setOnSuccess(result -> {

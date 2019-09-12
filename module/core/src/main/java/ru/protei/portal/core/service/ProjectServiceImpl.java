@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -63,13 +64,16 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    ContractDAO contractDAO;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
         List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
         /*  здесь на выходе получается мапа с сортировкой по id по возрастанию */
         Map< Long, RegionInfo > regionInfos = regions.stream().collect(
-                Collectors.toMap( Location::getId, Location::toRegionInfo)
+                Collectors.toMap( Location::getId, Location::toRegionInfo )
         );
 
         CaseQuery caseQuery = new CaseQuery();
@@ -107,28 +111,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Result< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setSearchString(query.getSearchString());
-        caseQuery.setType( En_CaseType.PROJECT );
-        caseQuery.setStateIds( query.getStates().stream()
-                .map( ( state ) -> new Long( state.getId() ).intValue() )
-                .collect( toList() )
-        );
-        List<Long> productIds = null;
-        if (query.getDirectionId() != null){
-            productIds = new ArrayList<>();
-            productIds.add( query.getDirectionId() );
-        }
-        caseQuery.setProductIds( productIds );
-        caseQuery.setDistrictIds( new ArrayList<>(query.getDistrictIds()) );
-
-        if (query.isOnlyMineProjects()) {
-            UserSessionDescriptor descriptor = authService.findSession(token);
-            if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
-            }
-        }
-
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
         caseQuery.setSortField(query.getSortField());
         caseQuery.setSortDir(query.getSortDir());
 
@@ -145,15 +128,25 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result< ProjectInfo > getProject( AuthToken token, Long id ) {
 
-        CaseObject caseObject = caseObjectDAO.get( id );
-        helper.fillAll( caseObject );
+        CaseObject project = caseObjectDAO.get( id );
 
-        return ok(ProjectInfo.fromCaseObject( caseObject ) );
+        if (project == null) {
+            return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+        }
+
+        helper.fillAll( project );
+        Contract contract = contractDAO.getByProjectId(id);
+        if (contract != null) {
+            project.setContractId(contract.getId());
+            project.setContractNumber(contract.getNumber());
+        }
+
+        return ok(ProjectInfo.fromCaseObject(project));
     }
 
     @Override
     @Transactional
-    public Result saveProject( AuthToken token, ProjectInfo project ) {
+    public Result<ProjectInfo> saveProject( AuthToken token, ProjectInfo project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -161,6 +154,14 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName( project.getName() );
         caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );
+        caseObject.setManagerId(project.getTeam()
+                .stream()
+                .filter(personProjectMemberView -> personProjectMemberView.getRole().getId() == En_DevUnitPersonRoleType.HEAD_MANAGER.getId())
+                .map(PersonShortView::getId)
+                .findFirst()
+                .orElse(null)
+        );
+
         if (project.getCustomerType() != null)
             caseObject.setLocal(project.getCustomerType().getId());
 
@@ -187,12 +188,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return ok();
+        return ok(ProjectInfo.fromCaseObject( caseObject ));
     }
 
     @Override
     @Transactional
-    public Result<Long> createProject( AuthToken token, ProjectInfo project) {
+    public Result<ProjectInfo> createProject(AuthToken token, ProjectInfo project) {
 
         if (project == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -213,7 +214,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         caseObjectDAO.merge( caseObject );
 
-        return ok(id);
+        return ok(ProjectInfo.fromCaseObject(caseObject));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
@@ -225,6 +226,13 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setCreatorId(project.getCreatorId());
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
+        caseObject.setManagerId(project.getTeam()
+                .stream()
+                .filter(personProjectMemberView -> personProjectMemberView.getRole() == En_DevUnitPersonRoleType.HEAD_MANAGER)
+                .map(PersonShortView::getId)
+                .findFirst()
+                .orElse(null)
+        );
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());
@@ -271,17 +279,34 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<ProjectInfo>> listProjects( AuthToken authToken) {
+    public Result<List<ProjectInfo>> listProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
 
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        helper.fill(projects, "members");
+        helper.fill(projects, "products");
+
+        List<ProjectInfo> result = projects.stream()
+                .map(ProjectInfo::fromCaseObject).collect(toList());
+        return ok(result );
+    }
+
+    @Override
+    public Result<List<EntityOption>> listFreeProjectsAsEntityOptions(AuthToken authToken) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
         caseQuery.setSortDir(En_SortDir.ASC);
         caseQuery.setSortField(En_SortField.case_name);
+        caseQuery.setFreeProjects(true);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
-        List<ProjectInfo> result = projects.stream()
-                .map(ProjectInfo::fromCaseObject).collect(toList());
-        return ok(result );
+        List<EntityOption> result = projects
+                .stream()
+                .map(project -> new EntityOption(project.getName(), project.getId()))
+                .collect(toList());
+
+        return ok(result);
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
@@ -382,7 +407,7 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
-        if ( locations == null || locations.isEmpty()) {
+        if ( locations == null || locations.isEmpty() ) {
             handler.accept( null );
             return;
         }
@@ -437,6 +462,49 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
+    }
+
+    private CaseQuery applyProjectQueryToCaseQuery(AuthToken authToken, ProjectQuery projectQuery) {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
+            caseQuery.setStateIds(projectQuery.getStates().stream()
+                    .map((state) -> new Long(state.getId()).intValue())
+                    .collect(toList())
+            );
+        }
+
+        List<Long> productIds = null;
+        if (projectQuery.getDirectionId() != null) {
+            productIds = new ArrayList<>();
+            productIds.add(projectQuery.getDirectionId());
+        }
+        if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
+            productIds = new ArrayList<>();
+            productIds.addAll(projectQuery.getProductIds());
+        }
+        caseQuery.setProductIds(productIds);
+
+        if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
+            UserSessionDescriptor descriptor = authService.findSession(authToken);
+            if (descriptor != null && descriptor.getPerson() != null) {
+                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+            }
+        }
+
+        if (projectQuery.getCustomerType() != null) {
+            caseQuery.setLocal(projectQuery.getCustomerType().getId());
+        }
+
+        caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
+        caseQuery.setCreatedTo(projectQuery.getCreatedTo());
+
+        caseQuery.setSearchString(projectQuery.getSearchString());
+        caseQuery.setSortDir(projectQuery.getSortDir());
+        caseQuery.setSortField(projectQuery.getSortField());
+
+        return caseQuery;
     }
 
     private LocationQuery makeLocationQuery( ProjectQuery query, boolean isSortByFilter ) {

@@ -10,7 +10,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -186,30 +189,11 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setPrivateComment(Boolean value) {
-        privateComment.setClassName(value ? "fa fa-fw fa-lg fa-lock text-danger pull-left"
-                                          : "fa fa-fw fa-lg fa-unlock-alt text-success pull-left");
-    }
-
-    private HasVisibility privacyVisibility = new HasVisibility() {
-        @Override
-        public boolean isVisible() {
-            return privateComment.getClassName().contains("hide") ;
+    public void setPrivacyFlag(Boolean value) {
+        if ( value ) {
+            messageContainer.addClassName("private-message");
+            privateComment.setClassName("fa m-l-10 fa-lock text-danger");
         }
-
-        @Override
-        public void setVisible( boolean b ) {
-            if (b) {
-                privateComment.removeClassName("hide");
-            } else {
-                privateComment.setClassName("hide");
-            }
-        }
-    };
-
-    @Override
-    public HasVisibility getPrivacyVisibility() {
-        return privacyVisibility;
     }
 
     @UiHandler( "remove" )
@@ -297,6 +281,8 @@ public class CaseCommentItemView
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    DivElement messageContainer;
     @Inject
     En_CaseStateLang stateLang;
     @Inject

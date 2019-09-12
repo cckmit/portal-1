@@ -82,7 +82,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new EmployeeEvents.ShowPreview(view.getPreviewContainer(), value, true,true));
+            fireEvent(new EmployeeEvents.ShowPreview(view.getPreviewContainer(), value,true));
         }
     }
 

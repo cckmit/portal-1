@@ -3,35 +3,37 @@
              xmlns:states="urn:import:ru.protei.portal.ui.common.client.widget.employeeregstate"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
->
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
-            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.employeeRegistrationSearchFullNameOrPost}" styleName="form-group col-xs-12"/>
+    <g:HTMLPanel styleName="card card-default card-fixed">
+        <div class="card-body">
+            <div class="row">
+                <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.employeeRegistrationSearchFullNameOrPost}" styleName="form-group col-md-12"/>
 
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfield:SortFieldSelector ui:field="sortField" type="EMPLOYEE_REGISTRATION" hasNullValue="false"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.sortBy}"/></label>
+                    <div class="control-group">
+                        <sortfield:SortFieldSelector ui:field="sortField" type="EMPLOYEE_REGISTRATION" hasNullValue="false"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
+                    <range:RangePicker ui:field="dateRange" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.employeeRegistrationState}"/></label>
+                    <states:EmployeeRegistrationStateOptionList ui:field="states"/>
                 </div>
             </div>
-
-            <div class="col-xs-12">
-                <label class="bold"><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
-                <range:RangePicker ui:field="dateRange" type="DATE" formatValue="dd.MM.yyyy"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.employeeRegistrationState}"/></label>
-                <states:EmployeeRegistrationStateOptionList ui:field="states"/>
-            </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default pull-right" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
+    
 </ui:UiBinder>

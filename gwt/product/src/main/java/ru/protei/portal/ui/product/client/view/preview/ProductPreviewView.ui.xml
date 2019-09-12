@@ -1,42 +1,38 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview">
-            <g:HTMLPanel ui:field="nameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend>
-                    <g:Label ui:field="typeLabel"/>
-                </legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.name}"/></label>
-                    <span class="col-xs-7" ui:field="name"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.productWikiLink}"/></label>
-                    <span class="col-xs-7" ui:field="wikiLink"/>
-                </div>
-            </g:HTMLPanel>
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend>
-                    <ui:text from="{lang.description}"/>
-                </legend>
-                <span ui:field="info" class="pre-formatted-info"></span>
-            </g:HTMLPanel>
+    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default card-fixed">
+        <div class="card-body">
+            <h4 class="m-r-50">
+                <g:Anchor ui:field="productName" href="#"/>
+            </h4>
 
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productConfiguration}"/></legend>
-                <div class="col-xs-12 markdown" ui:field="configuration"/>
-            </g:HTMLPanel>
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productHistoryVersion}"/></legend>
-                <div class="col-xs-12 markdown" ui:field="historyVersion"/>
-            </g:HTMLPanel>
-            <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productCDRDescription}"/></legend>
-                <div class="col-xs-12 markdown" ui:field="cdrDescription"/>
-            </g:HTMLPanel>
+            <img ui:field="typeImage" src="" class="preview-title-image_right"/>
+            <div class="small hint-text no-margin">
+                <a ui:field="wikiLink" href="#" target="_blank"/>
+            </div>
+
+            <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
+
+            <tab:TabWidget tabNames="{lang.productHistoryVersion}|{lang.productConfiguration}|{lang.productCDRDescription}" styleName="">
+                <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
+                    <g:HTMLPanel styleName="markdown" ui:field="historyVersion"/>
+                </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
+                    <g:HTMLPanel styleName="markdown" ui:field="configuration"/>
+                </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
+                    <g:HTMLPanel styleName="markdown" ui:field="cdrDescription"/>
+                </tab:pane.TabWidgetPane>
+            </tab:TabWidget>
+        </div>
+        <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProducts}"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

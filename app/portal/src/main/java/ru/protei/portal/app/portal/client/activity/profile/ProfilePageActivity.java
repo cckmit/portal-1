@@ -12,12 +12,12 @@ import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.util.PasswordUtils;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -36,40 +36,39 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
     @PostConstruct
     public void onInit() {
-        view.setActivity(this);
+        view.setActivity( this );
     }
 
     @Event
-    public void onInit(AppEvents.InitDetails event) {
+    public void onInit( AppEvents.InitDetails event ) {
         this.initDetails = event;
     }
 
     @Event
-    public void onShow(AppEvents.ShowProfile event) {
+    public void onShow( AppEvents.ShowProfile event ) {
         initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        initDetails.parent.add( view.asWidget() );
 
-        fireEvent(new ActionBarEvents.Clear());
+        fireEvent( new ActionBarEvents.Clear() );
 
-        fillView(policyService.getProfile());
+        fillView( policyService.getProfile() );
     }
 
     @Override
     public void onSaveSubscriptionClicked() {
-        companyService.updateSelfCompanySubscription(view.companySubscription().getValue().stream()
-                        .map(Subscription::toCompanySubscription)
-                        .collect(Collectors.toList()),
+        companyService.updateSelfCompanySubscription( view.companySubscription().getValue().stream()
+                .map(Subscription::toCompanySubscription)
+                .collect(Collectors.toList()),
                 new RequestCallback<List<CompanySubscription>>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                    }
+            @Override
+            public void onError( Throwable throwable ) {}
 
-                    @Override
-                    public void onSuccess(List<CompanySubscription> subscriptions) {
-                        policyService.getUserCompany().setSubscriptions(subscriptions);
-                        fireEvent(new NotifyEvents.Show(lang.companySubscriptionUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS));
-                    }
-                });
+            @Override
+            public void onSuccess( List<CompanySubscription> subscriptions ) {
+                policyService.getUserCompany().setSubscriptions( subscriptions );
+                fireEvent( new NotifyEvents.Show( lang.companySubscriptionUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS ) );
+            }
+        });
     }
 
     @Override
@@ -114,20 +113,20 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
                 Objects.equals(view.newPassword().getValue(), view.confirmPassword().getValue());
     }
 
-    private void fillView(Profile value) {
+    private void fillView(Profile value ) {
         this.profile = value;
-        view.setName(value.getFullName());
-        view.setIcon(UserIconUtils.getGenderIcon(value.getGender()));
-        if (value.getCompany() != null) {
-            view.setCompany(value.getCompany().getCname());
-            view.companySubscription().setValue(value.getCompany().getSubscriptions().stream()
-                    .map(Subscription::fromCompanySubscription)
+        view.setName( value.getFullName() );
+        view.setIcon( AvatarUtils.getAvatarUrl(value) );
+        if ( value.getCompany() != null ) {
+            view.setCompany( value.getCompany().getCname() );
+            view.companySubscription().setValue( value.getCompany().getSubscriptions().stream()
+                    .map( Subscription::fromCompanySubscription )
                     .collect(Collectors.toList())
             );
         }
 
-        view.companySubscriptionEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.COMMON_PROFILE_EDIT));
-        view.saveButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.COMMON_PROFILE_EDIT));
+        view.companySubscriptionEnabled().setEnabled(policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
+        view.saveButtonVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
         view.changePasswordButtonVisibility().setVisible(value.getAuthType() == En_AuthType.LOCAL);
         view.passwordContainerVisibility().setVisible(false);
     }

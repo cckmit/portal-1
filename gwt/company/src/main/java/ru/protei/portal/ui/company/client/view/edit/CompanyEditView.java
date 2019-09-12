@@ -18,13 +18,13 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
@@ -71,17 +71,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValidable actualAddressValidator() {
-        return actualAddress;
-    }
-
-    @Override
     public HasValue<String> legalAddress() {
-        return legalAddress;
-    }
-
-    @Override
-    public HasValidable legalAddressValidator() {
         return legalAddress;
     }
 
@@ -136,22 +126,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Override
     public HasWidgets tableContainer() {
-        return tableContainer;
+        return contactsContainer;
     }
 
     @Override
     public HasWidgets siteFolderContainer() {
         return siteFolderContainer;
-    }
-
-    @Override
-    public HasVisibility tableContainerVisibility() {
-        return tableContainerBlock;
-    }
-
-    @Override
-    public HasVisibility siteFolderContainerVisibility() {
-        return siteFolderContainerBlock;
     }
 
     @Override
@@ -214,17 +194,17 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     Element verifiableIcon;
 
     @UiField
-    ValidableTextArea actualAddress;
+    AutoResizeTextArea actualAddress;
 
     @UiField
-    ValidableTextArea legalAddress;
+    AutoResizeTextArea legalAddress;
 
     @UiField
     TextArea comment;
 
     @UiField
     TextBox webSite;
-    
+
     @Inject
     @UiField( provided = true )
     CompanySelector parentCompany;
@@ -240,12 +220,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CategoryButtonSelector companyCategory;
 
     @UiField
-    HTMLPanel tableContainerBlock;
-    @UiField
-    HTMLPanel tableContainer;
+    HTMLPanel contactsContainer;
 
-    @UiField
-    HTMLPanel siteFolderContainerBlock;
     @UiField
     HTMLPanel siteFolderContainer;
 

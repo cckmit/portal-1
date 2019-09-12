@@ -3,8 +3,8 @@ package ru.protei.portal.ui.common.client.view.casecomment.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -275,7 +275,7 @@ public class CaseCommentListView
     @UiField
     FlowPanel commentsContainer;
     @UiField
-    ToggleButton privateComment;
+    CheckBox privateComment;
     @UiField
     Button send;
     @Inject
@@ -305,7 +305,7 @@ public class CaseCommentListView
     @UiField
     DivElement filesUpload;
     @UiField
-    SpanElement textMarkupLabel;
+    Element textMarkupLabel;
     @UiField
     ToggleButton isDisplayPreview;
     @UiField

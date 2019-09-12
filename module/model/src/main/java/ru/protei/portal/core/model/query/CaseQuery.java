@@ -75,6 +75,10 @@ public class CaseQuery extends BaseQuery {
 
     private boolean findRecordByCaseComments;
 
+    private Integer local;
+
+    private boolean isFreeProjects;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -114,6 +118,8 @@ public class CaseQuery extends BaseQuery {
         setCaseTagsIds(query.getCaseTagsIds());
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
+        setLocal(query.getLocal());
+        setFreeProjects(query.isFreeProjects());
     }
 
     public Long getId() {
@@ -294,6 +300,20 @@ public class CaseQuery extends BaseQuery {
         this.customerSearch = customerSearch;
     }
 
+    public boolean isFreeProjects() {
+        return isFreeProjects;
+    }
+
+    public void setFreeProjects(boolean isFreeProjects) {
+        this.isFreeProjects = isFreeProjects;
+    }
+    public Integer getLocal() {
+        return local;
+    }
+
+    public void setLocal(Integer local) {
+        this.local = local;
+    }
 
     @Override
     public boolean isParamsPresent() {
@@ -315,7 +335,9 @@ public class CaseQuery extends BaseQuery {
                 StringUtils.isNotBlank(searchCasenoString) ||
                 CollectionUtils.isNotEmpty(memberIds) ||
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
-                CollectionUtils.isNotEmpty(caseTagsIds);
+                CollectionUtils.isNotEmpty(caseTagsIds) ||
+                local != null ||
+                isFreeProjects();
     }
 
     @Override
@@ -344,6 +366,7 @@ public class CaseQuery extends BaseQuery {
                 ", caseTagsIds=" + caseTagsIds +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", customerSearch=" + customerSearch +
+                ", local=" + local +
                 '}';
     }
 }

@@ -16,12 +16,10 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleBtnGroup;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
-import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 
 /**
  * Вид формы авторизации
@@ -121,7 +119,7 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     @UiField
     TextBox password;
     @UiField
-    OptionItem rememberMe;
+    CheckBox rememberMe;
     @UiField
     Button loginButton;
     @UiField

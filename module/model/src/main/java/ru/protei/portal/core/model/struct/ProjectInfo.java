@@ -3,18 +3,12 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.ent.CaseLocation;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Removable;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,12 +49,12 @@ public class ProjectInfo extends AuditableObject implements Removable {
     /**
      * продуктовое направление
      */
-    EntityOption productDirection;
+    private EntityOption productDirection;
 
     /**
      * Дата создания
      */
-    Date created;
+    private Date created;
 
     /**
      * Создатель проекта
@@ -72,9 +66,15 @@ public class ProjectInfo extends AuditableObject implements Removable {
      */
     private List<PersonProjectMemberView> team;
 
-    EntityOption region;
+    private EntityOption region;
 
-    Set<ProductShortView> products;
+    private Set<ProductShortView> products;
+
+    private Person creator;
+
+    private Long contractId;
+
+    private String contractNumber;
 
     private boolean deleted;
 
@@ -166,6 +166,14 @@ public class ProjectInfo extends AuditableObject implements Removable {
         this.products = products;
     }
 
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
+    }
+
     public List<PersonProjectMemberView> getTeam() {
         return team;
     }
@@ -199,18 +207,39 @@ public class ProjectInfo extends AuditableObject implements Removable {
         this.deleted = deleted;
     }
 
+    public ProductShortView getSingleProduct() {
+        return products.stream().findAny().orElse(null);
+    }
+
     @Override
     public boolean isAllowedRemove() {
         return id != null && !deleted;
     }
 
-    public static ProjectInfo fromCaseObject( CaseObject project ) {
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+    }
+
+    public static ProjectInfo fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
 
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setId( project.getId() );
         projectInfo.setName( project.getName() );
+        projectInfo.setCreator(project.getCreator());
         projectInfo.setDescription(project.getInfo());
         projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
         projectInfo.setDeleted(project.isDeleted());
@@ -244,6 +273,9 @@ public class ProjectInfo extends AuditableObject implements Removable {
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
+
+        projectInfo.setContractId(project.getContractId());
+        projectInfo.setContractNumber(project.getContractNumber());
         return projectInfo;
     }
 

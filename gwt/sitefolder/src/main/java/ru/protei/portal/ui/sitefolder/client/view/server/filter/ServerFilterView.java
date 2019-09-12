@@ -12,7 +12,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
@@ -28,18 +27,6 @@ public class ServerFilterView extends Composite implements AbstractServerFilterV
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -185,9 +172,6 @@ public class ServerFilterView extends Composite implements AbstractServerFilterV
     CleanableSearchBox parameters;
     @UiField
     TextArea comment;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractServerFilterActivity activity;
 

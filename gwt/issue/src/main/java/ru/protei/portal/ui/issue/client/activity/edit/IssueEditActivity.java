@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 
@@ -68,7 +69,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
             if (issue != null) {
                 initialRestoredView(issue);
             } else {
@@ -77,7 +77,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initialView(caseObject);
             }
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
         }
 
@@ -258,6 +257,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         localStorageService.set( ISSUE_EDIT + "_" + key, String.valueOf( isDisplay ) );
     }
 
+    @Override
+    public void onCopyClicked() {
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + view.name().getValue());
+
+        if (status != 0) {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        }
+    }
+
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
@@ -336,7 +346,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.name().setValue(issue.getName());
 
         view.numberVisibility().setVisible( !isNew(issue) );
-        view.number().setValue( isNew(issue) ? null : issue.getCaseNumber().intValue() );
+        view.setNumber(isNew(issue) ? null : issue.getCaseNumber().intValue() );
 
         view.isLocal().setValue(issue.isPrivateCase());
 
@@ -385,6 +395,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
+        view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption(issue.getPlatformName(), issue.getPlatformId()));
+        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+        view.copyVisibility().setVisible(!isNew(issue));
 
         fillViewForJira(issue);
 
@@ -422,6 +435,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
         issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
         issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
+        issue.setPlatformId(view.platform().getValue() == null ? null : view.platform().getValue().getId());
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             issue.setTimeElapsed(view.timeElapsedInput().getTime());

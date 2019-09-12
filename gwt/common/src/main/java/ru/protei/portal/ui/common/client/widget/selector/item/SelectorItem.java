@@ -36,7 +36,7 @@ public class SelectorItem
     }
 
     public void setName( String name ) {
-        text.setInnerHTML( name );
+        text.setInnerText( name );
     }
 
     public void setStyle( String style ) {

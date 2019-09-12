@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
@@ -28,6 +29,21 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         platformId = event.platform.getId();
 
         request(event.platform.getId(), this::fillView);
+        view.footerContainerVisibility().setVisible(false);
+    }
+
+    @Event
+    public void onShow(SiteFolderPlatformEvents.ShowFullScreen event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
+        request(event.platformId, this::fillView);
+        view.footerContainerVisibility().setVisible(true);
+    }
+
+    @Event
+    public void onInit( AppEvents.InitDetails event ) {
+        this.initDetails = event;
     }
 
     private void request(Long platformId, Consumer<Platform> consumer) {
@@ -58,10 +74,23 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
     }
 
+    @Override
+    public void onFullScreenClicked() {
+        if (platformId != null) {
+            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(platformId));
+        }
+    }
+
+    @Override
+    public void onGoToIssuesClicked() {
+        fireEvent(new SiteFolderPlatformEvents.Show());
+    }
+
     @Inject
     AbstractPlatformPreviewView view;
     @Inject
     SiteFolderControllerAsync siteFolderController;
 
     private Long platformId;
+    private AppEvents.InitDetails initDetails;
 }

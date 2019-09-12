@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -50,6 +51,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformButtonSelector;
 
 import java.util.Set;
 
@@ -65,18 +67,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         ensureDebugIds();
         // state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
+        platform.setDefaultValue(lang.selectPlatform());
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
-        description.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( DESCRIPTION, isDisplay );
-            }
-        } );
+        description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
+        copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
     }
 
     @Override
@@ -202,19 +201,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValidable companyValidator() { return company; }
-
-    @Override
-    public HasValidable initiatorValidator() { return initiator; }
-
-    @Override
-    public HasValidable productValidator() {
-        return product;
-    }
-
-    @Override
-    public HasValidable managerValidator() {
-        return manager;
+    public HasValidable companyValidator() {
+        return company;
     }
 
     @Override
@@ -233,11 +221,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<Integer> number(){
-        return number;
-    }
-
-    @Override
     public void setSubscriptionEmails(String value) {
         subscriptions.setInnerText(value);
     }
@@ -248,12 +231,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasAttachments attachmentsContainer(){
+    public HasAttachments attachmentsContainer() {
         return attachmentContainer;
     }
 
     @Override
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
         fileUploader.setUploadHandler(handler);
     }
 
@@ -288,6 +271,21 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setNumber(Integer num) {
+        if (num == null) {
+            number.setText("");
+            return;
+        }
+
+        number.setText("CRM-" + num);
+    }
+
+    @Override
+    public String getNumber() {
+        return number.getText();
+    }
+
+    @Override
     public HasVisibility caseSubscriptionContainer() {
         return caseSubscriptionContainers;
     }
@@ -301,8 +299,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             }
 
             @Override
-            public void setVisible( boolean b ) {
-                local.setVisible( b );
+            public void setVisible(boolean b) {
+                local.setVisible(b);
             }
         };
     }
@@ -319,7 +317,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setTimeElapseTypeVisibility(boolean isVisible) {
-        timeElapsedType.setVisible( isVisible );
+        timeElapsedType.setVisible(isVisible);
     }
 
     @Override
@@ -368,26 +366,56 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
-        description.setDisplayPreview( isPreviewAllowed );
+    public void setDescriptionPreviewAllowed(boolean isPreviewAllowed) {
+        description.setDisplayPreview(isPreviewAllowed);
     }
 
-    @UiHandler( "company" )
-    public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
-        if ( activity != null ) {
+    @Override
+    public HasVisibility copyVisibility() {
+        return copy;
+    }
+
+    @UiHandler("company")
+    public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
             activity.onCompanyChanged();
         }
     }
 
-    @UiHandler( "saveButton" )
-    public void onSaveClicked( ClickEvent event ) {
-        if ( activity != null ) {
+
+    @Override
+    public HasValue<EntityOption> platform() {
+        return platform;
+    }
+
+    @Override
+    public void setPlatformVisibility(boolean isVisible) {
+        if (!isVisible) {
+            stateContainer.replaceClassName("col-md-4", "col-md-6");
+            importanceContainer.replaceClassName("col-md-4", "col-md-6");
+            platformContainer.getStyle().setDisplay(Style.Display.NONE);
+        } else {
+            stateContainer.replaceClassName("col-md-6", "col-md-4");
+            importanceContainer.replaceClassName("col-md-6", "col-md-4");
+            platformContainer.getStyle().setDisplay(Style.Display.INITIAL);
+        }
+    }
+
+    @Override
+    public HasValidable platformValidable() {
+        return platform;
+    }
+
+    @UiHandler("saveButton")
+    public void onSaveClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onSaveClicked();
         }
     }
-    @UiHandler( "cancelButton" )
-    public void onCancelClicked( ClickEvent event ) {
-        if ( activity != null ) {
+
+    @UiHandler("cancelButton")
+    public void onCancelClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onCancelClicked();
         }
 
@@ -410,9 +438,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("copy")
+    public void onCopyClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCopyClicked();
+        }
+    }
+
     @Override
     public void showComments(boolean isShow) {
-        if(isShow)
+        if (isShow)
             comments.removeClassName(UiConstants.Styles.HIDE);
         else
             comments.addClassName(UiConstants.Styles.HIDE);
@@ -432,6 +467,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         caseMetaView.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
+        platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
         initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
         product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
@@ -445,11 +481,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
+        copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
         stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.STATE);
         importanceLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.IMPORTANCE);
+        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PLATFORM);
         companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.COMPANY);
         initiatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.CONTACT);
         productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PRODUCT);
@@ -474,7 +512,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     ToggleButton local;
 
     @UiField
-    IntegerBox number;
+    Anchor copy;
+
+    @UiField
+    Label number;
+
+    @UiField
+    HTMLPanel numberCopyPanel;
 
     @Inject
     @UiField(provided = true)
@@ -516,6 +560,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
 
+    @Inject
+    @UiField(provided = true)
+    PlatformButtonSelector platform;
+
+    @UiField
+    DivElement platformContainer;
+
     @UiField
     Button saveButton;
     @UiField
@@ -536,8 +587,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     DivElement subscriptions;
     @UiField
-    HTMLPanel nameInputGroupContainer;
-    @UiField
     HTMLPanel nameContainer;
     @UiField
     HTMLPanel caseSubscriptionContainers;
@@ -557,6 +606,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     LabelElement importanceLabel;
     @UiField
+    LabelElement platformLabel;
+    @UiField
     LabelElement companyLabel;
     @UiField
     LabelElement initiatorLabel;
@@ -574,6 +625,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     LabelElement notifiersLabel;
     @UiField
     LabelElement attachmentsLabel;
+    @UiField
+    DivElement importanceContainer;
+    @UiField
+    DivElement stateContainer;
 
     private AbstractIssueEditActivity activity;
 

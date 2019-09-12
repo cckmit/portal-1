@@ -13,14 +13,11 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -116,6 +113,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        downloadClickColumn.setDownloadCustomImage("./images/pdficon.png");
         archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
         downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 

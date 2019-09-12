@@ -30,25 +30,20 @@ import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_CREATED;
  */
 public class YoutrackRestClientImpl implements YoutrackRestClient {
 
-    @PostConstruct
-    public void initAuthHeadersAndUrl() {
-        BASE_URL = portalConfig.data().youtrack().getApiBaseUrl() + "/rest";
-    }
-
     @Override
     public Result<ChangeResponse> getIssueChanges( String issueId ) {
-        return client.read( BASE_URL + "/issue/" + issueId + "/changes", ChangeResponse.class );
+        return client.read( getBaseUrl() + "/issue/" + issueId + "/changes", ChangeResponse.class );
     }
 
     @Override
     public Result<List<YtAttachment>> getIssueAttachments( String issueId ) {
-        return client.read( BASE_URL + "/issue/" + issueId + "/attachment", AttachmentResponse.class )
+        return client.read( getBaseUrl() + "/issue/" + issueId + "/attachment", AttachmentResponse.class )
                 .map( ar -> ar.getAttachments() );
     }
 
     @Override
     public Result<String> createIssue( String project, String summary, String description ) {
-        String uri = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issue" )
+        String uri = UriComponentsBuilder.fromHttpUrl( getBaseUrl() + "/issue" )
                 .queryParam( "project", project )
                 .queryParam( "summary", summary )
                 .queryParam( "description", StringUtils.emptyIfNull( description ) )
@@ -70,7 +65,7 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
 
     @Override
     public Result<List<Issue>> getIssuesByProjectAndUpdated( String projectId, Date updatedAfter ) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issue/byproject/" + projectId )
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl( getBaseUrl() + "/issue/byproject/" + projectId )
                 .queryParam( "with", "id" )
                 .queryParam( "max", MAX_ISSUES_IN_RESPONSE );
 
@@ -99,11 +94,15 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
     @Deprecated
     @Override
     public Result<Issue> getIssue( String issueId ) {
-        return client.read( BASE_URL + "/issue/" + issueId, Issue.class );
+        return client.read( getBaseUrl() + "/issue/" + issueId, Issue.class );
+    }
+
+    private String getBaseUrl() {
+       return portalConfig.data().youtrack().getApiBaseUrl() + "/rest";
     }
 
     private String makeYoutrackCommand( String issueId, String fieldname, String fieldValue ) {
-        return UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issue/" + issueId + "/execute" )
+        return UriComponentsBuilder.fromHttpUrl( getBaseUrl() + "/issue/" + issueId + "/execute" )
                 .queryParam( "command", fieldname + " " + fieldValue )
                 .build()
                 .encode()
@@ -116,8 +115,6 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
     private PortalConfig portalConfig;
     @Autowired
     private YoutrackHttpClient client;
-
-    private String BASE_URL;
 
     private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;
     private final static Logger log = LoggerFactory.getLogger( YoutrackRestClientImpl.class );

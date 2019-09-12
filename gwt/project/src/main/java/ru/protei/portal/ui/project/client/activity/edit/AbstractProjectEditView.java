@@ -18,13 +18,14 @@ public interface AbstractProjectEditView extends IsWidget {
 
     void setActivity(AbstractProjectEditActivity activity);
 
-    HasValue<Integer> number();
+    void setNumber(Integer number);
     HasValue<String> name();
     HasText description();
     HasValue<En_RegionState> state();
     HasValue<EntityOption> region();
     HasValue<ProductDirectionInfo> direction();
-    HasValue<Set<ProductShortView>> products();
+    HasValue<ProductShortView> product();
+
     HasValue<EntityOption> company();
     HasValue<En_CustomerType> customerType();
     HasValue<Set<PersonProjectMemberView>> team();

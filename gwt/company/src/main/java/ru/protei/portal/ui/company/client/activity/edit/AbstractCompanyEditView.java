@@ -24,8 +24,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<String> legalAddress();
 
     HasValidable companyNameValidator();
-    HasValidable actualAddressValidator();
-    HasValidable legalAddressValidator();
 
     HasText webSite();
     HasText comment();
@@ -42,8 +40,6 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasWidgets tableContainer();
     HasWidgets siteFolderContainer();
-    HasVisibility tableContainerVisibility();
-    HasVisibility siteFolderContainerVisibility();
 
     void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
 

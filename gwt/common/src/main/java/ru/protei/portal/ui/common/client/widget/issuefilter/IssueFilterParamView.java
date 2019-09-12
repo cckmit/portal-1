@@ -301,11 +301,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         //userFilter.addDisplayOption(value);
     }
 
-    @Override
-    public void addBodyStyles(String styles) {
-        body.addStyleName(styles);
-    }
-
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
@@ -391,11 +386,33 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    public void watchForScrollOf(Widget widget) {
+        userFilter.watchForScrollOf(widget);
+        sortField.watchForScrollOf(widget);
+        products.watchForScrollOf(widget);
+        companies.watchForScrollOf(widget);
+        initiators.watchForScrollOf(widget);
+        managers.watchForScrollOf(widget);
+        commentAuthors.watchForScrollOf(widget);
+        tags.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        userFilter.stopWatchForScrollOf(widget);
+        sortField.stopWatchForScrollOf(widget);
+        products.stopWatchForScrollOf(widget);
+        companies.stopWatchForScrollOf(widget);
+        initiators.stopWatchForScrollOf(widget);
+        managers.stopWatchForScrollOf(widget);
+        commentAuthors.stopWatchForScrollOf(widget);
+        tags.stopWatchForScrollOf(widget);
+    }
+
     private void ensureDebugIds() {
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -442,15 +459,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField(provided = true)
     IssueFilterSelector userFilter;
     @UiField
-    HTMLPanel body;
-    @UiField
     CleanableSearchBox search;
     @UiField
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
     @UiField
-    OptionItem searchByComments;
+    CheckBox searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;

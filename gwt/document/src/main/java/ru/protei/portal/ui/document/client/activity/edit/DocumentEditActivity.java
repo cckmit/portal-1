@@ -59,12 +59,13 @@ public abstract class DocumentEditActivity
     public void onShow(DocumentEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        fireEvent(new ProjectEvents.Search(view.searchProjectContainer()));
+        fireEvent(new ProjectEvents.QuickCreate(view.createProjectContainer()));
+        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
 
         if (event.id == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.documentNameNew()));
             fillView(new Document());
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
             documentService.getDocument(event.id, new RequestCallback<Document>() {
                 @Override
                 public void onError(Throwable throwable) {
@@ -77,6 +78,12 @@ public abstract class DocumentEditActivity
                 }
             });
         }
+    }
+
+    @Event
+    public void onSetProject(ProjectEvents.Set event) {
+        view.project().setValue(event.project);
+        onProjectChanged();
     }
 
     @Override
@@ -271,7 +278,6 @@ public abstract class DocumentEditActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.executionType().setValue(document.getExecutionType());
-        view.setCreated( document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.inventoryNumber().setValue(document.getInventoryNumber());

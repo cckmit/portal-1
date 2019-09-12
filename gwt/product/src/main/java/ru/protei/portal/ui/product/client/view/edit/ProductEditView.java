@@ -234,8 +234,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
 
     @UiField
-    HTMLPanel nameContainer;
-    @UiField
     LabelElement nameLabel;
     @UiField
     LabelElement descriptionLabel;
@@ -281,7 +279,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     MarkdownAreaWithPreview cdrDescription;
     @UiField
     TextBox wikiLink;
-
 
     AbstractProductEditActivity activity;
 

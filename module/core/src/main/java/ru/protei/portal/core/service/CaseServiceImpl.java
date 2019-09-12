@@ -386,7 +386,17 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
-        List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
+        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
+
+        if (states == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        return ok(states.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
+        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -602,7 +612,8 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
                 || !Objects.equals(co1.getState(), co2.getState())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
-                || !Objects.equals(co1.getManagerId(), co2.getManagerId());
+                || !Objects.equals(co1.getManagerId(), co2.getManagerId())
+                || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {

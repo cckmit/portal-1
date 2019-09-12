@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
@@ -152,18 +151,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         fireChangeTimer();
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
@@ -210,9 +197,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     @UiField(provided = true)
     EquipmentButtonSelector equipment;
-
-    @Inject
-    FixedPositioner positioner;
 
 
     AbstractEquipmentFilterActivity activity;

@@ -339,6 +339,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String canceledCaseState();
 
+    String requestNXCaseState();
+
+    String requestCustomerCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -787,6 +791,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueNameHeader();
 
+    String issuePlatformHeader();
+
     String noChanges();
 
     String roleRemoveConfirmMessage();
@@ -808,6 +814,12 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeDocument();
 
     String documentCommonHeader();
+
+    String documentSearchProjectHeader();
+
+    String documentCreateProjectHeader();
+
+    String documentCreateProductHeader();
 
     String documentName();
 
@@ -1265,6 +1277,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectManager();
 
+    String selectPlatform();
+
     String employees();
 
     String privilegeCategoryEmployee();
@@ -1420,6 +1434,34 @@ public interface Lang extends Messages, ContactItemLang {
 
     String decimalNumbersRequired();
 
+    String proteiTitleShort();
+
+    String authDescription();
+
+    String proteiTitleFull();
+
+    String authTitle();
+
+    String companyMainInfoTitle();
+
+    String companyContactInfoTitle();
+
+    String companyContactsHeader();
+
+    String contactMainInfoTitle();
+
+    String contactContactInfoTitle();
+
+    String contactAccountTitle();
+
+    String contactAccountHint();
+
+    String projectCreateBy();
+
+    String accountFor();
+
+    String accountRolesNotFound();
+
     String projectRemoveConfirmMessage(String name);
 
     String projectRemoveSucceeded();
@@ -1463,6 +1505,8 @@ public interface Lang extends Messages, ContactItemLang {
     String type();
 
     String goToIssues();
+
+    String goToPlatforms();
 
     String employeeWithoutManager();
 
@@ -1594,14 +1638,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
-    String proteiTitleFull();
-
-    String authTitle();
-
-    String proteiTitleShort();
-
-    String authDescription();
-
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
@@ -1670,6 +1706,32 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagNotSpecified();
 
+    String employeeRegistrationMainInfoTitle();
+
+    String employeeRegistrationWorkplaceTitle();
+
+    String employeeRegistrationResourceTitle();
+
+    String employeeRegistrationResourceHint();
+
+    String employeeRegistrationWorkplaceHint();
+
+    String createBy();
+
+    String companyIsAPartOfCompany(String name);
+
+    String companyIsAHeadOfCompany(String names);
+
+    String in();
+
+    String roleMainTitle();
+
+    String rolePrivilegesHint();
+
+    String caseStateDescription();
+
+    String documentWorkGroupHeader();
+
     String tagAuthor();
 
     String tagInfo();
@@ -1712,11 +1774,43 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectEdit();
 
-    String projectName();
-
     String goToProjects();
 
     String errInvalidCaseUpdateCaseIsClosed();
+
+    String buttonSettings();
+
+    String commentSetPrivate();
+
+    String employeeRegistrationCuratorsHint();
+
+    String logoutHotKey();
+
+    String documentSearchProject();
+
+    String buttonSearch();
+
+    String buttonClose();
+
+    String projectName();
+
+    String buttonCreateProject();
+    String buttonCreateProduct();
+
+    String inputProjectName();
+    String selectCustomerType();
+
+    String errFilterParameterRequired();
+
+    String firstHundredRecords();
+
+    String issueCopyToClipboard();
+
+    String errCopyToClipboard();
+
+    String issueCopiedToClipboard();
+
+    String crmPrefix();
 
     String errInvalidCurrentPassword();
 
@@ -1731,6 +1825,7 @@ public interface Lang extends Messages, ContactItemLang {
     String passwordUpdatedSuccessful();
 
     String issueLinkIncorrectYouTrackCaseNotFound( String p0 );
+
     String dropFilesHere();
 
     String productChangeStateConfirmMessage();
@@ -1752,4 +1847,18 @@ public interface Lang extends Messages, ContactItemLang {
     String jiraTimeOfReaction();
 
     String jiraTimeOfDecision();
+
+    String contractProject();
+
+    String contractProjectNotDefined();
+
+    String errSaveIssueNeedSelectPlatform();
+
+    String contractProjectHint();
+
+    String goToProducts();
+
+    String goToContracts();
+
+    String contract();
 }

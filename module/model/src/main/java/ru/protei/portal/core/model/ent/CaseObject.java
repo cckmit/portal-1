@@ -127,6 +127,18 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "case_object_tag", localLinkColumn = "case_id", remoteLinkColumn = "tag_id")
     private Set<CaseTag> tags;
 
+    @JdbcColumn(name = "platform_id")
+    private Long platformId;
+
+    @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
+    private String platformName;
+
+    // not db column
+    private Long contractId;
+
+    // not db column
+    private String contractNumber;
+
     // not db column
     private List<CaseLink> links;
 
@@ -489,6 +501,38 @@ public class CaseObject extends AuditableObject {
         this.jiraMetaData = jiraMetaData;
     }
 
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
+    }
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -536,6 +580,10 @@ public class CaseObject extends AuditableObject {
                 ", links=" + links +
                 ", timeElapsedType=" + timeElapsedType +
                 ", jiraMetaData=" + jiraMetaData +
+                ", platformId=" + platformId +
+                ", platformName=" + platformName +
+                ", links=" + links +
+                ", timeElapsedType=" + timeElapsedType +
                 '}';
     }
 }

@@ -28,7 +28,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     public void fillSelectorView(DisplayOption selectedValue) {
         String value = selectedValue == null ? "" : selectedValue.getName() == null ? "" : selectedValue.getName();
         button.setTitle(value);
-        text.setInnerHTML(value);
+        text.setInnerText(value);
         text.setClassName("selector-val "+ (selectedValue != null && selectedValue.getStyle() != null? selectedValue.getStyle(): ""));
         icon.setClassName(selectedValue == null ? "" : selectedValue.getIcon() == null ? "" : selectedValue.getIcon());
     }
@@ -81,6 +81,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     }
 
     public void setHeader( String header ) {
+        this.label.removeClassName("hide");
         this.label.setInnerText( header );
     }
 

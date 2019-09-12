@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -37,21 +38,21 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
+    public void onInitDetails(AppEvents.InitDetails event) {
+        this.initDetails = event;
     }
 
     @Event
-    public void onShow(ProjectEvents.Edit event) {
+    public void onShow (ProjectEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         resetView();
 
         if (event.id == null) {
             project = new ProjectInfo();
-            fireEvent(new AppEvents.InitPanelName(lang.newProject()));
+            //fireEvent(new AppEvents.InitPanelName(lang.newProject()));
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
+            //fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
             requestProject(event.id, this::fillView);
         }
     }
@@ -66,21 +67,23 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveEnabled().setEnabled(false);
 
-        regionService.saveProject( project, new RequestCallback<Void>(){
+        regionService.saveProject( project, new RequestCallback<ProjectInfo>(){
             @Override
             public void onError( Throwable throwable ) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Void aVoid ) {
+            public void onSuccess( ProjectInfo aVoid ) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProjectEvents.ChangeModel());
                 fireEvent(new ProjectEvents.Show());
                 return;
             }
         });
-}
+    }
 
     @Override
     public void onCancelClicked() {
@@ -101,7 +104,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private void resetView () {
-        view.number().setValue(null);
+        view.setNumber(null);
         view.name().setValue("");
         view.description().setText("");
         view.state().setValue(En_RegionState.UNKNOWN);
@@ -110,7 +113,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(null);
         view.company().setValue(null);
         view.team().setValue(null);
-        view.products().setValue(null);
+        view.product().setValue(null);
 
         view.getDocumentsContainer().clear();
         view.getCommentsContainer().clear();
@@ -124,7 +127,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private void fillView(ProjectInfo projectInfo) {
-        view.number().setValue( projectInfo.getId().intValue() );
+        view.setNumber( projectInfo.getId().intValue() );
         view.name().setValue(projectInfo.getName());
         view.state().setValue( projectInfo.getState() );
         view.direction().setValue( projectInfo.getProductDirection() == null ? null : new ProductDirectionInfo( projectInfo.getProductDirection() ) );
@@ -133,7 +136,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         Company customer = projectInfo.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.description().setText(projectInfo.getDescription());
-        view.products().setValue(projectInfo.getProducts());
+        view.product().setValue(projectInfo.getSingleProduct());
         view.customerType().setValue(projectInfo.getCustomerType());
 
         view.numberVisibility().setVisible( true );
@@ -156,7 +159,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         projectInfo.setState(view.state().getValue());
         projectInfo.setCustomer(Company.fromEntityOption(view.company().getValue()));
         projectInfo.setCustomerType(view.customerType().getValue());
-        projectInfo.setProducts(view.products().getValue());
+        projectInfo.setProducts(new HashSet<>(Collections.singleton(view.product().getValue())));
         projectInfo.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         projectInfo.setRegion(view.region().getValue());
         projectInfo.setTeam(new ArrayList<>(view.team().getValue()));
@@ -204,6 +207,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 /*    @Inject
     LocalStorageService localStorageService;*/
 
+    private boolean isNameUnique = true;
     private ProjectInfo project;
 
     private AppEvents.InitDetails initDetails;

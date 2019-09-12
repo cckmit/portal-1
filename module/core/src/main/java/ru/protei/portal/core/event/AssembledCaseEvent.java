@@ -154,6 +154,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEvent() && lastState.isPrivateCase() != initState.isPrivateCase();
     }
 
+    public boolean isPlatformChanged() {
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
+    }
+
     public void attachCaseObject(CaseObject caseObject) {
         lastState = caseObject;
         lastUpdated = currentTimeMillis();
@@ -257,8 +261,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public boolean isSendToCustomers() {
         return isCreateEvent()
                 || (
-                (!isCommentAttached() || isAttachedCommentNotPrivate())
-                        && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
+                        (!isCommentAttached() || isAttachedCommentNotPrivate())
+                                && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
                 || isPublicChangedWithOutComments();
     }
 

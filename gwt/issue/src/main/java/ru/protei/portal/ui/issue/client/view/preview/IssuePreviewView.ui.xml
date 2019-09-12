@@ -5,122 +5,153 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
 >
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="previewMain" styleName="panel footer-fixable">
-        <div class="body">
-            <g:HTMLPanel ui:field="previewWrapper" styleName="preview grid">
-                <g:HTMLPanel ui:field="preview">
-                    <div class="col-xs-12">
-                        <i ui:field="privateIssue" class="fa fa-lg fa-unlock-alt pull-left"/>
-                        <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
+    <g:HTMLPanel styleName="preview-wrapper footer-fixable card-fixed">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+            <div class="card card-default">
+                <div class="card-body">
+                    <h4 class="no-margin inline">
+                        <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
+                            <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
+                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
+                            <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
+                                <i class="far fa-clone fa-xs"/>
+                            </g:Anchor>
+                        </g:HTMLPanel>
+                    </h4>
+                    <div class="inline pull-right">
+                        <small>
+                            <ui:text from="{lang.createBy}"/>
+                        </small>
+                        <small ui:field="author" class="name no-margin bold"/>
+                        <small class="m-l-5 m-r-5">
+                            <ui:text from="{lang.in}"/>
+                        </small>
+                        <small ui:field="creationDate" class="datetime no-margin"/>
                     </div>
 
-                    <fieldset class="header">
-                        <legend><lable ui:field="header"/></legend>
-                        <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12" enabled="false" showLabel="false"/>
+                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
+                                           enabled="false" showLabel="false"/>
 
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCriticality}"/></label>
-                            <span class="col-xs-7 col-md-7">
-                                <i ui:field="iconCriticality"></i>
-                                <span ui:field="criticality"></span>
-                            </span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueProduct}"/></label>
-                            <span class="col-xs-7 col-md-7" ui:field="product"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueState}"/></label>
-                            <span class="col-xs-7 col-md-7">
-                                <div ui:field="state"></div>
-                            </span>
-                        </div>
-                        <g:HTMLPanel ui:field="jiraMetaDataContainer" visible="false">
-                            <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-xs-6">
-                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraIssueType}"/></label>
-                                <span class="col-xs-7 col-md-7" ui:field="jiraIssueType"/>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-xs-6">
-                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraSeverity}"/></label>
-                                <span class="col-xs-7 col-md-7" ui:field="jiraSeverity"/>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-xs-6">
-                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
-                                <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfReaction"/>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-xs-6">
-                                <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
-                                <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfDecision"/>
-                            </g:HTMLPanel>
-                        </g:HTMLPanel>
-                        <g:HTMLPanel ui:field="timeElapsedContainer" styleName="col-xs-6">
-                            <label class="col-xs-5 col-md-5">
-                                <ui:text from="{lang.timeElapsed}"/>
-                            </label>
-                            <timefield:TimeLabel ui:field="timeElapsed" styleName="col-xs-5 col-md-5"/>
-                        </g:HTMLPanel>
-                    </fieldset>
-                    <fieldset class="header">
-                        <legend><ui:text from="{lang.issueContactHeader}"/></legend>
-                        <div class="col-xs-6">
-                            <label class="col-xs-12 col-md-12" ui:field="company"></label>
-                            <span class="col-xs-12 col-md-12" ui:field="contact"></span>
-                        </div>
-                        <div class="col-xs-6">
-                            <label class="col-xs-12 col-md-12" ui:field="ourCompany"></label>
-                            <span class="col-xs-12 col-md-12" ui:field="manager"></span>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="header">
-                        <legend><ui:text from="{lang.companySubscription}"/></legend>
-                        <div class="col-xs-12" ui:field="subscriptions"></div>
-                    </fieldset>
-
-                    <fieldset class="header">
-                        <legend><ui:text from="{lang.issueNameHeader}"/></legend>
-                        <div class="col-xs-12">
-                            <span class="col-xs-12 col-md-12" ui:field="name"></span>
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="header">
-                        <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
-                        <div class="col-xs-12">
-                            <span class="col-xs-12 col-md-12 markdown" ui:field="info"></span>
-                        </div>
-                    </fieldset>
-                    <fieldset class="header">
-                        <legend><ui:text from="{lang.issueAttachments}"/></legend>
-                        <div class="col-xs-12 col-md-12">
-                            <div class="panel">
-                                <div class="body">
-                                    <div class="attach attach-add">
-                                        <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                            <div class="attach-add-circle">
-                                                <i class="ion-plus"/>
-                                                <i class="icon-verifiable"/>
-                                            </div>
-                                        </fileuploader:AttachmentUploader>
+                    <div class="form-group-attached">
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.issueCriticality}"/>
+                                    </label>
+                                    <div>
+                                        <i ui:field="iconCriticality"/>
+                                        <span ui:field="criticality"/>
                                     </div>
-                                    <attachment:AttachmentList ui:field="attachmentContainer" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.issueState}"/>
+                                    </label>
+                                    <div ui:field="state"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label><ui:text from="{lang.issueProduct}"/></label>
+                                    <span ui:field="product"/>
+                                </div>
+                            </div>
+
+                            <g:HTMLPanel ui:field="jiraMetaDataContainer" visible="false">
+                                <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-xs-6">
+                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraIssueType}"/></label>
+                                    <span class="col-xs-7 col-md-7" ui:field="jiraIssueType"/>
+                                </g:HTMLPanel>
+                                <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-xs-6">
+                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraSeverity}"/></label>
+                                    <span class="col-xs-7 col-md-7" ui:field="jiraSeverity"/>
+                                </g:HTMLPanel>
+                                <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-xs-6">
+                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
+                                    <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfReaction"/>
+                                </g:HTMLPanel>
+                                <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-xs-6">
+                                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
+                                    <span class="col-xs-7 col-md-7" ui:field="jiraTimeOfDecision"/>
+                                </g:HTMLPanel>
+                            </g:HTMLPanel>
+
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label><ui:text from="{lang.issueInitiator}"/></label>
+                                    <span ui:field="contact"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label><ui:text from="{lang.issueManager}"/></label>
+                                    <span ui:field="manager"/>
                                 </div>
                             </div>
                         </div>
-                    </fieldset>
-                    <legend><ui:text from="{lang.comments}"/></legend>
-                    <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+                    </div>
+
+                    <h5 ui:field="name"/>
+
+                    <div class="form-group small hint-text pre-formatted-info markdown" ui:field="info"/>
+
+                    <h5>
+                        <ui:text from="{lang.companySubscription}"/>
+                    </h5>
+                    <small ui:field="subscriptions"/>
+
+                    <h5>
+                        <ui:text from="{lang.issuePlatformHeader}"/>
+                    </h5>
+                    <g:Anchor ui:field="platform" styleName="full-screen-link small" href="#"/>
+
+                    <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
+                        <h5 class="col-md-12">
+                            <ui:text from="{lang.timeElapsed}"/>
+                            <timefield:TimeLabel ui:field="timeElapsed" styleName="inline m-l-5"/>
+                        </h5>
+                    </g:HTMLPanel>
+
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <h5>
+                                <ui:text from="{lang.issueAttachments}"/>
+                            </h5>
+                            <div>
+                                <div class="attach attach-add">
+                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
+                                        <div class="attach-add-circle">
+                                            <i class="fa fa-plus"/>
+                                            <i class="icon-verifiable"/>
+                                        </div>
+                                    </fileuploader:AttachmentUploader>
+                                </div>
+                                <attachment:AttachmentList ui:field="attachmentContainer"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.comments}"/>
+                            </h5>
+                            <g:HTMLPanel ui:field="commentsContainer"/>
+                        </div>
+                    </div>
+
+                </div>
+                <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
                 </g:HTMLPanel>
-            </g:HTMLPanel>
-        </div>
-        <div class="footer">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
-        </div>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

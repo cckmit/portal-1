@@ -10,7 +10,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -25,19 +24,6 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch( this, FixedPositioner.NAVBAR_TOP_OFFSET );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore( this );
     }
 
     @Override
@@ -152,6 +138,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         timer.schedule( 300 );
     }
 
+
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
@@ -183,9 +170,6 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractEmployeeFilterActivity activity;
 

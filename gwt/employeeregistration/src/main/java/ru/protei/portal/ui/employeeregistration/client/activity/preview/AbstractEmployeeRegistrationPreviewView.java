@@ -32,7 +32,7 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setWithRegistration( String withRegistration);
 
-    void setCreated(String created);
+    void setCreationDate(String created);
 
     void setState(En_CaseState state);
 
@@ -49,6 +49,4 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setResourceComment( String resourceComment );
 
     void setAdditionalSoft( String additionalSoft );
-
-    void setHeader( String value );
 }
