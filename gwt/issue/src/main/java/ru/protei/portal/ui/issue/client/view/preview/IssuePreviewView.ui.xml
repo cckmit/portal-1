@@ -78,6 +78,33 @@
                         </div>
                     </div>
 
+                    <g:HTMLPanel ui:field="jiraMetaDataContainer" styleName="form-group-attached" visible="false">
+                        <br/>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="form-group form-group-default">
+                                    <label>JIRA</label>
+                                    <g:HTMLPanel ui:field="jiraIssueTypeContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraIssueType}"/>: </b>
+                                        <span ui:field="jiraIssueType"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="jiraSeverityContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraSeverity}"/>: </b>
+                                        <span ui:field="jiraSeverity"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraTimeOfReaction}"/>: </b>
+                                        <span ui:field="jiraTimeOfReaction"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" tag="div">
+                                        <b><ui:text from="{lang.jiraTimeOfDecision}"/>: </b>
+                                        <span ui:field="jiraTimeOfDecision"/>
+                                    </g:HTMLPanel>
+                                </div>
+                            </div>
+                        </div>
+                    </g:HTMLPanel>
+
                     <h5 ui:field="name"/>
 
                     <div class="form-group small hint-text pre-formatted-info markdown" ui:field="info"/>

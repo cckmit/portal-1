@@ -7,12 +7,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyActivity;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -27,7 +26,7 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
         initWidget( ourUiBinder.createAndBindUi( this ) );
         notify.sinkEvents(Event.ONCLICK);
         notify.addHandler(this, ClickEvent.getType());
-
+        setTestAttributes();
         iconContainer.clear();
     }
 
@@ -60,6 +59,16 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
         if ( activity != null ) {
             activity.onCloseClicked( this );
         }
+    }
+
+    private void setTestAttributes() {
+        notify.getElement().setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_ITEM);
+
+        iconSuccess.getElement().setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_ICON_SUCCESS);
+        iconError.getElement().setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_ICON_ERROR);
+
+        message.setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_CONTENT_MESSAGE);
+        title.setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_CONTENT_TITLE);
     }
 
     @UiField

@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protei.utils.common.ThreadLocalDateFormat;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
@@ -25,7 +26,7 @@ import java.util.Date;
  */
 public class HpsmUtils {
 
-    public static final String COMMON_HPSM_TAG = "hpsm";
+    public static final String COMMON_HPSM_TAG = En_ExtAppType.HPSM.getCode();
     public static final String RTTS_HPSM_XML_REQUEST = "rtts_hpsm.xml";
     public static final String RTTS_HPSM_XML_REPLY = "rtts_vendor.xml";
 

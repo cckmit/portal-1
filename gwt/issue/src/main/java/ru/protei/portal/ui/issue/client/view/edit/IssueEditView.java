@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -32,6 +33,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
+import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -174,6 +176,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasValue<JiraMetaData> jiraSlaSelector() {
+        return jiraSlaSelector;
+    }
+
+    @Override
     public HasValidable nameValidator() {
         return name;
     }
@@ -204,8 +211,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility numberVisibility() {
+    public HasVisibility numberVisibility(){
         return number;
+    }
+
+    @Override
+    public HasVisibility jiraSlaSelectorVisibility() {
+        return jiraSlaSelector;
     }
 
     @Override
@@ -583,6 +595,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     CaseMetaView caseMetaView;
     @UiField
     HTMLPanel timeElapsedContainer;
+    @Inject
+    @UiField(provided = true)
+    JiraSLASelector jiraSlaSelector;
 
     @UiField
     LabelElement nameLabel;

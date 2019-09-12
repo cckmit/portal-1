@@ -7,6 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.service.EventPublisherService;
@@ -155,7 +156,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     //app types for eager push
     private final static Set<String> EAGER_PUSH = new HashSet<String>() {{
         add("junit-test");
-        add("redmine");
+        add(En_ExtAppType.REDMINE.getCode());
     }};
     private static Logger logger = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 

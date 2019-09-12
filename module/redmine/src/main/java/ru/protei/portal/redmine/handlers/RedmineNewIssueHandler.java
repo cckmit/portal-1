@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
@@ -69,7 +70,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setCreator(contactPerson);
         obj.setInitiator(contactPerson);
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
-        obj.setExtAppType("redmine");
+        obj.setExtAppType(En_ExtAppType.REDMINE.getCode());
 
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
         String redminePriorityName = issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue();

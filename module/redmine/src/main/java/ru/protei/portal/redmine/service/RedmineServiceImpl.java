@@ -10,6 +10,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
@@ -170,7 +171,11 @@ public final class RedmineServiceImpl implements RedmineService {
 
         try {
 
-            final List<ExternalCaseAppData> caseAppDataList = externalCaseAppDAO.getListByParameters("redmine", projectId, "%" + endpoint.getCompanyId());
+            final List<ExternalCaseAppData> caseAppDataList = externalCaseAppDAO.getListByParameters(
+                En_ExtAppType.REDMINE.getCode(),
+                projectId,
+                "%" + endpoint.getCompanyId()
+            );
 
             logger.debug("Got {} case objects from database", caseAppDataList.size());
 
