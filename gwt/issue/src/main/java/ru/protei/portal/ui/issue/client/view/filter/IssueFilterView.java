@@ -38,12 +38,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     protected void onAttach() {
         super.onAttach();
         positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+        issueFilterParamView.watchForScrollOf(root);
     }
 
     @Override
     protected void onDetach() {
         super.onDetach();
         positioner.ignore(this);
+        issueFilterParamView.stopWatchForScrollOf(root);
     }
 
     @Override
@@ -220,10 +222,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField
     Lang lang;
 
+    @UiField
+    HTMLPanel root;
     @Inject
     @UiField(provided = true)
     IssueFilterParamView issueFilterParamView;
-
     @UiField
     Button resetBtn;
     @UiField
