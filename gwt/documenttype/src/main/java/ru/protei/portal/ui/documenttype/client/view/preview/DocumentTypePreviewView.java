@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.documenttype.client.activity.preview.AbstractDocumentTypePreviewActivity;
@@ -66,18 +65,6 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
         }
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
     @Inject
     @UiField
     Lang lang;
@@ -90,9 +77,6 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
     @Inject
     @UiField(provided = true)
     DocumentCategorySelector documentCategory;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractDocumentTypePreviewActivity activity;
 

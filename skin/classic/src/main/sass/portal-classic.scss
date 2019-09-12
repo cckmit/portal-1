@@ -114,7 +114,7 @@
 }
 
 .card-fixed {
-  position: sticky;
+  position: sticky !important;
   top: calc(60px + 1rem) !important;
 }
 

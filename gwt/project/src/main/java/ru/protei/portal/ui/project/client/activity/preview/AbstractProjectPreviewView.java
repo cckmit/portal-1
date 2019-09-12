@@ -11,8 +11,6 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setActivity( AbstractProjectPreviewActivity activity );
 
-    void watchForScroll( boolean isWatch );
-
     void setName(String value);
 
     void setAuthor(String value);

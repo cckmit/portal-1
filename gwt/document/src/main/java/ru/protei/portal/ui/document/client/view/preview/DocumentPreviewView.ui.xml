@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="preview">
-        <div class="card card-default">
+        <div class="card card-default card-fixed">
             <div class="card-body">
                 <h4 ui:field="header" class="m-r-50"/>
                 <g:Anchor href="javascript:void(0)" ui:field="downloadButton" target="_blank">

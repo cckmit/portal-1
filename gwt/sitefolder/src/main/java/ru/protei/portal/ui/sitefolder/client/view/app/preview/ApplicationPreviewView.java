@@ -10,14 +10,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PathInfo;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.AbstractApplicationPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.AbstractApplicationPreviewView;
-
-import java.util.stream.Collectors;
 
 public class ApplicationPreviewView extends Composite implements AbstractApplicationPreviewView {
 
@@ -28,18 +24,6 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     @Override
     public void setActivity(AbstractApplicationPreviewActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -84,9 +68,6 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     SpanElement server;
     @UiField
     SpanElement component;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractApplicationPreviewActivity activity;
 

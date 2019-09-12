@@ -1,14 +1,16 @@
 package ru.protei.portal.ui.equipment.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPreviewActivity;
 import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPreviewView;
@@ -25,18 +27,6 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @Override
     public void setActivity( AbstractEquipmentPreviewActivity activity ) {
         this.activity = activity;
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -168,9 +158,6 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     ImageElement typeImage;
     @UiField
     Element author;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractEquipmentPreviewActivity activity;
 

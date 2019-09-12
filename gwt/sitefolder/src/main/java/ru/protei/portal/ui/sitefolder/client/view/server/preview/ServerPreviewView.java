@@ -7,8 +7,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractServerPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractServerPreviewView;
 
@@ -21,18 +19,6 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     @Override
     public void setActivity(AbstractServerPreviewActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -79,9 +65,6 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     Label comment;
     @UiField
     Button openAppsButton;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractServerPreviewActivity activity;
 

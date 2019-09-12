@@ -52,7 +52,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         this.projectId = event.projectId;
 
         fillView( projectId );
-        view.watchForScroll( true );
         view.backButtonVisibility().setVisible( false );
     }
 

@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,7 +8,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
@@ -26,18 +24,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Override
     public void setActivity(AbstractPlatformPreviewActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -136,9 +122,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     AttachmentList attachmentContainer;
     @UiField
     Button backButton;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractPlatformPreviewActivity activity;
 

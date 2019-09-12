@@ -18,8 +18,6 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setActivity( AbstractIssuePreviewActivity activity );
 
-    void watchForScroll(boolean isWatch);
-
     void setAuthorName(String value);
 
     void setPrivateIssue(boolean privateIssue );

@@ -16,7 +16,6 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePic
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateOptionList;
@@ -111,18 +110,6 @@ public class EmployeeRegistrationFilterView extends Composite implements Abstrac
         restartChangeTimer();
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
     private void restartChangeTimer() {
         changeTimer.cancel();
         changeTimer.schedule(300);
@@ -157,9 +144,6 @@ public class EmployeeRegistrationFilterView extends Composite implements Abstrac
 
     @UiField
     ToggleButton sortDir;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractEmployeeRegistrationFilterActivity activity;
 

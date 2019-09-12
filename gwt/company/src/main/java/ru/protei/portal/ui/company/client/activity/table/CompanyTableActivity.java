@@ -125,7 +125,7 @@ public abstract class CompanyTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new CompanyEvents.ShowPreview(view.getPreviewContainer(), value, true, true));
+            fireEvent(new CompanyEvents.ShowPreview(view.getPreviewContainer(), value, true));
         }
     }
 

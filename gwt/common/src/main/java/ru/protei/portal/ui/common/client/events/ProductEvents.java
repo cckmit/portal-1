@@ -20,16 +20,14 @@ public class ProductEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, DevUnit product, boolean isWatchForScroll, boolean isShouldWrap ) {
+        public ShowPreview( HasWidgets parent, DevUnit product, boolean isShouldWrap ) {
             this.parent = parent;
             this.product = product;
-            this.isWatchForScroll = isWatchForScroll;
             this.isShouldWrap = isShouldWrap;
         }
 
         public HasWidgets parent;
         public DevUnit product;
-        public boolean isWatchForScroll;
         public boolean isShouldWrap;
     }
 

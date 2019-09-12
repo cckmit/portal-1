@@ -12,9 +12,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
@@ -37,14 +36,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     protected void onAttach() {
         super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
         issueFilterParamView.watchForScrollOf(root);
     }
 
     @Override
     protected void onDetach() {
         super.onDetach();
-        positioner.ignore(this);
         issueFilterParamView.stopWatchForScrollOf(root);
     }
 
@@ -247,10 +244,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Anchor filterRestoreBtn;
     @UiField
     Anchor filterCollapseBtn;
-
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractIssueFilterActivity activity;
 

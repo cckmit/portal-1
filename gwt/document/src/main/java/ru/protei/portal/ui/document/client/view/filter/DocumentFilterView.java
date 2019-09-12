@@ -16,9 +16,9 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectI
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
-import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -182,18 +181,6 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         fireChangeTimer();
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule(300);
@@ -253,9 +240,6 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Inject
     @UiField(provided = true)
     StringSelectInput keywords;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractDocumentFilterActivity activity;
 

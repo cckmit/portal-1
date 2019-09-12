@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -44,20 +43,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
     }
 
     @Override
@@ -315,8 +300,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     En_CaseImportanceLang caseImportanceLang;
     @Inject
     En_CaseStateLang caseStateLang;
-    @Inject
-    FixedPositioner positioner;
     @UiField
     HTMLPanel numberCopyPanel;
 

@@ -11,7 +11,6 @@ public interface AbstractProductPreviewView extends IsWidget {
     void setName( String name );
 
     void setActivity( AbstractProductPreviewActivity activity );
-    void watchForScroll(boolean isWatch);
 
     void setInfo( String value );
 

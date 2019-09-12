@@ -10,7 +10,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="card card-default">
+    <g:HTMLPanel styleName="card card-default card-fixed">
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.contractSearchPlaceholder}"

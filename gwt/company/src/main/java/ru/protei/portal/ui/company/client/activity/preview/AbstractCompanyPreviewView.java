@@ -17,8 +17,6 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setActivity( AbstractCompanyPreviewActivity activity );
 
-    void watchForScroll(boolean isWatch);
-
     void setPhone( String value );
 
     void setSite( String value );
