@@ -3,58 +3,56 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="preview">
-        <div class="card card-default no-border card-fixed">
-            <div class="card-body">
-                <h4 class="m-r-50">
-                    <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
-                </h4>
+    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed">
+        <div class="card-body">
+            <h4 class="m-r-50">
+                <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
+            </h4>
 
-                <img ui:field="typeImage" src="" class="preview-title-image_right"/>
+            <img ui:field="typeImage" src="" class="preview-title-image_right"/>
 
-                <div class="inline">
-                    <small>
-                        <ui:text from="{lang.createBy}"/>
-                    </small>
-                    <small ui:field="author" class="name no-margin bold"/>
-                    <small class="m-l-5 m-r-5"><ui:text from="{lang.in}"/></small>
-                    <small ui:field="created" class="datetime no-margin"/>
-                </div>
-
-                <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
-
-                <h5><ui:text from="{lang.equipmentCommonHeader}"/></h5>
-                <div class="small">
-                    <b><ui:text from="{lang.equipmentNameBySldWrks}: "/></b>
-                    <span ui:field="nameBySldWrks"/>
-                </div>
-
-                <div class="small">
-                    <b><ui:text from="{lang.equipmentProject}: "/></b>
-                    <span ui:field="project"/>
-                </div>
-
-                <div class="small">
-                    <b><ui:text from="{lang.equipmentManager}: "/></b>
-                    <span ui:field="manager"/>
-                </div>
-
-                <h5><ui:text from="{lang.equipmentDecimalNumber}"/></h5>
-                <div class="decimal-number" ui:field="number"/>
-
-                <h5><ui:text from="{lang.equipmentPrimaryUse}"/></h5>
-                <div>
-                    <g:Anchor ui:field="primaryUse" styleName="decimal-number full-screen-link" target="_blank" href="#"/>
-                </div>
-
-                <h5><ui:text from="{lang.equipmentDocuments}"/></h5>
-                <g:HTMLPanel ui:field="documents" styleName="equipment-document-preview"/>
+            <div class="inline">
+                <small>
+                    <ui:text from="{lang.createBy}"/>
+                </small>
+                <small ui:field="author" class="name no-margin bold"/>
+                <small class="m-l-5 m-r-5"><ui:text from="{lang.in}"/></small>
+                <small ui:field="created" class="datetime no-margin"/>
             </div>
-            <div class="card-footer">
-                <div class="text-right">
-                    <g:Button styleName="btn btn-xs btn-info" ui:field="copy" text="{lang.buttonCopy}"/>
-                    <g:Button styleName="btn btn-xs btn-danger" ui:field="remove" text="{lang.buttonRemove}"/>
-                </div>
+
+            <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
+
+            <h5><ui:text from="{lang.equipmentCommonHeader}"/></h5>
+            <div class="small">
+                <b><ui:text from="{lang.equipmentNameBySldWrks}: "/></b>
+                <span ui:field="nameBySldWrks"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.equipmentProject}: "/></b>
+                <span ui:field="project"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.equipmentManager}: "/></b>
+                <span ui:field="manager"/>
+            </div>
+
+            <h5><ui:text from="{lang.equipmentDecimalNumber}"/></h5>
+            <div class="decimal-number" ui:field="number"/>
+
+            <h5><ui:text from="{lang.equipmentPrimaryUse}"/></h5>
+            <div>
+                <g:Anchor ui:field="primaryUse" styleName="decimal-number full-screen-link" target="_blank" href="#"/>
+            </div>
+
+            <h5><ui:text from="{lang.equipmentDocuments}"/></h5>
+            <g:HTMLPanel ui:field="documents" styleName="equipment-document-preview"/>
+        </div>
+        <div class="card-footer">
+            <div class="text-right">
+                <g:Button styleName="btn btn-xs btn-info" ui:field="copy" text="{lang.buttonCopy}"/>
+                <g:Button styleName="btn btn-xs btn-danger" ui:field="remove" text="{lang.buttonRemove}"/>
             </div>
         </div>
     </g:HTMLPanel>
