@@ -392,6 +392,21 @@ public class MainTestsConfiguration {
     }
 
     @Bean
+    public JiraEndpointDAO getJiraEndpointDAO() {
+        return new JiraEnpointDAO_Impl();
+    }
+
+    @Bean
+    public JiraStatusMapEntryDAO getJiraStatusMapEntryDAO() {
+        return new JiraStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
     public YoutrackApiClient getYoutrackApiClient() {
         return new YoutrackApiClientImpl();
     }
