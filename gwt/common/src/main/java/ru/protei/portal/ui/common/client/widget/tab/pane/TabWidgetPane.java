@@ -52,10 +52,19 @@ public class TabWidgetPane extends Composite implements HasWidgets {
         return tabName;
     }
 
+    public void setTabIcon(String tabIcon) {
+        this.tabIcon = tabIcon;
+    }
+
+    public String getTabIcon() {
+        return tabIcon;
+    }
+
     @UiField
     HTMLPanel root;
 
     private String tabName;
+    private String tabIcon;
 
     interface TabWidgetContentUiBinder extends UiBinder<HTMLPanel, TabWidgetPane> {}
     private static TabWidgetContentUiBinder ourUiBinder = GWT.create(TabWidgetContentUiBinder.class);

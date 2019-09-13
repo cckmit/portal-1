@@ -81,8 +81,11 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
                 selectedTab = tabName;
             }
 
+            TabWidgetPane pane = tabNameToPane.get(tabName);
+
             TabWidgetNavItem navItem = new TabWidgetNavItem();
             navItem.setTabName(tabName);
+            navItem.setTabIcon(pane.getTabIcon());
             navItem.setActivity(this);
             navItem.setInActive();
             navTabs.add(navItem);
