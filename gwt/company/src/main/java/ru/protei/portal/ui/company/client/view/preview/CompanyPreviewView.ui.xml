@@ -5,60 +5,58 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="rootWrapper">
-        <div class="card card-default card-fixed">
-            <div class="card-body">
-                <h4 ui:field="companyName" class="m-r-50"/>
-                <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
-                <div class="small hint-text no-margin">
-                    <a ui:field="site" href="#" target="_blank"/>
-                </div>
-
-                <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
-
-                <p class="small">
-                    <g:InlineLabel ui:field="companyLinksMessage"/>
-                </p>
-
-                <p class="small">
-                    <span class="bold"><ui:text from="{lang.tags}"/></span>
-                    <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false"/>
-                </p>
-
-                <p class="small">
-                    <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
-                    <g:InlineLabel ui:field="subscription"/>
-                </p>
-
-                <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
-
-                <div class="small">
-                    <b><ui:text from="{lang.phone}: "/></b>
-                    <span ui:field="phone"/>
-                </div>
-                <div class="small">
-                    <b><ui:text from="{lang.email}: "/></b>
-                    <span ui:field="email"/>
-                </div>
-                <div class="small">
-                    <b><ui:text from="{lang.companyActualAddress}: "/></b>
-                    <span ui:field="addressFact"/>
-                </div>
-                <div class="small">
-                    <b><ui:text from="{lang.companyLegalAddress}: "/></b>
-                    <span ui:field="addressDejure"/>
-                </div>
-
-                <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
-                    <tab:pane.TabWidgetPane tabName="{lang.contacts}">
-                        <g:HTMLPanel ui:field="contactsContainer"/>
-                    </tab:pane.TabWidgetPane>
-
-                    <tab:pane.TabWidgetPane tabName="{lang.siteFolder}">
-                        <g:HTMLPanel ui:field="siteFolderContainer"/>
-                    </tab:pane.TabWidgetPane>
-                </tab:TabWidget>
+    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default card-fixed">
+        <div class="card-body">
+            <h4 ui:field="companyName" class="m-r-50"/>
+            <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
+            <div class="small hint-text no-margin">
+                <a ui:field="site" href="#" target="_blank"/>
             </div>
+
+            <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
+
+            <p class="small">
+                <g:InlineLabel ui:field="companyLinksMessage"/>
+            </p>
+
+            <p class="small">
+                <span class="bold"><ui:text from="{lang.tags}"/></span>
+                <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false"/>
+            </p>
+
+            <p class="small">
+                <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
+                <g:InlineLabel ui:field="subscription"/>
+            </p>
+
+            <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
+
+            <div class="small">
+                <b><ui:text from="{lang.phone}: "/></b>
+                <span ui:field="phone"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.email}: "/></b>
+                <span ui:field="email"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.companyActualAddress}: "/></b>
+                <span ui:field="addressFact"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.companyLegalAddress}: "/></b>
+                <span ui:field="addressDejure"/>
+            </div>
+
+            <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
+                <tab:pane.TabWidgetPane tabName="{lang.contacts}">
+                    <g:HTMLPanel ui:field="contactsContainer"/>
+                </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.siteFolder}">
+                    <g:HTMLPanel ui:field="siteFolderContainer"/>
+                </tab:pane.TabWidgetPane>
+            </tab:TabWidget>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
