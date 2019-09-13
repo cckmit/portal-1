@@ -30,6 +30,7 @@ public class AppView extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         initHandlers();
+        fixSidebarCheckBox.getElement().setAttribute("data-toggle-pin", "sidebar");
     }
 
     @Override
@@ -133,6 +134,20 @@ public class AppView extends Composite
         activity.onLocaleChanged(event.getValue().getLocale());
     }
 
+    @UiHandler("fixSidebarCheckBox")
+    public void onChecked (ClickEvent event){
+        if (fixSidebarCheckBox.isChecked()){
+            RootPanel.get().addStyleName("menu-pin");
+            actionBarContainer.removeStyleName("p-l-30");
+            actionBarContainer.addStyleName("p-l-50");
+        }
+        else {
+            RootPanel.get().removeStyleName("menu-pin");
+            actionBarContainer.removeStyleName("p-l-50");
+            actionBarContainer.addStyleName("p-l-30");
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent event ) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
@@ -164,12 +179,14 @@ public class AppView extends Composite
         navbar.addHandler( event -> {
             RootPanel.get().addStyleName("sidebar-visible");
             navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+            fixSidebarCheckBox.removeStyleName("hide");
         }, MouseOverEvent.getType() );
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
             RootPanel.get().removeStyleName("sidebar-visible");
             navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+            if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
         }, MouseOutEvent.getType() );
     }
 
@@ -209,6 +226,8 @@ public class AppView extends Composite
     HTMLPanel menuBar;
     @UiField
     Button profile;
+    @UiField
+    CheckBox fixSidebarCheckBox;
     @Inject
     @UiField(provided = true)
     LocaleSelector locale;
