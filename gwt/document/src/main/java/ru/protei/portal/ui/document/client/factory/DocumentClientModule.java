@@ -4,6 +4,8 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.document.client.activity.create.AbstractDocumentCreateView;
 import ru.protei.portal.ui.document.client.activity.create.DocumentCreateActivity;
+import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
+import ru.protei.portal.ui.document.client.activity.edit.DocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormView;
 import ru.protei.portal.ui.document.client.activity.form.DocumentFormActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
@@ -13,6 +15,7 @@ import ru.protei.portal.ui.document.client.activity.preview.DocumentPreviewActiv
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
 import ru.protei.portal.ui.document.client.activity.table.DocumentTableActivity;
 import ru.protei.portal.ui.document.client.view.create.DocumentCreateView;
+import ru.protei.portal.ui.document.client.view.edit.DocumentEditView;
 import ru.protei.portal.ui.document.client.view.form.DocumentFormView;
 import ru.protei.portal.ui.document.client.view.filter.DocumentFilterView;
 import ru.protei.portal.ui.document.client.view.preview.DocumentPreviewView;
@@ -29,6 +32,8 @@ public class DocumentClientModule extends AbstractGinModule {
 
         bind(DocumentCreateActivity.class).asEagerSingleton();
         bind(AbstractDocumentCreateView.class).to(DocumentCreateView.class).in(Singleton.class);
+        bind(DocumentEditActivity.class).asEagerSingleton();
+        bind(AbstractDocumentEditView.class).to(DocumentEditView.class).in(Singleton.class);
         bind(DocumentFormActivity.class).asEagerSingleton();
         bind(AbstractDocumentFormView.class).to(DocumentFormView.class).in(Singleton.class);
 

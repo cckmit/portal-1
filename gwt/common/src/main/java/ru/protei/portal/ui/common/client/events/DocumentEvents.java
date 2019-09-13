@@ -40,7 +40,7 @@ public class DocumentEvents {
         }
     }
 
-    @Url("doc")
+    @Url("doc-create")
     public static class Create {
         public Create() {
         }
