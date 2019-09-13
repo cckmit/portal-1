@@ -1,32 +1,34 @@
-package ru.protei.portal.ui.document.client.activity.edit;
+package ru.protei.portal.ui.document.client.activity.form;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_DocumentState;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
+import java.util.Objects;
 
-
-public abstract class DocumentEditActivity
-        implements Activity, AbstractDocumentEditActivity {
+public abstract class DocumentFormActivity
+        implements Activity, AbstractDocumentFormActivity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
@@ -39,10 +41,8 @@ public abstract class DocumentEditActivity
         view.documentUploader().setUploadHandler(new UploadHandler() {
             @Override
             public void onError() {
-                view.saveEnabled().setEnabled(true);
                 fireErrorMessage(lang.errSaveDocumentFile());
             }
-
             @Override
             public void onSuccess() {
                 saveUploadedDocument();
@@ -51,46 +51,18 @@ public abstract class DocumentEditActivity
     }
 
     @Event
-    public void onInitDetails(AppEvents.InitDetails initDetails) {
-        this.initDetails = initDetails;
+    public void onShow(DocumentEvents.Form.Show event) {
+        event.parent.clear();
+        event.parent.add(view.asWidget());
+        tag = event.tag;
+        fillView(event.document);
     }
 
     @Event
-    public void onShow(DocumentEvents.Edit event) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
-        fireEvent(new ProjectEvents.Search(view.searchProjectContainer()));
-        fireEvent(new ProjectEvents.QuickCreate(view.createProjectContainer()));
-        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
-
-        if (event.id == null) {
-            fillView(new Document());
-        } else {
-            documentService.getDocument(event.id, new RequestCallback<Document>() {
-                @Override
-                public void onError(Throwable throwable) {
-                    fireErrorMessage(lang.errGetObject());
-                }
-
-                @Override
-                public void onSuccess(Document result) {
-                    fillView(result);
-                }
-            });
-        }
-    }
-
-    @Event
-    public void onSetProject(ProjectEvents.Set event) {
-        view.project().setValue(event.project);
-        onProjectChanged();
-    }
-
-    @Override
-    public void onSaveClicked() {
-        if (!view.saveEnabled().isEnabled())
+    public void onSave(DocumentEvents.Form.Save event) {
+        if (!Objects.equals(tag, event.tag)) {
             return;
-
+        }
         Document newDocument = fillDto();
         if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
             return;
@@ -98,9 +70,13 @@ public abstract class DocumentEditActivity
         saveDocument(newDocument);
     }
 
-    @Override
-    public void onCancelClicked() {
-        fireEvent(new Back());
+    @Event
+    public void onSetProject(DocumentEvents.Form.SetProject event) {
+        if (!Objects.equals(tag, event.tag)) {
+            return;
+        }
+        view.project().setValue(event.project);
+        onProjectChanged();
     }
 
     @Override
@@ -192,18 +168,20 @@ public abstract class DocumentEditActivity
         }
         return true;
     }
+
     private boolean isValidDocument(Document document){
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
+
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
         if (view.project().getValue().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
     }
+
     private void saveDocument(Document document) {
         this.document = document;
-        view.saveEnabled().setEnabled(false);
         if (document.getId() == null)
             view.documentUploader().uploadBindToDocument(document);
         else
@@ -215,22 +193,10 @@ public abstract class DocumentEditActivity
     }
 
     private void saveUploadedDocument() {
-        documentService.saveDocument(this.document, new RequestCallback<Document>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireErrorMessage(lang.errDocumentNotSaved());
-                view.saveEnabled().setEnabled(true);
-            }
-
-            @Override
-            public void onSuccess(Document result) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new DocumentEvents.ChangeModel());
-                fireEvent(new Back());
-            }
-        });
+        documentService.saveDocument(this.document, new FluentCallback<Document>()
+            .withErrorMessage(lang.errDocumentNotSaved())
+            .withSuccess(result -> fireEvent(new DocumentEvents.Form.Saved(tag))));
     }
-
 
     private String getValidationErrorMessage(Document doc) {
         if (doc.getType() == null) {
@@ -249,7 +215,6 @@ public abstract class DocumentEditActivity
         }
         return null;
     }
-
 
     private Document fillDto() {
         Document d = new Document();
@@ -270,6 +235,7 @@ public abstract class DocumentEditActivity
         d.setState(document.getState());
         return d;
     }
+
     private void fillView(Document document) {
         this.document = document;
 
@@ -309,7 +275,6 @@ public abstract class DocumentEditActivity
 
         view.resetFilename();
         view.documentUploader().resetAction();
-        view.saveEnabled().setEnabled(true);
 
         setDesignationVisibility();
     }
@@ -317,11 +282,11 @@ public abstract class DocumentEditActivity
     @Inject
     Lang lang;
     @Inject
-    AbstractDocumentEditView view;
+    AbstractDocumentFormView view;
     @Inject
     DocumentControllerAsync documentService;
 
+    private String tag;
     private Document document;
     private Profile authorizedProfile;
-    private AppEvents.InitDetails initDetails;
 }

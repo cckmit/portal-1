@@ -110,7 +110,7 @@ public abstract class DocumentTableActivity
         if (!UiConstants.ActionBarIdentity.DOCUMENT.equals(event.identity)) {
             return;
         }
-        fireEvent(new DocumentEvents.Edit());
+        fireEvent(new DocumentEvents.Create());
     }
 
     @Override

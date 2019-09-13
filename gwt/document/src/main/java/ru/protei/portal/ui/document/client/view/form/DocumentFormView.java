@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.document.client.view.edit;
+package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -19,7 +18,6 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
@@ -33,18 +31,17 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
-import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
-import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
+import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormActivity;
+import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormView;
 import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-public class DocumentEditView extends Composite implements AbstractDocumentEditView {
+public class DocumentFormView extends Composite implements AbstractDocumentFormView {
 
     @Inject
     public void onInit() {
@@ -56,7 +53,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public void setActivity(AbstractDocumentEditActivity activity) {
+    public void setActivity(AbstractDocumentFormActivity activity) {
         this.activity = activity;
     }
 
@@ -200,11 +197,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasEnabled saveEnabled() {
-        return saveButton;
-    }
-
-    @Override
     public void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints) {
         decimalNumber.setHints(decimalNumberHints);
     }
@@ -218,35 +210,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter) {
         documentType.setFilter(filter);
         documentType.refreshValue();
-    }
-
-    @Override
-    public HasWidgets searchProjectContainer() {
-        return searchProjectContainer;
-    }
-
-    @Override
-    public HasWidgets createProjectContainer() {
-        return createProjectContainer;
-    }
-
-    @Override
-    public HasWidgets createProductContainer() {
-        return createProductContainer;
-    }
-
-    @UiHandler("saveButton")
-    public void onSaveClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onSaveClicked();
-        }
-    }
-
-    @UiHandler("cancelButton")
-    public void onCancelClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
     }
 
     @UiHandler("selectFileButton")
@@ -283,86 +246,56 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         fileName.setValue(documentUploader.getFilename());
     }
 
-    private void ensureDebugIds() {
-        tabs.setTabNameDebugId(lang.documentCommonHeader(), DebugIds.DOCUMENT_EDIT.COMMON_TAB);
-        tabs.setTabNameDebugId(lang.documentSearchProjectHeader(), DebugIds.DOCUMENT_EDIT.SEARCH_PROJECT_TAB);
-        tabs.setTabNameDebugId(lang.documentCreateProjectHeader(), DebugIds.DOCUMENT_EDIT.CREATE_PROJECT_TAB);
-        tabs.setTabNameDebugId(lang.documentCreateProductHeader(), DebugIds.DOCUMENT_EDIT.CREATE_PRODUCT_TAB);
-    }
+    private void ensureDebugIds() {}
 
     @UiField
     ValidableTextBox name;
-
     @UiField
     HTMLPanel nameContainer;
-
     @UiField
     TextBox fileName;
-
     @Inject
     @UiField(provided = true)
     DocumentUploader documentUploader;
-
     @Inject
     @UiField(provided = true)
     DocumentTypeSelector documentType;
-
     @Inject
     @UiField(provided = true)
     DocumentCategorySelector documentCategory;
-
     @UiField
     TextArea annotation;
-
-    @UiField
-    Button saveButton;
-    @UiField
-    Button cancelButton;
-
-
     @UiField
     LongBox inventoryNumber;
-
     @Inject
     @UiField(provided = true)
     ProjectButtonSelector project;
-
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector contractor;
-
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector registrar;
-
     @UiField
     TextBox version;
-
     @Inject
     @UiField(provided = true)
     DocumentExecutionTypeSelector executionType;
-
     @Inject
     @UiField(provided = true)
     StringSelectInput keywords;
-
     @Inject
     @UiField(provided = true)
     DecimalNumberInput decimalNumber;
-
     @UiField
     Switcher approved;
-
     @UiField
     Button selectFileButton;
-
     @UiField
     HTMLPanel selectFileContainer;
-
     @Inject
     @UiField(provided = true)
     EquipmentButtonSelector equipment;
-
     @UiField
     HTMLPanel equipmentSelectorContainer;
     @UiField
@@ -372,16 +305,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField
     HTMLPanel approvedContainer;
 
-    @UiField
-    HTMLPanel searchProjectContainer;
-    @UiField
-    HTMLPanel createProjectContainer;
-    @UiField
-    HTMLPanel createProductContainer;
-
-    @UiField
-    TabWidget tabs;
-
     @Inject
     @UiField
     Lang lang;
@@ -389,10 +312,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     Provider<EquipmentModel> equipmentModelProvider;
 
-    private AbstractDocumentEditActivity activity;
+    private AbstractDocumentFormActivity activity;
 
-    private static DocumentViewUiBinder ourUiBinder = GWT.create(DocumentViewUiBinder.class);
-
-    interface DocumentViewUiBinder extends UiBinder<HTMLPanel, DocumentEditView> {
-    }
+    interface DocumentFormViewUiBinder extends UiBinder<HTMLPanel, DocumentFormView> {}
+    private static DocumentFormViewUiBinder ourUiBinder = GWT.create(DocumentFormViewUiBinder.class);
 }

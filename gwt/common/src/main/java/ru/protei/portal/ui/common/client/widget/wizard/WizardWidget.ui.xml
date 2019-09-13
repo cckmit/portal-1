@@ -13,7 +13,7 @@
 
         <g:HTMLPanel ui:field="tabContent" styleName="tab-content"/>
 
-        <g:HTMLPanel ui:field="buttons" styleName="padding-20 sm-padding-5 sm-m-b-20 sm-m-t-20 bg-white clearfix">
+        <g:HTMLPanel ui:field="buttons" styleName="padding-20 sm-padding-5 sm-m-b-20 sm-m-t-20 bg-master-lighter clearfix">
             <ul class="pager wizard no-style pull-right">
                 <g:HTMLPanel tag="li" styleName="previous" ui:field="btnPreviousContainer">
                     <g:Button styleName="btn btn-default btn-cons pull-right" ui:field="btnPrevious">

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.activity.edit;
+package ru.protei.portal.ui.document.client.activity.form;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
@@ -14,9 +14,9 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocume
 
 import java.util.List;
 
-public interface AbstractDocumentEditView extends IsWidget {
+public interface AbstractDocumentFormView extends IsWidget {
 
-    void setActivity(AbstractDocumentEditActivity activity);
+    void setActivity(AbstractDocumentFormActivity activity);
 
     HasValue<String> name();
 
@@ -58,8 +58,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled inventoryNumberEnabled();
 
-    HasEnabled saveEnabled();
-
 
     HasVisibility uploaderVisible();
 
@@ -71,13 +69,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
 
     AbstractDocumentUploader documentUploader();
-
-
-    HasWidgets searchProjectContainer();
-
-    HasWidgets createProjectContainer();
-
-    HasWidgets createProductContainer();
 
 
     void resetFilename();
