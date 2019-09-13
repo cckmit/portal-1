@@ -77,6 +77,12 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CREATOR", table = "case_object", sqlTableAlias = "CO")
     private Long creatorId;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "Person")
+    }, mappedColumn = "displayShortName")
+    private String creatorShortName;
+
     /**
      * Руководитель
      */
@@ -147,9 +153,9 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
      * Попечители на испытательный срок
      */
     @JdbcColumnCollection(name = "curators", separator = ",")
-    Set<Long> curatorsIds;
+    private Set<Long> curatorsIds;
 
-    Collection<Person> curators;
+    private Collection<Person> curators;
 
     @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "PersonEmployee" )
     private Person person;
@@ -350,6 +356,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setAdditionalSoft( String additionalSoft ) {
         this.additionalSoft = additionalSoft;
+    }
+
+    public String getCreatorShortName() {
+        return creatorShortName;
+    }
+
+    public void setCreatorShortName(String creatorShortName) {
+        this.creatorShortName = creatorShortName;
     }
 
     @Override

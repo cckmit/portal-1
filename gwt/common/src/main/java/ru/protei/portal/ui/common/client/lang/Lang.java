@@ -1716,7 +1716,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationWorkplaceHint();
 
-    String createBy();
+    String createBy(String author, String date);
 
     String companyIsAPartOfCompany(String name);
 

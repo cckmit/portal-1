@@ -30,15 +30,11 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setCurators( String curators );
 
-    void setWithRegistration( String withRegistration);
-
-    void setCreationDate(String created);
+    void setCreatedBy(String created);
 
     void setState(En_CaseState state);
 
     void setIssues(Set<CaseLink> issues);
-    
-    HasWidgets getCommentsContainer();
 
     void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
 
@@ -49,4 +45,6 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setResourceComment( String resourceComment );
 
     void setAdditionalSoft( String additionalSoft );
+
+    HasWidgets getCommentsContainer();
 }

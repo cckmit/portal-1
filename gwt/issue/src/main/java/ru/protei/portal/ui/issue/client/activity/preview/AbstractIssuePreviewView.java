@@ -18,11 +18,9 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setActivity( AbstractIssuePreviewActivity activity );
 
-    void setAuthorName(String value);
-
     void setPrivateIssue(boolean privateIssue );
     void setCaseNumber(Long caseNumber);
-    void setCreationDate( String value );
+    void setCreatedBy(String value );
     void setState( long value );
     void setCriticality( int value );
     void setProduct( String value );
@@ -53,8 +51,6 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
-
-    String getCaseNumber();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     boolean isAttached();

@@ -5,12 +5,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -23,8 +19,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -103,8 +97,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         this.equipment = value;
 
         view.setHeader( value.getName() + " (#" + value.getId() + ")");
-        view.setAuthorName( value.getAuthorShortName() == null ? "" : value.getAuthorShortName() );
-        view.setCreatedDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
+        view.setCreatedBy(lang.createBy(value.getAuthorShortName(), DateFormatter.formatDateTime(value.getCreated())));
+
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
         String typeImage = null;

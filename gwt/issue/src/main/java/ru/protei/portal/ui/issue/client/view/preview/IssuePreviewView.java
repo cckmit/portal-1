@@ -52,11 +52,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setAuthorName(String value) {
-        this.author.setInnerText(value);
-    }
-
-    @Override
     public void setPrivateIssue( boolean privateIssue ) {
         if ( privateIssue ) {
             this.privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
@@ -67,8 +62,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setCreationDate( String value ) {
-        this.creationDate.setInnerText( value );
+    public void setCreatedBy(String value) {
+        this.createdBy.setInnerHTML( value );
     }
 
     @Override
@@ -144,11 +139,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     public void setCaseNumber(Long caseNumber) {
         number.setText("CRM-" + caseNumber);
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
-    }
-
-    @Override
-    public String getCaseNumber() {
-        return number.getText();
     }
 
     @Override
@@ -271,7 +261,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
-        creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED_LABEL);
+        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED_LABEL);
         criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE_LABEL);
         product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT_LABEL);
         state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE_LABEL);
@@ -292,7 +282,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     Element privateIssue;
     @UiField
-    Element creationDate;
+    Element createdBy;
     @UiField
     SpanElement product;
     @UiField
@@ -354,8 +344,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Button backButton;
     @UiField
     Anchor number;
-    @UiField
-    Element author;
     @UiField
     HTMLPanel backButtonContainer;
     @UiField

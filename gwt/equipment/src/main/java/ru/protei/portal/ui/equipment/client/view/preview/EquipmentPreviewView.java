@@ -70,13 +70,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    public void setAuthorName(String value) {
-        this.author.setInnerText(value);
-    }
-
-    @Override
-    public void setCreatedDate(String createdDate) {
-        created.setInnerText(createdDate);
+    public void setCreatedBy(String value) {
+        createdBy.setInnerHTML(value);
     }
 
     @Override
@@ -151,13 +146,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @UiField
     Button copy;
     @UiField
-    Element created;
+    Element createdBy;
     @UiField
     HTMLPanel documents;
     @UiField
     ImageElement typeImage;
-    @UiField
-    Element author;
 
     AbstractEquipmentPreviewActivity activity;
 

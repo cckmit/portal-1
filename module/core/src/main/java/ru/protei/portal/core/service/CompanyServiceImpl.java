@@ -67,11 +67,6 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<Long> countGroups( CompanyGroupQuery query) {
-        return ok(companyGroupDAO.count(query));
-    }
-
-    @Override
     public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
         List<Company> list = getCompanyList(token, query);
 
@@ -86,30 +81,6 @@ public class CompanyServiceImpl implements CompanyService {
         return ok(result);
     }
 
-    @Override
-    public Result<CompanyGroup> createGroup( String name, String info) {
-
-        CompanyGroup group = new CompanyGroup();
-        group.setCreated(new Date());
-        group.setInfo(info);
-        group.setName(name);
-
-        if (companyGroupDAO.persist(group) != null) {
-            return ok(group);
-        }
-
-        return createUndefinedError();
-    }
-
-    @Override
-    public Result< Boolean > updateCompanySubscriptions( Long companyId, List< CompanySubscription > subscriptions ) {
-        if ( companyId == null ) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        boolean result = updateCompanySubscription(companyId, subscriptions);
-        return ok(result );
-    }
 
     @Override
     public Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
@@ -154,11 +125,6 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
     }
-
-    private <T> Result<T> createUndefinedError() {
-        return error(En_ResultStatus.INTERNAL_ERROR);
-    }
-
 
     @Override
     public Result<List<EntityOption>> groupOptionList() {
@@ -325,19 +291,6 @@ public class CompanyServiceImpl implements CompanyService {
                 && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
                 /*&& isValidContactInfo(company)*/
                 && !checkCompanyExists(company.getCname(), company.getId());
-    }
-
-    private boolean isValidContactInfo (Company company) {
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
-
-        return HelperFunc.isNotEmpty(infoFacade.getLegalAddress()) &&
-                HelperFunc.isNotEmpty(infoFacade.getFactAddress());
-    }
-
-    private boolean isValidGroup(CompanyGroup group) {
-        return group != null &&
-                group.getName() != null && !group.getName().trim().isEmpty() &&
-                !checkGroupExists(group.getName(), group.getId());
     }
 
     private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {

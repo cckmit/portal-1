@@ -7,62 +7,83 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
-                <h4 class="col-md-12 m-t-0 m-b-0" ui:field="fullName"/>
+                <h4 class="col-md-12 m-t-0 m-b-0" >
+                    <g:InlineLabel ui:field="fullName"/>
+                    <div class="inline pull-right">
+                        <small ui:field="createdBy"/>
+                    </div>
+                </h4>
             </div>
+
+
+            <h5 ui:field="name"/>
 
             <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group" enabled="false" showLabel="false"/>
 
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationState}: "/>
-                </b>
-                <span >
-                    <div ui:field="caseState"/>
-                </span>
-            </div>
 
-            <h5><ui:text from="{lang.employeeRegistrationMainInfoTitle}"/></h5>
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationHeadOfDepartment}: "/>
-                </b>
-                <span ui:field="headOfDepartment"/>
-            </div>
+            <div class="form-group-attached">
+                <div class="row clearfix">
+                    <div class="col-md-3">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationState}"/>
+                            </label>
+                            <span ui:field="caseState"/>
+                        </div>
+                    </div>
 
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationEmploymentType}: "/>
-                </b>
-                <span ui:field="employmentType"/>
-            </div>
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationWithRegistration}: "/>
-                </b>
-                <span ui:field="withRegistration"/>
-            </div>
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationPost}: "/>
-                </b>
-                <span ui:field="position"/>
-            </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/>
+                            </label>
+                            <span ui:field="headOfDepartment"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationCurators}"/>
+                            </label>
+                            <span ui:field="curators"/>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationEmploymentDate}: "/>
-                </b>
-                <span ui:field="employmentDate"/>
-                <b>
-                    <ui:text from="{lang.employeeRegistrationCreated}: "/>
-                </b>
-                <span ui:field="created"/>
-            </div>
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationProbationPeriod}: "/>
-                </b>
-                <span ui:field="probationPeriod"/>
+                <div class="row clearfix">
+                    <div class="col-md-3">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationPost}"/>
+                            </label>
+                            <span ui:field="position"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationEmploymentType}"/>
+                            </label>
+                            <span ui:field="employmentType"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationEmploymentDate}"/>
+                            </label>
+                            <span ui:field="employmentDate"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
+                            </label>
+                            <span ui:field="probationPeriod"/>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <h5><ui:text from="{lang.employeeRegistrationWorkplaceTitle}"/></h5>
@@ -104,12 +125,7 @@
                 </b>
                 <span ui:field="comment"/>
             </div>
-            <div class="small">
-                <b>
-                    <ui:text from="{lang.employeeRegistrationCurators}: "/>
-                </b>
-                <span ui:field="curators"/>
-            </div>
+
             <h5><ui:text from="{lang.employeeRegistrationResourceTitle}"/></h5>
 
             <div class="small">

@@ -21,14 +21,7 @@
                         </g:HTMLPanel>
                     </h4>
                     <div class="inline pull-right">
-                        <small>
-                            <ui:text from="{lang.createBy}"/>
-                        </small>
-                        <small ui:field="author" class="name no-margin bold"/>
-                        <small class="m-l-5 m-r-5">
-                            <ui:text from="{lang.in}"/>
-                        </small>
-                        <small ui:field="creationDate" class="datetime no-margin"/>
+                        <small ui:field="createdBy"/>
                     </div>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"

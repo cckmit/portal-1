@@ -171,7 +171,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
-        view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
+        view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
+
         view.setState( value.getStateId() );
         view.setCriticality( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
@@ -188,7 +189,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
-        view.setAuthorName( StringUtils.emptyIfNull(value.getCreator().getDisplayShortName()));
 
 
 

@@ -79,4 +79,5 @@ public class UiConstants {
      */
     public static final String LOGIN_PAGE = "login";
     public static final String UNDEFINED_ENTRY = "undefined";
+    public static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
 }

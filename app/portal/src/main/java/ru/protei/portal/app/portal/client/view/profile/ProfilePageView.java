@@ -33,11 +33,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public HasValue<List<Subscription>> companySubscription() {
-        return subscriptions;
-    }
-
-    @Override
     public void setName( String name ) {
         this.name.setText( name );
     }
@@ -68,18 +63,8 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public HasVisibility saveButtonVisibility() {
-        return saveButton;
-    }
-
-    @Override
     public void setIcon( String iconSrc ) {
         this.icon.setSrc( iconSrc );
-    }
-
-    @Override
-    public HasEnabled companySubscriptionEnabled() {
-        return subscriptions;
     }
 
     @Override
@@ -101,13 +86,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         }
     }
 
-    @UiHandler( "saveButton" )
-    public void onButtonClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onSaveSubscriptionClicked();
-        }
-    }
-
     @UiField
     Button changePasswordButton;
     @UiField
@@ -115,13 +93,8 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    @UiField(provided = true)
-    SubscriptionList subscriptions;
     @UiField
     InlineLabel name;
-    @UiField
-    Button saveButton;
     @UiField
     Element company;
     @UiField

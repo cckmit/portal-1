@@ -102,8 +102,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         view.setHeader( lang.projectHeader(value.getId().toString()) );
         view.setName( value.getName() );
-        view.setAuthor( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
-        view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() )  );
+        view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
         view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );

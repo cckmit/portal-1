@@ -37,8 +37,8 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public void setCreatedDate(String created) {
-        this.created.setInnerText(created);
+    public void setCreatedBy(String created) {
+        this.createdBy.setInnerHTML(created);
     }
 
     @Override
@@ -103,8 +103,9 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     Element version;
     @UiField
-    Element created;
-    @UiField SpanElement type;
+    Element createdBy;
+    @UiField
+    SpanElement type;
     @UiField
     Label annotation;
     @UiField

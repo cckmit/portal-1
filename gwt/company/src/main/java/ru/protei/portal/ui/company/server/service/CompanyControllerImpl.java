@@ -199,27 +199,6 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException {
-        log.debug( "updateSelfCompanySubscription()" );
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Result< Boolean > updateResult = companyService.updateCompanySubscriptions( descriptor.getCompany().getId(), value );
-
-        if ( updateResult.isError() ) {
-            throw new RequestFailedException( updateResult.getStatus() );
-        }
-
-        Result< List<CompanySubscription> > companySubscriptionResult = companyService.getCompanySubscriptions( descriptor.getCompany().getId() );
-        if ( companySubscriptionResult.isError() ) {
-            throw new RequestFailedException( updateResult.getStatus() );
-        }
-
-        descriptor.getCompany().setSubscriptions(companySubscriptionResult.getData());
-
-        return companySubscriptionResult.getData();
-    }
-
-    @Override
     public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
         log.debug( "getCompanySubscription()" );
 

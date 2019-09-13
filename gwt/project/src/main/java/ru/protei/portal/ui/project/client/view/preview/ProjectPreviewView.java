@@ -42,12 +42,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setName(String value) { this.name.setInnerText( value ); }
 
     @Override
-    public void setAuthor(String value) {
-        this.author.setInnerText( value );
-    }
-
-    @Override
-    public void setCreationDate( String value ) { this.creationDate.setInnerText( value ); }
+    public void setCreatedBy(String value ) { this.createdBy.setInnerHTML( value ); }
 
     @Override
     public void setState( long value) {
@@ -138,7 +133,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
         header.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
         header.ensureDebugId(DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
-        creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DATE_CREATED_LABEL);
+        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DATE_CREATED_LABEL);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.NAME_LABEL);
         description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.INFO_LABEL);
         state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.STATE_LABEL);
@@ -156,11 +151,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     HTMLPanel preview;
     @UiField
-    Element author;
-    @UiField
     Button backButton;
     @UiField
-    Element creationDate;
+    Element createdBy;
     @UiField
     Anchor header;
     @UiField

@@ -10,7 +10,7 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setVersion(String text);
 
-    void setCreatedDate(String created);
+    void setCreatedBy(String created);
 
     void setType(String type);
 

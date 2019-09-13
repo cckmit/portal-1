@@ -76,13 +76,6 @@ public interface CompanyControllerAsync {
     void getCategoryOptionList( AsyncCallback< List< EntityOption > > callback );
 
     /**
-     * Обновить адреса подписок своей компании
-     * @param value
-     * @param callback
-     */
-    void updateSelfCompanySubscription( List<CompanySubscription> value, AsyncCallback<List<CompanySubscription>> callback );
-
-    /**
      * Получение список рассылок по компании
      *
      * @param companyId

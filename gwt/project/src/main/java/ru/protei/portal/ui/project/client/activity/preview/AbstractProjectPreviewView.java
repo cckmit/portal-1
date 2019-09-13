@@ -13,9 +13,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setName(String value);
 
-    void setAuthor(String value);
-
-    void setCreationDate( String value );
+    void setCreatedBy(String value );
 
     void setHeader(String name );
 

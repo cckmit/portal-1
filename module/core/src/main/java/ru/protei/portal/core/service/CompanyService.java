@@ -23,9 +23,6 @@ public interface CompanyService {
 
     @Privileged({ En_Privilege.COMPANY_VIEW })
     Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query);
-
-    Result<Long> countGroups ( CompanyGroupQuery query);
-
     Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
@@ -50,12 +47,6 @@ public interface CompanyService {
     Result<Boolean> isCompanyNameExists( String name, Long excludeId);
     Result<Boolean> isGroupNameExists( String name, Long excludeId);
 
-    Result<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
     Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
     Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
-
-    /**
-     * methods below are for testing purpose only
-     */
-    Result<CompanyGroup> createGroup( String name, String info);
 }

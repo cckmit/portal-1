@@ -12,14 +12,7 @@
                 </g:Anchor>
 
                 <div class="inline">
-                    <small>
-                        <ui:text from="{lang.createBy}"/>
-                    </small>
-                    <small ui:field="author" class="name no-margin bold"/>
-                    <small class="m-l-5 m-r-5">
-                        <ui:text from="{lang.in}"/>
-                    </small>
-                    <small ui:field="created" class="datetime no-margin"/>
+                    <small ui:field="createdBy"/>
                 </div>
 
                 <g:Label styleName="small hint-text pre-formatted-info" ui:field="annotation"/>
