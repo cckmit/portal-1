@@ -34,6 +34,7 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     public void clear() {
         tabContent.clear();
         tabNameToPane.clear();
+        clearTabs();
     }
 
     @Override
@@ -43,6 +44,11 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
 
     @Override
     public boolean remove(Widget widget) {
+        if (widget instanceof TabWidgetPane) {
+            TabWidgetPane pane = (TabWidgetPane) widget;
+            tabNameToPane.remove(pane.getTabName());
+            tabNameToNavItem.remove(pane.getTabName());
+        }
         return tabContent.remove(widget);
     }
 
@@ -110,6 +116,7 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     private void clearTabs() {
         navTabs.clear();
         tabNameToNavItem.clear();
+        if (popup != null) popup.getChildContainer().clear();
     }
 
     @Override
