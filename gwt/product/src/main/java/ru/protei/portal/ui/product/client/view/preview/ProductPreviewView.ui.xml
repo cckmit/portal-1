@@ -17,7 +17,7 @@
 
             <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
 
-            <tab:TabWidget tabNames="{lang.productHistoryVersion}|{lang.productConfiguration}|{lang.productCDRDescription}" styleName="">
+            <tab:TabWidget styleName="">
                 <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
                     <g:HTMLPanel styleName="markdown" ui:field="historyVersion"/>
                 </tab:pane.TabWidgetPane>

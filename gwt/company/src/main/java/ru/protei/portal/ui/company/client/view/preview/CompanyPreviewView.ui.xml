@@ -49,7 +49,7 @@
                     <span ui:field="addressDejure"/>
                 </div>
 
-                <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
+                <tab:TabWidget styleName="">
                     <tab:pane.TabWidgetPane tabName="{lang.contacts}">
                         <g:HTMLPanel ui:field="contactsContainer"/>
                     </tab:pane.TabWidgetPane>

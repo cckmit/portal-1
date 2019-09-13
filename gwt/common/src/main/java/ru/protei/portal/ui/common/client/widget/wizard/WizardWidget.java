@@ -8,7 +8,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.wizard.navitem.WizardWidgetNavItem;
@@ -23,6 +22,8 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
 
     public WizardWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        popup.setSearchVisible(false);
+        popup.setAddButton(false);
     }
 
     public void setActivity(WizardWidgetActivity activity) {
@@ -33,9 +34,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     public void add(Widget widget) {
         tabContent.add(widget);
         if (widget instanceof WizardWidgetPane) {
-            WizardWidgetPane pane = (WizardWidgetPane) widget;
-            pane.setInActive();
-            tabNameToPane.put(pane.getTabName(), pane);
+            addTab((WizardWidgetPane) widget);
         }
     }
 
@@ -66,64 +65,6 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         this.isSelectable = isSelectable;
     }
 
-    public void setTabNames(String tabNames) {
-        String[] tabNamesArray = StringUtils.emptyIfNull(tabNames).split("\\|+");
-        setTabNames(tabNamesArray);
-    }
-
-    public void setTabNames(String...tabNames) {
-        setTabNames(Arrays.asList(tabNames));
-    }
-
-    public void setTabNames(List<String> tabNames) {
-
-        clearTabs();
-
-        String selectedTab = null;
-
-        popup = new SelectorPopup();
-        popup.setSearchVisible(false);
-        popup.setAddButton(false);
-
-        for (String tabName : tabNames) {
-
-            if (StringUtils.isEmpty(tabName)) {
-                continue;
-            }
-
-            if (selectedTab == null) {
-                selectedTab = tabName;
-            }
-
-            WizardWidgetPane pane = tabNameToPane.get(tabName);
-
-            WizardWidgetNavItem navItem = new WizardWidgetNavItem();
-            navItem.setTabName(tabName);
-            navItem.setTabIcon(pane.getTabIcon());
-            navItem.setSelectable(isSelectable);
-            navItem.setHandler(this);
-            navItem.setInActive();
-            navTabs.add(navItem);
-            tabNameToNavItem.put(tabName, navItem);
-
-            SelectorItem selectorItem = new SelectorItem();
-            selectorItem.setName(tabName);
-            if (isSelectable) {
-                selectorItem.addClickHandler(event -> {
-                    onTabSelected(tabName);
-                    popup.hide();
-                });
-            }
-            popup.getChildContainer().add(selectorItem);
-
-            this.tabNames.add(tabName);
-        }
-
-        if (selectedTab != null) {
-            onTabSelected(selectedTab);
-        }
-    }
-
     public void setTabNameDebugId(String tabName, String debugId) {
         WizardWidgetNavItem navItem = tabNameToNavItem.get(tabName);
         if (navItem == null) return;
@@ -138,78 +79,134 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         btnNext.ensureDebugId(debugId);
     }
 
+    private void addTab(WizardWidgetPane pane) {
+
+        WizardWidgetNavItem navItem = makeNavItem(pane);
+        SelectorItem selectorItem = makeSelectorItem(pane);
+
+        popup.getChildContainer().add(selectorItem);
+        navTabs.add(navItem);
+        tabNameToNavItem.put(pane.getTabName(), navItem);
+        tabNameToPane.put(pane.getTabName(), pane);
+        tabNames.add(pane.getTabName());
+
+        selectTabIfNeeded(pane);
+    }
+
+    private WizardWidgetNavItem makeNavItem(WizardWidgetPane pane) {
+        WizardWidgetNavItem navItem = new WizardWidgetNavItem();
+        navItem.setTabName(pane.getTabName());
+        navItem.setTabIcon(pane.getTabIcon());
+        navItem.setSelectable(isSelectable);
+        navItem.setHandler(this);
+        navItem.setInActive();
+        return navItem;
+    }
+
+    private SelectorItem makeSelectorItem(WizardWidgetPane pane) {
+        SelectorItem selectorItem = new SelectorItem();
+        selectorItem.setName(pane.getTabName());
+        selectorItem.addClickHandler(event -> {
+            if (!isSelectable) return;
+            onTabSelected(pane.getTabName());
+            popup.hide();
+        });
+        return selectorItem;
+    }
+
+    private void selectTabIfNeeded(WizardWidgetPane pane) {
+        boolean isFirstTab = currentTabName == null;
+        if (isFirstTab) {
+            currentTabName = pane.getTabName();
+            onTabSelected(currentTabName);
+        }
+    }
+
     private void clearTabs() {
         navTabs.clear();
         tabNameToNavItem.clear();
         tabNames.clear();
-        if (popup != null) popup.getChildContainer().clear();
+        popup.getChildContainer().clear();
     }
 
     @Override
     public void onTabSelected(String tabName) {
 
+        if (!canLeaveTab(tabName)) return;
+
+        WizardWidgetPane pane = tabNameToPane.get(tabName);
+
+        setCurrentTabName(tabName);
+        setNavItemSelected(tabName);
+        setNavItemDropdownSelected(tabName);
+        setPaneSelected(tabName);
+        setBtnPrevious(pane);
+        setBtnNext(pane);
+    }
+
+    private boolean canLeaveTab(String tabName) {
         if (currentTabName != null && activity != null) {
-            if (!activity.canLeaveTab(currentTabName, tabName)) {
-                return;
-            }
+            return activity.canLeaveTab(currentTabName, tabName);
         }
+        return true;
+    }
 
+    private void setCurrentTabName(String tabName) {
         currentTabName = tabName;
+    }
 
+    private void setNavItemSelected(String tabName) {
         for (Map.Entry<String, WizardWidgetNavItem> entry : tabNameToNavItem.entrySet()) {
             entry.getValue().setInActive();
             if (Objects.equals(tabName, entry.getKey())) {
                 entry.getValue().setActive();
             }
         }
+    }
 
+    private void setNavItemDropdownSelected(String tabName) {
+        navDropdownTabsSelected.setText(tabName);
+    }
+
+    private void setPaneSelected(String tabName) {
         for (Map.Entry<String, WizardWidgetPane> entry : tabNameToPane.entrySet()) {
             entry.getValue().setInActive();
             if (Objects.equals(tabName, entry.getKey())) {
                 entry.getValue().setActive();
             }
         }
-
-        navDropdownTabsSelected.setText(tabName);
-
-        WizardWidgetPane pane = tabNameToPane.get(tabName);
-        String btnPreviousLang = pane != null ? pane.getButtonBack() : null;
-        String btnNextLang = pane != null ? pane.getButtonForward() : null;
-
-        setBtnPrevious(tabName, btnPreviousLang);
-        setBtnNext(tabName, btnNextLang);
     }
 
-    private void setBtnPrevious(String tabName, String btnPreviousLang) {
+    private void setBtnPrevious(WizardWidgetPane pane) {
 
-        if (btnPreviousHandlerRegistration != null) {
-            btnPreviousHandlerRegistration.removeHandler();
-        }
+        String btnPreviousLang = pane != null ? pane.getButtonBack() : null;
+
+        if (btnPreviousHandlerRegistration != null) btnPreviousHandlerRegistration.removeHandler();
         btnPreviousContainer.setVisible(false);
 
         if (btnPreviousLang == null) {
             return;
         }
 
-        String prevTabName = findPreviousElement(tabNames, tabName);
+        String prevTabName = findPreviousElement(tabNames, pane.getTabName());
 
         btnPreviousContainer.setVisible(true);
         btnPreviousText.setInnerText(btnPreviousLang);
         btnPreviousHandlerRegistration = btnPrevious.addClickHandler(event -> {
             if (prevTabName == null) {
-                if (activity != null) {
-                    activity.onClose();
-                }
+                if (activity != null) activity.onClose();
             } else {
-                if (activity != null && !activity.canGoBack(tabName)) {
-                    return;
+                boolean canGoBack = activity == null || activity.canGoBack(pane.getTabName());
+                if (canGoBack) {
+                    onTabSelected(prevTabName);
                 }
-                onTabSelected(prevTabName);
             }
         });
     }
 
-    private void setBtnNext(String tabName, String btnNextLang) {
+    private void setBtnNext(WizardWidgetPane pane) {
+
+        String btnNextLang = pane != null ? pane.getButtonForward() : null;
 
         if (btnNextHandlerRegistration != null) {
             btnNextHandlerRegistration.removeHandler();
@@ -220,20 +217,18 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
             return;
         }
 
-        String nextTabName = findNextElement(tabNames, tabName);
+        String nextTabName = findNextElement(tabNames, pane.getTabName());
 
         btnNextContainer.setVisible(true);
         btnNextText.setInnerText(btnNextLang);
         btnNextHandlerRegistration = btnNext.addClickHandler(event -> {
             if (nextTabName == null) {
-                if (activity != null) {
-                    activity.onDone();
-                }
+                if (activity != null) activity.onDone();
             } else {
-                if (activity != null && !activity.canGoNext(tabName)) {
-                    return;
+                boolean canGoNext = activity == null || activity.canGoNext(pane.getTabName());
+                if (canGoNext) {
+                    onTabSelected(nextTabName);
                 }
-                onTabSelected(nextTabName);
             }
         });
     }
@@ -270,8 +265,8 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private Map<String, WizardWidgetNavItem> tabNameToNavItem = new HashMap<>();
     private Map<String, WizardWidgetPane> tabNameToPane = new HashMap<>();
     private Set<String> tabNames = new LinkedHashSet<>();
-    private String currentTabName;
-    private SelectorPopup popup;
+    private String currentTabName = null;
+    private SelectorPopup popup = new SelectorPopup();
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;

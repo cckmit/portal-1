@@ -5,8 +5,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <wizard:WizardWidget ui:field="wizard"
-            tabNames="{lang.documentProjectHeader}|{lang.documentCreateHeader}">
+        <wizard:WizardWidget ui:field="wizard">
 
             <wizard:pane.WizardWidgetPane tabName="{lang.documentProjectHeader}" tabIcon="fa fa-archive"
                 buttonBack="{lang.buttonCancel}" buttonForward="{lang.buttonForward}">
