@@ -65,11 +65,15 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onShow( EmployeeEvents.Show event ) {
+    public void onShow(  EmployeeEvents.ShowDefinite event ) {
+        if(event.viewType != ViewType.LIST)
+            return;
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
         requestEmployees( 0 );
+
+        view.getFilterContainer().add(event.filter);
     }
 
     @Event
