@@ -3,7 +3,7 @@
 
     <g:HTMLPanel>
         <g:HTMLPanel ui:field="navTabs" tag="ul"
-                     styleName="nav nav-tabs nav-tabs-linetriangle d-none d-md-flex d-lg-flex d-xl-flex"/>
+                     styleName="nav nav-tabs nav-tabs-simple d-none d-md-flex d-lg-flex d-xl-flex"/>
 
         <div class="nav-tab-dropdown cs-wrapper full-width d-lg-none d-xl-none d-md-none">
             <div class="cs-select cs-skin-slide full-width">
