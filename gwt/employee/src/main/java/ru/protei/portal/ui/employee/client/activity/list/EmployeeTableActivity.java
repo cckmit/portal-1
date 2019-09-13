@@ -41,12 +41,13 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
         view.getFilterContainer().clear();
         view.getPagerContainer().clear();
-        this.query = event.query;
         init.parent.clear();
+
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-
         view.getFilterContainer().add(event.filter);
+
+        this.query = event.query;
         loadTable();
     }
 

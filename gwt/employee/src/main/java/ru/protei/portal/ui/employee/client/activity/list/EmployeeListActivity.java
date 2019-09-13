@@ -71,11 +71,12 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getFilterContainer().clear();
         view.getPagerContainer().clear();
         init.parent.clear();
+
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-        requestEmployees( 0 );
-
         view.getFilterContainer().add(event.filter);
+
+        requestEmployees( 0 );
     }
 
     @Event
