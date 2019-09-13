@@ -39,6 +39,8 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         if(event.viewType != ViewType.TABLE)
             return;
 
+        view.getFilterContainer().clear();
+        view.getPagerContainer().clear();
         this.query = event.query;
         init.parent.clear();
         init.parent.add( view.asWidget() );

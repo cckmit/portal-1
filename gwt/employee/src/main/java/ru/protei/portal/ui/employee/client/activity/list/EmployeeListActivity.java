@@ -50,7 +50,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     @PostConstruct
     public void init() {
         view.setActivity( this );
-        view.getFilterContainer().add( filterView.asWidget() );
         pagerView.setActivity( this );
     }
 
@@ -68,6 +67,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     public void onShow(  EmployeeEvents.ShowDefinite event ) {
         if(event.viewType != ViewType.LIST)
             return;
+
+        view.getFilterContainer().clear();
+        view.getPagerContainer().clear();
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
