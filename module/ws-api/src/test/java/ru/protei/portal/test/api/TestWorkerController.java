@@ -138,12 +138,12 @@ public class TestWorkerController {
         WorkerRecord worker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
-        Result<Long> successResult = addWorker(worker);
+        Result<Long> addResult = addWorker(worker);
         Result result;
 
         String uri = BASE_URI + "get.person";
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", successResult.getData());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", addResult.getData());
         String uriBuilder = builder.build().toUriString();
 
         WorkerRecord resultWorker;
@@ -164,7 +164,7 @@ public class TestWorkerController {
 
         Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
 
-        worker.setId(successResult.getData());
+        worker.setId(addResult.getData());
 
         worker.setFireDate("2019-05-05");
         updateFireDate(worker);
@@ -213,48 +213,34 @@ public class TestWorkerController {
 
     @Test
     public void testUpdateFireDates() throws Exception {
-        WorkerRecord worker = createWorkerRecord();
+        WorkerRecord firstWorker = createWorkerRecord();
+        WorkerRecord secondWorker = createWorkerRecord();
+        WorkerRecord thirdWorker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
-        Result<Long> successResult = addWorker(worker);
-        Result result;
+        Result result = addWorker(firstWorker);
+        addWorker(secondWorker);
+        addWorker(thirdWorker);
 
-        worker.setId(successResult.getData());
+        firstWorker.setId((Long)result.getData());
 
-        worker.setFired(true);
-        result = updateWorker(worker);
+        firstWorker.setFired(true);
+        result = updateWorker(firstWorker);
         Assert.assertEquals("update.fire.date is not success! " + result.getMessage(), true, result.isOk());
 
-        String uri = BASE_URI + "get.person";
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", successResult.getData());
-        String uriBuilder = builder.build().toUriString();
-
-        WorkerRecord resultWorker = getWorkerByUri(uriBuilder).getData();
-
-        Assert.assertEquals("update.fire.date: worker is not fired!", worker.isFired(), resultWorker.isFired());
-
-        resultWorker.setCompanyCode(worker.getCompanyCode());
-        resultWorker.setDepartmentId(worker.getDepartmentId());
-        resultWorker.setPositionName(worker.getPositionName());
-        resultWorker.setWorkerId(worker.getWorkerId());
-        resultWorker.setFireDate("2019-05-05");
-        worker.setFireDate("2019-06-06");
+        secondWorker.setFireDate("2019-05-05");
+        firstWorker.setFireDate("2019-06-06");
 
         WorkerRecordList list = new WorkerRecordList();
-        list.append(worker);
-        list.append(resultWorker);
+        list.append(firstWorker);
+        list.append(secondWorker);
+        list.append(thirdWorker);
 
         ResultList resultList = updateFireDates(list);
 
         for (Result res : resultList.getResults()) {
             Assert.assertEquals("update.fire.date is not success! " + res.getMessage(), true, res.isOk());
         }
-
-        updateFireDate(worker);
-        resultWorker = getWorkerByUri(uriBuilder).getData();
-
-        Assert.assertEquals("update.fire.date: fire date are different!", worker.getFireDate(), resultWorker.getFireDate());
     }
 
 
