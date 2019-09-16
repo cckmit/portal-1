@@ -72,9 +72,7 @@ public interface AbstractIssueEditView extends IsWidget {
     boolean isAttached();
     HasValue<EntityOption> platform();
 
-    void setPlatformVisibility(boolean isVisible);
-
-    HasValidable platformValidable();
+    HasVisibility platformVisibility();
 
     HasVisibility saveVisibility();
 
@@ -84,8 +82,6 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled stateEnabled();
 
     void setNumber(Integer num);
-
-    String getNumber();
 
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
@@ -104,7 +100,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void applyCompanyValueIfOneOption();
 
-    void setTagsEnabled(boolean enabled);
     void setTagsAddButtonEnabled(boolean enabled);
 
     void setTagsEditButtonEnabled(boolean enabled);

@@ -32,17 +32,17 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
-import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.*;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
@@ -52,6 +52,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformButtonSelector;
+import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
 
 import java.util.Set;
 
@@ -65,7 +66,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        // state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
         company.setDefaultValue(lang.selectIssueCompany());
@@ -75,6 +75,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setAddButtonText(lang.personCreateNew());
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
+
         copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
     }
 
@@ -281,11 +282,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public String getNumber() {
-        return number.getText();
-    }
-
-    @Override
     public HasVisibility caseSubscriptionContainer() {
         return caseSubscriptionContainers;
     }
@@ -346,11 +342,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setTagsEnabled(boolean enabled) {
-        caseMetaView.setTagsEnabled(enabled);
-    }
-
-    @Override
     public void setTagsAddButtonEnabled(boolean enabled) {
         caseMetaView.setTagsAddButtonEnabled(enabled);
     }
@@ -389,21 +380,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setPlatformVisibility(boolean isVisible) {
-        if (!isVisible) {
-            stateContainer.replaceClassName("col-md-4", "col-md-6");
-            importanceContainer.replaceClassName("col-md-4", "col-md-6");
-            platformContainer.getStyle().setDisplay(Style.Display.NONE);
-        } else {
-            stateContainer.replaceClassName("col-md-6", "col-md-4");
-            importanceContainer.replaceClassName("col-md-6", "col-md-4");
-            platformContainer.getStyle().setDisplay(Style.Display.INITIAL);
-        }
-    }
-
-    @Override
-    public HasValidable platformValidable() {
-        return platform;
+    public HasVisibility platformVisibility() {
+        return platformContainer;
     }
 
     @UiHandler("saveButton")
@@ -485,19 +463,22 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
-        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.STATE);
-        importanceLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.IMPORTANCE);
-        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PLATFORM);
-        companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.COMPANY);
-        initiatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.CONTACT);
-        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PRODUCT);
-        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.MANAGER);
+        state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
+        importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
+        platform.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PLATFORM);
+        company.ensureLabelDebugId(DebugIds.ISSUE.LABEL.COMPANY);
+        initiator.ensureLabelDebugId(DebugIds.ISSUE.LABEL.CONTACT);
+        product.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PRODUCT);
+        manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
         timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.TIME_ELAPSED);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
         subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.SUBSCRIPTIONS);
         notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
         attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
+
+    @UiField
+    Lang lang;
 
     @UiField
     HTMLPanel root;
@@ -522,11 +503,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    IssueStateButtonSelector state;
+    IssueStateFormSelector state;
 
     @Inject
     @UiField(provided = true)
-    ImportanceButtonSelector importance;
+    ImportanceFormSelector importance;
 
     @Inject
     @UiField(provided = true)
@@ -542,38 +523,33 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    CompanySelector company;
+    CompanyFormSelector company;
 
     @Inject
     @UiField(provided = true)
-    PersonButtonSelector initiator;
+    PersonFormSelector initiator;
 
     @Inject
     @UiField(provided = true)
-    DevUnitButtonSelector product;
+    DevUnitFormSelector product;
 
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector manager;
-
+    EmployeeFormSelector manager;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
-
     @Inject
     @UiField(provided = true)
-    PlatformButtonSelector platform;
-
+    PlatformFormSelector platform;
     @UiField
-    DivElement platformContainer;
+    HTMLPanel platformContainer;
 
     @UiField
     Button saveButton;
     @UiField
     Button cancelButton;
-    @Inject
-    @UiField
-    Lang lang;
+
     @UiField
     HTMLPanel commentsContainer;
     @UiField
@@ -602,20 +578,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     LabelElement nameLabel;
     @UiField
-    LabelElement stateLabel;
-    @UiField
-    LabelElement importanceLabel;
-    @UiField
-    LabelElement platformLabel;
-    @UiField
-    LabelElement companyLabel;
-    @UiField
-    LabelElement initiatorLabel;
-    @UiField
-    LabelElement productLabel;
-    @UiField
-    LabelElement managerLabel;
-    @UiField
     LabelElement timeElapsedLabel;
     @UiField
     LabelElement descriptionLabel;
@@ -625,10 +587,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     LabelElement notifiersLabel;
     @UiField
     LabelElement attachmentsLabel;
-    @UiField
-    DivElement importanceContainer;
-    @UiField
-    DivElement stateContainer;
 
     private AbstractIssueEditActivity activity;
 

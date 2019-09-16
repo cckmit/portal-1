@@ -10,7 +10,9 @@
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
-             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist"
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -79,12 +81,12 @@
 
         <div ui:field="importanceContainer" class="form-group col-md-12">
             <label><ui:text from="{lang.issueImportance}"/></label><br/>
-            <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+            <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
         </div>
 
         <div ui:field="stateContainer" class="form-group col-md-12">
             <label><ui:text from="{lang.issueState}"/></label>
-            <optionlist:IssueStatesOptionList ui:field="state"/>
+            <issuestate:IssueStatesOptionList ui:field="state"/>
         </div>
 
         <div ui:field="filterNameContainer" class="form-group col-md-12">

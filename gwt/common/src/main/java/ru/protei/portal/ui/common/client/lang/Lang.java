@@ -1861,4 +1861,6 @@ public interface Lang extends Messages, ContactItemLang {
     String goToContracts();
 
     String contract();
+
+    String issueInitiatorInfo();
 }

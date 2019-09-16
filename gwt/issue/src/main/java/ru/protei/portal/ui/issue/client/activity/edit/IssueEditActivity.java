@@ -396,7 +396,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
         view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption(issue.getPlatformName(), issue.getPlatformId()));
-        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+        view.platformVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
 
         fillViewForJira(issue);
