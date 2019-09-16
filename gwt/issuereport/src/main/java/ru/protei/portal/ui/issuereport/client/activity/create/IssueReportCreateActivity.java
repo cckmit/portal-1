@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -47,7 +48,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.fillReportTypes(makeReportTypeList());
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Create event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());

@@ -39,6 +39,11 @@ public abstract class IssueReportPage implements Activity {
     }
 
     @Event
+    public void onCreate(IssueReportEvents.Create event) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onClickSection(SectionEvents.Clicked event) {
         if (!ТAB.equals(event.identity)) {
             return;
