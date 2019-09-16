@@ -9,6 +9,7 @@ public class IssueReportEvents {
         public Show () {}
     }
 
+    @Url(value = "new_report")
     public static class Create {
         public Create () {}
     }
