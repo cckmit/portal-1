@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issuereport.client.view.create;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -64,16 +65,32 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         }
     }
 
+    @UiHandler("createButton")
+    public void createButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveClicked();
+        }
+    }
+
+    @UiHandler("cancelButton")
+    public void cancelButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
+    }
+
     @Inject
     @UiField(provided = true)
     ReportTypeButtonSelector reportType;
-
     @UiField
     TextBox name;
-
     @Inject
     @UiField(provided = true)
     IssueFilter issueFilter;
+    @UiField
+    Button createButton;
+    @UiField
+    Button cancelButton;
 
     private AbstractIssueReportCreateActivity activity;
 
