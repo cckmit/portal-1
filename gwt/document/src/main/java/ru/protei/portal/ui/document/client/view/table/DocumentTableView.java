@@ -12,7 +12,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -181,7 +181,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            ProjectInfo project = value.getProjectInfo();
+            Project project = value.getProjectInfo();
             if (project == null) {
                 return;
             }

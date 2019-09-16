@@ -32,6 +32,8 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
+    private boolean isFreeProjects;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
@@ -117,6 +119,14 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
+    public boolean isFreeProjects() {
+        return isFreeProjects;
+    }
+
+    public void setFreeProject(boolean freeProjects) {
+        isFreeProjects = freeProjects;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -125,7 +135,8 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
                 createdFrom != null ||
-                createdTo != null;
+                createdTo != null ||
+                isFreeProjects;
     }
 
     @Override

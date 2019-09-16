@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,6 +23,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
@@ -82,6 +84,17 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
     }
 
+    @Override
+    public void refreshProjectSpecificFields() {
+        regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+                .withSuccess(project -> {
+                    view.direction().setValue(project.getProductDirection() == null ? null : project.getProductDirection().getDisplayText());
+                    view.manager().setValue(project.getManager() == null ? null : project.getManager().getDisplayText());
+                    view.contragent().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
+                })
+        );
+    }
+
     private void requestData(Long id){
         contractService.getContract(id, new FluentCallback<Contract>()
                 .withSuccess(this::fillView));
@@ -112,6 +125,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
 
         view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
+
+        refreshProjectSpecificFields();
     }
 
     private void fillDto() {
@@ -196,6 +211,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private ContractControllerAsync contractService;
     @Inject
     PolicyService policyService;
+    @Inject
+    RegionControllerAsync regionService;
 
     private Contract contract;
     private AppEvents.InitDetails initDetails;

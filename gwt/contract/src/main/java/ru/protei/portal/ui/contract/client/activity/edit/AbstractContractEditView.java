@@ -44,4 +44,10 @@ public interface AbstractContractEditView extends IsWidget {
     HasEnabled costEnabled();
 
     HasValue<EntityOption> project();
+
+    HasValue<String> contragent();
+
+    HasValue<String> manager();
+
+    HasValue<String> direction();
 }

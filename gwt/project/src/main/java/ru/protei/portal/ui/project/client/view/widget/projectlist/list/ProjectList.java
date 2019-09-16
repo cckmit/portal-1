@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -25,26 +25,26 @@ import java.util.stream.Collectors;
 
 public class ProjectList
         extends Composite
-        implements HasValue<ProjectInfo>, ValueChangeHandler<Boolean> {
+        implements HasValue<Project>, ValueChangeHandler<Boolean> {
 
     public ProjectList() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
-    public ProjectInfo getValue() {
+    public Project getValue() {
         return selected;
     }
 
     @Override
-    public void setValue(ProjectInfo value) {
+    public void setValue(Project value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(ProjectInfo value, boolean fireEvents) {
+    public void setValue(Project value, boolean fireEvents) {
         selected = value;
-        for (Map.Entry<ProjectInfo, ProjectItem > entry : itemToViewModel.entrySet()) {
+        for (Map.Entry<Project, ProjectItem > entry : itemToViewModel.entrySet()) {
             entry.getValue().setValue(selected != null && selected.equals(entry.getKey()));
         }
         if (fireEvents) {
@@ -53,13 +53,13 @@ public class ProjectList
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectInfo> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Project> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
     @Override
     public void onValueChange(ValueChangeEvent<Boolean> event) {
-        ProjectInfo value = itemViewToModel.get(event.getSource());
+        Project value = itemViewToModel.get(event.getSource());
         if (value == null && !itemViewToModel.containsKey(event.getSource())) {
             return;
         }
@@ -67,7 +67,7 @@ public class ProjectList
         setValue(value, true);
     }
 
-    public void addItems(List<ProjectInfo> list) {
+    public void addItems(List<Project> list) {
         list.forEach(this::addItem);
     }
 
@@ -78,7 +78,7 @@ public class ProjectList
         selected = null;
     }
 
-    private void addItem(ProjectInfo value) {
+    private void addItem(Project value) {
         ProjectItem itemView = itemFactory.get();
         itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
         itemView.setName(value.getName());
@@ -93,7 +93,7 @@ public class ProjectList
         container.add(itemView.asWidget());
     }
 
-    private String makeManagers(ProjectInfo value) {
+    private String makeManagers(Project value) {
         StringBuilder content = new StringBuilder();
 
         List< PersonProjectMemberView > team = value.getTeam();
@@ -125,10 +125,10 @@ public class ProjectList
     @Inject
     Provider<ProjectItem> itemFactory;
 
-    ProjectInfo selected;
+    Project selected;
 
-    Map<ProjectItem, ProjectInfo> itemViewToModel = new HashMap<>();
-    Map<ProjectInfo, ProjectItem> itemToViewModel = new HashMap<>();
+    Map<ProjectItem, Project> itemViewToModel = new HashMap<>();
+    Map<Project, ProjectItem> itemToViewModel = new HashMap<>();
 
     @Inject
     En_CustomerTypeLang customerTypeLang;

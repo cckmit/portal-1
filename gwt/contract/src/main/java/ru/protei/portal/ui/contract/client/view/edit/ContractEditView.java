@@ -12,6 +12,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -21,7 +22,7 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSel
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.project.ProjectEntityOptionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
@@ -37,6 +38,10 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ProjectQuery projectQuery = new ProjectQuery();
+        projectQuery.setFreeProject(true);
+
+        project.setProjectQuery(projectQuery);
     }
     
     @Override
@@ -114,6 +119,21 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return project;
     }
 
+    @Override
+    public HasValue<String> contragent() {
+        return contragent;
+    }
+
+    @Override
+    public HasValue<String> manager() {
+        return manager;
+    }
+
+    @Override
+    public HasValue<String> direction() {
+        return direction;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -134,6 +154,14 @@ public class ContractEditView extends Composite implements AbstractContractEditV
             activity.onTypeChanged();
         }
     }
+
+    @UiHandler("project")
+    public void onValueChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.refreshProjectSpecificFields();
+        }
+    }
+
     @UiField
     Button saveButton;
 
@@ -172,7 +200,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractButtonSelector contractParent;
     @Inject
     @UiField(provided = true)
-    ProjectEntityOptionButtonSelector project;
+    ProjectButtonSelector project;
+    @UiField
+    TextBox direction;
+    @UiField
+    TextBox contragent;
+    @UiField
+    TextBox manager;
 
     private AbstractContractEditActivity activity;
 

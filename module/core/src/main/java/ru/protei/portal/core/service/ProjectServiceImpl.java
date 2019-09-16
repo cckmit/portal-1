@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -67,6 +67,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ContractDAO contractDAO;
 
+    @Autowired
+    PersonDAO personDAO;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
@@ -108,9 +111,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
+    public Result< Map< String, List<Project> > > listProjectsByRegions(AuthToken token, ProjectQuery query ) {
 
-        Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
+        Map< String, List<Project> > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
         caseQuery.setSortField(query.getSortField());
         caseQuery.setSortDir(query.getSortDir());
@@ -126,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result< ProjectInfo > getProject( AuthToken token, Long id ) {
+    public Result<Project> getProject(AuthToken token, Long id ) {
 
         CaseObject project = caseObjectDAO.get( id );
 
@@ -136,17 +139,37 @@ public class ProjectServiceImpl implements ProjectService {
 
         helper.fillAll( project );
         Contract contract = contractDAO.getByProjectId(id);
+
         if (contract != null) {
             project.setContractId(contract.getId());
             project.setContractNumber(contract.getNumber());
         }
 
-        return ok(ProjectInfo.fromCaseObject(project));
+        return ok(Project.fromCaseObject(project));
+    }
+
+    @Override
+    public Result<Project> getProjectBaseInfo(AuthToken token, Long id) {
+        CaseObject projectFromDb = caseObjectDAO.get(id);
+
+        if (projectFromDb == null) {
+            return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+        }
+
+        Project project = new Project();
+        project.setId(projectFromDb.getId());
+        project.setName(projectFromDb.getName());
+        project.setCustomerType(En_CustomerType.find(projectFromDb.getLocal()));
+        project.setContragent(new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId()));
+        project.setProductDirection(new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()));
+        project.setManager(projectFromDb.getManager() == null ? null : new EntityOption(projectFromDb.getManager().getDisplayShortName(), projectFromDb.getManagerId()));
+
+        return ok(project);
     }
 
     @Override
     @Transactional
-    public Result<ProjectInfo> saveProject( AuthToken token, ProjectInfo project ) {
+    public Result<Project> saveProject(AuthToken token, Project project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -161,6 +184,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .findFirst()
                 .orElse(null)
         );
+
+        caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
         if (project.getCustomerType() != null)
             caseObject.setLocal(project.getCustomerType().getId());
@@ -188,12 +213,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return ok(ProjectInfo.fromCaseObject( caseObject ));
+        return ok(Project.fromCaseObject( caseObject ));
     }
 
     @Override
     @Transactional
-    public Result<ProjectInfo> createProject(AuthToken token, ProjectInfo project) {
+    public Result<Project> createProject(AuthToken token, Project project) {
 
         if (project == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -214,10 +239,10 @@ public class ProjectServiceImpl implements ProjectService {
         }
         caseObjectDAO.merge( caseObject );
 
-        return ok(ProjectInfo.fromCaseObject(caseObject));
+        return ok(Project.fromCaseObject(caseObject));
     }
 
-    private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
+    private CaseObject createCaseObjectFromProjectInfo(Project project) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
         caseObject.setTypeId(En_CaseType.PROJECT.getId());
@@ -279,7 +304,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<ProjectInfo>> listProjects(AuthToken authToken, ProjectQuery query) {
+    public Result<List<Project>> listProjects(AuthToken authToken, ProjectQuery query) {
         CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
@@ -287,8 +312,8 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fill(projects, "members");
         helper.fill(projects, "products");
 
-        List<ProjectInfo> result = projects.stream()
-                .map(ProjectInfo::fromCaseObject).collect(toList());
+        List<Project> result = projects.stream()
+                .map(Project::fromCaseObject).collect(toList());
         return ok(result );
     }
 
@@ -447,20 +472,20 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
-    private void applyCaseToProjectInfo( CaseObject project, Location location, Map< String, List< ProjectInfo > > projects ) {
+    private void applyCaseToProjectInfo( CaseObject project, Location location, Map< String, List<Project> > projects ) {
 
         String locationName = ""; // name for empty location
         if ( location != null ) {
             locationName = location.getName();
         }
 
-        List< ProjectInfo > projectInfos = projects.get( locationName );
+        List<Project> projectInfos = projects.get( locationName );
         if ( projectInfos == null ) {
             projectInfos = new ArrayList<>();
             projects.put( locationName, projectInfos );
         }
 
-        ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
+        Project projectInfo = Project.fromCaseObject( project );
         projectInfos.add( projectInfo );
     }
 
@@ -503,6 +528,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
+        caseQuery.setFreeProjects(projectQuery.isFreeProjects());
 
         return caseQuery;
     }
