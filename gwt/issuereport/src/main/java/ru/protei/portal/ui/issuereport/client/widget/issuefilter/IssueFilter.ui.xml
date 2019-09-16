@@ -77,19 +77,19 @@
                                           caseType="CRM_SUPPORT"
                                           header="{lang.tags}"
                                           addStyleNames="form-group col-md-4"/>
+
+            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4">
+                <label><ui:text from="{lang.searchPrivate}"/></label>
+                <threestate:ThreeStateButton ui:field="searchPrivate"/>
+            </g:HTMLPanel>
         </div>
 
         <div class="row">
 
-            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-6">
-                <label><ui:text from="{lang.searchPrivate}"/></label>
-                <threestate:ThreeStateButton ui:field="searchPrivate"/>
-            </g:HTMLPanel>
-
             <div ui:field="importanceContainer" class="form-group col-md-4">
-            <label><ui:text from="{lang.issueImportance}"/></label><br/>
-            <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
-        </div>
+                <label><ui:text from="{lang.issueImportance}"/></label><br/>
+                <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+            </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8">
                 <label><ui:text from="{lang.issueState}"/></label>
