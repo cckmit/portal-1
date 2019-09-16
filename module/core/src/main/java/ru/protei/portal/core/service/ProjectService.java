@@ -76,6 +76,4 @@ public interface ProjectService {
     Result<Boolean> removeProject( AuthToken token, Long projectId );
 
     Result<List<Project>> listProjects(AuthToken token, ProjectQuery query );
-
-    Result<List<EntityOption>> listFreeProjectsAsEntityOptions(AuthToken authToken);
 }

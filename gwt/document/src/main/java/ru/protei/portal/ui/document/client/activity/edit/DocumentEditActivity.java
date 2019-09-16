@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public abstract class DocumentEditActivity
@@ -76,6 +77,11 @@ public abstract class DocumentEditActivity
                 @Override
                 public void onSuccess(Document result) {
                     fillView(result);
+                    if (view.project().getValue() != null) {
+                        refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+                    } else {
+                        setDesignationVisibility(false);
+                    }
                 }
             });
         }
@@ -92,19 +98,13 @@ public abstract class DocumentEditActivity
         if (!view.saveEnabled().isEnabled())
             return;
 
-        Document newDocument = fillDto();
+        Document newDocument = fillDto(new Document());
 
-        regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
-                .withSuccess(result -> {
-                    project = result;
+        if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
+            return;
+        }
 
-                    if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
-                        return;
-                    }
-
-                    saveDocument(newDocument);
-                })
-        );
+        saveDocument(newDocument);
     }
 
     @Override
@@ -118,16 +118,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onDocumentCategoryChanged() {
-        if (view.project().getValue() == null) {
-            project = null;
-        } else {
-            regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
-                    .withSuccess(result -> {
-                        project = result;
-                        setDesignationVisibility();
-                    })
-            );
-        }
+        setDesignationVisibility(isDesignationVisible(project, view.documentCategory().getValue()));
 
         En_DocumentCategory category = view.documentCategory().getValue();
 
@@ -150,15 +141,10 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onProjectChanged() {
-        if (view.project().getValue() == null) {
-            project = null;
+        if (view.project().getValue() != null) {
+            refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
         } else {
-            regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
-                    .withSuccess(result -> {
-                        project = result;
-                        setDesignationVisibility();
-                    })
-            );
+            setDesignationVisibility(false);
         }
 
         EntityOption project = view.project().getValue();
@@ -182,15 +168,24 @@ public abstract class DocumentEditActivity
         }
     }
 
-    private void setDesignationVisibility() {
-        boolean isDesignationVisible = isDesignationVisible();
+    private void refreshProject(Consumer<Project> consumer) {
+        view.saveEnabled().setEnabled(false);
+        regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+                .withError(error -> view.saveEnabled().setEnabled(true))
+                .withSuccess(result -> {
+                    project = result;
+                    consumer.accept(result);
+                    view.saveEnabled().setEnabled(true);
+                })
+        );
+    }
+
+    private void setDesignationVisibility(boolean isDesignationVisible) {
         view.decimalNumberVisible().setVisible(isDesignationVisible);
         view.inventoryNumberVisible().setVisible(isDesignationVisible);
     }
 
-    private boolean isDesignationVisible() {
-        En_DocumentCategory documentCategory = view.documentCategory().getValue();
-
+    private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
             return false;
 
@@ -277,8 +272,7 @@ public abstract class DocumentEditActivity
     }
 
 
-    private Document fillDto() {
-        Document d = new Document();
+    private Document fillDto(Document d) {
         d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
@@ -309,6 +303,8 @@ public abstract class DocumentEditActivity
         view.keywords().setValue(document.getKeywords());
         view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectInfo().getName(), document.getProjectId()));
         view.version().setValue(document.getVersion());
+        view.inventoryNumber().setValue(document.getInventoryNumber());
+        view.decimalNumberText().setText(document.getDecimalNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.isApproved().setValue(isNew ? false : document.getApproved());
 
@@ -334,19 +330,6 @@ public abstract class DocumentEditActivity
         view.resetFilename();
         view.documentUploader().resetAction();
         view.saveEnabled().setEnabled(true);
-
-        if (view.project().getValue() == null) {
-            project = null;
-        } else {
-            regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
-                    .withSuccess(result -> {
-                        project = result;
-                        setDesignationVisibility();
-                        view.inventoryNumber().setValue(document.getInventoryNumber());
-                        view.decimalNumberText().setText(document.getDecimalNumber());
-                    })
-            );
-        }
     }
 
     @Inject

@@ -161,12 +161,16 @@ public class RegionControllerImpl implements RegionController {
         log.debug("getProjectsEntityOptionList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        List<Project> projects = ServiceUtils.checkResultAndGetData(projectService.listProjects(token, query));
+        Result<List<Project>> response = projectService.listProjects(token, query);
 
-        return projects
-                .stream()
-                .map(project -> new EntityOption(project.getName(), project.getId()))
-                .collect(Collectors.toList());
+        if (response.isOk()) {
+            return response.getData()
+                    .stream()
+                    .map(project -> new EntityOption(project.getName(), project.getId()))
+                    .collect(Collectors.toList());
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Override

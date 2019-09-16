@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.Date;
@@ -32,7 +31,7 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
-    private boolean isFreeProjects;
+    private Boolean isFreeProject;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -119,12 +118,12 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public boolean isFreeProjects() {
-        return isFreeProjects;
+    public Boolean getFreeProject() {
+        return isFreeProject;
     }
 
-    public void setFreeProject(boolean freeProjects) {
-        isFreeProjects = freeProjects;
+    public void setFreeProject(Boolean freeProjects) {
+        isFreeProject = freeProjects;
     }
 
     @Override
@@ -136,7 +135,7 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                isFreeProjects;
+                isFreeProject;
     }
 
     @Override

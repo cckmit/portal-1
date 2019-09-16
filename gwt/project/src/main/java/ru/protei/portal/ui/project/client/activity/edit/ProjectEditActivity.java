@@ -50,9 +50,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         if (event.id == null) {
             project = new Project();
-            //fireEvent(new AppEvents.InitPanelName(lang.newProject()));
         } else {
-            //fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
             requestProject(event.id, this::fillView);
         }
     }
@@ -163,7 +161,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
-        return this.project;
+        return project;
     }
 
     private boolean validateView() {
@@ -192,10 +190,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         return true;
     }
 
-    private boolean isNew(Project project) {
-        return project.getId() == null;
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -204,14 +198,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
-/*    @Inject
-    LocalStorageService localStorageService;*/
 
-    private boolean isNameUnique = true;
     private Project project;
 
     private AppEvents.InitDetails initDetails;
-
-    private static final Logger log = Logger.getLogger(ProjectEditActivity.class.getName());
-    private static final String PROJECT_EDIT = "project_edit_is_preview_displayed";
 }

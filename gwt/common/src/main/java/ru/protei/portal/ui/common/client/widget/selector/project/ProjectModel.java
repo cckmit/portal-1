@@ -36,15 +36,14 @@ public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> 
                 .withSuccess(this::notifySubscribers));
     }
 
-    private ProjectQuery projectQuery = new ProjectQuery();
-
     public void setProjectQuery(ProjectQuery projectQuery) {
         this.projectQuery = projectQuery;
-        refreshOptions();
     }
 
     @Inject
     RegionControllerAsync regionService;
     @Inject
     Lang lang;
+
+    private ProjectQuery projectQuery = new ProjectQuery();
 }

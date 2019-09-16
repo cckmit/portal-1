@@ -343,6 +343,8 @@ public class Project extends AuditableObject implements Removable {
                 ", region=" + region +
                 ", team=" + team +
                 ", deleted=" + deleted +
+                ", manager" + manager +
+                ", contragent" + contragent +
                 '}';
     }
 }

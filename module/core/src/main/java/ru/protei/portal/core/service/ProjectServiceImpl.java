@@ -160,8 +160,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setId(projectFromDb.getId());
         project.setName(projectFromDb.getName());
         project.setCustomerType(En_CustomerType.find(projectFromDb.getLocal()));
-        project.setContragent(new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId()));
-        project.setProductDirection(new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()));
+        project.setContragent(projectFromDb.getInitiatorCompany() == null ? null : new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId()));
+        project.setProductDirection(projectFromDb.getProduct() == null ? null : new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()));
         project.setManager(projectFromDb.getManager() == null ? null : new EntityOption(projectFromDb.getManager().getDisplayShortName(), projectFromDb.getManagerId()));
 
         return ok(project);
@@ -315,23 +315,6 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> result = projects.stream()
                 .map(Project::fromCaseObject).collect(toList());
         return ok(result );
-    }
-
-    @Override
-    public Result<List<EntityOption>> listFreeProjectsAsEntityOptions(AuthToken authToken) {
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-        caseQuery.setSortDir(En_SortDir.ASC);
-        caseQuery.setSortField(En_SortField.case_name);
-        caseQuery.setFreeProjects(true);
-
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
-        List<EntityOption> result = projects
-                .stream()
-                .map(project -> new EntityOption(project.getName(), project.getId()))
-                .collect(toList());
-
-        return ok(result);
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
@@ -528,7 +511,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setFreeProjects(projectQuery.isFreeProjects());
+        caseQuery.setFreeProject(projectQuery.getFreeProject());
 
         return caseQuery;
     }
