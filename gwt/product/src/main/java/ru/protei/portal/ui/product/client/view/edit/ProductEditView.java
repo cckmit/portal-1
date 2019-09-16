@@ -112,7 +112,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setMutableState(En_DevUnitType type) {
         parentsContainerLabel.setText(lang.belongsTo());
-        parentsContainer.removeStyleName("hide");
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
@@ -120,11 +119,18 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             childrenContainerLabel.setText(lang.products());
 
             parentsContainer.addStyleName("hide");
+            childrenContainer.removeStyleName("col-md-6");
+            childrenContainer.addStyleName("col-md-12");
+
             children.setTypes(En_DevUnitType.PRODUCT);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
             descriptionLabel.setInnerText(lang.productDescription());
             childrenContainerLabel.setText(lang.components());
+
+            parentsContainer.removeStyleName("hide");
+            childrenContainer.removeStyleName("col-md-12");
+            childrenContainer.addStyleName("col-md-6");
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
@@ -132,6 +138,10 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             nameLabel.setInnerText(lang.componentName());
             descriptionLabel.setInnerText(lang.componentDescription());
             childrenContainerLabel.setText(lang.components());
+
+            parentsContainer.removeStyleName("hide");
+            childrenContainer.removeStyleName("col-md-12");
+            childrenContainer.addStyleName("col-md-6");
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
