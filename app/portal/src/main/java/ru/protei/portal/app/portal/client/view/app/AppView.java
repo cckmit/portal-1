@@ -1,7 +1,6 @@
 package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
@@ -12,11 +11,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
+import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
-import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
 
 /**
  * Вид основной формы приложения
@@ -195,8 +194,6 @@ public class AppView extends Composite
     @UiField
     Anchor logout;
 
-    @UiField
-    HTMLPanel sidebar;
     @UiField
     HTMLPanel container;
 

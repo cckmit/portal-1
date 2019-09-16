@@ -34,6 +34,15 @@
       }
     }
   }
+  .app-version {
+    color: #788195 !important;
+    width: 100% !important;
+    position: fixed;
+    bottom: 0;
+    line-height: 30px;
+    text-align: center;
+  }
+
 }
 
 .form-group-default div.cs-select {

@@ -26,6 +26,9 @@
                 </div>
                 <div class="clearfix"/>
             </div>
+
+            <g:Label styleName="app-version" ui:field="appVersion"/>
+
         </g:HTMLPanel>
 
         <div class="header">
@@ -76,16 +79,7 @@
                 <g:HTMLPanel ui:field="container" styleName="content"/>
             </div>
         </div>
-        <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar" visible="false">
-            <section class="sidebar">
-                <ul class="sidebar-menu">
-                    <li class="header">
-                        <ui:text from="{lang.appNavHeader}"/>
-                    </li>
-                </ul>
-                <g:Label styleName="app-version" ui:field="appVersion"/>
-            </section>
-        </g:HTMLPanel>
+
 
 
         <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-notice-right"/>
