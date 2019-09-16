@@ -1274,12 +1274,20 @@ td.info {
   color: #ef5350 !important;
 }
 
-.state-opened {
+.state-opened,
+.state-workaround,
+.state-info_request,
+.state-nx_request,
+.state-cust_request {
   color: $info_color !important;
 }
 
 .state-active {
   color: $info_light_color !important;
+}
+
+.state-cust_pending {
+  color: #133aadcf !important;
 }
 
 .state-done {
@@ -1293,6 +1301,11 @@ td.info {
 
 .state-verified {
   color: #607D8B !important;
+}
+
+.state-canceled,
+.state-paused {
+  color: #868686 !important;
 }
 
 /****************/
@@ -1329,8 +1342,8 @@ td.info {
 /*** LABELS OF STATES ***/
 .label-created,
 .label-draft_project,
-.option-draft_project .option-name,
-.option-created .option-name {
+.option-created .option-name,
+.option-draft_project .option-name {
   background-color: #ef5350;
 }
 
@@ -1339,24 +1352,19 @@ td.info {
   font-weight: bold;
 }
 
-.label-opened, .label-workaround, .label-info_request,
-.label-technical_project, .label-nx_request, .label-cust_request,
-.option-technical_project .option-name,
+.label-opened,
+.label-workaround,
+.label-info_request,
+.label-technical_project,
+.label-nx_request,
+.label-cust_request,
 .option-opened .option-name,
 .option-workaround .option-name,
 .option-info_request .option-name,
+.option-technical_project .option-name,
 .option-nx_request .option-name,
 .option-cust_request .option-name {
   background-color: $info_color;
-}
-
-.option-cust_pending .option-name, .label-cust_pending {
-  background-color: #133aadcf;
-}
-
-.case-cust_pending {
-  color: #133aadcf;
-  font-weight: bold;
 }
 
 .case-opened, .case-workaround, .case-info_request,
@@ -1367,8 +1375,8 @@ td.info {
 
 .label-active,
 .label-rkd_prototype,
-.option-rkd_prototype .option-name,
-.option-active .option-name {
+.option-active .option-name,
+.option-rkd_prototype .option-name {
   background-color: $info_light_color;
 }
 
@@ -1377,10 +1385,20 @@ td.info {
   font-weight: bold;
 }
 
+.label-cust_pending,
+.option-cust_pending .option-name {
+  background-color: #133aadcf;
+}
+
+.case-cust_pending {
+  color: #133aadcf;
+  font-weight: bold;
+}
+
 .label-done,
 .label-rkd_product,
-.option-rkd_product .option-name,
-.option-done .option-name {
+.option-done .option-name,
+.option-rkd_product .option-name {
   background-color: #4caf50;
 }
 
@@ -1413,8 +1431,16 @@ td.info {
 }
 
 .label-canceled,
-.option-canceled .option-name {
+.label-paused,
+.option-canceled .option-name,
+.option-paused .option-name {
   background-color: #868686;
+}
+
+.case-canceled,
+.case-paused {
+  color: #868686;
+  font-weight: bold;
 }
 
 .option-name {
