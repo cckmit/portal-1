@@ -60,6 +60,12 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         }
     }
 
+    public void setLazy(boolean isLazy) {
+        if (model != null) {
+            model.setLasy(isLazy);
+        }
+    }
+
     private void fillOptions() {
         clearOptions();
         if (hasNullValue) {

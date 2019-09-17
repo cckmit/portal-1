@@ -62,6 +62,7 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
 
     public void updateQueryAndRequest(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
         updateQuery(selector, enDevUnitState, enDevUnitTypes);
+        lock = false;
         requestOptions(selector, selectorToQuery.get(selector));
     }
 
@@ -72,18 +73,22 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     }
 
     private void requestOptions(SelectorWithModel<ProductShortView> selector, ProductQuery query) {
-        productService.getProductViewList(query, new RequestCallback<List<ProductShortView>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
+        if (!isLasy || !lock) {
+            productService.getProductViewList(query, new RequestCallback<List<ProductShortView>>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    lock = true;
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                }
 
-            @Override
-            public void onSuccess(List<ProductShortView> options) {
-                selector.fillOptions(options);
-                selector.refreshValue();
-            }
-        } );
+                @Override
+                public void onSuccess(List<ProductShortView> options) {
+                    lock = true;
+                    selector.fillOptions(options);
+                    selector.refreshValue();
+                }
+            } );
+        }
     }
 
     private ProductQuery makeQuery(En_DevUnitState enDevUnitState, Set<En_DevUnitType> enDevUnitTypes) {
@@ -95,11 +100,18 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         return query;
     }
 
+    public void setLasy(boolean lasy) {
+        isLasy = lasy;
+    }
+
     @Inject
     Lang lang;
 
     @Inject
     ProductControllerAsync productService;
+
+    private boolean isLasy;
+    private boolean lock = true;
 
     private Map<SelectorWithModel<ProductShortView>, ProductQuery> selectorToQuery = new HashMap<>();
 }
