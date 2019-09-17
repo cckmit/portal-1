@@ -77,7 +77,7 @@ public class CaseQuery extends BaseQuery {
 
     private Integer local;
 
-    private Boolean isFreeProject;
+    private Boolean independentProject;
 
     public CaseQuery() {}
 
@@ -119,7 +119,7 @@ public class CaseQuery extends BaseQuery {
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
-        setFreeProject(query.getFreeProject());
+        setIndependentProject(query.getIndependentProject());
     }
 
     public Long getId() {
@@ -300,12 +300,12 @@ public class CaseQuery extends BaseQuery {
         this.customerSearch = customerSearch;
     }
 
-    public Boolean getFreeProject() {
-        return isFreeProject;
+    public Boolean getIndependentProject() {
+        return independentProject;
     }
 
-    public void setFreeProject(Boolean isFreeProjects) {
-        this.isFreeProject = isFreeProjects;
+    public void setIndependentProject(Boolean independentProject) {
+        this.independentProject = independentProject;
     }
     public Integer getLocal() {
         return local;
@@ -337,7 +337,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
-                getFreeProject();
+                independentProject != null;
     }
 
     @Override

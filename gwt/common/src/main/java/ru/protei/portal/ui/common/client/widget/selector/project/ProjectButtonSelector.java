@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.project;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -27,15 +26,19 @@ public class ProjectButtonSelector
     @Override
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
-        options.forEach(entityOption -> addOption(entityOption));
+        options.forEach(this::addOption);
     }
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
-    public void setProjectQuery(ProjectQuery projectQuery) {
-        model.setProjectQuery(projectQuery);
+    public void setIndependentProject(Boolean independentProject) {
+        model.setIndependentProject(independentProject);
+    }
+
+    public void setLazy(boolean isLazy) {
+        model.setLazy(isLazy);
     }
 
     private ProjectModel model;

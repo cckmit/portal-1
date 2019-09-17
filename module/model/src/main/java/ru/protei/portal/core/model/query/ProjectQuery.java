@@ -31,7 +31,7 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
-    private Boolean isFreeProject;
+    private Boolean independentProject;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -118,12 +118,12 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Boolean getFreeProject() {
-        return isFreeProject;
+    public Boolean getIndependentProject() {
+        return independentProject;
     }
 
-    public void setFreeProject(Boolean freeProjects) {
-        isFreeProject = freeProjects;
+    public void setIndependentProject(Boolean independentProject) {
+        this.independentProject = independentProject;
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                isFreeProject;
+                independentProject != null;
     }
 
     @Override

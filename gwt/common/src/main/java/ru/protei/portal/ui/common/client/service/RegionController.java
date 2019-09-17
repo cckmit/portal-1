@@ -38,5 +38,5 @@ public interface RegionController extends RemoteService {
 
     Boolean removeProject(Long projectId) throws RequestFailedException;
 
-    Project getProjectBaseInfo(Long id) throws RequestFailedException;
+    Project getProjectInfo(Long id) throws RequestFailedException;
 }

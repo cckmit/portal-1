@@ -69,7 +69,7 @@
 
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractProject}"/></label>
-                            <project:ProjectButtonSelector validation="true" hasNullValue="true" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
+                            <project:ProjectButtonSelector validation="true" hasNullValue="true" ui:field="project" lazy="true" defaultValue="{lang.contractProjectNotDefined}"/>
                         </div>
 
                         <div class="form-group col-md-6">

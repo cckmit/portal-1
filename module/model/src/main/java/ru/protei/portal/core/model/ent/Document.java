@@ -70,7 +70,7 @@ public class Document implements Serializable, Downloadable {
     @JdbcColumn(name = "project_id")
     private Long projectId;
     @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private CaseObject projectInfo;
+    private CaseObject project;
 
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
@@ -185,12 +185,12 @@ public class Document implements Serializable, Downloadable {
         this.projectId = projectId;
     }
 
-    public Project getProjectInfo() {
-        return Project.fromCaseObject(projectInfo);
+    public Project getProject() {
+        return Project.fromCaseObject(project);
     }
 
-    public void setProjectInfo(CaseObject projectInfo) {
-        this.projectInfo = projectInfo;
+    public void setProject(CaseObject project) {
+        this.project = project;
     }
 
     public String getVersion() {
@@ -283,7 +283,7 @@ public class Document implements Serializable, Downloadable {
                 ", registrar=" + registrar +
                 ", contractor=" + contractor +
                 ", projectId=" + projectId +
-                ", projectInfo=" + projectInfo +
+                ", project=" + project +
                 ", equipment=" + equipment +
                 ", version='" + version + '\'' +
                 ", created=" + created +

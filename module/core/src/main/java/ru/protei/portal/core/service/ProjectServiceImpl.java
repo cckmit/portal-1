@@ -149,11 +149,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<Project> getProjectBaseInfo(AuthToken token, Long id) {
+    public Result<Project> getProjectInfo(AuthToken token, Long id) {
         CaseObject projectFromDb = caseObjectDAO.get(id);
 
         if (projectFromDb == null) {
-            return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         Project project = new Project();
@@ -511,7 +511,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setFreeProject(projectQuery.getFreeProject());
+        caseQuery.setIndependentProject(projectQuery.getIndependentProject());
 
         return caseQuery;
     }

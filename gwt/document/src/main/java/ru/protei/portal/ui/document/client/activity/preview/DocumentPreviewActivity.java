@@ -53,7 +53,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
         view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
 
-        Project project = document.getProjectInfo();
+        Project project = document.getProject();
         if (project == null) {
             view.setProject("");
             view.setManager("");

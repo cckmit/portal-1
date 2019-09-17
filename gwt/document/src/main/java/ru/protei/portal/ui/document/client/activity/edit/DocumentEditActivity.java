@@ -170,7 +170,7 @@ public abstract class DocumentEditActivity
 
     private void refreshProject(Consumer<Project> consumer) {
         view.saveEnabled().setEnabled(false);
-        regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
                 .withError(error -> view.saveEnabled().setEnabled(true))
                 .withSuccess(result -> {
                     project = result;
@@ -301,7 +301,7 @@ public abstract class DocumentEditActivity
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectInfo().getName(), document.getProjectId()));
+        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProject().getName(), document.getProjectId()));
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.decimalNumberText().setText(document.getDecimalNumber());

@@ -173,8 +173,8 @@ public class CaseObjectSqlBuilder {
                 args.add(query.getLocal());
             }
 
-            if (query.getFreeProject() != null && query.getFreeProject()) {
-                condition.append(" and case_object.id not in (SELECT contract.project_id FROM contract where contract.project_id is not null)");
+            if (query.getIndependentProject() != null && query.getIndependentProject()) {
+                condition.append(" and case_object.id NOT IN (SELECT contract.project_id FROM contract WHERE contract.project_id IS NOT NULL)");
             }
         });
     }

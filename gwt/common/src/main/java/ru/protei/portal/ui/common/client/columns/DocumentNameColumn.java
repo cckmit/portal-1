@@ -33,8 +33,8 @@ public class DocumentNameColumn<T extends Document> extends ClickColumn<T> {
             html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
         }
 
-        if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
-            html.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
+        if (value.getProject() != null && value.getProject().getCustomer() != null) {
+            html.append( "<div class=\"document-name\">" + value.getProject().getCustomer().getCname() + "</div>" );
         }
         html.append( "<br/>" );
         html.append( "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>" );

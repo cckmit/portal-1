@@ -12,7 +12,6 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -38,12 +37,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        ProjectQuery projectQuery = new ProjectQuery();
-        projectQuery.setFreeProject(true);
-
-        project.setProjectQuery(projectQuery);
     }
-    
+
+    @Override
+    public void setIndependentProjects(Boolean independentProjects) {
+        project.setIndependentProject(independentProjects);
+    }
+
     @Override
     public void setActivity(AbstractContractEditActivity activity) {
         this.activity = activity;

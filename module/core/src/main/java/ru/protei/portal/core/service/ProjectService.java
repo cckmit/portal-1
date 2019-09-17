@@ -46,7 +46,7 @@ public interface ProjectService {
      * @param id
      */
     @Privileged( En_Privilege.PROJECT_VIEW )
-    Result<Project> getProjectBaseInfo(AuthToken token, Long id);
+    Result<Project> getProjectInfo(AuthToken token, Long id);
 
     /**
      * Изменяем проект

@@ -25,7 +25,7 @@ public interface RegionControllerAsync {
 
     void getProject(Long id, AsyncCallback<Project> callback);
 
-    void getProjectBaseInfo(Long id, AsyncCallback<Project> callback);
+    void getProjectInfo(Long id, AsyncCallback<Project> callback);
 
     void saveProject(Project project, AsyncCallback<Project> callback);
 

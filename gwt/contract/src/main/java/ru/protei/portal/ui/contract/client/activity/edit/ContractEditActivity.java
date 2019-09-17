@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
@@ -45,6 +46,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ( !policyService.hasAnyPrivilegeOf( En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT )) {
             return;
         }
+
         initDetails.parent.add(view.asWidget());
 
         if(event.id == null) {
@@ -86,7 +88,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void refreshProjectSpecificFields() {
-        regionService.getProjectBaseInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
                 .withSuccess(project -> {
                     view.direction().setValue(project.getProductDirection() == null ? null : project.getProductDirection().getDisplayText());
                     view.manager().setValue(project.getManager() == null ? null : project.getManager().getDisplayText());
@@ -102,6 +104,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void fillView(Contract value) {
         this.contract = value;
+
+        view.setIndependentProjects(true);
 
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {

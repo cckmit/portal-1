@@ -181,7 +181,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            Project project = value.getProjectInfo();
+            Project project = value.getProject();
             if (project == null) {
                 return;
             }

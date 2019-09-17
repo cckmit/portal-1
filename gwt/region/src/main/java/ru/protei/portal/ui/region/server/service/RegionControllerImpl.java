@@ -98,12 +98,12 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project getProjectBaseInfo(Long id) throws RequestFailedException {
-        log.debug("getProjectBaseInfo(): id={}", id);
+    public Project getProjectInfo(Long id) throws RequestFailedException {
+        log.debug("getProjectInfo(): id={}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        Result<Project> response = projectService.getProjectBaseInfo( descriptor.makeAuthToken(), id );
+        Result<Project> response = projectService.getProjectInfo( descriptor.makeAuthToken(), id );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
