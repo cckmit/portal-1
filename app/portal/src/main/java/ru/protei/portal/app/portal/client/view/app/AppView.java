@@ -1,14 +1,18 @@
 package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -91,11 +95,20 @@ public class AppView extends Composite
         if ( isOpened ) {
             RootPanel.get().removeStyleName( "sidebar-open" );
             navbar.removeStyleName("visible");
+            headerDiv.removeClassName("header-padding");
+            brandDiv.removeClassName("hide");
+
             return;
         }
 
         RootPanel.get().addStyleName( "sidebar-open" );
         navbar.addStyleName("visible");
+        headerDiv.addClassName("header-padding");
+        brandDiv.addClassName("hide");
+        RootPanel.get().removeStyleName("menu-pin");
+        actionBarContainer.removeStyleName("p-l-50");
+        actionBarContainer.addStyleName("p-l-30");
+        fixSidebarCheckBox.setChecked(false);
     }
 
     @UiHandler("logo")
@@ -142,6 +155,11 @@ public class AppView extends Composite
             RootPanel.get().addStyleName("menu-pin");
             actionBarContainer.removeStyleName("p-l-30");
             actionBarContainer.addStyleName("p-l-50");
+            RootPanel.get().removeStyleName( "sidebar-open" );
+            navbar.removeStyleName("visible");
+            headerDiv.removeClassName("header-padding");
+            brandDiv.removeClassName("hide");
+
         }
         else {
             RootPanel.get().removeStyleName("menu-pin");
@@ -179,7 +197,7 @@ public class AppView extends Composite
 
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
-           // if (Window.getClientWidth() >= 991) {
+           // if (Window.getClientWidth() > 976) {
                 RootPanel.get().addStyleName("sidebar-visible");
                 navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
                 fixSidebarCheckBox.removeStyleName("hide");
@@ -188,12 +206,34 @@ public class AppView extends Composite
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
-           // if (Window.getClientWidth() >= 991) {
+          //  if (Window.getClientWidth() > 976) {
                 RootPanel.get().removeStyleName("sidebar-visible");
                 navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
                 if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
           //  }
         }, MouseOutEvent.getType() );
+
+       /* Window.addResizeHandler(new ResizeHandler() {
+
+            Timer resizeTimer = new Timer() {
+                @Override
+                public void run() {
+                    if (Window.getClientWidth() <= 990){
+
+
+                    }
+                    else{
+                        brandDiv.removeClassName("hide");
+                    }
+                }
+            };
+
+            @Override
+            public void onResize(ResizeEvent event) {
+                resizeTimer.cancel();
+                resizeTimer.schedule(250);
+            }
+        });*/
     }
 
     @UiField
@@ -235,6 +275,11 @@ public class AppView extends Composite
     @Inject
     @UiField(provided = true)
     LocaleSelector locale;
+    @UiField
+    DivElement headerDiv;
+    @UiField
+    DivElement brandDiv;
+
 
     AbstractAppActivity activity;
 

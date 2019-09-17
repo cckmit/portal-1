@@ -15,7 +15,7 @@
                 </g:Anchor>
 
                 <div class="sidebar-header-controls">
-                    <g:CheckBox ui:field="fixSidebarCheckBox" styleName="hide"/>
+                    <g:CheckBox ui:field="fixSidebarCheckBox" styleName="hide fix-check-box"/>
                 </div>
             </div>
 
@@ -31,12 +31,12 @@
 
         </g:HTMLPanel>
 
-        <div class="header">
+        <div class="header" ui:field="headerDiv">
             <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
 
 
             <div>
-                <div class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
+                <div ui:field="brandDiv" class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
                     <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
                     <b class="m-l-5">PROTEI</b> LTD
                 </div>
