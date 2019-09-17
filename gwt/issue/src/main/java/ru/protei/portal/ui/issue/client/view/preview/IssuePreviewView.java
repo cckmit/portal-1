@@ -74,7 +74,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setCriticality( int value ) {
+    public void setImportance(int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
         this.iconCriticality.setClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value)));
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
@@ -157,48 +157,28 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setJiraVisible(boolean isVisible) {
-        jiraMetaDataContainer.setVisible(isVisible);
+    public HasVisibility jiraContainerVisibility() {
+        return jiraMetaDataContainer;
     }
 
     @Override
     public void setJiraIssueType(String value) {
-        if (StringUtils.isBlank(value)) {
-            jiraIssueTypeContainer.setVisible(false);
-        } else {
-            jiraIssueType.setInnerText(value);
-            jiraIssueTypeContainer.setVisible(true);
-        }
+        jiraIssueType.setInnerText(StringUtils.isEmpty(value) ? "" : value);
     }
 
     @Override
     public void setJiraSeverity(String value) {
-        if (StringUtils.isBlank(value)) {
-            jiraSeverityContainer.setVisible(false);
-        } else {
-            jiraSeverity.setInnerText(value);
-            jiraSeverityContainer.setVisible(true);
-        }
+        jiraSeverity.setInnerText(StringUtils.isEmpty(value) ? "" : value);
     }
 
     @Override
     public void setJiraTimeOfReaction(String value) {
-        if (StringUtils.isBlank(value)) {
-            jiraTimeOfReactionContainer.setVisible(false);
-        } else {
-            jiraTimeOfReaction.setInnerText(value);
-            jiraTimeOfReactionContainer.setVisible(true);
-        }
+        jiraTimeOfReaction.setInnerText(StringUtils.isEmpty(value) ? "" : value);
     }
 
     @Override
     public void setJiraTimeOfDecision(String value) {
-        if (StringUtils.isBlank(value)) {
-            jiraTimeOfDecisionContainer.setVisible(false);
-        } else {
-            jiraTimeOfDecision.setInnerText(value);
-            jiraTimeOfDecisionContainer.setVisible(true);
-        }
+        jiraTimeOfDecision.setInnerText(StringUtils.isEmpty(value) ? "" : value);
     }
 
     @Override

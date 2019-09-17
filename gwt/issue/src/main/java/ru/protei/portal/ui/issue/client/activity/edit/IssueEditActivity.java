@@ -312,9 +312,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.setCaseNumber(issue.getCaseNumber());
 
         if (isNew(issue)) {
+            view.readOnlyNameContainerVisibility().setVisible(false);
+            view.editNameContainerVisibility().setVisible(true);
             view.showComments(false);
             view.getCommentsContainer().clear();
         } else {
+            view.readOnlyNameContainerVisibility().setVisible(true);
+            view.editNameContainerVisibility().setVisible(false);
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())

@@ -3,8 +3,8 @@ package ru.protei.portal.ui.issue.client.view.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -27,7 +27,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
+import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -38,10 +38,7 @@ import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.*;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
@@ -51,7 +48,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformButtonSelector;
 import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
 
 import java.util.Set;
@@ -213,7 +209,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasVisibility numberVisibility(){
-        return number;
+        return numberLabel;
     }
 
     @Override
@@ -274,11 +270,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setNumber(Integer num) {
         if (num == null) {
-            number.setText("");
+            numberLabel.setText("");
             return;
         }
 
-        number.setText("CRM-" + num);
+        numberLabel.setText("CRM-" + num);
     }
 
     @Override
@@ -288,17 +284,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasVisibility privacyVisibility() {
-        return new HasVisibility() {
-            @Override
-            public boolean isVisible() {
-                return local.isVisible();
-            }
-
-            @Override
-            public void setVisible(boolean b) {
-                local.setVisible(b);
-            }
-        };
+        return local;
     }
 
     @Override
@@ -384,6 +370,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return platformContainer;
     }
 
+    @Override
+    public HasVisibility readOnlyNameContainerVisibility() {
+        return readOnlyNameContainer;
+    }
+
+    @Override
+    public HasVisibility editNameContainerVisibility() {
+        return editNameContainer;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -436,7 +432,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             return;
         }
         local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
-        number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
+        numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         caseMetaView.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
         caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE.LINKS_CONTAINER);
@@ -461,7 +457,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
-        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
+        nameLabel.ensureDebugId(DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
         state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
         importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
@@ -496,9 +492,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Anchor copy;
 
     @UiField
-    Label number;
-
-    @UiField
     HTMLPanel numberCopyPanel;
 
     @Inject
@@ -519,7 +512,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    ElapsedTimeTypeSelector timeElapsedType;
+    ElapsedTimeTypeFormSelector timeElapsedType;
 
     @Inject
     @UiField(provided = true)
@@ -561,9 +554,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField(provided = true)
     AttachmentList attachmentContainer;
     @UiField
-    DivElement subscriptions;
-    @UiField
-    HTMLPanel nameContainer;
+    Element subscriptions;
     @UiField
     HTMLPanel caseSubscriptionContainers;
     @Inject
@@ -576,8 +567,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     JiraSLASelector jiraSlaSelector;
 
     @UiField
-    LabelElement nameLabel;
-    @UiField
     LabelElement timeElapsedLabel;
     @UiField
     LabelElement descriptionLabel;
@@ -587,6 +576,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     LabelElement notifiersLabel;
     @UiField
     LabelElement attachmentsLabel;
+    @UiField
+    InlineLabel nameLabel;
+    @UiField
+    HTMLPanel readOnlyNameContainer;
+    @UiField
+    HTMLPanel editNameContainer;
+    @UiField
+    InlineLabel numberLabel;
 
     private AbstractIssueEditActivity activity;
 

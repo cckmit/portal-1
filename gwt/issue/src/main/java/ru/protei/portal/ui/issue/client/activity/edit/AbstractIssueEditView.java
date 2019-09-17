@@ -68,6 +68,10 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility copyVisibility();
 
+    HasVisibility readOnlyNameContainerVisibility();
+
+    HasVisibility editNameContainerVisibility();
+
     void showComments(boolean isShow);
     boolean isAttached();
     HasValue<EntityOption> platform();
