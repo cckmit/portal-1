@@ -102,7 +102,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         boolean isGranted = policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
         clearTagsListView();
         caseTags.stream()
-                .filter(caseTag -> isGranted && (containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) || containsIgnoreCase(caseTag.getName(), searchNameFilter)))
+                .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter) || (isGranted ? containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) : false))
                 .forEach(this::addTagToListView);
     }
 
