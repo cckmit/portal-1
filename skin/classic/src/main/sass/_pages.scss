@@ -32,6 +32,13 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
   width: 100%
 }
 
+@media (min-width: 991px){
+ .header .pg-menu{
+   display: none !important;
+ }
+}
+
+/*
 @media (max-width: 550px) {
   .page-sidebar {
     width: 280px;
@@ -325,3 +332,4 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
         padding-left: 15px
       }
     }
+*/

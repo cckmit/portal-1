@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
@@ -86,13 +87,15 @@ public class AppView extends Composite
     @UiHandler( "toggleButton" )
     public void onToggleButtonClicked( ClickEvent event ) {
         event.preventDefault();
-        boolean isCollapsed = RootPanel.get().getStyleName().contains( "sidebar-collapse" );
-        if ( isCollapsed ) {
-            RootPanel.get().removeStyleName( "sidebar-collapse" );
+        boolean isOpened = RootPanel.get().getStyleName().contains( "sidebar-open" );
+        if ( isOpened ) {
+            RootPanel.get().removeStyleName( "sidebar-open" );
+            navbar.removeStyleName("visible");
             return;
         }
 
-        RootPanel.get().addStyleName( "sidebar-collapse" );
+        RootPanel.get().addStyleName( "sidebar-open" );
+        navbar.addStyleName("visible");
     }
 
     @UiHandler("logo")
@@ -176,16 +179,20 @@ public class AppView extends Composite
 
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
-            RootPanel.get().addStyleName("sidebar-visible");
-            navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
-            fixSidebarCheckBox.removeStyleName("hide");
+           // if (Window.getClientWidth() >= 991) {
+                RootPanel.get().addStyleName("sidebar-visible");
+                navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+                fixSidebarCheckBox.removeStyleName("hide");
+           // }
         }, MouseOverEvent.getType() );
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
-            RootPanel.get().removeStyleName("sidebar-visible");
-            navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
-            if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
+           // if (Window.getClientWidth() >= 991) {
+                RootPanel.get().removeStyleName("sidebar-visible");
+                navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+                if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
+          //  }
         }, MouseOutEvent.getType() );
     }
 

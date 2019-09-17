@@ -32,7 +32,7 @@
         </g:HTMLPanel>
 
         <div class="header">
-            <g:Anchor ui:field="toggleButton" styleName="hide btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
+            <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
 
 
             <div>
