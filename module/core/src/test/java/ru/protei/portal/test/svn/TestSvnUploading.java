@@ -36,39 +36,51 @@ public class TestSvnUploading {
             log.info("Upload successfully committed: " + commitFileInfo);
             SVNCommitInfo commitRemoveInfo = removeDir(repository, dirName);
             log.info("Removal successfully committed: " + commitRemoveInfo);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Assert.fail(t.getMessage());
+        } catch (Throwable throwable) {
+            log.error("Test failed", throwable);
+            Assert.fail(throwable.getMessage());
         }
     }
 
     private SVNCommitInfo commitFile(SVNRepository repository, String dirName) throws SVNException, FileNotFoundException {
-
         String filePath = getResourceFilePath(FILE_PATH);
+        ISVNEditor editor = null;
+        try {
+            editor = repository.getCommitEditor("Test - upload file to dir " + dirName, null);
 
-        ISVNEditor editor = repository.getCommitEditor("Test - upload file to dir " + dirName, null);
+            editor.openRoot(LATEST_REVISION);
+            editor.addDir(dirName, null, LATEST_REVISION);
 
-        editor.openRoot(LATEST_REVISION);
-        editor.addDir(dirName, null, LATEST_REVISION);
+            editor.addFile(filePath, null, LATEST_REVISION);
+            editor.applyTextDelta(filePath, null);
+            SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
+            String checksum = deltaGenerator.sendDelta(filePath, new FileInputStream(filePath), editor, true);
+            editor.closeFile(filePath, checksum);
 
-        editor.addFile(filePath, null, LATEST_REVISION);
-        editor.applyTextDelta(filePath, null);
-        SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-        String checksum = deltaGenerator.sendDelta(filePath, new FileInputStream(filePath), editor, true);
-        editor.closeFile(filePath, checksum);
+            editor.closeDir(); // close 'dirName' directory
+            editor.closeDir(); // close root directory
 
-        editor.closeDir();
-        editor.closeDir();
-
-        return editor.closeEdit();
+            return editor.closeEdit();
+        } catch (Throwable throwable) {
+            log.error("Commit file upload failed", throwable);
+            if (editor != null) editor.abortEdit();
+            throw throwable;
+        }
     }
 
     private SVNCommitInfo removeDir(SVNRepository repository, String dirName) throws SVNException {
-        ISVNEditor editor = repository.getCommitEditor("Test - remove dir " + dirName, null);
-        editor.openRoot(LATEST_REVISION);
-        editor.deleteEntry(dirName, LATEST_REVISION);
-        editor.closeDir();
-        return editor.closeEdit();
+        ISVNEditor editor = null;
+        try {
+            editor = repository.getCommitEditor("Test - remove dir " + dirName, null);
+            editor.openRoot(LATEST_REVISION);
+            editor.deleteEntry(dirName, LATEST_REVISION);
+            editor.closeDir(); // close root directory
+            return editor.closeEdit();
+        } catch (Throwable throwable) {
+            log.error("Commit dir removal failed", throwable);
+            if (editor != null) editor.abortEdit();
+            throw throwable;
+        }
     }
 
     private SVNRepository createSVNRepository() throws SVNException {
