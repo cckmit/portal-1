@@ -6,7 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -30,7 +30,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     public void onShow(ProjectEvents.QuickCreate event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-        initialView(new ProjectInfo());
+        initialView(new Project());
     }
 
     @Event
@@ -52,22 +52,22 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         }
 
         fillProject();
-        regionService.saveProject(project, new FluentCallback<ProjectInfo>()
+        regionService.saveProject(project, new FluentCallback<Project>()
                 .withErrorMessage(lang.errNotSaved())
                 .withSuccess(projectInfo -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(new ProjectEvents.Set(projectInfo));
-                    initialView(new ProjectInfo());
+                    initialView(new Project());
                 }));
     }
 
     @Override
     public void onResetClicked() {
-        initialView(new ProjectInfo());
+        initialView(new Project());
     }
 
-    private void initialView(ProjectInfo project) {
+    private void initialView(Project project) {
         this.project = project;
         view.name().setValue(project.getName());
         view.description().setValue(project.getDescription());
@@ -104,5 +104,5 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     @Inject
     Lang lang;
 
-    private ProjectInfo project;
+    private Project project;
 }

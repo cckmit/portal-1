@@ -11,7 +11,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -114,7 +115,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue<ProjectInfo> project() {
+    public HasValue<EntityOption> project() {
         return project;
     }
 

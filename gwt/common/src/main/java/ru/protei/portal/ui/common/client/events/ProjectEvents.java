@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 
 /**
  * События для вкладки с проектами
@@ -127,11 +127,11 @@ public class ProjectEvents {
      */
     public static class Set {
 
-        public Set(ProjectInfo project) {
+        public Set(Project project) {
             this.project = project;
         }
 
-        public ProjectInfo project;
+        public Project project;
     }
 
     /**

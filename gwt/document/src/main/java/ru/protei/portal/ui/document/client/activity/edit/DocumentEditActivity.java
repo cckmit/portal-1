@@ -7,22 +7,24 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public abstract class DocumentEditActivity
@@ -75,6 +77,11 @@ public abstract class DocumentEditActivity
                 @Override
                 public void onSuccess(Document result) {
                     fillView(result);
+                    if (view.project().getValue() != null) {
+                        refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+                    } else {
+                        setDesignationVisibility(false);
+                    }
                 }
             });
         }
@@ -82,7 +89,7 @@ public abstract class DocumentEditActivity
 
     @Event
     public void onSetProject(ProjectEvents.Set event) {
-        view.project().setValue(event.project);
+        view.project().setValue(new EntityOption(event.project.getName(), event.project.getId()));
         onProjectChanged();
     }
 
@@ -91,10 +98,12 @@ public abstract class DocumentEditActivity
         if (!view.saveEnabled().isEnabled())
             return;
 
-        Document newDocument = fillDto();
+        Document newDocument = fillDto(new Document());
+
         if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
             return;
         }
+
         saveDocument(newDocument);
     }
 
@@ -109,6 +118,8 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onDocumentCategoryChanged() {
+        setDesignationVisibility(isDesignationVisible(project, view.documentCategory().getValue()));
+
         En_DocumentCategory category = view.documentCategory().getValue();
 
         view.documentTypeEnabled().setEnabled(category != null);
@@ -126,20 +137,22 @@ public abstract class DocumentEditActivity
         view.equipmentVisible().setVisible(category.isForEquipment());
 
         setDecimalNumberEnabled();
-        setDesignationVisibility();
-
     }
 
     @Override
     public void onProjectChanged() {
-        ProjectInfo project = view.project().getValue();
+        if (view.project().getValue() != null) {
+            refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+        } else {
+            setDesignationVisibility(false);
+        }
+
+        EntityOption project = view.project().getValue();
         view.equipmentEnabled().setEnabled(project != null);
         view.equipment().setValue(null, true);
 
         if (project != null)
             view.setEquipmentProjectId(project.getId());
-
-        setDesignationVisibility();
     }
 
     @Override
@@ -155,16 +168,24 @@ public abstract class DocumentEditActivity
         }
     }
 
-    private void setDesignationVisibility() {
-        boolean isDesignationVisible = isDesignationVisible();
+    private void refreshProject(Consumer<Project> consumer) {
+        view.saveEnabled().setEnabled(false);
+        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+                .withError(error -> view.saveEnabled().setEnabled(true))
+                .withSuccess(result -> {
+                    project = result;
+                    consumer.accept(result);
+                    view.saveEnabled().setEnabled(true);
+                })
+        );
+    }
+
+    private void setDesignationVisibility(boolean isDesignationVisible) {
         view.decimalNumberVisible().setVisible(isDesignationVisible);
         view.inventoryNumberVisible().setVisible(isDesignationVisible);
     }
 
-    private boolean isDesignationVisible() {
-        En_DocumentCategory documentCategory = view.documentCategory().getValue();
-        ProjectInfo project = view.project().getValue();
-
+    private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
             return false;
 
@@ -196,7 +217,7 @@ public abstract class DocumentEditActivity
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        if (view.project().getValue().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
@@ -251,8 +272,7 @@ public abstract class DocumentEditActivity
     }
 
 
-    private Document fillDto() {
-        Document d = new Document();
+    private Document fillDto(Document d) {
         d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
@@ -280,12 +300,12 @@ public abstract class DocumentEditActivity
         view.executionType().setValue(document.getExecutionType());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
-        view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectInfo());
+        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProject().getName(), document.getProjectId()));
         view.version().setValue(document.getVersion());
-        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
+        view.inventoryNumber().setValue(document.getInventoryNumber());
         view.decimalNumberText().setText(document.getDecimalNumber());
+        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.isApproved().setValue(isNew ? false : document.getApproved());
 
         if (isNew) {
@@ -310,8 +330,6 @@ public abstract class DocumentEditActivity
         view.resetFilename();
         view.documentUploader().resetAction();
         view.saveEnabled().setEnabled(true);
-
-        setDesignationVisibility();
     }
 
     @Inject
@@ -320,7 +338,10 @@ public abstract class DocumentEditActivity
     AbstractDocumentEditView view;
     @Inject
     DocumentControllerAsync documentService;
+    @Inject
+    RegionControllerAsync regionService;
 
+    private Project project;
     private Document document;
     private Profile authorizedProfile;
     private AppEvents.InitDetails initDetails;

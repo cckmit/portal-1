@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.document.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -16,7 +15,7 @@ import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -96,7 +95,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<ProjectInfo> project() {
+    public HasValue<EntityOption> project() {
         return project;
     }
 
@@ -273,7 +272,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @UiHandler("project")
-    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+    public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
         if (activity != null)
             activity.onProjectChanged();
     }

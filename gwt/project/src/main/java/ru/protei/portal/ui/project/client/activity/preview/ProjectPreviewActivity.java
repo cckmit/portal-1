@@ -6,7 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -84,20 +84,20 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             return;
         }
 
-        regionService.getProject( id, new RequestCallback<ProjectInfo>() {
+        regionService.getProject( id, new RequestCallback<Project>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( ProjectInfo value ) {
+            public void onSuccess( Project value ) {
                 fillView( value );
             }
         } );
     }
 
-    private void fillView(ProjectInfo value) {
+    private void fillView(Project value) {
         this.project = value;
 
         view.setHeader( lang.projectHeader(value.getId().toString()) );
@@ -154,7 +154,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     @Inject
     PolicyService policyService;
 
-    private ProjectInfo project;
+    private Project project;
 
     private AppEvents.InitDetails initDetails;
 }

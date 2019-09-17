@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -24,7 +24,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<DocumentType> documentType();
 
-    HasValue<ProjectInfo> project();
+    HasValue<EntityOption> project();
 
     HasValue<PersonShortView> contractor();
 
