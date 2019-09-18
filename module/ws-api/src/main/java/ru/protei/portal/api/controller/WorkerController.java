@@ -333,112 +333,7 @@ public class WorkerController {
 
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        Result<Long> isValid = isValidWorkerRecord(rec);
-        if (isValid.isError()) {
-            logger.debug("error result: {}", isValid.getMessage());
-            return isValid;
-        }
-
-        try {
-
-            OperationData operationData = new OperationData(rec)
-                    .requireHomeItem()
-                    .requireDepartment(null)
-                    .requirePerson(null)
-                    .requireWorker(null)
-                    .requireAccount(null)
-                    .requireRegistration(null);
-
-            if (!operationData.isValid())
-                return operationData.failResult();
-
-            return transactionTemplate.execute(transactionStatus -> {
-
-                try {
-
-                    Person person = operationData.person();
-                    WorkerEntry worker = operationData.worker();
-                    UserLogin userLogin = operationData.account();
-                    EmployeeRegistration employeeRegistration = operationData.registration();
-
-                    convert(rec, person);
-
-                    if (rec.isFired() || rec.isDeleted()) {
-
-                        workerEntryDAO.remove(worker);
-
-                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            person.setFired(rec.isFired(), HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null);
-                            person.setDeleted(rec.isDeleted());
-                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
-
-                            if(userLogin != null) {
-                                if (person.isDeleted()) {
-                                    removeAccount(userLogin);
-                                } else {
-                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                    saveAccount(userLogin);
-                                }
-                            }
-                        }
-
-                        mergePerson(person);
-
-                        if (WSConfig.getInstance().isEnableMigration()) {
-                            Workers workers = new Workers(person.getId());
-                            String departmentName = workers.requireWorkers().getAnyDepartment("");
-                            String positionName = workers.requireWorkers().getAnyPosition("");
-                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
-                        }
-
-                        logger.debug("success result, workerRowId={}", worker.getId());
-                        return ok(person.getId());
-                    }
-
-                    mergePerson(person);
-
-                    if (userLogin == null) userLogin = createLDAPAccount(person);
-                    if (userLogin != null) {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin);
-                    }
-
-                    if (employeeRegistration != null) {
-                        checkRegistrationByPerson(person.getId());
-                        employeeRegistration.setPerson(person);
-                        mergeEmployeeRegistration(employeeRegistration);
-                    }
-
-                    WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
-
-                    worker.setDepartmentId(operationData.department().getId());
-                    worker.setPositionId(position.getId());
-                    worker.setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
-                    worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
-                    worker.setActiveFlag(rec.getActive());
-
-                    mergeWorker(worker);
-
-                    if (WSConfig.getInstance().isEnableMigration()) {
-                        Workers workers = new Workers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
-                        migrationManager.saveExternalEmployee(person, departmentName, positionName);
-                    }
-
-                    logger.debug("success result, workerRowId={}", worker.getId());
-                    return ok(person.getId());
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-        } catch (Exception e) {
-            logger.error("error while update worker's record", e);
-        }
-
-        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+        return update(rec);
     }
 
     /**
@@ -463,7 +358,7 @@ public class WorkerController {
         try {
 
             list.getWorkerRecords().forEach(
-                    p -> results.append(updateWorker(p, request, response))
+                    p -> results.append(update(p))
             );
 
         } catch (Exception e) {
@@ -494,7 +389,7 @@ public class WorkerController {
         try {
 
             list.getWorkerRecords().forEach(
-                    p -> results.append(updateFireDate(p, request, response))
+                    p -> results.append(updateDate(p))
             );
 
         } catch (Exception e) {
@@ -517,79 +412,7 @@ public class WorkerController {
 
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        Result<Long> isValid = isValidWorkerRecord(rec);
-        if (isValid.isError()) {
-            logger.debug("error result: {}", isValid.getMessage());
-            return isValid;
-        }
-
-        try {
-
-            OperationData operationData = new OperationData(rec)
-                    .requirePerson(null);
-
-            if (!operationData.isValid()){
-                try {
-
-                    Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
-                    Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
-
-                    if (newDate == null) return ok();
-                    if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
-
-                    List<Person> personList = personDAO.getListByCondition(
-                            "person.isFired=true and person.lastname=? and person.firstname=? and person.birthday=?",
-                            rec.getLastName(), rec.getFirstName(), rec.getBirthday());
-
-                    if (personList.isEmpty()) return ok();
-
-                    for (Person person : personList) {
-                        if (person.getFireDate() == null || person.getFireDate().before(newDate)) {
-                            person.setFired(newDate);
-                            mergePerson(person);
-                            logger.debug("success result, personId={}", person.getId());
-                            return ok(person.getId());
-                        }
-                    }
-                    return ok();
-                } catch (Exception e){
-                    logger.error("error while update worker's record", e);
-                }
-            }
-            else {
-
-
-                return transactionTemplate.execute(transactionStatus -> {
-
-                    try {
-
-                        Person person = operationData.person();
-
-                        if (person.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
-                            Date currentDate = person.getFireDate();
-                            Date newDate = HelperService.DATE.parse(rec.getFireDate());
-
-                            if (currentDate == null || currentDate.before(newDate)) {
-                                person.setFired(newDate);
-                                mergePerson(person);
-                            }
-                        }
-
-                        logger.debug("success result, personId={}", person.getId());
-                        return ok(person.getId());
-
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-        } catch (Exception e) {
-            logger.error("error while update worker's record", e);
-        }
-
-
-        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+        return updateDate(rec);
     }
 
     /**
@@ -1536,5 +1359,187 @@ public class WorkerController {
         return true;
     }
 
+    private Result<Long> update(WorkerRecord rec){
+        Result<Long> isValid = isValidWorkerRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: {}", isValid.getMessage());
+            return isValid;
+        }
 
+        try {
+
+            OperationData operationData = new OperationData(rec)
+                    .requireHomeItem()
+                    .requireDepartment(null)
+                    .requirePerson(null)
+                    .requireWorker(null)
+                    .requireAccount(null)
+                    .requireRegistration(null);
+
+            if (!operationData.isValid())
+                return operationData.failResult();
+
+            return transactionTemplate.execute(transactionStatus -> {
+
+                try {
+
+                    Person person = operationData.person();
+                    WorkerEntry worker = operationData.worker();
+                    UserLogin userLogin = operationData.account();
+                    EmployeeRegistration employeeRegistration = operationData.registration();
+
+                    convert(rec, person);
+
+                    if (rec.isFired() || rec.isDeleted()) {
+
+                        workerEntryDAO.remove(worker);
+
+                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                            person.setFired(rec.isFired(), HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null);
+                            person.setDeleted(rec.isDeleted());
+                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+
+                            if(userLogin != null) {
+                                if (person.isDeleted()) {
+                                    removeAccount(userLogin);
+                                } else {
+                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                    saveAccount(userLogin);
+                                }
+                            }
+                        }
+
+                        mergePerson(person);
+
+                        if (WSConfig.getInstance().isEnableMigration()) {
+                            Workers workers = new Workers(person.getId());
+                            String departmentName = workers.requireWorkers().getAnyDepartment("");
+                            String positionName = workers.requireWorkers().getAnyPosition("");
+                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
+                        }
+
+                        logger.debug("success result, workerRowId={}", worker.getId());
+                        return ok(person.getId());
+                    }
+
+                    mergePerson(person);
+
+                    if (userLogin == null) userLogin = createLDAPAccount(person);
+                    if (userLogin != null) {
+                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                        saveAccount(userLogin);
+                    }
+
+                    if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
+                        employeeRegistration.setPerson(person);
+                        mergeEmployeeRegistration(employeeRegistration);
+                    }
+
+                    WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
+
+                    worker.setDepartmentId(operationData.department().getId());
+                    worker.setPositionId(position.getId());
+                    worker.setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
+                    worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
+                    worker.setActiveFlag(rec.getActive());
+
+                    mergeWorker(worker);
+
+                    if (WSConfig.getInstance().isEnableMigration()) {
+                        Workers workers = new Workers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
+                        migrationManager.saveExternalEmployee(person, departmentName, positionName);
+                    }
+
+                    logger.debug("success result, workerRowId={}", worker.getId());
+                    return ok(person.getId());
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        } catch (Exception e) {
+            logger.error("error while update worker's record", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
+    private Result<Long> updateDate(WorkerRecord rec){
+        Result<Long> isValid = isValidWorkerRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: {}", isValid.getMessage());
+            return isValid;
+        }
+
+        try {
+
+            OperationData operationData = new OperationData(rec)
+                    .requirePerson(null);
+
+            if (!operationData.isValid()){
+                try {
+
+                    Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
+                    Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
+
+                    if (newDate == null) return ok();
+                    if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
+
+                    List<Person> personList = personDAO.getListByCondition(
+                            "person.isFired=true and person.lastname=? and person.firstname=? and person.birthday=?",
+                            rec.getLastName(), rec.getFirstName(), rec.getBirthday());
+
+                    if (personList.isEmpty()) return ok();
+
+                    for (Person person : personList) {
+                        if (person.getFireDate() == null || person.getFireDate().before(newDate)) {
+                            person.setFired(newDate);
+                            mergePerson(person);
+                            logger.debug("success result, personId={}", person.getId());
+                            return ok(person.getId());
+                        }
+                    }
+                    return ok();
+                } catch (Exception e){
+                    logger.error("error while update worker's record", e);
+                }
+            }
+            else {
+
+
+                return transactionTemplate.execute(transactionStatus -> {
+
+                    try {
+
+                        Person person = operationData.person();
+
+                        if (person.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
+                            Date currentDate = person.getFireDate();
+                            Date newDate = HelperService.DATE.parse(rec.getFireDate());
+
+                            if (currentDate == null || currentDate.before(newDate)) {
+                                person.setFired(newDate);
+                                mergePerson(person);
+                            }
+                        }
+
+                        logger.debug("success result, personId={}", person.getId());
+                        return ok(person.getId());
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+
+        } catch (Exception e) {
+            logger.error("error while update worker's record", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
 }
