@@ -815,11 +815,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentCommonHeader();
 
-    String documentSearchProjectHeader();
+    String documentProjectHeader();
 
-    String documentCreateProjectHeader();
-
-    String documentCreateProductHeader();
+    String documentCreateHeader();
 
     String documentName();
 
@@ -1861,6 +1859,14 @@ public interface Lang extends Messages, ContactItemLang {
     String goToContracts();
 
     String contract();
+
+    String buttonBack();
+
+    String buttonForward();
+
+    String projectSearch();
+
+    String projectCreate();
 
     String issueInitiatorInfo();
 }

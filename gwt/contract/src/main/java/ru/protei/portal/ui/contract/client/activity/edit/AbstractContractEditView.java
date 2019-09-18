@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -14,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface AbstractContractEditView extends IsWidget {
+
+    void setIndependentProjects(Boolean independentProjects);
 
     void setActivity(AbstractContractEditActivity activity);
 
@@ -44,4 +47,10 @@ public interface AbstractContractEditView extends IsWidget {
     HasEnabled costEnabled();
 
     HasValue<EntityOption> project();
+
+    HasValue<String> contragent();
+
+    HasValue<String> manager();
+
+    HasValue<String> direction();
 }

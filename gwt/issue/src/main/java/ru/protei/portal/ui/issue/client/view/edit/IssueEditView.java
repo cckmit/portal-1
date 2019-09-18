@@ -53,6 +53,8 @@ import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.Platf
 
 import java.util.Set;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 
 /**
  * Вид создания и редактирования обращения
@@ -235,8 +237,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void setPrivacyIcon(Boolean isPrivate) {
         if ( isPrivate ) {
             privacyIcon.setClassName("fas fa-lock text-danger m-r-10");
+            privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
         } else {
             privacyIcon.setClassName("fas fa-unlock text-success m-r-10");
+            privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
         }
     }
 
@@ -446,7 +450,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
-//        nameLabel.ensureDebugId(DebugIds.ISSUE.LABEL.NAME);
+        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
         state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
         importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
@@ -574,6 +578,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel nameContainer;
     @UiField
     HTMLPanel timeElapsedEditContainer;
+    @UiField
+    LabelElement nameLabel;
 
     private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
         @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }

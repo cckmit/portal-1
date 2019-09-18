@@ -7,7 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -53,7 +53,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
         view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
 
-        ProjectInfo project = document.getProjectInfo();
+        Project project = document.getProject();
         if (project == null) {
             view.setProject("");
             view.setManager("");

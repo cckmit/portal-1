@@ -2,8 +2,10 @@ package ru.protei.portal.ui.issuereport.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -13,8 +15,6 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
-import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -30,15 +30,17 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, AbstractIssueFilterModel {
+        AbstractIssueReportCreateActivity, AbstractIssueFilterModel {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
         view.getIssueFilter().setModel(this);
-        dialogView.setActivity(this);
-        dialogView.setHeader(lang.issueReportNew());
-        dialogView.getBodyContainer().add(view.asWidget());
+    }
+
+    @Event
+    public void onInitDetails(AppEvents.InitDetails initDetails) {
+        this.initDetails = initDetails;
     }
 
     @Event
@@ -46,17 +48,20 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.fillReportTypes(makeReportTypeList());
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Create event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
         isSaving = false;
         view.reset();
+
         if(!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
             view.getIssueFilter().companies().setValue(companyIds);
             view.getIssueFilter().updateInitiators();
         }
-        dialogView.showPopup();
     }
 
     @Event
@@ -109,7 +114,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         reportController.createReport(report, new FluentCallback<Long>()
                 .withResult(() -> isSaving = false)
                 .withSuccess(result -> {
-                    dialogView.hidePopup();
+                    fireEvent(new Back());
                     fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueReportEvents.Show());
                 })
@@ -118,7 +123,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Override
     public void onCancelClicked() {
-        dialogView.hidePopup();
+        fireEvent(new Back());
     }
 
     @Override
@@ -205,8 +210,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Inject
     AbstractIssueReportCreateView view;
     @Inject
-    AbstractDialogDetailsView dialogView;
-    @Inject
     ReportControllerAsync reportController;
     @Inject
     PolicyService policyService;
@@ -215,4 +218,5 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private Long filterIdToRemove;
     private boolean isSaving;
+    private AppEvents.InitDetails initDetails;
 }

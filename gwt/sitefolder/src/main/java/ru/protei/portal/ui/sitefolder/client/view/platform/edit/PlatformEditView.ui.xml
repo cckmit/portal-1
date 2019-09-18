@@ -54,7 +54,7 @@
 
             <div class="row">
 
-                <tab:TabWidget tabNames="{lang.siteFolderServers}|{lang.siteFolderCompanyContacts}">
+                <tab:TabWidget>
 
                     <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
                         <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">

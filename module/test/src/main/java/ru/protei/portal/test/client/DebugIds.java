@@ -4,6 +4,7 @@ public class DebugIds {
 
     // better to not change this prefix, some libraries (brainworm table for example) hardcoded its value
     public static final String DEBUG_ID_PREFIX = "gwt-debug-";
+    public static final String DEBUG_ID_ATTRIBUTE = "gwt-test-id";
 
     public interface AUTH {
         String INPUT_LOGIN = "auth-input-login";
@@ -156,6 +157,8 @@ public class DebugIds {
     public interface ISSUE {
         String PRIVACY_BUTTON = "issue-privacy-button";
         String PRIVACY_ICON = "issue-privacy-icon";
+        String PRIVACY_ICON_PRIVATE = "issue-privacy-icon-private";
+        String PRIVACY_ICON_PUBLIC = "issue-privacy-icon-public";
         String NUMBER_INPUT = "issue-number-input";
         String NAME_INPUT = "issue-name-input";
         String LINKS_BUTTON = "issue-links-button";

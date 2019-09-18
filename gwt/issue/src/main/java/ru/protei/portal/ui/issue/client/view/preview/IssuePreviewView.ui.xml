@@ -127,7 +127,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="form-group col-md-12">
                             <h5><ui:text from="{lang.comments}"/></h5>
                             <g:HTMLPanel ui:field="commentsContainer"/>
                         </div>

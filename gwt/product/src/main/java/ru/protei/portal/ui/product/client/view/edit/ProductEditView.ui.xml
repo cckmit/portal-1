@@ -53,11 +53,11 @@
                     <div class="row">
                         <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
                             <g:Label ui:field="parentsContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="parents" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
+                            <devunit:DevUnitMultiSelector ui:field="parents" lazy="true" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
                         </g:HTMLPanel>
                         <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
                             <g:Label ui:field="childrenContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="children" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
+                            <devunit:DevUnitMultiSelector ui:field="children" lazy="true" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
                         </g:HTMLPanel>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="container-fluid padding-15 bg-white">
-            <tab:TabWidget tabNames="{lang.productHistoryVersion}|{lang.productConfiguration}|{lang.productCDRDescription}" styleName="">
+            <tab:TabWidget styleName="">
                 <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
                     <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
                 </tab:pane.TabWidgetPane>

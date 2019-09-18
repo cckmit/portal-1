@@ -41,6 +41,7 @@ public abstract class CompanyTableActivity implements
 
         view.getFilterContainer().add(filterView.asWidget());
 
+        filterView.resetFilter();
         query = makeQuery();
     }
 
@@ -153,8 +154,7 @@ public abstract class CompanyTableActivity implements
         CompanyQuery cq = new CompanyQuery(filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
-                true // !!TODO dont known if its needed here
-                );
+                filterView.showDeprecated().getValue());
 
         if(filterView.categories().getValue() != null)
             cq.setCategoryIds(

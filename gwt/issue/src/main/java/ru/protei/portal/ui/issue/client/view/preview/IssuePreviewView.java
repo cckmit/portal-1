@@ -35,6 +35,8 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewVie
 
 import java.util.Set;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 /**
  * Вид превью обращения
  */
@@ -52,13 +54,14 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setPrivateIssue( boolean privateIssue ) {
-        if ( privateIssue ) {
-            this.privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
-            return;
+    public void setPrivateIssue( boolean isPrivate ) {
+        if ( isPrivate ) {
+            privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
+            privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
+        } else {
+            privateIssue.setClassName( "fa fa-unlock-alt text-success m-r-10"  );
+            privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
         }
-
-        this.privateIssue.setClassName( "fa fa-unlock-alt text-success m-r-10"  );
     }
 
     @Override

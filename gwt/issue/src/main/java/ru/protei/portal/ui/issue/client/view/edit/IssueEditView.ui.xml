@@ -37,7 +37,7 @@
                         <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn"/>
 
                         <div class="form-input-group">
-                            <label class="fade">
+                            <label ui:field="nameLabel" class="fade">
                                 <ui:text from="{lang.issueName}"/>
                             </label>
                             <g:TextBox ui:field="name" styleName="form-control"/>

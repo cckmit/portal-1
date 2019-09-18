@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -359,7 +359,7 @@ public class DocumentServiceImpl implements DocumentService {
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        ProjectInfo project = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        Project project = Project.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
         if (project == null) return false;
         else {
             if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {

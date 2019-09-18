@@ -7,7 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -128,17 +128,17 @@ public abstract class ProjectTableActivity
     }
 
     @Override
-    public void onItemClicked( ProjectInfo value ) {
+    public void onItemClicked( Project value ) {
         showPreview( value );
     }
 
     @Override
-    public void onEditClicked( ProjectInfo value ) {
+    public void onEditClicked( Project value ) {
         fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
     @Override
-    public void onRemoveClicked(ProjectInfo value) {
+    public void onRemoveClicked(Project value) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
             return;
         }
@@ -156,20 +156,20 @@ public abstract class ProjectTableActivity
         requestProjects( null );
     }
 
-    private void requestProjects( ProjectInfo rowToSelect ) {
+    private void requestProjects( Project rowToSelect ) {
         if ( rowToSelect == null ) {
             view.clearRecords();
             animation.closeDetails();
         }
 
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
+        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<Project>>>() {
                 @Override
                 public void onError( Throwable throwable ) {
                     fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
                 }
 
                 @Override
-                public void onSuccess( Map<String, List<ProjectInfo>> result ) {
+                public void onSuccess( Map<String, List<Project>> result ) {
                     fillRows( result );
                     if ( rowToSelect != null ) {
                         view.updateRow( rowToSelect );
@@ -179,35 +179,35 @@ public abstract class ProjectTableActivity
     }
 
     private void updateListAndSelect( Long projectId ) {
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
+        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<Project>>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Map<String, List<ProjectInfo>> result ) {
+            public void onSuccess( Map<String, List<Project>> result ) {
                 view.clearRecords();
                 fillRows( result );
-                ProjectInfo info = new ProjectInfo();
+                Project info = new Project();
                 info.setId( projectId );
                 onItemClicked( info );
             }
         } );
     }
 
-    private void fillRows( Map<String, List<ProjectInfo>> result ) {
+    private void fillRows( Map<String, List<Project>> result ) {
         view.clearRecords();
-        for ( Map.Entry<String, List<ProjectInfo>> entry : result.entrySet() ) {
+        for ( Map.Entry<String, List<Project>> entry : result.entrySet() ) {
             view.addSeparator( entry.getKey() );
 
-            for ( ProjectInfo projectInfo : entry.getValue() ) {
-                view.addRow( projectInfo );
+            for ( Project project : entry.getValue() ) {
+                view.addRow(project);
             }
         }
     }
 
-    private void showPreview ( ProjectInfo value ) {
+    private void showPreview ( Project value ) {
         currentValue = value;
         if ( value == null ) {
             animation.closeDetails();
@@ -219,7 +219,7 @@ public abstract class ProjectTableActivity
 
     @Event
     public void onChangeRow( ProjectEvents.ChangeProject event ) {
-        regionService.getProject(event.id, new FluentCallback<ProjectInfo>()
+        regionService.getProject(event.id, new FluentCallback<Project>()
                 .withSuccess(result -> {
                     view.updateRow(result);
                 }));
@@ -275,7 +275,7 @@ public abstract class ProjectTableActivity
     @Inject
     PolicyService policyService;
 
-    ProjectInfo currentValue = null;
+    Project currentValue = null;
     private Long projectIdForRemove = null;
 
     private static String CREATE_ACTION;
