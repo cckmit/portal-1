@@ -1482,28 +1482,33 @@ public class WorkerController {
 
             if (!operationData.isValid()){
                 try {
+                    return transactionTemplate.execute(transactionStatus -> {
+                        try{
+                            Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
+                            Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
 
-                    Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
-                    Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
+                            if (newDate == null) return ok();
+                            if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
 
-                    if (newDate == null) return ok();
-                    if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
+                            List<Person> personList = personDAO.getListByCondition(
+                                    "person.isdeleted=false and person.isfired=true and person.lastname=? and person.firstname=? and person.birthday=?",
+                                    rec.getLastName(), rec.getFirstName(), rec.getBirthday());
 
-                    List<Person> personList = personDAO.getListByCondition(
-                            "person.isdeleted=false and person.isfired=true and person.lastname=? and person.firstname=? and person.birthday=?",
-                            rec.getLastName(), rec.getFirstName(), rec.getBirthday());
+                            if (personList.isEmpty()) return ok();
 
-                    if (personList.isEmpty()) return ok();
-
-                    for (Person person : personList) {
-                        if (person.getFireDate() == null || person.getFireDate().before(newDate)) {
-                            person.setFired(newDate);
-                            mergePerson(person);
-                            logger.debug("success result, personId={}", person.getId());
-                            return ok(person.getId());
+                            for (Person person : personList) {
+                                if (person.getFireDate() == null || person.getFireDate().before(newDate)) {
+                                    person.setFired(newDate);
+                                    mergePerson(person);
+                                    logger.debug("success result, personId={}", person.getId());
+                                    return ok(person.getId());
+                                }
+                            }
+                            return ok();
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
                         }
-                    }
-                    return ok();
+                    });
                 } catch (Exception e){
                     logger.error("error while update worker's record", e);
                 }
