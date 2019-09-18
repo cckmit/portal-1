@@ -5,7 +5,6 @@
 }
 
 @media only screen and (min-width: 992px) {
-
   body.menu-pin .page-container .page-content-wrapper .content {
     padding-left: 270px
   }
@@ -47,22 +46,9 @@
   .fix-sidebar-button{
     display: none !important;
   }
-
-  body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
-    -webkit-transform: translate3d(0px, 0, 0) !important;
-    transform: translate3d(0px, 0, 0) !important;
-    -ms-transform: translate(0px, 0) !important;
-  }
-}
-
-body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
-  -webkit-transform: translate3d(0px, 0, 0) !important;
-  transform: translate3d(0px, 0, 0) !important;
-  -ms-transform: translate(0px, 0) !important;
 }
 
 @media (max-width: 991px) and (min-width: 980px) {
-
   body.menu-pin .page-sidebar {
     transform: none !important;
     -webkit-transform: none !important;
@@ -72,7 +58,6 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   body.menu-pin .page-container .page-content-wrapper .content {
     padding-left: 0px;
   }
-
 }
 
 @media (max-width: 767px) {
@@ -83,19 +68,26 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   }
 }
 
-.page-sidebar .sidebar-menu {
-  height: calc(100% - 90px);
-  position: relative;
-  width: 100%
-}
-
 body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
   -webkit-transform: translate3d(17px, 0, 0);
   transform: translate3d(17px, 0, 0);
   -ms-transform: translate(17px, 0)
 }
+
+body.menu-pin .page-sidebar .menu-items .icon-thumbnail {
+  -webkit-transform: translate3d(0px, 0, 0) !important;
+  transform: translate3d(0px, 0, 0) !important;
+  -ms-transform: translate(0px, 0) !important;
+}
+
+body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
+  -webkit-transform: translate3d(0px, 0, 0) !important;
+  transform: translate3d(0px, 0, 0) !important;
+  -ms-transform: translate(0px, 0) !important;
+}
+
 .fix-sidebar-button{
-  padding-left: 0px !important;
+  padding-left: 2px !important;
 }
 
 [data-toggle-pin=sidebar] > i:before {
@@ -106,30 +98,9 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
   padding-left: 270px;
 }
 
-
-
-
-
-
-
-  body.menu-pin .page-sidebar .menu-items .icon-thumbnail {
-    -webkit-transform: translate3d(0px, 0, 0) !important;
-    transform: translate3d(0px, 0, 0) !important;
-    -ms-transform: translate(0px, 0) !important;
-
-  }
-
-
-
-/*
-.page-sidebar .sidebar-menu .menu-items li{
-  a {
-    padding-left: 15px !important;
-    width: 77% !important;
-  }
-
-  span {
-    margin-right: 11px !important;
-  }
+.page-sidebar .sidebar-menu {
+  height: calc(100% - 90px);
+  position: relative;
+  width: 100%
 }
-*/
+

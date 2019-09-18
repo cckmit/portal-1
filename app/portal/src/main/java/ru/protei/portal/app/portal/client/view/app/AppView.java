@@ -34,6 +34,7 @@ public class AppView extends Composite
         fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
         if (Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ) )){
             fixSidebar();
+            fixSidebarButton.removeStyleName("hide");
         }
     }
 
