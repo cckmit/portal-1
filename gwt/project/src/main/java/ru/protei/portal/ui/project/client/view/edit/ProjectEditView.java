@@ -46,9 +46,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         ensureDebugIds();
         product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
+        product.setDefaultValue(lang.selectIssueProduct());
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
         projectDirection.setDefaultValue(lang.contractSelectDirection());
+        customerType.setDefaultValue(lang.selectCustomerType());
     }
 
     @Override

@@ -3,7 +3,7 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
@@ -33,7 +33,7 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectDirection}"/></label>
-                    <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
+                    <productdirection:ProductDirectionButtonSelector ui:field="projectDirection"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectCustomerType}"/></label>
@@ -41,11 +41,11 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label ui:field="subscriptionsLabel"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                    <company:CompanySelector ui:field="company" defaultValue="{lang.selectIssueCompany}"/>
+                    <company:CompanySelector ui:field="company" hasNullValue="false"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectProducts}"/></label>
-                    <productselector:devunit.DevUnitButtonSelector ui:field="product" hasNullValue="false" addStyleNames="form-group col-xs-12"/>
+                    <devunit:DevUnitButtonSelector ui:field="product"/>
                 </div>
                 <div class="form-group col-md-12">
                     <label ui:field="descriptionLabel"><ui:text from="{lang.projectDescription}"/></label>
