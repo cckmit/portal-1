@@ -33,10 +33,7 @@ public class AppView extends Composite
         initHandlers();
         fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
         if (Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ) )){
-            RootPanel.get().addStyleName("menu-pin");
-            actionBarContainer.removeStyleName("p-l-30");
-            actionBarContainer.addStyleName("p-l-50");
-            fixSidebarButton.addStyleName("fixed-sidebar");
+            fixSidebar();
         }
     }
 
@@ -96,21 +93,11 @@ public class AppView extends Composite
         event.preventDefault();
         boolean isOpened = RootPanel.get().getStyleName().contains( "sidebar-open" );
         if ( isOpened ) {
-            RootPanel.get().removeStyleName( "sidebar-open" );
-            navbar.removeStyleName("visible");
-            headerDiv.removeClassName("header-padding");
-            brandDiv.removeClassName("hide");
+            closeSidebar();
             return;
         }
-
-        RootPanel.get().addStyleName( "sidebar-open" );
-        navbar.addStyleName("visible");
-        headerDiv.addClassName("header-padding");
-        brandDiv.addClassName("hide");
-        RootPanel.get().removeStyleName("menu-pin");
-        actionBarContainer.removeStyleName("p-l-50");
-        actionBarContainer.addStyleName("p-l-30");
-        fixSidebarButton.removeStyleName("fixed-sidebar");
+        openSidebar();
+        unfixSidebar();
     }
 
     @UiHandler("logo")
@@ -156,20 +143,11 @@ public class AppView extends Composite
         localStorageService.set( "fixed-sidebar", String.valueOf(!fixSidebarButton.getStyleName().contains("fixed-sidebar")));
 
         if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")){
-            RootPanel.get().addStyleName("menu-pin");
-            actionBarContainer.removeStyleName("p-l-30");
-            actionBarContainer.addStyleName("p-l-50");
-            RootPanel.get().removeStyleName( "sidebar-open" );
-            navbar.removeStyleName("visible");
-            headerDiv.removeClassName("header-padding");
-            brandDiv.removeClassName("hide");
-            fixSidebarButton.addStyleName("fixed-sidebar");
+            fixSidebar();
+            closeSidebar();
         }
         else {
-            RootPanel.get().removeStyleName("menu-pin");
-            actionBarContainer.removeStyleName("p-l-50");
-            actionBarContainer.addStyleName("p-l-30");
-            fixSidebarButton.removeStyleName("fixed-sidebar");
+            unfixSidebar();
         }
     }
 
@@ -213,6 +191,34 @@ public class AppView extends Composite
             navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
             if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")) fixSidebarButton.addStyleName("hide");
         }, MouseOutEvent.getType() );
+    }
+
+    private void fixSidebar(){
+        RootPanel.get().addStyleName("menu-pin");
+        actionBarContainer.removeStyleName("p-l-30");
+        actionBarContainer.addStyleName("p-l-50");
+        fixSidebarButton.addStyleName("fixed-sidebar");
+    }
+
+    private void unfixSidebar(){
+        RootPanel.get().removeStyleName("menu-pin");
+        actionBarContainer.removeStyleName("p-l-50");
+        actionBarContainer.addStyleName("p-l-30");
+        fixSidebarButton.removeStyleName("fixed-sidebar");
+    }
+
+    private void openSidebar(){
+        RootPanel.get().addStyleName( "sidebar-open" );
+        navbar.addStyleName("visible");
+        headerDiv.addClassName("header-padding");
+        brandDiv.addClassName("hide");
+    }
+
+    private void closeSidebar(){
+        RootPanel.get().removeStyleName( "sidebar-open" );
+        navbar.removeStyleName("visible");
+        headerDiv.removeClassName("header-padding");
+        brandDiv.removeClassName("hide");
     }
 
     @UiField
