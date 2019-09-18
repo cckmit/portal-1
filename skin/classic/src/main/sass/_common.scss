@@ -1526,30 +1526,29 @@ a {
   color: #8b8b8b;
 }
 
-
-.btn.private-btn {
-  padding: 0;
+.private-btn {
+  padding: 10px 7px;
   min-width: 30px;
-  border: 0;
-  height: 28px;
-  background: none;
+  border-left: 0;
+  font-weight: 900;
 
-  &.btn-down:after,
-  &.btn-down-hovering:after {
-    font-family: "Font Awesome 5 Free", serif;
-    content: "\f023";
-    font-size: 1.6em;
-    color: $danger_color;
-    font-weight: 900;
+  &.input-group-addon-up {
+    background-color: teal !important;
+    border-color: #1f4c4c;
   }
 
-  &.btn-up:after,
-  &.btn-up-hovering:after {
+  &.input-group-addon-down:after,
+  &.input-group-addon-down-hovering:after {
+    font-family: "Font Awesome 5 Free", serif;
+    content: "\f023";
+    font-size: 1.2em;
+  }
+
+  &.input-group-addon-up:after,
+  &.input-group-addon-up-hovering:after {
     font-family: "Font Awesome 5 Free", serif;
     content: "\f13e";
-    font-size: 1.6em;
-    color: $success_color;
-    font-weight: 900;
+    font-size: 1.2em;
   }
 }
 
@@ -2107,7 +2106,6 @@ a {
   .case-tag-close {
     height: 12px;
     width: 12px;
-    padding: 5px 2px 5px 4px;
     font-size: 0.8em;
     color: inherit;
     cursor: pointer;
@@ -4100,4 +4098,8 @@ table {
       }
     }
   }
+}
+
+.b-t-none {
+  border-top: none;
 }

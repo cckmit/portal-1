@@ -4,13 +4,13 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.issueimportance.btngroup'
              xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
-             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -88,12 +88,12 @@
 
             <div ui:field="importanceContainer" class="form-group col-md-4">
                 <label><ui:text from="{lang.issueImportance}"/></label><br/>
-                <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
             </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8">
                 <label><ui:text from="{lang.issueState}"/></label>
-                <optionlist:IssueStatesOptionList ui:field="state"/>
+                <issuestate:IssueStatesOptionList ui:field="state"/>
             </div>
         </div>
 

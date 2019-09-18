@@ -1867,4 +1867,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSearch();
 
     String projectCreate();
+
+    String issueInitiatorInfo();
 }
