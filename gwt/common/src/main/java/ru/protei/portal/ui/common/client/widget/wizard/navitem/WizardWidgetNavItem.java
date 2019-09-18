@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.tab.navitem;
+package ru.protei.portal.ui.common.client.widget.wizard.navitem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -10,16 +10,16 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.ui.common.client.widget.tab.TabWidgetHandler;
+import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetHandler;
 
-public class TabWidgetNavItem extends Composite {
+public class WizardWidgetNavItem extends Composite {
 
-    public TabWidgetNavItem() {
+    public WizardWidgetNavItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setActivity(TabWidgetHandler activity) {
-        this.activity = activity;
+    public void setHandler(WizardWidgetHandler handler) {
+        this.handler = handler;
     }
 
     public void setActive() {
@@ -28,6 +28,10 @@ public class TabWidgetNavItem extends Composite {
 
     public void setInActive() {
         anchor.removeStyleName("active show");
+    }
+
+    public void setSelectable(boolean isSelectable) {
+        this.isSelectable = isSelectable;
     }
 
     public void setTabName(String tabName) {
@@ -49,8 +53,11 @@ public class TabWidgetNavItem extends Composite {
     @UiHandler("anchor")
     public void anchorClick(ClickEvent event) {
         event.preventDefault();
-        if (activity != null) {
-            activity.onTabSelected(tabName);
+        if (!isSelectable) {
+            return;
+        }
+        if (handler != null) {
+            handler.onTabSelected(tabName);
         }
     }
 
@@ -63,9 +70,10 @@ public class TabWidgetNavItem extends Composite {
     @UiField
     SpanElement text;
 
+    private boolean isSelectable;
     private String tabName;
-    private TabWidgetHandler activity;
+    private WizardWidgetHandler handler;
 
-    interface TabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, TabWidgetNavItem> {}
+    interface TabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, WizardWidgetNavItem> {}
     private static TabWidgetNavItemUiBinder ourUiBinder = GWT.create(TabWidgetNavItemUiBinder.class);
 }

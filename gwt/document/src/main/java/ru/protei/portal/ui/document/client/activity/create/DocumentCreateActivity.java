@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.activity.edit;
+package ru.protei.portal.ui.document.client.activity.create;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -9,18 +9,18 @@ import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public abstract class DocumentEditActivity implements Activity, AbstractDocumentEditActivity {
+public abstract class DocumentCreateActivity implements Activity, AbstractDocumentCreateActivity, WizardWidgetActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setWizardActivity(this);
     }
 
     @Event
@@ -29,21 +29,27 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
     }
 
     @Event
-    public void onShow(DocumentEvents.Edit event) {
+    public void onShow(DocumentEvents.Create event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        requestDocument(event.id, document -> {
-            fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), document, TAG));
-        });
+        fireEvent(new ProjectEvents.Search(view.projectSearchContainer()));
+        fireEvent(new ProjectEvents.QuickCreate(view.projectCreateContainer()));
+        fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), new Document(), TAG));
+        onProjectSearchClicked();
+    }
+
+    @Event
+    public void onSetProject(ProjectEvents.Set event) {
+        fireEvent(new DocumentEvents.Form.SetProject(event.project, TAG));
     }
 
     @Override
-    public void onCloseClicked() {
+    public void onClose() {
         fireEvent(new Back());
     }
 
     @Override
-    public void onSaveClicked() {
+    public void onDone() {
         fireEvent(new DocumentEvents.Form.Save(TAG));
     }
 
@@ -57,19 +63,25 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
         fireEvent(new Back());
     }
 
-    private void requestDocument(Long documentId, Consumer<Document> onSuccess) {
-        documentService.getDocument(documentId, new FluentCallback<Document>()
-            .withErrorMessage(lang.errGetObject())
-            .withSuccess(onSuccess));
+    @Override
+    public void onProjectSearchClicked() {
+        view.projectSearchContainerVisibility().setVisible(true);
+        view.projectCreateContainerVisibility().setVisible(false);
+        view.setProjectSearchActive();
+    }
+
+    @Override
+    public void onProjectCreateClicked() {
+        view.projectSearchContainerVisibility().setVisible(false);
+        view.projectCreateContainerVisibility().setVisible(true);
+        view.setProjectCreateActive();
     }
 
     @Inject
     Lang lang;
     @Inject
-    AbstractDocumentEditView view;
-    @Inject
-    DocumentControllerAsync documentService;
+    AbstractDocumentCreateView view;
 
     private AppEvents.InitDetails initDetails;
-    private final String TAG = "DocumentEditActivity";
+    private final String TAG = "DocumentCreateActivity";
 }

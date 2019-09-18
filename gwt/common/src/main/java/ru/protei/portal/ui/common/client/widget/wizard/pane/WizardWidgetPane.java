@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.tab.pane;
+package ru.protei.portal.ui.common.client.widget.wizard.pane;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,9 +10,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
-public class TabWidgetPane extends Composite implements HasWidgets {
+public class WizardWidgetPane extends Composite implements HasWidgets {
 
-    public TabWidgetPane() {
+    public WizardWidgetPane() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -60,12 +60,30 @@ public class TabWidgetPane extends Composite implements HasWidgets {
         return tabIcon;
     }
 
+    public void setButtonBack(String buttonBack) {
+        this.buttonBack = buttonBack;
+    }
+
+    public String getButtonBack() {
+        return buttonBack;
+    }
+
+    public void setButtonForward(String buttonForward) {
+        this.buttonForward = buttonForward;
+    }
+
+    public String getButtonForward() {
+        return buttonForward;
+    }
+
     @UiField
     HTMLPanel root;
 
     private String tabName;
     private String tabIcon;
+    private String buttonBack;
+    private String buttonForward;
 
-    interface TabWidgetContentUiBinder extends UiBinder<HTMLPanel, TabWidgetPane> {}
+    interface TabWidgetContentUiBinder extends UiBinder<HTMLPanel, WizardWidgetPane> {}
     private static TabWidgetContentUiBinder ourUiBinder = GWT.create(TabWidgetContentUiBinder.class);
 }
