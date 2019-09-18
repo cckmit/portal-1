@@ -1490,7 +1490,7 @@ public class WorkerController {
                     if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
 
                     List<Person> personList = personDAO.getListByCondition(
-                            "person.isFired=true and person.lastname=? and person.firstname=? and person.birthday=?",
+                            "person.isdeleted=false and person.isfired=true and person.lastname=? and person.firstname=? and person.birthday=?",
                             rec.getLastName(), rec.getFirstName(), rec.getBirthday());
 
                     if (personList.isEmpty()) return ok();
