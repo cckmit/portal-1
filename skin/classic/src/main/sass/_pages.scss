@@ -1,5 +1,5 @@
 @media (min-width: 992px){
-  .header .pg-menu{
+  .header .toggle-sidebar{
     display: none !important;
   }
 }
@@ -84,6 +84,9 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
   padding-left: 0px !important;
 }
 
+[data-toggle-pin=sidebar] > i:before {
+  content: "\f111"
+}
 
 .header-padding{
   padding-left: 265px;

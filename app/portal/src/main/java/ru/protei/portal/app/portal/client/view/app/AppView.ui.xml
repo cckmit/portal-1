@@ -16,7 +16,7 @@
 
                 <div class="sidebar-header-controls">
                     <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
-                        <i class="fa fs-12"></i>
+                        <i class="far fs-12"></i>
                     </g:Button>
                 </div>
             </div>
@@ -34,7 +34,7 @@
         </g:HTMLPanel>
 
         <div class="header" ui:field="headerDiv">
-            <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
+            <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up fas fa-bars"/>
 
 
             <div>
