@@ -181,7 +181,7 @@ public class AppView extends Composite
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
             RootPanel.get().addStyleName("sidebar-visible");
-            navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+            navbar.getElement().getStyle().setProperty("transform", "translate(200px, 0px)");
             fixSidebarButton.removeStyleName("hide");
         }, MouseOverEvent.getType() );
 
@@ -196,13 +196,13 @@ public class AppView extends Composite
     private void fixSidebar(){
         RootPanel.get().addStyleName("menu-pin");
         actionBarContainer.removeStyleName("p-l-30");
-        actionBarContainer.addStyleName("p-l-50");
+        actionBarContainer.addStyleName("p-l-40");
         fixSidebarButton.addStyleName("fixed-sidebar");
     }
 
     private void unfixSidebar(){
         RootPanel.get().removeStyleName("menu-pin");
-        actionBarContainer.removeStyleName("p-l-50");
+        actionBarContainer.removeStyleName("p-l-40");
         actionBarContainer.addStyleName("p-l-30");
         fixSidebarButton.removeStyleName("fixed-sidebar");
     }

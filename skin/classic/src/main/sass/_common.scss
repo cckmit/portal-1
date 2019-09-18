@@ -4093,12 +4093,21 @@ label {
       }
     }
   }
-  .menu-pin & {
-    .table-pager {
-      margin-left: 280px;
-      width: calc(100% - 280px);
+  @media (min-width: 992px) {
+    .menu-pin & {
+      .table-pager {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+      }
     }
   }
+  @media (max-width: 991px) {
+      .table-pager {
+        margin-left: 15px;
+        width: calc(100% - 15px);
+      }
+  }
+
 }
 
 .footer-fixable .card-footer {
