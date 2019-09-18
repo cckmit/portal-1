@@ -19,4 +19,8 @@ public interface SelectorWithModel<T> {
     void setSelectorModel( SelectorModel<T> selectorModel );
 
     boolean isAttached();
+
+    default boolean isLazy() {
+        return false;
+    }
 }

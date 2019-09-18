@@ -4033,8 +4033,9 @@ label {
   vertical-align: bottom;
 }
 
-.prepend-fix {
-  width: 35px;
+.input-group-text-fix {
+  min-width: 40px;
+  justify-content: center;
 }
 
 .number-copy-panel {

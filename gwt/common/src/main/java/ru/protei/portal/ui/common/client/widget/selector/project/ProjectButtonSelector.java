@@ -29,6 +29,11 @@ public class ProjectButtonSelector
         options.forEach(this::addOption);
     }
 
+    @Override
+    public boolean isLazy() {
+        return isLazy;
+    }
+
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -38,9 +43,10 @@ public class ProjectButtonSelector
     }
 
     public void setLazy(boolean isLazy) {
-        model.setLazy(isLazy);
+        this.isLazy = isLazy;
     }
 
+    private boolean isLazy;
     private ProjectModel model;
     private String defaultValue;
 }

@@ -28,23 +28,15 @@ public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> 
 
     @Override
     protected void refreshOptions() {
-        if (!isLazy || !lock) {
-            regionService.getProjectsEntityOptionList(projectQuery, new FluentCallback<List<EntityOption>>()
-                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                    .withSuccess(this::notifySubscribers)
-            );
-        }
+        regionService.getProjectsEntityOptionList(projectQuery, new FluentCallback<List<EntityOption>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(this::notifySubscribers)
+        );
     }
 
     void setIndependentProject(Boolean independentProject) {
         this.projectQuery = makeQuery(independentProject);
-        lock = false;
         refreshOptions();
-        lock = true;
-    }
-
-    void setLazy(boolean isLazy) {
-        this.isLazy = isLazy;
     }
 
     private ProjectQuery makeQuery(Boolean independentProject) {
@@ -59,7 +51,5 @@ public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> 
     @Inject
     Lang lang;
 
-    private boolean lock = true;
-    private boolean isLazy;
     private ProjectQuery projectQuery = new ProjectQuery();
 }

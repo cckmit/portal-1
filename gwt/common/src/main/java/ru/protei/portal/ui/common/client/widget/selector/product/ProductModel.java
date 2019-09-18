@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class ProductModel implements Activity, SelectorModel<ProductShortView> {
@@ -34,21 +35,21 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         getOptionsFromServer(selector);
     }
 
-    public void getOptionsFromServer(SelectorWithModel<ProductShortView> selector) {
-        if (selector == null) {
-            return;
-        }
-        if (selector.getValues() == null || selector.getValues().isEmpty()) {
-            requestOptions(selector, selectorToQuery.get(selector));
-        }
-    }
-
     @Override
     public void onSelectorUnload(SelectorWithModel<ProductShortView> selector) {
         if (selector == null) {
             return;
         }
         selector.clearOptions();
+    }
+
+    public void getOptionsFromServer(SelectorWithModel<ProductShortView> selector) {
+        if (selector == null || selector.isLazy()) {
+            return;
+        }
+        if (selector.getValues() == null || selector.getValues().isEmpty()) {
+            requestOptions(selector, selectorToQuery.get(selector));
+        }
     }
 
     public void subscribe(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
@@ -62,7 +63,6 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
 
     public void updateQueryAndRequest(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
         updateQuery(selector, enDevUnitState, enDevUnitTypes);
-        lock = false;
         requestOptions(selector, selectorToQuery.get(selector));
     }
 
@@ -73,22 +73,18 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     }
 
     private void requestOptions(SelectorWithModel<ProductShortView> selector, ProductQuery query) {
-        if (!isLasy || !lock) {
-            productService.getProductViewList(query, new RequestCallback<List<ProductShortView>>() {
-                @Override
-                public void onError(Throwable throwable) {
-                    lock = true;
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                }
+        productService.getProductViewList(query, new RequestCallback<List<ProductShortView>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
 
-                @Override
-                public void onSuccess(List<ProductShortView> options) {
-                    lock = true;
-                    selector.fillOptions(options);
-                    selector.refreshValue();
-                }
-            } );
-        }
+            @Override
+            public void onSuccess(List<ProductShortView> options) {
+                selector.fillOptions(options);
+                selector.refreshValue();
+            }
+        } );
     }
 
     private ProductQuery makeQuery(En_DevUnitState enDevUnitState, Set<En_DevUnitType> enDevUnitTypes) {
@@ -100,18 +96,11 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         return query;
     }
 
-    public void setLasy(boolean lasy) {
-        isLasy = lasy;
-    }
-
     @Inject
     Lang lang;
 
     @Inject
     ProductControllerAsync productService;
-
-    private boolean isLasy;
-    private boolean lock = true;
 
     private Map<SelectorWithModel<ProductShortView>, ProductQuery> selectorToQuery = new HashMap<>();
 }

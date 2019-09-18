@@ -32,13 +32,14 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );
     }
+
     public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
-        if ( model != null ) {
+        if (model != null) {
             model.updateQuery(this, enDevUnitState, enDevUnitTypes);
         }
     }
 
-    public void setDefaultValue( String value ) {
+    public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
     private String defaultValue = null;
