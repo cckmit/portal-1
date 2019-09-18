@@ -15,7 +15,9 @@
                 </g:Anchor>
 
                 <div class="sidebar-header-controls">
-                    <g:CheckBox ui:field="fixSidebarCheckBox" styleName="hide fix-check-box"/>
+                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
+                        <i class="fa fs-12"></i>
+                    </g:Button>
                 </div>
             </div>
 

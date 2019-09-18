@@ -5,15 +5,11 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
@@ -34,7 +30,7 @@ public class AppView extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         initHandlers();
-        fixSidebarCheckBox.getElement().setAttribute("data-toggle-pin", "sidebar");
+        fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
     }
 
     @Override
@@ -107,7 +103,7 @@ public class AppView extends Composite
         RootPanel.get().removeStyleName("menu-pin");
         actionBarContainer.removeStyleName("p-l-50");
         actionBarContainer.addStyleName("p-l-30");
-        fixSidebarCheckBox.setChecked(false);
+        fixSidebarButton.removeStyleName("fixed-sidebar");
     }
 
     @UiHandler("logo")
@@ -148,9 +144,9 @@ public class AppView extends Composite
         activity.onLocaleChanged(event.getValue().getLocale());
     }
 
-    @UiHandler("fixSidebarCheckBox")
+    @UiHandler("fixSidebarButton")
     public void onChecked (ClickEvent event){
-        if (fixSidebarCheckBox.isChecked()){
+        if (fixSidebarButton.getStyleName().contains("fixed-sidebar")){
             RootPanel.get().addStyleName("menu-pin");
             actionBarContainer.removeStyleName("p-l-30");
             actionBarContainer.addStyleName("p-l-50");
@@ -158,12 +154,14 @@ public class AppView extends Composite
             navbar.removeStyleName("visible");
             headerDiv.removeClassName("header-padding");
             brandDiv.removeClassName("hide");
+            fixSidebarButton.removeStyleName("fixed-sidebar");
 
         }
         else {
             RootPanel.get().removeStyleName("menu-pin");
             actionBarContainer.removeStyleName("p-l-50");
             actionBarContainer.addStyleName("p-l-30");
+            fixSidebarButton.addStyleName("fixed-sidebar");
         }
     }
 
@@ -198,14 +196,14 @@ public class AppView extends Composite
         navbar.addHandler( event -> {
             RootPanel.get().addStyleName("sidebar-visible");
             navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
-            fixSidebarCheckBox.removeStyleName("hide");
+            fixSidebarButton.removeStyleName("hide");
         }, MouseOverEvent.getType() );
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
             RootPanel.get().removeStyleName("sidebar-visible");
             navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
-            if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
+            if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")) fixSidebarButton.addStyleName("hide");
         }, MouseOutEvent.getType() );
     }
 
@@ -244,7 +242,7 @@ public class AppView extends Composite
     @UiField
     Button profile;
     @UiField
-    CheckBox fixSidebarCheckBox;
+    Button fixSidebarButton;
     @Inject
     @UiField(provided = true)
     LocaleSelector locale;
