@@ -40,7 +40,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
     HasValue<ProductShortView> product();
-    HasValue<Boolean> isLocal();
+    HasValue<Boolean> isPrivate();
     HasValue<Set<PersonShortView>> notifiers();
     HasValue<Set<CaseLink>> links();
     HasValue<Set<CaseTag>> tags();
@@ -63,20 +63,23 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
+
+    HasVisibility numberContainerVisibility();
+
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
+    void setCreatedBy(String value);
+
     HasVisibility copyVisibility();
-
-    HasVisibility readOnlyNameContainerVisibility();
-
-    HasVisibility editNameContainerVisibility();
 
     void showComments(boolean isShow);
     boolean isAttached();
     HasValue<EntityOption> platform();
 
     HasVisibility platformVisibility();
+
+    void setPrivacyIcon(Boolean isPrivate);
 
     HasVisibility saveVisibility();
 
@@ -90,9 +93,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
     HasVisibility timeElapsedLabelVisibility();
-    HasVisibility timeElapsedInputVisibility();
-    void setTimeElapseTypeVisibility( boolean isVisible );
-
+    HasVisibility timeElapsedEditContainerVisibility();
 
     HasEnabled saveEnabled();
 
@@ -113,4 +114,5 @@ public interface AbstractIssueEditView extends IsWidget {
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
     String DESCRIPTION = "description";
+
 }

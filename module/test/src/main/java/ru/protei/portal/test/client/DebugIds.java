@@ -155,6 +155,7 @@ public class DebugIds {
 
     public interface ISSUE {
         String PRIVACY_BUTTON = "issue-privacy-button";
+        String PRIVACY_ICON = "issue-privacy-icon";
         String NUMBER_INPUT = "issue-number-input";
         String NAME_INPUT = "issue-name-input";
         String LINKS_BUTTON = "issue-links-button";

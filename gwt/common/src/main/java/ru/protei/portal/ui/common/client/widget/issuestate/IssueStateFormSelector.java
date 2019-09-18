@@ -57,7 +57,7 @@ public class IssueStateFormSelector extends FormSelector<En_CaseState> implement
 
     private DisplayOptionCreator<En_CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseState -> new DisplayOption(makeCaseStateName(caseState));
+            return caseState -> new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase());
         }
         return new DisplayOptionCreator<En_CaseState>() {
             @Override

@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -73,11 +74,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
 
         copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
     }
 
     @Override
@@ -141,8 +137,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<Boolean> isLocal() {
-        return local;
+    public HasValue<Boolean> isPrivate() {
+        return privacyButton;
     }
 
     @Override
@@ -152,24 +148,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasValue<Set<CaseLink>> links() {
-        return new HasValue<Set<CaseLink>>() {
-            @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
-            @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
-            @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
-            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
-            @Override public void fireEvent(GwtEvent<?> event) {}
-        };
+        return linksHasValue;
     }
 
     @Override
     public HasValue<Set<CaseTag>> tags() {
-        return new HasValue<Set<CaseTag>>() {
-            @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
-            @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
-            @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
-            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
-            @Override public void fireEvent(GwtEvent<?> event) {}
-        };
+        return tagsHasValue;
     }
 
     @Override
@@ -179,7 +163,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasValidable nameValidator() {
-        return name;
+        return nameValidator;
     }
 
     @Override
@@ -233,6 +217,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasVisibility numberContainerVisibility() {
+        return numberContainer;
+    }
+
+    @Override
     public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
         fileUploader.setUploadHandler(handler);
     }
@@ -240,6 +229,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setCaseNumber(Long caseNumber) {
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
+    }
+
+    @Override
+    public void setPrivacyIcon(Boolean isPrivate) {
+        if ( isPrivate ) {
+            privacyIcon.setClassName("fas fa-lock text-danger m-r-10");
+        } else {
+            privacyIcon.setClassName("fas fa-unlock text-success m-r-10");
+        }
     }
 
     @Override
@@ -284,7 +282,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasVisibility privacyVisibility() {
-        return local;
+        return privacyButton;
     }
 
     @Override
@@ -293,13 +291,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility timeElapsedInputVisibility() {
-        return timeElapsedInput;
-    }
-
-    @Override
-    public void setTimeElapseTypeVisibility(boolean isVisible) {
-        timeElapsedType.setVisible(isVisible);
+    public HasVisibility timeElapsedEditContainerVisibility() {
+        return timeElapsedEditContainer;
     }
 
     @Override
@@ -348,17 +341,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setCreatedBy(String value) {
+        this.createdBy.setInnerHTML( value );
+    }
+
+    @Override
     public HasVisibility copyVisibility() {
         return copy;
     }
-
-    @UiHandler("company")
-    public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
-        if (activity != null) {
-            activity.onCompanyChanged();
-        }
-    }
-
 
     @Override
     public HasValue<EntityOption> platform() {
@@ -370,14 +360,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return platformContainer;
     }
 
-    @Override
-    public HasVisibility readOnlyNameContainerVisibility() {
-        return readOnlyNameContainer;
-    }
 
-    @Override
-    public HasVisibility editNameContainerVisibility() {
-        return editNameContainer;
+    @UiHandler("company")
+    public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onCompanyChanged();
+        }
     }
 
     @UiHandler("saveButton")
@@ -405,7 +393,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         activity.onCreateContactClicked();
     }
 
-    @UiHandler("local")
+    @UiHandler("privacyButton")
     public void onLocalClick(ClickEvent event) {
         if (activity != null) {
             activity.onLocalClicked();
@@ -431,7 +419,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
+        privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
+        privacyButton.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         caseMetaView.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
@@ -457,7 +446,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
-        nameLabel.ensureDebugId(DebugIds.ISSUE.LABEL.NAME);
+//        nameLabel.ensureDebugId(DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
         state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
         importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
@@ -480,19 +469,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel root;
 
     @UiField
-    ValidableTextBox name;
+    TextBox name;
 
     @UiField
     MarkdownAreaWithPreview description;
 
     @UiField
-    ToggleButton local;
+    ToggleButton privacyButton;
 
     @UiField
     Anchor copy;
-
-    @UiField
-    HTMLPanel numberCopyPanel;
 
     @Inject
     @UiField(provided = true)
@@ -577,13 +563,49 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     LabelElement attachmentsLabel;
     @UiField
-    InlineLabel nameLabel;
-    @UiField
-    HTMLPanel readOnlyNameContainer;
-    @UiField
-    HTMLPanel editNameContainer;
-    @UiField
     InlineLabel numberLabel;
+    @UiField
+    Element createdBy;
+    @UiField
+    HTMLPanel numberContainer;
+    @UiField
+    Element privacyIcon;
+    @UiField
+    HTMLPanel nameContainer;
+    @UiField
+    HTMLPanel timeElapsedEditContainer;
+
+    private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
+        @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
+        @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
+        @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
+        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
+        @Override public void fireEvent(GwtEvent<?> event) {}
+    };
+
+    private HasValue<Set<CaseLink>> linksHasValue = new HasValue<Set<CaseLink>>() {
+        @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
+        @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
+        @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
+        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
+        @Override public void fireEvent(GwtEvent<?> event) {}
+    };
+
+    private HasValidable nameValidator = new HasValidable() {
+        @Override
+        public void setValid(boolean isValid) {
+            if ( isValid ) {
+                nameContainer.removeStyleName("has-error");
+            } else {
+                nameContainer.addStyleName("has-error");
+            }
+        }
+
+        @Override
+        public boolean isValid() {
+            return StringUtils.isNotEmpty(name.getValue());
+        }
+    };
 
     private AbstractIssueEditActivity activity;
 

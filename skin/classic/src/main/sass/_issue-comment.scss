@@ -83,7 +83,7 @@
 }
 
 .chats .message {
-  border: 1px solid #ccd0d4;
+  border: 1px solid rgba(0,0,0,.07);
   padding: 7px 12px;
   font-size: 12px;
   position: relative;
@@ -119,13 +119,21 @@
   top: 10px;
   left: -14px;
   border: 7px solid transparent;
-  border-right-color: #ccd0d4;
+  border-right-color: rgba(0,0,0,.07);
   height: 0px;
+}
+
+.chats .message.private-message:after {
+  border-right-color: #fef6dd;
 }
 
 .chats .message:after {
   left: -13px;
   border-right-color: #fff
+}
+
+.chats .message.private-message:before {
+  border-right-color: #f9d35b
 }
 
 .chats {
