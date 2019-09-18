@@ -97,7 +97,6 @@ public class AppView extends Composite
             navbar.removeStyleName("visible");
             headerDiv.removeClassName("header-padding");
             brandDiv.removeClassName("hide");
-
             return;
         }
 
@@ -197,43 +196,17 @@ public class AppView extends Composite
 
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
-           // if (Window.getClientWidth() > 976) {
-                RootPanel.get().addStyleName("sidebar-visible");
-                navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
-                fixSidebarCheckBox.removeStyleName("hide");
-           // }
+            RootPanel.get().addStyleName("sidebar-visible");
+            navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+            fixSidebarCheckBox.removeStyleName("hide");
         }, MouseOverEvent.getType() );
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
-          //  if (Window.getClientWidth() > 976) {
-                RootPanel.get().removeStyleName("sidebar-visible");
-                navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
-                if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
-          //  }
+            RootPanel.get().removeStyleName("sidebar-visible");
+            navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+            if (!fixSidebarCheckBox.isChecked()) fixSidebarCheckBox.addStyleName("hide");
         }, MouseOutEvent.getType() );
-
-       /* Window.addResizeHandler(new ResizeHandler() {
-
-            Timer resizeTimer = new Timer() {
-                @Override
-                public void run() {
-                    if (Window.getClientWidth() <= 990){
-
-
-                    }
-                    else{
-                        brandDiv.removeClassName("hide");
-                    }
-                }
-            };
-
-            @Override
-            public void onResize(ResizeEvent event) {
-                resizeTimer.cancel();
-                resizeTimer.schedule(250);
-            }
-        });*/
     }
 
     @UiField
