@@ -134,3 +134,7 @@ blockquote::before {
 .locale-selector {
   list-style: none;
 }
+
+div.cs-skin-slide > span:after, div.cs-skin-slide.cs-active > span:after {
+    content: '\25BE' !important;
+}
