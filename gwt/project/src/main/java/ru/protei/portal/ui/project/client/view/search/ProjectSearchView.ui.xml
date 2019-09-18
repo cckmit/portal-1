@@ -31,7 +31,7 @@
             <g:Anchor href='#' ui:field="search" styleName="btn btn-complete" text="{lang.buttonSearch}"/>
             <g:Anchor href='#' ui:field="reset" styleName="btn btn-white" text="{lang.buttonReset}"/>
         </div>
-        <div ui:field="projectsContainer" class="hide">
+        <div ui:field="projectsContainer" class="p-t-15 hide">
             <projectlist:ProjectList ui:field="project"/>
         </div>
     </g:HTMLPanel>
