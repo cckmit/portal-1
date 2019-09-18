@@ -80,7 +80,13 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
   transform: translate3d(17px, 0, 0);
   -ms-transform: translate(17px, 0)
 }
+.fix-sidebar-button{
+  padding-left: 0px !important;
+}
+
 
 .header-padding{
   padding-left: 265px;
 }
+
+

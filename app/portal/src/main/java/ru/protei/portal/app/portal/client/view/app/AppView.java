@@ -17,6 +17,7 @@ import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 
 /**
  * Вид основной формы приложения
@@ -31,6 +32,12 @@ public class AppView extends Composite
         ensureDebugIds();
         initHandlers();
         fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
+        if (Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ) )){
+            RootPanel.get().addStyleName("menu-pin");
+            actionBarContainer.removeStyleName("p-l-30");
+            actionBarContainer.addStyleName("p-l-50");
+            fixSidebarButton.addStyleName("fixed-sidebar");
+        }
     }
 
     @Override
@@ -146,7 +153,9 @@ public class AppView extends Composite
 
     @UiHandler("fixSidebarButton")
     public void onChecked (ClickEvent event){
-        if (fixSidebarButton.getStyleName().contains("fixed-sidebar")){
+        localStorageService.set( "fixed-sidebar", String.valueOf(!fixSidebarButton.getStyleName().contains("fixed-sidebar")));
+
+        if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")){
             RootPanel.get().addStyleName("menu-pin");
             actionBarContainer.removeStyleName("p-l-30");
             actionBarContainer.addStyleName("p-l-50");
@@ -154,14 +163,13 @@ public class AppView extends Composite
             navbar.removeStyleName("visible");
             headerDiv.removeClassName("header-padding");
             brandDiv.removeClassName("hide");
-            fixSidebarButton.removeStyleName("fixed-sidebar");
-
+            fixSidebarButton.addStyleName("fixed-sidebar");
         }
         else {
             RootPanel.get().removeStyleName("menu-pin");
             actionBarContainer.removeStyleName("p-l-50");
             actionBarContainer.addStyleName("p-l-30");
-            fixSidebarButton.addStyleName("fixed-sidebar");
+            fixSidebarButton.removeStyleName("fixed-sidebar");
         }
     }
 
@@ -246,6 +254,8 @@ public class AppView extends Composite
     @Inject
     @UiField(provided = true)
     LocaleSelector locale;
+    @Inject
+    LocalStorageService localStorageService;
     @UiField
     DivElement headerDiv;
     @UiField
