@@ -34,7 +34,7 @@
                                         <div ui:field="filesUpload" class="attach-add-btn">
                                             <i class="fas fa-paperclip"/>
                                             <ui:text from='{lang.addAttachmentBtn}'/>
-                                            <i class="fas icon-verifiable"/>
+                                            <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
                                         </div>
                                     </fileuploader:AttachmentUploader>
                                     <small class="text-muted pull-right" ui:field="textMarkupLabel"/>

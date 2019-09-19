@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -609,7 +609,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
         @Override
         public boolean isValid() {
-            return StringUtils.isNotEmpty(name.getValue());
+            return HelperFunc.isNotEmpty(name.getValue());
         }
     };
 

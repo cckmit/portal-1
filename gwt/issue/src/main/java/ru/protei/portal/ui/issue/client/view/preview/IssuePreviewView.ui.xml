@@ -118,8 +118,8 @@
                             <div class="attach attach-add">
                                 <fileuploader:AttachmentUploader ui:field="fileUploader">
                                     <div class="attach-add-circle">
-                                        <i class="fa fa-plus"/>
-                                        <i class="icon-verifiable"/>
+                                        <i class="fas fa-plus ion-plus"/>
+                                        <i class="fas fa-spin icon-verifiable"/>
                                     </div>
                                 </fileuploader:AttachmentUploader>
                             </div>
