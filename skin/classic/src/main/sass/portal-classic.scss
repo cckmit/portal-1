@@ -11,6 +11,11 @@
 /**
  * Overrides
  */
+
+body {
+  color: #212121 !important;
+}
+
 .page-sidebar {
   .sidebar-header {
     color: white !important;
@@ -135,6 +140,7 @@ blockquote::before {
   list-style: none;
 }
 
-div.cs-skin-slide > span:after, div.cs-skin-slide.cs-active > span:after {
-    content: '\25BE' !important;
+div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
 }

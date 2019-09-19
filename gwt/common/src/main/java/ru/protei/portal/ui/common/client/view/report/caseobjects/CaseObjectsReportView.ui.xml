@@ -10,7 +10,9 @@
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
              xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist"
-             xmlns:issuefilterselector="urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector">
+             xmlns:issuefilterselector="urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector"
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -78,12 +80,12 @@
 
             <div class="form-group col-md-12 resize-md-6">
                 <label><ui:text from="{lang.issueImportance}"/></label>
-                <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
             </div>
 
             <div class="form-group col-md-12">
                 <label><ui:text from="{lang.issueState}"/></label>
-                <optionlist:IssueStatesOptionList ui:field="state"/>
+                <issuestate:IssueStatesOptionList ui:field="state"/>
             </div>
         </g:HTMLPanel>
     </g:HTMLPanel>

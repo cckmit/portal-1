@@ -174,7 +174,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
 
         view.setState( value.getStateId() );
-        view.setCriticality( value.getImpLevel() );
+        view.setImportance( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
 
         String contact = value.getInitiator() == null ? "" : value.getInitiator().getDisplayName();
@@ -225,7 +225,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private void fillViewForJira(CaseObject value) {
 
-        view.setJiraVisible(false);
+        view.jiraContainerVisibility().setVisible(false);
 
         if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
             return;
@@ -234,7 +234,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         JiraMetaData meta = value.getJiraMetaData();
         boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
 
-        view.setJiraVisible(true);
+        view.jiraContainerVisibility().setVisible(true);
+
         view.setJiraIssueType(meta.getIssueType());
         view.setJiraSeverity(isSeverityDisplayed ? meta.getSeverity() : null);
 

@@ -31,9 +31,7 @@
                         <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
-                                    <label>
-                                        <ui:text from="{lang.issueCriticality}"/>
-                                    </label>
+                                    <label class="fade"><ui:text from="{lang.issueCriticality}"/></label>
                                     <div>
                                         <i ui:field="iconCriticality"/>
                                         <span ui:field="criticality"/>
@@ -42,15 +40,13 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
-                                    <label>
-                                        <ui:text from="{lang.issueState}"/>
-                                    </label>
+                                    <label class="fade"><ui:text from="{lang.issueState}"/></label>
                                     <div ui:field="state"/>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
-                                    <label><ui:text from="{lang.issueProduct}"/></label>
+                                    <label class="fade"><ui:text from="{lang.issueProduct}"/></label>
                                     <span ui:field="product"/>
                                 </div>
                             </div>
@@ -58,59 +54,56 @@
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
-                                    <label><ui:text from="{lang.issueInitiator}"/></label>
+                                    <label class="fade"><ui:text from="{lang.issueInitiator}"/></label>
                                     <span ui:field="contact"/>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
-                                    <label><ui:text from="{lang.issueManager}"/></label>
+                                    <label class="fade"><ui:text from="{lang.issueManager}"/></label>
                                     <span ui:field="manager"/>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <g:HTMLPanel ui:field="jiraMetaDataContainer" styleName="form-group-attached" visible="false">
-                        <br/>
                         <div class="row clearfix">
-                            <div class="col-md-12">
-                                <div class="form-group form-group-default">
-                                    <label>JIRA</label>
-                                    <g:HTMLPanel ui:field="jiraIssueTypeContainer" tag="div">
-                                        <b><ui:text from="{lang.jiraIssueType}"/>: </b>
-                                        <span ui:field="jiraIssueType"/>
-                                    </g:HTMLPanel>
-                                    <g:HTMLPanel ui:field="jiraSeverityContainer" tag="div">
-                                        <b><ui:text from="{lang.jiraSeverity}"/>: </b>
-                                        <span ui:field="jiraSeverity"/>
-                                    </g:HTMLPanel>
-                                    <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" tag="div">
-                                        <b><ui:text from="{lang.jiraTimeOfReaction}"/>: </b>
-                                        <span ui:field="jiraTimeOfReaction"/>
-                                    </g:HTMLPanel>
-                                    <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" tag="div">
-                                        <b><ui:text from="{lang.jiraTimeOfDecision}"/>: </b>
-                                        <span ui:field="jiraTimeOfDecision"/>
-                                    </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-md-3">
+                                <div class="form-group form-group-default b-t-none">
+                                    <label class="fade"><ui:text from="{lang.jiraIssueType}"/></label>
+                                    <span ui:field="jiraIssueType"/>
                                 </div>
-                            </div>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-md-3">
+                                <div class="form-group form-group-default b-t-none">
+                                    <label class="fade"><ui:text from="{lang.jiraSeverity}"/></label>
+                                    <span ui:field="jiraSeverity"/>
+                                </div>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-md-3">
+                                <div class="form-group form-group-default b-t-none">
+                                    <label class="fade"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
+                                    <span ui:field="jiraTimeOfReaction"/>
+                                </div>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-md-3">
+                                <div class="form-group form-group-default b-t-none">
+                                    <label class="fade"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
+                                    <span ui:field="jiraTimeOfDecision"/>
+                                </div>
+                            </g:HTMLPanel>
                         </div>
                     </g:HTMLPanel>
 
                     <h5 ui:field="name"/>
 
-                    <div class="form-group small hint-text pre-formatted-info markdown" ui:field="info"/>
+                    <div class="form-group pre-formatted-info markdown" ui:field="info"/>
 
-                    <h5>
-                        <ui:text from="{lang.companySubscription}"/>
-                    </h5>
+                    <h5><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>
 
-                    <h5>
-                        <ui:text from="{lang.issuePlatformHeader}"/>
-                    </h5>
-                    <g:Anchor ui:field="platform" styleName="full-screen-link small" href="#"/>
+                    <h5><ui:text from="{lang.issuePlatformHeader}"/></h5>
+                    <g:Anchor ui:field="platform" styleName="full-screen-link" href="#"/>
 
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
                         <h5 class="col-md-12">
@@ -121,32 +114,24 @@
 
                     <div class="row">
                         <div class="form-group col-md-12">
-                            <h5>
-                                <ui:text from="{lang.issueAttachments}"/>
-                            </h5>
-                            <div>
-                                <div class="attach attach-add">
-                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                        <div class="attach-add-circle">
-                                            <i class="fa fa-plus"/>
-                                            <i class="icon-verifiable"/>
-                                        </div>
-                                    </fileuploader:AttachmentUploader>
-                                </div>
-                                <attachment:AttachmentList ui:field="attachmentContainer"/>
+                            <h5><ui:text from="{lang.issueAttachments}"/></h5>
+                            <div class="attach attach-add">
+                                <fileuploader:AttachmentUploader ui:field="fileUploader">
+                                    <div class="attach-add-circle">
+                                        <i class="fa fa-plus"/>
+                                        <i class="icon-verifiable"/>
+                                    </div>
+                                </fileuploader:AttachmentUploader>
                             </div>
+                            <attachment:AttachmentList ui:field="attachmentContainer"/>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="form-group col-md-12">
-                            <h5>
-                                <ui:text from="{lang.comments}"/>
-                            </h5>
+                            <h5><ui:text from="{lang.comments}"/></h5>
                             <g:HTMLPanel ui:field="commentsContainer"/>
                         </div>
                     </div>
-
                 </div>
                 <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
                     <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>

@@ -40,7 +40,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
     HasValue<ProductShortView> product();
-    HasValue<Boolean> isLocal();
+    HasValue<Boolean> isPrivate();
     HasValue<Set<PersonShortView>> notifiers();
     HasValue<Set<CaseLink>> links();
     HasValue<Set<CaseTag>> tags();
@@ -63,8 +63,13 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
+
+    HasVisibility numberContainerVisibility();
+
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
+
+    void setCreatedBy(String value);
 
     HasVisibility copyVisibility();
 
@@ -72,9 +77,9 @@ public interface AbstractIssueEditView extends IsWidget {
     boolean isAttached();
     HasValue<EntityOption> platform();
 
-    void setPlatformVisibility(boolean isVisible);
+    HasVisibility platformVisibility();
 
-    HasValidable platformValidable();
+    void setPrivacyIcon(Boolean isPrivate);
 
     HasVisibility saveVisibility();
 
@@ -85,14 +90,10 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setNumber(Integer num);
 
-    String getNumber();
-
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
     HasVisibility timeElapsedLabelVisibility();
-    HasVisibility timeElapsedInputVisibility();
-    void setTimeElapseTypeVisibility( boolean isVisible );
-
+    HasVisibility timeElapsedEditContainerVisibility();
 
     HasEnabled saveEnabled();
 
@@ -104,7 +105,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void applyCompanyValueIfOneOption();
 
-    void setTagsEnabled(boolean enabled);
     void setTagsAddButtonEnabled(boolean enabled);
 
     void setTagsEditButtonEnabled(boolean enabled);
@@ -114,4 +114,5 @@ public interface AbstractIssueEditView extends IsWidget {
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
     String DESCRIPTION = "description";
+
 }

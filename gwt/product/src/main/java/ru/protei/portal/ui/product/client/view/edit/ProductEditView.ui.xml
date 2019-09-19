@@ -5,7 +5,6 @@
              xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
-             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
 >
@@ -22,11 +21,12 @@
                                 <ui:text from="{lang.productName}"/>
                             </label>
                             <div class="input-group">
-                                <div class="verifiable">
-                                    <i ui:field="verifiableIcon"/>
+                                <div class="input-group-verifiable">
+                                    <div class="verifiable">
+                                        <i ui:field="verifiableIcon"/>
+                                    </div>
+                                    <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3" notNull="true"/>
                                 </div>
-                                <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3"
-                                                                 notNull="true"/>
                                 <typebtn:ProductTypeBtnGroup ui:field="type" styleName="input-group-append du-selector-inline"/>
                             </div>
                         </div>
@@ -52,12 +52,12 @@
 
                     <div class="row">
                         <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
-                            <g:Label ui:field="parentsContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="parents" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
+                            <label ui:field="parentsContainerLabel"/>
+                            <devunit:DevUnitMultiSelector ui:field="parents"/>
                         </g:HTMLPanel>
                         <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
-                            <g:Label ui:field="childrenContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="children" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
+                            <label ui:field="childrenContainerLabel"/>
+                            <devunit:DevUnitMultiSelector ui:field="children"/>
                         </g:HTMLPanel>
                     </div>
                 </div>

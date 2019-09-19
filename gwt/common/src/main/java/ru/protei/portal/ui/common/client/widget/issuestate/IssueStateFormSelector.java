@@ -4,15 +4,15 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> implements SelectorWithModel<En_CaseState> {
+public class IssueStateFormSelector extends FormSelector<En_CaseState> implements SelectorWithModel<En_CaseState> {
 
     @Inject
     public void init(StateModel model, En_CaseStateLang lang) {
@@ -57,7 +57,7 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
 
     private DisplayOptionCreator<En_CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseState -> new DisplayOption(makeCaseStateName(caseState));
+            return caseState -> new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase());
         }
         return new DisplayOptionCreator<En_CaseState>() {
             @Override

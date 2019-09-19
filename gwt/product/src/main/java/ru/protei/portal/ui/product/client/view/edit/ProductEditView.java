@@ -115,27 +115,37 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setMutableState(En_DevUnitType type) {
-        parentsContainerLabel.setText(lang.belongsTo());
-        parentsContainer.removeStyleName("hide");
+        parentsContainerLabel.setInnerText(lang.belongsTo());
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
             descriptionLabel.setInnerText(lang.complexDescription());
-            childrenContainerLabel.setText(lang.products());
+            childrenContainerLabel.setInnerText(lang.products());
 
             parentsContainer.addStyleName("hide");
+            childrenContainer.removeStyleName("col-md-6");
+            childrenContainer.addStyleName("col-md-12");
+
             children.setTypes(En_DevUnitType.PRODUCT);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
             descriptionLabel.setInnerText(lang.productDescription());
-            childrenContainerLabel.setText(lang.components());
+            childrenContainerLabel.setInnerText(lang.components());
+
+            parentsContainer.removeStyleName("hide");
+            childrenContainer.removeStyleName("col-md-12");
+            childrenContainer.addStyleName("col-md-6");
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
             descriptionLabel.setInnerText(lang.componentDescription());
-            childrenContainerLabel.setText(lang.components());
+            childrenContainerLabel.setInnerText(lang.components());
+
+            parentsContainer.removeStyleName("hide");
+            childrenContainer.removeStyleName("col-md-12");
+            childrenContainer.addStyleName("col-md-6");
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
@@ -250,10 +260,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     HTMLPanel parentsContainer;
     @UiField
     HTMLPanel childrenContainer;
-    @UiField
-    Label parentsContainerLabel;
-    @UiField
-    Label childrenContainerLabel;
     @Inject
     @UiField(provided = true)
     DevUnitMultiSelector parents;
@@ -283,6 +289,10 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     MarkdownAreaWithPreview cdrDescription;
     @UiField
     TextBox wikiLink;
+    @UiField
+    LabelElement parentsContainerLabel;
+    @UiField
+    LabelElement childrenContainerLabel;
 
     AbstractProductEditActivity activity;
 
