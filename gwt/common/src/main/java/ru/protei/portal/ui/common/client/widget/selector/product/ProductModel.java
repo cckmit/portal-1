@@ -44,7 +44,7 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     }
 
     public void getOptionsFromServer(SelectorWithModel<ProductShortView> selector) {
-        if (selector == null || selector.isLazy()) {
+        if (selector == null || !selector.requestByOnLoad()) {
             return;
         }
         if (selector.getValues() == null || selector.getValues().isEmpty()) {

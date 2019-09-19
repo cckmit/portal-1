@@ -30,8 +30,8 @@ public class ProjectButtonSelector
     }
 
     @Override
-    public boolean isLazy() {
-        return isLazy;
+    public boolean requestByOnLoad() {
+        return requestByOnLoad;
     }
 
     public void setDefaultValue(String defaultValue) {
@@ -42,11 +42,11 @@ public class ProjectButtonSelector
         model.setIndependentProject(independentProject);
     }
 
-    public void setLazy(boolean isLazy) {
-        this.isLazy = isLazy;
+    public void setRequestByOnLoad(boolean requestByOnLoad) {
+        this.requestByOnLoad = requestByOnLoad;
     }
 
-    private boolean isLazy;
+    private boolean requestByOnLoad;
     private ProjectModel model;
     private String defaultValue;
 }

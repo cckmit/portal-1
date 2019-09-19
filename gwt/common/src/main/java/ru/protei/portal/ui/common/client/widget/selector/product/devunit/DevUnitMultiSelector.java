@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * Мультиселектор продуктов
  */
-public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements SelectorWithModel< ProductShortView > {
+public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
     public void init(ProductModel model, Lang lang) {
@@ -29,8 +29,8 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
     }
 
     @Override
-    public boolean isLazy() {
-        return isLazy;
+    public boolean requestByOnLoad() {
+        return requestByOnLoad;
     }
 
     public void fillOptions(List<ProductShortView> o) {
@@ -63,8 +63,8 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         }
     }
 
-    public void setLazy(boolean isLazy) {
-        this.isLazy = isLazy;
+    public void setRequestByOnLoad(boolean requestByOnLoad) {
+        this.requestByOnLoad = requestByOnLoad;
     }
 
     private void fillOptions() {
@@ -80,7 +80,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
     @Inject
     private Lang lang;
 
-    private boolean isLazy;
+    private boolean requestByOnLoad;
     private List<ProductShortView> options = new ArrayList<>();
     private ProductShortView exclude = null;
     private boolean hasNullValue = true;

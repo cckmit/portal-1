@@ -15,16 +15,16 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init( ProductModel model) {
+    public void init(ProductModel model) {
         this.model = model;
         model.subscribe(this, En_DevUnitState.ACTIVE, null);
-        setSelectorModel( model );
-        setSearchEnabled( true );
-        setSearchAutoFocus( true );
+        setSelectorModel(model);
+        setSearchEnabled(true);
+        setSearchAutoFocus(true);
 
         setDisplayOptionCreator( value -> {
-            if ( value == null ) {
-                return new DisplayOption( defaultValue );
+            if (value == null) {
+                return new DisplayOption(defaultValue);
             }
             return new DisplayOption(
                     value.getName(),
