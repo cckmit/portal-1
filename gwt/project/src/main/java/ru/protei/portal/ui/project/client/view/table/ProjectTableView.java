@@ -13,7 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
@@ -34,7 +34,7 @@ import java.util.Optional;
 public class ProjectTableView extends Composite implements AbstractProjectTableView {
 
     @Inject
-    public void onInit(EditClickColumn< ProjectInfo > editClickColumn, RemoveClickColumn<ProjectInfo> removeClickColumn) {
+    public void onInit(EditClickColumn<Project> editClickColumn, RemoveClickColumn<Project> removeClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
         this.removeClickColumn = removeClickColumn;
@@ -76,7 +76,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     }
 
     @Override
-    public void addRow( ProjectInfo row ) {
+    public void addRow( Project row ) {
         table.addRow( row );
     }
 
@@ -90,12 +90,12 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     }
 
     @Override
-    public void updateRow( ProjectInfo project ) {
+    public void updateRow( Project project ) {
         table.updateRow( project );
     }
 
     @Override
-    public void selectRow(ProjectInfo project) {
+    public void selectRow(Project project) {
         columnProvider.setSelectedValue (project);
     }
 
@@ -106,11 +106,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         removeClickColumn.setPrivilege( En_Privilege.PROJECT_REMOVE );
         columns.add(removeClickColumn);
 
-        DynamicColumn<ProjectInfo> statusColumn = new DynamicColumn<>(null, "status",
+        DynamicColumn<Project> statusColumn = new DynamicColumn<>(null, "status",
                 value -> "<i class='"+ regionStateLang.getStateIcon( value.getState() )+" fa-2x"+"'></i>");
         columns.add(statusColumn);
 
-        DynamicColumn<ProjectInfo> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
+        DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
                     content.append("<b>").append(value.getId()).append("</b>");
@@ -125,11 +125,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                 });
         columns.add(numberColumn);
 
-        DynamicColumn<ProjectInfo> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
+        DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
                 value -> "<b>" + value.getName() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
         columns.add(infoColumn);
 
-        DynamicColumn<ProjectInfo> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
+        DynamicColumn<Project> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
                 value -> {
                     if (value.getTeam() == null) return null;
 
@@ -162,7 +162,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @UiField
     Lang lang;
     @UiField
-    TableWidget<ProjectInfo> table;
+    TableWidget<Project> table;
     @UiField
     HTMLPanel tableContainer;
     @UiField
@@ -176,14 +176,14 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     En_CustomerTypeLang customerTypeLang;
 
     @Inject
-    EditClickColumn< ProjectInfo > editClickColumn;
+    EditClickColumn<Project> editClickColumn;
     @Inject
-    RemoveClickColumn<ProjectInfo> removeClickColumn;
+    RemoveClickColumn<Project> removeClickColumn;
 
     private AbstractProjectTableActivity activity;
 
     private List<ClickColumn> columns = new ArrayList<>();
-    private ClickColumnProvider<ProjectInfo> columnProvider = new ClickColumnProvider<>();
+    private ClickColumnProvider<Project> columnProvider = new ClickColumnProvider<>();
 
     private static ProjectTableViewUiBinder ourUiBinder = GWT.create( ProjectTableViewUiBinder.class );
     interface ProjectTableViewUiBinder extends UiBinder< HTMLPanel, ProjectTableView> {}

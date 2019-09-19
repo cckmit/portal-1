@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.Date;
@@ -31,6 +30,8 @@ public class ProjectQuery extends BaseQuery {
     private Date createdFrom;
 
     private Date createdTo;
+
+    private Boolean independentProject;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -117,6 +118,14 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
+    public Boolean getIndependentProject() {
+        return independentProject;
+    }
+
+    public void setIndependentProject(Boolean independentProject) {
+        this.independentProject = independentProject;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -125,7 +134,8 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
                 createdFrom != null ||
-                createdTo != null;
+                createdTo != null ||
+                independentProject != null;
     }
 
     @Override

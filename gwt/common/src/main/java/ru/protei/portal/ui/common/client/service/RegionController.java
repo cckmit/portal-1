@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -24,17 +24,19 @@ public interface RegionController extends RemoteService {
 
     List<DistrictInfo> getDistrictList() throws RequestFailedException;
 
-    Map<String, List<ProjectInfo>> getProjectsByRegions(ProjectQuery query) throws RequestFailedException;
+    Map<String, List<Project>> getProjectsByRegions(ProjectQuery query) throws RequestFailedException;
 
-    ProjectInfo getProject(Long id) throws RequestFailedException;
+    Project getProject(Long id) throws RequestFailedException;
 
-    ProjectInfo saveProject(ProjectInfo project) throws RequestFailedException;
+    Project saveProject(Project project) throws RequestFailedException;
 
     long createNewProject() throws RequestFailedException;
 
-    List<ProjectInfo> getProjectsList(ProjectQuery query) throws RequestFailedException;
+    List<Project> getProjectsList(ProjectQuery query) throws RequestFailedException;
+
+    List<EntityOption> getProjectsEntityOptionList(ProjectQuery query) throws RequestFailedException;
 
     Boolean removeProject(Long projectId) throws RequestFailedException;
 
-    List<EntityOption> getFreeProjectsAsEntityOptions() throws RequestFailedException;
+    Project getProjectInfo(Long id) throws RequestFailedException;
 }

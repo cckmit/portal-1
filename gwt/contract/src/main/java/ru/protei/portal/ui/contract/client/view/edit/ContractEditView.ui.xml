@@ -2,8 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.selector.company"
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:list="urn:import:ru.protei.portal.ui.contract.client.widget.contractdates.list"
@@ -71,12 +69,12 @@
 
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractProject}"/></label>
-                            <project:ProjectEntityOptionButtonSelector validation="true" hasNullValue="true" ui:field="project" defaultValue="{lang.contractProjectNotDefined}"/>
+                            <project:ProjectButtonSelector validation="true" hasNullValue="true" ui:field="project" lazy="true" defaultValue="{lang.contractProjectNotDefined}"/>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractDirection}"/></label>
-                            <productdirection:ProductDirectionButtonSelector ui:field="direction" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
+                            <g:TextBox ui:field="direction" styleName="form-control" enabled="false"/>
                         </div>
                     </div>
                 </div>
@@ -104,12 +102,12 @@
 
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractManager}"/></label>
-                            <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" enabled="false" defaultValue="{lang.selectAccountPerson}"/>
+                            <g:TextBox ui:field="manager" styleName="form-control" enabled="false"/>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label><ui:text from="{lang.contractContragent}"/></label>
-                            <company:CompanySelector hasNullValue="false" ui:field="contragent" enabled="false" defaultValue="{lang.selectAccountCompany}"/>
+                            <g:TextBox ui:field="contragent" styleName="form-control" enabled="false"/>
                         </div>
                     </div>
                 </div>

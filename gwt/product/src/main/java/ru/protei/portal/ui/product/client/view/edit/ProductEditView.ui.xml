@@ -5,7 +5,6 @@
              xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
-             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
 >
@@ -54,11 +53,11 @@
                     <div class="row">
                         <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
                             <label ui:field="parentsContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="parents"/>
+                            <devunit:DevUnitMultiSelector ui:field="parents" lazy="true"/>
                         </g:HTMLPanel>
                         <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
                             <label ui:field="childrenContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="children"/>
+                            <devunit:DevUnitMultiSelector ui:field="children" lazy="true"/>
                         </g:HTMLPanel>
                     </div>
                 </div>
@@ -66,7 +65,7 @@
         </div>
 
         <div class="container-fluid padding-15 bg-white">
-            <tab:TabWidget tabNames="{lang.productHistoryVersion}|{lang.productConfiguration}|{lang.productCDRDescription}" styleName="">
+            <tab:TabWidget styleName="">
                 <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
                     <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
                 </tab:pane.TabWidgetPane>

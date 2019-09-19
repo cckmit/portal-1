@@ -16,6 +16,8 @@ import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyActivity;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 /**
  * Представление уведомление
  */
@@ -62,13 +64,13 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
     }
 
     private void setTestAttributes() {
-        notify.getElement().setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_ITEM);
+        notify.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.NOTIFY.NOTIFY_ITEM);
 
-        iconSuccess.getElement().setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_ICON_SUCCESS);
-        iconError.getElement().setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_ICON_ERROR);
+        iconSuccess.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.NOTIFY.NOTIFY_ICON_SUCCESS);
+        iconError.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.NOTIFY.NOTIFY_ICON_ERROR);
 
-        message.setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_CONTENT_MESSAGE);
-        title.setAttribute("gwt-test-id", DebugIds.NOTIFY.NOTIFY_CONTENT_TITLE);
+        message.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.NOTIFY.NOTIFY_CONTENT_MESSAGE);
+        title.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.NOTIFY.NOTIFY_CONTENT_TITLE);
     }
 
     @UiField

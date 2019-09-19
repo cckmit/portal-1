@@ -12,7 +12,7 @@
             <span ui:field="sectionName"/>
             <span ui:field="count" class="dashboard-total-count"/>
             <g:Button ui:field="fastOpen" styleName="btn dashboard-btn">
-                <i class="fa fa-lg fa-external-link"/>
+                <i class="fas fa-external-link-alt"/>
             </g:Button>
             <div class="rightSide">
                 <searchbtn:SearchButton ui:field="search" styleName="dashboard-search-btn" placeholder="{lang.issueNumber}"/>

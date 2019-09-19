@@ -1509,30 +1509,29 @@ a {
   color: #8b8b8b;
 }
 
-
-.btn.private-btn {
-  padding: 0;
+.private-btn {
+  padding: 10px 7px;
   min-width: 30px;
-  border: 0;
-  height: 28px;
-  background: none;
+  border-left: 0;
+  font-weight: 900;
 
-  &.btn-down:after,
-  &.btn-down-hovering:after {
-    font-family: "Font Awesome 5 Free", serif;
-    content: "\f023";
-    font-size: 1.6em;
-    color: $danger_color;
-    font-weight: 900;
+  &.input-group-addon-up {
+    background-color: teal !important;
+    border-color: #1f4c4c;
   }
 
-  &.btn-up:after,
-  &.btn-up-hovering:after {
+  &.input-group-addon-down:after,
+  &.input-group-addon-down-hovering:after {
+    font-family: "Font Awesome 5 Free", serif;
+    content: "\f023";
+    font-size: 1.2em;
+  }
+
+  &.input-group-addon-up:after,
+  &.input-group-addon-up-hovering:after {
     font-family: "Font Awesome 5 Free", serif;
     content: "\f13e";
-    font-size: 1.6em;
-    color: $success_color;
-    font-weight: 900;
+    font-size: 1.2em;
   }
 }
 
@@ -2090,7 +2089,6 @@ a {
   .case-tag-close {
     height: 12px;
     width: 12px;
-    padding: 5px 2px 5px 4px;
     font-size: 0.8em;
     color: inherit;
     cursor: pointer;
@@ -2156,12 +2154,10 @@ a {
       margin: 6px;
       cursor: pointer;
 
-      .fa {
-        margin-top: 5px;
-      }
-
-      .case-tag-edit {
-        min-width: 14px;
+      .case-tag-edit,
+      .case-tag-icon {
+        min-width: 16px;
+        margin: 2px 2px 2px 3px;
       }
 
       .case-tag-text {
@@ -2193,8 +2189,6 @@ a {
       .case-tag-icon {
         height: 16px;
         width: 16px;
-        min-width: 16px;
-        margin: 2px 2px 2px 3px;
         line-height: 16px;
         border-radius: 2px;
         text-align: center;
@@ -3789,131 +3783,6 @@ label {
   }
 }
 
-.case-tag {
-  position: relative;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  flex-direction: row;
-  margin: 2px;
-  text-align: center;
-  height: 20px;
-  line-height: 20px;
-  cursor: default;
-  border-radius: 3px;
-  padding: 0 6px;
-
-  .case-tag-close {
-    line-height: inherit;
-    font-size: 0.8em;
-    color: inherit;
-    cursor: pointer;
-    box-sizing: unset;
-    padding-right: 8px;
-  }
-
-  .case-tag-text {
-    padding: 0 2px 0 0;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-}
-
-.case-tag-popup {
-  z-index: 1000;
-  float: left;
-  width: 300px;
-  text-align: left;
-  box-sizing: border-box;
-  background: #fff;
-  box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
-  -webkit-box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
-  border: 1px solid #ced2d7;
-  padding: 0;
-
-  .case-tag-popup-header {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    border-bottom: 1px solid #ced2d7;
-
-    > .search-input {
-      flex: 1;
-
-      input {
-        border-color: transparent;
-      }
-    }
-
-    > .btn {
-      margin: 0;
-      border-color: transparent;
-      border-left: 1px solid #ced2d7;
-      padding: 6px 12px;
-    }
-  }
-
-  .case-tag-list {
-    position: relative;
-    display: block;
-    margin: 0;
-    padding: 0;
-
-    .case-tag {
-      position: relative;
-      display: -ms-flexbox;
-      display: -webkit-flex;
-      display: flex;
-      margin-left: 10px;
-      cursor: pointer;
-
-      .case-tag-icon {
-        height: 16px;
-        width: 16px;
-        min-width: 16px;
-        margin: 2px 2px 2px 3px;
-        line-height: 16px;
-        border-radius: 2px;
-        text-align: center;
-        vertical-align: middle;
-        font-size: 0.8em;
-        font-weight: bold;
-      }
-
-      .case-tag-text {
-        -webkit-box-flex: 1;
-        -ms-flex-positive: 1;
-        flex-grow: 1;
-        -ms-flex-negative: 1;
-        flex-shrink: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: left;
-      }
-
-      .case-tag-company-name {
-        -webkit-box-flex: 1;
-        -ms-flex-positive: 1;
-        flex-grow: 1;
-        -ms-flex-negative: 1;
-        flex-shrink: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 50%;
-        text-align: right;
-        padding-right: 6px;
-      }
-    }
-  }
-}
-
-
 .height-40 {
   height: 40px;
   max-height: 40px;
@@ -4212,6 +4081,10 @@ table {
       }
     }
   }
+}
+
+.b-t-none {
+  border-top: none;
 }
 
 .input-group .input-group-verifiable {

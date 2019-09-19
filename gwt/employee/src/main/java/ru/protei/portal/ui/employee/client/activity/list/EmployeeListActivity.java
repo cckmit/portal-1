@@ -179,6 +179,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         public void accept( EmployeeShortView employee ) {
             AbstractEmployeeItemView itemView = makeView( employee );
 
+
             itemViewToModel.put( itemView, employee );
             view.getChildContainer().add( itemView.asWidget() );
         }

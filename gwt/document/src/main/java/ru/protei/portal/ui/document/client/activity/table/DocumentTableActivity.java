@@ -23,7 +23,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -110,7 +109,7 @@ public abstract class DocumentTableActivity
         if (!UiConstants.ActionBarIdentity.DOCUMENT.equals(event.identity)) {
             return;
         }
-        fireEvent(new DocumentEvents.Edit());
+        fireEvent(new DocumentEvents.Create());
     }
 
     @Override
@@ -133,10 +132,10 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onProjectColumnClicked(Document value) {
-        if (value == null || value.getProjectInfo() == null)
+        if (value == null || value.getProject() == null)
             return;
         fireEvent(new ProjectEvents.Show());
-        fireEvent(new ProjectEvents.ShowFullScreen(value.getProjectInfo().getId()));
+        fireEvent(new ProjectEvents.ShowFullScreen(value.getProject().getId()));
     }
 
     @Override

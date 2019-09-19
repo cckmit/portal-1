@@ -134,7 +134,7 @@
         </div>
 
         <g:HTMLPanel  styleName="container-fluid padding-15 bg-white">
-            <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
+            <tab:TabWidget styleName="">
                 <tab:pane.TabWidgetPane tabName="{lang.contacts}">
                     <g:HTMLPanel ui:field="contactsContainer"/>
                 </tab:pane.TabWidgetPane>

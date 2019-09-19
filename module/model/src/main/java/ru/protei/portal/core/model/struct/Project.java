@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Информация о проекте в регионе
  */
-public class ProjectInfo extends AuditableObject implements Removable {
+public class Project extends AuditableObject implements Removable {
 
     /**
      * Идентификатор записи о проекте
@@ -77,6 +77,10 @@ public class ProjectInfo extends AuditableObject implements Removable {
     private String contractNumber;
 
     private boolean deleted;
+
+    private EntityOption manager;
+
+    private EntityOption contragent;
 
     public Long getId() {
         return id;
@@ -232,11 +236,27 @@ public class ProjectInfo extends AuditableObject implements Removable {
         this.contractNumber = contractNumber;
     }
 
-    public static ProjectInfo fromCaseObject(CaseObject project ) {
+    public EntityOption getManager() {
+        return manager;
+    }
+
+    public void setManager(EntityOption manager) {
+        this.manager = manager;
+    }
+
+    public EntityOption getContragent() {
+        return contragent;
+    }
+
+    public void setContragent(EntityOption contragent) {
+        this.contragent = contragent;
+    }
+
+    public static Project fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
 
-        ProjectInfo projectInfo = new ProjectInfo();
+        Project projectInfo = new Project();
         projectInfo.setId( project.getId() );
         projectInfo.setName( project.getName() );
         projectInfo.setCreator(project.getCreator());
@@ -276,12 +296,21 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
         projectInfo.setContractId(project.getContractId());
         projectInfo.setContractNumber(project.getContractNumber());
+
+        if (project.getManager() != null) {
+            projectInfo.setManager(new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()));
+        }
+
+        if (project.getInitiatorCompany() != null) {
+            projectInfo.setContragent(new EntityOption(project.getInitiatorCompany().getCname(), project.getInitiatorCompanyId()));
+        }
+
         return projectInfo;
     }
 
     @Override
     public String getAuditType() {
-        return "ProjectInfo";
+        return "Project";
     }
 
     @Override
@@ -289,7 +318,7 @@ public class ProjectInfo extends AuditableObject implements Removable {
         if ( this == o ) return true;
         if ( o == null || getClass() != o.getClass() ) return false;
 
-        ProjectInfo that = (ProjectInfo) o;
+        Project that = (Project) o;
 
         if ( id != null ? !id.equals( that.id ) : that.id != null ) return false;
 
@@ -303,7 +332,7 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     @Override
     public String toString() {
-        return "ProjectInfo{" +
+        return "Project{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -314,6 +343,8 @@ public class ProjectInfo extends AuditableObject implements Removable {
                 ", region=" + region +
                 ", team=" + team +
                 ", deleted=" + deleted +
+                ", manager" + manager +
+                ", contragent" + contragent +
                 '}';
     }
 }
