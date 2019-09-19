@@ -38,7 +38,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
             return;
         }
         subscribers.add( selector );
-        if( CollectionUtils.isNotEmpty( list ) ){
+        if( CollectionUtils.isNotEmpty( list ) ) {
             selector.fillOptions( list );
             selector.refreshValue();
             return;
@@ -55,10 +55,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
         subscribers.remove( selector );
     }
 
-    public void setFired(Boolean fired) {
-        isFired = fired;
-    }
-
     private void notifySubscribers() {
         for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
             selector.fillOptions( list );
@@ -71,7 +67,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     private void refreshOptions() {
         if (requested) return;
         requested = true;
-        employeeService.getEmployeeViewList( new EmployeeQuery( isFired, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
+        employeeService.getEmployeeViewList( new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
@@ -100,8 +96,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     Lang lang;
 
     private List< PersonShortView > list = new ArrayList<>();
-
-    private Boolean isFired;
 
     Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
 

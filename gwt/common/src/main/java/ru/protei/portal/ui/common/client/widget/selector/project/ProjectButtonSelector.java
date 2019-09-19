@@ -29,6 +29,11 @@ public class ProjectButtonSelector
         options.forEach(this::addOption);
     }
 
+    @Override
+    public boolean requestByOnLoad() {
+        return requestByOnLoad;
+    }
+
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -37,10 +42,11 @@ public class ProjectButtonSelector
         model.setIndependentProject(independentProject);
     }
 
-    public void setLazy(boolean isLazy) {
-        model.setLazy(isLazy);
+    public void setRequestByOnLoad(boolean requestByOnLoad) {
+        this.requestByOnLoad = requestByOnLoad;
     }
 
+    private boolean requestByOnLoad;
     private ProjectModel model;
     private String defaultValue;
 }

@@ -38,6 +38,10 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        parents.setRequestByOnLoad(false);
+        children.setRequestByOnLoad(false);
+
         historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         cdrDescription.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));

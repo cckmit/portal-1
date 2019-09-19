@@ -3,8 +3,8 @@
 
     <g:HTMLPanel>
         <div class="cleanable-search input-group">
-            <div  ui:field="addon" class="input-group-prepend prepend-fix hide">
-                <span class="input-group-text transparent" ui:field="addonText">
+            <div  ui:field="addon" class="input-group-prepend hide">
+                <span class="input-group-text transparent input-group-text-fix" ui:field="addonText">
                     <i ui:field="addonIcon"/>
                 </span>
             </div>

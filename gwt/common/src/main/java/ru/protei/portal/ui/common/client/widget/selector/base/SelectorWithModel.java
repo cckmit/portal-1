@@ -16,7 +16,11 @@ public interface SelectorWithModel<T> {
 
     Collection<T> getValues();
 
-    void setSelectorModel( SelectorModel<T> selectorModel );
+    void setSelectorModel(SelectorModel<T> selectorModel);
 
     boolean isAttached();
+
+    default boolean requestByOnLoad() {
+        return true;
+    }
 }

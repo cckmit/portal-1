@@ -1,14 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
@@ -19,15 +17,20 @@ import java.util.Objects;
 /**
  * Мультиселектор продуктов
  */
-public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements SelectorWithModel< ProductShortView > {
+public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init(ProductModel model, Lang lang ) {
+    public void init(ProductModel model, Lang lang) {
         this.model = model;
         model.subscribe(this, En_DevUnitState.ACTIVE, null);
         setSelectorModel(model);
-        setAddName( lang.buttonAdd() );
-        setClearName( lang.buttonClear() );
+        setAddName(lang.buttonAdd());
+        setClearName(lang.buttonClear());
+    }
+
+    @Override
+    public boolean requestByOnLoad() {
+        return requestByOnLoad;
     }
 
     public void fillOptions(List<ProductShortView> o) {
@@ -44,8 +47,8 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         this.exclude = exclude;
         fillOptions();
     }
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
-        if ( model != null ) {
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
+        if (model != null) {
             model.updateQuery(this, enDevUnitState, enDevUnitType);
         }
     }
@@ -60,10 +63,8 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         }
     }
 
-    public void setLazy(boolean isLazy) {
-        if (model != null) {
-            model.setLasy(isLazy);
-        }
+    public void setRequestByOnLoad(boolean requestByOnLoad) {
+        this.requestByOnLoad = requestByOnLoad;
     }
 
     private void fillOptions() {
@@ -79,6 +80,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
     @Inject
     private Lang lang;
 
+    private boolean requestByOnLoad;
     private List<ProductShortView> options = new ArrayList<>();
     private ProductShortView exclude = null;
     private boolean hasNullValue = true;

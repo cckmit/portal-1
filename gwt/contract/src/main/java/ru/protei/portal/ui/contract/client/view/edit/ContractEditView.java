@@ -37,6 +37,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        project.setRequestByOnLoad(false);
     }
 
     @Override

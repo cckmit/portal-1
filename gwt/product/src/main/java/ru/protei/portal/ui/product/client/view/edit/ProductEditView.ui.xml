@@ -53,11 +53,11 @@
                     <div class="row">
                         <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
                             <label ui:field="parentsContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="parents" lazy="true"/>
+                            <devunit:DevUnitMultiSelector ui:field="parents"/>
                         </g:HTMLPanel>
                         <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
                             <label ui:field="childrenContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="children" lazy="true"/>
+                            <devunit:DevUnitMultiSelector ui:field="children"/>
                         </g:HTMLPanel>
                     </div>
                 </div>
