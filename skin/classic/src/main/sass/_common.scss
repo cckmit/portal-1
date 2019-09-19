@@ -510,7 +510,7 @@ label.bordered:after {
 
 .verifiable {
   position: absolute;
-  right: 20px;
+  right: 25px;
   top: 50%;
   font-size: 18px;
   line-height: 1.5;
@@ -790,11 +790,6 @@ label.bordered:after {
 
 .products {
   table {
-    thead {
-      .dev-unit-type-column {
-        width: 70px;
-      }
-    }
     tbody {
       tr {
         td {
@@ -807,19 +802,7 @@ label.bordered:after {
             text-overflow: ellipsis;
           }
         }
-
-        .dev-unit-type-column {
-          text-align: center;
-
-          img {
-            height: 35px;
-            padding: 0 8px;
-          }
-        }
       }
-    }
-    .product-name {
-      width: 82%;
     }
   }
 }
@@ -4102,4 +4085,18 @@ table {
 
 .b-t-none {
   border-top: none;
+}
+
+.input-group .input-group-verifiable {
+  position: relative;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  width: 1%;
+  margin-bottom: 0;
+  margin-right: -1px;
+
+  .verifiable {
+    top: 15%;
+    right: 10px;
+  }
 }
