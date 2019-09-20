@@ -7,6 +7,7 @@
 @import "color-palette";
 @import "spinners";
 @import "display-table";
+@import "pages";
 
 /**
  * Overrides
@@ -30,7 +31,7 @@ body {
     }
     & li {
       & a {
-        padding-left: 20px !important;
+        padding-left: 15px !important;
         width: 75% !important;
 
         & .title {
@@ -38,6 +39,15 @@ body {
         }
       }
     }
+  }
+  .app-version {
+    color: #788195 !important;
+    width: 100% !important;
+    position: fixed;
+    bottom: 0;
+    line-height: 30px;
+    text-align: center;
+    font-size: 13px !important;
   }
 }
 

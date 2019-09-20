@@ -15,8 +15,9 @@
                 </g:Anchor>
 
                 <div class="sidebar-header-controls">
-                    <button type="button" class="hide btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" data-toggle-pin="sidebar"><i class="fa fs-12"></i>
-                    </button>
+                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
+                        <i class="far fs-12"></i>
+                    </g:Button>
                 </div>
             </div>
 
@@ -27,14 +28,17 @@
                 </div>
                 <div class="clearfix"/>
             </div>
+
+            <g:Label styleName="app-version" ui:field="appVersion"/>
+
         </g:HTMLPanel>
 
-        <div class="header">
-            <g:Anchor ui:field="toggleButton" styleName="hide btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
+        <div class="header" ui:field="headerDiv">
+            <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up fas fa-bars"/>
 
 
             <div>
-                <div class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
+                <div ui:field="brandDiv" class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
                     <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
                     <b class="m-l-5">PROTEI</b> LTD
                 </div>
@@ -77,16 +81,7 @@
                 <g:HTMLPanel ui:field="container" styleName="content"/>
             </div>
         </div>
-        <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar" visible="false">
-            <section class="sidebar">
-                <ul class="sidebar-menu">
-                    <li class="header">
-                        <ui:text from="{lang.appNavHeader}"/>
-                    </li>
-                </ul>
-                <g:Label styleName="app-version" ui:field="appVersion"/>
-            </section>
-        </g:HTMLPanel>
+
 
 
         <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-notice-right"/>
