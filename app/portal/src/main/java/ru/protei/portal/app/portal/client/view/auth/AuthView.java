@@ -69,6 +69,7 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         login.ensureDebugId(DebugIds.AUTH.INPUT_LOGIN);
         password.ensureDebugId(DebugIds.AUTH.INPUT_PASSWORD);
         loginButton.ensureDebugId(DebugIds.AUTH.LOGIN_BUTTON);
+        errorText.setId(DebugIds.AUTH.ERROR_ALERT);
     }
 
     private void initHandlers() {

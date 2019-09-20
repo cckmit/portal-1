@@ -176,7 +176,7 @@
                                     <div class="row clearfix">
                                         <div class="col-md-6">
                                             <div class="form-group form-group-default">
-                                                <label>
+                                                <label class="fade">
                                                     <ui:text from="{lang.timeElapsed}"/>
                                                 </label>
                                                 <timefield:TimeTextBox ui:field="timeElapsedInput"

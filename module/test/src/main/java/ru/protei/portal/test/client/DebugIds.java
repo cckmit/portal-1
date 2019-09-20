@@ -10,6 +10,7 @@ public class DebugIds {
         String INPUT_LOGIN = "auth-input-login";
         String INPUT_PASSWORD = "auth-input-password";
         String LOGIN_BUTTON = "auth-login-button";
+        String ERROR_ALERT = "auth-error-alert";
     }
 
     public interface NOTIFY {
@@ -348,5 +349,11 @@ public class DebugIds {
 
     public interface DOCUMENT_TABLE {
         String LOCK_ICON = "document-table-lock-icon";
+    }
+
+    interface LOCALE_BUTTON {
+        String DEFAULT = "locale-button-";
+        String EN = "locale-button-en";
+        String RU = "locale-button-ru";
     }
 }
