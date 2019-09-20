@@ -863,7 +863,7 @@ public class WorkerController {
     private UserLogin createLDAPAccount(Person person) throws Exception {
 
         ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
-        if (!email.isEmpty()) {
+        if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
             String login = email.value().substring(0, email.value().indexOf("@"));
             if (!userLoginDAO.isUnique(login.trim())) {
                 logger.debug("error: Login already exist.");
