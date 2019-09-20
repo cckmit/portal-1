@@ -32,7 +32,8 @@ public class AppView extends Composite
         ensureDebugIds();
         initHandlers();
         fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
-        if (Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ) )){
+        boolean isFixed = Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ));
+        if (isFixed){
             fixSidebar();
             fixSidebarButton.removeStyleName("hide");
         }
@@ -98,7 +99,6 @@ public class AppView extends Composite
             return;
         }
         openSidebar();
-        unfixSidebar();
     }
 
     @UiHandler("logo")
@@ -141,11 +141,9 @@ public class AppView extends Composite
 
     @UiHandler("fixSidebarButton")
     public void onChecked (ClickEvent event){
-        localStorageService.set( "fixed-sidebar", String.valueOf(!fixSidebarButton.getStyleName().contains("fixed-sidebar")));
 
         if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")){
             fixSidebar();
-            closeSidebar();
         }
         else {
             unfixSidebar();
@@ -195,6 +193,7 @@ public class AppView extends Composite
     }
 
     private void fixSidebar(){
+        localStorageService.set( "fixed-sidebar", "true");
         RootPanel.get().addStyleName("menu-pin");
         actionBarContainer.removeStyleName("p-l-30");
         actionBarContainer.addStyleName("p-l-40");
@@ -202,6 +201,7 @@ public class AppView extends Composite
     }
 
     private void unfixSidebar(){
+        localStorageService.set( "fixed-sidebar", "false");
         RootPanel.get().removeStyleName("menu-pin");
         actionBarContainer.removeStyleName("p-l-40");
         actionBarContainer.addStyleName("p-l-30");
