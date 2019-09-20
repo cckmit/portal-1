@@ -11,7 +11,6 @@ public class SimpleSidGenerator implements SessionIdGen{
     public String generateId() {
 
         StringBuilder b = new StringBuilder(String.format("%014d", System.currentTimeMillis()));
-        System.out.println(b.toString());
 
         b.reverse();
 
