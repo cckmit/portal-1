@@ -1,7 +1,6 @@
 package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
@@ -154,6 +153,9 @@ public class AppView extends Composite
         profile.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
         notifyContainer.ensureDebugId(DebugIds.APP_VIEW.NOTIFICATION_CONTAINER);
         locale.ensureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
+        settings.ensureDebugId(DebugIds.APP_VIEW.SETTING_BUTTON);
+        username.setId(DebugIds.APP_VIEW.USER_NAME);
+        navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
     }
 
     private void initHandlers() {

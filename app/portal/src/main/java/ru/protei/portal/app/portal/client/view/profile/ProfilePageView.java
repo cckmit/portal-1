@@ -2,7 +2,9 @@ package ru.protei.portal.app.portal.client.view.profile;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -86,6 +89,22 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         }
     }
 
+    private void ensureDebugIds() {
+        name.ensureDebugId(DebugIds.PROFILE.NAME);
+        company.setId(DebugIds.PROFILE.COMPANY);
+        changePasswordButton.ensureDebugId(DebugIds.PROFILE.CHANGE_PASSWORD_BUTTON);
+        changePasswordLabel.setId(DebugIds.PROFILE.CHANGE_PASSWORD_LABEL);
+        currentPasswordLabel.setId(DebugIds.PROFILE.CURRENT_PASSWORD_LABEL);
+        currentPassword.ensureDebugId(DebugIds.PROFILE.CURRENT_PASSWORD);
+        newPasswordLabel.setId(DebugIds.PROFILE.NEW_PASSWORD_LABEL);
+        newPassword.ensureDebugId(DebugIds.PROFILE.NEW_PASSWORD);
+        confirmPasswordLabel.setId(DebugIds.PROFILE.CONFIRM_PASSWORD_LABEL);
+        confirmPassword.ensureDebugId(DebugIds.PROFILE.CONFIRM_PASSWORD);
+        savePasswordButton.ensureDebugId(DebugIds.PROFILE.SAVE_PASSWORD_BUTTON);
+
+
+    }
+
     @UiField
     Button changePasswordButton;
     @UiField
@@ -107,6 +126,14 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     PasswordTextBox newPassword;
     @UiField
     PasswordTextBox confirmPassword;
+    @UiField
+    LabelElement currentPasswordLabel;
+    @UiField
+    LabelElement newPasswordLabel;
+    @UiField
+    LabelElement confirmPasswordLabel;
+    @UiField
+    HeadingElement changePasswordLabel;
 
     AbstractProfilePageActivity activity;
 

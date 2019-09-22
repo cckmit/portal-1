@@ -28,6 +28,23 @@ public class DebugIds {
         String TOGGLE_SIDEBAR_BUTTON = "app-toggle-sidebar-button";
         String USER_PANEL = "app-user-panel";
         String NOTIFICATION_CONTAINER = "app-notification-container";
+        String SETTING_BUTTON = "app-setting-button";
+        String USER_NAME = "app-user-name";
+        String SIDEBAR = "app-sidebar";
+    }
+
+    public interface PROFILE {
+        String NAME = "profile-name";
+        String COMPANY = "profile-company";
+        String CHANGE_PASSWORD_BUTTON = "profile-change-password-button";
+        String CHANGE_PASSWORD_LABEL = "profile-change-password-label";
+        String CURRENT_PASSWORD_LABEL = "profile-current-password-label";
+        String CURRENT_PASSWORD = "profile-current-password";
+        String NEW_PASSWORD_LABEL = "profile-new-password-label";
+        String NEW_PASSWORD = "profile-new-password";
+        String CONFIRM_PASSWORD_LABEL = "profile-confirm-password-label";
+        String CONFIRM_PASSWORD = "profile-confirm-password";
+        String SAVE_PASSWORD_BUTTON = "profile-save-password-button";
     }
 
     public interface ACTION_BAR {
