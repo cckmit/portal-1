@@ -799,6 +799,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCompanySubscriptionNotDefined();
 
+    String issueCompanySubscriptionBasedOnPrivacyNotDefined();
+
     String issueCompanySubscriptionNeedSelectCompany();
 
     String caseSubscription();

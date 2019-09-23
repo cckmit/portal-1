@@ -117,6 +117,13 @@ public class DebugIds {
         String RESET_BUTTON = "filter-reset-button";
         String REMOVE_BUTTON = "filter-remove-button";
 
+        String COMPANY_SELECTOR = "filter-company-selector";
+        String SHOW_FIRED = "filter-show-fired";
+
+        String SORT_FIELD_LABEL = "filter-sort-field-label";
+        String COMPANY_LABEL = "filter-company-label";
+        String SHOW_FIRED_LABEL = "filter-show-fired-label";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";
@@ -354,6 +361,14 @@ public class DebugIds {
 
     public interface COMPANY_ITEM {
         String LOCK_ICON = "company-item-lock-icon";
+    }
+
+    public interface COMPANY_PREVIEW {
+        String TAGS_LABEL = "company-preview-tags-label";
+        String TAGS_CONTAINER = "company-preview-tags-container";
+        String SUBSCRIPTION_LABEL = "company-preview-subscription-label";
+        String SUBSCRIPTION = "company-preview-subscription";
+        String CONTACT_INFO = "company-preview-contact-info";
     }
 
     public interface PRODUCT_TABLE {

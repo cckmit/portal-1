@@ -1,15 +1,14 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
@@ -24,6 +23,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
     }
 
     @Override
@@ -122,6 +122,17 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         this.caseMetaView.setTags(value);
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        tagsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.TAGS_LABEL);
+        caseMetaView.setEnsureDebugIdTagsContainer(DebugIds.COMPANY_PREVIEW.TAGS_CONTAINER);
+        subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.SUBSCRIPTION_LABEL);
+        subscription.ensureDebugId(DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
+        contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.CONTACT_INFO);
+    }
+
     @UiField
     SpanElement phone;
     @UiField
@@ -151,6 +162,12 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @Inject
     @UiField(provided = true)
     CaseMetaView caseMetaView;
+    @UiField
+    SpanElement tagsLabel;
+    @UiField
+    SpanElement subscriptionLabel;
+    @UiField
+    HeadingElement contactsHeader;
 
     AbstractCompanyPreviewActivity activity;
 

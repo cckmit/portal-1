@@ -12,7 +12,7 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}"
                                                        styleName="form-group col-md-12"/>
                 <div class="form-group col-md-12">
-                    <label>
+                    <label ui:field="sortFieldLabel">
                         <ui:text from="{lang.sortBy}"/>
                     </label>
                     <div class="control-group">

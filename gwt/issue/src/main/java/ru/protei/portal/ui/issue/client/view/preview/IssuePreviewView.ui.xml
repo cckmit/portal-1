@@ -18,6 +18,7 @@
                             <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
                                 <i class="far fa-clone fa-xs"/>
                             </g:Anchor>
+                            <h5 ui:field="name"/>
                         </g:HTMLPanel>
                     </h4>
                     <div class="inline pull-right">
@@ -95,9 +96,7 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <h5 ui:field="name"/>
-
-                    <div class="form-group pre-formatted-info markdown" ui:field="info"/>
+                    <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
 
                     <h5><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>

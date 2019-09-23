@@ -154,7 +154,7 @@ public class AppView extends Composite
         notifyContainer.ensureDebugId(DebugIds.APP_VIEW.NOTIFICATION_CONTAINER);
         locale.ensureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
         settings.ensureDebugId(DebugIds.APP_VIEW.SETTING_BUTTON);
-        username.setId(DebugIds.APP_VIEW.USER_NAME);
+        username.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.USER_NAME);
         navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
     }
 

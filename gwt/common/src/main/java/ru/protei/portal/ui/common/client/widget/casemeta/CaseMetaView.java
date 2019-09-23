@@ -374,6 +374,10 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         createCaseLinkPopup.setEnsureDebugIdApply(debugId);
     }
 
+    public void setEnsureDebugIdTagsContainer(String debugId) {
+        tagsContainer.ensureDebugId(debugId);
+    }
+
     @Inject
     CaseLinkProvider caseLinkProvider;
     @Inject
