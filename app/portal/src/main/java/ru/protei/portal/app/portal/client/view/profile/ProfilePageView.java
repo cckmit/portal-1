@@ -16,10 +16,6 @@ import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageAc
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-
-import java.util.List;
 
 /**
  * Вид превью контакта
@@ -98,13 +94,13 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         name.ensureDebugId(DebugIds.PROFILE.NAME);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.COMPANY);
         changePasswordButton.ensureDebugId(DebugIds.PROFILE.CHANGE_PASSWORD_BUTTON);
-        changePasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.CHANGE_PASSWORD_LABEL);
-        currentPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.CURRENT_PASSWORD_LABEL);
-        currentPassword.ensureDebugId(DebugIds.PROFILE.CURRENT_PASSWORD);
-        newPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.NEW_PASSWORD_LABEL);
-        newPassword.ensureDebugId(DebugIds.PROFILE.NEW_PASSWORD);
-        confirmPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.CONFIRM_PASSWORD_LABEL);
-        confirmPassword.ensureDebugId(DebugIds.PROFILE.CONFIRM_PASSWORD);
+        changePasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CHANGE_PASSWORD);
+        currentPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CURRENT_PASSWORD);
+        currentPassword.ensureDebugId(DebugIds.PROFILE.CURRENT_PASSWORD_INPUT);
+        newPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.NEW_PASSWORD);
+        newPassword.ensureDebugId(DebugIds.PROFILE.NEW_PASSWORD_INPUT);
+        confirmPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CONFIRM_PASSWORD);
+        confirmPassword.ensureDebugId(DebugIds.PROFILE.CONFIRM_PASSWORD_INPUT);
         savePasswordButton.ensureDebugId(DebugIds.PROFILE.SAVE_PASSWORD_BUTTON);
     }
 

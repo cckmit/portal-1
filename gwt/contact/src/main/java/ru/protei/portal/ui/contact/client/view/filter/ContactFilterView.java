@@ -130,10 +130,10 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
             return;
         }
         search.ensureDebugId(DebugIds.FILTER.SEARCH_INPUT);
-        sortFieldLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
+        sortFieldLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.LABEL.SORT_FIELD);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
-        company.setEnsureDebugIdLabel(DebugIds.FILTER.COMPANY_LABEL);
+        company.setEnsureDebugIdLabel(DebugIds.FILTER.LABEL.COMPANY);
         company.setEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR);
         showFired.ensureDebugId(DebugIds.FILTER.SHOW_FIRED);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);

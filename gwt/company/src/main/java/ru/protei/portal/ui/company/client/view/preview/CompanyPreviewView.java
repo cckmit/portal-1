@@ -126,11 +126,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        tagsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.TAGS_LABEL);
-        caseMetaView.setEnsureDebugIdTagsContainer(DebugIds.COMPANY_PREVIEW.TAGS_CONTAINER);
-        subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.SUBSCRIPTION_LABEL);
+        tagsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.TAGS);
+        caseMetaView.setEnsureDebugIdTagContainer(DebugIds.COMPANY_PREVIEW.TAGS_CONTAINER);
+        subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
         subscription.ensureDebugId(DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
-        contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.CONTACT_INFO);
+        contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
     }
 
     @UiField
