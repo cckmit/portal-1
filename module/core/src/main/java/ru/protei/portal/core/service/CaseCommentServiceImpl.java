@@ -11,6 +11,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -74,6 +75,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .withCaseComment(resultData.getCaseComment())
                     .withAddedAttachments(resultData.getAddedAttachments())
                     .build());
+        }
+
+        if (comment.getAuthorId().equals(person.getId())) {
+            comment.setAuthor(person);
+        } else {
+            comment.setAuthor(personDAO.get(person.getId()));
         }
 
         return ok( comment);
@@ -439,6 +446,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseCommentDAO caseCommentDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    PersonDAO personDAO;
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
     private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
