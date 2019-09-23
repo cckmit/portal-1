@@ -136,7 +136,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     private void publishAndClear(Tuple<Person, Long> key) {
         AssembledCaseEvent personsEvent = assembledEventsMap.get(key);
-        logger.debug("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(),
+        logger.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(),
                 personsEvent.getInitiator().getDisplayName());
         publisherService.publishEvent(personsEvent);
         assembledEventsMap.remove(key);

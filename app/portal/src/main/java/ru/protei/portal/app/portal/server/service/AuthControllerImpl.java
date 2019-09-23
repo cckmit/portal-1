@@ -34,16 +34,16 @@ public class AuthControllerImpl implements AuthController {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
 
         if (descriptor != null) {
-            log.debug("authentificate: sessionDescriptior={}", descriptor);
+            log.info("authentificate: sessionDescriptior={}", descriptor);
             return makeProfileByDescriptor(descriptor);
         }
 
         if (login == null && password == null) {
-            log.debug( "authentificate: neither login nor password provided" );
+            log.info( "authentificate: neither login nor password provided" );
             return null;
         }
 
-        log.debug( "authentificate: login={}", login );
+        log.info( "authentificate: login={}", login );
 
         Result< UserSessionDescriptor > result = authService.login(
                 httpRequest.getSession().getId(),
