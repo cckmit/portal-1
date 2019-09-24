@@ -20,7 +20,7 @@
             <!-- Сбор ошибок со всех appendable источников-->
             <AppenderRef ref="ERRORS"/>
             <!-- Для отладки в IDE вывод в консоль. ( Отладка )-->
-            <AppenderRef ref="CONSOLE"/>
+<!--            <AppenderRef ref="CONSOLE"/>-->
         </Root>
 
         <Logger name="ru.protei.portal" level="INFO">
