@@ -226,7 +226,7 @@ public class AuthServiceImpl implements AuthService {
         Company company = companyDAO.get(person.getCompanyId());
         jdbcManyRelationsHelper.fillAll( company );
 
-        logger.debug("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
+        logger.info("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
 
         UserSession s = new UserSession();
         s.setClientIp(ip);

@@ -26,19 +26,19 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
 
     @Override
     public SearchResult<EmployeeRegistration> getEmployeeRegistrations(EmployeeRegistrationQuery query) throws RequestFailedException {
-        log.debug(" get employee registrations: offset={} | limit={}", query.getOffset(), query.getLimit());
+        log.info(" get employee registrations: offset={} | limit={}", query.getOffset(), query.getLimit());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(employeeRegistrationService.getEmployeeRegistrations(token, query));
     }
 
     @Override
     public EmployeeRegistration getEmployeeRegistration(Long id) throws RequestFailedException {
-        log.debug(" get employee registration, id: {}", id);
+        log.info(" get employee registration, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<EmployeeRegistration> response = employeeRegistrationService.getEmployeeRegistration(descriptor.makeAuthToken(), id);
-        log.debug(" get employee registration, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+        log.info(" get employee registration, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -53,17 +53,17 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("create employee registration, id: {}", HelperFunc.nvlt(employeeRegistration.getId(), "new"));
+        log.info("create employee registration, id: {}", HelperFunc.nvlt(employeeRegistration.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         employeeRegistration.setCreatorId(descriptor.getPerson().getId());
         Result<Long> response = employeeRegistrationService.createEmployeeRegistration(descriptor.makeAuthToken(), employeeRegistration);
 
-        log.debug("create employee registration, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("create employee registration, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("create employee registration, applied id: {}", response.getData());
+            log.info("create employee registration, applied id: {}", response.getData());
             return response.getData();
         }
 

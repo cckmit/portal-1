@@ -26,28 +26,28 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
     @Override
     public SearchResult<Platform> getPlatforms(PlatformQuery query) throws RequestFailedException {
-        log.debug("getPlatforms(): query={}", query);
+        log.info("getPlatforms(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(siteFolderService.getPlatforms(token, query));
     }
 
     @Override
     public SearchResult<Server> getServers(ServerQuery query) throws RequestFailedException {
-        log.debug("getServers(): query={}", query);
+        log.info("getServers(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(siteFolderService.getServers(token, query));
     }
 
     @Override
     public SearchResult<Application> getApplications(ApplicationQuery query) throws RequestFailedException {
-        log.debug("getApplications(): query={}", query);
+        log.info("getApplications(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(siteFolderService.getApplications(token, query));
     }
 
     @Override
     public SearchResult<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException {
-        log.debug("getServersWithAppsNames(): query={}", query);
+        log.info("getServersWithAppsNames(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(siteFolderService.getServersWithAppsNames(token, query));
     }
@@ -56,7 +56,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException {
 
-        log.debug("getPlatformsOptionList(): query={}", query);
+        log.info("getPlatformsOptionList(): query={}", query);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<List<EntityOption>> response = siteFolderService.listPlatformsOptionList(descriptor.makeAuthToken(), query);
         if (response.isError()) {
@@ -68,7 +68,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public List<EntityOption> getServersOptionList(ServerQuery query) throws RequestFailedException {
 
-        log.debug("getServersOptionList(): query={}", query);
+        log.info("getServersOptionList(): query={}", query);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<List<EntityOption>> response = siteFolderService.listServersOptionList(descriptor.makeAuthToken(), query);
         if (response.isError()) {
@@ -80,10 +80,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public Platform getPlatform(long id) throws RequestFailedException {
 
-        log.debug("getPlatform(id={})", id);
+        log.info("getPlatform(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Platform> response = siteFolderService.getPlatform(descriptor.makeAuthToken(), id);
-        log.debug("getPlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("getPlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -93,10 +93,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public Server getServer(long id) throws RequestFailedException {
 
-        log.debug("getServer(id={})", id);
+        log.info("getServer(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Server> response = siteFolderService.getServer(descriptor.makeAuthToken(), id);
-        log.debug("getServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("getServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -106,10 +106,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public Application getApplication(long id) throws RequestFailedException {
 
-        log.debug("getApplication(id={})", id);
+        log.info("getApplication(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Application> response = siteFolderService.getApplication(descriptor.makeAuthToken(), id);
-        log.debug("getApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("getApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -119,7 +119,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public Platform savePlatform(Platform platform) throws RequestFailedException {
 
-        log.debug("savePlatform(): platform={}", platform);
+        log.info("savePlatform(): platform={}", platform);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Platform> response;
         if (platform.getId() == null) {
@@ -127,7 +127,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         } else {
             response = siteFolderService.updatePlatform(descriptor.makeAuthToken(), platform);
         }
-        log.debug("savePlatform(): {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("savePlatform(): {}", response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -137,7 +137,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public Server saveServer(Server server, Long serverIdOfAppsToBeCloned) throws RequestFailedException {
 
-        log.debug("saveServer(): server={}", server);
+        log.info("saveServer(): server={}", server);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Server> response;
         if (server.getId() == null) {
@@ -149,7 +149,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         } else {
             response = siteFolderService.updateServer(descriptor.makeAuthToken(), server);
         }
-        log.debug("saveServer(): {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("saveServer(): {}", response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -159,7 +159,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public Application saveApplication(Application application) throws RequestFailedException {
 
-        log.debug("saveApplication(): application={}", application);
+        log.info("saveApplication(): application={}", application);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Application> response;
         if (application.getId() == null) {
@@ -167,7 +167,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         } else {
             response = siteFolderService.updateApplication(descriptor.makeAuthToken(), application);
         }
-        log.debug("saveApplication(): {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("saveApplication(): {}", response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -177,10 +177,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public boolean removePlatform(long id) throws RequestFailedException {
 
-        log.debug("removePlatform(id={})", id);
+        log.info("removePlatform(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Boolean> response = siteFolderService.removePlatform(descriptor.makeAuthToken(), id);
-        log.debug("removePlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("removePlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -190,10 +190,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public boolean removeServer(long id) throws RequestFailedException {
 
-        log.debug("removeServer(id={})", id);
+        log.info("removeServer(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Boolean> response = siteFolderService.removeServer(descriptor.makeAuthToken(), id);
-        log.debug("removeServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("removeServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -203,10 +203,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Override
     public boolean removeApplication(long id) throws RequestFailedException {
 
-        log.debug("removeApplication(id={})", id);
+        log.info("removeApplication(id={})", id);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Boolean> response = siteFolderService.removeApplication(descriptor.makeAuthToken(), id);
-        log.debug("removeApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("removeApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

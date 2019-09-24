@@ -96,9 +96,29 @@ public class ServiceLayerInterceptorLogging {
             return "ResultObject is null.";
         }
 
+        if ( resultObject instanceof Long) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
+        if ( resultObject instanceof Integer) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
+        if ( resultObject instanceof Boolean) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
         if ( resultObject instanceof Collection<?>) {
             log.trace( "ResultObject: {}", resultObject );
             return "collection size=" + ((Collection) resultObject).size();
+        }
+
+        if ( resultObject instanceof Set<?>) {
+            log.trace( "ResultObject: {}", resultObject );
+            return "set size=" + ((Set) resultObject).size();
         }
 
         if ( resultObject instanceof Map<?, ?>) {

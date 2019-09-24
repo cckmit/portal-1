@@ -23,11 +23,11 @@ public class CaseLinkControllerImpl implements CaseLinkController {
 
     @Override
     public Map<En_CaseLink, String> getLinkMap() throws RequestFailedException {
-        log.debug("get case link map");
+        log.info("get case link map");
 
         Result<Map<En_CaseLink, String>> response = caseLinkService.getLinkMap();
 
-        log.debug("get case link map -> {} ", response.isOk() ? "ok" : response.getStatus());
+        log.info("get case link map -> {} ", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

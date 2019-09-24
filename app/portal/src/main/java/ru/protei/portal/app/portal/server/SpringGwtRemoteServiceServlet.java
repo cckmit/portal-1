@@ -30,14 +30,15 @@ public class SpringGwtRemoteServiceServlet extends RemoteServiceServlet {
 
     public String processCall(String payload) throws SerializationException {
         try {
-            Object ex = this.getBean(this.getThreadLocalRequest());
-            RPCRequest rpcRequest = RPC.decodeRequest(payload, ex.getClass(), this);
+            String url = this.getThreadLocalRequest().getRequestURI();
+            String controller = this.extractControllerName(url);
+            Object bean = this.getBean(controller);
+            RPCRequest rpcRequest = RPC.decodeRequest(payload, bean.getClass(), this);
             this.onAfterRequestDeserialized(rpcRequest);
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Invoking " + ex.getClass().getName() + "." + rpcRequest.getMethod().getName());
-            }
 
-            return RPC.invokeAndEncodeResponse(ex, rpcRequest.getMethod(), rpcRequest.getParameters(), rpcRequest.getSerializationPolicy());
+            LOG.info( "Invoking: " + bean.getClass().getSimpleName() + "."+rpcRequest.getMethod().getName() + "(..) for URL: " + url);
+
+            return RPC.invokeAndEncodeResponse(bean, rpcRequest.getMethod(), rpcRequest.getParameters(), rpcRequest.getSerializationPolicy());
         } catch (IncompatibleRemoteServiceException var4) {
             this.log("An IncompatibleRemoteServiceException was thrown while processing this call.", var4);
             return RPC.encodeResponseForFailure(null, var4);
@@ -58,39 +59,24 @@ public class SpringGwtRemoteServiceServlet extends RemoteServiceServlet {
         return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
     }
 
-
-    private Object getBean( HttpServletRequest request ) {
-        String service = this.getService(request);
-        Object bean = this.getBean(service);
-        if(!(bean instanceof RemoteService )) {
-            throw new IllegalArgumentException("Spring bean is not a GWT RemoteService: " + service + " (" + bean + ")");
-        } else {
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Bean for service " + service + " is " + bean);
-            }
-
-            return bean;
-        }
-    }
-
-    private String getService( HttpServletRequest request ) {
-        String url = request.getRequestURI();
-        String service = url.substring(url.lastIndexOf("/") + 1);
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("Service for URL " + url + " is " + service);
-        }
-
+    private String extractControllerName( String url ) {
+           String service = url.substring(url.lastIndexOf("/") + 1);
         return service;
     }
 
-    private Object getBean( String name ) {
+    private Object getBean( String service ) {
         WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         if(applicationContext == null) {
             throw new IllegalStateException("No Spring web application context found");
-        } else if(!applicationContext.containsBean(name)) {
-            throw new IllegalArgumentException("Spring bean not found: " + name);
-        } else {
-            return applicationContext.getBean(name);
+        } else if(!applicationContext.containsBean(service)) {
+            throw new IllegalArgumentException("Spring bean not found: " + service);
         }
+
+        Object bean = applicationContext.getBean( service );
+
+        if (!(bean instanceof RemoteService)) {
+            throw new IllegalArgumentException( "Spring bean is not a GWT RemoteService: " + service + " (" + bean + ")" );
+        }
+        return bean;
     }
 }

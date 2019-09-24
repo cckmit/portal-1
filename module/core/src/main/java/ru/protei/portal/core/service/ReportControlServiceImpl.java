@@ -78,14 +78,14 @@ public class ReportControlServiceImpl implements ReportControlService {
             int reportThreadsNumber = config.data().reportConfig().getThreadsNumber();
             int activeThreads = reportExecutorService.getActiveCount();
             if (activeThreads >= reportThreadsNumber) {
-                log.debug("all threads to process reports are busy");
+                log.info("all threads to process reports are busy");
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
             Result<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
             if (!result.isOk()) {
                 return result;
             }
-            log.debug( "reports to process : {}", size( result.getData() ) );
+            log.info( "reports to process : {}", size( result.getData() ) );
             if (size( result.getData() ) == 0) {
                 return ok();
             }

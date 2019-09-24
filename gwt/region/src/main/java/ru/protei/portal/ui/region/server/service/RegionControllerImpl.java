@@ -35,7 +35,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public List< RegionInfo > getRegionList( ProjectQuery query ) throws RequestFailedException {
-        log.debug( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
+        log.info( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -71,7 +71,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Map< String, List<Project> > getProjectsByRegions(ProjectQuery query ) throws RequestFailedException {
-        log.debug( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
+        log.info( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -85,7 +85,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Project getProject(Long id ) throws RequestFailedException {
-        log.debug( "getProject(): id={}", id );
+        log.info( "getProject(): id={}", id );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -99,7 +99,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Project getProjectInfo(Long id) throws RequestFailedException {
-        log.debug("getProjectInfo(): id={}", id);
+        log.info("getProjectInfo(): id={}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -113,7 +113,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Project saveProject(Project project) throws RequestFailedException {
-        log.debug("saveProject(): project={}", project);
+        log.info("saveProject(): project={}", project);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -136,7 +136,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public long createNewProject() throws RequestFailedException {
-        log.debug( "createNewProject()" );
+        log.info( "createNewProject()" );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -150,7 +150,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public List<Project> getProjectsList(ProjectQuery query) throws RequestFailedException {
-        log.debug("getProjectsList(): query={}", query);
+        log.info("getProjectsList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(projectService.listProjects(token, query));
@@ -158,7 +158,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public List<EntityOption> getProjectsEntityOptionList(ProjectQuery query) throws RequestFailedException {
-        log.debug("getProjectsEntityOptionList(): query={}", query);
+        log.info("getProjectsEntityOptionList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<List<Project>> response = projectService.listProjects(token, query);
@@ -175,12 +175,12 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Boolean removeProject(Long projectId) throws RequestFailedException {
-        log.debug("removeProject(): id={}", projectId);
+        log.info("removeProject(): id={}", projectId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Boolean> response = projectService.removeProject(descriptor.makeAuthToken(), projectId);
-        log.debug("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
+        log.info("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
             return response.getData();

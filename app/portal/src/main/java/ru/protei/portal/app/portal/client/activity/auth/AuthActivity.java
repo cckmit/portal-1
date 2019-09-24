@@ -53,7 +53,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     public void onLoginClicked() {
         String login = view.login().getValue();
         String pwd = view.password().getValue();
-        authService.authentificate(login, pwd, new FluentCallback<Profile>()
+        authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> view.showError(lang.errLoginOrPwd()))
                 .withSuccess(profile -> {
                     view.hideError();
@@ -77,7 +77,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             login = null;
             pwd = null;
         }
-        authService.authentificate(login, pwd, new FluentCallback<Profile>()
+        authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
                     resetRememberMe();
                     placeView();
