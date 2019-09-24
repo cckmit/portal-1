@@ -27,11 +27,6 @@
             <AppenderRef ref="PORTAL"/>
         </Logger>
 
-        <!-- Контроллеры -->
-        <Logger name="org.apache.http" level="INFO">
-            <AppenderRef ref="PORTAL"/>
-        </Logger>
-
         <!-- Сервис слой -->
         <Logger name="service" level="TRACE">
             <!-- Логгирование данных. Большие объемы. ( Отладка )-->
