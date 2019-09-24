@@ -441,7 +441,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
         product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
         manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_LABEL);
+        timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED);
         timeElapsedInput.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_INPUT);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);

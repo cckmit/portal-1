@@ -196,6 +196,7 @@ public class DebugIds {
         String LINKS_INPUT = "issue-links-input";
         String LINKS_APPLY_BUTTON = "issue-links-apply-button";
         @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
+        String LINK_INFO_CONTAINER = "issue-link-info-container";
         String TAGS_BUTTON = "issue-tags-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
@@ -205,7 +206,7 @@ public class DebugIds {
         String INITIATOR_SELECTOR = "issue-initiator-selector";
         String PRODUCT_SELECTOR = "issue-product-selector";
         String MANAGER_SELECTOR = "issue-manager-selector";
-        String TIME_ELAPSED_LABEL = "issue-time-elapsed-label";
+        String TIME_ELAPSED = "issue-time-elapsed";
         String TIME_ELAPSED_INPUT = "issue-time-elapsed-input";
         String DESCRIPTION_INPUT = "issue-description-input";
         String NOTIFIERS_SELECTOR_ADD_BUTTON = "issue-notifiers-selector-add-button";
@@ -406,9 +407,28 @@ public class DebugIds {
         String LOCK_ICON = "document-table-lock-icon";
     }
 
-    interface LOCALE_BUTTON {
+    public interface LOCALE_BUTTON {
         String DEFAULT = "locale-button-";
         String EN = "locale-button-en";
         String RU = "locale-button-ru";
+    }
+
+    public interface TABLE {
+        interface BUTTON {
+            String EDIT = "edit-button";
+            String DOWNLOAD = "download-button";
+            String REMOVE = "remove-button";
+            String REFRESH = "refresh-button";
+            String ARCHIVE = "archive-button";
+            String ATTACHMENT = "attachment-button";
+            String COPY = "copy-button";
+        }
+        interface ISSUE {
+            String PRIVACY = "";
+            String PRODUCT = "";
+            String CREATION_DATE = "";
+            String NAME = "";
+            String DESCRIPTION = "";
+        }
     }
 }

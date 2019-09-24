@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.casemeta.link.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -22,6 +23,7 @@ import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -181,6 +183,13 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     private boolean hasInfo( CaseLink caseLink ) {
         return caseLink.getCaseInfo()!=null || caseLink.getYouTrackInfo()!=null;
+    }
+
+    private void ensureDebugIds() {
+        if ( !DebugInfo.isDebugIdEnabled() ) {
+            return;
+        }
+        caseInfoPanel.ensureDebugId(DebugIds.ISSUE.LINK_INFO_CONTAINER );
     }
 
     @Inject

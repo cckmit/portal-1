@@ -1,13 +1,17 @@
 package ru.protei.portal.ui.common.client.columns;
 
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class CopyClickColumn<T> extends ClickColumn<T> {
 
@@ -32,6 +36,7 @@ public class CopyClickColumn<T> extends ClickColumn<T> {
         a.setHref("#");
         a.addClassName("far fa-lg fa-copy");
         a.setTitle(lang.buttonCopy());
+        a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.COPY);
         setCopyEnabled(a);
         cell.appendChild(a);
     }

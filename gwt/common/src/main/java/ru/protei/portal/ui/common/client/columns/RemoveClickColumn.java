@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.columns;
 
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -7,8 +8,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Removable;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class RemoveClickColumn< T > extends ClickColumn< T > {
 
@@ -32,8 +36,9 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
         if ( ((Removable) value).isAllowedRemove() ) {
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref( "#" );
-            a.addClassName("far fa-trash-alt fa-lg");
+            a.addClassName( "far fa-trash-alt fa-lg" );
             a.setTitle( lang.remove() );
+            a.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.REMOVE );
             setRemoveEnabled( a );
             cell.appendChild( a );
         }

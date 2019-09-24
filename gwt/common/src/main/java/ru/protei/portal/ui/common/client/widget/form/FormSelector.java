@@ -103,6 +103,7 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
 
     public void setEnsureDebugId(String debugId) {
         formContainer.ensureDebugId(debugId);
+        text.setId(DebugIds.DEBUG_ID_PREFIX + debugId + "-text");
     }
 
     public void ensureLabelDebugId(String debugId) {
