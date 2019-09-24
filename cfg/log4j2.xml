@@ -5,64 +5,92 @@
         <Property name="archivePath" value="${basePath}/archive"/>
         <Property name="extension" value=".log"/>
         <Property name="errorsFileName" value="errors"/>
-        <Property name="appFileName" value="portal.app"/>
-        <Property name="migrateFileName" value="portal.migrate"/>
-        <Property name="appServiceFileName" value="portal.app.service"/>
-        <Property name="hpsmFileName" value="portal.hpsm.service"/>
-        <Property name="redmineFileName" value="portal.redmine.service"/>
+        <Property name="appFileName" value="app"/>
+        <Property name="appTraceFileName" value="app.trace"/>
+        <Property name="migrateFileName" value="migrate"/>
+        <Property name="jiraFileName" value="jira"/>
+        <Property name="hpsmFileName" value="hpsm.service"/>
+        <Property name="redmineFileName" value="redmine.service"/>
         <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
         <Property name="maxFileSize" value="32MB"/>
     </Properties>
 
     <Loggers>
         <Root level="DEBUG">
+            <!-- Сбор ошибок со всех appendable источников-->
             <AppenderRef ref="ERRORS"/>
+            <!-- Для отладки в IDE вывод в консоль. ( Отладка )-->
+            <AppenderRef ref="CONSOLE"/>
         </Root>
 
-        <Logger name="ru.protei" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
+        <Logger name="ru.protei.portal" level="INFO">
+            <AppenderRef ref="PORTAL"/>
         </Logger>
-        <Logger name="protei" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
+
+        <!-- Контроллеры -->
+        <Logger name="org.apache.http" level="INFO">
+            <AppenderRef ref="PORTAL"/>
         </Logger>
-        <Logger name="debuglog" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
+
+        <!-- Сервис слой -->
+        <Logger name="service" level="TRACE">
+            <!-- Логгирование данных. Большие объемы. ( Отладка )-->
+            <!--  <AppenderRef ref="TRACE"/> -->
+            <!-- Основной лог -->
+            <AppenderRef ref="PORTAL" level="INFO"/>
         </Logger>
-        <Logger name="ds_cluster" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
+
+        <!-- SQL запросы -->
+        <!-- SQL -->
+        <Logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG">
+            <AppenderRef ref="PORTAL"/>
         </Logger>
-        <Logger name="ds_cluster_stat" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
-        </Logger>
-        <Logger name="org" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
-        </Logger>
-        <Logger name="com" level="DEBUG">
-            <AppenderRef ref="COMMON"/>
-        </Logger>
-        <Logger name="service" level="DEBUG">
-            <AppenderRef ref="APPSERVICE"/>
+        <!-- параметры SQL запроса ( Отладка )-->
+        <!--        <logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="TRACE">-->
+        <!--            <AppenderRef ref="PORTAL"/>-->
+        <!--        </logger>-->
+
+        <!--Модули интеграции -->
+        <Logger name="ru.protei.portal.jira" level="DEBUG" additivity="false">
+            <AppenderRef ref="JIRA"/>
+            <AppenderRef ref="ERRORS"/>
         </Logger>
         <Logger name="ru.protei.portal.hpsm" level="DEBUG" additivity="false">
             <AppenderRef ref="HPSM"/>
+            <AppenderRef ref="ERRORS"/>
         </Logger>
         <Logger name="ru.protei.portal.redmine" level="DEBUG" additivity="false">
             <AppenderRef ref="REDMINE"/>
+            <AppenderRef ref="ERRORS"/>
         </Logger>
+
         <Logger name="ru.protei.portal.tools.migrate" level="DEBUG" additivity="false">
             <AppenderRef ref="MIGRATE"/>
+            <AppenderRef ref="ERRORS"/>
         </Logger>
 
-        <Logger name="DefaultListableBeanFactory" level="INFO"/>
-        <Logger name="org.apache.http" level="INFO"/>
+        <!-- Инициализация контекстов и бинов Spring -->
+        <Logger name="DefaultListableBeanFactory" level="INFO">
+            <AppenderRef ref="PORTAL"/>
+        </Logger>
 
-        <Logger name="org.springframework" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
-        <Logger name="config" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
-        <Logger name="ru.protei.winter" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
-        <Logger name="liquibase" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
-        <Logger name="LiquibaseSchemaResolver" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
-        <Logger name="jdbc" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
-        <Logger name="SpringGwtRemoteServiceServlet" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
+        <!-- Winter reloadable config -->
+        <Logger name="config" level="ERROR">
+            <AppenderRef ref="PORTAL"/>
+        </Logger>
+        <Logger name="ru.protei.winter" level="DEBUG">
+            <AppenderRef ref="PORTAL"/>
+        </Logger>
+        <Logger name="liquibase" level="WARN">
+            <AppenderRef ref="PORTAL"/>
+        </Logger>
+        <Logger name="LiquibaseSchemaResolver" level="WARN">
+            <AppenderRef ref="PORTAL"/>
+        </Logger>
+        <Logger name="org.springframework.web" level="DEBUG">
+            <AppenderRef ref="PORTAL"/>
+        </Logger>
+
     </Loggers>
 
     <Appenders>
@@ -70,36 +98,53 @@
             <PatternLayout pattern="${pattern}"/>
         </Console>
 
+        <!-- Лог ошибок из всех модулей приложения -->
         <RollingFile name="ERRORS" fileName="${basePath}/${errorsFileName}${extension}"
                      filePattern="${archivePath}/${errorsFileName}.%d{yyyyMMdd}.%i${extension}.gz">
             <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
             </Policies>
         </RollingFile>
 
-        <RollingFile name="COMMON" fileName="${basePath}/${appFileName}${extension}"
+        <!-- Основной лог приложения -->
+        <RollingFile name="PORTAL" fileName="${basePath}/${appFileName}${extension}"
                      filePattern="${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">
-            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
             </Policies>
         </RollingFile>
 
-        <RollingFile name="APPSERVICE" fileName="${basePath}/${appServiceFileName}${extension}"
-                     filePattern="${archivePath}/${appServiceFileName}.%d{yyyyMMdd}.%i${extension}.gz">
-            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+        <!-- Логгирование данных ( toString() ). Большие объёмы. -->
+        <!-- Сжимать раз в сутки при низкой нагрузке. Хранить не более 20 дней-->
+        <RollingFile name="TRACE" fileName="${basePath}/${appTraceFileName}${extension}"
+                     filePattern="${archivePath}/${appTraceFileName}.%d{yyyyMMdd}${extension}.gz">
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${archivePath}" maxDepth="1">
+                    <IfFileName glob="*/${appTraceFileName}*.log.gz"/>
+                    <IfLastModified age="20d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <RollingFile name="MIGRATE" fileName="${basePath}/${migrateFileName}${extension}"
                      filePattern="${archivePath}/${migrateFileName}.%d{yyyyMMdd}.%i${extension}.gz">
-            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
@@ -108,7 +153,20 @@
 
         <RollingFile name="HPSM" fileName="${basePath}/${hpsmFileName}${extension}"
                      filePattern="${archivePath}/${hpsmFileName}.%d{yyyyMMdd}.%i${extension}.gz">
-            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="JIRA" fileName="${basePath}/${jiraFileName}${extension}"
+                     filePattern="${archivePath}/${jiraFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
@@ -117,7 +175,9 @@
 
         <RollingFile name="REDMINE" fileName="${basePath}/${redmineFileName}${extension}"
                      filePattern="${archivePath}/${redmineFileName}.%d{yyyyMMdd}.%i${extension}.gz">
-            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
