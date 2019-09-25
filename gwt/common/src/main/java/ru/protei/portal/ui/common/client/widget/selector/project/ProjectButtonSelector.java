@@ -46,7 +46,7 @@ public class ProjectButtonSelector
         this.requestByOnLoad = requestByOnLoad;
     }
 
-    private boolean requestByOnLoad;
+    private boolean requestByOnLoad = true;
     private ProjectModel model;
     private String defaultValue;
 }
