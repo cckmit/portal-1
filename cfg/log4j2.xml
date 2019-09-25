@@ -29,7 +29,7 @@
 
         <!-- Сервис слой -->
         <Logger name="service" level="TRACE">
-            <!-- Логгирование данных. Большие объемы. ( Отладка )-->
+            <!-- Логгирование данных. Большие объемы. ( Отладка, Демозона, Тестирование )-->
             <!--  <AppenderRef ref="TRACE"/> -->
             <!-- Основной лог -->
             <AppenderRef ref="APP" level="INFO"/>
@@ -40,7 +40,7 @@
         <Logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG">
             <AppenderRef ref="APP"/>
         </Logger>
-        <!-- параметры SQL запроса ( Отладка )-->
+        <!-- параметры SQL запроса ( Отладка, Демозона, Тестирование )-->
         <!--        <logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="TRACE">-->
         <!--            <AppenderRef ref="APP"/>-->
         <!--        </logger>-->
