@@ -29,19 +29,19 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectRegion}"/></label>
-                    <region:RegionButtonSelector ui:field="projectRegion" />
+                    <region:RegionButtonSelector ui:field="projectRegion" validation="true"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectDirection}"/></label>
-                    <productdirection:ProductDirectionButtonSelector ui:field="projectDirection"/>
+                    <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" validation="true"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectCustomerType}"/></label>
-                    <cutomertype:CustomerTypeSelector ui:field="customerType"/>
+                    <cutomertype:CustomerTypeSelector ui:field="customerType" validation="true"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label ui:field="subscriptionsLabel"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                    <company:CompanySelector ui:field="company" hasNullValue="false"/>
+                    <company:CompanySelector ui:field="company" hasNullValue="false" validation="true"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.projectProducts}"/></label>
