@@ -34,7 +34,7 @@
                                         <div ui:field="filesUpload" class="attach-add-btn">
                                             <i class="fas fa-paperclip"/>
                                             <ui:text from='{lang.addAttachmentBtn}'/>
-                                            <i class="fas icon-verifiable"/>
+                                            <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
                                         </div>
                                     </fileuploader:AttachmentUploader>
                                     <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
@@ -51,7 +51,7 @@
                                                            styleName="form-control time-elapsed" notNull="false"/>
                                 </div>
 
-                                <div class="col-md-2 p-r-0">
+                                <div class="col-md-4 p-r-0">
                                     <g:CheckBox ui:field="privateComment" styleName="checkbox check-danger" text="{lang.commentSetPrivate}"/>
                                 </div>
                             </div>

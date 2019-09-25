@@ -1,0 +1,40 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:wizard="urn:import:ru.protei.portal.ui.common.client.widget.wizard">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <wizard:WizardWidget ui:field="wizard">
+
+            <wizard:pane.WizardWidgetPane tabName="{lang.documentProjectHeader}" tabIcon="fa fa-archive"
+                buttonBack="{lang.buttonCancel}" buttonForward="{lang.buttonForward}">
+                <g:HTMLPanel ui:field="projectChooseContainer">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <g:Button ui:field="btnSearch" styleName="btn btn-block btn-white">
+                                    <span class="pull-left"><i class="fas fa-search"/></span>
+                                    <span class="bold"><ui:text from="{lang.projectSearch}"/></span>
+                                </g:Button>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <g:Button ui:field="btnCreate" styleName="btn btn-block btn-white">
+                                    <span class="pull-left"><i class="fas fa-plus-circle"/></span>
+                                    <span class="bold"><ui:text from="{lang.projectCreate}"/></span>
+                                </g:Button>
+                            </div>
+                        </div>
+                    </div>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="projectSearchContainer"/>
+                <g:HTMLPanel ui:field="projectCreateContainer"/>
+            </wizard:pane.WizardWidgetPane>
+
+            <wizard:pane.WizardWidgetPane tabName="{lang.documentCreateHeader}" tabIcon="fa fa-book"
+                buttonBack="{lang.buttonBack}" buttonForward="{lang.buttonCreate}">
+                <g:HTMLPanel ui:field="documentContainer"/>
+            </wizard:pane.WizardWidgetPane>
+        </wizard:WizardWidget>
+    </g:HTMLPanel>
+</ui:UiBinder>

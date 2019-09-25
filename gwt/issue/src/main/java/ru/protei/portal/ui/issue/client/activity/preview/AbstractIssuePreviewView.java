@@ -22,7 +22,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setCaseNumber(Long caseNumber);
     void setCreatedBy(String value );
     void setState( long value );
-    void setCriticality( int value );
+    void setImportance(int value );
     void setProduct( String value );
 
     void setLinks(Set<CaseLink> value);
@@ -43,7 +43,9 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setSubscriptionEmails( String value );
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();
-    void setJiraVisible(boolean isVisible);
+
+    HasVisibility jiraContainerVisibility();
+
     void setJiraIssueType(String value);
     void setJiraSeverity(String value);
     void setJiraTimeOfReaction(String value);

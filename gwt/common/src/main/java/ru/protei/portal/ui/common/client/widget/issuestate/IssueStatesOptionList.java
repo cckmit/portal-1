@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.issuestate.optionlist;
+package ru.protei.portal.ui.common.client.widget.issuestate;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;

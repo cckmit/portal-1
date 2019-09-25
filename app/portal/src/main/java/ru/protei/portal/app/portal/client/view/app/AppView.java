@@ -12,11 +12,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
+import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
-import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 
 /**
  * Вид основной формы приложения
@@ -30,6 +31,12 @@ public class AppView extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         initHandlers();
+        fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
+        boolean isFixed = Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ));
+        if (isFixed){
+            fixSidebar();
+            fixSidebarButton.removeStyleName("hide");
+        }
     }
 
     @Override
@@ -86,13 +93,12 @@ public class AppView extends Composite
     @UiHandler( "toggleButton" )
     public void onToggleButtonClicked( ClickEvent event ) {
         event.preventDefault();
-        boolean isCollapsed = RootPanel.get().getStyleName().contains( "sidebar-collapse" );
-        if ( isCollapsed ) {
-            RootPanel.get().removeStyleName( "sidebar-collapse" );
+        boolean isOpened = RootPanel.get().getStyleName().contains( "sidebar-open" );
+        if ( isOpened ) {
+            closeSidebar();
             return;
         }
-
-        RootPanel.get().addStyleName( "sidebar-collapse" );
+        openSidebar();
     }
 
     @UiHandler("logo")
@@ -133,6 +139,17 @@ public class AppView extends Composite
         activity.onLocaleChanged(event.getValue().getLocale());
     }
 
+    @UiHandler("fixSidebarButton")
+    public void onChecked (ClickEvent event){
+
+        if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")){
+            fixSidebar();
+        }
+        else {
+            unfixSidebar();
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent event ) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
@@ -163,14 +180,46 @@ public class AppView extends Composite
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
             RootPanel.get().addStyleName("sidebar-visible");
-            navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+            navbar.getElement().getStyle().setProperty("transform", "translate(200px, 0px)");
+            fixSidebarButton.removeStyleName("hide");
         }, MouseOverEvent.getType() );
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
             RootPanel.get().removeStyleName("sidebar-visible");
             navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+            if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")) fixSidebarButton.addStyleName("hide");
         }, MouseOutEvent.getType() );
+    }
+
+    private void fixSidebar(){
+        localStorageService.set( "fixed-sidebar", "true");
+        RootPanel.get().addStyleName("menu-pin");
+        actionBarContainer.removeStyleName("p-l-30");
+        actionBarContainer.addStyleName("p-l-40");
+        fixSidebarButton.addStyleName("fixed-sidebar");
+    }
+
+    private void unfixSidebar(){
+        localStorageService.set( "fixed-sidebar", "false");
+        RootPanel.get().removeStyleName("menu-pin");
+        actionBarContainer.removeStyleName("p-l-40");
+        actionBarContainer.addStyleName("p-l-30");
+        fixSidebarButton.removeStyleName("fixed-sidebar");
+    }
+
+    private void openSidebar(){
+        RootPanel.get().addStyleName( "sidebar-open" );
+        navbar.addStyleName("visible");
+        headerDiv.addClassName("header-padding");
+        brandDiv.addClassName("hide");
+    }
+
+    private void closeSidebar(){
+        RootPanel.get().removeStyleName( "sidebar-open" );
+        navbar.removeStyleName("visible");
+        headerDiv.removeClassName("header-padding");
+        brandDiv.removeClassName("hide");
     }
 
     @UiField
@@ -178,8 +227,6 @@ public class AppView extends Composite
     @UiField
     Anchor logout;
 
-    @UiField
-    HTMLPanel sidebar;
     @UiField
     HTMLPanel container;
 
@@ -209,9 +256,18 @@ public class AppView extends Composite
     HTMLPanel menuBar;
     @UiField
     Button profile;
+    @UiField
+    Button fixSidebarButton;
     @Inject
     @UiField(provided = true)
     LocaleSelector locale;
+    @Inject
+    LocalStorageService localStorageService;
+    @UiField
+    DivElement headerDiv;
+    @UiField
+    DivElement brandDiv;
+
 
     AbstractAppActivity activity;
 

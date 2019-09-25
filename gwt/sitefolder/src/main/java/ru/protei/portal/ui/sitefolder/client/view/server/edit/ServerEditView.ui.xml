@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="row">
-                <tab:TabWidget tabNames="{lang.siteFolderApps}">
+                <tab:TabWidget>
                     <tab:pane.TabWidgetPane tabName="{lang.siteFolderApps}">
                         <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">
                             <g:Button ui:field="openButton" styleName="btn btn-default m-r-10" text="{lang.openTableView}"/>

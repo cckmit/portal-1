@@ -355,23 +355,25 @@ public abstract class CaseCommentListActivity
 
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
         AbstractCaseCommentItemView itemView = issueProvider.get();
-        itemView.setActivity( this );
+        itemView.setActivity(this);
 
-        if ( value.getAuthorId().equals( profile.getId() ) ) {
+        if (value.getAuthorId().equals(profile.getId())) {
             itemView.setMine();
+            itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
+        } else {
+            itemView.setIcon(AvatarUtils.getAvatarUrl(value.getAuthor()));
         }
 
-        itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
-        itemView.setOwner( getOwnerName(value) );
-        itemView.setIcon( AvatarUtils.getAvatarUrl(value.getAuthor()));
+        itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));
+        itemView.setOwner(getOwnerName(value));
         itemView.setRemoteLink(value.getRemoteLink());
 
         if (StringUtils.isNotEmpty(value.getText())) {
             itemView.setMessage(value.getText());
         }
         itemView.clearElapsedTime();
-        fillTimeElapsed( value, itemView );
-        if ( isPrivateVisible ) {
+        fillTimeElapsed(value, itemView);
+        if (isPrivateVisible) {
             itemView.setPrivacyFlag(value.isPrivateComment());
         }
 
@@ -380,7 +382,7 @@ public abstract class CaseCommentListActivity
         boolean isManagerChangeComment = value.getCaseManagerId() != null;
         boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment;
 
-        if ( HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
+        if (HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
             itemView.hideOptions();
         }
 

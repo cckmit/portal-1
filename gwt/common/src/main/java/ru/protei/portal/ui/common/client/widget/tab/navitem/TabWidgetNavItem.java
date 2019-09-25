@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.tab.navitem;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -30,7 +32,14 @@ public class TabWidgetNavItem extends Composite {
 
     public void setTabName(String tabName) {
         this.tabName = tabName;
-        anchor.setText(tabName);
+        text.setInnerText(tabName);
+    }
+
+    public void setTabIcon(String tabIcon) {
+        if (tabIcon != null) {
+            icon.removeClassName("hide");
+            icon.addClassName(tabIcon);
+        }
     }
 
     public void setTabNameDebugId(String debugId) {
@@ -49,6 +58,10 @@ public class TabWidgetNavItem extends Composite {
     HTMLPanel root;
     @UiField
     Anchor anchor;
+    @UiField
+    Element icon;
+    @UiField
+    SpanElement text;
 
     private String tabName;
     private TabWidgetHandler activity;

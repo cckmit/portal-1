@@ -3,6 +3,7 @@ package ru.protei.portal.api.model;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -246,7 +247,7 @@ public class WorkerRecord {
 
     public void setFireDate(String fireDate) {
         this.fireDate = fireDate;
-        this.isFired = fireDate != null && !fireDate.isEmpty();
+        this.isFired = HelperFunc.isNotEmpty(fireDate);
     }
 
     @XmlElement(name = "worker-id")

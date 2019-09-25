@@ -135,18 +135,21 @@
   background-color: #fff;
   border: 1px solid #fff;
 
-  &.icon-verifiable{
+  &.icon-verifiable {
     display: flex;
-    &:before{
+
+    &:before {
       font-size: 19px;
-      animation: animation-8 1s linear 0s infinite normal forwards running;
+      animation: fa-spin 2s infinite linear;
       margin: auto;
       color: #bdbdbd;
     }
-    .pic{
+
+    .pic {
       display: none;
     }
   }
+
   .pic {
     display: table-cell;
     max-height: 40px;
@@ -254,13 +257,13 @@
   }
   & .icon-verifiable {
     display: none;
-    animation: animation-8 1s linear 0s infinite normal forwards running;
   }
   &:hover{
     background: #c1c1c1;
     cursor: pointer;
   }
 }
+
 .attach-add-btn {
   text-transform: initial;
   cursor: pointer;
@@ -277,27 +280,32 @@
   }
   .icon-verifiable {
     display: none;
-    animation: animation-8 1s linear 0s infinite normal forwards running;
   }
 }
 
 .attachment-uploading {
+
   .attach-add-circle {
-    background: #008080 !important;
+    background: teal !important;
     transition-duration: 0.2s;
     cursor: not-allowed;
   }
+
   .ion-plus {
     display: none;
   }
+
   .icon-verifiable {
     display: block;
   }
+
   .attach-add-btn {
     opacity: 0.5;
+
     .icon-verifiable {
       display: inline-block;
     }
+
     &:active{
       box-shadow: none;
     }

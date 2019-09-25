@@ -14,8 +14,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 public abstract class NotifyActivity
         implements Activity, AbstractNotifyActivity {
 
-
-
     @Event
     public void onInit(NotifyEvents.Init event) {
         this.init = event;

@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.text.RawTextButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.text.RawTextFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -66,7 +67,6 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     }
 
     private void renderView() {
-
         renderViewDisableAll();
 
         if (value == null) {
@@ -94,9 +94,6 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
         issueType.setEnabled(false);
         severity.fillOptions(Collections.emptyList());
         severity.setEnabled(false);
-        severityContainer.setVisible(false);
-        timeOfReactionContainer.setVisible(false);
-        timeOfDecisionContainer.setVisible(false);
     }
 
     private void renderViewIssueType(String currentIssueType) {
@@ -108,32 +105,21 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
         boolean isSeverityEditable = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(currentIssueType));
         if (!isSeverityEditable) {
             severity.setEnabled(false);
-            severityContainer.setVisible(false);
+            severity.setValue("");
         } else {
             severity.setDisplayOptionCreator(makeSeverityDisplayOptionCreator(cache, currentIssueType));
             severity.fillOptions(collectSeverities(cache, currentIssueType));
             severity.setValue(currentSeverity);
             severity.setEnabled(true);
-            severityContainer.setVisible(true);
         }
     }
 
     private void renderViewTimeOfReaction(Long currentTimeOfReaction) {
-        if (currentTimeOfReaction == null) {
-            timeOfReactionContainer.setVisible(false);
-        } else {
-            timeOfReaction.setValue(workTimeFormatter.asString(currentTimeOfReaction));
-            timeOfReactionContainer.setVisible(true);
-        }
+        timeOfReaction.setValue(currentTimeOfReaction == null ? "" : workTimeFormatter.asString(currentTimeOfReaction));
     }
 
     private void renderViewTimeOfDecision(Long currentTimeOfDecision) {
-        if (currentTimeOfDecision == null) {
-            timeOfDecisionContainer.setVisible(false);
-        } else {
-            timeOfDecision.setValue(workTimeFormatter.asString(currentTimeOfDecision));
-            timeOfDecisionContainer.setVisible(true);
-        }
+        timeOfDecision.setValue(currentTimeOfDecision == null ? "" : workTimeFormatter.asString(currentTimeOfDecision));
     }
 
     private void fillValueFromView() {
@@ -215,17 +201,11 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     TextBox issueType;
     @Inject
     @UiField(provided = true)
-    RawTextButtonSelector severity;
+    RawTextFormSelector severity;
     @UiField
     TextBox timeOfReaction;
     @UiField
     TextBox timeOfDecision;
-    @UiField
-    HTMLPanel severityContainer;
-    @UiField
-    HTMLPanel timeOfReactionContainer;
-    @UiField
-    HTMLPanel timeOfDecisionContainer;
 
     private JiraMetaData value;
     private List<JiraSLAMapEntry> cache;

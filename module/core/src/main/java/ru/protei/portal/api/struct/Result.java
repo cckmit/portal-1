@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -14,7 +18,11 @@ import java.util.function.Function;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect
+@XmlRootElement(name = "result")
 public class Result<T> {
+
+    public Result() {
+    }
 
     @JsonProperty
     private En_ResultStatus status;
@@ -35,20 +43,31 @@ public class Result<T> {
         return status != En_ResultStatus.OK;
     }
 
+    @XmlElement(name="status")
     public En_ResultStatus getStatus () {
         return status;
     }
 
+    @XmlElement(name="data")
     public T getData () {
         return data;
     }
 
+    @XmlElement(name="message")
     public String getMessage() {
         return message;
     }
 
     public void setMessage( String message ) {
         this.message = message;
+    }
+
+    public void setStatus( En_ResultStatus status ) {
+        this.status = status;
+    }
+
+    public void setData( T data ) {
+        this.data = data;
     }
 
     public Result( En_ResultStatus status, T data, String message ) {
@@ -83,12 +102,13 @@ public class Result<T> {
 
     @Override
     public String toString() {
-        return "CoreResponse{" +
+        return "Result{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
                 ", data=" + data +
                 '}';
     }
+
 
     /**
      * Если результрат успешен

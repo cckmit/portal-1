@@ -14,7 +14,7 @@ public class Credentials {
     public String login;
     public String password;
 
-    boolean isValid()
+    public boolean isValid()
     {
         return (!StringUtils.isEmpty(login)) && (!StringUtils.isEmpty(password));
     }

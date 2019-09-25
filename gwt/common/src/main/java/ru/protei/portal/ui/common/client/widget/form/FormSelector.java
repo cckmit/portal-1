@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -102,6 +103,10 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
 
     public void setEnsureDebugId(String debugId) {
         formContainer.ensureDebugId(debugId);
+    }
+
+    public void ensureLabelDebugId(String debugId) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
     private void initHandler() {

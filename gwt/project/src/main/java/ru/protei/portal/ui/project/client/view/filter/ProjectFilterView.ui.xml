@@ -14,21 +14,15 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.productDirection}"/></label>
-                    <div class="control-group">
-                        <productdirection:ProductDirectionButtonSelector ui:field="direction" />
-                    </div>
+                    <productdirection:ProductDirectionButtonSelector ui:field="direction" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regionDistrict}"/></label>
-                    <div class="control-group">
-                        <district:DistrictBtnGroupMulti ui:field="districts" />
-                    </div>
+                    <district:DistrictBtnGroupMulti ui:field="districts" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regionState}"/></label>
-                    <div class="control-group">
-                        <state:RegionStateBtnGroupMulti ui:field="states" />
-                    </div>
+                    <state:RegionStateBtnGroupMulti ui:field="states" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
@@ -38,10 +32,7 @@
                     </div>
                 </div>
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.accessory}"/></label>
-                    <div class="control-group single-option-container">
-                        <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
-                    </div>
+                    <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
                 </div>
             </div>
         </div>
