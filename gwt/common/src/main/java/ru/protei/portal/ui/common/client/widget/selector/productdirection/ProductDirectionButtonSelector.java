@@ -29,7 +29,7 @@ public class ProductDirectionButtonSelector
     @Override
     public void fillOptions( List< ProductDirectionInfo > products) {
         clearOptions();
-        if( defaultValue != null ) {
+        if (defaultValue != null && !isValidable()) {
             addOption( null );
             setValue( null );
         }

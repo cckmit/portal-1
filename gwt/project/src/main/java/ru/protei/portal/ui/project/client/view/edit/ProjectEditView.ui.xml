@@ -17,9 +17,12 @@
         <div class="card-body">
             <div class="row p-b-10">
                 <h5 class="no-margin col-md-12">
-                    <g:Label ui:field="number" styleName="inline-block"/>
-                    <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
+                    <g:Label ui:field="number" styleName="m-b-15 inline-block"/>
                 </h5>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.projectName}"/></label>
+                    <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
+                </div>
             </div>
 
             <div class="row">

@@ -60,7 +60,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public void setNumber(Integer number) {
-        this.number.setText(number == null ? "" : number.toString());
+        this.number.setText(lang.projectHeader(String.valueOf(number)));
     }
 
     @Override

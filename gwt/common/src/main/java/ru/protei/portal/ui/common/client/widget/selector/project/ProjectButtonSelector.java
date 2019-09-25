@@ -26,6 +26,10 @@ public class ProjectButtonSelector
     @Override
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
+        if (defaultValue != null && !isValidable()) {
+            addOption(null);
+            setValue(null);
+        }
         options.forEach(this::addOption);
     }
 
@@ -46,7 +50,7 @@ public class ProjectButtonSelector
         this.requestByOnLoad = requestByOnLoad;
     }
 
-    private boolean requestByOnLoad;
+    private boolean requestByOnLoad = true;
     private ProjectModel model;
     private String defaultValue;
 }
