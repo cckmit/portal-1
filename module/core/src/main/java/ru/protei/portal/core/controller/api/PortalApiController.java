@@ -70,7 +70,7 @@ public class PortalApiController {
             HttpServletRequest request,
             HttpServletResponse response) {
 
-        log.debug("API | getCaseList(): query={}", query);
+        log.info("API | getCaseList(): query={}", query);
 
         try {
             Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
@@ -99,7 +99,7 @@ public class PortalApiController {
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
 
-        log.debug("API | createCase(): auditableObject={}", auditableObject);
+        log.info("API | createCase(): auditableObject={}", auditableObject);
 
         if (!(auditableObject instanceof CaseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
@@ -137,7 +137,7 @@ public class PortalApiController {
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
 
-        log.debug("API | updateCase(): auditableObject={}", auditableObject);
+        log.info("API | updateCase(): auditableObject={}", auditableObject);
 
         if (!(auditableObject instanceof CaseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");

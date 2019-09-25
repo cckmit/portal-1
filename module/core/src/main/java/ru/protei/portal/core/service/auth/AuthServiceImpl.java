@@ -102,14 +102,14 @@ public class AuthServiceImpl implements AuthService {
         UserSessionDescriptor descriptor = sessionCache.get(appSessionId);
 
         if (descriptor == null) {
-            logger.debug(" no session found in cache, id=" + appSessionId);
+            logger.info(" no session found in cache, id=" + appSessionId);
 
             // try to restore from database
             UserSession appSession = sessionDAO.findBySID(appSessionId);
 
             if (appSession != null) {
                 //ok
-                logger.debug("session " + appSessionId + " restored from database");
+                logger.info("session " + appSessionId + " restored from database");
                 descriptor = new UserSessionDescriptor();
                 descriptor.init(appSession);
 
@@ -125,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
 
                 sessionCache.put(appSessionId, descriptor);
             } else {
-                logger.debug("session " + appSessionId + " doesn't exists");
+                logger.info("session " + appSessionId + " doesn't exists");
                 return null;
             }
         }
@@ -226,7 +226,7 @@ public class AuthServiceImpl implements AuthService {
         Company company = companyDAO.get(person.getCompanyId());
         jdbcManyRelationsHelper.fillAll( company );
 
-        logger.debug("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
+        logger.info("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
 
         UserSession s = new UserSession();
         s.setClientIp(ip);

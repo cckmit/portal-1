@@ -39,7 +39,7 @@ public class ReportControllerImpl implements ReportController {
 
     @Override
     public Long createReport(Report report) throws RequestFailedException {
-        log.debug("createReport(): locale={} | caseQuery={}", report.getLocale(), report.getCaseQuery());
+        log.info("createReport(): locale={} | caseQuery={}", report.getLocale(), report.getCaseQuery());
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
@@ -54,7 +54,7 @@ public class ReportControllerImpl implements ReportController {
 
     @Override
     public Report getReport(Long id) throws RequestFailedException {
-        log.debug("getReport(): id={}", id);
+        log.info("getReport(): id={}", id);
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 
@@ -69,14 +69,14 @@ public class ReportControllerImpl implements ReportController {
 
     @Override
     public SearchResult<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException {
-        log.debug("getReportsByQuery(): query={}", query);
+        log.info("getReportsByQuery(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(reportService.getReports(token, query));
     }
 
     @Override
     public void removeReports(Set<Long> include, Set<Long> exclude) throws RequestFailedException {
-        log.debug("removeReports(): include={} | exclude={}",
+        log.info("removeReports(): include={} | exclude={}",
                 include == null ? "" : CollectionUtils.joinIter(include, ","),
                 exclude == null ? "" : CollectionUtils.joinIter(exclude, ",")
         );
@@ -92,7 +92,7 @@ public class ReportControllerImpl implements ReportController {
 
     @Override
     public void recreateReport(Long id) throws RequestFailedException {
-        log.debug("createReport(): id={}", id);
+        log.info("createReport(): id={}", id);
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
 

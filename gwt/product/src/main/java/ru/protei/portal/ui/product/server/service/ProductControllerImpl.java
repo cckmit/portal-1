@@ -35,7 +35,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public SearchResult< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
 
-        log.debug( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
+        log.info( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
                 productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -46,7 +46,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public DevUnit getProduct( Long productId ) throws RequestFailedException {
 
-        log.debug( "getProduct(): id={}", productId );
+        log.info( "getProduct(): id={}", productId );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -55,7 +55,7 @@ public class ProductControllerImpl implements ProductController {
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "getProduct(): id={}", response.getData() );
+        log.info( "getProduct(): id={}", response.getData() );
 
         return response.getData();
     }
@@ -63,7 +63,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public DevUnit saveProduct( DevUnit product ) throws RequestFailedException {
 
-        log.debug( "saveProduct(): product={}", product );
+        log.info( "saveProduct(): product={}", product );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -77,7 +77,7 @@ public class ProductControllerImpl implements ProductController {
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "saveProduct(): response.getData()={}", response.getData() );
+        log.info( "saveProduct(): response.getData()={}", response.getData() );
 
         return response.getData();
     }
@@ -85,7 +85,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException {
 
-        log.debug( "updateState(): productId={} | state={}", productId, state);
+        log.info( "updateState(): productId={} | state={}", productId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -95,7 +95,7 @@ public class ProductControllerImpl implements ProductController {
             throw new RequestFailedException(response.getStatus());
         }
 
-        log.debug( "updateState(): response.getData()={}", response.getData() );
+        log.info( "updateState(): response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }
@@ -104,7 +104,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public boolean isNameUnique(String name, En_DevUnitType type, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isNameUnique(): name={}", name );
+        log.info( "isNameUnique(): name={}", name );
 
         if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
@@ -114,7 +114,7 @@ public class ProductControllerImpl implements ProductController {
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "isNameUnique(): response={}", response.getData() );
+        log.info( "isNameUnique(): response={}", response.getData() );
 
         return response.getData();
     }
@@ -122,12 +122,12 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException {
 
-        log.debug( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
+        log.info( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
         Result< List<ProductShortView> > result = productService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -138,7 +138,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException {
 
-        log.debug( "getProductDirectionList(): query={}", query );
+        log.info( "getProductDirectionList(): query={}", query );
 
         String[] names = new String[] {
                 "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"

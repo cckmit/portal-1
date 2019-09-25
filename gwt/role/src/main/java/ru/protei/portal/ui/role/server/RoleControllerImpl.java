@@ -27,7 +27,7 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public List<UserRole> getRoles( UserRoleQuery query ) throws RequestFailedException {
-        log.debug( "getRoles(): searchPattern={} ",
+        log.info( "getRoles(): searchPattern={} ",
                 query.getSearchString() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -42,13 +42,13 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public UserRole getRole(Long id) throws RequestFailedException {
-        log.debug("get role, id: {}", id);
+        log.info("get role, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<UserRole> response = roleService.getUserRole( descriptor.makeAuthToken(), id );
 
-        log.debug("get role, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+        log.info("get role, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         return response.getData();
     }
@@ -62,14 +62,14 @@ public class RoleControllerImpl implements RoleController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug("store role, id: {} ", HelperFunc.nvl(role.getId(), "new"));
+        log.info("store role, id: {} ", HelperFunc.nvl(role.getId(), "new"));
 
         Result<UserRole> response = roleService.saveUserRole( descriptor.makeAuthToken(), role );
 
-        log.debug("store role, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("store role, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("store role, applied id: {}", response.getData().getId());
+            log.info("store role, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
@@ -78,7 +78,7 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public List< EntityOption > getRolesOptionList( UserRoleQuery query ) throws RequestFailedException {
-        log.debug( "getRolesOptionList(): searchPattern={} ",
+        log.info( "getRolesOptionList(): searchPattern={} ",
                 query.getSearchString() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -93,12 +93,12 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public boolean removeRole( Long id ) throws RequestFailedException {
-        log.debug( "removeRole(): id={}", id );
+        log.info( "removeRole(): id={}", id );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result< Boolean > response = roleService.removeRole( descriptor.makeAuthToken(), id );
-        log.debug( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
+        log.info( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
             return response.getData();

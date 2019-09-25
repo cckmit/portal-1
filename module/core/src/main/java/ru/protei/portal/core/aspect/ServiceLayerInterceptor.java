@@ -37,6 +37,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging.SERVICE_FACADE_LOGGER_NAME;
+
 /**
  * Created by Mike on 06.11.2016.
  */
@@ -318,5 +320,5 @@ public class ServiceLayerInterceptor {
 
     private static final String AUDITABLE_TYPE = "AuditableType";
     private Map<String, Object> notAuditableContainer = new LinkedHashMap<>();
-    private static Logger logger = LoggerFactory.getLogger("Service");
+    private static Logger logger = LoggerFactory.getLogger(SERVICE_FACADE_LOGGER_NAME);
 }

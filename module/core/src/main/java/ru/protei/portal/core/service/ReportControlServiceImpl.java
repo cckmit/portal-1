@@ -64,28 +64,19 @@ public class ReportControlServiceImpl implements ReportControlService {
     // -------------------
 
     @Override
-    @Scheduled(fixedRate = 30 * 1000) // every 30 seconds
-    public void processNewReportsSchedule() {
-        Result response = processNewReports();
-        if (!response.isOk()) {
-            log.warn("fail to process reports : status={}", response.getStatus());
-        }
-    }
-
-    @Override
     public Result processNewReports() {
         synchronized (sync) {
             int reportThreadsNumber = config.data().reportConfig().getThreadsNumber();
             int activeThreads = reportExecutorService.getActiveCount();
             if (activeThreads >= reportThreadsNumber) {
-                log.debug("all threads to process reports are busy");
+                log.info("all threads to process reports are busy");
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
             Result<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
             if (!result.isOk()) {
                 return result;
             }
-            log.debug( "reports to process : {}", size( result.getData() ) );
+            log.info( "reports to process : {}", size( result.getData() ) );
             if (size( result.getData() ) == 0) {
                 return ok();
             }
@@ -203,15 +194,6 @@ public class ReportControlServiceImpl implements ReportControlService {
     // -------------------
 
     @Override
-    @Scheduled(cron = "0 0 5 * * ?") // at 05:00:00 am every day
-    public void processOldReportsSchedule() {
-        Result response = processOldReports();
-        if (!response.isOk()) {
-            log.warn("fail to process reports : status={}", response.getStatus());
-        }
-    }
-
-    @Override
     public Result processOldReports() {
         List<Report> reports = reportDAO.getReportsByStatuses(
                 Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
@@ -238,15 +220,6 @@ public class ReportControlServiceImpl implements ReportControlService {
     // --------------------
     // Process hang reports
     // --------------------
-
-    @Override
-    @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
-    public void processHangReportsSchedule() {
-        Result response = processHangReports();
-        if (!response.isOk()) {
-            log.warn("fail to process reports : status={}", response.getStatus());
-        }
-    }
 
     @Override
     public Result processHangReports() {

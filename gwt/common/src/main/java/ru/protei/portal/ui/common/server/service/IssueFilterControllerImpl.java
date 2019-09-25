@@ -28,7 +28,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", descriptor.getLogin().getId(), filterType );
+        log.info( "getIssueFilterShortViewList(): accountId={}, filterType={} ", descriptor.getLogin().getId(), filterType );
 
         Result< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId(), filterType );
 
@@ -40,11 +40,11 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
     public CaseFilter getIssueFilter( Long id ) throws RequestFailedException {
-        log.debug("getIssueFilter, id: {}", id);
+        log.info("getIssueFilter, id: {}", id);
 
         Result<CaseFilter > response = issueFilterService.getIssueFilter( id );
 
-        log.debug("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
+        log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -55,7 +55,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     @Override
     public CaseFilter saveIssueFilter(CaseFilter filter) throws RequestFailedException {
 
-        log.debug("saveIssueFilter, filter: {}", filter);
+        log.info("saveIssueFilter, filter: {}", filter);
 
         if (filter == null) {
             log.warn("Not null issueFilter is required");
@@ -66,7 +66,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         Result<CaseFilter> response = issueFilterService.saveIssueFilter(descriptor.makeAuthToken(), filter);
 
-        log.debug("saveIssueFilter, result: {}", response.getStatus());
+        log.info("saveIssueFilter, result: {}", response.getStatus());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -77,10 +77,10 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
     public boolean removeIssueFilter( Long id ) throws RequestFailedException {
-        log.debug( "removeIssueFilter(): id={}", id );
+        log.info( "removeIssueFilter(): id={}", id );
 
         Result< Boolean > response = issueFilterService.removeIssueFilter( id );
-        log.debug( "removeIssueFilter(): result={}", response.getStatus() );
+        log.info( "removeIssueFilter(): result={}", response.getStatus() );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

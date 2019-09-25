@@ -21,7 +21,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
 
     @Override
     public List<CaseComment> getCaseComments(En_CaseType caseType, Long caseId) throws RequestFailedException {
-        log.debug("getCaseComments(): caseType={}, issueId={}", caseType, caseId);
+        log.info("getCaseComments(): caseType={}, issueId={}", caseType, caseId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<List<CaseComment>> response = caseCommentService.getCaseCommentList(descriptor.makeAuthToken(), caseType, caseId);
@@ -34,7 +34,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
 
     @Override
     public CaseComment saveCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException {
-        log.debug("saveCaseComment(): caseType={}, comment={}", caseType, comment);
+        log.info("saveCaseComment(): caseType={}, comment={}", caseType, comment);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<CaseComment> response;
@@ -52,7 +52,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
 
     @Override
     public void removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException {
-        log.debug("removeCaseComment(): caseType={}, comment={}", caseType, comment);
+        log.info("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());

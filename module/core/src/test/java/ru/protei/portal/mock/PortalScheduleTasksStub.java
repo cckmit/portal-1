@@ -1,11 +1,11 @@
 package ru.protei.portal.mock;
 
-import ru.protei.portal.core.service.ReportControlServiceImpl;
+import ru.protei.portal.schedule.PortalScheduleTasksImpl;
 
 /**
- * Disable automated report processing
+ * Disable scheduled tasks
  */
-public class ReportControlServiceMock extends ReportControlServiceImpl {
+public class PortalScheduleTasksStub extends PortalScheduleTasksImpl {
 
     @Override
     public void init() {}

@@ -27,7 +27,7 @@ public class AccountControllerImpl implements AccountController {
 
     @Override
     public SearchResult<UserLogin> getAccounts(AccountQuery query) throws RequestFailedException {
-        log.debug("getAccounts(): query={}", query);
+        log.info("getAccounts(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<SearchResult<UserLogin>> result = accountService.getAccounts(token, query);
         return ServiceUtils.checkResultAndGetData(result);
@@ -35,33 +35,33 @@ public class AccountControllerImpl implements AccountController {
 
     @Override
     public UserLogin getAccount( long id ) throws RequestFailedException {
-        log.debug( "getAccount(): id={}", id );
+        log.info( "getAccount(): id={}", id );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
 
-        log.debug( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
+        log.info( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
 
         return response.getData();
     }
 
     @Override
     public UserLogin getContactAccount(long personId ) throws RequestFailedException {
-        log.debug( "getContactAccount(): personId={}", personId );
+        log.info( "getContactAccount(): personId={}", personId );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result< UserLogin > response = accountService.getContactAccount( descriptor.makeAuthToken(), personId );
 
-        log.debug( "getContactAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
+        log.info( "getContactAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
 
         return response.getData();
     }
 
     @Override
     public UserLogin saveAccount( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException {
-        log.debug( "saveAccount(): account={} ", userLogin );
+        log.info( "saveAccount(): account={} ", userLogin );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -74,10 +74,10 @@ public class AccountControllerImpl implements AccountController {
 
         Result< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
 
-        log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
+        log.info( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if ( response.isOk() ) {
-            log.debug( "saveAccount(): applied id={}", response.getData().getId() );
+            log.info( "saveAccount(): applied id={}", response.getData().getId() );
             return response.getData();
         }
 
@@ -87,11 +87,11 @@ public class AccountControllerImpl implements AccountController {
     @Override
     public boolean isLoginUnique( String login, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
+        log.info( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
 
         Result< Boolean > response = accountService.checkUniqueLogin( login, excludeId );
 
-        log.debug( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
+        log.info( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -101,12 +101,12 @@ public class AccountControllerImpl implements AccountController {
 
     @Override
     public boolean removeAccount( Long accountId ) throws RequestFailedException {
-        log.debug( "removeAccount(): id={}", accountId );
+        log.info( "removeAccount(): id={}", accountId );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), accountId );
-        log.debug( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
+        log.info( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
             return response.getData();
@@ -117,13 +117,13 @@ public class AccountControllerImpl implements AccountController {
 
     @Override
     public void updateAccountPassword(Long loginId, String currentPassword, String newPassword) throws RequestFailedException {
-        log.debug("updateAccountPassword(): id={}, newPassword={}", loginId, newPassword);
+        log.info("updateAccountPassword(): id={}, newPassword={}", loginId, newPassword);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<?> response = accountService.updateAccountPassword(token, loginId, currentPassword, newPassword);
 
-        log.debug("updateAccountPassword(): result={}", response.isOk() ? "ok" : response.getStatus());
+        log.info("updateAccountPassword(): result={}", response.isOk() ? "ok" : response.getStatus());
 
         if (!response.isOk()) {
             throw new RequestFailedException(response.getStatus());

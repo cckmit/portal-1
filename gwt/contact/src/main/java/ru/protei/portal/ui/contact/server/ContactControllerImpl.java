@@ -35,7 +35,7 @@ public class ContactControllerImpl implements ContactController {
     @Override
     public SearchResult<Person> getContacts( ContactQuery query ) throws RequestFailedException {
 
-        log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.info( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -44,13 +44,13 @@ public class ContactControllerImpl implements ContactController {
 
     @Override
     public Person getContact(long id) throws RequestFailedException {
-        log.debug("get contact, id: {}", id);
+        log.info("get contact, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Person> response = contactService.getContact( descriptor.makeAuthToken(), id );
 
-        log.debug("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
+        log.info("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
 
         return response.getData();
     }
@@ -62,16 +62,16 @@ public class ContactControllerImpl implements ContactController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
+        log.info("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Person> response = contactService.saveContact( descriptor.makeAuthToken(), p );
 
-        log.debug("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("store contact, applied id: {}", response.getData().getId());
+            log.info("store contact, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
@@ -80,38 +80,38 @@ public class ContactControllerImpl implements ContactController {
 
     @Override
     public boolean fireContact(long id) throws RequestFailedException {
-        log.debug("fire contact, id: {}", id);
+        log.info("fire contact, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Boolean> response = contactService.fireContact(descriptor.makeAuthToken(), id);
 
-        log.debug("fire contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
+        log.info("fire contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
         return response.isOk() ? response.getData() : false;
     }
 
     @Override
     public boolean removeContact(long id) throws RequestFailedException {
-        log.debug("remove contact, id: {}", id);
+        log.info("remove contact, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Boolean> response = contactService.removeContact(descriptor.makeAuthToken(), id);
 
-        log.debug("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
+        log.info("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
 
         return response.isOk() ? response.getData() : false;
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
 
-        log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.info( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         Result< List<PersonShortView> > result = contactService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -133,11 +133,11 @@ public class ContactControllerImpl implements ContactController {
                 return true;
             }
 
-            log.debug( "remove account, id: {} ", userLogin.getId() );
+            log.info( "remove account, id: {} ", userLogin.getId() );
 
             Result< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), userLogin.getId() );
 
-            log.debug( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
+            log.info( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
             if ( response.isOk() ) {
                 return response.getData();
@@ -146,17 +146,17 @@ public class ContactControllerImpl implements ContactController {
             throw new RequestFailedException( response.getStatus() );
 
         } else {
-            log.debug( "store account, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
+            log.info( "store account, id: {} ", HelperFunc.nvl( userLogin.getId(), "new" ) );
 
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
             Result< UserLogin > response = accountService.saveContactAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
 
-            log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
+            log.info( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
             if ( response.isOk() ) {
-                log.debug( "store account, applied id: {}", response.getData().getId() );
+                log.info( "store account, applied id: {}", response.getData().getId() );
                 return true;
             }
 
@@ -166,11 +166,11 @@ public class ContactControllerImpl implements ContactController {
 
     private boolean isLoginUnique( String login, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
+        log.info( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
 
         Result< Boolean > response = accountService.checkUniqueLogin( login, excludeId );
 
-        log.debug( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
+        log.info( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );

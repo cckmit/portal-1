@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
@@ -34,7 +35,7 @@ public class ServiceLayerInterceptorLogging {
     @Around("methodWithResult() && authServiceMethod()")
     public Object authorizeServiceLogging(ProceedingJoinPoint pjp) throws Throwable {
         String methodName = pjp.getSignature().toShortString();
-        log.debug("calling : {} : <secure>", methodName);
+        log.info("calling : {} : <secure>", methodName);
 
         return invokeMethod( methodName, pjp);
     }
@@ -42,7 +43,7 @@ public class ServiceLayerInterceptorLogging {
     @Around("inServiceFacade()")
     public Object serviceFacadeLogging(ProceedingJoinPoint pjp) throws Throwable {
         String methodName = pjp.getSignature().toShortString();
-        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
+        log.info("calling : {} args: {}", methodName, pjp.getArgs());
 
         return invokeMethod( methodName, pjp);
     }
@@ -67,7 +68,7 @@ public class ServiceLayerInterceptorLogging {
                 profiling.put(methodName, profile);
             }
             profile.updateTime(executionTime);
-            log.debug("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
+            log.info("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
                     methodName, profile.invokeCount, executionTime, profile.average, profile.maxTime, profile.minTime,
                     makeResultAsString(result));
 
@@ -95,9 +96,29 @@ public class ServiceLayerInterceptorLogging {
             return "ResultObject is null.";
         }
 
+        if ( resultObject instanceof Long) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
+        if ( resultObject instanceof Integer) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
+        if ( resultObject instanceof Boolean) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
         if ( resultObject instanceof Collection<?>) {
             log.trace( "ResultObject: {}", resultObject );
             return "collection size=" + ((Collection) resultObject).size();
+        }
+
+        if ( resultObject instanceof Set<?>) {
+            log.trace( "ResultObject: {}", resultObject );
+            return "set size=" + ((Set) resultObject).size();
         }
 
         if ( resultObject instanceof Map<?, ?>) {
@@ -109,12 +130,20 @@ public class ServiceLayerInterceptorLogging {
             log.trace( "ResultObject: {}", ((SearchResult) resultObject).getResults() );
             return "SearchResult total=" + ((SearchResult) resultObject).getTotalCount();
         }
-        return String.valueOf( resultObject );
+
+        if ( resultObject instanceof AuditableObject) {
+            log.trace( "ResultObject: {}", resultObject );
+            return resultObject.getClass().getSimpleName()+ " id=" + ((AuditableObject) resultObject).getId();
+        }
+
+        log.trace( "ResultObject: {}", resultObject );
+        return resultObject.getClass().getSimpleName();
     }
 
 
     Map<String, MethodProfile> profiling = new ConcurrentHashMap<>();
-    private static final Logger log = getLogger("service");
+    public static final String SERVICE_FACADE_LOGGER_NAME = "service";
+    private static final Logger log = getLogger( SERVICE_FACADE_LOGGER_NAME );
 
 }
 
