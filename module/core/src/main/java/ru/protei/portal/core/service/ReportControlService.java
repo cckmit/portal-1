@@ -12,30 +12,20 @@ public interface ReportControlService {
      *
      * @return результат выполнения операции
      */
-    Result processNewReports();
+    Result<Void> processNewReports();
 
     /**
      * Обработать старые отчеты
      *
      * @return результат выполнения операции
      */
-    Result processOldReports();
+    Result<Void> processOldReports();
 
     /**
      * Обработать подвисшие отчеты
      *
      * @return результат выполнения операции
      */
-    Result processHangReports();
+    Result<Void> processHangReports();
 
-    // Методы для автоматической обработки, контролирования и управления отчетами
-
-    /** @hide */
-    void processNewReportsSchedule();
-
-    /** @hide */
-    void processOldReportsSchedule();
-
-    /** @hide */
-    void processHangReportsSchedule();
 }
