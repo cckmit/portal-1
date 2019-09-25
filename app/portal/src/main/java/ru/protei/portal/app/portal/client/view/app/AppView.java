@@ -160,6 +160,7 @@ public class AppView extends Composite
         settings.ensureDebugId(DebugIds.APP_VIEW.SETTING_BUTTON);
         username.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.USER_NAME_LABEL);
         navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
+        logo.ensureDebugId(DebugIds.APP_VIEW.DASHBOARD_BUTTON);
     }
 
     private void initHandlers() {

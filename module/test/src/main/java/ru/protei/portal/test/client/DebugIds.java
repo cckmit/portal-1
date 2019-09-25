@@ -31,6 +31,7 @@ public class DebugIds {
         String SETTING_BUTTON = "app-setting-button";
         String USER_NAME_LABEL = "app-user-name-label";
         String SIDEBAR = "app-sidebar";
+        String DASHBOARD_BUTTON = "app-dashboard-button";
     }
 
     public interface PROFILE {
@@ -79,11 +80,20 @@ public class DebugIds {
         String ICON_SUFFIX = "-icon";
     }
 
-    public interface SELECTOR_POPUP {
-        String ADD_NEW_ENTRY_BUTTON = "selector-popup-add-new-entry-button";
-        String SEARCH_INPUT = "selector-popup-search-input";
-        String SEARCH_ACTION = "selector-popup-search-action";
-        String ENTRY_LIST_CONTAINER = "selector-popup-entry-list-container";
+    public interface SELECTOR {
+
+        interface POPUP {
+            String ADD_NEW_ENTRY_BUTTON = "selector-popup-add-new-entry-button";
+            String SEARCH_INPUT = "selector-popup-search-input";
+            String SEARCH_ACTION = "selector-popup-search-action";
+            String ENTRY_LIST_CONTAINER = "selector-popup-entry-list-container";
+            String ITEM = "selector-popup-item";
+        }
+
+        interface SELECTED {
+            String ITEM = "selector-selected-item";
+            String REMOVE_BUTTON = "selector-selected-remove-button";
+        }
     }
 
     public interface DASHBOARD {
@@ -441,5 +451,10 @@ public class DebugIds {
         String DOWNLOAD = "attachment-download-button";
         String NAME = "attachment-name";
         String SIZE = "attachment-size";
+    }
+
+    public interface TAG_SELECTOR_POPUP {
+        String ITEM = "tag-selector-popup-item";
+        String EDIT_BUTTON = "tag-selector-popup-edit-button";
     }
 }
