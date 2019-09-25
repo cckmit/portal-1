@@ -80,7 +80,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView
     @Inject
     private Lang lang;
 
-    private boolean requestByOnLoad;
+    private boolean requestByOnLoad = true;
     private List<ProductShortView> options = new ArrayList<>();
     private ProductShortView exclude = null;
     private boolean hasNullValue = true;
