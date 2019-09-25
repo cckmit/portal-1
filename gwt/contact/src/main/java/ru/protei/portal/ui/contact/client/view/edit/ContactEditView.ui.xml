@@ -242,10 +242,8 @@
         <div class="container-fluid padding-15  bg-white">
             <div class="card card-transparent no-margin">
                 <div class="card-body">
-                    <div class="text-right">
-                        <option:OptionItem ui:field="sendWelcomeEmail" styleName="checkbox single pull-left no-margin"
-                                           name="{lang.sendEmail}"/>
-
+                    <div class="pull-right">
+                        <option:OptionItem ui:field="sendWelcomeEmail" styleName="pull-left checkbox single" name="{lang.sendEmail}"/>
                         <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                         <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"

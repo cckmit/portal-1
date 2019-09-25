@@ -58,8 +58,8 @@
                 </div>
             </div>
             <div class="card-footer">
-                <div class="text-right">
-                    <option:OptionItem ui:field="sendWelcomeEmail" styleName="checkbox single" name="{lang.sendEmail}"/>
+                <div class="inline pull-right">
+                    <option:OptionItem ui:field="sendWelcomeEmail" styleName="pull-left checkbox single" name="{lang.sendEmail}"/>
                     <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                     <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
                 </div>
