@@ -33,12 +33,15 @@ import java.util.Set;
 
 import static ru.protei.portal.core.model.dict.En_CaseState.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
 
 
     public CaseLinkView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
+        setTestAttributes();
     }
 
     @Override
@@ -189,7 +192,11 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         if ( !DebugInfo.isDebugIdEnabled() ) {
             return;
         }
-        caseInfoPanel.ensureDebugId(DebugIds.ISSUE.LINK_INFO_CONTAINER );
+        caseInfoPanel.ensureDebugId(DebugIds.ISSUE.LINK_INFO_CONTAINER);
+    }
+
+    private void setTestAttributes() {
+        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_REMOVE_BUTTON);
     }
 
     @Inject

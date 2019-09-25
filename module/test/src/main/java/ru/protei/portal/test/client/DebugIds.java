@@ -197,6 +197,7 @@ public class DebugIds {
         String LINKS_APPLY_BUTTON = "issue-links-apply-button";
         @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
         String LINK_INFO_CONTAINER = "issue-link-info-container";
+        String LINK_REMOVE_BUTTON = "issue-link-remove-button";
         String TAGS_BUTTON = "issue-tags-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
@@ -414,21 +415,31 @@ public class DebugIds {
     }
 
     public interface TABLE {
+
         interface BUTTON {
-            String EDIT = "edit-button";
-            String DOWNLOAD = "download-button";
-            String REMOVE = "remove-button";
-            String REFRESH = "refresh-button";
-            String ARCHIVE = "archive-button";
-            String ATTACHMENT = "attachment-button";
-            String COPY = "copy-button";
+            String EDIT = "table-edit-button";
+            String DOWNLOAD = "table-download-button";
+            String REMOVE = "table-remove-button";
+            String REFRESH = "table-refresh-button";
+            String ARCHIVE = "table-archive-button";
+            String ATTACHMENT = "table-attachment-button";
+            String COPY = "table-copy-button";
         }
+
         interface ISSUE {
-            String PRIVACY = "";
-            String PRODUCT = "";
-            String CREATION_DATE = "";
-            String NAME = "";
-            String DESCRIPTION = "";
+            String PRIVACY = "table-issue-privacy";
+            String PRODUCT = "table-issue-product";
+            String CREATION_DATE = "table-issue-creation-date";
+            String NAME = "table-issue-name";
+            String DESCRIPTION = "table-issue-description";
         }
+    }
+
+    public interface ATTACHMENT {
+        String SHOW = "attachment-show-button";
+        String DELETE = "attachment-delete-button";
+        String DOWNLOAD = "attachment-download-button";
+        String NAME = "attachment-name";
+        String SIZE = "attachment-size";
     }
 }

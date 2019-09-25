@@ -18,12 +18,12 @@
                             <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
                                 <i class="far fa-clone fa-xs"/>
                             </g:Anchor>
-                            <h5 ui:field="name"/>
                         </g:HTMLPanel>
                     </h4>
                     <div class="inline pull-right">
                         <small ui:field="createdBy"/>
                     </div>
+                    <h5 ui:field="name"/>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
                                            enabled="false" showLabel="false"/>

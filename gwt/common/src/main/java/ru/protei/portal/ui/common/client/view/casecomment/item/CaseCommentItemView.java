@@ -44,7 +44,7 @@ public class CaseCommentItemView
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        ensureDebugIds();
+        setTestAttributes();
     }
 
     @Override
@@ -227,10 +227,7 @@ public class CaseCommentItemView
         activity.onRemoveAttachment(this, event.getAttachment());
     }
 
-    private void ensureDebugIds() {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
-        }
+    private void setTestAttributes() {
         privateComment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
         reply.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
         edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
