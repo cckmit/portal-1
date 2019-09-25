@@ -5,12 +5,12 @@
         <Property name="archivePath" value="${basePath}/archive"/>
         <Property name="extension" value=".log"/>
         <Property name="errorsFileName" value="errors"/>
-        <Property name="appFileName" value="app"/>
-        <Property name="appTraceFileName" value="app.trace"/>
-        <Property name="migrateFileName" value="migrate"/>
-        <Property name="jiraFileName" value="jira"/>
-        <Property name="hpsmFileName" value="hpsm.service"/>
-        <Property name="redmineFileName" value="redmine.service"/>
+        <Property name="appFileName" value="portal.app"/>
+        <Property name="appTraceFileName" value="portal.app.trace"/>
+        <Property name="migrateFileName" value="portal.migrate"/>
+        <Property name="jiraFileName" value="portal.jira"/>
+        <Property name="hpsmFileName" value="portal.hpsm.service"/>
+        <Property name="redmineFileName" value="portal.redmine.service"/>
         <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
         <Property name="maxFileSize" value="32MB"/>
     </Properties>
@@ -23,8 +23,8 @@
 <!--            <AppenderRef ref="CONSOLE"/>-->
         </Root>
 
-        <Logger name="ru.protei.portal" level="INFO">
-            <AppenderRef ref="PORTAL"/>
+        <Logger name="ru.protei.portal" level="DEBUG">
+            <AppenderRef ref="APP"/>
         </Logger>
 
         <!-- Сервис слой -->
@@ -32,17 +32,17 @@
             <!-- Логгирование данных. Большие объемы. ( Отладка )-->
             <!--  <AppenderRef ref="TRACE"/> -->
             <!-- Основной лог -->
-            <AppenderRef ref="PORTAL" level="INFO"/>
+            <AppenderRef ref="APP" level="INFO"/>
         </Logger>
 
         <!-- SQL запросы -->
         <!-- SQL -->
         <Logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
         <!-- параметры SQL запроса ( Отладка )-->
         <!--        <logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="TRACE">-->
-        <!--            <AppenderRef ref="PORTAL"/>-->
+        <!--            <AppenderRef ref="APP"/>-->
         <!--        </logger>-->
 
         <!--Модули интеграции -->
@@ -66,24 +66,24 @@
 
         <!-- Инициализация контекстов и бинов Spring -->
         <Logger name="DefaultListableBeanFactory" level="INFO">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
 
         <!-- Winter reloadable config -->
         <Logger name="config" level="ERROR">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
         <Logger name="ru.protei.winter" level="DEBUG">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
         <Logger name="liquibase" level="WARN">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
         <Logger name="LiquibaseSchemaResolver" level="WARN">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
         <Logger name="org.springframework.web" level="DEBUG">
-            <AppenderRef ref="PORTAL"/>
+            <AppenderRef ref="APP"/>
         </Logger>
 
     </Loggers>
@@ -106,7 +106,7 @@
         </RollingFile>
 
         <!-- Основной лог приложения -->
-        <RollingFile name="PORTAL" fileName="${basePath}/${appFileName}${extension}"
+        <RollingFile name="APP" fileName="${basePath}/${appFileName}${extension}"
                      filePattern="${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">
             <PatternLayout>
                 <pattern>${pattern}</pattern>
