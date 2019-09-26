@@ -19,6 +19,9 @@ public interface AbstractProjectEditView extends IsWidget {
     void setActivity(AbstractProjectEditActivity activity);
 
     void setNumber(Integer number);
+
+    void setHideNullValue(boolean isHideNullValue);
+
     HasValue<String> name();
     HasText description();
     HasValue<En_RegionState> state();

@@ -40,9 +40,9 @@ public abstract class Selector<T>
 {
 
     public interface SelectorFilter<T> {
+
         boolean isDisplayed( T value );
     }
-
     public Collection<T> getValues() {
         return itemToDisplayOptionModel.keySet();
     }
@@ -148,8 +148,6 @@ public abstract class Selector<T>
             itemToDisplayOptionModel.put(value, option);
         }
 
-
-
         popup.getChildContainer().add(itemView.asWidget());
     }
 
@@ -194,6 +192,10 @@ public abstract class Selector<T>
         onSearchChanged(event.getValue());
     }
 
+    public void setHideNullValue(boolean isHideNullValue) {
+        this.isHideNullValue = isHideNullValue;
+    }
+
     protected void onSearchChanged( String searchString ) {
         String searchText = searchString.toLowerCase();
 
@@ -202,7 +204,7 @@ public abstract class Selector<T>
 
         popup.getChildContainer().clear();
 
-        if (searchText.isEmpty() && nullItemView != null) {
+        if (searchText.isEmpty() && nullItemView != null && !isHideNullValue) {
             popup.getChildContainer().add(nullItemView);
         }
 
@@ -360,6 +362,7 @@ public abstract class Selector<T>
         nextSelectorItem.setFocus(true);
     }
 
+
     @Inject
     protected SelectorPopup popup;
     @Inject
@@ -380,6 +383,7 @@ public abstract class Selector<T>
     };
 
     protected boolean hasNullValue = true;
+    private boolean isHideNullValue = false;
     private boolean autoSelectFirst = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;

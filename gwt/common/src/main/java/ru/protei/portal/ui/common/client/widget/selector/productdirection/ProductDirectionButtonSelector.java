@@ -29,7 +29,8 @@ public class ProductDirectionButtonSelector
     @Override
     public void fillOptions( List< ProductDirectionInfo > products) {
         clearOptions();
-        if( defaultValue != null ) {
+
+        if (defaultValue != null) {
             addOption( null );
             setValue( null );
         }
@@ -42,5 +43,4 @@ public class ProductDirectionButtonSelector
     }
 
     private String defaultValue = null;
-
 }
