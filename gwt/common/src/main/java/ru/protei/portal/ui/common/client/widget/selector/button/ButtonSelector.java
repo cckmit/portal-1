@@ -105,10 +105,6 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
         button.ensureDebugId(debugId);
     }
 
-    protected boolean isValidable() {
-        return isValidable;
-    }
-
     @UiField
     HTMLPanel inputContainer;
     @UiField

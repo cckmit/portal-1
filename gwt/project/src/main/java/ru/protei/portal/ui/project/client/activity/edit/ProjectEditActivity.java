@@ -112,6 +112,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.company().setValue(null);
         view.team().setValue(null);
         view.product().setValue(null);
+        view.setHideNullValue(true);
 
         view.getDocumentsContainer().clear();
         view.getCommentsContainer().clear();

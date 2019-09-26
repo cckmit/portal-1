@@ -49,7 +49,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         product.setDefaultValue(lang.selectIssueProduct());
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
-        projectDirection.setDefaultValue(lang.contractSelectDirection());
+        productDirection.setDefaultValue(lang.contractSelectDirection());
         customerType.setDefaultValue(lang.selectCustomerType());
     }
 
@@ -64,6 +64,14 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public void setHideNullValue(boolean isHideNullValue) {
+        productDirection.setHideNullValue(isHideNullValue);
+        projectRegion.setHideNullValue(isHideNullValue);
+        customerType.setHideNullValue(isHideNullValue);
+        company.setHideNullValue(isHideNullValue);
+    }
+
+    @Override
     public HasValue<String> name() { return projectName; }
 
     @Override
@@ -73,7 +81,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue<En_RegionState> state() { return projectState; }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() { return projectDirection; }
+    public HasValue<ProductDirectionInfo> direction() { return productDirection; }
 
     @Override
     public HasValidable nameValidator() {
@@ -159,7 +167,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
         projectState.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
         projectRegion.setEnsureDebugId(DebugIds.PROJECT.REGION_SELECTOR);
-        projectDirection.setEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
+        productDirection.setEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
         company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
@@ -181,7 +189,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector projectDirection;
+    ProductDirectionButtonSelector productDirection;
 
     @Inject
     @UiField( provided = true )

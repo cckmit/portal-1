@@ -26,7 +26,7 @@ public class ProjectButtonSelector
     @Override
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
-        if (defaultValue != null && !isValidable()) {
+        if (defaultValue != null) {
             addOption(null);
             setValue(null);
         }

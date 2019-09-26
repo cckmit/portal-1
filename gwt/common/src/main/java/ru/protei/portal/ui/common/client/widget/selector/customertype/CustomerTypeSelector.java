@@ -20,7 +20,7 @@ public class CustomerTypeSelector extends ButtonSelector<En_CustomerType> implem
     public void fillOptions(List<En_CustomerType> options) {
         clearOptions();
 
-        if(defaultValue != null && !isValidable()) {
+        if(defaultValue != null) {
             addOption(null);
             setValue(null);
         }

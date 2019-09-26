@@ -25,7 +25,7 @@ public class RegionButtonSelector extends ButtonSelector<EntityOption> implement
     public void fillOptions(List<EntityOption> regions){
         clearOptions();
 
-        if(defaultValue != null && !isValidable()) {
+        if(defaultValue != null) {
             addOption(null);
             setValue(null);
         }
