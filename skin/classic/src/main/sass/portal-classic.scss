@@ -20,6 +20,7 @@ body {
   .sidebar-header {
     color: white !important;
     font-size: 24px;
+    text-transform: uppercase;
   }
   .sidebar-menu .menu-items {
     margin-top: 10px !important;
@@ -38,6 +39,15 @@ body {
         }
       }
     }
+  }
+}
+
+.header {
+  .brand {
+    font-size: 24px;
+    color: #257ac0;
+    left: 16px;
+    text-transform: uppercase;
   }
 }
 

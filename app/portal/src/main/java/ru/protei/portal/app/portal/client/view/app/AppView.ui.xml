@@ -10,8 +10,7 @@
             <div class="sidebar-header">
                 <g:Anchor ui:field="logo" >
                     <img class="brand" height="30" src="./images/logo.svg" width="30"/>
-                    <b class="m-l-5" style="">PROTEI</b>
-                    <span> LTD</span>
+                    <b class="m-l-5" style=""><ui:text from="{lang.proteiTitleShort}"/></b>
                 </g:Anchor>
 
                 <div class="sidebar-header-controls">
@@ -34,9 +33,9 @@
 
 
             <div>
-                <div class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
+                <div class="brand inline">
                     <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
-                    <b class="m-l-5">PROTEI</b> LTD
+                    <b class="m-l-5"><ui:text from="{lang.proteiTitleShort}"/></b>
                 </div>
                 <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin inline no-style p-l-30 p-r-20"/>
             </div>
