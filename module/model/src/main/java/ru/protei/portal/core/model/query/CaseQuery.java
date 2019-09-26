@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +34,7 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> locationIds;
 
-    private List<Long> districtIds;
+    private Set<Long> districtIds;
 
     private List<Long> managerIds;
 
@@ -78,6 +79,8 @@ public class CaseQuery extends BaseQuery {
     private Integer local;
 
     private Boolean independentProject;
+
+    private Long productDirectionId;
 
     public CaseQuery() {}
 
@@ -169,9 +172,9 @@ public class CaseQuery extends BaseQuery {
 
     public void setLocationIds(List<Long> locationIds) { this.locationIds = locationIds; }
 
-    public List<Long> getDistrictIds() { return districtIds; }
+    public Set<Long> getDistrictIds() { return districtIds; }
 
-    public void setDistrictIds(List<Long> districtsIds) { this.districtIds = districtsIds; }
+    public void setDistrictIds(Set<Long> districtsIds) { this.districtIds = districtsIds; }
 
     public En_CaseType getType() {
         return type;
@@ -315,6 +318,14 @@ public class CaseQuery extends BaseQuery {
         this.local = local;
     }
 
+    public Long getProductDirectionId() {
+        return productDirectionId;
+    }
+
+    public void setProductDirectionId(Long productDirectionId) {
+        this.productDirectionId = productDirectionId;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -337,7 +348,8 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
-                independentProject != null;
+                independentProject != null ||
+                productDirectionId != null;
     }
 
     @Override

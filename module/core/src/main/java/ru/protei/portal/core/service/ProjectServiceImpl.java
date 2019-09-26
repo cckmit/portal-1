@@ -483,16 +483,12 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
 
-        List<Long> productIds = null;
         if (projectQuery.getDirectionId() != null) {
-            productIds = new ArrayList<>();
-            productIds.add(projectQuery.getDirectionId());
+            caseQuery.setProductDirectionId(projectQuery.getDirectionId());
         }
         if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
-            productIds = new ArrayList<>();
-            productIds.addAll(projectQuery.getProductIds());
+            caseQuery.setProductIds(new ArrayList<>(projectQuery.getProductIds()));
         }
-        caseQuery.setProductIds(productIds);
 
         if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
             UserSessionDescriptor descriptor = authService.findSession(authToken);
@@ -512,6 +508,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
         caseQuery.setIndependentProject(projectQuery.getIndependentProject());
+        caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 
         return caseQuery;
     }
