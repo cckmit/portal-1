@@ -564,8 +564,13 @@ public class MainTestsConfiguration {
         return new ReportServiceImpl();
     }
 
+    @Bean
+    public ReportControlService getReportControlService() {
+        return new ReportControlServiceImpl();
+    }
+
     @Bean(name = "portalScheduler")
-    public PortalScheduleTasks getReportControlService() {
+    public PortalScheduleTasks getPortalScheduleTasks() {
         return new PortalScheduleTasksStub();
     }
 
