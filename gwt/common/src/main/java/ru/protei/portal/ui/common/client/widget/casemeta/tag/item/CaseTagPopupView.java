@@ -14,14 +14,18 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers, HasClickHandlers {
 
     public CaseTagPopupView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setTestAttributes();
     }
 
     @Override
@@ -99,6 +103,11 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
     @UiHandler("editIcon")
     public void editClick(ClickEvent event) {
         ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
+    }
+
+    private void setTestAttributes() {
+        panel.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.ITEM);
+        editIcon.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.EDIT_BUTTON);
     }
 
     @UiField

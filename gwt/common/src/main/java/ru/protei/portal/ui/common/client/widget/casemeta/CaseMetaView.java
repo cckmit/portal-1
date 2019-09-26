@@ -347,30 +347,45 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     }
 
 
-    public void setEnsureDebugId(String debugId) {
+    public void setEnsureDebugLinkId(String debugId) {
         addLinkButton.ensureDebugId(debugId);
     }
 
-    public void setEnsureDebugIdLabel(String debugId) {
+    public void setEnsureDebugTagId(String debugId) {
+        addTagButton.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdLinkLabel(String debugId) {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         linksLabel.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
-    public void setEnsureDebugIdContainer(String debugId) {
+    public void setEnsureDebugIdTagLabel(String debugId) {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        tagsLabel.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
+    }
+
+    public void setEnsureDebugIdLinkContainer(String debugId) {
         linksContainer.ensureDebugId(debugId);
     }
 
-    public void setEnsureDebugIdSelector(String debugId) {
+    public void setEnsureDebugIdTagContainer(String debugId) {
+        tagsContainer.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdLinkSelector(String debugId) {
         createCaseLinkPopup.setEnsureDebugIdSelector(debugId);
     }
 
-    public void setEnsureDebugIdTextBox(String debugId) {
+    public void setEnsureDebugIdLinkTextBox(String debugId) {
         createCaseLinkPopup.setEnsureDebugIdTextBox(debugId);
     }
 
-    public void setEnsureDebugIdApply(String debugId) {
+    public void setEnsureDebugIdLinkApply(String debugId) {
         createCaseLinkPopup.setEnsureDebugIdApply(debugId);
     }
 

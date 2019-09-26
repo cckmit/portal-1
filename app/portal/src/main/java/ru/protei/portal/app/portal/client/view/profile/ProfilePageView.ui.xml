@@ -26,24 +26,24 @@
 
                             <g:HTMLPanel ui:field="passwordContainer" visible="false" styleName="row">
                                 <div class="col-md-12">
-                                    <h4 class="title">
+                                    <h4 ui:field="changePasswordLabel" class="title">
                                         <ui:text from="{lang.accountPasswordChange}"/>
                                     </h4>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <label>
+                                    <label ui:field="currentPasswordLabel">
                                         <ui:text from="{lang.accountCurrentPassword}"/>
                                     </label>
                                     <g:PasswordTextBox ui:field="currentPassword" styleName="form-control"/>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <label>
+                                    <label ui:field="newPasswordLabel">
                                         <ui:text from="{lang.accountNewPassword}"/>
                                     </label>
                                     <g:PasswordTextBox ui:field="newPassword" styleName="form-control"/>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <label>
+                                    <label ui:field="confirmPasswordLabel">
                                         <ui:text from="{lang.accountConfirmPassword}"/>
                                     </label>
                                     <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>

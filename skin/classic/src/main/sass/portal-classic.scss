@@ -21,6 +21,7 @@ body {
   .sidebar-header {
     color: white !important;
     font-size: 24px;
+    text-transform: uppercase;
   }
   .sidebar-menu .menu-items {
     margin-top: 10px !important;
@@ -48,6 +49,15 @@ body {
     line-height: 30px;
     text-align: center;
     font-size: 13px !important;
+  }
+}
+
+.header {
+  .brand {
+    font-size: 24px;
+    color: #257ac0;
+    left: 16px;
+    text-transform: uppercase;
   }
 }
 

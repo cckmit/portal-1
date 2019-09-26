@@ -2,10 +2,7 @@ package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -241,20 +238,27 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
             return;
         }
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
-        privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
-        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED_LABEL);
-        criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE_LABEL);
-        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT_LABEL);
-        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE_LABEL);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.TIME_ELAPSED_LABEL);
-        contact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.CONTACT_LABEL);
-        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER_LABEL);
-        subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION_LABEL);
-        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME_LABEL);
-        platform.ensureDebugId(DebugIds.ISSUE_PREVIEW.PLATFORM_LABEL);
-        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO_LABEL);
+        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
+        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
+        criticalityLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.IMPORTANCE);
+        criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE);
+        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PRODUCT);
+        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT);
+        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.STATE);
+        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE);
+        timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.TIME_ELAPSED);
+        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.TIME_ELAPSED);
+        contactLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.CONTACT);
+        contact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.CONTACT);
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.MANAGER);
+        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER);
+        subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.SUBSCRIPTION);
+        subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION);
+        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
+        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PLATFORM);
+        platform.ensureDebugId(DebugIds.ISSUE_PREVIEW.PLATFORM);
+        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
         copy.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_TO_CLIPBOARD_BUTTON);
@@ -337,6 +341,22 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     En_CaseStateLang caseStateLang;
     @UiField
     HTMLPanel numberCopyPanel;
+    @UiField
+    LabelElement stateLabel;
+    @UiField
+    LabelElement productLabel;
+    @UiField
+    LabelElement contactLabel;
+    @UiField
+    LabelElement managerLabel;
+    @UiField
+    HeadingElement subscriptionsLabel;
+    @UiField
+    HeadingElement platformLabel;
+    @UiField
+    LabelElement criticalityLabel;
+    @UiField
+    SpanElement timeElapsedLabel;
 
     AbstractIssuePreviewActivity activity;
 
