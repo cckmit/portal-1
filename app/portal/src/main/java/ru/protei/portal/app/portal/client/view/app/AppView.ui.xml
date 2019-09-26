@@ -14,7 +14,7 @@
                 </g:Anchor>
 
                 <div class="sidebar-header-controls">
-                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
+                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </div>
