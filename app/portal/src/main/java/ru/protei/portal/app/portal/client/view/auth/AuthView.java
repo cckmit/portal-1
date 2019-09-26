@@ -1,6 +1,7 @@
 package ru.protei.portal.app.portal.client.view.auth;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -65,17 +66,6 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
             activity.onLoginClicked();
     }
 
-    private void ensureDebugIds() {
-        login.ensureDebugId(DebugIds.AUTH.INPUT_LOGIN);
-        password.ensureDebugId(DebugIds.AUTH.INPUT_PASSWORD);
-        loginButton.ensureDebugId(DebugIds.AUTH.LOGIN_BUTTON);
-    }
-
-    private void initHandlers() {
-        loginContainer.sinkEvents(Event.ONKEYPRESS);
-        loginContainer.addHandler(this, KeyPressEvent.getType());
-    }
-
     public void setFocus () {
         login.setFocus(true);
     }
@@ -107,6 +97,21 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         if ( activity != null ) {
             activity.onLocaleChanged( event.getValue().getLocale() );
         }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        login.ensureDebugId(DebugIds.AUTH.INPUT_LOGIN);
+        password.ensureDebugId(DebugIds.AUTH.INPUT_PASSWORD);
+        loginButton.ensureDebugId(DebugIds.AUTH.LOGIN_BUTTON);
+        errorText.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.AUTH.ERROR_ALERT);
+    }
+
+    private void initHandlers() {
+        loginContainer.sinkEvents(Event.ONKEYPRESS);
+        loginContainer.addHandler(this, KeyPressEvent.getType());
     }
 
     private void initPlaceholders() {

@@ -208,7 +208,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             Long selectedCompanyId = companyOption.getId();
             companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
-                    .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
+                    .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions,
+                            CollectionUtils.isEmpty(subscriptions) ? lang.issueCompanySubscriptionNotDefined() : lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()))));
 
             companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
                     .setOnSuccess(caseStates -> {
@@ -396,7 +397,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
         view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption(issue.getPlatformName(), issue.getPlatformId()));
-        view.platformVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+        view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
 
         fillViewForJira(issue);
@@ -501,12 +502,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;
-        return subscriptionsList == null || subscriptionsList.isEmpty()
-                ? subscriptionsListEmptyMessage
-                : subscriptionsList.stream()
+
+        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
+
+        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
-                .filter(mail -> !view.isPrivate().getValue() || CompanySubscription.isProteiRecipient(mail))
-                .collect(Collectors.joining(", "));
+                .filter(mail -> !view.isPrivate().getValue() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
+
+        return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
+                ? subscriptionsListEmptyMessage
+                : subscriptionsBasedOnPrivacyList.stream().collect(Collectors.joining(", "));
     }
 
     private boolean isCompanyChangeAllowed(CaseObject issue) {

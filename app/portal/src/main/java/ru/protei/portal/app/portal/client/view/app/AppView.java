@@ -1,6 +1,7 @@
 package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -165,12 +166,19 @@ public class AppView extends Composite
     }
 
     private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
         globalContainer.ensureDebugId(DebugIds.APP_VIEW.GLOBAL_CONTAINER);
         logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
         profile.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
         notifyContainer.ensureDebugId(DebugIds.APP_VIEW.NOTIFICATION_CONTAINER);
         locale.ensureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
+        settings.ensureDebugId(DebugIds.APP_VIEW.SETTING_BUTTON);
+        username.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.USER_NAME_LABEL);
+        navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
+        logo.ensureDebugId(DebugIds.APP_VIEW.DASHBOARD_BUTTON);
     }
 
     private void initHandlers() {

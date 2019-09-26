@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.columns;
 
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style;
@@ -9,10 +10,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Downloadable;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.function.Function;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
 
@@ -50,6 +54,7 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
             a.appendChild(img);
         }
         a.setTitle(lang.download());
+        a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.DOWNLOAD);
         setDownloadEnabled(a);
         setDownloadDeprecated(a);
         cell.appendChild(a);

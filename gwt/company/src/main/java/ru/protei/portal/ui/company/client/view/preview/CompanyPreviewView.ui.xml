@@ -20,16 +20,16 @@
             </p>
 
             <p class="small">
-                <span class="bold"><ui:text from="{lang.tags}"/></span>
+                <span class="bold" ui:field="tagsLabel"><ui:text from="{lang.tags}"/></span>
                 <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false"/>
             </p>
 
             <p class="small">
-                <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
+                <span class="bold" ui:field="subscriptionLabel"><ui:text from="{lang.companySubscription}: "/></span>
                 <g:InlineLabel ui:field="subscription"/>
             </p>
 
-            <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
+            <h5 ui:field="contactsHeader"><ui:text from="{lang.companyContactsHeader}"/></h5>
 
             <div class="small">
                 <b><ui:text from="{lang.phone}: "/></b>

@@ -175,10 +175,10 @@ public class SelectorPopup
     }
 
     private void ensureDefaultDebugIds() {
-        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR_POPUP.ADD_NEW_ENTRY_BUTTON);
-        setEnsureDebugIdSearch(DebugIds.SELECTOR_POPUP.SEARCH_INPUT);
-        setEnsureDebugIdSearchAction(DebugIds.SELECTOR_POPUP.SEARCH_ACTION);
-        setEnsureDebugIdListContainer(DebugIds.SELECTOR_POPUP.ENTRY_LIST_CONTAINER);
+        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
+        setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
+        setEnsureDebugIdSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
+        setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
     public void setEnsureDebugIdAddEntryAction(String debugId) {

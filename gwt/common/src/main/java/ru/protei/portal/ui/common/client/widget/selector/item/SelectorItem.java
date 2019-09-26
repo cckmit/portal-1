@@ -12,6 +12,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import ru.protei.portal.test.client.DebugIds;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Вид одного элемента из выпадайки селектора
@@ -23,6 +26,7 @@ public class SelectorItem
 
     public SelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.POPUP.ITEM);
     }
 
     @Override

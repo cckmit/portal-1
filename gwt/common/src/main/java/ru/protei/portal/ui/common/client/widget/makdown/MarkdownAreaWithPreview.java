@@ -97,6 +97,10 @@ public class MarkdownAreaWithPreview
         }
     }
 
+    public void setEnsureDebugId(String debugId) {
+        text.ensureDebugId(debugId);
+    }
+
     private void scheduleChangedPreview() {
         changedPreviewTimer.cancel();
         changedPreviewTimer.schedule(PREVIEW_CHANGE_DELAY_MS);

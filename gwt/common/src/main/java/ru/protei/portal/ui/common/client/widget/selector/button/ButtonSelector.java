@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -103,6 +104,10 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
 
     public void setEnsureDebugId(String debugId) {
         button.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdLabel(String debugId) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
     @UiField

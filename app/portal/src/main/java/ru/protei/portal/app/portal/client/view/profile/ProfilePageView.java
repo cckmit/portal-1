@@ -1,8 +1,11 @@
 package ru.protei.portal.app.portal.client.view.profile;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,11 +14,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-
-import java.util.List;
 
 /**
  * Вид превью контакта
@@ -25,6 +25,7 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -86,6 +87,23 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        name.ensureDebugId(DebugIds.PROFILE.NAME);
+        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.COMPANY);
+        changePasswordButton.ensureDebugId(DebugIds.PROFILE.CHANGE_PASSWORD_BUTTON);
+        changePasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CHANGE_PASSWORD);
+        currentPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CURRENT_PASSWORD);
+        currentPassword.ensureDebugId(DebugIds.PROFILE.CURRENT_PASSWORD_INPUT);
+        newPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.NEW_PASSWORD);
+        newPassword.ensureDebugId(DebugIds.PROFILE.NEW_PASSWORD_INPUT);
+        confirmPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CONFIRM_PASSWORD);
+        confirmPassword.ensureDebugId(DebugIds.PROFILE.CONFIRM_PASSWORD_INPUT);
+        savePasswordButton.ensureDebugId(DebugIds.PROFILE.SAVE_PASSWORD_BUTTON);
+    }
+
     @UiField
     Button changePasswordButton;
     @UiField
@@ -107,6 +125,14 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     PasswordTextBox newPassword;
     @UiField
     PasswordTextBox confirmPassword;
+    @UiField
+    LabelElement currentPasswordLabel;
+    @UiField
+    LabelElement newPasswordLabel;
+    @UiField
+    LabelElement confirmPasswordLabel;
+    @UiField
+    HeadingElement changePasswordLabel;
 
     AbstractProfilePageActivity activity;
 

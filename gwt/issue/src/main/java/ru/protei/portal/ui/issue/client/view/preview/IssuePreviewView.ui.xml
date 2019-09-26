@@ -23,6 +23,7 @@
                     <div class="inline pull-right">
                         <small ui:field="createdBy"/>
                     </div>
+                    <h5 ui:field="name"/>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
                                            enabled="false" showLabel="false"/>
@@ -31,7 +32,7 @@
                         <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
-                                    <label class="fade"><ui:text from="{lang.issueCriticality}"/></label>
+                                    <label ui:field="criticalityLabel" class="fade"><ui:text from="{lang.issueCriticality}"/></label>
                                     <div>
                                         <i ui:field="iconCriticality"/>
                                         <span ui:field="criticality"/>
@@ -40,13 +41,13 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
-                                    <label class="fade"><ui:text from="{lang.issueState}"/></label>
+                                    <label ui:field="stateLabel" class="fade"><ui:text from="{lang.issueState}"/></label>
                                     <div ui:field="state"/>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
-                                    <label class="fade"><ui:text from="{lang.issueProduct}"/></label>
+                                    <label ui:field="productLabel" class="fade"><ui:text from="{lang.issueProduct}"/></label>
                                     <span ui:field="product"/>
                                 </div>
                             </div>
@@ -54,13 +55,13 @@
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
-                                    <label class="fade"><ui:text from="{lang.issueInitiator}"/></label>
+                                    <label ui:field="contactLabel" class="fade"><ui:text from="{lang.issueInitiator}"/></label>
                                     <span ui:field="contact"/>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
-                                    <label class="fade"><ui:text from="{lang.issueManager}"/></label>
+                                    <label ui:field="managerLabel" class="fade"><ui:text from="{lang.issueManager}"/></label>
                                     <span ui:field="manager"/>
                                 </div>
                             </div>
@@ -95,19 +96,17 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <h5 ui:field="name"/>
+                    <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
 
-                    <div class="form-group pre-formatted-info markdown" ui:field="info"/>
-
-                    <h5><ui:text from="{lang.companySubscription}"/></h5>
+                    <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>
 
-                    <h5><ui:text from="{lang.issuePlatformHeader}"/></h5>
+                    <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
                     <g:Anchor ui:field="platform" styleName="full-screen-link" href="#"/>
 
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
                         <h5 class="col-md-12">
-                            <ui:text from="{lang.timeElapsed}"/>
+                            <span ui:field="timeElapsedLabel"><ui:text from="{lang.timeElapsed}"/></span>
                             <timefield:TimeLabel ui:field="timeElapsed" styleName="inline m-l-5"/>
                         </h5>
                     </g:HTMLPanel>
