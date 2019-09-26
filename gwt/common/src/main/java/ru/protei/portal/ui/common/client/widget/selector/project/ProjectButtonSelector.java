@@ -26,6 +26,10 @@ public class ProjectButtonSelector
     @Override
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
+        if (defaultValue != null) {
+            addOption(null);
+            setValue(null);
+        }
         options.forEach(this::addOption);
     }
 
