@@ -176,6 +176,12 @@ public class CaseObjectSqlBuilder {
             if (query.getIndependentProject() != null && query.getIndependentProject()) {
                 condition.append(" and case_object.id NOT IN (SELECT contract.project_id FROM contract WHERE contract.project_id IS NOT NULL)");
             }
+
+            if (query.getProductDirectionId() != null) {
+                condition
+                        .append(" and product_id = ")
+                        .append(query.getProductDirectionId());
+            }
         });
     }
 }
