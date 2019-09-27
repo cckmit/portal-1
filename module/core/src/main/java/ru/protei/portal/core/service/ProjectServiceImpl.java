@@ -487,7 +487,7 @@ public class ProjectServiceImpl implements ProjectService {
             caseQuery.setProductDirectionId(projectQuery.getDirectionId());
         }
         if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
-            caseQuery.setProductIds(new ArrayList<>(projectQuery.getProductIds()));
+            caseQuery.setProductIds(projectQuery.getProductIds());
         }
 
         if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
@@ -503,12 +503,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
         caseQuery.setCreatedTo(projectQuery.getCreatedTo());
-
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
         caseQuery.setIndependentProject(projectQuery.getIndependentProject());
-        caseQuery.setDistrictIds(projectQuery.getDistrictIds());
+        caseQuery.setDistrictIds(new ArrayList<>(projectQuery.getDistrictIds()));
 
         return caseQuery;
     }

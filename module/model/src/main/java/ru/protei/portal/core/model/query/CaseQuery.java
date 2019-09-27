@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +33,7 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> locationIds;
 
-    private Set<Long> districtIds;
+    private List<Long> districtIds;
 
     private List<Long> managerIds;
 
@@ -172,9 +171,9 @@ public class CaseQuery extends BaseQuery {
 
     public void setLocationIds(List<Long> locationIds) { this.locationIds = locationIds; }
 
-    public Set<Long> getDistrictIds() { return districtIds; }
+    public List<Long> getDistrictIds() { return districtIds; }
 
-    public void setDistrictIds(Set<Long> districtsIds) { this.districtIds = districtsIds; }
+    public void setDistrictIds(List<Long> districtsIds) { this.districtIds = districtsIds; }
 
     public En_CaseType getType() {
         return type;
