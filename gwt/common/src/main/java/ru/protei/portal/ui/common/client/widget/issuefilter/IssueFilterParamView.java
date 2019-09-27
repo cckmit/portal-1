@@ -236,6 +236,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             }
         } else if (searchByCommentsWarning.isVisible()) {
             searchByCommentsWarning.setVisible(false);
+
         }
     }
 

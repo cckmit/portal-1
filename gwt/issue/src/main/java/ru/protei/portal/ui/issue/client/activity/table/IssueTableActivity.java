@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -197,6 +198,9 @@ public abstract class IssueTableActivity
         if ( !validateMultiSelectorsTotalCount() ){
             return;
         }
+
+        filterView.createEnabled().setEnabled(!filterParamView.searchByComments().getValue() ||
+                (filterParamView.searchByComments().getValue() && filterParamView.searchPattern().getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
 
         loadTable();
         filterParamView.toggleMsgSearchThreshold();
@@ -387,7 +391,7 @@ public abstract class IssueTableActivity
         CaseFilter filter = new CaseFilter();
         filter.setName(filterView.filterName().getValue());
         filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView, false);
+        CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView, !filterParamView.searchPattern().getValue().isEmpty());
         filter.setParams(query);
         query.setSearchString(filterParamView.searchPattern().getValue());
         return filter;
