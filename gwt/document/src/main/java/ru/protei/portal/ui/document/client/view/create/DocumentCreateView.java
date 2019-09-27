@@ -31,6 +31,11 @@ public class DocumentCreateView extends Composite implements AbstractDocumentCre
     }
 
     @Override
+    public void resetWizard() {
+        wizard.selectFirstTab();
+    }
+
+    @Override
     public HasWidgets projectSearchContainer() {
         return projectSearchContainer;
     }

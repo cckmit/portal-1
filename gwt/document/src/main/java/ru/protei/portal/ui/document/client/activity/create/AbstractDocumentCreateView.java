@@ -11,6 +11,8 @@ public interface AbstractDocumentCreateView extends IsWidget {
 
     void setWizardActivity(WizardWidgetActivity activity);
 
+    void resetWizard();
+
     // Wizard 1st tab
 
     HasWidgets projectSearchContainer();

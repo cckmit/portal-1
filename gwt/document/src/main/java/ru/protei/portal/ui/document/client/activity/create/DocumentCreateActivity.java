@@ -35,6 +35,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         fireEvent(new ProjectEvents.Search(view.projectSearchContainer()));
         fireEvent(new ProjectEvents.QuickCreate(view.projectCreateContainer()));
         fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), new Document(), TAG));
+        view.resetWizard();
         onProjectSearchClicked();
     }
 

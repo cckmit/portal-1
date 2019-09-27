@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.wizard.navitem.WizardWidgetNavItem;
@@ -90,7 +91,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         tabNameToPane.put(pane.getTabName(), pane);
         tabNames.add(pane.getTabName());
 
-        selectTabIfNeeded(pane);
+        selectFirstTab();
     }
 
     private WizardWidgetNavItem makeNavItem(WizardWidgetPane pane) {
@@ -114,19 +115,15 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         return selectorItem;
     }
 
-    private void selectTabIfNeeded(WizardWidgetPane pane) {
-        boolean isFirstTab = currentTabName == null;
-        if (isFirstTab) {
-            currentTabName = pane.getTabName();
-            onTabSelected(currentTabName);
-        }
-    }
-
     private void clearTabs() {
         navTabs.clear();
         tabNameToNavItem.clear();
         tabNames.clear();
         popup.getChildContainer().clear();
+    }
+
+    public void selectFirstTab() {
+        findFirstPane().ifPresent(p -> onTabSelected(p.getTabName()));
     }
 
     @Override
@@ -238,6 +235,10 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         event.preventDefault();
         if (!isSelectable) return;
         popup.showNear(navDropdownTabsSelected);
+    }
+
+    private Optional<WizardWidgetPane> findFirstPane() {
+        return tabNameToPane.values().stream().findFirst();
     }
 
     @UiField
