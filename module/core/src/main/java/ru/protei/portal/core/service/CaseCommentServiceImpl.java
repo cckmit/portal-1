@@ -76,7 +76,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .build());
         }
 
-        return ok( comment);
+        return ok(resultData.getCaseComment());
     }
 
     @Override
@@ -136,7 +136,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 addedAttachmentsIds
         ).getData();
 
-        return ok( new CaseCommentSaveOrUpdateResult(comment, addedAttachments));
+        return ok( new CaseCommentSaveOrUpdateResult(result, addedAttachments));
     }
 
     @Override
