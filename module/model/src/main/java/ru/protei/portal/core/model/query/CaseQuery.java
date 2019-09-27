@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -29,11 +30,11 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> initiatorIds;
 
-    private List<Long> productIds;
+    private Set<Long> productIds;
 
     private List<Long> locationIds;
 
-    private List<Long> districtIds;
+    private Set<Long> districtIds;
 
     private List<Long> managerIds;
 
@@ -122,6 +123,7 @@ public class CaseQuery extends BaseQuery {
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
         setIndependentProject(query.getIndependentProject());
+        setProductDirectionId(query.getProductDirectionId());
     }
 
     public Long getId() {
@@ -161,19 +163,19 @@ public class CaseQuery extends BaseQuery {
         this.initiatorIds = initiatorIds;
     }
 
-    public List<Long> getProductIds() {
+    public Set<Long> getProductIds() {
         return productIds;
     }
 
-    public void setProductIds( List<Long> productIds ) { this.productIds = productIds; }
+    public void setProductIds( Set<Long> productIds ) { this.productIds = productIds; }
 
     public List<Long> getLocationIds() { return locationIds; }
 
     public void setLocationIds(List<Long> locationIds) { this.locationIds = locationIds; }
 
-    public List<Long> getDistrictIds() { return districtIds; }
+    public Set<Long> getDistrictIds() { return districtIds; }
 
-    public void setDistrictIds(List<Long> districtsIds) { this.districtIds = districtsIds; }
+    public void setDistrictIds(Set<Long> districtsIds) { this.districtIds = districtsIds; }
 
     public En_CaseType getType() {
         return type;

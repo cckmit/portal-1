@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
@@ -62,9 +63,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<CaseResolutionTimeReportDto> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
-                                                                       List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
-                                                                       List<Long> tagsIds) {
+    public List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Integer> terminatedStates,
+                                                                      List<Long> companiesIds, Set<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
+                                                                      List<Long> tagsIds) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
         String acceptableStates = makeInArg( terminatedStates);

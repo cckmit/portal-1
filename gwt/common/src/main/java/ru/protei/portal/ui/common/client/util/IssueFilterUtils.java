@@ -137,7 +137,7 @@ public class IssueFilterUtils {
         return option;
     }
 
-    public static List< Long > getProductsIdList( Set< ProductShortView > productSet ) {
+    public static Set< Long > getProductsIdList( Set< ProductShortView > productSet ) {
 
         if ( productSet == null || productSet.isEmpty() ) {
             return null;
@@ -145,16 +145,16 @@ public class IssueFilterUtils {
         return productSet
                 .stream()
                 .map( ProductShortView::getId )
-                .collect( Collectors.toList() );
+                .collect( Collectors.toSet() );
     }
 
-    public static Set< ProductShortView > getProducts( List< Long > managerIds ) {
+    public static Set< ProductShortView > getProducts( Set< Long > productIds ) {
 
-        if ( managerIds == null || managerIds.isEmpty() ) {
+        if ( productIds == null || productIds.isEmpty() ) {
             return null;
         }
         Set< ProductShortView > products = new HashSet<>();
-        for ( Long id : managerIds ) {
+        for ( Long id : productIds ) {
             ProductShortView prd = new ProductShortView();
             prd.setId( id );
             products.add( prd );

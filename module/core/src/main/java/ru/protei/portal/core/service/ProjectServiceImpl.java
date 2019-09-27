@@ -82,9 +82,9 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
 
-        List<Long> productIds = null;
+        Set<Long> productIds = null;
         if (query.getDirectionId() != null){
-            productIds = new ArrayList<>();
+            productIds = new HashSet<>();
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
@@ -507,7 +507,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
         caseQuery.setIndependentProject(projectQuery.getIndependentProject());
-        caseQuery.setDistrictIds(new ArrayList<>(projectQuery.getDistrictIds()));
+        caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 
         return caseQuery;
     }

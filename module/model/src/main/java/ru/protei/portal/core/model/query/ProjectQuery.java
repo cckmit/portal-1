@@ -23,7 +23,7 @@ public class ProjectQuery extends BaseQuery {
 
     private Boolean onlyMineProjects;
 
-    private List<Long> productIds;
+    private Set<Long> productIds;
 
     private En_CustomerType customerType;
 
@@ -47,7 +47,7 @@ public class ProjectQuery extends BaseQuery {
         this.states = state;
     }
 
-    public ProjectQuery(Date createdFrom, Date createdTo, List<Long> productIds, String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public ProjectQuery(Date createdFrom, Date createdTo, Set<Long> productIds, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.createdFrom = createdFrom;
         this.createdTo = createdTo;
@@ -86,11 +86,11 @@ public class ProjectQuery extends BaseQuery {
         this.onlyMineProjects = onlyMineProjects;
     }
 
-    public List<Long> getProductIds() {
+    public Set<Long> getProductIds() {
         return productIds;
     }
 
-    public void setProductIds(List<Long> productIds) {
+    public void setProductIds(Set<Long> productIds) {
         this.productIds = productIds;
     }
 

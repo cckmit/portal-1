@@ -34,9 +34,9 @@ public class OfficialServiceImpl implements OfficialService {
         caseQuery.setCreatedFrom(query.getFrom());
         caseQuery.setCreatedTo(query.getTo());
         caseQuery.setType( En_CaseType.OFFICIAL );
-        List<Long> productIds = null;
+        Set<Long> productIds = null;
         if (query.getProductId() != null){
-            productIds = new ArrayList<>();
+            productIds = new HashSet<>();
             productIds.add( query.getProductId() );
         }
         caseQuery.setProductIds( productIds );
