@@ -13,6 +13,8 @@ import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 public abstract class DocumentPreviewActivity implements Activity, AbstractDocumentPreviewActivity {
 
@@ -52,22 +54,28 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
         view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
+        view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
+        view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
+        fillProject(document);
+    }
 
-        Project project = document.getProject();
-        if (project == null) {
+    private void fillProject(Document document) {
+        if (document.getProjectId() == null) {
             view.setProject("");
             view.setManager("");
         } else {
-            view.setProject(project.getName());
-            view.setManager(project.getLeader() == null ? "" : project.getLeader().getDisplayShortName());
+            regionService.getProject(document.getProjectId(), new ShortRequestCallback<Project>()
+                    .setOnSuccess(project -> {
+                        view.setProject(project.getName());
+                        view.setManager(project.getLeader() == null ? "" : project.getLeader().getDisplayShortName());
+                    } ));
         }
-
-        view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
-        view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
     }
 
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/document/";
 
+    @Inject
+    RegionControllerAsync regionService;
     @Inject
     Lang lang;
     @Inject
