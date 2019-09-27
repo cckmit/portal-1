@@ -56,6 +56,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     HasValue<Set<En_CaseState>> states();
 
 
+    HasVisibility searchByCommentsWarningVisibility();
+
     HasVisibility productsVisibility();
 
     HasVisibility companiesVisibility();
@@ -73,8 +75,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     void resetFilter();
 
     void fillFilterFields(CaseQuery caseQuery);
-
-    void toggleMsgSearchThreshold();
 
     void setCompaniesErrorStyle(boolean hasError);
 
