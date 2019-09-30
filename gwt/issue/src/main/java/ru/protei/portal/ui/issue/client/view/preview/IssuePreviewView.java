@@ -192,8 +192,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public HasVisibility platformVisibility() {
-        return platform;
+    public void setPlatformVisibility(boolean visible) {
+        if (visible) {
+            platformLabel.removeClassName("hide");
+        } else {
+            platformLabel.addClassName("hide");
+        }
+        platform.setVisible(visible);
     }
 
     @UiHandler( "number" )
