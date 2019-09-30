@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 
@@ -47,4 +48,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void setRemoteLink(CaseLink remoteLink);
 
     void setPrivacyFlag(Boolean value);
+
+    void setTimeElapsedType(En_TimeElapsedType type);
 }

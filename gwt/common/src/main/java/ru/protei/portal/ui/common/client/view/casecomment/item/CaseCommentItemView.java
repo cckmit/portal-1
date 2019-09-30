@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.view.casecomment.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -17,6 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
@@ -27,7 +27,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.casecomment.item.EditElapsedTimeTypePopup;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -173,12 +175,12 @@ public class CaseCommentItemView
 
     @Override
     public void setTimeElapsed( String timeTypeString ) {
-        timeElapsed.setInnerHTML( timeTypeString == null ? "" : timeTypeString );
+        timeElapsed.setText(timeTypeString == null ? "" : timeTypeString);
     }
 
     @Override
     public void clearElapsedTime() {
-        timeElapsed.setInnerHTML("");
+        timeElapsed.setText("");
     }
 
     @Override
@@ -196,6 +198,11 @@ public class CaseCommentItemView
             messageContainer.addClassName("private-message");
             privateComment.setClassName("fa m-l-10 fa-lock text-danger");
         }
+    }
+
+    @Override
+    public void setTimeElapsedType(En_TimeElapsedType type) {
+        elapsedTimeTypePopup.setTimeElapsedType(type);
     }
 
     @UiHandler( "remove" )
@@ -227,12 +234,19 @@ public class CaseCommentItemView
         activity.onRemoveAttachment(this, event.getAttachment());
     }
 
+    @UiHandler("timeElapsed")
+    public void onTimeElapsedClicked(ClickEvent event) {
+        event.preventDefault();
+
+        elapsedTimeTypePopup.showNear(timeElapsed);
+    }
+
     private void setTestAttributes() {
         privateComment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
         reply.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
         edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REMOVE_BUTTON);
-        timeElapsed.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
+        timeElapsed.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
         date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
         owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
         status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.STATUS);
@@ -258,7 +272,7 @@ public class CaseCommentItemView
     @UiField(provided = true)
     AttachmentList attachList;
     @UiField
-    LIElement timeElapsed;
+    Anchor timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField
@@ -285,6 +299,8 @@ public class CaseCommentItemView
     En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
+    @Inject
+    EditElapsedTimeTypePopup elapsedTimeTypePopup;
 
     private AbstractCaseCommentItemActivity activity;
 

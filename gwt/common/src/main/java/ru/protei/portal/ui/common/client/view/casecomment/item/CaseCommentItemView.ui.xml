@@ -14,7 +14,7 @@
             </li>
             <i ui:field="privateComment"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
-            <li ui:field="timeElapsed" class="time-label"/>
+            <g:Anchor ui:field="timeElapsed" styleName="time-label" href="#"/>
             <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">

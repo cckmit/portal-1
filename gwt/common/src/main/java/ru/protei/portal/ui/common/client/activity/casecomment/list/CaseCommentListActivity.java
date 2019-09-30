@@ -413,12 +413,14 @@ public abstract class CaseCommentListActivity
 
     private void fillTimeElapsed( CaseComment value, AbstractCaseCommentItemView itemView ) {
         if (isElapsedTimeEnabled && value.getTimeElapsed() != null) {
-            String timeType = (value.getTimeElapsedType() == null || value.getTimeElapsedType().equals( En_TimeElapsedType.NONE ) ? "" : ", " + timeElapsedTypeLang.getName( value.getTimeElapsedType() ));
+            String timeType = (value.getTimeElapsedType() == null ? "" : ", " + timeElapsedTypeLang.getName( value.getTimeElapsedType() ));
             itemView.setTimeElapsed( StringUtils.join(
                     " ( +", workTimeFormatter.asString( value.getTimeElapsed() ), timeType, " )"
                     ).toString()
             );
         }
+
+        itemView.setTimeElapsedType(value.getTimeElapsedType());
     }
 
     private void bindAttachmentsToComment(AbstractCaseCommentItemView itemView, List<CaseAttachment> caseAttachments){
