@@ -87,6 +87,14 @@
                 <module>module/ws-api</module>
             </modules>
         </profile>
+
+        <profile>
+            <id>debug-ids</id>
+
+            <modules>
+                <module>module/test</module>
+            </modules>
+        </profile>
     </profiles>
 
     <dependencies>
