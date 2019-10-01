@@ -10,7 +10,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
+    <g:HTMLPanel styleName="card card-transparent no-margin footer-fixable">
+        <div class="card-body no-padding">
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
                 <div class="card-header">
@@ -175,15 +176,14 @@
                 </div>
             </div>
         </div>
-        <div class="container-fluid padding-15 bg-white">
+        </div>
+        <div class="card-footer">
             <div class="card card-transparent no-margin">
-                <div class="card-body">
                     <div class="text-right">
                         <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"
                                   text="{lang.buttonCancel}"/>
                     </div>
-                </div>
             </div>
         </div>
     </g:HTMLPanel>

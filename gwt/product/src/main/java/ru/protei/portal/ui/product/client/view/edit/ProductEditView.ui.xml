@@ -11,82 +11,81 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <label ui:field="nameLabel">
-                                <ui:text from="{lang.productName}"/>
-                            </label>
-                            <div class="input-group">
-                                <div class="input-group-verifiable">
-                                    <div class="verifiable">
-                                        <i ui:field="verifiableIcon"/>
+    <g:HTMLPanel styleName="card card-transparent no-margin footer-fixable">
+        <div class="card-body no-padding">
+            <div class="container-fluid padding-15">
+                <div class="card card-transparent no-margin">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label ui:field="nameLabel">
+                                    <ui:text from="{lang.productName}"/>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-verifiable">
+                                        <div class="verifiable">
+                                            <i ui:field="verifiableIcon"/>
+                                        </div>
+                                        <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3" notNull="true"/>
                                     </div>
-                                    <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3" notNull="true"/>
+                                    <typebtn:ProductTypeBtnGroup ui:field="type" styleName="input-group-append du-selector-inline"/>
                                 </div>
-                                <typebtn:ProductTypeBtnGroup ui:field="type" styleName="input-group-append du-selector-inline"/>
                             </div>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label ui:field="descriptionLabel"/>
-                            <autoresizetextarea:AutoResizeTextArea ui:field="info"
-                                                                   minRows="2"
-                                                                   maxRows="10"
-                                                                   styleName="form-control description"/>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label><ui:text from="{lang.productWikiLink}"/></label>
-                            <g:TextBox ui:field="wikiLink" styleName="form-control"/>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label>
-                                <ui:text from="{lang.companySubscription}"/>
-                            </label>
+                            <div class="form-group col-md-12">
+                                <label ui:field="descriptionLabel"/>
+                                <autoresizetextarea:AutoResizeTextArea ui:field="info"
+                                                                       minRows="2"
+                                                                       maxRows="10"
+                                                                       styleName="form-control description"/>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label><ui:text from="{lang.productWikiLink}"/></label>
+                                <g:TextBox ui:field="wikiLink" styleName="form-control"/>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>
+                                    <ui:text from="{lang.companySubscription}"/>
+                                </label>
+                            </div>
+
+                            <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                         </div>
 
-                        <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
-                    </div>
-
-                    <div class="row">
-                        <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
-                            <label ui:field="parentsContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="parents"/>
-                        </g:HTMLPanel>
-                        <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
-                            <label ui:field="childrenContainerLabel"/>
-                            <devunit:DevUnitMultiSelector ui:field="children"/>
-                        </g:HTMLPanel>
+                        <div class="row">
+                            <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
+                                <label ui:field="parentsContainerLabel"/>
+                                <devunit:DevUnitMultiSelector ui:field="parents"/>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
+                                <label ui:field="childrenContainerLabel"/>
+                                <devunit:DevUnitMultiSelector ui:field="children"/>
+                            </g:HTMLPanel>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="container-fluid padding-15 bg-white">
+                <tab:TabWidget styleName="">
+                    <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
+                        <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
+                    </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
+                        <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
+                    </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
+                        <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
+            </div>
         </div>
-
-        <div class="container-fluid padding-15 bg-white">
-            <tab:TabWidget styleName="">
-                <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
-                    <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
-                </tab:pane.TabWidgetPane>
-
-                <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
-                    <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
-                </tab:pane.TabWidgetPane>
-
-                <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
-                    <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
-                </tab:pane.TabWidgetPane>
-            </tab:TabWidget>
-        </div>
-
-        <div class="container-fluid padding-15">
+        <div class="card-footer">
             <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="text-right">
-                        <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                        <g:Button ui:field="cancelBtn" styleName="btn btn-default" text="{lang.buttonCancel}"/>
-                    </div>
+                <div class="text-right">
+                    <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                    <g:Button ui:field="cancelBtn" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                 </div>
             </div>
         </div>
