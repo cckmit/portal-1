@@ -164,7 +164,7 @@
                                                      visible="false" styleName="form-group"/>
 
                             <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
-                                <div class="col-md-12">
+                                <div class="col-md-12 hide">
                                     <label ui:field="timeElapsedLabel">
                                         <ui:text from="{lang.timeElapsed}"/>
                                     </label>
