@@ -66,6 +66,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
+    public HasEnabled createEnabled() {
+        return createBtn;
+    }
+
+    @Override
     public void changeUserFilterValueName( CaseFilterShortView value ){
         issueFilterParamView.changeUserFilterValueName( value );
     }

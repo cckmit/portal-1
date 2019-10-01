@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.filter;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -20,6 +21,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasVisibility removeFilterBtnVisibility();
 
     void resetFilter();
+
+    HasEnabled createEnabled();
 
     void changeUserFilterValueName(CaseFilterShortView value);
 
