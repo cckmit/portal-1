@@ -6,7 +6,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin footer-fixable">
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <div class="row">
                 <div class="form-group col-md-4">

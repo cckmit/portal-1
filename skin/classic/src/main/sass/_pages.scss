@@ -34,7 +34,7 @@
 
   .page-sidebar {
     width: 270px;
-    left: -203px;
+    left: -200px;
   }
 }
 
@@ -108,3 +108,12 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   cursor: pointer;
 }
 
+
+.icon-thumbnail{
+  margin-right: 15px !important;
+}
+
+.card .card-body.no-padding .row {
+  margin-right: -15px;
+  margin-left: -15px;
+}

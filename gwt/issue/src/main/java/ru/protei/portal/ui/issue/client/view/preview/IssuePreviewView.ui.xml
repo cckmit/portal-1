@@ -7,8 +7,8 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-wrapper footer-fixable card-fixed">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
+    <g:HTMLPanel styleName="preview-wrapper card-with-fixable-footer card-fixed card card-transparent no-margin ">
+        <g:HTMLPanel ui:field="preview" styleName="preview card-body no-padding">
             <div class="card card-default no-border">
                 <div class="card-body">
                     <h4 class="no-margin inline">
@@ -132,9 +132,14 @@
                         </div>
                     </div>
                 </div>
-                <g:HTMLPanel styleName="card-footer text-right" ui:field="backButtonContainer">
-                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
-                </g:HTMLPanel>
+
+            </div>
+        </g:HTMLPanel>
+        <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
+                </div>
             </div>
         </g:HTMLPanel>
     </g:HTMLPanel>
