@@ -6,6 +6,6 @@
 
     <g:HTMLPanel ui:field="root">
         <timeElapsed:ElapsedTimeTypeSelector ui:field="typeSelector"/>
-        <g:Button ui:field="confirmBtn" styleName="btn btn-complete btn-sm" text="Ok"/>
+        <g:Button ui:field="confirmBtn" styleName="btn btn-complete btn-sm" text="{lang.msgOK}"/>
     </g:HTMLPanel>
 </ui:UiBinder>

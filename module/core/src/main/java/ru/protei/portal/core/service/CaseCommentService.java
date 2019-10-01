@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;

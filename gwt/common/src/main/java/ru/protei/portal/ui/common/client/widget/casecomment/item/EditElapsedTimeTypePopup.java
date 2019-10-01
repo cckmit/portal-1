@@ -35,12 +35,6 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
         setAutoHideEnabled(true);
         setAutoHideOnHistoryEventsEnabled(true);
 
-        resizeHandler = resizeEvent -> {
-            if (isAttached()) {
-                showNear(relative);
-            }
-        };
-
         windowScrollHandler = event -> {
             if (isAttached()) {
                 showNear(relative);
@@ -68,15 +62,11 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
     protected void onLoad() {
         typeSelector.setValue(type == null ? En_TimeElapsedType.NONE : type);
         confirmBtn.setEnabled(type != En_TimeElapsedType.NONE);
-        resizeHandlerReg = Window.addResizeHandler(resizeHandler);
         scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
     }
 
     @Override
     protected void onUnload() {
-        if (resizeHandlerReg != null) {
-            resizeHandlerReg.removeHandler();
-        }
         if (scrollHandlerReg != null) {
             scrollHandlerReg.removeHandler();
         }
@@ -84,8 +74,6 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
 
     public void showNear(IsWidget nearWidget) {
         this.relative = nearWidget;
-
-        root.getElement().getStyle().setPosition(Style.Position.RELATIVE);
         root.getElement().getStyle().setDisplay(Style.Display.FLEX);
         typeSelector.getElement().setAttribute("style", "min-width: " + relativeLeftIndent + "px;");
         setPopupPositionAndShow((popupWidth, popupHeight) -> {
@@ -108,7 +96,10 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
 
     @UiHandler("confirmBtn")
     public void onConfirmClicked(ClickEvent event) {
-        ValueChangeEvent.fire(this, typeSelector.getValue());
+        if (type != typeSelector.getValue()) {
+            ValueChangeEvent.fire(this, typeSelector.getValue());
+        }
+
         hide();
     }
 
@@ -124,9 +115,7 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
     Lang lang;
 
     private IsWidget relative;
-    private ResizeHandler resizeHandler;
     private Window.ScrollHandler windowScrollHandler;
-    private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
 
     private Integer relativeLeftIndent;
