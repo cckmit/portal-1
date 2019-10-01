@@ -363,6 +363,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return platformContainer;
     }
 
+    @Override
+    public Element timeElapsedHeader() {
+        return timeElapsedHeader;
+    }
+
 
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
@@ -487,6 +492,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiField
     Anchor copy;
+
+    @UiField
+    DivElement timeElapsedHeader;
 
     @Inject
     @UiField(provided = true)
