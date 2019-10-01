@@ -381,6 +381,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueComment();
 
+    String errEditTimeElapsedType();
+
     String selectCompanyGroup();
 
     String activeRecords();

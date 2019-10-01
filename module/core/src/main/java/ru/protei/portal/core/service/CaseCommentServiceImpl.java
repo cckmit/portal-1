@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -333,6 +334,26 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
+    public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type, Long personId) {
+        CaseComment caseComment;
+
+        if (caseCommentId == null || type == En_TimeElapsedType.NONE || (caseComment = caseCommentDAO.get(caseCommentId)) == null) {
+            return error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!Objects.equals(caseComment.getAuthorId(), personId)) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        caseComment.setTimeElapsedType(type);
+
+        boolean isUpdated = caseCommentDAO.partialMerge(caseComment, "time_elapsed_type");
+
+        return ok(isUpdated);
+    }
+
+    @Override
+    @Transactional
     public Result<Long> addCommentOnSentReminder( CaseComment comment ) {
         comment.setCreated( new Date() );
         comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
@@ -345,8 +366,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok( commentId);
     }
 
-
-    private Result<List<CaseComment>> getList( CaseCommentQuery query) {
+    private Result<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
         return getList(comments);
     }

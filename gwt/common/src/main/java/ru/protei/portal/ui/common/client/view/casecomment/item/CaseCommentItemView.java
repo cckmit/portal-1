@@ -6,13 +6,11 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -29,10 +27,10 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casecomment.item.EditElapsedTimeTypePopup;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -52,6 +50,11 @@ public class CaseCommentItemView
     @Override
     public void setActivity( AbstractCaseCommentItemActivity activity ) {
         this.activity = activity;
+    }
+
+    @Override
+    public void setElapsedTimeTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer) {
+        elapsedTimeTypePopup.addValueChangeHandler(consumer::accept);
     }
 
     @Override
@@ -151,6 +154,11 @@ public class CaseCommentItemView
     }
 
     @Override
+    public void enableUpdateElapsedTimeType(boolean isElapsedTimeTypeEnabled) {
+        this.isElapsedTimeTypeEnabled = isElapsedTimeTypeEnabled;
+    }
+
+    @Override
     public void showAttachments( boolean isShow ){
         if( isShow )
             attachBlock.removeClassName( "hide" );
@@ -236,9 +244,9 @@ public class CaseCommentItemView
 
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
-        event.preventDefault();
-
-        elapsedTimeTypePopup.showNear(timeElapsed);
+        if (activity != null && isElapsedTimeTypeEnabled) {
+            elapsedTimeTypePopup.showNear(timeElapsed);
+        }
     }
 
     private void setTestAttributes() {
@@ -272,7 +280,7 @@ public class CaseCommentItemView
     @UiField(provided = true)
     AttachmentList attachList;
     @UiField
-    Anchor timeElapsed;
+    Label timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField
@@ -302,6 +310,7 @@ public class CaseCommentItemView
     @Inject
     EditElapsedTimeTypePopup elapsedTimeTypePopup;
 
+    private boolean isElapsedTimeTypeEnabled;
     private AbstractCaseCommentItemActivity activity;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}

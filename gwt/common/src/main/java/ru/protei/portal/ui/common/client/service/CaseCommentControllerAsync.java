@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -16,4 +17,6 @@ public interface CaseCommentControllerAsync {
     void saveCaseComment(En_CaseType caseType, CaseComment comment, AsyncCallback<CaseComment> async);
 
     void removeCaseComment(En_CaseType caseType, CaseComment comment, AsyncCallback<Void> async);
+
+    void updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type, AsyncCallback<Boolean> async);
 }

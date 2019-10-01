@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.CaseCommentService;
@@ -59,6 +60,20 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
+    }
+
+    @Override
+    public Boolean updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type) throws RequestFailedException {
+        log.info("removeCaseComment(): caseCommentId={}, type={}", caseCommentId, type);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        Result<Boolean> response = caseCommentService.updateCaseTimeElapsedType(descriptor.makeAuthToken(), caseCommentId, type, descriptor.getPerson().getId());
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

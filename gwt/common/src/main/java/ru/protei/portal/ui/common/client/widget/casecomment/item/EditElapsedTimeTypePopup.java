@@ -3,10 +3,7 @@ package ru.protei.portal.ui.common.client.widget.casecomment.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.HasKeyUpHandlers;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -50,8 +47,6 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
             }
         };
 
-
-
         relativeLeftIndent = Arrays.stream(En_TimeElapsedType.values())
                 .mapToInt(type -> elapsedTimeTypeLang.getName(type).length())
                 .max()
@@ -72,6 +67,7 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
     @Override
     protected void onLoad() {
         typeSelector.setValue(type == null ? En_TimeElapsedType.NONE : type);
+        confirmBtn.setEnabled(type != En_TimeElapsedType.NONE);
         resizeHandlerReg = Window.addResizeHandler(resizeHandler);
         scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
     }
@@ -100,13 +96,20 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
         });
     }
 
-    public void setEnsureDebugIdSelector(String debugId) {
-        typeSelector.setEnsureDebugId(debugId);
-    }
-
     public void setTimeElapsedType(En_TimeElapsedType type) {
         this.type = type;
         typeSelector.setValue(type);
+    }
+
+    @UiHandler("typeSelector")
+    public void onTypeChanged(ValueChangeEvent<En_TimeElapsedType> event) {
+        confirmBtn.setEnabled(event.getValue() != En_TimeElapsedType.NONE);
+    }
+
+    @UiHandler("confirmBtn")
+    public void onConfirmClicked(ClickEvent event) {
+        ValueChangeEvent.fire(this, typeSelector.getValue());
+        hide();
     }
 
     @UiField
@@ -126,7 +129,7 @@ public class EditElapsedTimeTypePopup extends PopupPanel implements HasValueChan
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
 
-    private Integer relativeLeftIndent = 0;
+    private Integer relativeLeftIndent;
 
     private En_TimeElapsedType type;
 
