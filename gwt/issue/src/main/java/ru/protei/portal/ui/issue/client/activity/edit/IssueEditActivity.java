@@ -313,7 +313,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.showComments(false);
             view.getCommentsContainer().clear();
             view.privacyVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+            view.timeElapsedHeader().addClassName("hide");
         } else {
+            view.timeElapsedHeader().removeClassName("hide");
             view.setCaseNumber(issue.getCaseNumber());
             view.privacyVisibility().setVisible(false);
             view.setPrivacyIcon(issue.isPrivateCase());

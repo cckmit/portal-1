@@ -10,112 +10,112 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
 
-    <g:HTMLPanel>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.equipmentCommonHeader}"/>
+    <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body no-padding">
+            <div class="container-fluid padding-15">
+                <div class="card card-transparent no-margin">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <ui:text from="{lang.equipmentCommonHeader}"/>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label>
-                                <ui:text from="{lang.equipmentNameBySpecification}"/>
-                            </label>
-                            <validatefield:ValidableTextBox ui:field="nameSpecification" styleName="form-control"
-                                                            notNull="true"/>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>
+                                    <ui:text from="{lang.equipmentNameBySpecification}"/>
+                                </label>
+                                <validatefield:ValidableTextBox ui:field="nameSpecification" styleName="form-control"
+                                                                notNull="true"/>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label>
+                                    <ui:text from="{lang.equipmentNameBySldWrks}"/>
+                                </label>
+                                <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="form-control"
+                                                                notNull="false"/>
+                            </div>
+                            <div class="form-group col-md-4 eq-type-details">
+                                <type:EquipmentTypeBtnGroup ui:field="type"/>
+                            </div>
+
+                            <div class="form-group col-md-8">
+                                <label>
+                                    <ui:text from="{lang.equipmentPrimaryUse}"/>
+                                </label>
+                                <equipment:EquipmentButtonSelector ui:field="linkedEquipment" hasNullValue="true"/>
+                            </div>
+
+                            <g:HTMLPanel styleName="form-group col-md-4" ui:field="projectBox">
+                                <label>
+                                    <ui:text from="{lang.equipmentProject}"/>
+                                </label>
+                                <project:ProjectButtonSelector ui:field="project"
+                                                               defaultValue="{lang.equipmentProjectNotDefined}"/>
+                            </g:HTMLPanel>
+
+                            <g:HTMLPanel styleName="form-group col-md-4" ui:field="managerBox">
+                                <label>
+                                    <ui:text from="{lang.equipmentManager}"/>
+                                </label>
+                                <person:EmployeeButtonSelector ui:field="manager"
+                                                               defaultValue="{lang.equipmentManagerNotDefined}"/>
+                            </g:HTMLPanel>
+
+                            <g:HTMLPanel styleName="form-group col-md-4" ui:field="date">
+                                <label>
+                                    <ui:text from="{lang.created}"/>
+                                </label>
+                                <g:TextBox ui:field="dateTextBox" styleName="form-control"/>
+                            </g:HTMLPanel>
+
+                            <g:HTMLPanel styleName="form-group col-md-12">
+                                <label>
+                                    <ui:text from="{lang.equipmentComment}"/>
+                                </label>
+                                <g:TextArea ui:field="comment" styleName="form-control comment"/>
+                            </g:HTMLPanel>
                         </div>
-
-                        <div class="form-group col-md-6">
-                            <label>
-                                <ui:text from="{lang.equipmentNameBySldWrks}"/>
-                            </label>
-                            <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="form-control"
-                                                            notNull="false"/>
-                        </div>
-                        <div class="form-group col-md-4 eq-type-details">
-                            <type:EquipmentTypeBtnGroup ui:field="type"/>
-                        </div>
-
-                        <div class="form-group col-md-8">
-                            <label>
-                                <ui:text from="{lang.equipmentPrimaryUse}"/>
-                            </label>
-                            <equipment:EquipmentButtonSelector ui:field="linkedEquipment" hasNullValue="true"/>
-                        </div>
-
-                        <g:HTMLPanel styleName="form-group col-md-4" ui:field="projectBox">
-                            <label>
-                                <ui:text from="{lang.equipmentProject}"/>
-                            </label>
-                            <project:ProjectButtonSelector ui:field="project"
-                                                           defaultValue="{lang.equipmentProjectNotDefined}"/>
-                        </g:HTMLPanel>
-
-                        <g:HTMLPanel styleName="form-group col-md-4" ui:field="managerBox">
-                            <label>
-                                <ui:text from="{lang.equipmentManager}"/>
-                            </label>
-                            <person:EmployeeButtonSelector ui:field="manager"
-                                                           defaultValue="{lang.equipmentManagerNotDefined}"/>
-                        </g:HTMLPanel>
-
-                        <g:HTMLPanel styleName="form-group col-md-4" ui:field="date">
-                            <label>
-                                <ui:text from="{lang.created}"/>
-                            </label>
-                            <g:TextBox ui:field="dateTextBox" styleName="form-control"/>
-                        </g:HTMLPanel>
-
-                        <g:HTMLPanel styleName="form-group col-md-12">
-                            <label>
-                                <ui:text from="{lang.equipmentComment}"/>
-                            </label>
-                            <g:TextArea ui:field="comment" styleName="form-control comment"/>
-                        </g:HTMLPanel>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.equipmentDecimalNumber}"/>
+            <div class="container-fluid padding-15 bg-white">
+                <div class="card card-transparent no-margin">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <ui:text from="{lang.equipmentDecimalNumber}"/>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <list:MultipleDecimalNumberInput ui:field="numbers" styleName="row"/>
-                </div>
-            </div>
-        </div>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title col-md-12">
-                        <ui:text from="{lang.equipmentDocuments}"/>
-                        <g:Button ui:field="createDocumentButton" styleName="btn btn-xs btn-info pull-right"
-                                  text="{lang.equipmentDocumentCreate}"/>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12"/>
+                    <div class="card-body">
+                        <list:MultipleDecimalNumberInput ui:field="numbers" styleName="row"/>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="text-right">
-                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                        <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
+            <div class="container-fluid padding-15">
+                <div class="card card-transparent no-margin">
+                    <div class="card-header">
+                        <div class="card-title col-md-12">
+                            <ui:text from="{lang.equipmentDocuments}"/>
+                            <g:Button ui:field="createDocumentButton" styleName="btn btn-xs btn-info pull-right"
+                                      text="{lang.equipmentDocumentCreate}"/>
+                        </div>
                     </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                 </div>
             </div>
         </div>
