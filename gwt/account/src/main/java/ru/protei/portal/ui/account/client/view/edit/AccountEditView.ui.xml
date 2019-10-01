@@ -7,7 +7,7 @@
              xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="card card-transparent no-margin footer-fixable">
+    <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body no-padding">
             <div class="container-fluid padding-25 sm-padding-10">
                 <div class="card card-default">

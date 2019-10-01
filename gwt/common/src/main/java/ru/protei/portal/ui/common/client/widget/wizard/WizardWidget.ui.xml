@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="card card-transparent no-margin footer-fixable">
+    <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body no-padding">
             <g:HTMLPanel ui:field="navTabs" tag="ul"
                          styleName="nav nav-tabs nav-tabs-linetriangle nav-tabs-separator nav-stack-sm d-none d-md-flex d-lg-flex d-xl-flex"/>

@@ -3,7 +3,7 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="card card-default no-border card-fixed no-border card-transparent no-margin footer-fixable">
+    <g:HTMLPanel styleName="card card-default no-border card-fixed no-border card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <h4 class="m-r-50">
                 <g:Anchor href="#" ui:field="header"/>
