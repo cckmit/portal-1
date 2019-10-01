@@ -45,7 +45,7 @@ public class BootstrapService {
         updateCompanyCaseTags();
         patchNormalizeWorkersPhoneNumbers(); // remove once executed
         uniteSeveralProductsInProjectToComplex();
-        createProjectsForContracts();
+        //createProjectsForContracts();
     }
 
     private void autoPatchDefaultRoles () {

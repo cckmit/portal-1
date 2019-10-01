@@ -28,7 +28,6 @@ public class ProjectButtonSelector
         clearOptions();
         if (defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
         options.forEach(this::addOption);
     }

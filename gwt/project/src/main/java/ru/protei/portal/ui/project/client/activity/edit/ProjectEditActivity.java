@@ -78,7 +78,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProjectEvents.ChangeModel());
                 fireEvent(new ProjectEvents.Show());
-                return;
             }
         });
     }

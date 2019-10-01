@@ -59,7 +59,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
                 new ActionBarEvents.Clear()
         );
 
-        filterView.resetFilter();
         loadTable();
     }
 

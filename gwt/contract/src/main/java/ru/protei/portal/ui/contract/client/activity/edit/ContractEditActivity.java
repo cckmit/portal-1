@@ -144,9 +144,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         refreshProjectSpecificFields();
 
         if (view.project().getValue() == null) {
-            view.contragent().setValue(createOptionOrNull(contract.getContragentId(), contract.getContragentName()));
-            view.manager().setValue(createPersonOrNull(contract.getManagerId(), contract.getManagerShortName()));
-            view.direction().setValue(createProductOrNull(contract.getDirectionId(), contract.getDirectionName()));
+            view.contragent().setValue(createOptionOrNull(contract.getCaseContragentId(), contract.getCaseContragentName()));
+            view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
+            view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
         }
     }
 
@@ -167,13 +167,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
 
-        contract.setProjectId(view.project().getValue().getId());
+        contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
 
-        if (contract.getProjectId() == null) {
-            contract.setContragentId(getOptionIdOrNull(view.contragent().getValue()));
-            contract.setManagerId(getPersonIdOrNull(view.manager().getValue()));
-            contract.setDirectionId(getProductIdOrNull(view.direction().getValue()));
-        }
+        contract.setContragentId(getOptionIdOrNull(view.contragent().getValue()));
+        contract.setManagerId(getPersonIdOrNull(view.manager().getValue()));
+        contract.setDirectionId(getProductIdOrNull(view.direction().getValue()));
     }
 
     private void showValidationError() {
@@ -190,7 +188,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getContractType() == null)
             return lang.contractValidationEmptyType();
 
-        if (contract.getDirectionId() == null)
+        if (contract.getProjectId() == null && contract.getDirectionId() == null)
             return lang.contractValidationEmptyDirection();
 
         return null;

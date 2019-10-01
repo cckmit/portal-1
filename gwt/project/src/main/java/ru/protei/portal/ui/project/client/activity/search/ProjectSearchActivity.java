@@ -39,11 +39,6 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         view.refreshProducts();
     }
 
-    @Event
-    public void onProjectListChanged(ProjectEvents.ChangeModel event) {
-        requestProjects();
-    }
-
     @Override
     public void onSearchClicked() {
         requestProjects();
