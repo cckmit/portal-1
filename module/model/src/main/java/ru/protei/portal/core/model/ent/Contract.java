@@ -42,7 +42,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "P")
     private Long managerId;
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
@@ -75,7 +75,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Контрагент (компания)
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "P")
     private Long contragentId;
 
     @JdbcJoinedColumn(joinPath = {
@@ -97,7 +97,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Направление
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "P")
     private Long directionId;
 
     @JdbcJoinedColumn(joinPath = {

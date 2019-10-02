@@ -89,12 +89,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void refreshProjectSpecificFields() {
         if (view.project().getValue() == null) {
-            view.direction().setValue(null);
-            view.manager().setValue(null);
-            view.contragent().setValue(null);
-            view.directionEnabled().setEnabled(true);
-            view.managerEnabled().setEnabled(true);
-            view.contragentEnabled().setEnabled(true);
+            clearProjectSpecificFields();
             return;
         }
         regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
@@ -107,6 +102,15 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                     view.contragentEnabled().setEnabled(false);
                 })
         );
+    }
+
+    private void clearProjectSpecificFields() {
+        view.direction().setValue(null);
+        view.manager().setValue(null);
+        view.contragent().setValue(null);
+        view.directionEnabled().setEnabled(true);
+        view.managerEnabled().setEnabled(true);
+        view.contragentEnabled().setEnabled(true);
     }
 
     private void requestData(Long id){
@@ -169,9 +173,15 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
 
-        contract.setContragentId(getOptionIdOrNull(view.contragent().getValue()));
-        contract.setManagerId(getPersonIdOrNull(view.manager().getValue()));
-        contract.setDirectionId(getProductIdOrNull(view.direction().getValue()));
+        if (contract.getProjectId() == null) {
+            contract.setCaseContragentId(getOptionIdOrNull(view.contragent().getValue()));
+            contract.setCaseManagerId(getPersonIdOrNull(view.manager().getValue()));
+            contract.setCaseDirectionId(getProductIdOrNull(view.direction().getValue()));
+        } else {
+            contract.setCaseContragentId(null);
+            contract.setCaseManagerId(null);
+            contract.setCaseDirectionId(null);
+        }
     }
 
     private void showValidationError() {
@@ -188,7 +198,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getContractType() == null)
             return lang.contractValidationEmptyType();
 
-        if (contract.getProjectId() == null && contract.getDirectionId() == null)
+        if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
             return lang.contractValidationEmptyDirection();
 
         return null;
