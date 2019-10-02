@@ -46,6 +46,12 @@
   .fix-sidebar-button{
     display: none !important;
   }
+
+  .page-container .page-content-wrapper .content {
+    overflow-x: inherit;
+    height: auto
+  }
+
 }
 
 @media (max-width: 991px) and (min-width: 980px) {
