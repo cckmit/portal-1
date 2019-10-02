@@ -245,13 +245,13 @@ public class BootstrapService {
 
                     Long caseId = caseObjectDAO.persist(project);
 
-                    CaseMember caseMember = new CaseMember();
-                    caseMember.setCaseId(caseId);
-                    caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
-                    caseMember.setMemberId(contractAsCaseObject.getManagerId());
-
-                    caseMemberDAO.persist(caseMember);
-
+                    if (contractAsCaseObject.getManagerId() != null) {
+                        CaseMember caseMember = new CaseMember();
+                        caseMember.setCaseId(caseId);
+                        caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
+                        caseMember.setMemberId(contractAsCaseObject.getManagerId());
+                        caseMemberDAO.persist(caseMember);
+                    }
                     contract.setProjectId(caseId);
                     contractDAO.merge(contract);
                 });
