@@ -118,16 +118,19 @@ public class MailNotificationProcessor {
             Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
             final boolean IS_PRIVATE_RECIPIENT = true;
 
-            if ( isPrivateCase(event) ) {
-                List<String> recipients = getNotifiersAddresses(partitionNotifiers.get(IS_PRIVATE_RECIPIENT));
+            List<NotificationEntry> privateRecipients = partitionNotifiers.get( IS_PRIVATE_RECIPIENT );
+            List<NotificationEntry> publicRecipients = partitionNotifiers.get( !IS_PRIVATE_RECIPIENT );
 
-                toPerformCaseObjectNotification(event, allComments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PRIVATE_RECIPIENT);
+            if ( isPrivateCase(event) ) {
+                List<String> recipients = getNotifiersAddresses( privateRecipients );
+
+                performCaseObjectNotification( event, comments, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
 
             } else {
                 List<String> recipients = getNotifiersAddresses(notifiers);
 
-                toPerformCaseObjectNotification(event, allComments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PRIVATE_RECIPIENT);
-                toPerformCaseObjectNotification(event, allComments.getData(), lastMessageId, recipients, partitionNotifiers, !IS_PRIVATE_RECIPIENT);
+                performCaseObjectNotification( event, comments, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
+                performCaseObjectNotification( event, selectPublicComments( comments ), lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicRecipients );
             }
 
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
@@ -138,18 +141,14 @@ public class MailNotificationProcessor {
         }
     }
 
-    private void toPerformCaseObjectNotification(AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
-                                                 Map<Boolean, List<NotificationEntry>> partitionNotifiers, boolean isProteiRecipient) {
-        performCaseObjectNotification(
-                event,
-                isProteiRecipient ? comments : selectPublicComments(comments),
-                lastMessageId,
-                recipients,
-                isProteiRecipient,
-                (isProteiRecipient ? config.data().getMailNotificationConfig().getCrmUrlInternal() : config.data().getMailNotificationConfig().getCrmUrlExternal())
-                        + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                partitionNotifiers.get(isProteiRecipient)
-        );
+    private String getCrmCaseUrl( boolean isProteiRecipient ) {
+        String baseUrl = "";
+        if (isProteiRecipient) {
+            baseUrl = config.data().getMailNotificationConfig().getCrmUrlInternal();
+        } else {
+            baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
+        }
+        return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
     private boolean isPrivateCase(AssembledCaseEvent event) {
@@ -176,7 +175,7 @@ public class MailNotificationProcessor {
 
     private void performCaseObjectNotification(
             AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
-            boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
+            boolean isProteiRecipients, Collection<NotificationEntry> notifiers
     ) {
 
         if (CollectionUtils.isEmpty(notifiers)) {
@@ -185,7 +184,7 @@ public class MailNotificationProcessor {
 
         CaseObject caseObject = event.getCaseObject();
 
-        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, crmCaseUrl, recipients);
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, getCrmCaseUrl( isProteiRecipients ), recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for caseId={}", caseObject.getId());
             return;

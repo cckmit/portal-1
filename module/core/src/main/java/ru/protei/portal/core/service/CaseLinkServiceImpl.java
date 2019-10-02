@@ -69,7 +69,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
+    public Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
         if (caseLinks == null) {
             return ok();
         }
@@ -123,7 +123,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.persistBatch(toAddLinks);
         }
 
-        return ok();
+        return ok(caseLinksDiffResult);
     }
 
     @Override

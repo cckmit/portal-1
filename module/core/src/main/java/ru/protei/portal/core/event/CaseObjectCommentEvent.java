@@ -2,10 +2,8 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,13 +19,14 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
     private CaseComment removedCaseComment;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
+    private DiffCollectionResult<CaseLink> mergeLinks;
 
     private CaseObjectCommentEvent(
             Object source, ServiceModule serviceModule,
             Person person, CaseObject newState, CaseObject oldState,
             CaseComment caseComment, CaseComment oldCaseComment, CaseComment removedCaseComment,
-            Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments
-    ) {
+            Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments,
+            DiffCollectionResult<CaseLink> mergeLinks ) {
         super(source);
         this.serviceModule = serviceModule;
         this.person = person;
@@ -38,6 +37,7 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
         this.removedCaseComment = removedCaseComment;
         this.addedAttachments = addedAttachments;
         this.removedAttachments = removedAttachments;
+        this.mergeLinks = mergeLinks;
     }
 
     public ServiceModule getServiceModule() {
@@ -149,6 +149,11 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
             return this;
         }
 
+        public Builder withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
+            this.mergeLinks = mergeLinks;
+            return this;
+        }
+
         public CaseObjectCommentEvent build() {
             return new CaseObjectCommentEvent(
                     source,
@@ -160,8 +165,11 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
                     oldCaseComment,
                     removedCaseComment,
                     addedAttachments,
-                    removedAttachments
+                    removedAttachments,
+                    mergeLinks
             );
         }
+
+        private DiffCollectionResult<CaseLink> mergeLinks;
     }
 }

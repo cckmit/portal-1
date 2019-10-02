@@ -59,20 +59,18 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public CaseObject saveIssue( CaseObject caseObject ) throws RequestFailedException{
+    public CaseObject createIssue( CaseObject caseObject ) throws RequestFailedException{
         log.info( "saveIssue(): case={}", caseObject );
+        if(caseObject == null || caseObject.getId() != null){
+            new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        Result< CaseObject > response;
-        if ( caseObject.getId() == null ) {
-            caseObject.setTypeId(En_CaseType.CRM_SUPPORT.getId());
-            caseObject.setCreatorId(getCurrentPerson().getId());
+        caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
+        caseObject.setCreatorId( getCurrentPerson().getId() );
 
-            response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
-        }
-        else
-            response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
+        Result< CaseObject >  response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
 
         log.info( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
@@ -85,7 +83,7 @@ public class IssueControllerImpl implements IssueController {
         log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
-            CaseObject saved = saveIssue(caseObject);
+            CaseObject saved = createIssue(caseObject);
             return new CaseObjectWithCaseComment(saved, null);
         }
         Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());

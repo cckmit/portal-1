@@ -248,6 +248,7 @@ public class CaseServiceImpl implements CaseService {
                     .withOldCaseComment(commentResultData.getOldCaseComment())
                     .withAddedAttachments(commentResultData.getAddedAttachments())
                     .withRemovedAttachments(commentResultData.getRemovedAttachments())
+                    .withLinks( objectResultData.getMergeLinks() )
                     .build());
         }
 
@@ -277,11 +278,11 @@ public class CaseServiceImpl implements CaseService {
                 mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
         );
 
-        Result mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
-        if (mergeLinksResponse.isError()) {
-            log.info("Failed to merge links for the issue {}", caseObject.getId());
-            throw new ResultStatusException(mergeLinksResponse.getStatus());
-        }
+        DiffCollectionResult<CaseLink> mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() )
+                .orElseThrow( result -> {
+                    log.info( "Failed to merge links for the issue {}", caseObject.getId() );
+                    return new ResultStatusException( result.getStatus() );
+                } ).getData();
 
         synchronizeTags(caseObject, authService.findSession(token));
         jdbcManyRelationsHelper.persist(caseObject, "tags");
@@ -347,7 +348,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        return new CaseObjectUpdateResult(caseObject, true);
+        return new CaseObjectUpdateResult(caseObject, mergeLinks, true);
     }
 
     private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {

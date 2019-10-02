@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public interface CaseLinkService {
     Result<List<CaseLink>> getLinks( AuthToken token, Long caseId);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> links);
+    Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> links);
 
     Result<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId );
 

@@ -22,6 +22,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseComment removedComment;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
+    public Collection<Attachment> addedLinks;
+
 
 
     private Person initiator;
