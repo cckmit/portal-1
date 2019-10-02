@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
-import ru.protei.winter.core.utils.collections.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.List;
 import java.util.Map;

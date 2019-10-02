@@ -22,7 +22,8 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 
@@ -294,7 +295,7 @@ public class CaseServiceImpl implements CaseService {
         persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
-            return new CaseObjectUpdateResult(caseObject, false);
+            return new CaseObjectUpdateResult(caseObject, mergeLinks, false);
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
@@ -352,8 +353,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {
-        DiffCollectionResult<String> youTrackLinkIdsDiff = ru.protei.winter.core.utils.collections.CollectionUtils.
-                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
+        DiffCollectionResult<String> youTrackLinkIdsDiff = DiffCollectionResult.from(ru.protei.winter.core.utils.collections.CollectionUtils.
+                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) ));
 
         for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
             youtrackService.removeIssueCrmNumberIfSame( youtrackId, caseNumber);

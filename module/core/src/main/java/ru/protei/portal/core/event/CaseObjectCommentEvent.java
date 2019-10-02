@@ -3,7 +3,7 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.winter.core.utils.collections.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,6 +78,10 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
 
     public Collection<Attachment> getRemovedAttachments() {
         return removedAttachments == null ? Collections.emptyList() : removedAttachments;
+    }
+
+    public DiffCollectionResult<CaseLink> getMergeLinks() {
+        return mergeLinks;
     }
 
     public static class Builder {

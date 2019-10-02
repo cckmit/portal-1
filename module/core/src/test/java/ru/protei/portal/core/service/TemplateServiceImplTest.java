@@ -50,7 +50,7 @@ public class TemplateServiceImplTest {
 
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembledCaseEvent, comments, "url", Collections.EMPTY_LIST
+                assembledCaseEvent, comments, mergeLinks, "url", Collections.EMPTY_LIST
         );
 
         assertNotNull(bodyTemplate);

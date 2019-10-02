@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.winter.core.utils.collections.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 public class CaseObjectUpdateResult  {
 
@@ -10,13 +10,12 @@ public class CaseObjectUpdateResult  {
     private boolean isUpdated;
     private DiffCollectionResult<CaseLink> mergeLinks;
 
-    public CaseObjectUpdateResult( CaseObject caseObject, DiffCollectionResult<CaseLink> mergeLinks, boolean b ) {
-        this.mergeLinks = mergeLinks;
-    }
+    public CaseObjectUpdateResult() {}
 
-    public CaseObjectUpdateResult(CaseObject caseObject, boolean isUpdated) {
+    public CaseObjectUpdateResult(CaseObject caseObject, DiffCollectionResult<CaseLink> mergeLinks, boolean isUpdated) {
         this.caseObject = caseObject;
         this.isUpdated = isUpdated;
+        this.mergeLinks = mergeLinks;
     }
 
     public CaseObject getCaseObject() {

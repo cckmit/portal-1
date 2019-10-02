@@ -2,12 +2,10 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
 
@@ -22,7 +20,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseComment removedComment;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
-    public Collection<Attachment> addedLinks;
+    private DiffCollectionResult <CaseLink> mergeLinks;
 
 
 
@@ -65,6 +63,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         addedAttachments.addAll(objectCommentEvent.getAddedAttachments());
         removedAttachments.addAll(objectCommentEvent.getRemovedAttachments());
         removedComment = objectCommentEvent.getRemovedCaseComment();
+        mergeLinks = objectCommentEvent.getMergeLinks();
     }
 
     public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
@@ -254,6 +253,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public Person getInitiator() {
         return initiator;
+    }
+
+    public DiffCollectionResult<CaseLink> getMergeLinks() {
+        return mergeLinks;
     }
 
     public boolean isCoreModuleEvent () {

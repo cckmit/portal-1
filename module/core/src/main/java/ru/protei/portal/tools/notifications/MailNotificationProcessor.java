@@ -10,6 +10,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.*;
+import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -124,13 +128,13 @@ public class MailNotificationProcessor {
             if ( isPrivateCase(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
 
-                performCaseObjectNotification( event, comments, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
+                performCaseObjectNotification( event, comments, convertToLinks(event.getMergeLinks()), lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
 
             } else {
                 List<String> recipients = getNotifiersAddresses(notifiers);
 
-                performCaseObjectNotification( event, comments, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
-                performCaseObjectNotification( event, selectPublicComments( comments ), lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicRecipients );
+                performCaseObjectNotification( event, comments, convertToLinks(event.getMergeLinks()), lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
+                performCaseObjectNotification( event, selectPublicComments( comments ), convertToLinks(selectPublicLinks(event.getMergeLinks())), lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicRecipients );
             }
 
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
@@ -139,6 +143,27 @@ public class MailNotificationProcessor {
         } finally {
             messageIdSemaphore.release();
         }
+    }
+
+    private DiffCollectionResult<CaseLink> convertToLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
+        log.warn( "convertToLinks(): Not implemented." );//TODO NotImplemented
+        return null;
+    }
+
+    private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
+        DiffCollectionResult diffCollectionResult = new DiffCollectionResult();
+        for (CaseLink added : emptyIfNull(mergeLinks.getAddedEntries())) {
+            if(!CRM.equals( added.getType() )) continue;
+            if(added.isPrivate()) continue;
+            diffCollectionResult.putAddedEntry( added );
+        }
+        for (CaseLink removed : emptyIfNull(mergeLinks.getRemovedEntries())) {
+            if(!CRM.equals( removed.getType() )) continue;
+            if(removed.isPrivate()) continue;
+            diffCollectionResult.putRemovedEntry( removed );
+        }
+
+        return diffCollectionResult;
     }
 
     private String getCrmCaseUrl( boolean isProteiRecipient ) {
@@ -174,7 +199,7 @@ public class MailNotificationProcessor {
     }
 
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
+            AssembledCaseEvent event, List<CaseComment> comments, DiffCollectionResult<CaseLink> mergeLinks, Long lastMessageId, List<String> recipients,
             boolean isProteiRecipients, Collection<NotificationEntry> notifiers
     ) {
 
@@ -184,7 +209,7 @@ public class MailNotificationProcessor {
 
         CaseObject caseObject = event.getCaseObject();
 
-        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, getCrmCaseUrl( isProteiRecipients ), recipients);
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, mergeLinks, getCrmCaseUrl( isProteiRecipients ), recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for caseId={}", caseObject.getId());
             return;

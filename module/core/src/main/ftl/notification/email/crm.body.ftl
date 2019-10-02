@@ -20,6 +20,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_manager" value="${manager}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
 <@set name="_attachments" value="${attachments}"/>
+<@set name="_linkedTasks" value="${linkedTasks}"/>
 <@set name="_updated" value="${updated_just_now}"/>
 <@set name="_description" value="${description}"/>
 <@set name="_timeElapsed" value="${timeElapsed}"/>
@@ -206,6 +207,36 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
                 </tr>
+    <#if hasLinks??>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_linkedTasks}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                <#if existingLinks??>
+                    <#list existingLinks as link>
+                        <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">
+                                                ${link.fileName}
+                                            </span>
+                    </#list>
+                </#if>
+                <#if addedLinks??>
+                    <#list removedAttachments as link>
+                    <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">
+                                                    ${link.fileName}
+                                                </span>
+                    </#list>
+                </#if>
+                <#if removedLinks??>
+                    <#list addedAttachments as link>
+                    <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
+                                                        ${link.fileName}
+                                                    </span>
+                    </#list>
+                </#if>
+            </td>
+        </tr>
+    </#if>
                 <#if attachments??>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
