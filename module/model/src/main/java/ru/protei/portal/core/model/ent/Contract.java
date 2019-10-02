@@ -42,7 +42,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "P")
     private Long managerId;
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
@@ -50,6 +50,15 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
             @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
     })
     private String managerShortName;
+
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "CO")
+    private Long caseManagerId;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+    }, mappedColumn = "displayShortName")
+    private String caseManagerShortName;
 
     /**
      * Куратор договора
@@ -66,7 +75,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Контрагент (компания)
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "P")
     private Long contragentId;
 
     @JdbcJoinedColumn(joinPath = {
@@ -75,10 +84,20 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     }, mappedColumn = "cname")
     private String contragentName;
 
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
+    private Long caseContragentId;
+
+    //    TODO: refactor
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
+    }, mappedColumn = "cname")
+    private String caseContragentName;
+
     /**
      * Направление
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "P")
     private Long directionId;
 
     @JdbcJoinedColumn(joinPath = {
@@ -86,6 +105,15 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
             @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
     }, mappedColumn = "UNIT_NAME")
     private String directionName;
+
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
+    private Long caseDirectionId;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
+    }, mappedColumn = "UNIT_NAME")
+    private String caseDirectionName;
 
     /**
      * Текущее состояние договора
@@ -367,6 +395,42 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public Long getCaseDirectionId() {
+        return caseDirectionId;
+    }
+
+    public String getCaseDirectionName() {
+        return caseDirectionName;
+    }
+
+    public Long getCaseContragentId() {
+        return caseContragentId;
+    }
+
+    public String getCaseContragentName() {
+        return caseContragentName;
+    }
+
+    public Long getCaseManagerId() {
+        return caseManagerId;
+    }
+
+    public String getCaseManagerShortName() {
+        return caseManagerShortName;
+    }
+
+    public void setCaseManagerId( Long caseManagerId ) {
+        this.caseManagerId = caseManagerId;
+    }
+
+    public void setCaseContragentId( Long caseContragentId ) {
+        this.caseContragentId = caseContragentId;
+    }
+
+    public void setCaseDirectionId( Long caseDirectionId ) {
+        this.caseDirectionId = caseDirectionId;
     }
 
     @Override

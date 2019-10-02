@@ -114,7 +114,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = caseObjectDAO.get(contract.getId());
-        if ( caseObject == null ) {
+        if (caseObject == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
         fillCaseObjectFromContract(caseObject, contract);
@@ -126,7 +126,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
-        if ( caseObject == null ) {
+        if (caseObject == null) {
             caseObject = new CaseObject();
             caseObject.setCaseType(En_CaseType.CONTRACT);
             caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CONTRACT));
@@ -138,10 +138,10 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
         caseObject.setStateId(contract.getState().getId());
-        caseObject.setManagerId(contract.getManagerId());
+        caseObject.setManagerId(contract.getCaseManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
-        caseObject.setInitiatorCompanyId(contract.getContragentId());
-        caseObject.setProductId(contract.getDirectionId());
+        caseObject.setInitiatorCompanyId(contract.getCaseContragentId());
+        caseObject.setProductId(contract.getCaseDirectionId());
 
         return caseObject;
     }
