@@ -74,13 +74,16 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             }
 
             if (query.getDirectionId() != null) {
-                condition.append(" and CO.product_id = ?");
+                condition.append(" and (CO.product_id = ? or P.product_id = ?)");
+                args.add(query.getDirectionId());
                 args.add(query.getDirectionId());
             }
 
             if (CollectionUtils.isNotEmpty(query.getContragentIds())) {
-                condition.append(" and CO.initiator_company in ")
-                        .append(HelperFunc.makeInArg(query.getContragentIds(), false));
+                String inArg = HelperFunc.makeInArg(query.getContragentIds(), false);
+                condition.append(" and (CO.initiator_company in ").append(inArg)
+                        .append(" or P.initiator_company in ").append(inArg)
+                        .append(")");
             }
 
             if (CollectionUtils.isNotEmpty(query.getOrganizationIds())) {
@@ -89,8 +92,10 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             }
 
             if (CollectionUtils.isNotEmpty(query.getManagerIds())) {
-                condition.append(" and CO.MANAGER in ")
-                        .append(HelperFunc.makeInArg(query.getManagerIds(), false));
+                String inArg = HelperFunc.makeInArg(query.getManagerIds(), false);
+                condition.append(" and (CO.MANAGER in ").append(inArg)
+                        .append("or P.MANAGER in ").append(inArg)
+                        .append(")");
             }
         }));
     }

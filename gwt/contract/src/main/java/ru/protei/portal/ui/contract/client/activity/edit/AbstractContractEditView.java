@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -48,9 +49,15 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<EntityOption> project();
 
-    HasValue<String> contragent();
+    HasValue<EntityOption> contragent();
 
-    HasValue<String> manager();
+    HasValue<PersonShortView> manager();
 
-    HasValue<String> direction();
+    HasValue<ProductDirectionInfo> direction();
+
+    HasEnabled managerEnabled();
+
+    HasEnabled contragentEnabled();
+
+    HasEnabled directionEnabled();
 }

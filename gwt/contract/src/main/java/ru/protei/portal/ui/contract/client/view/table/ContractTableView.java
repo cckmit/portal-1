@@ -109,14 +109,15 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(numTypeColumn);
 
         DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
-                contract -> "<b>" + StringUtils.emptyIfNull(contract.getDirectionName()) + "</b><br/>" + StringUtils.emptyIfNull(contract.getDescription()));
+                contract -> "<b>" + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseDirectionName()) : StringUtils.emptyIfNull(contract.getDirectionName())) + "</b><br/>"
+                        + StringUtils.emptyIfNull(contract.getDescription()));
         clickColumns.add(descriptionColumn);
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",
                 contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
-                        +  "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
+                        +  "<b>" + lang.contractManager() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseManagerShortName()) : StringUtils.emptyIfNull(contract.getManagerShortName())) + "</b><br/>"
                         +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
-                        +  "<b>" + lang.contractContragent() + ":</b> " + StringUtils.emptyIfNull(contract.getContragentName()) + "</b>");
+                        +  "<b>" + lang.contractContragent() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseContragentName()) : StringUtils.emptyIfNull(contract.getContragentName())) + "</b>");
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
