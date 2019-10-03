@@ -296,7 +296,7 @@ public class CaseServiceImpl implements CaseService {
         persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
-            return new CaseObjectUpdateResult(caseObject, mergeLinks, false);
+            return new CaseObjectUpdateResult(caseObject, mergeLinks, isLinksChanged(mergeLinks));
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
@@ -617,6 +617,13 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
+    }
+
+    private boolean isLinksChanged( DiffCollectionResult<CaseLink> mergeLinks ){
+        if(mergeLinks == null) return false;
+        if(!isEmpty(mergeLinks.getAddedEntries())) return true;
+        if(!isEmpty(mergeLinks.getRemovedEntries())) return true;
+        return false;
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
