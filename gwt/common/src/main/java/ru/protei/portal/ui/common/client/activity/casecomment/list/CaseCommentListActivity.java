@@ -404,17 +404,17 @@ public abstract class CaseCommentListActivity
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
 
-        itemView.setElapsedTimeTypeChangeHandler(event -> updateElapsedTimeType(event.getValue(), value, itemView));
+        itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
         itemView.enabledEdit( isModifyEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
         itemView.enableReply(isModifyEnabled);
-        itemView.enableUpdateElapsedTimeType(Objects.equals(value.getAuthorId(), profile.getId()));
+        itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
         itemViewToModel.put( itemView, value );
 
         return itemView;
     }
 
-    private void updateElapsedTimeType(En_TimeElapsedType type, CaseComment value, AbstractCaseCommentItemView itemView) {
+    private void updateTimeElapsedType(En_TimeElapsedType type, CaseComment value, AbstractCaseCommentItemView itemView) {
         value.setTimeElapsedType(type);
         caseCommentController.updateCaseTimeElapsedType(value.getId(), type, new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errEditTimeElapsedType(), NotifyEvents.NotifyType.ERROR)))

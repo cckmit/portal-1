@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casecomment.item.EditElapsedTimeTypePopup;
+import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypePopup;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 
 import java.util.HashSet;
@@ -53,8 +53,8 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setElapsedTimeTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer) {
-        elapsedTimeTypePopup.addValueChangeHandler(consumer::accept);
+    public void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer) {
+        timeElapsedTypePopup.addValueChangeHandler(consumer::accept);
     }
 
     @Override
@@ -154,8 +154,8 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void enableUpdateElapsedTimeType(boolean isElapsedTimeTypeEnabled) {
-        this.isElapsedTimeTypeEnabled = isElapsedTimeTypeEnabled;
+    public void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled) {
+        this.isTimeElapsedTypeEnabled = isTimeElapsedTypeEnabled;
     }
 
     @Override
@@ -210,7 +210,7 @@ public class CaseCommentItemView
 
     @Override
     public void setTimeElapsedType(En_TimeElapsedType type) {
-        elapsedTimeTypePopup.setTimeElapsedType(type);
+        timeElapsedTypePopup.setTimeElapsedType(type);
     }
 
     @UiHandler( "remove" )
@@ -244,8 +244,8 @@ public class CaseCommentItemView
 
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
-        if (activity != null && isElapsedTimeTypeEnabled) {
-            elapsedTimeTypePopup.showNear(timeElapsed);
+        if (activity != null && isTimeElapsedTypeEnabled) {
+            timeElapsedTypePopup.showNear(timeElapsed);
         }
     }
 
@@ -308,9 +308,9 @@ public class CaseCommentItemView
     @Inject
     En_CaseImportanceLang importanceLang;
     @Inject
-    EditElapsedTimeTypePopup elapsedTimeTypePopup;
+    EditTimeElapsedTypePopup timeElapsedTypePopup;
 
-    private boolean isElapsedTimeTypeEnabled;
+    private boolean isTimeElapsedTypeEnabled;
     private AbstractCaseCommentItemActivity activity;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}

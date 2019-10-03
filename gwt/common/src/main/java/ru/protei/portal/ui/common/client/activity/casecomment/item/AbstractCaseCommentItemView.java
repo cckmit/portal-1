@@ -17,7 +17,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setActivity( AbstractCaseCommentItemActivity activity );
 
-    void setElapsedTimeTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer);
+    void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer);
 
     void setDate(String value );
 
@@ -37,7 +37,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void enableReply(boolean isEnabled);
 
-    void enableUpdateElapsedTimeType(boolean isElapsedTimeTypeEnabled);
+    void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled);
 
     void showAttachments(boolean isShow);
 
