@@ -101,8 +101,10 @@
                     <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>
 
-                    <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
-                    <g:Anchor ui:field="platform" styleName="full-screen-link" href="#" target="_blank"/>
+                    <g:HTMLPanel ui:field="platformContainer">
+                        <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
+                        <a href="#" ui:field="platform" class="full-screen-link"/>
+                    </g:HTMLPanel>
 
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
                         <h5 class="col-md-12">

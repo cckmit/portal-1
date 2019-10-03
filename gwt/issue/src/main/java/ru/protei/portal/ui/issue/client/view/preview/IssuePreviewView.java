@@ -188,22 +188,17 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setPlatform(String value) {
-        this.platform.setText(value);
+        platform.setInnerText(value);
     }
 
     @Override
     public void setPlatformLink(String link) {
-        this.platform.setHref(link);
+        platform.setAttribute("onclick", "window.open('" + link + "', 'newwindow', 'width=1024,height=768'); return false;");
     }
 
     @Override
-    public void setPlatformVisibility(boolean visible) {
-        if (visible) {
-            platformLabel.removeClassName("hide");
-        } else {
-            platformLabel.addClassName("hide");
-        }
-        platform.setVisible(visible);
+    public HasVisibility platformVisibility() {
+        return platformContainer;
     }
 
     @UiHandler( "number" )
@@ -258,7 +253,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
         platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PLATFORM);
-        platform.ensureDebugId(DebugIds.ISSUE_PREVIEW.PLATFORM);
+        platform.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PLATFORM);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
@@ -285,8 +280,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     HeadingElement name;
-    @UiField
-    Anchor platform;
     @UiField
     DivElement info;
     @Inject
@@ -358,6 +351,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     LabelElement criticalityLabel;
     @UiField
     SpanElement timeElapsedLabel;
+    @UiField
+    AnchorElement platform;
+    @UiField
+    HTMLPanel platformContainer;
 
     AbstractIssuePreviewActivity activity;
 
