@@ -182,10 +182,14 @@
   padding: 0;
   border-style: dashed;
   border-width: thin;
-  border-color: $info_dark_color;
+  border-color: teal;
   display: flex;
   align-items: center;
   justify-content: center;
+  legend {
+    color: teal;
+    width: auto;
+  }
 }
 
 .chats .right .list-inline {
