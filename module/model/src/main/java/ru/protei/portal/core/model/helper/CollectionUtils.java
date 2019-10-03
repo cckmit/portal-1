@@ -1,7 +1,10 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.PersonShortView;
+
 
 import java.util.*;
 import java.util.function.*;
@@ -111,6 +114,18 @@ public class CollectionUtils {
         return result;
     }
 
+    public static <T> List<T> filterToList( Iterable<T> iterable, Predicate<? super T> predicate ) {
+        List<T> result = new ArrayList<>();
+        if(predicate ==null) return result;
+
+        transform( iterable, result, ( t, rConsumer ) -> {
+            if(predicate.test( t )){
+                rConsumer.accept( t );
+            }
+        } );
+        return result;
+    }
+
     public static <T, K, U> Map<K, U> toMap( final Iterable<T> iterable,
                                              Function<? super T, ? extends K> keyMapper,
                                              Function<? super T, ? extends U> valueMapper ) {
@@ -165,5 +180,43 @@ public class CollectionUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Сравнение двух коллекций
+     *
+     * @param <T>    тип элементов, хранящихся в сравниваемых коллекциях
+     * @param first  первая коллекция ("старая")
+     * @param second вторая коллекция ("новая")
+     * @return результат сравнения двух коллекций
+     */
+    public static <T> DiffCollectionResult<T> diffCollection(Collection<T> first, Collection<T> second) {
+        DiffCollectionResult<T> result = new DiffCollectionResult<T>();
+        if (first == null) {
+            if (second != null) {
+                for (T entry : second) {
+                    result.putAddedEntry(entry);
+                }
+            }
+            return result;
+        } else if (second == null) {
+            for (T entry : first) {
+                result.putRemovedEntry(entry);
+            }
+            return result;
+        }
+        for (T entry : first) {
+            if (!second.contains(entry)) {
+                result.putRemovedEntry(entry);
+            }else{
+                result.putSameEntry( entry );
+            }
+        }
+        for (T entry : second) {
+            if (!first.contains(entry)) {
+                result.putAddedEntry(entry);
+            }
+        }
+        return result;
     }
 }

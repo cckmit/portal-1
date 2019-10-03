@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import javax.annotation.PostConstruct;
@@ -57,7 +59,7 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent event, List<CaseComment> caseComments, DiffCollectionResult<CaseLink> mergeLinks, String urlTemplate, Collection<String> recipients
+            AssembledCaseEvent event, List<CaseComment> caseComments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
     ) {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
@@ -105,8 +107,8 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("platformChanged", event.isPlatformChanged());
         templateModel.put("oldPlatform", oldState == null ? null : oldState.getPlatformName());
-        templateModel.put("hasLinks", hasLinks(newState, mergeLinks) );
-        templateModel.put("existingLinks", newState == null ? null : newState.getLinks());
+        templateModel.put("hasLinks", hasLinks( mergeLinks) );
+        templateModel.put("existingLinks", mergeLinks == null ? null : mergeLinks.getSameEntries());
         templateModel.put("addedLinks", mergeLinks == null ? null : mergeLinks.getAddedEntries());
         templateModel.put("removedLinks", mergeLinks == null ? null : mergeLinks.getRemovedEntries());
 
@@ -369,10 +371,13 @@ public class TemplateServiceImpl implements TemplateService {
 
     }
 
-    private boolean hasLinks( CaseObject newState, DiffCollectionResult<CaseLink> mergeLinks ) {
-        if (newState != null && !isEmpty( newState.getLinks() )) return true;
-        if (mergeLinks != null && !isEmpty( mergeLinks.getAddedEntries() )) return true;
-        if (mergeLinks != null && !isEmpty( mergeLinks.getRemovedEntries() )) return true;
+    private boolean hasLinks( DiffCollectionResult<LinkData> mergeLinks ) {
+        if (mergeLinks == null) return false;
+        if (!isEmpty( mergeLinks.getSameEntries() )) return true;
+        if (!isEmpty( mergeLinks.getAddedEntries() )) return true;
+        if (!isEmpty( mergeLinks.getRemovedEntries() )) return true;
         return false;
     }
+
+
 }

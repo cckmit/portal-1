@@ -1,5 +1,10 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +17,19 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.test.service.CaseCommentServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +61,7 @@ public class TemplateServiceImplTest {
 
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembledCaseEvent, comments, mergeLinks, "url", Collections.EMPTY_LIST
+                assembledCaseEvent, comments, null, "url", Collections.EMPTY_LIST
         );
 
         assertNotNull(bodyTemplate);
@@ -60,6 +71,56 @@ public class TemplateServiceImplTest {
         String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true );
 
         assertNotNull(body);
+    }
+
+    @Test
+    public void  crmLinksToTasks() throws Exception    {
+
+        Company company = CaseCommentServiceTest.createNewCompany(new CompanyCategory(2L));
+        Person person = CaseCommentServiceTest.createNewPerson(company);
+        CaseObject initState = BaseServiceTest.createNewCaseObject( person );
+        CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
+
+        Object dummyCaseService = new Object();
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
+        List<CaseComment> comments = Collections.EMPTY_LIST;
+
+        DiffCollectionResult<LinkData> linkData = new DiffCollectionResult<>();
+        linkData.putSameEntry( new LinkData( "http://youtrak/PG-101", "PG-101" ) );
+        linkData.putSameEntry( new LinkData( "http://crm/102", "102" ) );
+
+        linkData.putAddedEntry( new LinkData( "http://youtrak/PG-201", "PG-201" ) );
+        linkData.putAddedEntry( new LinkData( "http://crm/202", "202" ) );
+
+        linkData.putRemovedEntry( new LinkData( "http://youtrak/PG-301", "PG-301" ) );
+        linkData.putRemovedEntry( new LinkData( "http://crm/202", "302" ) );
+
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
+                assembledCaseEvent, comments, linkData, "url", Collections.EMPTY_LIST
+        );
+
+        assertNotNull(bodyTemplate);
+
+        NotificationEntry entry =  createNewNotificationEntry();
+
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true );
+
+        assertNotNull("Expected html from template", body);
+
+        Document docFromTemplate = Jsoup.parse( body );
+        assertNotNull("Expected parsed Html from template", docFromTemplate);
+
+        docFromTemplate.outputSettings().prettyPrint( true );
+        Element elementById = docFromTemplate.getElementById( "test-linkedTasks" );
+
+        assertNotNull("Expected <tr> with linked tasks html element", elementById);
+
+        String fileContent = getFileContent( "crm.body.linksOnTasks.html" );
+        Document bodyFragment = Jsoup.parse( fileContent, "", Parser.xmlParser() ); //html парсер всегда добавляет html и head узлы
+        bodyFragment.outputSettings().prettyPrint( true );
+        String etalonHtml = bodyFragment.outerHtml();
+
+        assertEquals( "Expected links to tasks content:", etalonHtml,  elementById.outerHtml());
     }
 
     private NotificationEntry createNewNotificationEntry() {
@@ -77,6 +138,36 @@ public class TemplateServiceImplTest {
 
         return caseObject;
     }
+
+    private File getFileFromResources( String fileName) {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        URL resource = classLoader.getResource(fileName);
+        if (resource == null) {
+            throw new IllegalArgumentException("file is not found!");
+        } else {
+            return new File(resource.getFile());
+        }
+
+    }
+
+    private String getFileContent( String fileName ) {
+
+        String result = "";
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String aPackage = getClass().getPackage().getName().replace( ".", File.separator );
+        try {
+            String s = aPackage + File.separator + fileName;
+            result = IOUtils.toString( classLoader.getResourceAsStream( s ) );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
 
     @Autowired
     TemplateService templateService;
@@ -100,5 +191,6 @@ public class TemplateServiceImplTest {
             "</code></pre>\n" +
             "<p>перенос<br/>строки<br/>работает <br />\n" +
             "как-то<br/>так</p>\n";
+
 
 }

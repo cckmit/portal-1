@@ -11,6 +11,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -353,8 +354,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {
-        DiffCollectionResult<String> youTrackLinkIdsDiff = DiffCollectionResult.from(ru.protei.winter.core.utils.collections.CollectionUtils.
-                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) ));
+        DiffCollectionResult<String> youTrackLinkIdsDiff = CollectionUtils.
+                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
 
         for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
             youtrackService.removeIssueCrmNumberIfSame( youtrackId, caseNumber);

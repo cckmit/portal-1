@@ -89,8 +89,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
         List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseId.toString()));
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
-        DiffCollectionResult<CaseLink> caseLinksDiffResult = DiffCollectionResult.<CaseLink>from(ru.protei.winter.core.utils.collections.CollectionUtils
-                .diffCollection(oldCaseLinks, caseLinks));
+        DiffCollectionResult<CaseLink> caseLinksDiffResult = ru.protei.portal.core.model.helper.CollectionUtils
+                .diffCollection(oldCaseLinks, caseLinks);
         if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
             Set<Long> toRemoveIds = new HashSet<>();
             caseLinksDiffResult.getRemovedEntries().forEach( link -> {

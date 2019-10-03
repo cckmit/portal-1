@@ -11,16 +11,6 @@ import java.util.List;
  */
 public class DiffCollectionResult<T> implements Serializable {
 
-    public static <T> DiffCollectionResult<T> from( ru.protei.winter.core.utils.collections.DiffCollectionResult<T> diffResult ) {
-        DiffCollectionResult<T> result = new DiffCollectionResult<>();
-        result.addedEntries = diffResult.getAddedEntries();
-        result.removedEntries = diffResult.getRemovedEntries();
-        result.changedEntries = diffResult.getChangedEntries();
-        result.allDiffEntries = diffResult.getAllDiffEntries();
-
-        return result;
-    }
-
     /**
      * возвращает список добавленных узлов
      *
@@ -70,6 +60,35 @@ public class DiffCollectionResult<T> implements Serializable {
         allDiffEntries.add(entry);
     }
 
+    public void putAddedEntries(List<T> entries) {
+        if (addedEntries == null) {
+            addedEntries = new ArrayList<T>();
+        }
+        addedEntries.addAll(entries);
+        allDiffEntries.addAll(entries);
+    }
+
+    /**
+     * включить в результат одинаковый в обоих коллекция узел
+     *
+     * @param entry одинаковый в обоих коллекция узел
+     */
+    public void putSameEntry(T entry) {
+        if (sameEntries == null) {
+            sameEntries = new ArrayList<T>();
+        }
+        sameEntries.add(entry);
+        allDiffEntries.add(entry);
+    }
+
+    public void putSameEntries(List<T> entries) {
+        if (sameEntries == null) {
+            sameEntries = new ArrayList<T>();
+        }
+        sameEntries.addAll(entries);
+        allDiffEntries.addAll(entries);
+    }
+
     /**
      * включить в результат измененный узел
      *
@@ -83,6 +102,14 @@ public class DiffCollectionResult<T> implements Serializable {
         allDiffEntries.add(entry);
     }
 
+    public void putChangedEntries(List<T> entries) {
+        if (changedEntries == null) {
+            changedEntries = new ArrayList<T>();
+        }
+        changedEntries.addAll(entries);
+        allDiffEntries.addAll(entries);
+    }
+
     /**
      * включить в результат удаленный узел
      *
@@ -94,6 +121,10 @@ public class DiffCollectionResult<T> implements Serializable {
         }
         removedEntries.add(entry);
         allDiffEntries.add(entry);
+    }
+
+    public List<T>  getSameEntries() {
+        return sameEntries;
     }
 
     /**
@@ -110,6 +141,11 @@ public class DiffCollectionResult<T> implements Serializable {
      * измененные узлы
      */
     private List<T> changedEntries;
+
+    /**
+     * не измененные узлы
+     */
+    private List<T> sameEntries;
 
     /**
      * все различающиеся узлы

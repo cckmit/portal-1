@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -24,6 +25,7 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.utils.LinkData;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
@@ -35,6 +37,7 @@ import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
@@ -46,6 +49,7 @@ public class MailNotificationProcessor {
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
     private final static Semaphore messageIdSemaphore = new Semaphore(1);
+    public static final String EMPTY_LINK = "#";
 
     @Autowired
     CaseSubscriptionService subscriptionService;
@@ -125,16 +129,22 @@ public class MailNotificationProcessor {
             List<NotificationEntry> privateRecipients = partitionNotifiers.get( IS_PRIVATE_RECIPIENT );
             List<NotificationEntry> publicRecipients = partitionNotifiers.get( !IS_PRIVATE_RECIPIENT );
 
+            String privateCaseUrl = getCrmCaseUrl( IS_PRIVATE_RECIPIENT );
+            String publicCaseUrl = getCrmCaseUrl( !IS_PRIVATE_RECIPIENT );
+
+            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
+            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
+
             if ( isPrivateCase(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
 
-                performCaseObjectNotification( event, comments, convertToLinks(event.getMergeLinks()), lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
+                performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
 
             } else {
                 List<String> recipients = getNotifiersAddresses(notifiers);
 
-                performCaseObjectNotification( event, comments, convertToLinks(event.getMergeLinks()), lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateRecipients );
-                performCaseObjectNotification( event, selectPublicComments( comments ), convertToLinks(selectPublicLinks(event.getMergeLinks())), lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicRecipients );
+                performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
+                performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
 
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
@@ -145,25 +155,67 @@ public class MailNotificationProcessor {
         }
     }
 
-    private DiffCollectionResult<CaseLink> convertToLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
-        log.warn( "convertToLinks(): Not implemented." );//TODO NotImplemented
-        return null;
+    private DiffCollectionResult<LinkData> convertToLinkData( DiffCollectionResult<CaseLink> mergeLinks, String crmCaseUrl ) {
+        DiffCollectionResult<LinkData> result = new DiffCollectionResult<LinkData>();
+        for (CaseLink added : emptyIfNull( mergeLinks.getAddedEntries() )) {
+            LinkData linkData = new LinkData( makeLinkUrl( added.getType(), added.getRemoteId(), crmCaseUrl ), added.getRemoteId() );
+            result.putAddedEntry( linkData );
+        }
+        for (CaseLink removed : emptyIfNull( mergeLinks.getRemovedEntries() )) {
+            LinkData linkData = new LinkData( makeLinkUrl( removed.getType(), removed.getRemoteId(), crmCaseUrl ), removed.getRemoteId() );
+            result.putRemovedEntry( linkData );
+        }
+        for (CaseLink same : emptyIfNull( mergeLinks.getSameEntries() )) {
+            LinkData linkData = new LinkData( makeLinkUrl( same.getType(), same.getRemoteId(), crmCaseUrl ), same.getRemoteId() );
+            result.putSameEntry( linkData );
+        }
+
+        return result;
+    }
+
+    private String makeLinkUrl( En_CaseLink type, String remoteId, String crmCaseUrl ) {
+        if(YT.equals( type )){
+            return config.data().youtrack().getYoutrackIssueUrl() + "/" + remoteId;
+        }
+        if(CRM.equals( type )){
+            Long crmNumber = NumberUtils.parseLong( remoteId );
+            if( crmNumber == null) return EMPTY_LINK;
+            return String.format( crmCaseUrl, crmNumber );
+        }
+        return EMPTY_LINK;
     }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
-        DiffCollectionResult diffCollectionResult = new DiffCollectionResult();
+        DiffCollectionResult result = new DiffCollectionResult();
         for (CaseLink added : emptyIfNull(mergeLinks.getAddedEntries())) {
-            if(!CRM.equals( added.getType() )) continue;
-            if(added.isPrivate()) continue;
-            diffCollectionResult.putAddedEntry( added );
+            if(isPrivate(added)) continue;
+            result.putAddedEntry( added );
         }
         for (CaseLink removed : emptyIfNull(mergeLinks.getRemovedEntries())) {
-            if(!CRM.equals( removed.getType() )) continue;
-            if(removed.isPrivate()) continue;
-            diffCollectionResult.putRemovedEntry( removed );
+            if(isPrivate(removed)) continue;
+            result.putRemovedEntry( removed );
+        }
+        for (CaseLink same : emptyIfNull(mergeLinks.getSameEntries())) {
+            if(isPrivate(same)) continue;
+            result.putSameEntry( same );
         }
 
-        return diffCollectionResult;
+        return result;
+    }
+
+    private boolean isPrivate(CaseLink caseLink){
+        if(!CRM.equals( caseLink.getType() )) return true;
+        if(caseLink.isPrivate()) return true;
+        return false;
+    }
+
+    private List<CaseLink> selectPublicLinks( List<CaseLink> caseLinks ) {
+        return emptyIfNull( caseLinks ).stream()
+                .filter( caseLink -> {
+                    if (!CRM.equals( caseLink.getType() )) return false;
+                    if (caseLink.isPrivate()) return false;
+                    return true;
+                } ).collect( toList() );
     }
 
     private String getCrmCaseUrl( boolean isProteiRecipient ) {
@@ -199,8 +251,8 @@ public class MailNotificationProcessor {
     }
 
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, DiffCollectionResult<CaseLink> mergeLinks, Long lastMessageId, List<String> recipients,
-            boolean isProteiRecipients, Collection<NotificationEntry> notifiers
+            AssembledCaseEvent event, List<CaseComment> comments, DiffCollectionResult<LinkData> linksToTasks, Long lastMessageId, List<String> recipients,
+            boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
         if (CollectionUtils.isEmpty(notifiers)) {
@@ -209,7 +261,7 @@ public class MailNotificationProcessor {
 
         CaseObject caseObject = event.getCaseObject();
 
-        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, mergeLinks, getCrmCaseUrl( isProteiRecipients ), recipients);
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, linksToTasks, crmCaseUrl, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for caseId={}", caseObject.getId());
             return;
@@ -591,6 +643,8 @@ public class MailNotificationProcessor {
         calendar.add(Calendar.SECOND, sec);
         return calendar.getTime();
     }
+
+
 
     private class MimeMessageHeadersFacade {
 
