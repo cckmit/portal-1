@@ -102,7 +102,7 @@
                     <small ui:field="subscriptions"/>
 
                     <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
-                    <g:Anchor ui:field="platform" styleName="full-screen-link" href="#"/>
+                    <g:Anchor ui:field="platform" styleName="full-screen-link" href="#" target="_blank"/>
 
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
                         <h5 class="col-md-12">
@@ -132,7 +132,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </g:HTMLPanel>
         <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">

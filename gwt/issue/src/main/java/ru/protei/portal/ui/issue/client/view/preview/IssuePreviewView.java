@@ -192,6 +192,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setPlatformLink(String link) {
+        this.platform.setHref(link);
+    }
+
+    @Override
     public void setPlatformVisibility(boolean visible) {
         if (visible) {
             platformLabel.removeClassName("hide");
@@ -214,15 +219,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     public void onGoToIssuesClicked ( ClickEvent event) {
         if ( activity != null ) {
             activity.onGoToIssuesClicked();
-        }
-    }
-
-    @UiHandler("platform")
-    public void onPlatformExtLinkClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onPlatformExtLinkClicked();
         }
     }
 

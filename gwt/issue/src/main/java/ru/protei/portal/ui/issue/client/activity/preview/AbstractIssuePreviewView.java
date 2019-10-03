@@ -37,6 +37,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setInfo(String value );
 
     void setPlatform(String value);
+    void setPlatformLink(String link);
     void setPlatformVisibility(boolean visible);
 
     void setSubscriptionEmails( String value );
