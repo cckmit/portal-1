@@ -756,7 +756,7 @@ label.bordered:after {
       }
     }
     .contacts {
-      i {
+      i, b {
         padding-right: 5px;
       }
     }
@@ -3917,8 +3917,18 @@ label {
   }
 }
 
+.checkbox input[type=checkbox] {
+  width: auto;
+  height: auto;
+}
+
 .checkbox label {
   margin-right: 0px !important;
+  padding-left: 12px;
+}
+
+.checkbox label:before {
+  margin-left: -13px;
 }
 
 .pager-container {
