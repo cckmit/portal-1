@@ -70,7 +70,7 @@ public class IssueControllerImpl implements IssueController {
         caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
         caseObject.setCreatorId( getCurrentPerson().getId() );
 
-        Result< CaseObject >  response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
+        Result< CaseObject >  response = caseService.createCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
 
         log.info( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());

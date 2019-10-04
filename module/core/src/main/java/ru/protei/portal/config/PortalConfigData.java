@@ -507,7 +507,7 @@ public class PortalConfigData {
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
-            youtrackIssueUrl = properties.getProperty("youtrack.issue.baseurl", "https://youtrack.protei.ru/issue/");
+            youtrackIssueUrl = properties.getProperty("youtrack.issue.baseurl", "https://youtrack.protei.ru/issue");
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");

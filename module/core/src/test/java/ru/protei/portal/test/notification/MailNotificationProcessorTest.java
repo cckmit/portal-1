@@ -86,7 +86,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         object.setInfo( "some text is here" );
         object.setExtAppType( "junit-test" );
 
-        Result<CaseObject> response = caseService.saveCaseObject(getAuthToken(), object, initiator);
+        Result<CaseObject> response = caseService.createCaseObject(getAuthToken(), object, initiator);
         Assert.assertTrue(response.isOk());
         object = response.getData();
 

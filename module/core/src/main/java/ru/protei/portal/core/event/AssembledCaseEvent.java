@@ -42,6 +42,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public AssembledCaseEvent(CaseObjectEvent objectEvent) {
         this(objectEvent.getServiceModule(), objectEvent.getSource(), objectEvent.getOldState(),
                 objectEvent.getNewState(), objectEvent.getPerson());
+        mergeLinks = objectEvent.getMergeLinks();
     }
 
     public AssembledCaseEvent(CaseCommentEvent commentEvent) {

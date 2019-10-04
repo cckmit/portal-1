@@ -132,10 +132,10 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
                 logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
 
-                eventPublisherService.publishEvent(new CaseObjectEvent.Builder(caseService, ServiceModule.HPSM)
+                eventPublisherService.publishEvent( CaseObjectEvent.create(caseService, ServiceModule.HPSM)
                         .withNewState(obj)
                         .withPerson(contactPerson)
-                        .build());
+                );
 
                 createComment(request, contactPerson, obj, caseObjId);
 
@@ -237,11 +237,11 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
 
-            eventPublisherService.publishEvent(new CaseObjectEvent.Builder(caseService, ServiceModule.HPSM)
+            eventPublisherService.publishEvent( CaseObjectEvent.create(caseService, ServiceModule.HPSM)
                     .withNewState(object)
                     .withOldState(oldState)
                     .withPerson(contactPerson)
-                    .build());
+            );
 
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
                 logger.debug("append comment text from message");

@@ -114,7 +114,7 @@ public class PortalApiController {
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            Result<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(
+            Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
                     (CaseObject) auditableObject,
                     userSessionDescriptorAPIResult.getData().getPerson()

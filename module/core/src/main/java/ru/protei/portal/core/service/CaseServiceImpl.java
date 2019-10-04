@@ -94,7 +94,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         if (!validateFields(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -169,8 +169,9 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        DiffCollectionResult<CaseLink> mergeLinks = null;
         if (isNotEmpty(caseObject.getLinks())) {
-            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+            mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() ).getData();
         }
 
         if (isNotEmpty(caseObject.getLinks())) {
@@ -194,10 +195,11 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+        publisherService.publishEvent( CaseObjectEvent.create(this)
                 .withNewState(newState)
                 .withPerson(initiator)
-                .build());
+                .withLinks(mergeLinks)
+        );
 
         return ok(newState);
     }
@@ -216,11 +218,11 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getCaseObject().getAttachments());
             newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+            publisherService.publishEvent( CaseObjectEvent.create(this)
                     .withNewState(newState)
                     .withOldState(oldState)
                     .withPerson(initiator)
-                    .build());
+            );
         }
 
         return ok(objectResultData.getCaseObject());
@@ -242,7 +244,7 @@ public class CaseServiceImpl implements CaseService {
             newState.setNotifiers(caseObject.getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
 
-            publisherService.publishEvent(new CaseObjectCommentEvent.Builder(this)
+            publisherService.publishEvent( CaseObjectCommentEvent.create(this)
                     .withPerson(initiator)
                     .withOldState(oldState)
                     .withNewState(newState)
@@ -251,7 +253,7 @@ public class CaseServiceImpl implements CaseService {
                     .withAddedAttachments(commentResultData.getAddedAttachments())
                     .withRemovedAttachments(commentResultData.getRemovedAttachments())
                     .withLinks( objectResultData.getMergeLinks() )
-                    .build());
+            );
         }
 
         return Result.ok(

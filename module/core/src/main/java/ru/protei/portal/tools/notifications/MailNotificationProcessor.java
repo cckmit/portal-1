@@ -209,15 +209,6 @@ public class MailNotificationProcessor {
         return false;
     }
 
-    private List<CaseLink> selectPublicLinks( List<CaseLink> caseLinks ) {
-        return emptyIfNull( caseLinks ).stream()
-                .filter( caseLink -> {
-                    if (!CRM.equals( caseLink.getType() )) return false;
-                    if (caseLink.isPrivate()) return false;
-                    return true;
-                } ).collect( toList() );
-    }
-
     private String getCrmCaseUrl( boolean isProteiRecipient ) {
         String baseUrl = "";
         if (isProteiRecipient) {

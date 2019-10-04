@@ -140,7 +140,7 @@ public class BaseServiceTest {
 
     protected CaseObject makeCaseObject( En_CaseType caseType, Person person) {
         return checkResultAndGetData(
-                caseService.saveCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
+                caseService.createCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
         );
     }
 

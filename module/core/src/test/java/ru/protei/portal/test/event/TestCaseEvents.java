@@ -62,7 +62,7 @@ public class TestCaseEvents extends BaseServiceTest {
         object.setImpLevel(En_ImportanceLevel.BASIC.getId());
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
-        Result<CaseObject> response = service.saveCaseObject(getAuthToken(), object, person);
+        Result<CaseObject> response = service.createCaseObject(getAuthToken(), object, person);
         Assert.assertTrue(response.isOk());
 
         // wait for async event
