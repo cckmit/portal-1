@@ -21,15 +21,6 @@ public class DiffCollectionResult<T> implements Serializable {
     }
 
     /**
-     * возвращает список измененных узлов
-     *
-     * @return список измененных узлов
-     */
-    public List<T> getChangedEntries() {
-        return changedEntries;
-    }
-
-    /**
      * возвращает список удаленных узлов
      *
      * @return спсок удаленных узлов
@@ -45,6 +36,13 @@ public class DiffCollectionResult<T> implements Serializable {
      */
     public List<T> getAllDiffEntries() {
         return allDiffEntries;
+    }
+
+    /**
+     * возвращает список всех одинаковых узлов
+     */
+    public List<T> getSameEntries() {
+        return sameEntries;
     }
 
     /**
@@ -69,48 +67,6 @@ public class DiffCollectionResult<T> implements Serializable {
     }
 
     /**
-     * включить в результат одинаковый в обоих коллекция узел
-     *
-     * @param entry одинаковый в обоих коллекция узел
-     */
-    public void putSameEntry(T entry) {
-        if (sameEntries == null) {
-            sameEntries = new ArrayList<T>();
-        }
-        sameEntries.add(entry);
-        allDiffEntries.add(entry);
-    }
-
-    public void putSameEntries(List<T> entries) {
-        if (sameEntries == null) {
-            sameEntries = new ArrayList<T>();
-        }
-        sameEntries.addAll(entries);
-        allDiffEntries.addAll(entries);
-    }
-
-    /**
-     * включить в результат измененный узел
-     *
-     * @param entry измененный узел
-     */
-    public void putChangedEntry(T entry) {
-        if (changedEntries == null) {
-            changedEntries = new ArrayList<T>();
-        }
-        changedEntries.add(entry);
-        allDiffEntries.add(entry);
-    }
-
-    public void putChangedEntries(List<T> entries) {
-        if (changedEntries == null) {
-            changedEntries = new ArrayList<T>();
-        }
-        changedEntries.addAll(entries);
-        allDiffEntries.addAll(entries);
-    }
-
-    /**
      * включить в результат удаленный узел
      *
      * @param entry удаленный узел
@@ -123,8 +79,31 @@ public class DiffCollectionResult<T> implements Serializable {
         allDiffEntries.add(entry);
     }
 
-    public List<T>  getSameEntries() {
-        return sameEntries;
+    public void putRemovedEntries(List<T> entries) {
+        if (removedEntries == null) {
+            removedEntries = new ArrayList<T>();
+        }
+        removedEntries.addAll(entries);
+        allDiffEntries.addAll(entries);
+    }
+
+    /**
+     * включить в результат одинаковый в обоих коллекция узел
+     *
+     * @param entry одинаковый в обоих коллекция узел
+     */
+    public void putSameEntry(T entry) {
+        if (sameEntries == null) {
+            sameEntries = new ArrayList<T>();
+        }
+        sameEntries.add(entry);
+    }
+
+    public void putSameEntries(List<T> entries) {
+        if (sameEntries == null) {
+            sameEntries = new ArrayList<T>();
+        }
+        sameEntries.addAll(entries);
     }
 
     /**
@@ -136,11 +115,6 @@ public class DiffCollectionResult<T> implements Serializable {
      * добавленные узлы
      */
     private List<T> addedEntries;
-
-    /**
-     * измененные узлы
-     */
-    private List<T> changedEntries;
 
     /**
      * не измененные узлы

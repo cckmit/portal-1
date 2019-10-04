@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ import java.util.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.find;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -89,9 +88,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
         List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseId.toString()));
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
-        DiffCollectionResult<CaseLink> caseLinksDiffResult = ru.protei.portal.core.model.helper.CollectionUtils
-                .diffCollection(oldCaseLinks, caseLinks);
-        if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
+        DiffCollectionResult<CaseLink> caseLinksDiffResult = diffCollection(oldCaseLinks, caseLinks);
+        if ( isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
             Set<Long> toRemoveIds = new HashSet<>();
             caseLinksDiffResult.getRemovedEntries().forEach( link -> {
                 toRemoveIds.add(link.getId());
@@ -108,9 +106,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.removeByKeys(toRemoveIds);
         }
 
-        if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
+        if ( isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
             List<CaseLink> toAddLinks = new ArrayList<>();
-            CollectionUtils.emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
+            emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
                 if ( isNotCrmLink(link) ) {
                     return;
                 }

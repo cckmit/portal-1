@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -38,7 +37,7 @@ import java.util.stream.LongStream;
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -49,7 +48,7 @@ public class MailNotificationProcessor {
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
     private final static Semaphore messageIdSemaphore = new Semaphore(1);
-    public static final String EMPTY_LINK = "#";
+    public static final LinkData EMPTY_LINK = new LinkData( "#", "" );
 
     @Autowired
     CaseSubscriptionService subscriptionService;
@@ -155,58 +154,44 @@ public class MailNotificationProcessor {
         }
     }
 
-    private DiffCollectionResult<LinkData> convertToLinkData( DiffCollectionResult<CaseLink> mergeLinks, String crmCaseUrl ) {
-        DiffCollectionResult<LinkData> result = new DiffCollectionResult<LinkData>();
-        for (CaseLink added : emptyIfNull( mergeLinks.getAddedEntries() )) {
-            LinkData linkData = new LinkData( makeLinkUrl( added.getType(), added.getRemoteId(), crmCaseUrl ), added.getRemoteId() );
-            result.putAddedEntry( linkData );
-        }
-        for (CaseLink removed : emptyIfNull( mergeLinks.getRemovedEntries() )) {
-            LinkData linkData = new LinkData( makeLinkUrl( removed.getType(), removed.getRemoteId(), crmCaseUrl ), removed.getRemoteId() );
-            result.putRemovedEntry( linkData );
-        }
-        for (CaseLink same : emptyIfNull( mergeLinks.getSameEntries() )) {
-            LinkData linkData = new LinkData( makeLinkUrl( same.getType(), same.getRemoteId(), crmCaseUrl ), same.getRemoteId() );
-            result.putSameEntry( linkData );
-        }
-
+    private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
+        DiffCollectionResult result = new DiffCollectionResult();
+        result.putAddedEntries( filterToList( mergeLinks.getAddedEntries(), this::isPublic ) );
+        result.putRemovedEntries( filterToList( mergeLinks.getRemovedEntries(), this::isPublic ) );
+        result.putSameEntries( filterToList( mergeLinks.getSameEntries(), this::isPublic ) );
         return result;
     }
 
-    private String makeLinkUrl( En_CaseLink type, String remoteId, String crmCaseUrl ) {
-        if(YT.equals( type )){
-            return config.data().youtrack().getYoutrackIssueUrl() + "/" + remoteId;
+    private DiffCollectionResult<LinkData> convertToLinkData( DiffCollectionResult<CaseLink> mergeLinks, String crmCaseUrl ) {
+        DiffCollectionResult<LinkData> result = new DiffCollectionResult<LinkData>();
+        result.putAddedEntries( toList( mergeLinks.getAddedEntries(), link -> makeLinkData( link, crmCaseUrl ) ) );
+        result.putRemovedEntries( toList( mergeLinks.getRemovedEntries(), link -> makeLinkData( link, crmCaseUrl ) ) );
+        result.putSameEntries( toList( mergeLinks.getSameEntries(), link -> makeLinkData( link, crmCaseUrl ) ) );
+        return result;
+    }
+
+    private LinkData makeLinkData( CaseLink link, String crmCaseUrl ) {
+        En_CaseLink type = link.getType();
+
+        if (YT.equals( type )) {
+            String remoteId = link.getRemoteId();
+            return new LinkData( config.data().youtrack().getYoutrackIssueUrl() + "/" + remoteId, remoteId );
         }
-        if(CRM.equals( type )){
-            Long crmNumber = NumberUtils.parseLong( remoteId );
-            if( crmNumber == null) return EMPTY_LINK;
-            return String.format( crmCaseUrl, crmNumber );
+        if (CRM.equals( type )) {
+            CaseInfo caseInfo = link.getCaseInfo();
+            if (caseInfo == null) return EMPTY_LINK;
+            Long crmNumber = link.getCaseInfo().getCaseNumber();
+            if (crmNumber == null) return EMPTY_LINK;
+            return new LinkData( String.format( crmCaseUrl, crmNumber ), String.valueOf( crmNumber ) );
         }
+
         return EMPTY_LINK;
     }
 
-    private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
-        DiffCollectionResult result = new DiffCollectionResult();
-        for (CaseLink added : emptyIfNull(mergeLinks.getAddedEntries())) {
-            if(isPrivate(added)) continue;
-            result.putAddedEntry( added );
-        }
-        for (CaseLink removed : emptyIfNull(mergeLinks.getRemovedEntries())) {
-            if(isPrivate(removed)) continue;
-            result.putRemovedEntry( removed );
-        }
-        for (CaseLink same : emptyIfNull(mergeLinks.getSameEntries())) {
-            if(isPrivate(same)) continue;
-            result.putSameEntry( same );
-        }
-
-        return result;
-    }
-
-    private boolean isPrivate(CaseLink caseLink){
-        if(!CRM.equals( caseLink.getType() )) return true;
-        if(caseLink.isPrivate()) return true;
-        return false;
+    private boolean isPublic( CaseLink caseLink){
+        if(caseLink.isPrivate()) return false;
+        if(!CRM.equals( caseLink.getType() )) return false;
+        return true;
     }
 
     private String getCrmCaseUrl( boolean isProteiRecipient ) {
@@ -228,7 +213,7 @@ public class MailNotificationProcessor {
     private List<CaseComment> selectPublicComments(List<CaseComment> comments) {
         return comments.stream()
                 .filter(comment -> !comment.isPrivateComment())
-                .collect(toList());
+                .collect( Collectors.toList());
     }
 
     private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {
@@ -237,7 +222,7 @@ public class MailNotificationProcessor {
                 .withInReplyTo(makeCaseObjectMessageId(caseNumber, lastMessageId, recipientAddressHashCode ))
                 .withReferences( LongStream.iterate(lastMessageId, id -> id - 1).limit(lastMessageId + 1)
                         .mapToObj(id -> makeCaseObjectMessageId(caseNumber, id, recipientAddressHashCode ))
-                        .collect(toList())
+                        .collect( Collectors.toList())
                 );
     }
 
@@ -603,7 +588,7 @@ public class MailNotificationProcessor {
     }
 
     private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {
-        return notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
+        return notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList());
     }
 
     private Long getEmailLastId(Long caseId) {

@@ -222,15 +222,15 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                         <#if addedLinks??>
                             <#list addedLinks as link>
-                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through">
-                                    <a href="${link.url}" style="color:#bd1313;">${link.linkName}</a>
+                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
+                                    <a href="${link.url}" >${link.linkName}</a>
                                 </span>
                             </#list>
                         </#if>
                         <#if removedLinks??>
                             <#list removedLinks as link>
-                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
-                                    <a href="${link.url}">${link.linkName}</a>
+                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through">
+                                    <a href="${link.url}" style="color:#bd1313;">${link.linkName}</a>
                                 </span>
                             </#list>
                         </#if>
