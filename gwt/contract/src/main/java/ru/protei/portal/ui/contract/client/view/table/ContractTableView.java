@@ -45,6 +45,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         });
 
         editClickColumn.setEditHandler(activity);
+        editClickColumn.setColumnProvider(columnProvider);
         table.setLoadHandler(activity);
     }
 

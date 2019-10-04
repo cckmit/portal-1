@@ -434,11 +434,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     }
 
     @Override
-    public int hashCode() {
-        return this.id == null ? -1 : this.id.intValue();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (id != null) {
             return obj instanceof Contract && id.equals(((Contract) obj).getId());
