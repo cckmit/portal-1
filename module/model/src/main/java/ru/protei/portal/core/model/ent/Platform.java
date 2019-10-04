@@ -143,6 +143,14 @@ public class Platform implements Serializable, Removable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof Platform && id.equals(((Platform) obj).getId());
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "Platform{" +
                 "id=" + id +

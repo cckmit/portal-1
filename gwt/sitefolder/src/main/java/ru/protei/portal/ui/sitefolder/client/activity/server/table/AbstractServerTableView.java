@@ -28,4 +28,6 @@ public interface AbstractServerTableView extends IsWidget {
     HasWidgets getFilterContainer();
 
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

@@ -97,6 +97,10 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         return pagerContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
 
     private void initTable() {
         copyClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_CREATE);

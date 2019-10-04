@@ -140,6 +140,14 @@ public class Server implements Serializable, Removable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof Server && id.equals(((Server) obj).getId());
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "Server{" +
                 "id=" + id +

@@ -60,6 +60,6 @@ public abstract class ContractPage
     Lang lang;
 
     private String ТAB;
-    private ContractEvents.Show show = new ContractEvents.Show();
+    private ContractEvents.Show show = new ContractEvents.Show(true);
 }
 

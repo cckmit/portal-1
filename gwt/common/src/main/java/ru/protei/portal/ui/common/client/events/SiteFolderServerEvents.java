@@ -15,11 +15,12 @@ public class SiteFolderServerEvents {
     public static class Show {
         @Name("platform")
         public Long platformId;
-        public Show() {
-            this(null);
-        }
+        @Omit
+        public Boolean clearSelection = false;
+        public Show() {}
         public Show(Long platformId) {
             this.platformId = platformId;
+            this.clearSelection = true;
         }
     }
 

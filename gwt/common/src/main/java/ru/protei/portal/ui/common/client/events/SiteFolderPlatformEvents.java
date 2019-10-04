@@ -13,7 +13,12 @@ public class SiteFolderPlatformEvents {
 
     @Url(value = "sfplatforms", primary = true)
     public static class Show {
+        @Omit
+        public Boolean clearSelection = false;
         public Show() {}
+        public Show(Boolean clearSelection) {
+            this.clearSelection = clearSelection;
+        }
     }
 
     @Url(value = "sfplatform")
