@@ -188,7 +188,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setManager( manager );
         view.setName( value.getName() == null ? "" : value.getName() );
 
-        view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
+        view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.setPlatformLink(PlatformUtils.makeLink(value.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
 

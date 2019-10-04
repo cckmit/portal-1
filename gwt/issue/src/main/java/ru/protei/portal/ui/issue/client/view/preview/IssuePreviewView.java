@@ -187,7 +187,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setPlatform(String value) {
+    public void setPlatformName(String value) {
         platform.setInnerText(value);
     }
 
