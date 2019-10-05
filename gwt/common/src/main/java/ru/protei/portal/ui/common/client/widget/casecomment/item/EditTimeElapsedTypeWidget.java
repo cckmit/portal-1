@@ -21,26 +21,11 @@ import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 
 import java.util.Arrays;
 
-public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChangeHandlers<En_TimeElapsedType> {
+public class EditTimeElapsedTypeWidget extends Composite implements HasValueChangeHandlers<En_TimeElapsedType> {
 
     @Inject
     public void onInit(TimeElapsedTypeLang elapsedTimeTypeLang) {
-        setWidget(ourUiBinder.createAndBindUi(this));
-        setAutoHideEnabled(true);
-        setAutoHideOnHistoryEventsEnabled(true);
-
-        windowScrollHandler = event -> {
-            if (isAttached()) {
-                showNear(relative);
-            }
-        };
-
-        selectorWidth = Arrays.stream(En_TimeElapsedType.values())
-                .mapToInt(type -> elapsedTimeTypeLang.getName(type).length())
-                .max()
-                .orElse(0);
-
-        selectorWidth *= 10;
+        initWidget(ourUiBinder.createAndBindUi(this));
 
         typeSelector.setDisplayOptionCreator(type ->
                 new DisplayOption((type == null || En_TimeElapsedType.NONE.equals(type)) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName(type)));
@@ -50,6 +35,12 @@ public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChan
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<En_TimeElapsedType> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        root.setVisible(visible);
+        super.setVisible(visible);
     }
 
     @UiHandler("typeSelector")
@@ -62,40 +53,11 @@ public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChan
         if (type != typeSelector.getValue()) {
             ValueChangeEvent.fire(this, typeSelector.getValue());
         }
-
-        hide();
-    }
-
-    public void showNear(IsWidget nearWidget) {
-        this.relative = nearWidget;
-        root.getElement().getStyle().setDisplay(Style.Display.FLEX);
-        typeSelector.getElement().setAttribute("style", "min-width: " + selectorWidth + "px;");
-        setPopupPositionAndShow((popupWidth, popupHeight) -> {
-            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
-            int popupTop = nearWidget.asWidget().getAbsoluteTop() + nearWidget.asWidget().getOffsetHeight();
-            int nearWidgetWidth = nearWidget.asWidget().getOffsetWidth();
-            setPopupPosition(relativeLeft - (nearWidgetWidth >= selectorWidth + confirmBtnSize ? 0 : (selectorWidth - nearWidgetWidth) + confirmBtnSize), popupTop);
-        });
     }
 
     public void setTimeElapsedType(En_TimeElapsedType type) {
         this.type = type;
         typeSelector.setValue(type);
-    }
-
-    @Override
-    protected void onLoad() {
-        typeSelector.setValue(type == null ? En_TimeElapsedType.NONE : type);
-        confirmBtn.setEnabled(type != En_TimeElapsedType.NONE);
-        scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
-        confirmBtnSize = confirmBtn.getOffsetWidth();
-    }
-
-    @Override
-    protected void onUnload() {
-        if (scrollHandlerReg != null) {
-            scrollHandlerReg.removeHandler();
-        }
     }
 
     @UiField
@@ -109,15 +71,8 @@ public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChan
     @UiField
     Lang lang;
 
-    private IsWidget relative;
-    private Window.ScrollHandler windowScrollHandler;
-    private HandlerRegistration scrollHandlerReg;
-    private int confirmBtnSize;
-
-    private Integer selectorWidth;
-
     private En_TimeElapsedType type;
 
-    interface EditTimeElapsedTypePopupUiBinder extends UiBinder<HTMLPanel, EditTimeElapsedTypePopup> {}
-    private static EditTimeElapsedTypePopupUiBinder ourUiBinder = GWT.create(EditTimeElapsedTypePopupUiBinder.class);
+    interface EditTimeElapsedTypeWidgetUiBinder extends UiBinder<HTMLPanel, EditTimeElapsedTypeWidget> {}
+    private static EditTimeElapsedTypeWidgetUiBinder ourUiBinder = GWT.create(EditTimeElapsedTypeWidgetUiBinder.class);
 }

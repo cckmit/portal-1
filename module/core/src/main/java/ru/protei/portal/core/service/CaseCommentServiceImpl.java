@@ -334,7 +334,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type, Long personId) {
         CaseComment caseComment;
 

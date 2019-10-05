@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypePopup;
+import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypeWidget;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 
 import java.util.HashSet;
@@ -53,8 +53,11 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer) {
-        timeElapsedTypePopup.addValueChangeHandler(consumer::accept);
+    public void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> editTimeElapsedType) {
+        timeElapsedTypePopup.addValueChangeHandler(timeElapsedType -> {
+            editTimeElapsedType.accept(timeElapsedType);
+            timeElapsedTypeContainer.setVisible(false);
+        });
     }
 
     @Override
@@ -155,7 +158,7 @@ public class CaseCommentItemView
 
     @Override
     public void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled) {
-        this.isTimeElapsedTypeEnabled = isTimeElapsedTypeEnabled;
+        this.isTimeElapsedTypeEditEnabled = isTimeElapsedTypeEnabled;
     }
 
     @Override
@@ -244,8 +247,8 @@ public class CaseCommentItemView
 
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
-        if (activity != null && isTimeElapsedTypeEnabled) {
-            timeElapsedTypePopup.showNear(timeElapsed);
+        if (isTimeElapsedTypeEditEnabled) {
+            timeElapsedTypeContainer.setVisible(!timeElapsedTypeContainer.isVisible());
         }
     }
 
@@ -258,6 +261,7 @@ public class CaseCommentItemView
         date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
         owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
         status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.STATUS);
+        timeElapsedTypePopup.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP);
     }
 
 
@@ -279,6 +283,11 @@ public class CaseCommentItemView
     @Inject
     @UiField(provided = true)
     AttachmentList attachList;
+    @UiField
+    HTMLPanel timeElapsedTypeContainer;
+    @Inject
+    @UiField(provided = true)
+    EditTimeElapsedTypeWidget timeElapsedTypePopup;
     @UiField
     Label timeElapsed;
     @UiField
@@ -307,10 +316,8 @@ public class CaseCommentItemView
     En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
-    @Inject
-    EditTimeElapsedTypePopup timeElapsedTypePopup;
 
-    private boolean isTimeElapsedTypeEnabled;
+    private boolean isTimeElapsedTypeEditEnabled;
     private AbstractCaseCommentItemActivity activity;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}

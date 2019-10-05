@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -17,7 +18,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setActivity( AbstractCaseCommentItemActivity activity );
 
-    void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> consumer);
+    void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> editTimeElapsedType);
 
     void setDate(String value );
 
