@@ -1624,6 +1624,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyDirection();
 
+    String contractValidationEmptyState();
+
+    String contractValidationEmptyDateSigning();
+
+    String contractValidationEmptyDateValid();
+
     String period();
 
     String reportMissingProduct();

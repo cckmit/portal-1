@@ -133,6 +133,7 @@ body {
 .checkbox input[type=checkbox]:checked+label::after {
   font-family: "Font Awesome 5 Free", serif;
   font-weight: 900;
+  left: -9.5px
 }
 
 .full-screen-link{

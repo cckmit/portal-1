@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
@@ -134,9 +133,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
         view.cost().setValue(new CostWithCurrency(contract.getCost(), contract.getCurrency()));
         view.description().setValue(contract.getDescription());
-
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
-
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValid().setValue(contract.getDateValid());
         view.contractDates().setValue(contract.getContractDates());
@@ -161,9 +158,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setCost(view.cost().getValue().getCost());
         contract.setCurrency(view.cost().getValue().getCurrency());
         contract.setDescription(view.description().getValue());
-
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
-
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValid().getValue());
         contract.setContractDates(view.contractDates().getValue());
@@ -197,6 +192,15 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         if (contract.getContractType() == null)
             return lang.contractValidationEmptyType();
+
+        if (contract.getStateId() == null)
+            return lang.contractValidationEmptyState();
+
+        if (contract.getDateSigning() == null)
+            return lang.contractValidationEmptyDateSigning();
+
+        if (contract.getDateValid() == null)
+            return lang.contractValidationEmptyDateValid();
 
         if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
             return lang.contractValidationEmptyDirection();
