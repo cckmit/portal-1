@@ -451,6 +451,7 @@ public class DebugIds {
         String DOWNLOAD = "attachment-download-button";
         String NAME = "attachment-name";
         String SIZE = "attachment-size";
+        String IMAGE = "attachment-fullscreen-image";
     }
 
     public interface TAG_SELECTOR_POPUP {

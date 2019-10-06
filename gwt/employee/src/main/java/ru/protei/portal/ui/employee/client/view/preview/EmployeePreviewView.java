@@ -39,6 +39,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
+    public void setIP( String ip ) {
+        this.ip.setInnerText( ip );
+    }
+
+    @Override
     public HasWidgets getPositionsContainer() {
         return positionsContainer;
     }
@@ -58,10 +63,12 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @UiField
     SpanElement employeeName;
 
+    @UiField
+    SpanElement ip;
+
     @Inject
     @UiField
     Lang lang;
-
 
     AbstractEmployeePreviewActivity activity;
 

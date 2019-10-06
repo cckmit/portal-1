@@ -34,6 +34,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     private void fillView( EmployeeShortView employee ) {
         view.setID( employee.getId().toString() );
         view.setName( employee.getDisplayName() );
+        view.setIP( employee.getIpAddress() );
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
