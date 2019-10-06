@@ -123,4 +123,5 @@
   <include file="2019-09-09-add-paused-state-to-issues.xml" relativeToChangelogFile="true"/>
   <include file="2019-09-06-add-jira-sla-map-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-10-03-add-project_id-column-to-platform.xml" relativeToChangelogFile="true"/>
+  <include file="2019-10-04-modify-platform-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -30,6 +30,12 @@ public class Platform implements Serializable, Removable {
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
 
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
+    private String projectName;
+
     @JdbcColumn(name="case_id")
     private Long caseId;
 
@@ -98,6 +104,22 @@ public class Platform implements Serializable, Removable {
         return manager;
     }
 
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
     public void setManager(Person manager) {
         this.manager = manager;
     }
@@ -154,6 +176,8 @@ public class Platform implements Serializable, Removable {
                 ", company=" + company +
                 ", caseId=" + caseId +
                 ", serversCount=" + serversCount +
+                ", projectId=" + projectId +
+                ", projectName=" + projectName +
                 '}';
     }
 }

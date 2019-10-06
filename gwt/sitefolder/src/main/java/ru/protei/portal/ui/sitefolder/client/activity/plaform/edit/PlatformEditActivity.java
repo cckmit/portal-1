@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -13,11 +14,14 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -90,7 +94,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
-
         fillPlatform(platform);
 
         siteFolderController.savePlatform(platform, new RequestCallback<Platform>() {
@@ -156,13 +159,63 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 }));
     }
 
+    @Override
+    public void refreshProjectSpecificFields(EntityOption entityOptionProject) {
+        if (entityOptionProject == null) {
+            clearProjectSpecificFields();
+            return;
+        }
+        regionService.getProjectInfo(entityOptionProject.getId(), new FluentCallback<Project>()
+                .withSuccess(project -> {
+                    view.company().setValue(project.getContragent());
+                    view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
+                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+                    view.companyEnabled().setEnabled(false);
+                    view.managerEnabled().setEnabled(false);
+                    view.companyValidator().setValid(true);
+                })
+        );
+
+
+    }
+
+    private void fillProjectSpecificFields (EntityOption entityOptionProject){
+        regionService.getProjectInfo(entityOptionProject.getId(), new FluentCallback<Project>()
+                .withSuccess(project -> {
+                    view.company().setValue(project.getContragent());
+                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+                    view.companyEnabled().setEnabled(false);
+                    view.managerEnabled().setEnabled(false);
+                    view.companyValidator().setValid(true);
+                    fireShowCompanyContacts(project.getContragent().getId());
+                })
+        );
+    }
+
+    private void clearProjectSpecificFields() {
+        view.company().setValue(null);
+        view.manager().setValue(null);
+        view.name().setValue(null);
+        view.companyEnabled().setEnabled(true);
+        view.managerEnabled().setEnabled(true);
+        view.companyValidator().setValid(false);
+    }
+
     private void fillView(Platform platform) {
         this.platform = platform;
         boolean isNotNew = platform.getId() != null;
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
+        if (platform.getProjectId() != null){
+            fillProjectSpecificFields(new EntityOption(platform.getProjectName(), platform.getProjectId()));
+        }
+        else{
+            clearProjectSpecificFields();
+            view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
+            view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
+            fireShowCompanyContacts(platform.getCompanyId());
+        }
+        view.project().setValue(platform.getProjectId() == null ? null : new EntityOption(platform.getProjectName(), platform.getProjectId()));
         view.name().setValue(platform.getName());
-        view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
-        view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
         view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
@@ -171,6 +224,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.listContainerHeaderVisibility().setVisible(isNotNew);
         view.setCaseNumber(platform.getId());
         view.attachmentsContainer().clear();
+
         if (isNotNew) {
             view.attachmentsContainer().add(platform.getAttachments());
             fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
@@ -178,6 +232,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
         fireShowCompanyContacts(platform.getCompanyId());
     }
+
 
     private void fireShowCompanyContacts(Long companyId) {
         if ( companyId == null ) {
@@ -190,14 +245,25 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void fillPlatform(Platform platform) {
         platform.setName(view.name().getValue());
-        platform.setCompanyId(view.company().getValue().getId());
-        platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
         platform.setParams(view.parameters().getValue());
         platform.setComment(view.comment().getValue());
+        if (view.project().getValue() == null){
+            platform.setProjectId(null);
+            platform.setCompanyId(view.company().getValue().getId());
+            platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
+        }
+        else {
+            platform.setProjectId(view.project().getValue().getId());
+            platform.setCompany(null);
+            platform.setManager(null);
+        }
     }
 
     private boolean isValid() {
-        return view.nameValidator().isValid() && view.companyValidator().isValid();
+        if (view.project().getValue().getId() != null)
+            return view.nameValidator().isValid();
+        else
+            return view.nameValidator().isValid() && view.companyValidator().isValid();
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments) {
@@ -220,6 +286,8 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     PolicyService policyService;
     @Inject
     AttachmentServiceAsync attachmentService;
+    @Inject
+    RegionControllerAsync regionService;
 
     private Platform platform;
     private AppEvents.InitDetails initDetails;

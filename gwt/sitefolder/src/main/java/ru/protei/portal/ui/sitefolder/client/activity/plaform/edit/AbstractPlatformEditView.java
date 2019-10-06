@@ -21,6 +21,8 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValue<PersonShortView> manager();
 
+    HasEnabled managerEnabled();
+
     HasValue<String> parameters();
 
     HasValue<String> comment();
@@ -44,4 +46,6 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasWidgets contactsContainer();
 
     HasAttachments attachmentsContainer();
+
+    HasValue<EntityOption> project();
 }
