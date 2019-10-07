@@ -193,7 +193,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setPlatformLink(String link) {
-        platform.setAttribute("onclick", "window.open('" + link + "', 'newwindow', 'width=1024,height=768'); return false;");
+        platform.setHref(link);
     }
 
     @Override

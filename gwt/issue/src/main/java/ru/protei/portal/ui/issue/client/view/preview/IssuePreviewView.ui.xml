@@ -103,7 +103,7 @@
 
                     <g:HTMLPanel ui:field="platformContainer">
                         <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
-                        <a href="#" ui:field="platform" class="full-screen-link"/>
+                        <a href="#" ui:field="platform" class="full-screen-link" target="_blank"/>
                     </g:HTMLPanel>
 
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
