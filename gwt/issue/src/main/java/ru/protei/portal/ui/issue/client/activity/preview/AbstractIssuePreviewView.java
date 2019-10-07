@@ -16,30 +16,31 @@ import java.util.Set;
  */
 public interface AbstractIssuePreviewView extends IsWidget {
 
-    void setActivity( AbstractIssuePreviewActivity activity );
+    void setActivity(AbstractIssuePreviewActivity activity);
 
-    void setPrivateIssue(boolean privateIssue );
+    void setPrivateIssue(boolean privateIssue);
     void setCaseNumber(Long caseNumber);
-    void setCreatedBy(String value );
-    void setState( long value );
-    void setImportance(int value );
-    void setProduct( String value );
+    void setCreatedBy(String value);
+    void setState(long value );
+    void setImportance(int value);
+    void setProduct(String value);
 
     void setLinks(Set<CaseLink> value);
     void setTags(Set<CaseTag> value);
 
-    void setContact(String value );
-    void setManager( String value );
-    void setName( String value );
+    void setContact(String value);
+    void setManager(String value);
+    void setName(String value);
 
     String getName();
 
-    void setInfo(String value );
+    void setInfo(String value);
 
-    void setPlatform(String value);
-    void setPlatformVisibility(boolean visible);
+    void setPlatformName(String value);
+    void setPlatformLink(String link);
+    HasVisibility platformVisibility();
 
-    void setSubscriptionEmails( String value );
+    void setSubscriptionEmails(String value);
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();
 
