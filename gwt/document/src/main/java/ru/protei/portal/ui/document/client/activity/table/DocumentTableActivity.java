@@ -3,6 +3,7 @@ package ru.protei.portal.ui.document.client.activity.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -14,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -52,6 +54,11 @@ public abstract class DocumentTableActivity
         init.parent.clear();
         init.parent.add(view.asWidget());
         view.getPagerContainer().add( pagerView.asWidget() );
+
+        if (event.clearSelection) {
+            view.clearSelection();
+            event.clearSelection = false;
+        }
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE) ?
                 new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DOCUMENT) :
@@ -115,6 +122,7 @@ public abstract class DocumentTableActivity
     @Override
     public void onEditClicked(Document value) {
         if (!value.isDeprecatedUnit()) {
+            persistScrollTopPosition();
             fireEvent(DocumentEvents.Edit.byId(value.getId()));
         }
     }
@@ -154,6 +162,7 @@ public abstract class DocumentTableActivity
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
                     }
                 }));
     }
@@ -193,6 +202,22 @@ public abstract class DocumentTableActivity
         );
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -209,6 +234,7 @@ public abstract class DocumentTableActivity
     PolicyService policyService;
 
 
+    private Integer scrollTop;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;

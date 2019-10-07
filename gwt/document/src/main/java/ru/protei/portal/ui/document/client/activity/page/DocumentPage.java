@@ -60,5 +60,5 @@ public abstract class DocumentPage implements Activity {
     Lang lang;
 
     private String TAB;
-    private DocumentEvents.Show show = new DocumentEvents.Show();
+    private DocumentEvents.Show show = new DocumentEvents.Show(true);
 }

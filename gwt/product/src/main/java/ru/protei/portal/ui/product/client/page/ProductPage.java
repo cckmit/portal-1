@@ -61,6 +61,6 @@ public abstract class ProductPage
     Lang lang;
 
     private String ТAB;
-    private ProductEvents.Show show = new ProductEvents.Show();
+    private ProductEvents.Show show = new ProductEvents.Show(true);
 }
 

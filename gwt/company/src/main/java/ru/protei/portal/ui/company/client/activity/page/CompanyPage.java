@@ -63,6 +63,6 @@ public abstract class CompanyPage
     Lang lang;
 
     private String ТAB;
-    private CompanyEvents.Show show = new CompanyEvents.Show();
+    private CompanyEvents.Show show = new CompanyEvents.Show(true);
 }
 

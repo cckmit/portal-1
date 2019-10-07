@@ -111,6 +111,11 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
             table.updateRow(item);
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         archiveClickColumn.setPrivilege(En_Privilege.COMPANY_EDIT);
