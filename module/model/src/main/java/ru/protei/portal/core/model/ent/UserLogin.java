@@ -202,6 +202,14 @@ public class UserLogin extends AuditableObject implements Removable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof UserLogin && id.equals(((UserLogin) obj).getId());
+        }
+        return false;
+    }
+
+    @Override
     public String toString () {
         return "UserLogin{" +
                 "id=" + id +

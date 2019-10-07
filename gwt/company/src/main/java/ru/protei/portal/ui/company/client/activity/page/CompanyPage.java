@@ -30,7 +30,7 @@ public abstract class CompanyPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.COMPANY_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.COMPANY, DebugIds.SIDEBAR_MENU.COMPANY ) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( new CompanyEvents.Show( true ) ) );
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class CompanyPage
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new CompanyEvents.Show( true ) );
     }
 
     private void fireSelectTab() {
@@ -63,6 +63,5 @@ public abstract class CompanyPage
     Lang lang;
 
     private String ТAB;
-    private CompanyEvents.Show show = new CompanyEvents.Show(true);
 }
 

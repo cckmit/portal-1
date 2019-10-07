@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -29,6 +30,7 @@ public abstract class ProductPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PRODUCT, DebugIds.SIDEBAR_MENU.PRODUCT ) );
+            fireEvent( new AppEvents.InitPage( new ProductEvents.Show( true ) ) );
         }
     }
 
@@ -49,7 +51,7 @@ public abstract class ProductPage
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new ProductEvents.Show( true ) );
     }
 
     private void fireSelectTab() {
@@ -61,6 +63,5 @@ public abstract class ProductPage
     Lang lang;
 
     private String ТAB;
-    private ProductEvents.Show show = new ProductEvents.Show(true);
 }
 

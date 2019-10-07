@@ -66,6 +66,11 @@ public abstract class EquipmentTableActivity
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
+        if (event.clearSelection) {
+            view.clearSelection();
+            event.clearSelection = false;
+        }
+
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.EQUIPMENT ) :
                 new ActionBarEvents.Clear()

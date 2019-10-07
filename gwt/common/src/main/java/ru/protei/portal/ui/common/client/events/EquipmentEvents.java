@@ -17,7 +17,14 @@ public class EquipmentEvents {
      * Показать
      */
     @Url( value = "equipments", primary = true )
-    public static class Show {}
+    public static class Show {
+        @Omit
+        public Boolean clearSelection = false;
+        public Show() {}
+        public Show(Boolean clearSelection) {
+            this.clearSelection = clearSelection;
+        }
+    }
 
     /**
      * Показать превью оборудования

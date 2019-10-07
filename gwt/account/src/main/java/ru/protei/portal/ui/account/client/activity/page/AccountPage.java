@@ -28,7 +28,7 @@ public abstract class AccountPage implements Activity {
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT, DebugIds.SIDEBAR_MENU.ACCOUNT ) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( new AccountEvents.Show(true) ) );
         }
     }
 
@@ -49,7 +49,7 @@ public abstract class AccountPage implements Activity {
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new AccountEvents.Show(true) );
     }
 
     private void fireSelectTab() {
@@ -61,5 +61,4 @@ public abstract class AccountPage implements Activity {
     Lang lang;
 
     private String ТAB;
-    private AccountEvents.Show show = new AccountEvents.Show();
 }

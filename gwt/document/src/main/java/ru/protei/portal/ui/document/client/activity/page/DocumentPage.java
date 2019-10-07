@@ -27,7 +27,7 @@ public abstract class DocumentPage implements Activity {
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, DebugIds.SIDEBAR_MENU.DOCUMENT));
-            fireEvent(new AppEvents.InitPage(show));
+            fireEvent(new AppEvents.InitPage(new DocumentEvents.Show(true)));
         }
     }
 
@@ -48,7 +48,7 @@ public abstract class DocumentPage implements Activity {
         }
 
         fireSelectTab();
-        fireEvent(show);
+        fireEvent(new DocumentEvents.Show(true));
     }
 
     private void fireSelectTab() {
@@ -60,5 +60,4 @@ public abstract class DocumentPage implements Activity {
     Lang lang;
 
     private String TAB;
-    private DocumentEvents.Show show = new DocumentEvents.Show(true);
 }
