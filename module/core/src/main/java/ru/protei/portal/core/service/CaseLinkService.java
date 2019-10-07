@@ -28,5 +28,5 @@ public interface CaseLinkService {
 
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
-    Result<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
+    Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 }

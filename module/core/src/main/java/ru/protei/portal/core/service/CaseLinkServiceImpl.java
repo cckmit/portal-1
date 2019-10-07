@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
@@ -46,6 +47,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    private CaseService caseService;
 
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
@@ -145,16 +149,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return getYoutrackLinks( caseId ).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
                 CaseLink::getCaseId ).orElseGet( ignore ->
-                addCaseLinkOnToYoutrack( caseId, youtrackId ) );
+                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( caseLInk ->
+                        sendMailNotificationLinkAdded( caseNumber, caseLInk )
+                )
+        );
     }
 
     @Override
-    public Result<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+    @Transactional
+    public Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Long caseId = getCaseIdByCaseNumber( caseNumber );
         return getYoutrackLinks( caseId ).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
-                removeCaseLinkOnToYoutrack( caseLink )).orElseGet( ignore ->
-                ok( true )
+                removeCaseLinkOnToYoutrack( caseLink ).flatMap( removedLink ->
+                        sendMailNotificationLinkRemoved( caseNumber, removedLink )
+                )
         );
     }
 
@@ -168,7 +177,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
     }
 
-    private Result<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
         CaseLink newLink = new CaseLink();
         newLink.setCaseId( caseNumber );
         newLink.setType( En_CaseLink.YT );
@@ -176,18 +185,33 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Long id = caseLinkDAO.persist( newLink );
         if (id == null) {
             log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
-            throw new RuntimeException( "addCaseLinkOnToYoutrack(): rollback transaction" );
+            throw new RollbackTransactionException( "addCaseLinkOnToYoutrack(): rollback transaction" );
         }
-        return ok( id );
+        newLink.setId( id );
+        return ok( newLink );
     }
 
-    private Result<Boolean> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+    private Result<CaseLink> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
         if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
-            throw new RuntimeException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+            throw new RollbackTransactionException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
         }
         log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
-        return ok(true);
+        return ok(caseLink);
+    }
+
+    private Result<Long> sendMailNotificationLinkAdded( Long caseNumber, CaseLink caseLInk ) {
+        DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
+        diff.putAddedEntry( caseLInk );
+        return caseService.sendMailNotificationLinkChanged( caseNumber, diff )
+                .ifOk( caseId -> caseLInk.getId() );
+    }
+
+    private Result<Long> sendMailNotificationLinkRemoved( Long caseNumber, CaseLink caseLInk ) {
+        DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
+        diff.putRemovedEntry( caseLInk );
+        return caseService.sendMailNotificationLinkChanged( caseNumber, diff )
+                .ifOk( caseId -> caseLInk.getId() );
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

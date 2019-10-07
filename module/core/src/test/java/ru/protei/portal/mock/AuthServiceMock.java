@@ -23,11 +23,8 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.api.struct.Result.error;
 
 public class AuthServiceMock implements AuthService {
-    @Autowired
-    UserLoginDAO userLoginDAO;
 
-    @Autowired
-    PersonDAO personDAO;
+    public static final AuthToken TEST_AUTH_TOKEN = null;
 
     private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
@@ -62,21 +59,7 @@ public class AuthServiceMock implements AuthService {
 
     @Override
     public Result<UserSessionDescriptor> login( String appSessionID, String login, String pwd, String ip, String userAgent) {
-        UserLogin ulogin = userLoginDAO.findByLogin(login);
-        if (ulogin == null) {
-            return ok( descriptor);
-        } else {
-            Person person = personDAO.get(ulogin.getPersonId());
-            UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
-            userSessionDescriptor.init(makeUserSession(ulogin, person));
-            userSessionDescriptor.login(ulogin, person, person.getCompany());
-
-            if (!ulogin.getUpass().equalsIgnoreCase(DigestUtils.md5DigestAsHex(pwd.getBytes()))) {
-                return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
-            }
-
-            return ok( userSessionDescriptor);
-        }
+        return ok( descriptor);
     }
 
     @Override

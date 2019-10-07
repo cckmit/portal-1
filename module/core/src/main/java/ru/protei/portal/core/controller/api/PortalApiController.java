@@ -186,7 +186,7 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Boolean> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+    public Result<Long> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
                                                       @PathVariable("caseNumber") Long caseNumber,
                                                       @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );

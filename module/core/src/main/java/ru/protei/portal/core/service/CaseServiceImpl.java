@@ -531,6 +531,21 @@ public class CaseServiceImpl implements CaseService {
                 .map( this::fillYouTrackInfo );
     }
 
+    @Override
+    public Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff ) {
+        CaseObject caseObject = caseObjectDAO.getCaseByCaseno( caseNumber );
+        if (!isEmpty( caseObject.getLinks() )) {
+            linksDiff.putSameEntries( caseObject.getLinks() );
+        }
+
+        publisherService.publishEvent( CaseObjectEvent.create(this)
+                .withOldState(caseObject)
+                .withNewState(caseObject)
+                .withLinks( linksDiff )
+        );
+        return ok(caseObject.getId());
+    }
+
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
         if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
             return;
