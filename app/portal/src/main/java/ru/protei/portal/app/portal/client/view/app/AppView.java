@@ -120,7 +120,7 @@ public class AppView extends Composite
         }
     }
 
-    @UiHandler("profile")
+    @UiHandler({"profile", "menuBarFocus"})
     public void profileClick(ClickEvent event) {
         if (menuBar.getStyleName().contains("show")) {
             menuBar.removeStyleName( "show" );

@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -298,18 +299,34 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){
 
-        Stream<String> companySubscribers = Stream.empty();
-        if ( companySubscriptions != null ) {
-             companySubscribers = companySubscriptions.stream()
-                     .map( CompanySubscription::getEmail )
-                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"));
+        String message = null;
+        if (CollectionUtils.isEmpty(companySubscriptions)) {
+            message = lang.issueCompanySubscriptionNotDefined();
         }
 
-        Stream<String> personSubscribers = Stream.empty();
-        if(isPersonsAllowed && notifiers != null){
-            personSubscribers = notifiers.stream().map(Person::getDisplayShortName);
+        List<String> companySubscribers = new ArrayList<>();
+        if (companySubscriptions != null) {
+             companySubscribers = companySubscriptions.stream()
+                     .map( CompanySubscription::getEmail )
+                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"))
+                     .collect( Collectors.toList());
         }
-        return Stream.concat(companySubscribers, personSubscribers).collect(Collectors.joining(", "));
+
+        if (companySubscribers.isEmpty() && message == null) {
+            message = lang.issueCompanySubscriptionBasedOnPrivacyNotDefined();
+        }
+
+        List<String> personSubscribers = new ArrayList<>();
+        if(isPersonsAllowed && notifiers != null){
+            personSubscribers = notifiers.stream().map(Person::getDisplayShortName)
+                    .collect( Collectors.toList());
+        }
+
+        if (personSubscribers.isEmpty() && message != null) {
+            return message;
+        }
+
+        return Stream.concat(companySubscribers.stream(), personSubscribers.stream()).collect(Collectors.joining(", "));
     }
 
     private void addAttachments(Collection<Attachment> attachs){
