@@ -150,7 +150,11 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         }
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+            if (value.getProjectManager() != null)
+                cell.setInnerText(value.getProjectManager() == null ? "" : value.getProjectManager().getDisplayShortName());
+            else
+                cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+
         }
     };
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {

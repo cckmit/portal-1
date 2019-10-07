@@ -5,10 +5,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -50,21 +52,48 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
     }
 
+    /*private void projectRequest(Long projectId, Consumer<Project> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<Project>().withSuccess(consumer));
+    }*/
+    private void fillProjectSpecificFields (Long id){
+        regionService.getProjectInfo(id, new FluentCallback<Project>()
+                .withSuccess(project -> {
+                    view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
+                    view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
+                    if (project.getContragent() != null) fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
+                    else fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), 999999999999999L)); // НАДО СТЕРЕТЬ КОНТАКТЫ!!!!!
+                })
+        );
+    }
+
+
+  /*  private void fillProjectSpecificFields (Project project){
+                    view.setCompany(project.getContragent().getDisplayText());
+                    view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
+                    fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
+    }
+*/
     private void fillView( Platform value ) {
         if (value == null) {
             return;
         }
         view.setName(value.getName() == null ? "" : value.getName());
-        view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
-        view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
         view.setParameters(value.getParams() == null ? "" : value.getParams());
         view.setComment(value.getComment() == null ? "" : value.getComment());
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
 
-        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
         fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
+        if (value.getProjectId() != null){
+            //projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
+            fillProjectSpecificFields(value.getProjectId());
+        }
+        else {
+            view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
+            view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
+            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
+        }
     }
 
     @Override
@@ -90,6 +119,9 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     AbstractPlatformPreviewView view;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    RegionControllerAsync regionService;
+
 
     private Long platformId;
     private AppEvents.InitDetails initDetails;

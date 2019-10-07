@@ -27,6 +27,12 @@ public class Platform implements Serializable, Removable {
     @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
     private Person manager;
 
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(table = "case_object", localColumn = "project_id", remoteColumn = "id"),
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+    })
+    private Person projectManager;
+
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
 
@@ -102,6 +108,10 @@ public class Platform implements Serializable, Removable {
 
     public Person getManager() {
         return manager;
+    }
+
+    public Person getProjectManager() {
+        return projectManager;
     }
 
     public Long getProjectId() {
