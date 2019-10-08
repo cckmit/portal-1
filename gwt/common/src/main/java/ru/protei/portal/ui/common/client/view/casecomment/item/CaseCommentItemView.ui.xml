@@ -17,9 +17,6 @@
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <g:Label ui:field="timeElapsed" styleName="time-label"/>
             <li ui:field="status"/>
-            <g:HTMLPanel ui:field="timeElapsedTypeContainer" styleName="row edit-work-type" visible="false">
-                <workType:EditTimeElapsedTypeWidget ui:field="timeElapsedTypePopup"/>
-            </g:HTMLPanel>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">

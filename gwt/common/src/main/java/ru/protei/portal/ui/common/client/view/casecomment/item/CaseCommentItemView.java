@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypeWidget;
+import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypePopup;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 
 import java.util.HashSet;
@@ -54,10 +54,7 @@ public class CaseCommentItemView
 
     @Override
     public void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> editTimeElapsedType) {
-        timeElapsedTypePopup.addValueChangeHandler(timeElapsedType -> {
-            editTimeElapsedType.accept(timeElapsedType);
-            timeElapsedTypeContainer.setVisible(false);
-        });
+        timeElapsedTypePopup.addValueChangeHandler(editTimeElapsedType::accept);
     }
 
     @Override
@@ -248,7 +245,7 @@ public class CaseCommentItemView
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
         if (isTimeElapsedTypeEditEnabled) {
-            timeElapsedTypeContainer.setVisible(!timeElapsedTypeContainer.isVisible());
+            timeElapsedTypePopup.showNear(timeElapsed.asWidget());
         }
     }
 
@@ -284,11 +281,6 @@ public class CaseCommentItemView
     @UiField(provided = true)
     AttachmentList attachList;
     @UiField
-    HTMLPanel timeElapsedTypeContainer;
-    @Inject
-    @UiField(provided = true)
-    EditTimeElapsedTypeWidget timeElapsedTypePopup;
-    @UiField
     Label timeElapsed;
     @UiField
     DivElement attachBlock;
@@ -306,6 +298,8 @@ public class CaseCommentItemView
     LIElement options;
     @UiField
     ImageElement icon;
+    @Inject
+    EditTimeElapsedTypePopup timeElapsedTypePopup;
 
     @Inject
     @UiField
