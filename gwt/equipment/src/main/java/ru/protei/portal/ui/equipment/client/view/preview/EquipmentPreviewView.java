@@ -2,7 +2,8 @@ package ru.protei.portal.ui.equipment.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.LegendElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,12 +11,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPreviewActivity;
 import ru.protei.portal.ui.equipment.client.activity.preview.AbstractEquipmentPreviewView;
-
-import java.text.SimpleDateFormat;
 
 /**
  * Вид превью контакта
@@ -32,25 +30,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
-    @Override
     public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
-
-    @Override
-    public void setName( String value ) {
-        this.name.setInnerText( value );
+        this.header.setText( value );
     }
 
     @Override
@@ -60,17 +41,17 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
 
     @Override
     public void setComment( String value ) {
-        this.comment.setInnerText( value );
+        this.comment.setText( value );
     }
 
     @Override
     public void setType( String value ) {
-        this.type.setInnerText( value );
+        this.typeImage.setSrc( value );
     }
 
     @Override
     public void setLinkedEquipment( String value ) {
-        this.primaryUse.setInnerText( value );
+        this.primaryUse.setText( value );
     }
 
     @Override
@@ -89,18 +70,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    public void setCreatedDate(String createdDate) {
-        created.setInnerText(createdDate);
-    }
-
-    @Override
-    public void showFullScreen(boolean value) {
-        fullScreen.setVisible( !value );
-        if (value) {
-            preview.addStyleName("full-screen col-xs-12");
-        } else {
-            preview.setStyleName("preview");
-        }
+    public void setCreatedBy(String value) {
+        createdBy.setInnerHTML(value);
     }
 
     @Override
@@ -110,12 +81,7 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
 
     @Override
     public void setLinkedEquipmentExternalLink(String href) {
-        primaryUseLink.setHref(href);
-    }
-
-    @Override
-    public HasVisibility linkedEquipmentLinkVisibility() {
-        return primaryUseLink;
+        primaryUse.setHref(href);
     }
 
     @Override
@@ -150,8 +116,9 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         }
     }
 
-    @UiHandler( "fullScreen" )
+    @UiHandler( "header" )
     public void onFullScreenClicked( ClickEvent event ) {
+        event.preventDefault();
         if( activity != null ) {
             activity.onFullScreenClicked();
         }
@@ -161,21 +128,15 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @UiField
     Lang lang;
     @UiField
-    HTMLPanel preview;
+    Label comment;
     @UiField
-    SpanElement comment;
-    @UiField
-    LegendElement header;
+    Anchor header;
     @UiField
     DivElement number;
     @UiField
-    SpanElement name;
-    @UiField
     SpanElement nameBySldWrks;
     @UiField
-    SpanElement type;
-    @UiField
-    SpanElement primaryUse;
+    Anchor primaryUse;
     @UiField
     SpanElement manager;
     @UiField
@@ -185,16 +146,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     @UiField
     Button copy;
     @UiField
-    Button fullScreen;
-    @UiField
-    SpanElement created;
+    Element createdBy;
     @UiField
     HTMLPanel documents;
     @UiField
-    Anchor primaryUseLink;
-
-    @Inject
-    FixedPositioner positioner;
+    ImageElement typeImage;
 
     AbstractEquipmentPreviewActivity activity;
 

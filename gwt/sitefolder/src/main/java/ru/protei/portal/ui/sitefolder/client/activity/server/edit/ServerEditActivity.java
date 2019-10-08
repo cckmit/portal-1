@@ -38,7 +38,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.serverId == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerNew()));
 
             if (event.serverIdToBeCloned != null) {
                 requestServer(event.serverIdToBeCloned, server -> {
@@ -56,7 +55,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
             fillView(server);
             return;
         }
-        fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerEdit()));
 
         requestServer(event.serverId, this::fillView);
     }

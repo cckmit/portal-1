@@ -95,7 +95,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
             Element label = DOM.createLabel();
             label.setInnerText(name.getInnerText());
 
-            name.setInnerHTML("");
+            name.setInnerText("");
             name.appendChild(banIcon);
             name.appendChild(label);
 

@@ -25,6 +25,11 @@ public class PersonShortView implements Serializable {
         this.id = id;
     }
 
+    public PersonShortView(EntityOption entityOption) {
+        this.displayShortName = entityOption.getDisplayText();
+        this.id = entityOption.getId();
+    }
+
     public String getDisplayShortName() {
         return displayShortName;
     }

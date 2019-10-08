@@ -17,14 +17,14 @@ import java.util.List;
 /**
  * Сервис управления продуктами
  */
-@RemoteServiceRelativePath( "springGwtServices/ProductController" )
+@RemoteServiceRelativePath("springGwtServices/ProductController")
 public interface ProductController extends RemoteService {
 
     SearchResult<DevUnit> getProductList (ProductQuery query) throws RequestFailedException;
 
-    DevUnit getProduct( Long productId ) throws RequestFailedException;
+    DevUnit getProduct(Long productId) throws RequestFailedException;
 
-    Boolean saveProduct(DevUnit product) throws RequestFailedException;
+    DevUnit saveProduct(DevUnit product) throws RequestFailedException;
 
     Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException;
 
@@ -35,12 +35,12 @@ public interface ProductController extends RemoteService {
      * @param query запрос
      * @return
      */
-    List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException;
+    List<ProductShortView> getProductViewList(ProductQuery query) throws RequestFailedException;
 
     /**
      * Получение списка продуктовых направлений
      *
      * @param query
      */
-    List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException;
+    List<ProductDirectionInfo> getProductDirectionList(ProductDirectionQuery query) throws RequestFailedException;
 }

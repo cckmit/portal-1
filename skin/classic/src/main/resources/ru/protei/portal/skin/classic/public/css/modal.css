@@ -1,6 +1,9 @@
-
+.gwt-PopupPanel {
+  z-index: 1050 !important;
+}
 
 .modal {
+  display: block;
   position: fixed;
   top: 0;
   right: 0;
@@ -113,6 +116,11 @@ button.close {
   padding: 15px;
   max-height: calc(100vh - 200px);
   overflow-y: auto;
+}
+
+.modal-body .footer {
+  text-align: right;
+  margin-bottom: 30px;
 }
 
 .modal-body .tag-author {

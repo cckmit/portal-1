@@ -9,9 +9,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemActivity;
@@ -89,9 +92,19 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         itemView.setActivity(this);
         itemView.setApproved(document.getApproved());
         itemView.setDecimalNumber(document.getDecimalNumber());
-        itemView.setInfo((document.getInventoryNumber() == null ? "" : document.getInventoryNumber() + " ") + document.getName());
-        itemView.setDocumentType(document.getType().getName());
-        itemView.setCreated(document.getCreated());
+        StringBuilder infoBuilder = new StringBuilder();
+        if ( document.getInventoryNumber() != null ) {
+            infoBuilder.append(document.getInventoryNumber()).append(" ");
+        }
+        infoBuilder.append(document.getName())
+                .append(", ")
+                .append(document.getType().getName().toLowerCase())
+                .append(" ")
+                .append(lang.from().toLowerCase())
+                .append(" ")
+                .append(DateFormatter.formatDateOnly(document.getCreated()));
+
+        itemView.setInfo(infoBuilder.toString());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && isModifyEnabled);
         return itemView;
     }
@@ -100,6 +113,8 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         view.documentsContainer().add(itemView.asWidget());
     }
 
+    @Inject
+    Lang lang;
     @Inject
     DocumentControllerAsync documentController;
     @Inject

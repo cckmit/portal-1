@@ -6,15 +6,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -29,7 +28,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class IssueReportTableActivity implements
         AbstractIssueReportTableActivity,
@@ -43,12 +41,10 @@ public abstract class IssueReportTableActivity implements
         pagerView.setActivity(this);
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Show event) {
-        fireEvent(new AppEvents.InitPanelName(lang.issueReports()));
-
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE_REPORT));
+        fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE_REPORT));
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());

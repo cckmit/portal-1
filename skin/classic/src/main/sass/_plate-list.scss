@@ -47,7 +47,7 @@ ul.plate-list {
     margin: 7.5px;
     display: block;
     background: white;
-    border: 1px solid #d3d3d3;
+    border: 1px solid #ededed;
     -webkit-transition: opacity 0.35s;
     transition: opacity 0.35s;
     -webkit-font-smoothing: antialiased;
@@ -58,7 +58,7 @@ ul.plate-list {
         position: relative;
 
         &:after {
-          font: normal normal normal 14px/1 FontAwesome;
+          font: normal normal normal 14px/1 Font Awesome 5 Free;
           content: "\f187";
           position: absolute;
           font-size: 4em;
@@ -85,15 +85,8 @@ ul.plate-list {
       }
     }
 
-    &.employee {
-      height: 250px;
-      .header-block {
-        height: calc(240px - 3em);
-      }
-    }
-
     &.partner .header-block:after {
-      font-family: FontAwesome, serif;
+      font-family: "Font Awesome 5 Free", serif;
       content: "\f2b5";
     }
 
@@ -110,6 +103,19 @@ ul.plate-list {
     &.home .header-block:after {
       font-family: Ionicons, serif;
       content: "\f448";
+    }
+
+    &.employee {
+      height: 250px;
+      .header-block {
+        height: calc(240px - 3em);
+
+        & div {
+          font-size: 11px;
+          margin-bottom: 5px;
+          line-height: 11px;
+        }
+      }
     }
 
     &:hover {
@@ -136,7 +142,7 @@ ul.plate-list {
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       z-index: 1;
-      width: calc(100% - 3em);
+      //width: calc(100% - 3em);
       height: calc(170px - 3em);
       top: 0;
       left: 0;
@@ -146,11 +152,11 @@ ul.plate-list {
       }
       &:before {
         position: absolute;
-        top: 0;
-        right: 1.5em;
-        left: 1.5em;
+        top: 0.6em;
+        right: 1.4em;
+        left: 1.4em;
         z-index: -1;
-        height: 3em;
+        height: 2.6em;
         background: gray;
         content: '';
         -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
@@ -173,6 +179,7 @@ ul.plate-list {
         text-transform: uppercase;
         word-spacing: 0.15em;
         font-weight: 300;
+        font-size: 1.5em;
       }
 
       p {
@@ -188,7 +195,7 @@ ul.plate-list {
         transform: translate3d(0, -10px, 0);
 
         a {
-          margin: 0.5em;
+          margin: 0.2em 0.4em;
           color: white;
           outline: none;
           text-decoration: none !important;
@@ -226,18 +233,19 @@ ul.plate-list {
       transition: height 350ms ease;
 
       .plate-list-expander {
+        width: calc(100% - 30px);
         transition: height 350ms ease;
-        border: 1px solid #d3d3d3;
+        border: 1px solid #ededed;
         opacity: 1;
-        z-index: 10001;
+        z-index: 100;
       }
     }
     .plate-list-expander {
       position: absolute;
       top: auto;
-      left: 0;
+      left: 15px;
       width: 100%;
-      margin-top: 29px;
+      margin-top: 55px;
       text-align: left;
       overflow: hidden;
       background: white;
@@ -248,3 +256,10 @@ ul.plate-list {
   }
 }
 
+.employee-list-image {
+  display: block;
+  font-size: 6em;
+  height: 135px;
+  float: right;
+  margin: 0 0 5px 5px;
+}

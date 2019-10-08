@@ -1,6 +1,7 @@
 package ru.protei.portal.app.portal.client.view.auth;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,12 +17,10 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleBtnGroup;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
-import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 
 /**
  * Вид формы авторизации
@@ -67,17 +66,6 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
             activity.onLoginClicked();
     }
 
-    private void ensureDebugIds() {
-        login.ensureDebugId(DebugIds.AUTH.INPUT_LOGIN);
-        password.ensureDebugId(DebugIds.AUTH.INPUT_PASSWORD);
-        loginButton.ensureDebugId(DebugIds.AUTH.LOGIN_BUTTON);
-    }
-
-    private void initHandlers() {
-        loginContainer.sinkEvents(Event.ONKEYPRESS);
-        loginContainer.addHandler(this, KeyPressEvent.getType());
-    }
-
     public void setFocus () {
         login.setFocus(true);
     }
@@ -111,6 +99,21 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        login.ensureDebugId(DebugIds.AUTH.INPUT_LOGIN);
+        password.ensureDebugId(DebugIds.AUTH.INPUT_PASSWORD);
+        loginButton.ensureDebugId(DebugIds.AUTH.LOGIN_BUTTON);
+        errorText.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.AUTH.ERROR_ALERT);
+    }
+
+    private void initHandlers() {
+        loginContainer.sinkEvents(Event.ONKEYPRESS);
+        loginContainer.addHandler(this, KeyPressEvent.getType());
+    }
+
     private void initPlaceholders() {
         login.getElement().setAttribute("placeholder", lang.accountLogin() );
         password.getElement().setAttribute("placeholder", lang.accountPassword() );
@@ -121,7 +124,7 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     @UiField
     TextBox password;
     @UiField
-    OptionItem rememberMe;
+    CheckBox rememberMe;
     @UiField
     Button loginButton;
     @UiField

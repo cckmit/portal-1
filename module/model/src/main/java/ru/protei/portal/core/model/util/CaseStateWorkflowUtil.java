@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.util;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
@@ -9,8 +10,6 @@ import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 import java.util.List;
 
 public class CaseStateWorkflowUtil {
-
-    private static final String CASE_APP_TYPE_JIRA = "jira";
 
     public static boolean isCaseStateTransitionValid(CaseStateWorkflow workflow, En_CaseState caseStateFrom, En_CaseState caseStateTo) {
 
@@ -38,7 +37,7 @@ public class CaseStateWorkflowUtil {
             return En_CaseStateWorkflow.NO_WORKFLOW;
         }
 
-        if (CASE_APP_TYPE_JIRA.equals(caseObject.getExtAppType())) {
+        if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
             return En_CaseStateWorkflow.NX_JIRA;
         }
 

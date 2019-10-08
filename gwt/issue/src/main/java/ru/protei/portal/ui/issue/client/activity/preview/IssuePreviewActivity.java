@@ -4,21 +4,23 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_FileUploadStatus;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -51,6 +53,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 }
             }
         });
+        workTimeFormatter = new WorkTimeFormatter(lang);
     }
 
     @Event
@@ -84,8 +87,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         isPrivateCase = false;
 
         fillView(issueCaseNumber);
-        view.watchForScroll( true );
-        view.showFullScreen( false );
+        view.backBtnVisibility().setVisible(false);
     }
 
     @Event
@@ -98,7 +100,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         isPrivateCase = false;
 
         fillView(issueCaseNumber);
-        view.showFullScreen( true );
+        view.backBtnVisibility().setVisible(true);
     }
 
     @Event
@@ -144,30 +146,51 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
+    public void onPlatformExtLinkClicked() {
+        if (caseObject != null && caseObject.getPlatformId() != null) {
+            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(caseObject.getPlatformId()));
+        }
+    }
+
+    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
 
+    @Override
+    public void onCopyClicked() {
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
+
+        if (status != 0) {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        }
+    }
+
     private void fillView(CaseObject value ) {
+        this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
-        view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
-        view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
+        view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
+
         view.setState( value.getStateId() );
-        view.setCriticality( value.getImpLevel() );
+        view.setImportance( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
-        view.setContact( value.getInitiator() == null ? "" : value.getInitiator().getDisplayName() );
-        Company ourCompany = value.getManager() == null ? null : value.getManager().getCompany();
-        view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
-        view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
-        view.setName( value.getName() == null ? "" : value.getName() );
-        view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
-        Company initiator = value.getInitiatorCompany();
-        if ( initiator == null ) {
-            view.setCompany( "" );
-        } else {
-            view.setCompany( initiator.getCname() );
+
+        String contact = value.getInitiator() == null ? "" : value.getInitiator().getDisplayName();
+        Company initiatorCompany = value.getInitiatorCompany();
+        if ( initiatorCompany != null ) {
+            contact += " (" + initiatorCompany.getCname() + ")";
         }
+        view.setContact( contact );
+        String manager = value.getManager() == null ? "" : value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")";
+        view.setManager( manager );
+        view.setName( value.getName() == null ? "" : value.getName() );
+        view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
+        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+        view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
+
         fillSubscriptions(value);
 
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
@@ -186,6 +209,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                     .withSuccess(rendered -> view.setInfo(rendered)));
         }
 
+        fillViewForJira(value);
+
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withCaseId(value.getId())
@@ -195,6 +220,38 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withPrivateCase(isPrivateCase)
                 .withTextMarkup(textMarkup)
                 .build());
+    }
+
+    private void fillViewForJira(CaseObject value) {
+
+        view.jiraContainerVisibility().setVisible(false);
+
+        if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
+            return;
+        }
+
+        JiraMetaData meta = value.getJiraMetaData();
+        boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
+
+        view.jiraContainerVisibility().setVisible(true);
+
+        view.setJiraIssueType(meta.getIssueType());
+        view.setJiraSeverity(isSeverityDisplayed ? meta.getSeverity() : null);
+
+        slaController.getJiraSLAEntry(meta.getSlaMapId(), meta.getIssueType(), meta.getSeverity(), new FluentCallback<JiraSLAMapEntry>()
+            .withError(throwable -> {
+                view.setJiraTimeOfReaction(null);
+                view.setJiraTimeOfDecision(null);
+            })
+            .withSuccess(entry -> {
+                String timeOfReaction = entry.getTimeOfReactionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfReactionMinutes());
+                String timeOfDecision = entry.getTimeOfDecisionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfDecisionMinutes());
+                String description = entry.getDescription();
+                String severity = StringUtils.isNotBlank(description) ? description : meta.getSeverity();
+                view.setJiraTimeOfReaction(timeOfReaction);
+                view.setJiraTimeOfDecision(timeOfDecision);
+                view.setJiraSeverity(isSeverityDisplayed ? severity : null);
+            }));
     }
 
     private void fillSubscriptions( CaseObject value ) {
@@ -223,8 +280,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
             @Override
             public void onSuccess( CaseObject caseObject ) {
-                fireEvent( new AppEvents.InitPanelName( caseObject.getCaseNumber().toString() ) );
-
                 issueId = caseObject.getId();
                 isPrivateCase = caseObject.isPrivateCase();
                 textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);
@@ -244,18 +299,34 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){
 
-        Stream<String> companySubscribers = Stream.empty();
-        if ( companySubscriptions != null ) {
-             companySubscribers = companySubscriptions.stream()
-                     .map( CompanySubscription::getEmail )
-                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"));
+        String message = null;
+        if (CollectionUtils.isEmpty(companySubscriptions)) {
+            message = lang.issueCompanySubscriptionNotDefined();
         }
 
-        Stream<String> personSubscribers = Stream.empty();
-        if(isPersonsAllowed && notifiers != null){
-            personSubscribers = notifiers.stream().map(Person::getDisplayShortName);
+        List<String> companySubscribers = new ArrayList<>();
+        if (companySubscriptions != null) {
+             companySubscribers = companySubscriptions.stream()
+                     .map( CompanySubscription::getEmail )
+                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"))
+                     .collect( Collectors.toList());
         }
-        return Stream.concat(companySubscribers, personSubscribers).collect(Collectors.joining(", "));
+
+        if (companySubscribers.isEmpty() && message == null) {
+            message = lang.issueCompanySubscriptionBasedOnPrivacyNotDefined();
+        }
+
+        List<String> personSubscribers = new ArrayList<>();
+        if(isPersonsAllowed && notifiers != null){
+            personSubscribers = notifiers.stream().map(Person::getDisplayShortName)
+                    .collect( Collectors.toList());
+        }
+
+        if (personSubscribers.isEmpty() && message != null) {
+            return message;
+        }
+
+        return Stream.concat(companySubscribers.stream(), personSubscribers.stream()).collect(Collectors.joining(", "));
     }
 
     private void addAttachments(Collection<Attachment> attachs){
@@ -279,10 +350,14 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     CompanyControllerAsync companyService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    SLAControllerAsync slaController;
 
     private Long issueCaseNumber;
     private Long issueId;
     private boolean isPrivateCase;
     private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;
+    private WorkTimeFormatter workTimeFormatter;
+    private CaseObject caseObject;
 }

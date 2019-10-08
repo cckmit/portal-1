@@ -30,7 +30,10 @@ public class DynamicColumn<T> extends ClickColumn<T>{
         }
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
-        divElement.setInnerHTML( valueGenerator.apply(value) );
+        String htmlVal = valueGenerator.apply(value);
+        if ( htmlVal != null ) {
+            divElement.setInnerHTML(htmlVal);
+        }
 
         cell.appendChild( divElement );
     }

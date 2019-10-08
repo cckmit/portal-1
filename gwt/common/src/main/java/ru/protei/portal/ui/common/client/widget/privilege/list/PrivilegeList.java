@@ -101,7 +101,9 @@ public class PrivilegeList
         container.add( entityItem );
 
         for ( En_PrivilegeAction action : En_PrivilegeAction.values() ) {
-            entityItem.getContainer().add( new Label( actionLang.getName( action ) ) );
+            Label label = new Label(actionLang.getName(action));
+            label.setStyleName("control-label");
+            entityItem.getContainer().add( label );
         }
     }
 

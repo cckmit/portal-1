@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCat
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.text.RawTextButtonSelector;
@@ -123,10 +122,10 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     @Override
     public void setApprovedMode(boolean off) {
         if (off) {
-            nameContainer.setStyleName("form-group col-xs-6");
+            nameContainer.setStyleName("form-group col-md-6");
             documentUploaderContainer.setVisible(true);
         } else {
-            nameContainer.setStyleName("form-group col-xs-9");
+            nameContainer.setStyleName("form-group col-md-9");
             documentUploaderContainer.setVisible(false);
         }
     }
@@ -238,7 +237,7 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     @UiField(provided = true)
     DocumentUploader documentUploader;
     @UiField
-    OptionItem approved;
+    CheckBox approved;
     @Inject
     @UiField(provided = true)
     DocumentCategorySelector documentCategory;

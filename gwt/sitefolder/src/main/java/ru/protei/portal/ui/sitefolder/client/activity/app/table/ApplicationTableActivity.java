@@ -67,7 +67,7 @@ public abstract class ApplicationTableActivity implements
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
+            fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
         }
 
         if (serverId != null) {

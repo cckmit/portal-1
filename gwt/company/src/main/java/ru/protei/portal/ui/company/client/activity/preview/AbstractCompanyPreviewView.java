@@ -17,8 +17,6 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setActivity( AbstractCompanyPreviewActivity activity );
 
-    void watchForScroll(boolean isWatch);
-
     void setPhone( String value );
 
     void setSite( String value );
@@ -31,13 +29,9 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setCategory( String value );
 
-    void setParentCompany( String value );
-
-    void setChildrenCompanies( String value );
+    void setCompanyLinksMessage(String value );
 
     void setInfo( String value );
-
-    void setGroupVisible( boolean value );
 
     Widget asWidget(boolean isForTableView);
 

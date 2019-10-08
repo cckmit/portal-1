@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
@@ -39,8 +40,14 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        project.setRequestByOnLoad(false);
     }
-    
+
+    @Override
+    public void setIndependentProjects(Boolean independentProjects) {
+        project.setIndependentProject(independentProjects);
+    }
+
     @Override
     public void setActivity(AbstractContractEditActivity activity) {
         this.activity = activity;
@@ -82,21 +89,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<PersonShortView> manager() {
-        return manager;
-    }
-
-    @Override
-    public HasValue<EntityOption> contragent() {
-        return contragent;
-    }
-
-    @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
-    }
-
-    @Override
     public HasValue<Date> dateSigning() {
         return dateSigning;
     }
@@ -126,6 +118,38 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return costWithCurrency;
     }
 
+    @Override
+    public HasValue<EntityOption> project() {
+        return project;
+    }
+
+    @Override
+    public HasValue<PersonShortView> manager() {
+        return manager;
+    }
+
+    @Override
+    public HasValue<EntityOption> contragent() {
+        return contragent;
+    }
+
+    @Override
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
+    }
+
+    public HasEnabled managerEnabled() {
+        return manager;
+    }
+
+    public HasEnabled contragentEnabled() {
+        return contragent;
+    }
+
+    public HasEnabled directionEnabled() {
+        return direction;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -146,20 +170,19 @@ public class ContractEditView extends Composite implements AbstractContractEditV
             activity.onTypeChanged();
         }
     }
+
+    @UiHandler("project")
+    public void onValueChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.refreshProjectSpecificFields();
+        }
+    }
+
     @UiField
     Button saveButton;
 
     @UiField
     Lang lang;
-    @Inject
-    @UiField(provided = true)
-    CompanySelector contragent;
-    @Inject
-    @UiField(provided = true)
-    ProductDirectionButtonSelector direction;
-    @Inject
-    @UiField(provided = true)
-    EmployeeButtonSelector manager;
     @Inject
     @UiField(provided = true)
     HomeCompanyButtonSelector organization;
@@ -191,6 +214,18 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractButtonSelector contractParent;
+    @Inject
+    @UiField(provided = true)
+    ProjectButtonSelector project;
+    @Inject
+    @UiField(provided = true)
+    ProductDirectionButtonSelector direction;
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector manager;
+    @Inject
+    @UiField(provided = true)
+    CompanySelector contragent;
 
     private AbstractContractEditActivity activity;
 

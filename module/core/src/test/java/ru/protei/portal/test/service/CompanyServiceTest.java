@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
@@ -35,7 +35,7 @@ public class CompanyServiceTest extends BaseServiceTest {
     @Test
     public void testGetCompanyList () {
 
-        CoreResponse<SearchResult<Company>> result = companyService.getCompanies(getAuthToken(), new CompanyQuery());
+        Result<SearchResult<Company>> result = companyService.getCompanies(getAuthToken(), new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());
@@ -112,7 +112,7 @@ public class CompanyServiceTest extends BaseServiceTest {
             companyGroupId = companyGroupDAO.persist( group );
             company.setGroupId(group.getId());
 
-            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
+            Result<Company> response = companyService.createCompany(getAuthToken(), company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
             log.info("Company id = {}", company.getId());
@@ -157,7 +157,7 @@ public class CompanyServiceTest extends BaseServiceTest {
             company.setCreated(new Date());
             company.setCname("Тестовая компания " + new Date().getTime());
 
-            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
+            Result<Company> response = companyService.createCompany(getAuthToken(), company);
             Company companyFromService = response.getData();
             companyId = companyFromService.getId();
 

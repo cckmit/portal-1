@@ -5,8 +5,6 @@ package ru.protei.portal.app.portal.client.activity.profile;
  */
 public interface AbstractProfilePageActivity {
 
-    void onSaveSubscriptionClicked();
-
     void onChangePasswordButtonClicked();
 
     void onSavePasswordButtonClicked();

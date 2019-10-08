@@ -24,16 +24,14 @@ public class EmployeeEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, EmployeeShortView employee, boolean isWatchForScroll, boolean isForTableView ) {
+        public ShowPreview( HasWidgets parent, EmployeeShortView employee, boolean isForTableView ) {
             this.parent = parent;
             this.employee = employee;
             this.isForTableView = isForTableView;
-            this.isWatchForScroll = isWatchForScroll;
         }
 
         public HasWidgets parent;
         public EmployeeShortView employee;
-        public boolean isWatchForScroll;
         public boolean isForTableView;
     }
 

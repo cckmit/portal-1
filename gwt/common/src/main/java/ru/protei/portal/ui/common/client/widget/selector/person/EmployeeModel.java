@@ -38,7 +38,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
             return;
         }
         subscribers.add( selector );
-        if( CollectionUtils.isNotEmpty( list ) ){
+        if( CollectionUtils.isNotEmpty( list ) ) {
             selector.fillOptions( list );
             selector.refreshValue();
             return;
@@ -67,7 +67,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     private void refreshOptions() {
         if (requested) return;
         requested = true;
-        employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
+        employeeService.getEmployeeViewList( new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {

@@ -26,7 +26,6 @@ import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItem
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -46,6 +45,7 @@ import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
@@ -63,7 +63,6 @@ import ru.protei.winter.web.common.client.view.section.SectionItemView;
 public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
-        bind( FixedPositioner.class ).asEagerSingleton();
         bind( ActionBarActivity.class ).asEagerSingleton();
         bind( AbstractSectionItemView.class ).to( SectionItemView.class );
 
@@ -119,6 +118,7 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(DecimalNumberFormatter.class);
 
         bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( CustomerTypeModel.class ).asEagerSingleton();
     }
 }
 

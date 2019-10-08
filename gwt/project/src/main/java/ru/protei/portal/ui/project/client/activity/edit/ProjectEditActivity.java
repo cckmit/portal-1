@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -37,21 +38,19 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
+    public void onInitDetails(AppEvents.InitDetails event) {
+        this.initDetails = event;
     }
 
     @Event
-    public void onShow(ProjectEvents.Edit event) {
+    public void onShow (ProjectEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         resetView();
 
         if (event.id == null) {
-            project = new ProjectInfo();
-            fireEvent(new AppEvents.InitPanelName(lang.newProject()));
+            project = new Project();
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
             requestProject(event.id, this::fillView);
         }
     }
@@ -66,42 +65,43 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveEnabled().setEnabled(false);
 
-        regionService.saveProject( project, new RequestCallback<Void>(){
+        regionService.saveProject( project, new RequestCallback<Project>(){
             @Override
             public void onError( Throwable throwable ) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Void aVoid ) {
+            public void onSuccess( Project aVoid ) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProjectEvents.ChangeModel());
                 fireEvent(new ProjectEvents.Show());
-                return;
             }
         });
-}
+    }
 
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
     }
 
-    private void requestProject(Long projectId, Consumer<ProjectInfo> successAction) {
-        regionService.getProject( projectId, new RequestCallback<ProjectInfo>() {
+    private void requestProject(Long projectId, Consumer<Project> successAction) {
+        regionService.getProject( projectId, new RequestCallback<Project>() {
             @Override
             public void onError(Throwable throwable) {}
 
             @Override
-            public void onSuccess(ProjectInfo projectInfo) {
-                project = projectInfo;
-                successAction.accept(projectInfo);
+            public void onSuccess(Project project) {
+                ProjectEditActivity.this.project = project;
+                successAction.accept(project);
             }
         });
     }
 
     private void resetView () {
-        view.number().setValue(null);
+        view.setNumber(null);
         view.name().setValue("");
         view.description().setText("");
         view.state().setValue(En_RegionState.UNKNOWN);
@@ -110,7 +110,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(null);
         view.company().setValue(null);
         view.team().setValue(null);
-        view.products().setValue(null);
+        view.product().setValue(null);
+        view.setHideNullValue(true);
 
         view.getDocumentsContainer().clear();
         view.getCommentsContainer().clear();
@@ -123,18 +124,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.saveEnabled().setEnabled(true);
     }
 
-    private void fillView(ProjectInfo projectInfo) {
-        view.number().setValue( projectInfo.getId().intValue() );
-        view.name().setValue(projectInfo.getName());
-        view.state().setValue( projectInfo.getState() );
-        view.direction().setValue( projectInfo.getProductDirection() == null ? null : new ProductDirectionInfo( projectInfo.getProductDirection() ) );
-        view.team().setValue( new HashSet<>( projectInfo.getTeam() ) );
-        view.region().setValue( projectInfo.getRegion() );
-        Company customer = projectInfo.getCustomer();
+    private void fillView(Project project) {
+        view.setNumber( project.getId().intValue() );
+        view.name().setValue(project.getName());
+        view.state().setValue( project.getState() );
+        view.direction().setValue( project.getProductDirection() == null ? null : new ProductDirectionInfo( project.getProductDirection() ) );
+        view.team().setValue( new HashSet<>( project.getTeam() ) );
+        view.region().setValue( project.getRegion() );
+        Company customer = project.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
-        view.description().setText(projectInfo.getDescription());
-        view.products().setValue(projectInfo.getProducts());
-        view.customerType().setValue(projectInfo.getCustomerType());
+        view.description().setText(project.getDescription());
+        view.product().setValue(project.getSingleProduct());
+        view.customerType().setValue(project.getCustomerType());
 
         view.numberVisibility().setVisible( true );
 
@@ -143,23 +144,23 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
-                .withCaseId(projectInfo.getId())
+                .withCaseId(project.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
                 .build());
 
-        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
+        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
     }
 
-    private ProjectInfo fillProject(ProjectInfo projectInfo) {
-        projectInfo.setName(view.name().getValue());
-        projectInfo.setDescription(view.description().getText());
-        projectInfo.setState(view.state().getValue());
-        projectInfo.setCustomer(Company.fromEntityOption(view.company().getValue()));
-        projectInfo.setCustomerType(view.customerType().getValue());
-        projectInfo.setProducts(view.products().getValue());
-        projectInfo.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
-        projectInfo.setRegion(view.region().getValue());
-        projectInfo.setTeam(new ArrayList<>(view.team().getValue()));
+    private Project fillProject(Project project) {
+        project.setName(view.name().getValue());
+        project.setDescription(view.description().getText());
+        project.setState(view.state().getValue());
+        project.setCustomer(Company.fromEntityOption(view.company().getValue()));
+        project.setCustomerType(view.customerType().getValue());
+        project.setProducts(view.product().getValue() == null ? null : new HashSet<>(Collections.singleton(view.product().getValue())));
+        project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
+        project.setRegion(view.region().getValue());
+        project.setTeam(new ArrayList<>(view.team().getValue()));
         return project;
     }
 
@@ -189,10 +190,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         return true;
     }
 
-    private boolean isNew(ProjectInfo projectInfo) {
-        return projectInfo.getId() == null;
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -201,13 +198,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
-/*    @Inject
-    LocalStorageService localStorageService;*/
 
-    private ProjectInfo project;
+    private Project project;
 
     private AppEvents.InitDetails initDetails;
-
-    private static final Logger log = Logger.getLogger(ProjectEditActivity.class.getName());
-    private static final String PROJECT_EDIT = "project_edit_is_preview_displayed";
 }

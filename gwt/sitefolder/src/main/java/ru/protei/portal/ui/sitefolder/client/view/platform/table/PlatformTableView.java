@@ -164,7 +164,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
             cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " + lang.amountShort());
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref("#");
-            a.addClassName("fa fa-share cell-inline-icon");
+            a.addClassName("m-l-5 fa fa-share cell-inline-icon");
             a.setTitle(lang.siteFolderServers());
             cell.appendChild(a);
         }

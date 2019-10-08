@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="root" styleName="nav-item" tag="li">
+        <g:Anchor ui:field="anchor" href="#">
+            <i ui:field="icon" class="tab-icon hide"/>
+            <span ui:field="text"/>
+        </g:Anchor>
+    </g:HTMLPanel>
+</ui:UiBinder>

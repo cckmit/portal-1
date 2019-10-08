@@ -2,7 +2,6 @@ package ru.protei.portal.ui.role.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,7 +10,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -26,18 +24,6 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -110,9 +96,6 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
 
     Timer timer = new Timer() {
         @Override

@@ -25,7 +25,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;

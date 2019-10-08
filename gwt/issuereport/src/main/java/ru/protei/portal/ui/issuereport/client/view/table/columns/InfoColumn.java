@@ -32,7 +32,7 @@ public class InfoColumn extends StaticColumn<Report> {
         Element divElement = DOM.createDiv();
 
         Element locale = DOM.createElement("p");
-        locale.addClassName("fa fa-fw locale-box");
+        locale.addClassName("fa locale-box");
         locale.setInnerText(value == null ? "" : value.getLocale() == null ? "" : value.getLocale());
         divElement.appendChild(locale);
 

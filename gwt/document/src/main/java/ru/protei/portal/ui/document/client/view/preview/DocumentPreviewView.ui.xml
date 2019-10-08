@@ -3,73 +3,67 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
-            <fieldset class="header">
-                <legend ui:field="header"></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentName}"/></label>
-                    <span class="col-xs-7" ui:field="name"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentVersion}"/></label>
-                    <span class="col-xs-7" ui:field="version"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.created}"/></label>
-                    <span class="col-xs-7" ui:field="created"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentType}"/></label>
-                    <span class="col-xs-7" ui:field="type"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentExecutionType}"/></label>
-                    <span class="col-xs-7" ui:field="executionType"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.annotation}"/></label>
-                    <span class="col-xs-7" ui:field="annotation"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentProject}"/></label>
-                    <span class="col-xs-7" ui:field="project"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentManager}"/></label>
-                    <span class="col-xs-7" ui:field="manager"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentRegistrar}"/></label>
-                    <span class="col-xs-7" ui:field="registrar"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentContractor}"/></label>
-                    <span class="col-xs-7" ui:field="contractor"></span>
-                </div>
-            </fieldset>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.documentIdentification}"/></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.documentDecimalNumber}"/></label>
-                    <span class="col-xs-7" ui:field="numberDecimal"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.inventoryNumber}"/></label>
-                    <span class="col-xs-7" ui:field="numberInventory"></span>
-                </div>
-            </fieldset>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.documentKeywords}"/></legend>
-                <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 decimal-number" ui:field="keyWords"></span>
-                </div>
-            </fieldset>
-            <g:Anchor href="javascript:void(0)" ui:field="downloadButton" styleName="btn btn-white" target="_blank">
-                <ui:text from="{lang.download}"/>
+    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed">
+        <div class="card-body">
+            <h4 ui:field="header" class="m-r-50"/>
+            <g:Anchor href="javascript:void(0)" ui:field="downloadButton" target="_blank">
+                <img src="./images/pdficon.png" class="preview-title-image_right"/>
             </g:Anchor>
-        </g:HTMLPanel>
+
+            <div class="inline">
+                <small ui:field="createdBy"/>
+            </div>
+
+            <g:Label styleName="small hint-text pre-formatted-info" ui:field="annotation"/>
+            <div ui:field="version"/>
+
+            <h5><ui:text from="{lang.documentCommonHeader}"/></h5>
+            <div class="small">
+                <b><ui:text from="{lang.documentType}: "/></b>
+                <span ui:field="type"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.documentExecutionType}: "/></b>
+                <span ui:field="executionType"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.documentProject}: "/></b>
+                <span ui:field="project"/>
+            </div>
+
+            <h5><ui:text from="{lang.documentIdentification}"/></h5>
+
+            <div class="small">
+                <b><ui:text from="{lang.documentDecimalNumber}: "/></b>
+                <span ui:field="numberDecimal"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.inventoryNumber}: "/></b>
+                <span ui:field="numberInventory"/>
+            </div>
+
+            <h5><ui:text from="{lang.documentWorkGroupHeader}"/></h5>
+
+            <div class="small">
+                <b><ui:text from="{lang.documentManager}: "/></b>
+                <span ui:field="manager"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.documentRegistrar}: "/></b>
+                <span ui:field="registrar"/>
+            </div>
+
+            <div class="small">
+                <b><ui:text from="{lang.documentContractor}: "/></b>
+                <span ui:field="contractor"/>
+            </div>
+
+            <h5><ui:text from="{lang.documentKeywords}"/></h5>
+            <span ui:field="keyWords"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

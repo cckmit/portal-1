@@ -4,27 +4,41 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview project">
-            <fieldset class="header">
-                <legend><ui:text from="{lang.documentCategory}"/></legend>
-                <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
-            </fieldset>
+    <g:HTMLPanel styleName="card card-default no-border card-fixed">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.documentTypeName}"/>
+                    </label>
+                    <g:TextBox ui:field="name" styleName="form-control" />
+                </div>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.documentTypeName}"/></legend>
-                <g:TextBox ui:field="name" styleName="col-xs-12" />
-            </fieldset>
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.documentTypeShortName}"/>
+                    </label>
+                    <g:TextBox ui:field="shortName" styleName="form-control" />
+                </div>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.documentTypeShortName}"/></legend>
-                <g:TextBox ui:field="shortName" styleName="col-xs-12" />
-            </fieldset>
+                <doccategory:DocumentCategorySelector ui:field="documentCategory"
+                                                      header="{lang.documentCategory}"
+                                                      addStyleNames="form-group col-md-6"/>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.documentTypeGost}"/></legend>
-                <g:TextBox ui:field="gost" styleName="col-xs-12" />
-            </fieldset>
-        </g:HTMLPanel>
+
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.documentTypeGost}"/>
+                    </label>
+                    <g:TextBox ui:field="gost" styleName="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="text-right">
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
+            </div>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

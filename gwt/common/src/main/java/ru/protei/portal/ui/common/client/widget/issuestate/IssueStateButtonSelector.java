@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -65,7 +66,7 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
             }
             @Override
             public DisplayOption makeDisplaySelectedOption(En_CaseState caseState) {
-                return new DisplayOption(makeCaseStateName(caseState), "", "fa fa-dot-circle-o case-state-item");
+                return new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
             }
         };
     }

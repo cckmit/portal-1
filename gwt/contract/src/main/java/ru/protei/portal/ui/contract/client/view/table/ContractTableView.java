@@ -12,13 +12,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -29,7 +25,6 @@ import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -114,14 +109,15 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(numTypeColumn);
 
         DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
-                contract -> "<b>" + StringUtils.emptyIfNull(contract.getDirectionName()) + "</b><br/>" + StringUtils.emptyIfNull(contract.getDescription()));
+                contract -> "<b>" + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseDirectionName()) : StringUtils.emptyIfNull(contract.getDirectionName())) + "</b><br/>"
+                        + StringUtils.emptyIfNull(contract.getDescription()));
         clickColumns.add(descriptionColumn);
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",
                 contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
-                        +  "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
+                        +  "<b>" + lang.contractManager() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseManagerShortName()) : StringUtils.emptyIfNull(contract.getManagerShortName())) + "</b><br/>"
                         +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
-                        +  "<b>" + lang.contractContragent() + ":</b> " + StringUtils.emptyIfNull(contract.getContragentName()) + "</b>");
+                        +  "<b>" + lang.contractContragent() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseContragentName()) : StringUtils.emptyIfNull(contract.getContragentName())) + "</b>");
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",

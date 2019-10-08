@@ -81,7 +81,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             CaseQuery query = new CaseQuery(viewToModel.get(view).query);
             query.setCreatedFrom(null);
             query.setCreatedTo(null);
-            fireEvent(new IssueEvents.Show(query));
+            fireEvent(new IssueEvents.Show(query, true));
         }
     }
 

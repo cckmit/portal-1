@@ -170,8 +170,8 @@ public class StringSelectInput
 
             unfilledWidth = containerRightBorder - lastItemRightBorder;
         }
-        if (unfilledWidth < 160) {
-            unfilledWidth = 160;
+        if (unfilledWidth < 180) {
+            unfilledWidth = 180;
         }
 
         input.setWidth(unfilledWidth + "px");

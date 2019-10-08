@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
@@ -19,7 +19,9 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
+import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
@@ -85,7 +87,7 @@ public class MailNotificationProcessor {
         CaseObject caseObject = event.getCaseObject();
 
         Date upperBoundDate = makeCommentUpperBoundDate(event);
-        CoreResponse<List<CaseComment>> allComments = caseCommentService.getCaseCommentList(null, En_CaseType.CRM_SUPPORT, new CaseCommentQuery(caseObject.getId(), upperBoundDate));
+        Result<List<CaseComment>> allComments = caseCommentService.getCaseCommentList(null, En_CaseType.CRM_SUPPORT, new CaseCommentQuery(caseObject.getId(), upperBoundDate));
 
         if (allComments.isError()) {
             log.error("Case notification :: failed to retrieve comments for caseId={}", caseObject.getId());
@@ -538,7 +540,7 @@ public class MailNotificationProcessor {
     }
 
     private Long getEmailLastId(Long caseId) {
-        CoreResponse<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
+        Result<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
         return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
     }
 

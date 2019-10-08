@@ -13,10 +13,8 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -37,18 +35,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         initWidget( ourUiBinder.createAndBindUi( this ) );
         direction.setDefaultValue(lang.contractSelectDirection());
         sortField.setType( ModuleType.PROJECT );
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -197,10 +183,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     ProductDirectionButtonSelector direction;
 
     @UiField
-    OptionItem onlyMineProjects;
-
-    @Inject
-    FixedPositioner positioner;
+    CheckBox onlyMineProjects;
 
     AbstractProjectFilterActivity activity;
 

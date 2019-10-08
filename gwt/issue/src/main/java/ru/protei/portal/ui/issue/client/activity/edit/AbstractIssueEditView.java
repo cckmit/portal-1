@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
@@ -8,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -39,10 +41,11 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
     HasValue<ProductShortView> product();
-    HasValue<Boolean> isLocal();
+    HasValue<Boolean> isPrivate();
     HasValue<Set<PersonShortView>> notifiers();
     HasValue<Set<CaseLink>> links();
     HasValue<Set<CaseTag>> tags();
+    HasValue<JiraMetaData> jiraSlaSelector();
 
     HasValidable nameValidator();
     HasValidable stateValidator();
@@ -51,26 +54,33 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility timeElapsedContainerVisibility();
 
     HasValidable companyValidator();
-    HasValidable initiatorValidator();
-    HasValidable productValidator();
-    HasValidable managerValidator();
 
     HasEnabled initiatorState();
 
     HasVisibility numberVisibility();
-
-    HasValue<Integer> number();
+    HasVisibility jiraSlaSelectorVisibility();
 
     void setSubscriptionEmails(String value);
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
+
+    HasVisibility numberContainerVisibility();
+
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
+    void setCreatedBy(String value);
+
+    HasVisibility copyVisibility();
+
     void showComments(boolean isShow);
     boolean isAttached();
+    HasValue<EntityOption> platform();
 
+    HasVisibility platformVisibility();
+
+    void setPrivacyIcon(Boolean isPrivate);
 
     HasVisibility saveVisibility();
 
@@ -79,14 +89,16 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled managerEnabled();
     HasEnabled stateEnabled();
 
+    void setNumber(Integer num);
+
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
     HasVisibility timeElapsedLabelVisibility();
-    HasVisibility timeElapsedInputVisibility();
-    void setTimeElapseTypeVisibility( boolean isVisible );
-
+    HasVisibility timeElapsedEditContainerVisibility();
 
     HasEnabled saveEnabled();
+
+    Element timeElapsedHeader();
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 
@@ -96,7 +108,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void applyCompanyValueIfOneOption();
 
-    void setTagsEnabled(boolean enabled);
     void setTagsAddButtonEnabled(boolean enabled);
 
     void setTagsEditButtonEnabled(boolean enabled);
@@ -106,4 +117,5 @@ public interface AbstractIssueEditView extends IsWidget {
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
     String DESCRIPTION = "description";
+
 }

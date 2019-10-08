@@ -2,29 +2,19 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <div class="preview">
-            <fieldset class="header">
-                <legend><ui:text from="{lang.account}"/></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountLogin}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="login"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountPerson}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="displayName"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountCompany}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="company"></span>
-                </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.accountRoles}"/></legend>
-                <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12" ui:field="roles"></span>
-                </div>
-            </fieldset>
+    <g:HTMLPanel styleName="card card-default no-border card-fixed">
+        <div class="card-body">
+            <h4 class="m-r-50">
+                <ui:text from="{lang.accountFor}"/>
+                <b ui:field="personInfo"/>
+            </h4>
+            <img ui:field="typeImage" src="" class="preview-title-image_right"/>
+            <div class="clearfix"/>
+            <label class="control-label inline bold"><ui:text from="{lang.accountLogin}: "/></label>
+            <span ui:field="login"/>
+            <div class="clearfix"/>
+            <label class="control-label inline bold"><ui:text from="{lang.accountRoles}: "/></label>
+            <span ui:field="roles"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

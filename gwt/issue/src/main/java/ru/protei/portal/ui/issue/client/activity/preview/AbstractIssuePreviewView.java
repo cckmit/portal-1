@@ -18,32 +18,43 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setActivity( AbstractIssuePreviewActivity activity );
 
-    void watchForScroll(boolean isWatch);
-    void setPrivateIssue( boolean privateIssue );
+    void setPrivateIssue(boolean privateIssue );
     void setCaseNumber(Long caseNumber);
-    void setHeader( String value );
-    void setCreationDate( String value );
+    void setCreatedBy(String value );
     void setState( long value );
-    void setCriticality( int value );
+    void setImportance(int value );
     void setProduct( String value );
-    void setCompany( String value );
 
     void setLinks(Set<CaseLink> value);
     void setTags(Set<CaseTag> value);
 
     void setContact(String value );
-    void setOurCompany( String value );
     void setManager( String value );
     void setName( String value );
-    void setInfo( String value );
+
+    String getName();
+
+    void setInfo(String value );
+
+    void setPlatform(String value);
+    void setPlatformVisibility(boolean visible);
+
     void setSubscriptionEmails( String value );
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();
-    void showFullScreen( boolean value );
+
+    HasVisibility jiraContainerVisibility();
+
+    void setJiraIssueType(String value);
+    void setJiraSeverity(String value);
+    void setJiraTimeOfReaction(String value);
+    void setJiraTimeOfDecision(String value);
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     boolean isAttached();
+
+    HasVisibility backBtnVisibility();
 }

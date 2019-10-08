@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 
 /**
  * Сервис автоматического контролирования и управления отчетами
@@ -12,21 +12,21 @@ public interface ReportControlService {
      *
      * @return результат выполнения операции
      */
-    CoreResponse processNewReports();
+    Result processNewReports();
 
     /**
      * Обработать старые отчеты
      *
      * @return результат выполнения операции
      */
-    CoreResponse processOldReports();
+    Result processOldReports();
 
     /**
      * Обработать подвисшие отчеты
      *
      * @return результат выполнения операции
      */
-    CoreResponse processHangReports();
+    Result processHangReports();
 
     // Методы для автоматической обработки, контролирования и управления отчетами
 

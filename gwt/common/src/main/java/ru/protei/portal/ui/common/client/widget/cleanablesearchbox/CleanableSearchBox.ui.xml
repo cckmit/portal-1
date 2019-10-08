@@ -2,14 +2,15 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel>
-        <div class="cleanable-search">
-            <div class="input-group">
-                <span ui:field="addon" class="input-group-addon input-group-addon-fix text-bold hide">
-                    <i ui:field="addonIcon" class="hide"/>
+        <div class="cleanable-search input-group">
+            <div  ui:field="addon" class="input-group-prepend hide">
+                <span class="input-group-text transparent input-group-text-fix" ui:field="addonText">
+                    <i ui:field="addonIcon"/>
                 </span>
-                <g:Anchor ui:field="textBoxAction" styleName="icon cleanable-search-icon"/>
-                <g:TextBox ui:field="textBox" styleName="input-field"/>
             </div>
+            <g:TextBox ui:field="textBox" styleName="form-control rounded-right-3 rounded-left-3"/>
+
+            <g:Anchor ui:field="textBoxAction" styleName="icon cleanable-search-icon"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -26,16 +25,13 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
@@ -315,7 +311,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -366,8 +362,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
-    @UiField
-    OptionItem searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
@@ -407,6 +401,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
+    @UiField
+    CheckBox searchByComments;
 
     private Timer timer = null;
     private AbstractIssueFilterParamActivity activity = null;

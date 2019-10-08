@@ -27,15 +27,13 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
@@ -503,7 +501,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -529,15 +527,13 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @UiField(provided = true)
     IssueFilterSelector userFilter;
     @UiField
-    HTMLPanel body;
-    @UiField
     CleanableSearchBox search;
     @UiField
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
     @UiField
-    OptionItem searchByComments;
+    CheckBox searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;

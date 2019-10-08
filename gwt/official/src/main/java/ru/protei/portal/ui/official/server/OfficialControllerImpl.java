@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.OfficialQuery;
@@ -27,7 +27,7 @@ public class OfficialControllerImpl implements OfficialController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Official > response = officialService.getOfficial( descriptor.makeAuthToken(), id );
+        Result< Official > response = officialService.getOfficial( descriptor.makeAuthToken(), id );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -41,7 +41,7 @@ public class OfficialControllerImpl implements OfficialController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Map< String, List< Official > > > response = officialService.listOfficialsByRegions( descriptor.makeAuthToken(), query );
+        Result< Map< String, List< Official > > > response = officialService.listOfficialsByRegions( descriptor.makeAuthToken(), query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -62,7 +62,7 @@ public class OfficialControllerImpl implements OfficialController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< OfficialMember > response = officialService.getOfficialMember( descriptor.makeAuthToken(), id );
+        Result< OfficialMember > response = officialService.getOfficialMember( descriptor.makeAuthToken(), id );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -74,7 +74,7 @@ public class OfficialControllerImpl implements OfficialController {
     public Long createOfficialMember(OfficialMember officialMember, Long parentId) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Long > response = officialService.createOfficialMember( descriptor.makeAuthToken(), officialMember, parentId);
+        Result< Long > response = officialService.createOfficialMember( descriptor.makeAuthToken(), officialMember, parentId);
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -88,7 +88,7 @@ public class OfficialControllerImpl implements OfficialController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<OfficialMember> response = officialService.saveOfficialMember( descriptor.makeAuthToken(), officialMember );
+        Result<OfficialMember> response = officialService.saveOfficialMember( descriptor.makeAuthToken(), officialMember );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -101,7 +101,7 @@ public class OfficialControllerImpl implements OfficialController {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Long creatorId = sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId();
 
-        CoreResponse< Long > response = officialService.createOfficial( descriptor.makeAuthToken(), official, creatorId );
+        Result< Long > response = officialService.createOfficial( descriptor.makeAuthToken(), official, creatorId );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -113,7 +113,7 @@ public class OfficialControllerImpl implements OfficialController {
     public Official updateOfficial(Official official) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Official> response = officialService.updateOfficial( descriptor.makeAuthToken(), official );
+        Result<Official> response = officialService.updateOfficial( descriptor.makeAuthToken(), official );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -124,7 +124,7 @@ public class OfficialControllerImpl implements OfficialController {
     public boolean removeOfficial(Long id) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Boolean > response = officialService.removeOfficial( descriptor.makeAuthToken(), id);
+        Result< Boolean > response = officialService.removeOfficial( descriptor.makeAuthToken(), id);
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -136,7 +136,7 @@ public class OfficialControllerImpl implements OfficialController {
     public boolean removeOfficialMember(Long id) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Boolean > response = officialService.removeOfficialMember( descriptor.makeAuthToken(), id);
+        Result< Boolean > response = officialService.removeOfficialMember( descriptor.makeAuthToken(), id);
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }

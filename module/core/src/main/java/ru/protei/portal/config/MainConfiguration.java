@@ -29,14 +29,21 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.AccountService;
+import ru.protei.portal.core.service.AccountServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
-import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.core.service.user.AuthServiceImpl;
-import ru.protei.portal.core.service.user.LDAPAuthProvider;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.auth.AuthServiceImpl;
+import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
@@ -395,6 +402,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
     public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }
@@ -746,6 +758,11 @@ public class MainConfiguration {
     @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
+    }
+
+    @Bean
+    public SLAService getSLAService() {
+        return new SLAServiceImpl();
     }
 
 

@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:localeselector="urn:import:ru.protei.portal.app.portal.client.widget.locale"
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
+             xmlns:localeselector="urn:import:ru.protei.portal.app.portal.client.widget.locale">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -49,14 +48,14 @@
                         <g:PasswordTextBox ui:field="password" styleName="form-control"/>
                     </div>
 
-                    <div class="form-group width-auto auth-remember-me">
-                        <option:OptionItem ui:field="rememberMe" styleName="checkbox single" name="{lang.rememberMe}"/>
+                    <div class="form-group width-auto">
+                        <g:CheckBox ui:field="rememberMe" styleName="checkbox" text="{lang.rememberMe}"/>
                     </div>
 
                     <g:Button ui:field="loginButton" text="{lang.buttonLogin}"
-                              styleName="btn-auth m-t-10"/>
+                              styleName="btn btn-complete m-t-10"/>
 
-                    <div class="alert alert-danger fade in m-t-15 text-center hide" ui:field="errorMessage">
+                    <div class="alert alert-danger m-t-15 text-center hide" ui:field="errorMessage">
                         <span ui:field="errorText"/>
                     </div>
                 </div>

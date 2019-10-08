@@ -72,12 +72,11 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     }
 
     private void fillView( EmployeeRegistration value ) {
-        view.setHeader( lang.employeeRegistrationCommonHeader() + (value.getId() == null ? "" : " #" + value.getId()) );
-        view.setFullName(value.getEmployeeFullName());
+        view.setFullName(value.getEmployeeFullName() + " (" + (value.getId() == null ? "" : " #" + value.getId()) + ")");
         view.setComment(value.getComment());
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
-        view.setCreated(DateFormatter.formatDateTime(value.getCreated()));
+        view.setCreatedBy(lang.createBy(value.getCreatorShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
@@ -90,22 +89,17 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setOperatingSystem(value.getOperatingSystem());
         view.setResourceComment(value.getResourceComment());
         view.setAdditionalSoft(value.getAdditionalSoft());
-        if (value.getHeadOfDepartment() != null)
-            view.setHeadOfDepartment(value.getHeadOfDepartment().getDisplayShortName());
-        else
-            view.setHeadOfDepartment("");
+        view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getDisplayShortName());
 
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");
         } else {
             String employmentType = employmentTypeLang.getName(value.getEmploymentType());
+            if(value.isWithRegistration()) {
+                employmentType += lang.employeeRegistrationEmployeeWithRegistrationTrue();
+            }
             view.setEmploymentType(employmentType);
         }
-
-        if (value.isWithRegistration())
-            view.setWithRegistration(lang.employeeRegistrationEmployeeWithRegistrationTrue());
-        else
-            view.setWithRegistration(lang.employeeRegistrationEmployeeWithRegistrationFalse());
 
         view.setState(value.getState());
         view.setIssues(value.getYoutrackIssues());

@@ -54,6 +54,9 @@ public class Equipment extends AuditableObject {
     @JdbcColumn( name = "author_id" )
     private Long authorId;
 
+    @JdbcJoinedColumn( localColumn = "author_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    private String authorShortName;
+
     /**
      * Менеджер
      */
@@ -227,6 +230,10 @@ public class Equipment extends AuditableObject {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getAuthorShortName() {
+        return authorShortName;
     }
 
     @Override

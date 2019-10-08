@@ -39,12 +39,15 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         if(event.viewType != ViewType.TABLE)
             return;
 
-        this.query = event.query;
+        view.getFilterContainer().clear();
+        view.getPagerContainer().clear();
         init.parent.clear();
+
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-
         view.getFilterContainer().add(event.filter);
+
+        this.query = event.query;
         loadTable();
     }
 
@@ -82,7 +85,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new EmployeeEvents.ShowPreview(view.getPreviewContainer(), value, true,true));
+            fireEvent(new EmployeeEvents.ShowPreview(view.getPreviewContainer(), value,true));
         }
     }
 

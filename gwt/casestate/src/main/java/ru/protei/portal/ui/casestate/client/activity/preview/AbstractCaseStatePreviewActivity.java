@@ -4,4 +4,6 @@ public interface AbstractCaseStatePreviewActivity {
     void onUsageInCompaniesChange();
 
     void onSaveClicked();
+
+    void onCancelClicked();
 }

@@ -145,7 +145,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
                 cell.appendChild( root );
 
                 Element personElement = DOM.createDiv();
-                personElement.setInnerHTML( value.getDisplayName() );
+                personElement.setInnerText( value.getDisplayName() );
                 root.appendChild( personElement );
 
                 if ( value.getCompanyName() == null ) {

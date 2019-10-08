@@ -81,13 +81,6 @@ public interface CompanyController extends RemoteService {
     List< EntityOption > getCategoryOptionList() throws RequestFailedException;
 
     /**
-     * Обновить адреса подписок своей компании
-     *
-     * @param value
-     */
-    List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
-
-    /**
      * Получение список рассылок по компании
      *
      * @param companyId

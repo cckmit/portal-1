@@ -1,15 +1,19 @@
 package ru.protei.portal.ui.common.client.columns;
 
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.function.Function;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Колонка вынесения сущности в архив
@@ -28,6 +32,7 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
     public void fillColumnValue(Element cell, T value) {
         this.lock = DOM.createAnchor().cast();
         lock.setHref("#");
+        lock.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.ARCHIVE);
         setMutableAttributes(archivedCheckFunction.apply(value));
         setRemoveEnabled(lock);
         cell.appendChild(lock);
@@ -65,11 +70,11 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
     private void setMutableAttributes(boolean isArchived) {
         if (isArchived) {
             lock.addClassName("archive-lock");
-            lock.replaceClassName("fa-2x fa fa-unlock-alt", "fa-2x fa fa-lock");
+            lock.replaceClassName("fa-lg fa fa-archive", "fa-lg fa fa-history");
             lock.setTitle(lang.buttonFromArchive());
         } else {
             lock.removeClassName("archive-lock");
-            lock.replaceClassName("fa-2x fa fa-lock", "fa-2x fa fa-unlock-alt");
+            lock.replaceClassName("fa-lg fa fa-history", "fa-lg fa fa-archive");
             lock.setTitle(lang.buttonToArchive());
         }
     }

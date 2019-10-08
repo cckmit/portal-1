@@ -7,15 +7,15 @@
     <g:HTMLPanel>
         <autoresizetextarea:AutoResizeTextArea
                 ui:field="text"
-                styleName="input-field form-group message-input resize-vertical"
+                styleName="form-control form-group message-input resize-vertical"
                 maxRows="20"/>
 
         <g:HTMLPanel ui:field="previewContainer" styleName="message-preview">
-            <div class="message-preview-label">
+            <label class="message-preview-label">
                 <ui:text from='{lang.markdownPreview}'/>
-                <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn"
+                <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn p-t-3"
                 title="{lang.commentPreviewIsDisplay}"/>
-            </div>
+            </label>
             <div ui:field="preview" class="message-preview-content markdown"/>
         </g:HTMLPanel>
     </g:HTMLPanel>

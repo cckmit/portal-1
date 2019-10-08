@@ -124,4 +124,15 @@ public class DebugIdsHelper {
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }
     }
+    public static final class LOCALE_BUTTON {
+        public static String byLocale(String locale) {
+            if (locale.equals("en")) {
+                return DebugIds.LOCALE_BUTTON.EN;
+            }
+            if (locale.equals("ru")) {
+                return DebugIds.LOCALE_BUTTON.RU;
+            }
+            return DebugIds.LOCALE_BUTTON.DEFAULT + locale;
+        }
+    }
 }

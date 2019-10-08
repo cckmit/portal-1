@@ -17,16 +17,13 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getCompaniesIdList;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getManagersIdList;
@@ -58,11 +55,10 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         init.parent.add(view.asWidget());
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE) ?
-                new ActionBarEvents.Add(lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTRACT) :
+                new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.CONTRACT) :
                 new ActionBarEvents.Clear()
         );
 
-        filterView.resetFilter();
         loadTable();
     }
 

@@ -9,8 +9,6 @@ public interface AbstractRolePreviewView extends IsWidget {
 
     void setActivity( AbstractRolePreviewActivity activity );
 
-    void setHeader( String value );
-
     void setName( String value );
 
     void setDescription( String value );

@@ -16,19 +16,19 @@
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
-                                          addStyleNames="form-group col-xs-12"/>
-            <div class="col-xs-12">
+                                          addStyleNames="form-group col-md-12"/>
+            <div class="col-md-12">
                 <label class="bold"><ui:text from="{lang.reportTypeCaseTimeElapsedPeriod}"/></label>
                 <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.issueProduct}"
-                                                          addStyleNames="form-group col-xs-12"/>
+                                                          addStyleNames="form-group col-md-12"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
                                                   header="{lang.issueCompany}"
-                                                  addStyleNames="form-group col-xs-12"/>
+                                                  addStyleNames="form-group col-md-12"/>
 
 
         </g:HTMLPanel>

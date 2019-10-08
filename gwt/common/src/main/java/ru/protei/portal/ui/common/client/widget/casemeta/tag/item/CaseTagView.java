@@ -9,15 +9,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled {
 
     public CaseTagView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setTestAttributes();
     }
 
     @Override
@@ -76,6 +80,11 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         }
         CloseEvent.fire(this, caseTag);
     }
+
+    private void setTestAttributes() {
+        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_REMOVE_BUTTON);
+    }
+
     @UiField
     FocusPanel root;
 

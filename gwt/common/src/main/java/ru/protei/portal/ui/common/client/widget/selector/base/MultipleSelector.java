@@ -3,13 +3,14 @@ package ru.protei.portal.ui.common.client.widget.selector.base;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.ui.common.client.common.ScrollWatcher;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
@@ -21,9 +22,13 @@ import java.util.*;
  */
 public abstract class MultipleSelector<T>
         extends Composite
-        implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>,
+        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>,
         SelectorWithModel<T>
 {
+
+    public interface SelectorFilter<T> {
+        boolean isDisplayed( T value );
+    }
 
     protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
 
@@ -63,7 +68,6 @@ public abstract class MultipleSelector<T>
     public void setHasAnyValue( boolean hasAnyValue ) {
         this.hasAnyValue = hasAnyValue;
     }
-
     public void addOption( String name, T value ) {
         addOption(name, null, value);
     }
@@ -104,6 +108,14 @@ public abstract class MultipleSelector<T>
         onUserCanAddMoreItems(!isLimitSet() || isLimitNotReached());
     }
 
+    public void watchForScrollOf(Widget widget) {
+        scrollWatcher.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        scrollWatcher.stopWatchForScrollOf(widget);
+    }
+
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
@@ -137,18 +149,21 @@ public abstract class MultipleSelector<T>
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    @Override
-    public void onWindowScroll( Window.ScrollEvent event ) {
+    private void onScroll() {
         if ( popup.isAttached() ) {
             popup.showNear(relative);
         }
+    }
+
+    public void setFilter( SelectorFilter<T> selectorFilter ) {
+        filter = selectorFilter;
     }
 
     public abstract void fillSelectorView( List<T> selectedItems );
 
     @Override
     protected void onLoad() {
-        scrollRegistration = Window.addWindowScrollHandler( this );
+        scrollWatcher.startWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorLoad(this);
         }
@@ -156,7 +171,7 @@ public abstract class MultipleSelector<T>
 
     @Override
     protected void onUnload() {
-        scrollRegistration.removeHandler();
+        scrollWatcher.stopWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorUnload(this);
         }
@@ -182,6 +197,10 @@ public abstract class MultipleSelector<T>
         popup.getChildContainer().clear();
 
         for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
+            if ( filter != null && !filter.isDisplayed( entry.getKey() ) ) {
+                continue;
+            }
+
             String entryText = entry.getValue().getName().toLowerCase() + (entry.getValue().getInfo() == null ? "" : entry.getValue().getInfo().toLowerCase());
             if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectableItem itemView = itemToViewModel.get( entry.getKey() );
@@ -282,11 +301,11 @@ public abstract class MultipleSelector<T>
     protected boolean hasAnyValue = false;
     private IsWidget relative;
     private Set<T> selected = new HashSet<>();
-    private HandlerRegistration scrollRegistration;
     private SelectableItem anyItemView;
     private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private SelectorModel<T> selectorModel;
+    private SelectorFilter<T> filter;
 
     protected Map<T, String> itemToNameModel = new HashMap<T, String>();
 
@@ -294,4 +313,5 @@ public abstract class MultipleSelector<T>
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
     protected Map<T, SelectableItem> itemToViewModel = new HashMap<>();
+    private final ScrollWatcher scrollWatcher = new ScrollWatcher(this::onScroll);
 }

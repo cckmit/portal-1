@@ -75,6 +75,10 @@ public class CaseQuery extends BaseQuery {
 
     private boolean findRecordByCaseComments;
 
+    private Integer local;
+
+    private Boolean independentProject;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -114,6 +118,8 @@ public class CaseQuery extends BaseQuery {
         setCaseTagsIds(query.getCaseTagsIds());
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
+        setLocal(query.getLocal());
+        setIndependentProject(query.getIndependentProject());
     }
 
     public Long getId() {
@@ -294,6 +300,20 @@ public class CaseQuery extends BaseQuery {
         this.customerSearch = customerSearch;
     }
 
+    public Boolean getIndependentProject() {
+        return independentProject;
+    }
+
+    public void setIndependentProject(Boolean independentProject) {
+        this.independentProject = independentProject;
+    }
+    public Integer getLocal() {
+        return local;
+    }
+
+    public void setLocal(Integer local) {
+        this.local = local;
+    }
 
     @Override
     public boolean isParamsPresent() {
@@ -315,7 +335,9 @@ public class CaseQuery extends BaseQuery {
                 StringUtils.isNotBlank(searchCasenoString) ||
                 CollectionUtils.isNotEmpty(memberIds) ||
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
-                CollectionUtils.isNotEmpty(caseTagsIds);
+                CollectionUtils.isNotEmpty(caseTagsIds) ||
+                local != null ||
+                independentProject != null;
     }
 
     @Override
@@ -344,6 +366,7 @@ public class CaseQuery extends BaseQuery {
                 ", caseTagsIds=" + caseTagsIds +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", customerSearch=" + customerSearch +
+                ", local=" + local +
                 '}';
     }
 }

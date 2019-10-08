@@ -1,71 +1,89 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:navsearch="urn:import:ru.protei.portal.app.portal.client.widget.navsearch"
              xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.locale">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
 
-    <g:HTMLPanel ui:field="globalContainer" styleName="global">
-        <g:HTMLPanel tag="header" styleName="main-header">
-            <g:Anchor ui:field="logo" href="#" styleName="logo">
-                <span class="logo-lg">
-                    <img src="./images/logo.svg"/>
-                    <b>PROTEI</b>
-                    LTD
-                </span>
-
-                <span class="logo-mini">
-                    <img src="./images/logo.svg"/>
-                </span>
-            </g:Anchor>
-
-            <nav class="navbar">
-                <g:Anchor ui:field="toggleButton" styleName="sidebar-toggle" href="#">
-                    <span class="sr-only">Toggle navigation</span>
+    <g:HTMLPanel ui:field="globalContainer">
+        <g:HTMLPanel ui:field="navbar" styleName="page-sidebar">
+            <div class="sidebar-header">
+                <g:Anchor ui:field="logo" >
+                    <img class="brand" height="30" src="./images/logo.svg" width="30"/>
+                    <b class="m-l-5" style=""><ui:text from="{lang.proteiTitleShort}"/></b>
                 </g:Anchor>
 
-                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="nav navbar-nav navbar-left"/>
+                <div class="sidebar-header-controls">
+                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
+                        <i class="far fs-12"></i>
+                    </g:Button>
+                </div>
+            </div>
 
-                <ul class="nav navbar-nav navbar-right">
-                    <navsearch:NavSearchBox ui:field="search"/>
-                    <locale:LocaleSelector ui:field="locale"/>
-                    <li>
-                        <g:Anchor ui:field="logout" title="{lang.buttonLogout}" href="#">
-                            <i class="fa-lg ion-log-out"/>
-                        </g:Anchor>
-                    </li>
-                </ul>
-            </nav>
-        </g:HTMLPanel>
+            <div class="sidebar-menu">
+                <div class="scroll-wrapper menu-items" style="position: relative;">
+                    <g:HTMLPanel styleName="menu-items scroll-content scroll-scrolly_visible m-t-10"
+                                 ui:field="menuContainer"/>
+                </div>
+                <div class="clearfix"/>
+            </div>
 
-
-        <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar">
-            <section class="sidebar">
-                <g:HTMLPanel ui:field="userPanel" styleName="user-panel">
-                    <div class="pull-left image">
-                        <img src="./images/user-icon-m.svg" class="img-circle" ui:field="icon"/>
-                    </div>
-                    <div class="pull-left info">
-                        <p ui:field="username"></p>
-                        <a ui:field="company"></a>
-                    </div>
-                </g:HTMLPanel>
-                <ul class="sidebar-menu">
-                    <li class="header">
-                        <ui:text from="{lang.appNavHeader}"/>
-                    </li>
-                </ul>
-
-                <g:HTMLPanel styleName="sidebar-menu" ui:field="menuContainer"/>
-            </section>
             <g:Label styleName="app-version" ui:field="appVersion"/>
+
         </g:HTMLPanel>
 
-        <g:HTMLPanel ui:field="container" styleName="right-side"/>
+        <div class="header" ui:field="headerDiv">
+            <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up fas fa-bars"/>
 
-        <g:HTMLPanel ui:field="notifyContainer" styleName="notifyPanel"/>
 
+            <div>
+                <div ui:field="brandDiv" class="brand inline">
+                    <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
+                    <b class="m-l-5"><ui:text from="{lang.proteiTitleShort}"/></b>
+                </div>
+                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin inline no-style p-l-30 p-r-20"/>
+            </div>
+
+
+            <div class="d-flex align-items-center">
+                <locale:LocaleSelector ui:field="locale" addStyleNames="m-r-20"/>
+                <div class="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+                    <span class="semi-bold" ui:field="username"/>
+                </div>
+                <div class="dropdown pull-right">
+                    <g:Button ui:field="profile" styleName="profile-dropdown-toggle">
+                        <span class="thumbnail-wrapper d32 circular inline">
+                            <img ui:field="photo" src="#" alt="" width="32" height="32"/>
+                        </span>
+                    </g:Button>
+                    <g:FocusPanel ui:field="menuBarFocus">
+                        <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
+                            <g:Anchor ui:field="settings" styleName="dropdown-item" href="#">
+                                <span class="pull-left m-r-10">
+                                    <i class="fas fa-user-cog"/></span>
+                                <ui:text from="{lang.buttonSettings}"/>
+                            </g:Anchor>
+
+                            <g:Anchor ui:field="logout" styleName="clearfix bg-master-lighter dropdown-item" title="{lang.logoutHotKey}" href="#">
+                                <span class="pull-left"><ui:text from="{lang.buttonLogout}"/></span>
+                                <span class="pull-right">
+                                    <i class="fas fa-power-off"/></span>
+                            </g:Anchor>
+                        </g:HTMLPanel>
+                    </g:FocusPanel>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-container">
+            <div class="page-content-wrapper">
+                <g:HTMLPanel ui:field="container" styleName="content"/>
+            </div>
+        </div>
+
+
+
+        <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-notice-right"/>
     </g:HTMLPanel>
 
 </ui:UiBinder>

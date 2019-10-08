@@ -7,7 +7,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 
 import javax.servlet.http.Cookie;

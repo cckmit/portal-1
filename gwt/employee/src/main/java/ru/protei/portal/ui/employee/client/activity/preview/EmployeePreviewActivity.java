@@ -26,16 +26,15 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     @Event
     public void onShow( EmployeeEvents.ShowPreview event ) {
         event.parent.clear();
-        event.parent.add( view.asWidget(event.isForTableView) );
+        event.parent.add( view.asWidget() );
 
         fillView( event.employee );
-        view.watchForScroll(event.isWatchForScroll);
     }
 
     private void fillView( EmployeeShortView employee ) {
-
         view.setID( employee.getId().toString() );
         view.setName( employee.getDisplayName() );
+        view.setIP( employee.getIpAddress() );
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
@@ -51,7 +50,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         itemView.setDepartment( workerEntry.getDepartmentName() );
         itemView.setPosition( workerEntry.getPositionName() );
-        //itemView.showMainInfo( workerEntry.isMain() );
 
         return itemView;
     }

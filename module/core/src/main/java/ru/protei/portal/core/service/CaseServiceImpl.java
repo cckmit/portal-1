@@ -4,22 +4,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.JiraUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
-import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Реализация сервиса управления обращениями
@@ -39,35 +42,36 @@ public class CaseServiceImpl implements CaseService {
 
 
     @Override
-    public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
-
+    public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
         applyFilterByScope(token, query);
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
 
-        return new CoreResponse<SearchResult<CaseShortView>>().success(sr);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<CaseObject> getCaseObject( AuthToken token, long number ) {
+    public Result<CaseObject> getCaseObject( AuthToken token, long number ) {
 
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         if(caseObject == null)
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
 
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
 
-        CoreResponse<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
+        Result<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
         if (caseTags.isOk()) {
             caseObject.setTags(new HashSet<>(caseTags.getData()));
         }
+
+        withJiraSLAInformation(caseObject);
 
         // RESET PRIVACY INFO
         if ( caseObject.getInitiator() != null ) {
@@ -83,20 +87,20 @@ public class CaseServiceImpl implements CaseService {
             caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
         }
 
-        return new CoreResponse<CaseObject>().success(caseObject);
+        return ok(caseObject);
     }
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         if (!validateFields(caseObject)) {
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         applyCaseByScope( token, caseObject );
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
+            return error(En_ResultStatus.PERMISSION_DENIED );
         }
 
         Date now = new Date();
@@ -117,7 +121,7 @@ public class CaseServiceImpl implements CaseService {
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
         if (caseId == null)
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
         else
             caseObject.setId(caseId);
 
@@ -193,12 +197,12 @@ public class CaseServiceImpl implements CaseService {
                 .withPerson(initiator)
                 .build());
 
-        return new CoreResponse<CaseObject>().success( newState );
+        return ok(newState);
     }
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -217,12 +221,12 @@ public class CaseServiceImpl implements CaseService {
                     .build());
         }
 
-        return new CoreResponse<CaseObject>().success(objectResultData.getCaseObject());
+        return ok(objectResultData.getCaseObject());
     }
 
     @Override
     @Transactional
-    public CoreResponse<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment(AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
+    public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -247,7 +251,7 @@ public class CaseServiceImpl implements CaseService {
                     .build());
         }
 
-        return new CoreResponse<CaseObjectWithCaseComment>().success(
+        return Result.ok(
                 new CaseObjectWithCaseComment(objectResultData.getCaseObject(), commentResultData.getCaseComment())
         );
     }
@@ -273,7 +277,7 @@ public class CaseServiceImpl implements CaseService {
                 mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
         );
 
-        CoreResponse mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+        Result mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         if (mergeLinksResponse.isError()) {
             log.info("Failed to merge links for the issue {}", caseObject.getId());
             throw new ResultStatusException(mergeLinksResponse.getStatus());
@@ -285,6 +289,8 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
 
         applyStateBasedOnManager(caseObject);
+
+        persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
             return new CaseObjectUpdateResult(caseObject, false);
@@ -365,7 +371,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseComment == null) {
             return new CaseCommentSaveOrUpdateResult();
         }
-        CoreResponse<CaseCommentSaveOrUpdateResult> response;
+        Result<CaseCommentSaveOrUpdateResult> response;
         if (caseComment.getId() == null) {
             response = caseCommentService.addCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment);
         } else {
@@ -379,61 +385,62 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<List<En_CaseState>> stateList( En_CaseType caseType ) {
+    public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
         List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
-            return new CoreResponse<List<En_CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return new CoreResponse<List<En_CaseState>>().success(states.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList()));
+        return ok(states.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList()));
     }
 
     @Override
-    public CoreResponse<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
+    public Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
         List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
-            return new CoreResponse<List<CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return new CoreResponse<List<CaseState>>().success(states);
+        return ok(states);
     }
 
     @Override
-    public CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
+    public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = new CaseObject(caseId);
         caseObject.setModified(modified == null? new Date(): modified);
 
         boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "MODIFIED");
 
-        return new CoreResponse<Boolean>().success(isUpdated);
+        return ok(isUpdated);
     }
 
     @Override
-    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag){
+    public Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag){
         if(caseId == null)
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = new CaseObject(caseId);
         caseObject.setAttachmentExists(flag);
         boolean result = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
 
         if(!result)
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_UPDATED);
-        return new CoreResponse<Boolean>().success(true);
+            return error(En_ResultStatus.NOT_UPDATED);
+        return ok(true);
     }
 
     @Override
-    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId){
-        return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
+    public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
+      return isExistsAttachments(caseId).flatMap( isExists ->
+         updateExistsAttachmentsFlag(caseId, isExists));
     }
 
     @Override
-    public CoreResponse<Long> getEmailLastId(Long caseId) {
+    public Result<Long> getEmailLastId( Long caseId) {
         if (caseId == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Long lastMessageId = caseObjectDAO.getEmailLastId(caseId);
@@ -441,30 +448,30 @@ public class CaseServiceImpl implements CaseService {
             lastMessageId = 0L;
         }
 
-        return new CoreResponse<Long>().success(lastMessageId);
+        return ok(lastMessageId);
     }
 
     @Override
-    public CoreResponse<Boolean> updateEmailLastId(Long caseId, Long emailLastId) {
+    public Result<Boolean> updateEmailLastId( Long caseId, Long emailLastId) {
         if (caseId == null) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         boolean result = caseObjectDAO.updateEmailLastId(caseId, emailLastId);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber) {
+    public Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber) {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
-            return new CoreResponse<CaseInfo>().error( En_ResultStatus.PERMISSION_DENIED );
+            return error(En_ResultStatus.PERMISSION_DENIED );
         }
 
         CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
 
         if(caseObject == null)
-            return new CoreResponse<CaseInfo>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
 
         CaseInfo info = new CaseInfo();
         info.setId(caseObject.getId());
@@ -475,27 +482,27 @@ public class CaseServiceImpl implements CaseService {
         info.setStateId(caseObject.getStateId());
         info.setInfo(caseObject.getInfo());
 
-        return new CoreResponse<CaseInfo>().success(info);
+        return ok(info);
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
+    public Result<Long> bindAttachmentToCaseNumber( AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
         CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return new CoreResponse<Long>().error( En_ResultStatus.PERMISSION_DENIED );
+            return error(En_ResultStatus.PERMISSION_DENIED );
         }
         return attachToCaseId( attachment, caseObject.getId() );
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId) {
+    public Result<Long> attachToCaseId( Attachment attachment, long caseId) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
         if(caseAttachId == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
 
         CaseObject caseObject = new CaseObject(caseId);
         caseObject.setAttachmentExists(true);
@@ -505,12 +512,18 @@ public class CaseServiceImpl implements CaseService {
         if(!isCaseUpdated)
             throw new RuntimeException("failed to update case object");
 
-        return new CoreResponse<Long>().success(caseAttachId);
+        return ok(caseAttachId);
     }
 
     @Override
-    public boolean isExistsAttachments(Long caseId) {
-        return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    public Result<Boolean> isExistsAttachments(Long caseId) {
+        return ok(caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId));
+    }
+
+    @Override
+    public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
+        return caseLinkService.getLinks( token, caseId)
+                .map( this::fillYouTrackInfo );
     }
 
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
@@ -544,7 +557,7 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseStateId((long)state.getId());
         if (timeElapsed != null && timeElapsed > 0L) {
             stateChangeMessage.setTimeElapsed(timeElapsed);
-            stateChangeMessage.setTimeElapsedType(timeElapsedType!=null?timeElapsedType:En_TimeElapsedType.NONE);
+            stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
         }
         return caseCommentDAO.persist(stateChangeMessage);
     }
@@ -584,18 +597,6 @@ public class CaseServiceImpl implements CaseService {
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }
 
-    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
-            caseObject.setPrivateCase( false );
-            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                caseObject.setInitiatorCompany( descriptor.getCompany() );
-            }
-            caseObject.setManagerId( null );
-        }
-    }
-
     private boolean isCaseChanged(CaseObject co1, CaseObject co2){
         // without notifiers
         // without links
@@ -611,35 +612,27 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
                 || !Objects.equals(co1.getState(), co2.getState())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
-                || !Objects.equals(co1.getManagerId(), co2.getManagerId());
+                || !Objects.equals(co1.getManagerId(), co2.getManagerId())
+                || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
     }
 
-    @Override
-    public boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
+    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, privilege ) && policyService.hasScopeForPrivilege( roles, privilege, En_Scope.COMPANY ) ) {
-            if ( caseObject == null ) {
-                return false;
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
+            caseObject.setPrivateCase( false );
+            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
+                caseObject.setInitiatorCompany( descriptor.getCompany() );
             }
-
-            Collection<Long> companyIds = descriptor.getAllowedCompaniesIds();
-            if ( !companyIds.contains( caseObject.getInitiatorCompanyId() ) ) {
-                return false;
-            }
-
-            if ( caseObject.isPrivateCase() ) {
-                return false;
-            }
+            caseObject.setManagerId( null );
         }
-        return true;
     }
 
-    @Override
-    public CoreResponse<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
-       return caseLinkService.getLinks( token, caseId)
-                .map( this::fillYouTrackInfo );
+    private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        return policyService.hasAccessForCaseObject( descriptor, privilege, caseObject );
     }
+
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObject oldState, CaseObject newState) {
         return oldState.getState() == En_CaseState.VERIFIED &&
@@ -679,7 +672,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseStateFrom == caseStateTo) {
             return true;
         }
-        CoreResponse<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
+        Result<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
         if (response.isError()) {
             log.error("Failed to get case state workflow, status={}", response.getStatus());
             return false;
@@ -717,6 +710,78 @@ public class CaseServiceImpl implements CaseService {
         return caseLinks;
     }
 
+    private CaseObject withJiraSLAInformation(CaseObject caseObject) {
+
+        if (!En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+            return caseObject;
+        }
+
+        try {
+            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObject.getId());
+            JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
+            JiraUtils.JiraIssueData issueData = JiraUtils.convert(appData);
+            JiraEndpoint endpoint = jiraEndpointDAO.get(issueData.endpointId);
+            caseObject.setJiraMetaData(new JiraMetaData(
+                extAppData.issueType(),
+                extAppData.slaSeverity(),
+                endpoint.getSlaMapId()
+            ));
+        } catch (Exception e) {
+            log.warn("Failed to fill jira SLA information", e);
+            caseObject.setJiraMetaData(new JiraMetaData());
+            return caseObject;
+        }
+
+        return caseObject;
+    }
+
+    private CaseObject persistJiraSLAInformation(CaseObject caseObject) {
+
+        if (!En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+            return caseObject;
+        }
+
+        if (caseObject.getJiraMetaData() == null) {
+            log.warn("Got caseObject with 'jira' extAppType and null jiraMetaData");
+            return caseObject;
+        }
+
+        JiraMetaData metaData = caseObject.getJiraMetaData();
+
+        if (metaData.getSlaMapId() == null || StringUtils.isEmpty(metaData.getIssueType())) {
+            log.warn("Got caseObject with 'jira' extAppType and empty jiraMetaData field(s): {}", metaData);
+            return caseObject;
+        }
+
+        boolean isSeverityCanBeChanged = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(metaData.getIssueType()));
+
+        if (!isSeverityCanBeChanged) {
+            return caseObject;
+        }
+
+        try {
+            JiraSLAMapEntry slaMapEntry = jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(metaData.getSlaMapId(), metaData.getIssueType(), metaData.getSeverity());
+            if (slaMapEntry == null) {
+                log.warn("Got caseObject with 'jira' extAppType and invalid issueType/severity: {}", metaData);
+                return caseObject;
+            }
+
+            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObject.getId());
+            JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
+            extAppData.setSlaSeverity(metaData.getSeverity());
+            appData.setExtAppData(JiraExtAppData.toJSON(extAppData));
+            if (!externalCaseAppDAO.saveExtAppData(appData)) {
+                log.warn("Failed to save extAppData with jira SLA information");
+                return caseObject;
+            }
+        } catch (Exception e) {
+            log.warn("Failed to persist jira SLA information", e);
+            return caseObject;
+        }
+
+        return caseObject;
+    }
+
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
@@ -748,7 +813,16 @@ public class CaseServiceImpl implements CaseService {
     CaseObjectTagDAO caseObjectTagDAO;
 
     @Autowired
+    ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
     CaseTagDAO caseTagDAO;
+
+    @Autowired
+    JiraEndpointDAO jiraEndpointDAO;
+
+    @Autowired
+    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
 
     @Autowired
     PolicyService policyService;

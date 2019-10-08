@@ -32,7 +32,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onShow(EmployeeEvents.Show event) {
-        fireEvent(new AppEvents.InitPanelName(lang.employees()));
 
         fireEvent(new ActionBarEvents.Clear());
 

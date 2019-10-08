@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -19,13 +19,13 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    CoreResponse<List<PersonShortView>> shortViewList(EmployeeQuery query);
-    CoreResponse<List<WorkerView>> list(String param);
+    Result<List<PersonShortView>> shortViewList( EmployeeQuery query);
+    Result<List<WorkerView>> list( String param);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    CoreResponse<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
+    Result<SearchResult<EmployeeShortView>> employeeList( AuthToken token, EmployeeQuery query);
 
-    CoreResponse<Person> getEmployee( Long id );
+    Result<Person> getEmployee( Long id );
     EmployeeDetailView getEmployeeProfile (Long id);
     EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
 

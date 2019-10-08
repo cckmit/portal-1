@@ -6,12 +6,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
@@ -32,20 +28,13 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
+    public HasVisibility footerContainerVisibility(){
+        return footerContainer;
     }
 
     @Override
     public void setName(String value) {
-        name.setInnerText(value);
+        name.setText(value);
     }
 
     @Override
@@ -65,7 +54,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setComment(String value) {
-        comment.setInnerText(value);
+        comment.setText(value);
     }
 
     @Override
@@ -90,8 +79,26 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
+    @UiHandler("name")
+    public void fullScreenClick(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onFullScreenClicked();
+        }
+    }
+
+    @UiHandler( "backButton" )
+    public void onGoToIssuesClicked ( ClickEvent event) {
+        if ( activity != null ) {
+            activity.onGoToIssuesClicked();
+        }
+    }
+
     @UiField
-    SpanElement name;
+    HTMLPanel preview;
+    @UiField
+    Anchor name;
     @UiField
     SpanElement company;
     @UiField
@@ -99,19 +106,20 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     SpanElement parameters;
     @UiField
-    SpanElement comment;
+    Label comment;
     @UiField
-    CollapsablePanel contactsContainer;
+    HTMLPanel contactsContainer;
     @UiField
-    CollapsablePanel serversContainer;
+    HTMLPanel serversContainer;
     @UiField
     Button openServersButton;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
-
-    @Inject
-    FixedPositioner positioner;
+    @UiField
+    Button backButton;
+    @UiField
+    HTMLPanel footerContainer;
 
     private AbstractPlatformPreviewActivity activity;
 

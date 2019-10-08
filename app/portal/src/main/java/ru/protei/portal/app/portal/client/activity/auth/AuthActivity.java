@@ -17,6 +17,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.REMEMBER_ME_PREFIX;
+
 /**
  * Активность окна авторизации
  */
@@ -130,5 +132,4 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     LocalStorageService storage;
 
     private AuthEvents.Init init;
-    private static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
 }

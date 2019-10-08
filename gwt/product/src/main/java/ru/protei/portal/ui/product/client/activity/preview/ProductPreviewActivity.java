@@ -7,9 +7,13 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.service.ProductService;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -27,17 +31,45 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     }
 
     @Event
+    public void onInit(AppEvents.InitDetails event) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow( ProductEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget(event.isShouldWrap) );
 
         fillView( event.product );
-        view.watchForScroll( event.isWatchForScroll);
+        view.showFullScreen(false);
     }
 
-    private void fillView( DevUnit product ) {
+    @Event
+    public void onShow(ProductEvents.ShowFullScreen event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget(true));
+
+        productService.getProduct(event.productId, new FluentCallback<DevUnit>()
+                .withSuccess(product -> {
+                    fillView(product);
+                    view.showFullScreen(true);
+                }));
+    }
+
+    @Override
+    public void onFullScreenClicked() {
+        fireEvent(new ProductEvents.ShowFullScreen(productId));
+    }
+
+    @Override
+    public void onBackButtonClicked() {
+        fireEvent(new ProductEvents.Show());
+    }
+
+    private void fillView(DevUnit product ) {
+        this.productId = product.getId();
         view.setName(product.getName());
-        view.setType(typeLang.getName(product.getType()));
+        view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setInfo( product.getInfo() );
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
@@ -62,12 +94,14 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         );
     }
 
-    @Inject
-    Lang lang;
+
     @Inject
     AbstractProductPreviewView view;
     @Inject
     TextRenderControllerAsync textRenderController;
     @Inject
-    En_DevUnitTypeLang typeLang;
+    ProductControllerAsync productService;
+
+    private AppEvents.InitDetails initDetails;
+    private Long productId;
 }

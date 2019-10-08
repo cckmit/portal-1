@@ -1,11 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.viewtype;
 
-/**
- * Типы представлений списков
- */
 public enum ViewType {
     LIST("fa fa-list-ul"),
-    TABLE("fa fa-table");
+    TABLE("fa fa-table"),
+    ;
 
     private String icon;
 

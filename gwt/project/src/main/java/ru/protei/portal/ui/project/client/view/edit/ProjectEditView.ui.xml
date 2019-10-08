@@ -3,75 +3,77 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body">
+            <div class="row p-b-10">
+                <h5 class="no-margin col-md-12">
+                    <g:Label ui:field="number" styleName="m-b-15 inline-block"/>
+                </h5>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.projectName}"/></label>
+                    <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
+                </div>
+            </div>
 
-        <div class="body">
-            <div class="grid grid-indent">
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-6 m-b-0">
-                    <label ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
-                    <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="project-main-info">
-                        <g:IntegerBox ui:field="number" styleName="input-field project-number" enabled="false"/>
-                        <validablefield:ValidableTextBox ui:field="projectName" styleName="input-field" notNull="true"/>
-                    </g:HTMLPanel>
-                </g:HTMLPanel>
-                <div class="form-group col-xs-6">
-                    <label class="col-xs-6 col-md-3 h30"><ui:text from="{lang.projectState}"/></label>
-                    <state:RegionStateButtonSelector ui:field="projectState" validation="true"/>
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.projectState}"/></label>
+                    <state:RegionStateButtonSelector ui:field="projectState"/>
                 </div>
-                <div class="form-group col-xs-3">
-                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectRegion}"/></label>
-                    <region:RegionButtonSelector ui:field="projectRegion" />
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.projectRegion}"/></label>
+                    <region:RegionButtonSelector ui:field="projectRegion" validation="true"/>
                 </div>
-                <div class="form-group col-xs-3">
-                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectDirection}"/></label>
-                    <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.projectDirection}"/></label>
+                    <productdirection:ProductDirectionButtonSelector ui:field="productDirection" validation="true"/>
                 </div>
-                <div class="form-group col-xs-3">
-                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectCustomerType}"/></label>
-                    <cutomertype:CustomerTypeSelector ui:field="customerType"/>
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.projectCustomerType}"/></label>
+                    <cutomertype:CustomerTypeSelector ui:field="customerType" validation="true"/>
                 </div>
-                <div class="form-group col-xs-3">
-                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                    <company:CompanySelector ui:field="company" defaultValue="{lang.selectIssueCompany}"/>
+                <div class="form-group col-md-4">
+                    <label ui:field="subscriptionsLabel"><ui:text from="{lang.projectCustomerCompany}"/></label>
+                    <company:CompanySelector ui:field="company" hasNullValue="false" validation="true"/>
                 </div>
-                <div class="form-group col-xs-12">
-                    <label class="col-xs-12"><ui:text from="{lang.projectProducts}"/></label>
-                    <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false" addStyleNames="form-group col-xs-12"/>
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.projectProducts}"/></label>
+                    <devunit:DevUnitButtonSelector ui:field="product"/>
                 </div>
-                <div class="form-group col-xs-12">
-                    <label class="col-xs-12"><ui:text from="{lang.projectDescription}"/></label>
-                    <g:TextArea ui:field="description" styleName="input-field description" />
-                </div>
-
-                <div class="form-group col-xs-12">
-                    <label class="col-xs-12"><ui:text from="{lang.projectTeam}"/></label>
-                    <team:TeamSelector ui:field="team" addStyleNames="form-group col-xs-12"/>
+                <div class="form-group col-md-12">
+                    <label ui:field="descriptionLabel"><ui:text from="{lang.projectDescription}"/></label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="form-control" maxRows="10"/>
                 </div>
 
-                <div class="form-group col-xs-12" ui:field="documents">
-                    <label class="col-xs-6"><ui:text from="{lang.equipmentDocuments}"/></label>
-                    <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.projectTeam}"/></label>
+                    <team:TeamSelector ui:field="team" addStyleNames="form-group col-md-12"/>
                 </div>
 
-                <div class="form-group col-xs-12" ui:field="comments">
-                    <label class="col-xs-6"><ui:text from="{lang.comments}"/></label>
+                <div class="form-group col-md-12" ui:field="documents">
+                    <label><ui:text from="{lang.equipmentDocuments}"/></label>
+                    <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
+                </div>
+
+                <div class="form-group col-md-12" ui:field="comments">
+                    <label><ui:text from="{lang.comments}"/></label>
                     <g:HTMLPanel ui:field="commentsContainer"/>
                 </div>
             </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
         </div>
-
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -2,10 +2,12 @@ package ru.protei.portal.ui.common.client.view.pager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -79,7 +81,7 @@ public class PagerView extends Composite implements AbstractPagerView {
     }
 
     private void updateLabel() {
-        label.setInnerText(lang.pagerLabel(currentPage + 1, totalPages, totalCount));
+        label.setInnerHTML(lang.pagerLabel(currentPage + 1, totalPages, totalCount));
     }
 
     private void toggleArrowButtonsEnabled() {
@@ -93,6 +95,8 @@ public class PagerView extends Composite implements AbstractPagerView {
 
     private void redrawPageButtons() {
         pagesContainer.clear();
+        pagesContainer.add(fastBackward);
+        pagesContainer.add(backward);
         int from = Math.max(0, currentPage - PAGE_BUTTON_COUNT / 2);
         int to = Math.min(from + PAGE_BUTTON_COUNT, totalPages);
         if (to - from < PAGE_BUTTON_COUNT) {
@@ -100,37 +104,38 @@ public class PagerView extends Composite implements AbstractPagerView {
             from = Math.max(from, 0);
         }
         for (int page = from; page < to; page++) {
-            Button button = makePageButton(page, page == currentPage);
-            pagesContainer.add(button);
+            Anchor anchor = makePageAnchor(page, page == currentPage);
+            pagesContainer.add(anchor);
         }
+        pagesContainer.add(forward);
+        pagesContainer.add(fastForward);
     }
 
-    private Button makePageButton(int page, boolean isSelected) {
-        Button button = buttonProvider.get();
-        button.setStyleName("btn m-r-5");
-        button.addStyleName(isSelected ? "btn-primary" : "btn-white");
-        button.setText(String.valueOf(page + 1));
-        button.addClickHandler(event -> onPageSelected(page));
-        return button;
+    private Anchor makePageAnchor(int page, boolean isSelected) {
+        Anchor anchor = new Anchor();
+        anchor.setHref("javascript:void(0)");
+        anchor.addStyleName("table-pager_button " + (isSelected ? "active" : ""));
+        anchor.setText(String.valueOf(page + 1));
+        anchor.addClickHandler(event -> onPageSelected(page));
+
+        return anchor;
     }
 
     @UiField
-    DivElement label;
+    Element label;
     @UiField
-    Button fastBackward;
+    Anchor fastBackward;
     @UiField
-    Button backward;
+    Anchor backward;
     @UiField
-    Button forward;
+    Anchor forward;
     @UiField
-    Button fastForward;
+    Anchor fastForward;
     @UiField
     HTMLPanel pagesContainer;
 
     @Inject
     Lang lang;
-    @Inject
-    Provider<Button> buttonProvider;
 
     private AbstractPagerActivity activity;
     private int currentPage = 0;

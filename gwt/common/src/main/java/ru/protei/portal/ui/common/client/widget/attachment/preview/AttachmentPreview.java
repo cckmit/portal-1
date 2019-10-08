@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 
 /**
  * Created by bondarenko on 29.06.17.
@@ -25,6 +26,7 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
     }
 
     public void show(Image attachment){
+        attachment.ensureDebugId(DebugIds.ATTACHMENT.IMAGE);
         root.clear();
         root.add(attachment);
         show();

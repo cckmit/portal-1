@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
@@ -37,7 +37,7 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<EmployeeRegistration> response = employeeRegistrationService.getEmployeeRegistration(descriptor.makeAuthToken(), id);
+        Result<EmployeeRegistration> response = employeeRegistrationService.getEmployeeRegistration(descriptor.makeAuthToken(), id);
         log.debug(" get employee registration, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -58,7 +58,7 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         employeeRegistration.setCreatorId(descriptor.getPerson().getId());
-        CoreResponse<Long> response = employeeRegistrationService.createEmployeeRegistration(descriptor.makeAuthToken(), employeeRegistration);
+        Result<Long> response = employeeRegistrationService.createEmployeeRegistration(descriptor.makeAuthToken(), employeeRegistration);
 
         log.debug("create employee registration, result: {}", response.isOk() ? "ok" : response.getStatus());
 

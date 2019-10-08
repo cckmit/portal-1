@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <g:Button ui:field="searchBtn" styleName="btn btn-search">
+        <g:Button ui:field="searchBtn" styleName="btn dashboard-btn">
             <i class="fa fa-search"/>
         </g:Button>
     </g:HTMLPanel>

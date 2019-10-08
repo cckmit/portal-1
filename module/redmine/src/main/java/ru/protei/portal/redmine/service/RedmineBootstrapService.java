@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 
 import javax.annotation.PostConstruct;
 
@@ -44,7 +45,7 @@ public class RedmineBootstrapService {
     private void updateNullIssueCreator() {
         if (portalConfig.data().integrationConfig().isRedmineEnabled()) {
             logger.debug("Update null issue creator started");
-            boolean result = caseObjectDAO.updateNullCreatorByExtAppType("redmine");
+            boolean result = caseObjectDAO.updateNullCreatorByExtAppType(En_ExtAppType.REDMINE.getCode());
             logger.debug("Update null issue creator ended with result {}", result);
         }
     }

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseFilter;
@@ -30,7 +30,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", descriptor.getLogin().getId(), filterType );
 
-        CoreResponse< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId(), filterType );
+        Result< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId(), filterType );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -42,7 +42,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     public CaseFilter getIssueFilter( Long id ) throws RequestFailedException {
         log.debug("getIssueFilter, id: {}", id);
 
-        CoreResponse<CaseFilter > response = issueFilterService.getIssueFilter( id );
+        Result<CaseFilter > response = issueFilterService.getIssueFilter( id );
 
         log.debug("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
@@ -64,7 +64,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseFilter> response = issueFilterService.saveIssueFilter(descriptor.makeAuthToken(), filter);
+        Result<CaseFilter> response = issueFilterService.saveIssueFilter(descriptor.makeAuthToken(), filter);
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());
 
@@ -79,7 +79,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     public boolean removeIssueFilter( Long id ) throws RequestFailedException {
         log.debug( "removeIssueFilter(): id={}", id );
 
-        CoreResponse< Boolean > response = issueFilterService.removeIssueFilter( id );
+        Result< Boolean > response = issueFilterService.removeIssueFilter( id );
         log.debug( "removeIssueFilter(): result={}", response.getStatus() );
 
         if ( response.isError() ) {

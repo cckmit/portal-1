@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewActivity;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewView;
@@ -22,21 +21,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if (isWatch) {
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        } else {
-            positioner.ignore(this);
-        }
     }
 
     @Override
@@ -55,19 +39,13 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public HasWidgets getPositionsContainer() {
-        return positionsContainer;
+    public void setIP( String ip ) {
+        this.ip.setInnerText( ip );
     }
 
     @Override
-    public Widget asWidget(boolean isForTableView) {
-        if (isForTableView) {
-            rootWrapper.addStyleName("preview-wrapper");
-            employeeNameBlock.setVisible(true);
-        } else {
-            rootWrapper.removeStyleName("preview-wrapper");
-        }
-        return asWidget();
+    public HasWidgets getPositionsContainer() {
+        return positionsContainer;
     }
 
     @UiField
@@ -85,13 +63,12 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @UiField
     SpanElement employeeName;
 
-    @Inject
-    FixedPositioner positioner;
+    @UiField
+    SpanElement ip;
 
     @Inject
     @UiField
     Lang lang;
-
 
     AbstractEmployeePreviewActivity activity;
 

@@ -142,4 +142,28 @@ public class CollectionUtils {
         if(elements == null) return Collections.EMPTY_SET;
         return new HashSet<>( Arrays.asList( elements ));
     }
+
+    public static <T> T findPreviousElement(Set<T> set, T element) {
+        T prevEl = null;
+        for (T el : set) {
+            if (Objects.equals(el, element)) {
+                return prevEl;
+            }
+            prevEl = el;
+        }
+        return prevEl;
+    }
+
+    public static <T> T findNextElement(Set<T> set, T element) {
+        boolean shouldReturn = false;
+        for (T el : set) {
+            if (shouldReturn) {
+                return el;
+            }
+            if (Objects.equals(el, element)) {
+                shouldReturn = true;
+            }
+        }
+        return null;
+    }
 }

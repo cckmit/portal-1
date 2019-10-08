@@ -25,7 +25,7 @@ public abstract class ContractModel extends LifecycleSelectorModel<EntityOption>
     }
 
     @Event
-    public void onCompanyListChanged(ContractEvents.ChangeModel event) {
+    public void onContractListChanged(ContractEvents.ChangeModel event) {
         refreshOptions();
     }
 

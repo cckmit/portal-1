@@ -1,8 +1,9 @@
 package ru.protei.portal.ui.contact.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -10,10 +11,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
 
-import java.util.Arrays;
 
 /**
  * Представление фильтра контактов
@@ -33,18 +32,7 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
         initWidget( ourUiBinder.createAndBindUi( this ) );
         company.setDefaultValue( lang.selectContactCompany() );
         sortField.setType( ModuleType.CONTACT );
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
+        ensureDebugIds();
     }
 
     @Override
@@ -137,6 +125,20 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
         }
     };
 
+    private void ensureDebugIds() {
+        if ( !DebugInfo.isDebugIdEnabled() ) {
+            return;
+        }
+        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        sortFieldLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.LABEL.SORT_FIELD);
+        sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
+        company.setEnsureDebugIdLabel(DebugIds.FILTER.LABEL.COMPANY);
+        company.setEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR);
+        showFired.ensureDebugId(DebugIds.FILTER.SHOW_FIRED);
+        resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
+    }
+
     @Inject
     @UiField( provided = true )
     CompanySelector company;
@@ -160,9 +162,8 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
+    @UiField
+    LabelElement sortFieldLabel;
 
 
     AbstractContactFilterActivity activity;

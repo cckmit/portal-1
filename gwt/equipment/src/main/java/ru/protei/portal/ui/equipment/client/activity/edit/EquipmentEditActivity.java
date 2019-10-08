@@ -12,7 +12,8 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -180,13 +181,13 @@ public abstract class EquipmentEditActivity
         }
         view.manager().setValue( manager );
 
-        ProjectInfo info = null;
+        Project info = null;
         if (equipment.getProjectId() != null) {
-            info = new ProjectInfo();
+            info = new Project();
             info.setId(equipment.getProjectId());
             info.setName(equipment.getProjectName());
         }
-        view.project().setValue( info );
+        view.project().setValue( info == null ? null : new EntityOption(info.getName(), info.getId()));
 
         view.createDocumentButtonEnabled().setEnabled(!isCreate);
         view.documentsVisibility().setVisible(!isCreate);
@@ -219,7 +220,7 @@ public abstract class EquipmentEditActivity
             equipment.setProjectName(null);
         } else {
             equipment.setProjectId(view.project().getValue().getId());
-            equipment.setProjectName(view.project().getValue().getName());
+            equipment.setProjectName(view.project().getValue().getDisplayText());
         }
     }
 

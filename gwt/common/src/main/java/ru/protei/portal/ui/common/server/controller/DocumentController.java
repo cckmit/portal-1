@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.core.service.DocumentSvnService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 
 import javax.servlet.http.HttpServletRequest;

@@ -14,14 +14,13 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseCommentUtils;
@@ -97,7 +96,7 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
         view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
-        view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
+        view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.enabledNewComment(isModifyEnabled);
         view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
                         lang.textMarkdownSupport() :
@@ -356,32 +355,34 @@ public abstract class CaseCommentListActivity
 
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
         AbstractCaseCommentItemView itemView = issueProvider.get();
-        itemView.setActivity( this );
+        itemView.setActivity(this);
 
-        if ( value.getAuthorId().equals( profile.getId() ) ) {
+        if (value.getAuthorId().equals(profile.getId())) {
             itemView.setMine();
+            itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
+        } else {
+            itemView.setIcon(AvatarUtils.getAvatarUrl(value.getAuthor()));
         }
 
-        itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
-        itemView.setOwner( getOwnerName(value) );
-        itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
+        itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));
+        itemView.setOwner(getOwnerName(value));
         itemView.setRemoteLink(value.getRemoteLink());
 
         if (StringUtils.isNotEmpty(value.getText())) {
             itemView.setMessage(value.getText());
         }
         itemView.clearElapsedTime();
-        fillTimeElapsed( value, itemView );
-        itemView.setPrivateComment(value.isPrivateComment());
-
-        itemView.getPrivacyVisibility().setVisible(isPrivateVisible);
+        fillTimeElapsed(value, itemView);
+        if (isPrivateVisible) {
+            itemView.setPrivacyFlag(value.isPrivateComment());
+        }
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
         boolean isManagerChangeComment = value.getCaseManagerId() != null;
         boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment;
 
-        if ( HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
+        if (HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
             itemView.hideOptions();
         }
 
@@ -660,8 +661,6 @@ public abstract class CaseCommentListActivity
     AttachmentServiceAsync attachmentService;
     @Inject
     TextRenderControllerAsync textRenderController;
-    @Inject
-    PolicyService policyService;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;

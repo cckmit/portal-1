@@ -8,13 +8,11 @@ import com.google.gwt.user.client.ui.Widget;
  * Представление превью сотрудника
  */
 public interface AbstractEmployeePreviewView extends IsWidget {
-    void watchForScroll(boolean isWatch);
 
     void setActivity(AbstractEmployeePreviewActivity activity );
     void setID( String value );
+    void setName( String name );
+    void setIP( String ip );
+
     HasWidgets getPositionsContainer();
-
-    Widget asWidget(boolean isForTableView);
-
-    void setName(String name);
 }

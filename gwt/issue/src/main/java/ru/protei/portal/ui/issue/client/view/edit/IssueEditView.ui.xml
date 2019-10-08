@@ -1,139 +1,224 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector"
+             xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla"
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
 
-    <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-        <div class="body">
-            <div class="grid grid-indent">
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <g:HTMLPanel ui:field="numberContainer" styleName="col-md-12">
+                        <h5 class="number-copy-panel no-margin p-b-10">
+                            <i ui:field="privacyIcon"/>
+                            <g:InlineLabel ui:field="numberLabel"/>
+                            <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
+                                <i class="far fa-clone fa-xs"/>
+                            </g:Anchor>
+                        </h5>
 
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-12 m-b-0">
-                    <label ui:field="nameLabel"><ui:text from="{lang.issueName}"/></label>
-                    <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="issue-main-info">
-                            <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
-                            <g:IntegerBox ui:field="number" styleName="input-field issue-number" enabled="false"/>
-                            <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                        <div class="inline pull-right">
+                            <small ui:field="createdBy"/>
+                        </div>
                     </g:HTMLPanel>
-                </g:HTMLPanel>
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 m-b-0" tagCaseType="CRM_SUPPORT"/>
-            </div>
-            <div class="grid grid-indent">
-                <div class="form-group col-xs-6">
-                    <label ui:field="stateLabel">
-                        <ui:text from="{lang.issueState}"/>
-                    </label>
-                    <issuestate:IssueStateButtonSelector ui:field="state" validation="true"/>
-                </div>
-                <div class="form-group col-xs-6">
-                    <label ui:field="importanceLabel">
-                        <ui:text from="{lang.issueImportance}"/>
-                    </label>
-                    <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
-                </div>
-                <div class="form-group col-xs-3">
-                    <label ui:field="companyLabel">
-                        <ui:text from="{lang.issueCompany}"/>
-                    </label>
-                    <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
-                </div>
-                <div class="form-group col-xs-3">
-                    <label ui:field="initiatorLabel">
-                        <ui:text from="{lang.issueInitiator}"/>
-                    </label>
-                    <person:PersonButtonSelector ui:field="initiator" fired="false" validation="false"/>
-                </div>
+                    <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
+                        <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn"/>
 
-                <div class="form-group col-xs-3">
-                    <label ui:field="productLabel">
-                        <ui:text from="{lang.issueProduct}"/>
-                    </label>
-                    <devunit:DevUnitButtonSelector ui:field="product" validation="false"/>
-                </div>
+                        <div class="form-input-group">
+                            <label ui:field="nameLabel" class="fade">
+                                <ui:text from="{lang.issueName}"/>
+                            </label>
+                            <g:TextBox ui:field="name" styleName="form-control"/>
+                        </div>
 
-                <div class="form-group col-xs-3">
-                    <label ui:field="managerLabel">
-                        <ui:text from="{lang.issueManager}"/>
-                    </label>
-                    <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
-                </div>
+                    </g:HTMLPanel>
 
-                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group grid grid-indent col-xs-12">
-                    <div class="col-xs-8">
-                        <label ui:field="timeElapsedLabel">
-                            <ui:text from="{lang.timeElapsed}"/>
-                        </label>
-                        <timefield:TimeLabel ui:field="timeElapsed" styleName="inline-block m-l-10"/>
-                        <timefield:TimeTextBox ui:field="timeElapsedInput" styleName="input-field time-elapsed" notNull="false"/>
+                    <div class="row form-group">
+                        <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"
+                                               tagCaseType="CRM_SUPPORT"/>
                     </div>
 
-                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="btn-selector col-xs-4"
-                                                         header="{lang.timeElapsedType}"/>
+                    <div class="row form-group ">
+                        <div class="col-md-12">
+                            <div class="form-group-default">
+                                <label class="fade" ui:field="descriptionLabel">
+                                    <ui:text from="{lang.description}"/>
+                                </label>
+                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
+                            </div>
+                        </div>
+                    </div>
 
-                </g:HTMLPanel>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label ui:field="attachmentsLabel">
+                                <ui:text from="{lang.issueAttachments}"/>
+                            </label>
 
-                <div class="form-group col-xs-12">
-                    <label ui:field="descriptionLabel">
-                        <ui:text from="{lang.description}"/>
-                    </label>
-                    <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
-                </div>
-
-
-                <div class="form-group col-xs-12">
-                    <label style="display:block" ui:field="subscriptionsLabel">
-                        <ui:text from="{lang.companySubscription}"/>
-                    </label>
-                    <div ui:field="subscriptions"/>
-                </div>
-
-                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
-                    <label ui:field="notifiersLabel">
-                        <ui:text from="{lang.caseSubscription}"/>
-                    </label>
-                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
-                </g:HTMLPanel>
-
-                <div class="form-group col-xs-12">
-                    <label ui:field="attachmentsLabel"><ui:text from="{lang.issueAttachments}"/></label>
-                    <div class="col-xs-12 col-md-12">
-                        <div class="panel">
-                            <div class="body">
+                            <div>
                                 <div class="attach attach-add">
                                     <fileuploader:AttachmentUploader ui:field="fileUploader">
                                         <div class="attach-add-circle">
-                                            <i class="ion-plus"/>
-                                            <i class="icon-verifiable"/>
+                                            <i class="fas fa-plus ion-plus"/>
+                                            <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
                                         </div>
                                     </fileuploader:AttachmentUploader>
                                 </div>
-                                <attachment:AttachmentList ui:field="attachmentContainer" />
+                                <attachment:AttachmentList ui:field="attachmentContainer"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-12" ui:field="comments">
+                            <label>
+                                <ui:text from="{lang.comments}"/>
+                            </label>
+                            <g:HTMLPanel ui:field="commentsContainer"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            <div class="form-group-attached">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <issuestate:IssueStateFormSelector ui:field="state"
+                                                                           validation="true"
+                                                                           header="{lang.issueState}"
+                                                                           mandatory="true"/>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <issueimportance:ImportanceFormSelector ui:field="importance"
+                                                                                validation="true"
+                                                                                header="{lang.issueImportance}"
+                                                                                mandatory="true"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <devunit:DevUnitFormSelector ui:field="product"
+                                                                     validation="false"
+                                                                     header="{lang.issueProduct}"
+                                                                     mandatory="false"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <person:EmployeeFormSelector ui:field="manager"
+                                                                     validation="false"
+                                                                     header="{lang.issueManager}"
+                                                                     mandatory="false"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="m-t-10">
+                                <ui:text from="{lang.issueInitiatorInfo}"/>
+                            </p>
+                            <div class="form-group-attached form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <company:CompanyFormSelector ui:field="company"
+                                                                     validation="false"
+                                                                     header="{lang.issueCompany}"
+                                                                     hasNullValue="false"
+                                                                     mandatory="false"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <person:PersonFormSelector ui:field="initiator"
+                                                                   validation="false"
+                                                                   header="{lang.issueInitiator}"
+                                                                   mandatory="false"
+                                                                   fired="false"/>
+                                    </div>
+                                </div>
+                                <g:HTMLPanel ui:field="platformContainer" styleName="row">
+                                    <div class="col-md-12">
+                                        <selector:PlatformFormSelector ui:field="platform"
+                                                                       validation="false"
+                                                                       header="{lang.siteFolderPlatform}"
+                                                                       mandatory="false"/>
+                                    </div>
+                                </g:HTMLPanel>
+                            </div>
+
+
+                            <jirasla:JiraSLASelector ui:field="jiraSlaSelector"
+                                                     visible="false" styleName="form-group"/>
+
+                            <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
+                                <div ui:field="timeElapsedHeader" class="col-md-12">
+                                    <label ui:field="timeElapsedLabel">
+                                        <ui:text from="{lang.timeElapsed}"/>
+                                    </label>
+                                    <timefield:TimeLabel ui:field="timeElapsed"
+                                                         styleName="inline m-l-10 small hint-text"/>
+                                </div>
+
+                                <g:HTMLPanel ui:field="timeElapsedEditContainer" styleName="col-md-12 form-group-attached">
+                                    <div class="row clearfix">
+                                        <div class="col-md-6">
+                                            <div class="form-group form-group-default">
+                                                <label class="fade">
+                                                    <ui:text from="{lang.timeElapsed}"/>
+                                                </label>
+                                                <timefield:TimeTextBox ui:field="timeElapsedInput"
+                                                                       styleName="form-control time-elapsed"
+                                                                       notNull="false"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <timeElapsed:ElapsedTimeTypeFormSelector ui:field="timeElapsedType"
+                                                                                     header="{lang.timeElapsedType}"/>
+                                        </div>
+                                    </div>
+                                </g:HTMLPanel>
+                            </g:HTMLPanel>
+
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <label ui:field="subscriptionsLabel">
+                                        <ui:text from="{lang.companySubscription}"/>
+                                    </label>
+                                    <small class="hint-text block" ui:field="subscriptions"/>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="col-md-12">
+                                    <label ui:field="notifiersLabel">
+                                        <ui:text from="{lang.caseSubscription}"/>
+                                    </label>
+                                    <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
+                                                                  buttonStyle="btn-info btn-xs"/>
+                                </g:HTMLPanel>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-xs-12" ui:field="comments">
-                    <label><ui:text from="{lang.comments}"/></label>
-                    <g:HTMLPanel ui:field="commentsContainer"/>
-                </div>
             </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button"
+                      text="{lang.buttonCancel}"/>
         </div>
-
     </g:HTMLPanel>
 </ui:UiBinder>

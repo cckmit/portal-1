@@ -1,7 +1,6 @@
 package ru.protei.portal.core.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -10,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
-import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.annotations.Auditable;
@@ -22,12 +20,15 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.SimpleAuditableObject;
+import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.EventPublisherService;
-import ru.protei.portal.core.service.PolicyService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
 
 import java.lang.reflect.Method;
@@ -35,76 +36,85 @@ import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.*;
 
+import static ru.protei.portal.api.struct.Result.error;
 /**
  * Created by Mike on 06.11.2016.
  */
 @Aspect
-@Order(0)
+@Order(1)
 public class ServiceLayerInterceptor {
 
-    private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
+    /**
+     *  Сервис методы "Фасада", строго в пакете service, прочие сервисы в подпакетах
+     */
+    @Pointcut("within(ru.protei.portal.core.service.*)")
+    private void inServiceFacade() {
+    }
 
-    @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
-//    @Pointcut("call(public ru.protei.portal.api.struct.CoreResponse *(..))")
-    private void coreResponseMethod() {}
+    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
+    private void methodWithResult() {}
 
+    @Pointcut("within(ru.protei.portal.core.service.auth.*)")
+    public void authServiceMethod() {
+    }
 
-    @Pointcut("within(ru.protei.portal.core.service..*)")
-    private void inServiceLayer() {}
+    @Around("methodWithResult() && authServiceMethod()")
+    public Object unhandledExceptionAuthMethods( ProceedingJoinPoint pjp ) {
+        try {
+            return pjp.proceed();
+        } catch (Throwable t) {
+            logger.warn( "Unhandled exception from auth methods: {}", pjp.getSignature(), t );
+            return null;
+        }
+    }
 
-
-    @Around("coreResponseMethod() && inServiceLayer()")
-    public Object unhandledException (ProceedingJoinPoint pjp) {
+    /**
+     * Все сервис методы "Фасада" обязаны возвращать объект результата выполения "Result",
+     * принимать признак безопасности "AuthToken", могут быть аннотированы как @Privileged.
+     * Если метод не возврщает "Result", не требует авторизации или не попадает в журнал аудита,
+     * то наверное такой сервис метод не относится к "Фасаду"
+     * и должен быть размещен в отдельном пакете и обрабатываться иначе.
+     */
+    @Around("inServiceFacade()")
+    public Object serviceFacadeProcessing (ProceedingJoinPoint pjp) {
 
         try {
             checkPrivileges( pjp );
-            Object result = pjp.proceed();
+            // Все сервис методы "Фасада" обязаны возвращать объект результата выполения "Result"...
+            Result result = (Result) pjp.proceed(); // Нужно падать если не приводтся к Result!
             tryDoAudit( pjp, result );
             return result;
         }
         catch (Throwable e) {
-            logger.debug("service layer unhandled exception", e);
+            logger.error("service layer unhandled exception", e);
 
             if (JdbcHelper.isTemporaryDatabaseError (e)) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.DB_TEMP_ERROR);
+                return error( En_ResultStatus.DB_TEMP_ERROR);
             }
 
             if (e instanceof SQLException) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.DB_COMMON_ERROR);
+                return error( En_ResultStatus.DB_COMMON_ERROR);
             }
 
             if (e instanceof InvalidAuthTokenException ) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.INVALID_SESSION_ID );
+                return error( En_ResultStatus.INVALID_SESSION_ID );
             }
 
             if ( e instanceof InsufficientPrivilegesException ) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.PERMISSION_DENIED );
+                return error( En_ResultStatus.PERMISSION_DENIED );
             }
 
             if ( e instanceof ResultStatusException ) {
-                En_ResultStatus resultStatus = ((ResultStatusException) e).getResultStatus();
-                return handleReturn(pjp.getSignature(), resultStatus);
+                return error( ((ResultStatusException) e).getResultStatus());
             }
+
+            return error( En_ResultStatus.INTERNAL_ERROR );
         }
-
-        return handleReturn(pjp.getSignature(), En_ResultStatus.INTERNAL_ERROR);
     }
-
-    private Object handleReturn (Signature signature, En_ResultStatus status) {
-        if (!(signature instanceof MethodSignature))
-            return null;
-
-        if (CoreResponse.class.isAssignableFrom(((MethodSignature)signature).getReturnType())) {
-            return new CoreResponse<>().error(status);
-        }
-
-        return null;
-    }
-
 
     private void tryDoAudit( ProceedingJoinPoint pjp, Object result ) {
 
-        if ( result instanceof CoreResponse && !((CoreResponse)result).getStatus().equals( En_ResultStatus.OK ) ){
+        if ( result instanceof Result && !((Result)result).getStatus().equals( En_ResultStatus.OK ) ){
             return;
         }
 
@@ -308,4 +318,5 @@ public class ServiceLayerInterceptor {
 
     private static final String AUDITABLE_TYPE = "AuditableType";
     private Map<String, Object> notAuditableContainer = new LinkedHashMap<>();
+    private static Logger logger = LoggerFactory.getLogger("Service");
 }

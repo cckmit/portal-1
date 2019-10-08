@@ -41,7 +41,6 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         initDetails.parent.add(view.asWidget());
 
         if( event.id == null ) {
-            this.fireEvent( new AppEvents.InitPanelName( lang.accountNew() ) );
             initialView( new UserLogin() );
         } else {
             requestAccount( event.id, this::initialView );
@@ -118,7 +117,6 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
             @Override
             public void onSuccess( UserLogin userLogin ) {
-                fireEvent( new AppEvents.InitPanelName( lang.editContactHeader( userLogin.getUlogin() ) ) );
                 successAction.accept( userLogin );
             }
         } );

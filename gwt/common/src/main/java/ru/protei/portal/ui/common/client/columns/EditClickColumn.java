@@ -1,15 +1,19 @@
 package ru.protei.portal.ui.common.client.columns;
 
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.function.Function;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Колонка редактирования контакта.
@@ -34,13 +38,14 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
-        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
+        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply( value );
 
         cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
-        a.addClassName( "fa-2x ion-compose" );
+        a.addClassName( "far fa-edit fa-lg" );
         a.setTitle( lang.edit() );
+        a.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.EDIT );
         setEditEnabled( a );
         cell.appendChild( a );
     }
@@ -50,14 +55,14 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
     }
 
     public void setEditHandler( EditHandler< T > editHandler ) {
-        setActionHandler(editHandler::onEditClicked);
+        setActionHandler( editHandler::onEditClicked );
     }
 
-    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
+    public void setArchivedCheckFunction( Function<T, Boolean> archivedCheckFunction ) {
         this.archivedCheckFunction = archivedCheckFunction;
     }
 
-    private void setEditEnabled(AnchorElement a ) {
+    private void setEditEnabled( AnchorElement a ) {
 
         if ( privilege == null ) {
             return;

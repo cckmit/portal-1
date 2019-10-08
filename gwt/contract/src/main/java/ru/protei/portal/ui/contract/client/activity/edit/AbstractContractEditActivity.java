@@ -7,4 +7,6 @@ public interface AbstractContractEditActivity {
     void onCancelClicked();
 
     void onTypeChanged();
+
+    void refreshProjectSpecificFields();
 }

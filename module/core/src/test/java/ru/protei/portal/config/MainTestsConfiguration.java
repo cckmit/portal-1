@@ -31,7 +31,12 @@ import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
@@ -387,6 +392,21 @@ public class MainTestsConfiguration {
     }
 
     @Bean
+    public JiraEndpointDAO getJiraEndpointDAO() {
+        return new JiraEnpointDAO_Impl();
+    }
+
+    @Bean
+    public JiraStatusMapEntryDAO getJiraStatusMapEntryDAO() {
+        return new JiraStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
     public YoutrackApiClient getYoutrackApiClient() {
         return new YoutrackApiClientImpl();
     }
@@ -589,6 +609,11 @@ public class MainTestsConfiguration {
     @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
+    }
+
+    @Bean
+    public SLAService getSLAService() {
+        return new SLAServiceImpl();
     }
 
 

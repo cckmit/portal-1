@@ -40,8 +40,8 @@ public class SelectorPopup
         resizeHandler = new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent resizeEvent) {
-                if ( isAttached() ) {
-                    showNear( relative );
+                if (SelectorPopup.this.isAttached()) {
+                    SelectorPopup.this.showNear(relative);
                 }
             }
         };
@@ -63,7 +63,8 @@ public class SelectorPopup
 
     public void showNear( IsWidget nearWidget ) {
         prepareToShow(nearWidget);
-        root.getElement().getStyle().setWidth( nearWidget.asWidget().getOffsetWidth(), Style.Unit.PX );
+        int offsetWidth = nearWidget.asWidget().getOffsetWidth();
+        root.getElement().getStyle().setWidth( offsetWidth < 100 ? 150 : offsetWidth, Style.Unit.PX );
         if(searchVisible && searchAutoFocus) {
             search.setFocus(true);
         }
@@ -85,6 +86,8 @@ public class SelectorPopup
 
     public void showNearInlineRight( final IsWidget nearWidget ) {
         prepareToShow(nearWidget);
+        root.getElement().getStyle().setWidth( 150, Style.Unit.PX );
+        search.setStyle( "input-sm" );
         setPopupPositionAndShow((popupWidth, popupHeight) -> {
             int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
             int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
@@ -172,10 +175,10 @@ public class SelectorPopup
     }
 
     private void ensureDefaultDebugIds() {
-        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR_POPUP.ADD_NEW_ENTRY_BUTTON);
-        setEnsureDebugIdSearch(DebugIds.SELECTOR_POPUP.SEARCH_INPUT);
-        setEnsureDebugIdSearchAction(DebugIds.SELECTOR_POPUP.SEARCH_ACTION);
-        setEnsureDebugIdListContainer(DebugIds.SELECTOR_POPUP.ENTRY_LIST_CONTAINER);
+        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
+        setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
+        setEnsureDebugIdSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
+        setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
     public void setEnsureDebugIdAddEntryAction(String debugId) {

@@ -14,9 +14,9 @@ import ru.protei.portal.app.portal.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
 import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
@@ -53,8 +53,9 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUser( event.profile.getName(), event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(), UserIconUtils.getGenderIcon(event.profile.getGender()));
-
+        view.setUser( event.profile.getShortName(),
+                event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(),
+                AvatarUtils.getAvatarUrl(event.profile));
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
         view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
 
@@ -70,16 +71,17 @@ public abstract class AppActivity
     }
 
     @Override
-    public void onLocaleChanged( String locale ) {
-        LocaleUtils.changeLocale( locale );
-    }
-
-    @Override
     public void onLogoClicked() {
         fireEvent(pageService.getFirstAvailablePageEvent());
     }
 
-    public void onUserClicked() {
+    @Override
+    public void onLocaleChanged(String locale) {
+        LocaleUtils.changeLocale( locale );
+    }
+
+    @Override
+    public void onSettingsClicked() {
         fireEvent( new AppEvents.ShowProfile());
     }
 
@@ -96,7 +98,6 @@ public abstract class AppActivity
         fireEvent( new NotifyEvents.Init( view.getNotifyContainer() ) );
         fireEvent( new ActionBarEvents.Init( view.getActionBarContainer() ) );
     }
-
 
     private void pingServer() {
         pingService.ping( new AsyncCallback<Void>() {

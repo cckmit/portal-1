@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,9 +11,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.ContractEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -21,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.HelperFunc.isEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
@@ -31,11 +31,45 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     @Event
+    public void onInit( AppEvents.InitDetails event ) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow( ContractEvents.ShowPreview event ) {
         event.parent.clear();
+
+        view.footerVisibility().setVisible(false);
         event.parent.add( view.asWidget() );
 
         loadDetails(event.id);
+    }
+
+    @Event
+    public void onShow(ContractEvents.ShowFullScreen event) {
+        initDetails.parent.clear();
+
+        view.footerVisibility().setVisible(true);
+        initDetails.parent.add(view.asWidget());
+
+        loadDetails(event.contractId);
+    }
+
+    @Override
+    public void onProjectClicked() {
+        if (projectId != null) {
+            fireEvent(new ProjectEvents.ShowFullScreen(projectId));
+        }
+    }
+
+    @Override
+    public void onFullScreenClicked() {
+        fireEvent(new ContractEvents.ShowFullScreen(contractId));
+    }
+
+    @Override
+    public void onGoToContractsClicked() {
+        fireEvent(new ContractEvents.Show());
     }
 
     private void loadDetails(Long id) {
@@ -50,6 +84,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     onError(null);
                     return;
                 }
+                projectId = result.getProjectId();
+                contractId = result.getId();
                 fillView(result);
             }
         });
@@ -57,25 +93,33 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     private void fillView( Contract value ) {
         view.setHeader(lang.contractNum(value.getNumber()));
-        view.setState(stateLang.getName(value.getState()));
+        String stateImage = null;
+        if ( value.getState() != null ) {
+            stateImage = "./images/contract_" + value.getState().name().toLowerCase() + ".png";
+        }
+        view.setState( stateImage );
+
         view.setType(typeLang.getName(value.getContractType()));
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
         view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
-        view.setContragent(StringUtils.emptyIfNull(value.getContragentName()));
+        view.setContragent(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseContragentName()) : StringUtils.emptyIfNull(value.getContragentName()));
         view.setOrganization(StringUtils.emptyIfNull(value.getOrganizationName()));
-        view.setManager(StringUtils.emptyIfNull(value.getManagerShortName()));
+        view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
-        view.setDirection(StringUtils.emptyIfNull(value.getDirectionName()));
+        view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
         view.setDates(getAllDatesAsString(value.getContractDates()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
 
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()));
+
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
                 .withCaseId(value.getId())
+                .withModifyEnabled(true)
                 .build());
     }
 
@@ -93,8 +137,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     @Inject
     private Lang lang;
     @Inject
-    private En_ContractStateLang stateLang;
-    @Inject
     private En_ContractTypeLang typeLang;
     @Inject
     private En_ContractDatesTypeLang datesTypeLang;
@@ -104,5 +146,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     @Inject
     private ContractControllerAsync contractController;
 
+    private Long projectId;
+    private Long contractId;
+
     private DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+    private AppEvents.InitDetails initDetails;
 }

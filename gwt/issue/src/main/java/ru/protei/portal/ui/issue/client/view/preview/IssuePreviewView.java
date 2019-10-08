@@ -2,10 +2,7 @@ package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,9 +14,9 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -35,6 +32,8 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewVie
 
 import java.util.Set;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 /**
  * Вид превью обращения
  */
@@ -47,53 +46,35 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
-    }
-
-    @Override
     public void setActivity( AbstractIssuePreviewActivity activity ) {
         this.activity = activity;
     }
 
     @Override
-    public void setPrivateIssue( boolean privateIssue ) {
-        if ( privateIssue ) {
-            this.privateIssue.setClassName( "fa fa-fw fa-lg fa-lock text-danger pull-left" );
-            return;
+    public void setPrivateIssue( boolean isPrivate ) {
+        if ( isPrivate ) {
+            privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
+            privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
+        } else {
+            privateIssue.setClassName( "fa fa-unlock-alt text-success m-r-10"  );
+            privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
         }
-
-        this.privateIssue.setClassName( "fa fa-fw fa-lg fa-unlock-alt text-success pull-left"  );
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
-
-    @Override
-    public void setCreationDate( String value ) {
-        this.creationDate.setInnerText( value );
+    public void setCreatedBy(String value) {
+        this.createdBy.setInnerHTML( value );
     }
 
     @Override
     public void setState( long value ) {
         En_CaseState caseState = En_CaseState.getById( value );
-        this.state.setClassName( "small label label-" + caseState.toString().toLowerCase());
-        this.state.setInnerText( caseStateLang.getStateName( caseState ) );
+        this.state.setInnerHTML( "<i class='fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase() + "'></i>" +
+                caseStateLang.getStateName( caseState ) );
     }
 
     @Override
-    public void setCriticality( int value ) {
+    public void setImportance(int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
         this.iconCriticality.setClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value)));
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
@@ -102,11 +83,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setProduct( String value ) {
         this.product.setInnerText( value );
-    }
-
-    @Override
-    public void setCompany( String value ) {
-        this.company.setInnerText( value );
     }
 
     @Override
@@ -121,12 +97,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setContact( String value ) {
-        this.contact.setInnerHTML( value );
-    }
-
-    @Override
-    public void setOurCompany( String value ) {
-        this.ourCompany.setInnerText( value );
+        this.contact.setInnerText( value );
     }
 
     @Override
@@ -140,6 +111,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public String getName() {
+        return name.getInnerText();
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerHTML( value );
     }
@@ -147,23 +123,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setSubscriptionEmails( String value ) {
         this.subscriptions.setInnerText( value );
-    }
-
-    @Override
-    public void showFullScreen( boolean value ) {
-        fullScreen.setVisible( !value );
-        backButton.setVisible( value );
-        if ( value ) {
-            previewMain.setStyleName("panel footer-fixable");
-            previewWrapper.setStyleName("preview grid");
-            preview.addStyleName( "issue-fullscreen col-md-12 m-t-10" );
-        } else {
-            previewMain.setStyleName(" preview-wrapper grid");
-            previewWrapper.setStyleName("");
-            preview.setStyleName( "preview" );
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-
-        }
     }
 
     @Override
@@ -178,6 +137,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setCaseNumber(Long caseNumber) {
+        number.setText("CRM-" + caseNumber);
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
@@ -187,8 +147,38 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public HasVisibility backBtnVisibility() {
+        return backButtonContainer;
+    }
+
+    @Override
     public HasVisibility timeElapsedContainerVisibility() {
         return timeElapsedContainer;
+    }
+
+    @Override
+    public HasVisibility jiraContainerVisibility() {
+        return jiraMetaDataContainer;
+    }
+
+    @Override
+    public void setJiraIssueType(String value) {
+        jiraIssueType.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+    }
+
+    @Override
+    public void setJiraSeverity(String value) {
+        jiraSeverity.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+    }
+
+    @Override
+    public void setJiraTimeOfReaction(String value) {
+        jiraTimeOfReaction.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+    }
+
+    @Override
+    public void setJiraTimeOfDecision(String value) {
+        jiraTimeOfDecision.setInnerText(StringUtils.isEmpty(value) ? "" : value);
     }
 
     @Override
@@ -196,8 +186,22 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         return timeElapsed;
     }
 
+    @Override
+    public void setPlatform(String value) {
+        this.platform.setText(value);
+    }
 
-    @UiHandler( "fullScreen" )
+    @Override
+    public void setPlatformVisibility(boolean visible) {
+        if (visible) {
+            platformLabel.removeClassName("hide");
+        } else {
+            platformLabel.addClassName("hide");
+        }
+        platform.setVisible(visible);
+    }
+
+    @UiHandler( "number" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
 
@@ -213,9 +217,25 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
+    @UiHandler("platform")
+    public void onPlatformExtLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onPlatformExtLinkClicked();
+        }
+    }
+
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
+    }
+
+    @UiHandler("copy")
+    public void onCopyClick(ClickEvent event) {
+        if ( activity != null ) {
+            activity.onCopyClicked();
+        }
     }
 
     private void ensureDebugIds() {
@@ -223,40 +243,38 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
             return;
         }
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
-        privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON); /* @ASK for what? */
-        fullScreen.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.TITLE_LABEL);
-        caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
-        creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED_LABEL);
-        criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE_LABEL);
-        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT_LABEL);
-        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE_LABEL);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.TIME_ELAPSED_LABEL);
-        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMPANY_LABEL);
-        contact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.CONTACT_LABEL);
-        ourCompany.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.OUR_COMPANY_LABEL);
-        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER_LABEL);
-        subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION_LABEL);
-        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME_LABEL);
-        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO_LABEL);
+        number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
+        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
+        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
+        criticalityLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.IMPORTANCE);
+        criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE);
+        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PRODUCT);
+        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT);
+        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.STATE);
+        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE);
+        timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.TIME_ELAPSED);
+        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.TIME_ELAPSED);
+        contactLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.CONTACT);
+        contact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.CONTACT);
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.MANAGER);
+        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER);
+        subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.SUBSCRIPTION);
+        subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION);
+        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
+        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PLATFORM);
+        platform.ensureDebugId(DebugIds.ISSUE_PREVIEW.PLATFORM);
+        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
+        copy.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_TO_CLIPBOARD_BUTTON);
     }
 
     @UiField
     HTMLPanel preview;
     @UiField
-    HTMLPanel previewWrapper;
-    @UiField
-    HTMLPanel previewMain;
-    @UiField
-    Anchor fullScreen;
-    @UiField
     Element privateIssue;
     @UiField
-    Element header;
-    @UiField
-    SpanElement creationDate;
+    Element createdBy;
     @UiField
     SpanElement product;
     @UiField
@@ -266,17 +284,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement criticality;
     @UiField
-    LabelElement company;
-    @UiField
     SpanElement contact;
-    @UiField
-    LabelElement ourCompany;
     @UiField
     SpanElement manager;
     @UiField
-    SpanElement name;
+    HeadingElement name;
     @UiField
-    SpanElement info;
+    Anchor platform;
+    @UiField
+    DivElement info;
     @Inject
     @UiField
     Lang lang;
@@ -289,7 +305,25 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField(provided = true)
     AttachmentList attachmentContainer;
     @UiField
-    DivElement subscriptions;
+    Element subscriptions;
+    @UiField
+    HTMLPanel jiraMetaDataContainer;
+    @UiField
+    HTMLPanel jiraIssueTypeContainer;
+    @UiField
+    HTMLPanel jiraSeverityContainer;
+    @UiField
+    HTMLPanel jiraTimeOfReactionContainer;
+    @UiField
+    HTMLPanel jiraTimeOfDecisionContainer;
+    @UiField
+    SpanElement jiraIssueType;
+    @UiField
+    SpanElement jiraSeverity;
+    @UiField
+    SpanElement jiraTimeOfReaction;
+    @UiField
+    SpanElement jiraTimeOfDecision;
     @UiField
     HTMLPanel timeElapsedContainer;
     @Inject
@@ -300,12 +334,34 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     CaseMetaView caseMetaView;
     @UiField
     Button backButton;
+    @UiField
+    Anchor number;
+    @UiField
+    HTMLPanel backButtonContainer;
+    @UiField
+    Anchor copy;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject
     En_CaseStateLang caseStateLang;
-    @Inject
-    FixedPositioner positioner;
+    @UiField
+    HTMLPanel numberCopyPanel;
+    @UiField
+    LabelElement stateLabel;
+    @UiField
+    LabelElement productLabel;
+    @UiField
+    LabelElement contactLabel;
+    @UiField
+    LabelElement managerLabel;
+    @UiField
+    HeadingElement subscriptionsLabel;
+    @UiField
+    HeadingElement platformLabel;
+    @UiField
+    LabelElement criticalityLabel;
+    @UiField
+    SpanElement timeElapsedLabel;
 
     AbstractIssuePreviewActivity activity;
 

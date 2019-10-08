@@ -52,14 +52,14 @@ public class OfficialPreviewView extends Composite implements AbstractOfficialPr
 
     @Override
     public void setInfo(String value) {
-        info.setInnerHTML(value);
+        info.setInnerText(value);
     }
 
     @Override
     public void showFullScreen(boolean value) {
         fullScreen.setVisible( !value );
         if ( value ) {
-            preview.addStyleName( "col-xs-12 col-lg-6" );
+            preview.addStyleName( "col-md-12 col-lg-6" );
         } else {
             preview.setStyleName( "preview" );
         }
