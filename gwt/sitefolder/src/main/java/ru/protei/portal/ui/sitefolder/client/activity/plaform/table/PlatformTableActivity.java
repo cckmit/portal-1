@@ -64,15 +64,12 @@ public abstract class PlatformTableActivity implements
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
         }
+
+        clearSelection(event);
 
         loadTable();
     }
@@ -255,6 +252,13 @@ public abstract class PlatformTableActivity implements
         if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
+        }
+    }
+
+    private void clearSelection(SiteFolderPlatformEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
         }
     }
 

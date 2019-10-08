@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.contact.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -57,18 +60,20 @@ public abstract class ContactTableActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
+        view.showElements();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.CONTACT ) :
                 new ActionBarEvents.Clear()
         );
 
-        view.showElements();
         isShowTable = false;
         contactId = null;
-
         query = makeQuery( null );
-        requestContacts( 0 );
+
+        clearSelection( event );
+
+        requestContacts( this.page );
     }
 
     @Event
@@ -128,6 +133,7 @@ public abstract class ContactTableActivity
 
     @Override
     public void onEditClicked(Person value ) {
+        persistScrollTopPosition();
         fireEvent(ContactEvents.Edit.byId(value.getId()));
     }
 
@@ -142,13 +148,14 @@ public abstract class ContactTableActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery( null );
-        requestContacts( 0 );
+        this.page = 0;
+        requestContacts( this.page );
     }
 
     @Override
     public void onPageSelected( int page ) {
-        pagerView.setCurrentPage( page );
-        requestContacts( page );
+        this.page = page;
+        requestContacts( this.page );
     }
 
     private void requestContacts( int page ) {
@@ -167,9 +174,10 @@ public abstract class ContactTableActivity
                         if ( isFirstChunk ) {
                             pagerView.setTotalCount( r.getTotalCount() );
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
-                            pagerView.setCurrentPage( 0 );
                         }
+                        pagerView.setCurrentPage( page );
                         view.addRecords( r.getResults() );
+                        restoreScrollTopPositionOrClearSelection();
                     }
                 })
                 .withErrorMessage( lang.errGetList() ) );
@@ -196,6 +204,29 @@ public abstract class ContactTableActivity
 
     };
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearSelection(ContactEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
+            this.page = 0;
+        }
+    }
 
     @Inject
     Lang lang;
@@ -226,4 +257,8 @@ public abstract class ContactTableActivity
     private static String CREATE_ACTION;
 
     private long marker;
+
+    private Integer scrollTop;
+
+    private int page = 0;
 }

@@ -65,16 +65,12 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-            this.page = 0;
-        }
-
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ACCOUNT ) :
                 new ActionBarEvents.Clear()
         );
+
+        clearSelection( event );
 
         requestAccounts( this.page );
     }
@@ -138,7 +134,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     @Override
     public void onFilterChanged() {
         this.page = 0;
-        requestAccounts( page );
+        requestAccounts( this.page );
     }
 
     @Override
@@ -217,6 +213,14 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
+        }
+    }
+
+    private void clearSelection(AccountEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
+            this.page = 0;
         }
     }
 

@@ -61,15 +61,12 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         init.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE) ?
                 new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.CONTRACT) :
                 new ActionBarEvents.Clear()
         );
+
+        clearSelection(event);
 
         loadTable();
     }
@@ -173,6 +170,13 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
+        }
+    }
+
+    private void clearSelection(ContractEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
         }
     }
 

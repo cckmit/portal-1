@@ -55,17 +55,15 @@ public abstract class DocumentTableActivity
         init.parent.add(view.asWidget());
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE) ?
                 new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DOCUMENT) :
                 new ActionBarEvents.Clear()
         );
 
         query = makeQuery();
+
+        clearSelection(event);
+
         loadTable();
     }
 
@@ -215,6 +213,13 @@ public abstract class DocumentTableActivity
         if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
+        }
+    }
+
+    private void clearSelection(DocumentEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
         }
     }
 

@@ -66,15 +66,12 @@ public abstract class EquipmentTableActivity
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.EQUIPMENT ) :
                 new ActionBarEvents.Clear()
         );
+
+        clearSelection(event);
 
         query = makeQuery();
 
@@ -175,6 +172,13 @@ public abstract class EquipmentTableActivity
         return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
                 filterView.organizationCodes().getValue(), filterView.types().getValue(),
                 filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId, equipmentId );
+    }
+
+    private void clearSelection(EquipmentEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
+        }
     }
 
     @Inject

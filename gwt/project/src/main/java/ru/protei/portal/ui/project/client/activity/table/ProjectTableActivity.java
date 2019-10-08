@@ -54,17 +54,15 @@ public abstract class ProjectTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
             new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.PROJECT ) :
             new ActionBarEvents.Clear()
         );
 
         projectIdForRemove = null;
+
+        clearSelection(event);
+
         requestProjects( null );
     }
 
@@ -229,6 +227,13 @@ public abstract class ProjectTableActivity
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
         return query;
+    }
+
+    private void clearSelection(ProjectEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
+        }
     }
 
     @Inject

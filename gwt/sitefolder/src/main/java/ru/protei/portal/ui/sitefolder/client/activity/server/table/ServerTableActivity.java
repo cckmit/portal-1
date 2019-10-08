@@ -66,18 +66,12 @@ public abstract class ServerTableActivity implements
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
 
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
-        platformId = event.platformId;
-
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.siteFolderServerCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_SERVER));
         }
 
+        platformId = event.platformId;
         if (platformId != null) {
             Set<EntityOption> options = new HashSet<>();
             EntityOption option = new EntityOption();
@@ -85,6 +79,8 @@ public abstract class ServerTableActivity implements
             options.add(option);
             filterView.platforms().setValue(options);
         }
+
+        clearSelection(event);
 
         loadTable();
     }
@@ -282,6 +278,13 @@ public abstract class ServerTableActivity implements
         if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
+        }
+    }
+
+    private void clearSelection(SiteFolderServerEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
         }
     }
 

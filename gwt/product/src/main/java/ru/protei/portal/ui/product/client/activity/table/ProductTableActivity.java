@@ -59,21 +59,16 @@ public abstract class ProductTableActivity implements
 
     @Event(Type.FILL_CONTENT)
     public void onShow( ProductEvents.Show event ) {
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
+
         fireEvent(new ActionBarEvents.Clear());
-
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
-
         if(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE )){
             fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));
         }
 
-        init.parent.clear();
-        init.parent.add( view.asWidget() );
-
-        view.getPagerContainer().add( pagerView.asWidget() );
+        clearSelection(event);
 
         loadTable();
     }
@@ -189,6 +184,13 @@ public abstract class ProductTableActivity implements
         if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
+        }
+    }
+
+    private void clearSelection(ProductEvents.Show event) {
+        if (event.clearSelection) {
+            event.clearSelection = false;
+            this.scrollTop = null;
         }
     }
 
