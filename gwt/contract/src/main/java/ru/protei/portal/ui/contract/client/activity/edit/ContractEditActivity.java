@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
@@ -121,7 +120,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void fillView(Contract value) {
         this.contract = value;
 
-        view.setIndependentProjects(true);
+        view.setContractIndependentProjects(true);
 
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {

@@ -201,6 +201,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void fillView(Platform platform) {
         this.platform = platform;
+        view.setPlatformIndependentProjects(true);
         boolean isNotNew = platform.getId() != null;
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         if (platform.getProjectId() != null){

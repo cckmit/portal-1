@@ -506,7 +506,8 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setIndependentProject(projectQuery.getIndependentProject());
+        caseQuery.setContractIndependentProject(projectQuery.getContractIndependentProject());
+        caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
         caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 
         return caseQuery;
