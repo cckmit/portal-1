@@ -18,11 +18,9 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
-import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -150,10 +148,12 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         }
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            if (value.getProjectManager() != null)
-                cell.setInnerText(value.getProjectManager() == null ? "" : value.getProjectManager().getDisplayShortName());
-            else
+            if (value.getProjectId() != null) {
+                cell.setInnerText(value.getCaseManagerShortName() == null ? "" : value.getCaseManagerShortName());
+            }
+            else {
                 cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+            }
 
         }
     };

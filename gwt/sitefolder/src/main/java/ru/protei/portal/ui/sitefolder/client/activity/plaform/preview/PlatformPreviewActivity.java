@@ -30,7 +30,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
         platformId = event.platform.getId();
 
-        request(event.platform.getId(), this::fillView);
+        platformRequest(event.platform.getId(), this::fillView);
         view.footerContainerVisibility().setVisible(false);
     }
 
@@ -39,7 +39,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        request(event.platformId, this::fillView);
+        platformRequest(event.platformId, this::fillView);
         view.footerContainerVisibility().setVisible(true);
     }
 
@@ -48,31 +48,22 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         this.initDetails = event;
     }
 
-    private void request(Long platformId, Consumer<Platform> consumer) {
+    private void platformRequest(Long platformId, Consumer<Platform> consumer) {
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
     }
 
-    /*private void projectRequest(Long projectId, Consumer<Project> consumer) {
+    private void projectRequest(Long projectId, Consumer<Project> consumer) {
         regionService.getProjectInfo(projectId, new FluentCallback<Project>().withSuccess(consumer));
-    }*/
-    private void fillProjectSpecificFields (Long id){
-        regionService.getProjectInfo(id, new FluentCallback<Project>()
-                .withSuccess(project -> {
-                    view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
-                    view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-                    if (project.getContragent() != null) fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
-                    else fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), 999999999999999L)); // НАДО СТЕРЕТЬ КОНТАКТЫ!!!!!
-                })
-        );
+    }
+
+    private void fillProjectSpecificFields (Project project){
+        view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
+        view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
+        if (project.getContragent() != null) fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
+        else fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), null));
     }
 
 
-  /*  private void fillProjectSpecificFields (Project project){
-                    view.setCompany(project.getContragent().getDisplayText());
-                    view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-                    fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
-    }
-*/
     private void fillView( Platform value ) {
         if (value == null) {
             return;
@@ -86,8 +77,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
         fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
         if (value.getProjectId() != null){
-            //projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
-            fillProjectSpecificFields(value.getProjectId());
+            projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
         }
         else {
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));

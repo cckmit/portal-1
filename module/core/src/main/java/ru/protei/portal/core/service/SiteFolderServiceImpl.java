@@ -330,19 +330,22 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Platform platform = platformDAO.get(id);
 
         if (platform == null){
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (platform.getCaseId() == null) {
-            return error(En_ResultStatus.NOT_REMOVED);
+        if (platform.getCaseId() == null || platform.getName() == null) {
+            return error(En_ResultStatus.NOT_UPDATED);
         }
-        else {
-            boolean resultCase = caseObjectDAO.removeByKey(platform.getCaseId());
-            boolean result = platformDAO.removeByKey(id);
 
-            if (result && resultCase) return ok (result);
-            else return error(En_ResultStatus.NOT_REMOVED);
-        }
+        CaseObject caseObject = makePlatformCaseObject(platform.getId(), platform.getName());
+        caseObject.setId(platform.getCaseId());
+
+        caseObject.setDeleted(true);
+        boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
+        boolean result = platformDAO.removeByKey(id);
+
+        if (result && resultCase) return ok (result);
+        else return error(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override

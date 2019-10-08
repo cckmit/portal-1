@@ -11,5 +11,5 @@ public interface AbstractPlatformEditActivity {
     void onCreateClicked();
     void onCompanySelected();
     void onRemoveAttachment(Attachment attachment);
-    void refreshProjectSpecificFields(EntityOption entityOptionProject);
+    void refreshProjectSpecificFields();
 }

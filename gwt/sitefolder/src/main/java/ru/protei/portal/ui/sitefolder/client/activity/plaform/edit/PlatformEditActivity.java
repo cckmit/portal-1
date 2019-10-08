@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -30,6 +29,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
 
@@ -160,36 +160,34 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     }
 
     @Override
-    public void refreshProjectSpecificFields(EntityOption entityOptionProject) {
-        if (entityOptionProject == null) {
+    public void refreshProjectSpecificFields() {
+        if (view.project().getValue() == null) {
             clearProjectSpecificFields();
             return;
         }
-        regionService.getProjectInfo(entityOptionProject.getId(), new FluentCallback<Project>()
-                .withSuccess(project -> {
-                    view.company().setValue(project.getContragent());
-                    view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
-                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
-                    view.companyEnabled().setEnabled(false);
-                    view.managerEnabled().setEnabled(false);
-                    view.companyValidator().setValid(true);
-                })
-        );
-
-
+        projectRequest(view.project().getValue().getId(), this::fillProjectSpecificFieldsOnRefresh);
     }
 
-    private void fillProjectSpecificFields (EntityOption entityOptionProject){
-        regionService.getProjectInfo(entityOptionProject.getId(), new FluentCallback<Project>()
-                .withSuccess(project -> {
-                    view.company().setValue(project.getContragent());
-                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
-                    view.companyEnabled().setEnabled(false);
-                    view.managerEnabled().setEnabled(false);
-                    view.companyValidator().setValid(true);
-                    fireShowCompanyContacts(project.getContragent().getId());
-                })
-        );
+    private void fillProjectSpecificFieldsOnRefresh(Project project) {
+        view.company().setValue(project.getContragent());
+        view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
+        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+        view.companyEnabled().setEnabled(false);
+        view.managerEnabled().setEnabled(false);
+        view.companyValidator().setValid(true);
+    }
+
+    private void fillProjectSpecificFieldsOnLoad(Project project){
+        view.company().setValue(project.getContragent());
+        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+        view.companyEnabled().setEnabled(false);
+        view.managerEnabled().setEnabled(false);
+        view.companyValidator().setValid(true);
+        fireShowCompanyContacts(project.getContragent().getId());
+    }
+
+    private void projectRequest(Long projectId, Consumer<Project> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<Project>().withSuccess(consumer));
     }
 
     private void clearProjectSpecificFields() {
@@ -206,7 +204,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         boolean isNotNew = platform.getId() != null;
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         if (platform.getProjectId() != null){
-            fillProjectSpecificFields(new EntityOption(platform.getProjectName(), platform.getProjectId()));
+            projectRequest(platform.getProjectId(), this::fillProjectSpecificFieldsOnLoad);
         }
         else{
             clearProjectSpecificFields();
@@ -260,7 +258,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     }
 
     private boolean isValid() {
-        if (view.project().getValue().getId() != null)
+        if (view.project().getValue() != null)
             return view.nameValidator().isValid();
         else
             return view.nameValidator().isValid() && view.companyValidator().isValid();
