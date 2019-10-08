@@ -35,13 +35,6 @@ public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChan
             }
         };
 
-        selectorWidth = Arrays.stream(En_TimeElapsedType.values())
-                .mapToInt(type -> elapsedTimeTypeLang.getName(type).length())
-                .max()
-                .orElse(0);
-
-        selectorWidth *= 10;
-
         typeSelector.setDisplayOptionCreator(type ->
                 new DisplayOption((type == null || En_TimeElapsedType.NONE.equals(type)) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName(type)));
         typeSelector.fillOptions();
@@ -69,12 +62,12 @@ public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChan
     public void showNear(IsWidget nearWidget) {
         this.relative = nearWidget;
         root.getElement().getStyle().setDisplay(Style.Display.FLEX);
-        typeSelector.getElement().setAttribute("style", "min-width: " + selectorWidth + "px;");
+        typeSelector.getElement().setAttribute("style", "min-width: " + SELECTOR_WIDTH + "px;");
         setPopupPositionAndShow((popupWidth, popupHeight) -> {
             int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
             int popupTop = nearWidget.asWidget().getAbsoluteTop() + nearWidget.asWidget().getOffsetHeight();
             int nearWidgetWidth = nearWidget.asWidget().getOffsetWidth();
-            setPopupPosition(relativeLeft - (nearWidgetWidth >= selectorWidth + confirmBtnSize ? 0 : (selectorWidth - nearWidgetWidth) + confirmBtnSize), popupTop);
+            setPopupPosition(relativeLeft - (nearWidgetWidth >= SELECTOR_WIDTH + confirmBtnSize ? 0 : (SELECTOR_WIDTH - nearWidgetWidth) + confirmBtnSize), popupTop);
         });
     }
 
@@ -113,10 +106,8 @@ public class EditTimeElapsedTypePopup extends PopupPanel implements HasValueChan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration scrollHandlerReg;
     private int confirmBtnSize;
-
-    private Integer selectorWidth;
-
     private En_TimeElapsedType type;
+    private static final Integer SELECTOR_WIDTH = 210;
 
     interface EditTimeElapsedTypePopupUiBinder extends UiBinder<HTMLPanel, EditTimeElapsedTypePopup> {}
     private static EditTimeElapsedTypePopupUiBinder ourUiBinder = GWT.create(EditTimeElapsedTypePopupUiBinder.class);
