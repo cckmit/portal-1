@@ -203,15 +203,15 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private Result<Long> sendMailNotificationLinkAdded( Long caseNumber, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
         diff.putAddedEntry( caseLInk );
-        return caseService.sendMailNotificationLinkChanged( caseNumber, diff )
-                .ifOk( caseId -> caseLInk.getId() );
+        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+                caseLInk.getId() );
     }
 
     private Result<Long> sendMailNotificationLinkRemoved( Long caseNumber, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
         diff.putRemovedEntry( caseLInk );
-        return caseService.sendMailNotificationLinkChanged( caseNumber, diff )
-                .ifOk( caseId -> caseLInk.getId() );
+        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+                caseLInk.getId() );
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

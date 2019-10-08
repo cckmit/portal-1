@@ -3,13 +3,14 @@ package ru.protei.portal.core.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.MockTestConfiguration;
-import ru.protei.portal.config.TestNotificationConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+import ru.protei.portal.config.DaoMockTestConfiguration;
+import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -21,29 +22,31 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.mock.AuthServiceMock.TEST_AUTH_TOKEN;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestNotificationConfiguration.class, MockTestConfiguration.class})
+@ContextConfiguration(classes = {
+        DaoMockTestConfiguration.class, ServiceTestsConfiguration.class
+})
 public class CaseLinkServiceImplTest {
 
-
-    @InjectMocks
-    CaseLinkService caseLinkService = new CaseLinkServiceImpl();
-
     @Autowired
-    CaseService caseService;
+    CaseLinkService caseLinkService;
     @Autowired
     CaseLinkDAO caseLinkDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
-    @Autowired
+
+    @Mock
     EventPublisherService publisherService;
+
+    @Autowired
+    CaseService caseService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks( this );
+        ReflectionTestUtils.setField(caseService, "publisherService", publisherService);
     }
 
     @Test
@@ -56,12 +59,11 @@ public class CaseLinkServiceImplTest {
         when( caseObjectDAO.getCaseByCaseno( eq( CASE_NUMBER ) ) ).thenReturn( caseObject );
         when( caseLinkDAO.getListByQuery( any( CaseLinkQuery.class ) ) ).thenReturn( Collections.EMPTY_LIST );
         when( caseLinkDAO.persist( any( CaseLink.class ) ) ).thenReturn( CASELINK_ID );
-        when( caseService.sendMailNotificationLinkChanged( eq( CASE_NUMBER ), any() ) ).thenReturn( ok( CASELINK_ID ) );
 
         Long link_id = caseLinkService.addYoutrackLink( TEST_AUTH_TOKEN, CASE_NUMBER, "YouTrack_ID" ).getData();
-        assertEquals("Expected id of added lik",  CASELINK_ID, link_id );
+        assertEquals( "Expected id of added lik", CASELINK_ID, link_id );
 
-        verify( caseService, atLeastOnce() ).sendMailNotificationLinkChanged( anyLong(), any() );
+        verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }
 
     public static final Long CASE_NUMBER = 111L;
