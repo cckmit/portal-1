@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import ru.protei.portal.config.DaoMockTestConfiguration;
+import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -26,7 +27,9 @@ import static ru.protei.portal.mock.AuthServiceMock.TEST_AUTH_TOKEN;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        DaoMockTestConfiguration.class, ServiceTestsConfiguration.class
+        PortalConfigTestConfiguration.class,
+        DaoMockTestConfiguration.class,
+        ServiceTestsConfiguration.class
 })
 public class CaseLinkServiceImplTest {
 
@@ -36,12 +39,11 @@ public class CaseLinkServiceImplTest {
     CaseLinkDAO caseLinkDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseService caseService;
 
     @Mock
     EventPublisherService publisherService;
-
-    @Autowired
-    CaseService caseService;
 
     @Before
     public void setUp() {

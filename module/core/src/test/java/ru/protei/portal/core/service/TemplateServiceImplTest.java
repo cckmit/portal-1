@@ -8,10 +8,12 @@ import org.jsoup.parser.Parser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.DaoMockTestConfiguration;
-import ru.protei.portal.config.ServiceTestsConfiguration;
+import ru.protei.portal.config.PortalConfigTestConfiguration;
+import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -22,6 +24,7 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.test.service.CaseCommentServiceTest;
@@ -37,8 +40,17 @@ import static org.junit.Assert.assertNotNull;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestsConfiguration.class, DaoMockTestConfiguration.class})
+@ContextConfiguration(classes = {PortalConfigTestConfiguration.class, RendererTestConfiguration.class,
+        TemplateServiceImplTest.ContextConfiguration.class})
 public class TemplateServiceImplTest {
+
+    @Configuration
+    static class ContextConfiguration {
+        @Bean
+        public TemplateService getTemplateService() {
+            return new TemplateServiceImpl();
+        }
+    }
 
     @Test
     public void escapeTextComment_ReplaceLineBreaks() {

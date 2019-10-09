@@ -156,6 +156,7 @@ public class MailNotificationProcessor {
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         DiffCollectionResult result = new DiffCollectionResult();
+        if (mergeLinks == null) return result;
         result.putAddedEntries( filterToList( mergeLinks.getAddedEntries(), this::isPublic ) );
         result.putRemovedEntries( filterToList( mergeLinks.getRemovedEntries(), this::isPublic ) );
         result.putSameEntries( filterToList( mergeLinks.getSameEntries(), this::isPublic ) );
@@ -164,6 +165,7 @@ public class MailNotificationProcessor {
 
     private DiffCollectionResult<LinkData> convertToLinkData( DiffCollectionResult<CaseLink> mergeLinks, String crmCaseUrl ) {
         DiffCollectionResult<LinkData> result = new DiffCollectionResult<LinkData>();
+        if (mergeLinks == null) return result;
         result.putAddedEntries( toList( mergeLinks.getAddedEntries(), link -> makeLinkData( link, crmCaseUrl ) ) );
         result.putRemovedEntries( toList( mergeLinks.getRemovedEntries(), link -> makeLinkData( link, crmCaseUrl ) ) );
         result.putSameEntries( toList( mergeLinks.getSameEntries(), link -> makeLinkData( link, crmCaseUrl ) ) );

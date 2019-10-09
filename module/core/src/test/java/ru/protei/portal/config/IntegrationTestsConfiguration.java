@@ -5,8 +5,9 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
+        PortalConfigTestConfiguration.class,
         ServiceTestsConfiguration.class,
         DaoTestsConfiguration.class})
-public class MainTestsConfiguration {
+public class IntegrationTestsConfiguration {
 
 }

@@ -6,15 +6,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.DaoMockTestConfiguration;
-import ru.protei.portal.config.ServiceTestsConfiguration;
+import ru.protei.portal.config.PortalConfigTestConfiguration;
+import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        DaoMockTestConfiguration.class,
-        ServiceTestsConfiguration.class
+        PortalConfigTestConfiguration.class, RendererTestConfiguration.class
 })
 public class JiraWikiMarkupRendererTest {
 

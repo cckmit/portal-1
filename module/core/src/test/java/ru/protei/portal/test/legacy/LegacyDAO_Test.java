@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -29,7 +29,7 @@ public class LegacyDAO_Test {
 
     @BeforeClass
     public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, IntegrationTestsConfiguration.class);
     }
 
     @Test

@@ -1,12 +1,10 @@
 package ru.protei.portal.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.io.Resource;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
@@ -42,25 +40,12 @@ import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.mock.ReportControlServiceMock;
-import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 @Configuration
 @EnableAspectJAutoProxy
 public class ServiceTestsConfiguration {
-
-    @Value("classpath:portal.properties")
-    private Resource props;
-
-    /**
-     * Config
-     * @return
-     */
-    @Bean
-    public PortalConfig getPortalConfig () throws ConfigException {
-        return new TestPortalConfig(props);
-    }
 
     @Bean
     public FileStorage getFileStorage (@Autowired PortalConfig config){
