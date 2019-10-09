@@ -107,6 +107,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                 fireEvent(new SiteFolderPlatformEvents.Changed(result));
                 fireEvent(new Back());
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }
@@ -175,6 +176,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.companyEnabled().setEnabled(false);
         view.managerEnabled().setEnabled(false);
         view.companyValidator().setValid(true);
+        fireShowCompanyContacts(project.getContragent().getId());
     }
 
     private void fillProjectSpecificFieldsOnLoad(Project project){
@@ -228,8 +230,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             view.attachmentsContainer().add(platform.getAttachments());
             fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
         }
-
-        fireShowCompanyContacts(platform.getCompanyId());
     }
 
 

@@ -267,12 +267,14 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean status = platformDAO.merge(platform);
 
-        if (!status || platform.getId() == null || platform.getCaseId() == null || platform.getName() == null) {
+        if (!status) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        CaseObject caseObject = makePlatformCaseObject(platform.getId(), platform.getName());
+        CaseObject caseObject = new CaseObject();
         caseObject.setId(platform.getCaseId());
+        caseObject.setName(platform.getName());
+
         boolean caseStatus = caseObjectDAO.partialMerge(caseObject, "CASE_NAME");
         if (!caseStatus) {
             return error(En_ResultStatus.NOT_UPDATED);
@@ -333,14 +335,10 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (platform.getCaseId() == null || platform.getName() == null) {
-            return error(En_ResultStatus.NOT_UPDATED);
-        }
-
-        CaseObject caseObject = makePlatformCaseObject(platform.getId(), platform.getName());
+        CaseObject caseObject = new CaseObject();
         caseObject.setId(platform.getCaseId());
-
         caseObject.setDeleted(true);
+
         boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
         boolean result = platformDAO.removeByKey(id);
 
