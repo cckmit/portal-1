@@ -214,7 +214,7 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     private static void createAndPersistPerson() {
-        Person p = new Person();
+        Person p = new Person(0L);
         String personFirstName = "Test" + new Date().getTime();
 
         p.setCompany(new Company(1L));

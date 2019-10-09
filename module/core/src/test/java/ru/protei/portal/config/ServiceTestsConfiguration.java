@@ -2,15 +2,11 @@ package ru.protei.portal.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
@@ -24,10 +20,6 @@ import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
-import ru.protei.portal.core.model.dao.impl.CaseCommentSqlBuilder;
-import ru.protei.portal.core.model.dao.impl.CaseObjectSqlBuilder;
-import ru.protei.portal.core.model.dao.impl.EmployeeSqlBuilder;
-import ru.protei.portal.core.model.dao.impl.ServerSqlBuilder;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -54,17 +46,9 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
-import static ru.protei.winter.core.CoreConfigurationContext.SCHEDULER;
-
 @Configuration
 @EnableAspectJAutoProxy
 public class ServiceTestsConfiguration {
-
-    @Bean(name = SCHEDULER)
-    @Scope(BeanDefinition.SCOPE_SINGLETON)
-    public TaskScheduler getTaskScheduler() throws ConfigException {
-        return new ThreadPoolTaskScheduler();
-    }
 
     @Value("classpath:portal.properties")
     private Resource props;
@@ -75,7 +59,7 @@ public class ServiceTestsConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException {
-        return new TestPortalConfig( props );
+        return new TestPortalConfig(props);
     }
 
     @Bean
@@ -96,29 +80,6 @@ public class ServiceTestsConfiguration {
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
     }
-
-    /* DAO SQL builders */
-
-    @Bean
-    public CaseObjectSqlBuilder sqlDefaultBuilder () {
-        return new CaseObjectSqlBuilder();
-    }
-
-    @Bean
-    public CaseCommentSqlBuilder getCaseCommentSqlBuilder() {
-        return new CaseCommentSqlBuilder();
-    }
-
-    @Bean
-    public ServerSqlBuilder serverSqlBuilder() {
-        return new ServerSqlBuilder();
-    }
-
-    @Bean
-    public EmployeeSqlBuilder employeeSqlBuilder() {
-        return new EmployeeSqlBuilder();
-    }
-
 
     @Bean
     public YoutrackApiClient getYoutrackApiClient() {

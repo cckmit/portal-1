@@ -10,7 +10,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.DaoMockTestConfiguration;
+import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -24,8 +25,6 @@ import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.test.service.CaseCommentServiceTest;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = { ServiceTestsConfiguration.class, DaoMockTestConfiguration.class})
 public class TemplateServiceImplTest {
 
     @Test

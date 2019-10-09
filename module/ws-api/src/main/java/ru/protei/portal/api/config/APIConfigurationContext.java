@@ -1,7 +1,9 @@
 package ru.protei.portal.api.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.core.io.Resource;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.config.PortalConfigImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
@@ -116,7 +119,7 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigImpl("portal.properties");
     }
 
     @Bean

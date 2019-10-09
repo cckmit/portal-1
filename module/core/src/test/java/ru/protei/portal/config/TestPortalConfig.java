@@ -1,5 +1,7 @@
 package ru.protei.portal.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
@@ -20,10 +22,13 @@ public class TestPortalConfig implements PortalConfig {
             portalConfigData = new PortalConfigData(new PropertiesWrapper(inputStreamReader));
         } catch (ConfigException e) {
             e.printStackTrace();
+            log.error( "TestPortalConfig(): Can't load test portal properties", e );
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            log.error( "TestPortalConfig(): Can't load test portal properties. File not found.", e );
         } catch (IOException e) {
             e.printStackTrace();
+            log.error( "TestPortalConfig(): Can't load test portal properties", e );
         }
     }
 
@@ -31,5 +36,7 @@ public class TestPortalConfig implements PortalConfig {
     public PortalConfigData data() {
         return portalConfigData;
     }
+
+    private static final Logger log = LoggerFactory.getLogger( TestPortalConfig.class );
 }
 
