@@ -271,6 +271,15 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(platform.getCaseId());
+        caseObject.setName(platform.getName());
+
+        boolean caseStatus = caseObjectDAO.partialMerge(caseObject, "CASE_NAME");
+        if (!caseStatus) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
         Platform result = platformDAO.get(platform.getId());
 
         if (result == null) {
@@ -320,9 +329,21 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     public Result<Boolean> removePlatform( AuthToken token, long id) {
 
+        Platform platform = platformDAO.get(id);
+
+        if (platform == null){
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(platform.getCaseId());
+        caseObject.setDeleted(true);
+
+        boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
         boolean result = platformDAO.removeByKey(id);
 
-        return ok(result);
+        if (result && resultCase) return ok (result);
+        else return error(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override

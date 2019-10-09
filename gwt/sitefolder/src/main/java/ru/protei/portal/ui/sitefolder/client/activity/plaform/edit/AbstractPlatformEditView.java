@@ -9,6 +9,8 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractPlatformEditView extends IsWidget {
 
+    void setPlatformIndependentProjects(Boolean platformIndependentProjects);
+
     void setActivity(AbstractPlatformEditActivity activity);
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
@@ -20,6 +22,8 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasValue<EntityOption> company();
 
     HasValue<PersonShortView> manager();
+
+    HasEnabled managerEnabled();
 
     HasValue<String> parameters();
 
@@ -44,4 +48,6 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasWidgets contactsContainer();
 
     HasAttachments attachmentsContainer();
+
+    HasValue<EntityOption> project();
 }
