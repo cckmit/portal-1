@@ -156,6 +156,9 @@
 
 .chats .right .time-label {
   float: right;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .drop-zone {
