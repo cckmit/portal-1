@@ -78,7 +78,9 @@ public class CaseQuery extends BaseQuery {
 
     private Integer local;
 
-    private Boolean independentProject;
+    private Boolean contractIndependentProject;
+
+    private Boolean platformIndependentProject;
 
     private Long productDirectionId;
 
@@ -122,7 +124,8 @@ public class CaseQuery extends BaseQuery {
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
-        setIndependentProject(query.getIndependentProject());
+        setContractIndependentProject(query.getContractIndependentProject());
+        setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionId(query.getProductDirectionId());
     }
 
@@ -304,13 +307,22 @@ public class CaseQuery extends BaseQuery {
         this.customerSearch = customerSearch;
     }
 
-    public Boolean getIndependentProject() {
-        return independentProject;
+    public Boolean getContractIndependentProject() {
+        return contractIndependentProject;
     }
 
-    public void setIndependentProject(Boolean independentProject) {
-        this.independentProject = independentProject;
+    public void setContractIndependentProject(Boolean contractIndependentProject) {
+        this.contractIndependentProject = contractIndependentProject;
     }
+
+    public Boolean getPlatformIndependentProject() {
+        return platformIndependentProject;
+    }
+
+    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
+        this.platformIndependentProject = platformIndependentProject;
+    }
+
     public Integer getLocal() {
         return local;
     }
@@ -349,7 +361,8 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
-                independentProject != null ||
+                contractIndependentProject != null ||
+                platformIndependentProject != null ||
                 productDirectionId != null;
     }
 
@@ -380,6 +393,8 @@ public class CaseQuery extends BaseQuery {
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", customerSearch=" + customerSearch +
                 ", local=" + local +
+                ", contractIndependentProject=" + contractIndependentProject +
+                ", platformIndependentProject=" + platformIndependentProject +
                 '}';
     }
 }

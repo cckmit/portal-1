@@ -17,7 +17,7 @@ import java.util.List;
 
 public interface AbstractContractEditView extends IsWidget {
 
-    void setIndependentProjects(Boolean independentProjects);
+    void setContractIndependentProjects(Boolean contractIndependentProject);
 
     void setActivity(AbstractContractEditActivity activity);
 

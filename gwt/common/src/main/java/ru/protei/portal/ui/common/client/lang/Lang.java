@@ -1139,6 +1139,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderPlatformNotSaved();
 
+    String siteFolderPlatformSaved();
+
     String siteFolderPlatformName();
 
     String siteFolderServer();
