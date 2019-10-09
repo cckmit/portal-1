@@ -66,7 +66,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
                 new ActionBarEvents.Clear()
         );
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -173,9 +173,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         }
     }
 
-    private void clearSelection(ContractEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(ContractEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

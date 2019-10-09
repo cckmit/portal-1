@@ -71,7 +71,7 @@ public abstract class ContactTableActivity
         contactId = null;
         query = makeQuery( null );
 
-        clearSelection( event );
+        clearScroll( event );
 
         requestContacts( this.page );
     }
@@ -220,9 +220,9 @@ public abstract class ContactTableActivity
         }
     }
 
-    private void clearSelection(ContactEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(ContactEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
             this.page = 0;
         }

@@ -16,11 +16,11 @@ public class SiteFolderServerEvents {
         @Name("platform")
         public Long platformId;
         @Omit
-        public Boolean clearSelection = false;
-        public Show() {}
-        public Show(Long platformId) {
+        public Boolean clearScroll = false;
+        public Show () {}
+        public Show (Long platformId) {
             this.platformId = platformId;
-            this.clearSelection = true;
+            this.clearScroll = true;
         }
     }
 

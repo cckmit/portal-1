@@ -68,7 +68,7 @@ public abstract class ProductTableActivity implements
             fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));
         }
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -187,9 +187,9 @@ public abstract class ProductTableActivity implements
         }
     }
 
-    private void clearSelection(ProductEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(ProductEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

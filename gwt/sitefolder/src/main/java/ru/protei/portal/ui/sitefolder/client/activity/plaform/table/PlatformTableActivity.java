@@ -69,7 +69,7 @@ public abstract class PlatformTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
         }
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -255,9 +255,9 @@ public abstract class PlatformTableActivity implements
         }
     }
 
-    private void clearSelection(SiteFolderPlatformEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(SiteFolderPlatformEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

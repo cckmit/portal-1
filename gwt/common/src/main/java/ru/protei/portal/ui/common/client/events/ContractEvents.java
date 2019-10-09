@@ -10,10 +10,10 @@ public class ContractEvents {
     @Url( value = "contracts", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearSelection = false;
+        public Boolean clearScroll = false;
         public Show () {}
-        public Show(Boolean clearSelection) {
-            this.clearSelection = clearSelection;
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
         }
     }
 

@@ -15,10 +15,10 @@ public class ProjectEvents {
     @Url( value = "projects", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearSelection = false;
-        public Show() {}
-        public Show(Boolean clearSelection) {
-            this.clearSelection = clearSelection;
+        public Boolean clearScroll = false;
+        public Show () {}
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
         }
     }
 

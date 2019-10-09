@@ -61,7 +61,7 @@ public abstract class ProjectTableActivity
 
         projectIdForRemove = null;
 
-        clearSelection(event);
+        clearScroll(event);
 
         requestProjects( null );
     }
@@ -229,9 +229,9 @@ public abstract class ProjectTableActivity
         return query;
     }
 
-    private void clearSelection(ProjectEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(ProjectEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

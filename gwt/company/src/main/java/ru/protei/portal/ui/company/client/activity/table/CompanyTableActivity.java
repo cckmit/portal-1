@@ -70,7 +70,7 @@ public abstract class CompanyTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.COMPANY));
         }
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -197,9 +197,9 @@ public abstract class CompanyTableActivity implements
         }
     }
 
-    private void clearSelection(CompanyEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(CompanyEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

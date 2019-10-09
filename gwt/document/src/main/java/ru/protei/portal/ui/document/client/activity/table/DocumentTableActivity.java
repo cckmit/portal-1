@@ -62,7 +62,7 @@ public abstract class DocumentTableActivity
 
         query = makeQuery();
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -216,9 +216,9 @@ public abstract class DocumentTableActivity
         }
     }
 
-    private void clearSelection(DocumentEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(DocumentEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

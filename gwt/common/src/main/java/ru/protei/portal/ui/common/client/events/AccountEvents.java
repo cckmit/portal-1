@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.UserLogin;
@@ -16,10 +15,10 @@ public class AccountEvents {
     @Url( value = "accounts", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearSelection = false;
-        public Show() {}
-        public Show(Boolean clearSelection) {
-            this.clearSelection = clearSelection;
+        public Boolean clearScroll = false;
+        public Show () {}
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
         }
     }
 

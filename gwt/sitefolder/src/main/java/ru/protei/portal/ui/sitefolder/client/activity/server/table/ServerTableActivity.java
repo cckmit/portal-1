@@ -31,7 +31,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ServerTableActivity implements
@@ -80,7 +79,7 @@ public abstract class ServerTableActivity implements
             filterView.platforms().setValue(options);
         }
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -281,9 +280,9 @@ public abstract class ServerTableActivity implements
         }
     }
 
-    private void clearSelection(SiteFolderServerEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(SiteFolderServerEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }

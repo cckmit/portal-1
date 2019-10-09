@@ -217,8 +217,8 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     private void clearSelection(AccountEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+        if (event.clearScroll ) {
+            event.clearScroll = false;
             this.scrollTop = null;
             this.page = 0;
         }

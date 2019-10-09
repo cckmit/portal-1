@@ -106,7 +106,7 @@ public abstract class IssueTableActivity
 
         toggleMsgSearchThreshold();
 
-        clearSelection(event);
+        clearScroll(event);
 
         loadTable();
     }
@@ -473,9 +473,9 @@ public abstract class IssueTableActivity
         filterParamView.updateInitiators();
     }
 
-    private void clearSelection(IssueEvents.Show event) {
-        if (event.clearSelection) {
-            event.clearSelection = false;
+    private void clearScroll(IssueEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
             this.scrollTop = null;
         }
     }
