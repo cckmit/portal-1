@@ -7,77 +7,76 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.roleMainTitle}"/>
+    <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body no-padding">
+            <div class="container-fluid padding-15">
+                <div class="card card-transparent no-margin">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <ui:text from="{lang.roleMainTitle}"/>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="form-group col-md-4">
-                            <label>
-                                <ui:text from="{lang.roleName}"/>
-                            </label>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>
+                                    <ui:text from="{lang.roleName}"/>
+                                </label>
 
-                            <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
+                                <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
 
-                        </div>
-                        <div class="form-group col-md-8">
-                            <label >
-                                <ui:text from="{lang.roleDescription}"/>
-                            </label>
-                            <g:TextBox ui:field="description" styleName="form-control"/>
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label >
-                                <ui:text from="{lang.roleScope}"/>
-                            </label>
-                            <div>
-                                <widget:ScopeBtnGroup ui:field="scope"/>
                             </div>
-                        </div>
+                            <div class="form-group col-md-8">
+                                <label >
+                                    <ui:text from="{lang.roleDescription}"/>
+                                </label>
+                                <g:TextBox ui:field="description" styleName="form-control"/>
+                            </div>
 
-                        <div class="form-group col-md-6">
-                            <label >
-                                <ui:text from="{lang.roleDefaultForContact}"/>
-                            </label>
-                            <div>
-                                <switcher:Switcher ui:field="defaultForContact"/>
+                            <div class="form-group col-md-6">
+                                <label >
+                                    <ui:text from="{lang.roleScope}"/>
+                                </label>
+                                <div>
+                                    <widget:ScopeBtnGroup ui:field="scope"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label >
+                                    <ui:text from="{lang.roleDefaultForContact}"/>
+                                </label>
+                                <div>
+                                    <switcher:Switcher ui:field="defaultForContact"/>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container-fluid padding-15  bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.rolePrivileges}"/>
+            <div class="container-fluid padding-15  bg-white">
+                <div class="card card-transparent no-margin">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <ui:text from="{lang.rolePrivileges}"/>
+                        </div>
+                        <p class="small hint-text">
+                            <ui:text from="{lang.rolePrivilegesHint}"/>
+                        </p>
                     </div>
-                    <p class="small hint-text">
-                        <ui:text from="{lang.rolePrivilegesHint}"/>
-                    </p>
-                </div>
-                <div class="card-body">
-                    <list:PrivilegeList ui:field="privileges"/>
+                    <div class="card-body">
+                        <list:PrivilegeList ui:field="privileges"/>
+                    </div>
                 </div>
             </div>
         </div>
 
-
-        <div class="container-fluid padding-15">
+        <div class="card-footer">
             <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="text-right">
-                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                        <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
-                    </div>
+                <div class="text-right">
+                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
                 </div>
             </div>
         </div>

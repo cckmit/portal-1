@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -8,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -57,6 +60,9 @@ public abstract class ProjectTableActivity
         );
 
         projectIdForRemove = null;
+
+        clearScroll(event);
+
         requestProjects( null );
     }
 
@@ -73,28 +79,6 @@ public abstract class ProjectTableActivity
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
     }
-
-/*    @Event
-    public void onChanged( ProjectEvents.Changed event ) {
-        view.updateRow( event.project );
-
-        if ( currentValue == null ) {
-            return;
-        }
-
-        // если выбрали регион в первый раз
-        if ( currentValue.getRegion() == null ) {
-            if ( event.project.getRegion() != null ) {
-                requestProjects( currentValue );
-                return;
-            }
-        }
-
-        // если выбрали регион взамен выбранному ранее
-        if ( !Objects.equals(currentValue.getRegion(), event.project.getRegion() ) ) {
-            requestProjects( currentValue );
-        }
-    }*/
 
     @Event
     public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
@@ -127,6 +111,14 @@ public abstract class ProjectTableActivity
         projectIdForRemove = null;
     }
 
+    @Event
+    public void onChangeRow( ProjectEvents.ChangeProject event ) {
+        regionService.getProject(event.id, new FluentCallback<Project>()
+                .withSuccess(result -> {
+                    view.updateRow(result);
+                }));
+    }
+
     @Override
     public void onItemClicked( Project value ) {
         showPreview( value );
@@ -134,6 +126,7 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onEditClicked( Project value ) {
+        persistScrollTopPosition();
         fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
@@ -174,26 +167,9 @@ public abstract class ProjectTableActivity
                     if ( rowToSelect != null ) {
                         view.updateRow( rowToSelect );
                     }
+                    restoreScrollTopPositionOrClearSelection();
                 }
             } );
-    }
-
-    private void updateListAndSelect( Long projectId ) {
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<Project>>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Map<String, List<Project>> result ) {
-                view.clearRecords();
-                fillRows( result );
-                Project info = new Project();
-                info.setId( projectId );
-                onItemClicked( info );
-            }
-        } );
     }
 
     private void fillRows( Map<String, List<Project>> result ) {
@@ -217,15 +193,6 @@ public abstract class ProjectTableActivity
         }
     }
 
-    @Event
-    public void onChangeRow( ProjectEvents.ChangeProject event ) {
-        regionService.getProject(event.id, new FluentCallback<Project>()
-                .withSuccess(result -> {
-                    view.updateRow(result);
-                }));
-    }
-
-/*
     private void persistScrollTopPosition() {
         scrollTop = Window.getScrollTop();
     }
@@ -240,7 +207,7 @@ public abstract class ProjectTableActivity
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
         }
-    }*/
+    }
 
     private ProjectQuery getQuery() {
         ProjectQuery query = new ProjectQuery();
@@ -262,6 +229,13 @@ public abstract class ProjectTableActivity
         return query;
     }
 
+    private void clearScroll(ProjectEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -280,5 +254,5 @@ public abstract class ProjectTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
-    //private Integer scrollTop;
+    private Integer scrollTop;
 }

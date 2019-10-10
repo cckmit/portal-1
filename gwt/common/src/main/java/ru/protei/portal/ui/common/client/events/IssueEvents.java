@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -18,23 +17,23 @@ public class IssueEvents {
 
         public Show () {}
 
-        public Show (Boolean clearSelection) {
-            this.clearSelection = clearSelection;
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
         }
 
         public Show (CaseQuery query) {
             this.query = query;
         }
 
-        public Show (CaseQuery query, Boolean clearSelection) {
+        public Show (CaseQuery query, Boolean clearScroll) {
             this.query = query;
-            this.clearSelection = clearSelection;
+            this.clearScroll = clearScroll;
         }
 
         @Omit
         public CaseQuery query;
         @Omit
-        public Boolean clearSelection = false;
+        public Boolean clearScroll = false;
     }
 
     /**

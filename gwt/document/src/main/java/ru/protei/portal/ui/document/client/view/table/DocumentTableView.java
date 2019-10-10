@@ -110,6 +110,10 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.scrollToPage(page);
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
 
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
@@ -129,8 +133,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
     }
-
-
 
     private final ClickColumn<Document> id = new ClickColumn<Document>() {
         @Override

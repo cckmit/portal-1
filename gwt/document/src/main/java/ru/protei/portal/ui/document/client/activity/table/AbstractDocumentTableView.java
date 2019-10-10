@@ -28,4 +28,6 @@ public interface AbstractDocumentTableView extends IsWidget {
     HasWidgets getPreviewContainer();
 
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

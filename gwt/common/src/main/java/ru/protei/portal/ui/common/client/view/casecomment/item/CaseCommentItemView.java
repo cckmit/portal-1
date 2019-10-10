@@ -1,22 +1,20 @@
 package ru.protei.portal.ui.common.client.view.casecomment.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
@@ -27,10 +25,12 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypePopup;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -50,6 +50,11 @@ public class CaseCommentItemView
     @Override
     public void setActivity( AbstractCaseCommentItemActivity activity ) {
         this.activity = activity;
+    }
+
+    @Override
+    public void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> editTimeElapsedType) {
+        timeElapsedTypePopup.addValueChangeHandler(editTimeElapsedType::accept);
     }
 
     @Override
@@ -149,6 +154,11 @@ public class CaseCommentItemView
     }
 
     @Override
+    public void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled) {
+        this.isTimeElapsedTypeEditEnabled = isTimeElapsedTypeEnabled;
+    }
+
+    @Override
     public void showAttachments( boolean isShow ){
         if( isShow )
             attachBlock.removeClassName( "hide" );
@@ -173,12 +183,12 @@ public class CaseCommentItemView
 
     @Override
     public void setTimeElapsed( String timeTypeString ) {
-        timeElapsed.setInnerHTML( timeTypeString == null ? "" : timeTypeString );
+        timeElapsed.setText(timeTypeString == null ? "" : timeTypeString);
     }
 
     @Override
     public void clearElapsedTime() {
-        timeElapsed.setInnerHTML("");
+        timeElapsed.setText("");
     }
 
     @Override
@@ -196,6 +206,11 @@ public class CaseCommentItemView
             messageContainer.addClassName("private-message");
             privateComment.setClassName("fa m-l-10 fa-lock text-danger");
         }
+    }
+
+    @Override
+    public void setTimeElapsedType(En_TimeElapsedType type) {
+        timeElapsedTypePopup.setTimeElapsedType(type);
     }
 
     @UiHandler( "remove" )
@@ -227,15 +242,23 @@ public class CaseCommentItemView
         activity.onRemoveAttachment(this, event.getAttachment());
     }
 
+    @UiHandler("timeElapsed")
+    public void onTimeElapsedClicked(ClickEvent event) {
+        if (isTimeElapsedTypeEditEnabled) {
+            timeElapsedTypePopup.showNear(timeElapsed.asWidget());
+        }
+    }
+
     private void setTestAttributes() {
         privateComment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
         reply.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
         edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REMOVE_BUTTON);
-        timeElapsed.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
+        timeElapsed.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
         date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
         owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
         status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.STATUS);
+        timeElapsedTypePopup.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP);
     }
 
 
@@ -258,7 +281,7 @@ public class CaseCommentItemView
     @UiField(provided = true)
     AttachmentList attachList;
     @UiField
-    LIElement timeElapsed;
+    Label timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField
@@ -275,6 +298,8 @@ public class CaseCommentItemView
     LIElement options;
     @UiField
     ImageElement icon;
+    @Inject
+    EditTimeElapsedTypePopup timeElapsedTypePopup;
 
     @Inject
     @UiField
@@ -286,6 +311,7 @@ public class CaseCommentItemView
     @Inject
     En_CaseImportanceLang importanceLang;
 
+    private boolean isTimeElapsedTypeEditEnabled;
     private AbstractCaseCommentItemActivity activity;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}

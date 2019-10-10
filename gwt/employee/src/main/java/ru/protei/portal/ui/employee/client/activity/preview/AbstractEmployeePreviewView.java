@@ -11,7 +11,8 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     void setActivity(AbstractEmployeePreviewActivity activity );
     void setID( String value );
-    HasWidgets getPositionsContainer();
+    void setName( String name );
+    void setIP( String ip );
 
-    void setName(String name);
+    HasWidgets getPositionsContainer();
 }

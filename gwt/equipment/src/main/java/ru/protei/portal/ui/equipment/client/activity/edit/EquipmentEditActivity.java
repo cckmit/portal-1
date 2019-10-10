@@ -114,7 +114,7 @@ public abstract class EquipmentEditActivity
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
                 })
         );
     }
@@ -222,6 +222,10 @@ public abstract class EquipmentEditActivity
             equipment.setProjectId(view.project().getValue().getId());
             equipment.setProjectName(view.project().getValue().getDisplayText());
         }
+    }
+
+    private boolean isNew(Equipment equipment) {
+        return equipment.getId() == null;
     }
 
     @Inject

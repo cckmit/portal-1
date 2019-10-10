@@ -24,4 +24,6 @@ public interface AbstractContactTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

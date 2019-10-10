@@ -291,6 +291,7 @@ public class DebugIds {
             String STATUS = "issue-preview-comment-item-status";
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
+            String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
         }
 
         interface LABEL {
@@ -451,6 +452,7 @@ public class DebugIds {
         String DOWNLOAD = "attachment-download-button";
         String NAME = "attachment-name";
         String SIZE = "attachment-size";
+        String IMAGE = "attachment-fullscreen-image";
     }
 
     public interface TAG_SELECTOR_POPUP {

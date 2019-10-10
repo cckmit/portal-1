@@ -34,14 +34,26 @@ public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> 
         );
     }
 
-    void setIndependentProject(Boolean independentProject) {
-        this.projectQuery = makeQuery(independentProject);
+    void setContractIndependentProject(Boolean contractIndependentProject) {
+        this.projectQuery = makeContractQuery(contractIndependentProject);
         refreshOptions();
     }
 
-    private ProjectQuery makeQuery(Boolean independentProject) {
+    void setPlatformIndependentProject(Boolean platformIndependentProject) {
+        this.projectQuery = makePlatformQuery(platformIndependentProject);
+        refreshOptions();
+    }
+
+    private ProjectQuery makeContractQuery(Boolean contractIndependentProject) {
         ProjectQuery projectQuery = new ProjectQuery();
-        projectQuery.setIndependentProject(independentProject);
+        projectQuery.setContractIndependentProject(contractIndependentProject);
+
+        return projectQuery;
+    }
+
+    private ProjectQuery makePlatformQuery(Boolean platformIndependentProject) {
+        ProjectQuery projectQuery = new ProjectQuery();
+        projectQuery.setPlatformIndependentProject(platformIndependentProject);
 
         return projectQuery;
     }

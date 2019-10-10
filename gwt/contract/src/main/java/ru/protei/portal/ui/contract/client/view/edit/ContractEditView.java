@@ -13,14 +13,17 @@ import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
@@ -41,8 +44,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public void setIndependentProjects(Boolean independentProjects) {
-        project.setIndependentProject(independentProjects);
+    public void setContractIndependentProjects(Boolean contractIndependentProject) {
+        project.setContractIndependentProject(contractIndependentProject);
     }
 
     @Override
@@ -121,17 +124,29 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<String> contragent() {
-        return contragent;
-    }
-
-    @Override
-    public HasValue<String> manager() {
+    public HasValue<PersonShortView> manager() {
         return manager;
     }
 
     @Override
-    public HasValue<String> direction() {
+    public HasValue<EntityOption> contragent() {
+        return contragent;
+    }
+
+    @Override
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
+    }
+
+    public HasEnabled managerEnabled() {
+        return manager;
+    }
+
+    public HasEnabled contragentEnabled() {
+        return contragent;
+    }
+
+    public HasEnabled directionEnabled() {
         return direction;
     }
 
@@ -202,12 +217,15 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ProjectButtonSelector project;
-    @UiField
-    TextBox direction;
-    @UiField
-    TextBox contragent;
-    @UiField
-    TextBox manager;
+    @Inject
+    @UiField(provided = true)
+    ProductDirectionButtonSelector direction;
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector manager;
+    @Inject
+    @UiField(provided = true)
+    CompanySelector contragent;
 
     private AbstractContractEditActivity activity;
 

@@ -381,6 +381,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueComment();
 
+    String errEditTimeElapsedType();
+
     String selectCompanyGroup();
 
     String activeRecords();
@@ -1137,6 +1139,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderPlatformNotSaved();
 
+    String siteFolderPlatformSaved();
+
     String siteFolderPlatformName();
 
     String siteFolderServer();
@@ -1623,6 +1627,12 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyType();
 
     String contractValidationEmptyDirection();
+
+    String contractValidationEmptyState();
+
+    String contractValidationEmptyDateSigning();
+
+    String contractValidationEmptyDateValid();
 
     String period();
 

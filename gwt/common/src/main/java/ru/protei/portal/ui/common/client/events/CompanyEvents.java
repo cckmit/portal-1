@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Company;
 
@@ -13,7 +14,14 @@ public class CompanyEvents {
      * Показать grid компаний
      */
     @Url( value = "companies", primary = true )
-    public static class Show {}
+    public static class Show {
+        @Omit
+        public Boolean clearScroll = false;
+        public Show () {}
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
+        }
+    }
 
 
     /**

@@ -27,4 +27,6 @@ public interface AbstractProductTableView extends IsWidget {
     void updateRow(DevUnit item);
 
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

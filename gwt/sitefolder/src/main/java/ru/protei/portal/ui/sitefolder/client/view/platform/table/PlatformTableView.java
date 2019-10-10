@@ -18,11 +18,9 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
-import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -101,6 +99,11 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         return pagerContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
         removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
@@ -150,7 +153,13 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         }
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+            if (value.getProjectId() != null) {
+                cell.setInnerText(value.getCaseManagerShortName() == null ? "" : value.getCaseManagerShortName());
+            }
+            else {
+                cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+            }
+
         }
     };
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {

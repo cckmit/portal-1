@@ -32,7 +32,7 @@ public abstract class SiteFolderPage implements Activity {
             //fireEvent(new MenuEvents.Add(SUB_TAB_PLATFORMS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_PLATFORMS).withParent(TAB));
             //fireEvent(new MenuEvents.Add(SUB_TAB_SERVERS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_SERVERS).withParent(TAB));
             //fireEvent(new MenuEvents.Add(SUB_TAB_APPS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_APPS).withParent(TAB));
-            fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show()));
+            fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show(true)));
         }
     }
 
@@ -59,7 +59,7 @@ public abstract class SiteFolderPage implements Activity {
         if (!TAB.equals(event.identity)) {
             return;
         }
-        fireEvent(new SiteFolderPlatformEvents.Show());
+        fireEvent(new SiteFolderPlatformEvents.Show(true));
         //if (TAB.equals(event.identity)) {
         //    //fireSelectTab(null);
         //} else if (SUB_TAB_PLATFORMS.equals(event.identity)) {

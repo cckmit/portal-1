@@ -28,7 +28,6 @@ public class ProjectButtonSelector
         clearOptions();
         if (defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
         options.forEach(this::addOption);
     }
@@ -42,8 +41,12 @@ public class ProjectButtonSelector
         this.defaultValue = defaultValue;
     }
 
-    public void setIndependentProject(Boolean independentProject) {
-        model.setIndependentProject(independentProject);
+    public void setContractIndependentProject(Boolean contractIndependentProject) {
+        model.setContractIndependentProject(contractIndependentProject);
+    }
+
+    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
+        model.setPlatformIndependentProject(platformIndependentProject);
     }
 
     public void setRequestByOnLoad(boolean requestByOnLoad) {

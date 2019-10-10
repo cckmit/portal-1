@@ -29,14 +29,18 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
     @Event
     public void onShow(ContactEvents.ShowConciseTable event) {
         event.parent.clear();
+        view.clearRecords();
         event.parent.add(view.asWidget());
 
         contactId = null;
 
-        query = makeQuery(event.companyId, false);
-        view.showEditableColumns(event.editable);
+        if (event.companyId != null) {
 
-        requestContacts();
+            query = makeQuery(event.companyId, false);
+            view.showEditableColumns(event.editable);
+
+            requestContacts();
+        }
     }
 
     @Event

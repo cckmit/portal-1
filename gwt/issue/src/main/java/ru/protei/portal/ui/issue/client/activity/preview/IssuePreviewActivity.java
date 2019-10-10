@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -14,6 +15,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.util.PlatformUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
@@ -186,8 +188,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         String manager = value.getManager() == null ? "" : value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")";
         view.setManager( manager );
         view.setName( value.getName() == null ? "" : value.getName() );
-        view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
-        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+
+        view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
+        view.setPlatformLink(PlatformUtils.makeLink(value.getPlatformId()));
+        view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
 
         fillSubscriptions(value);
@@ -298,18 +303,34 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){
 
-        Stream<String> companySubscribers = Stream.empty();
-        if ( companySubscriptions != null ) {
-             companySubscribers = companySubscriptions.stream()
-                     .map( CompanySubscription::getEmail )
-                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"));
+        String message = null;
+        if (CollectionUtils.isEmpty(companySubscriptions)) {
+            message = lang.issueCompanySubscriptionNotDefined();
         }
 
-        Stream<String> personSubscribers = Stream.empty();
-        if(isPersonsAllowed && notifiers != null){
-            personSubscribers = notifiers.stream().map(Person::getDisplayShortName);
+        List<String> companySubscribers = new ArrayList<>();
+        if (companySubscriptions != null) {
+             companySubscribers = companySubscriptions.stream()
+                     .map( CompanySubscription::getEmail )
+                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"))
+                     .collect( Collectors.toList());
         }
-        return Stream.concat(companySubscribers, personSubscribers).collect(Collectors.joining(", "));
+
+        if (companySubscribers.isEmpty() && message == null) {
+            message = lang.issueCompanySubscriptionBasedOnPrivacyNotDefined();
+        }
+
+        List<String> personSubscribers = new ArrayList<>();
+        if(isPersonsAllowed && notifiers != null){
+            personSubscribers = notifiers.stream().map(Person::getDisplayShortName)
+                    .collect( Collectors.toList());
+        }
+
+        if (personSubscribers.isEmpty() && message != null) {
+            return message;
+        }
+
+        return Stream.concat(companySubscribers.stream(), personSubscribers.stream()).collect(Collectors.joining(", "));
     }
 
     private void addAttachments(Collection<Attachment> attachs){

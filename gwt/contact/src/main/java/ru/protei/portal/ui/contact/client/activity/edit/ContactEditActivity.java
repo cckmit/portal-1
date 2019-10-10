@@ -141,8 +141,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                     @Override
                     public void onSuccess(Boolean result) {
-                        fireEvent(new Back());
                         fireEvent(new PersonEvents.PersonCreated(person, origin));
+                        fireEvent(isNew(contact) ? new ContactEvents.Show(true): new Back());
                     }
                 } );
             }
@@ -193,6 +193,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
+    }
+
+    private boolean isNew(Person person) {
+        return person.getId() == null;
     }
 
     private void resetValidationStatus(){

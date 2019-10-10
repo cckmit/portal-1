@@ -11,7 +11,6 @@ public class ContractTypeSelector extends ButtonSelector<En_ContractType> {
 
     @Inject
     public void init() {
-        defaultValue = lang.selectorAny();
         setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : typeLang.getName(o)));
         fillOptions();
     }
@@ -23,7 +22,7 @@ public class ContractTypeSelector extends ButtonSelector<En_ContractType> {
     private void fillOptions() {
         clearOptions();
 
-        if ( hasNullValue ) {
+        if (defaultValue != null) {
             addOption(null);
         }
         for(En_ContractType value : En_ContractType.values())

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
@@ -96,6 +97,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility timeElapsedEditContainerVisibility();
 
     HasEnabled saveEnabled();
+
+    Element timeElapsedHeader();
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 

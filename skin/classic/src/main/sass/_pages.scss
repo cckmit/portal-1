@@ -34,7 +34,7 @@
 
   .page-sidebar {
     width: 270px;
-    left: -203px;
+    left: -200px;
   }
 }
 
@@ -46,6 +46,12 @@
   .fix-sidebar-button{
     display: none !important;
   }
+
+  .page-container .page-content-wrapper .content {
+    overflow-x: inherit;
+    height: auto
+  }
+
 }
 
 @media (max-width: 991px) and (min-width: 980px) {
@@ -108,3 +114,12 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   cursor: pointer;
 }
 
+
+.icon-thumbnail{
+  margin-right: 15px !important;
+}
+
+.card .card-body.no-padding .row {
+  margin-right: -15px;
+  margin-left: -15px;
+}

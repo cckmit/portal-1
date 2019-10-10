@@ -13,7 +13,6 @@ public class ContractStateSelector extends ButtonSelector<En_ContractState> {
 
     @Inject
     public void init() {
-        defaultValue = lang.selectorAny();
         setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : stateLang.getName(o)));
         fillOptions();
     }
@@ -25,7 +24,7 @@ public class ContractStateSelector extends ButtonSelector<En_ContractState> {
     private void fillOptions() {
         clearOptions();
 
-        if ( hasNullValue ) {
+        if (defaultValue != null) {
             addOption(null);
         }
         for(En_ContractState value : En_ContractState.values())
