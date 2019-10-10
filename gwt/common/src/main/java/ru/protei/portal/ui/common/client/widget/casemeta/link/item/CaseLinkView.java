@@ -111,9 +111,9 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         }
     }
 
-    @UiHandler("link")
+    @UiHandler("root")
     public void onHover(MouseOverEvent event) {
-        if ( !En_CaseLink.CRM.equals(caseLink.getType()) ){
+        if ( En_CaseLink.CRM_OLD.equals(caseLink.getType()) ){
             return;
         }
 
@@ -123,8 +123,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
         caseInfoPanel.setVisible(true);
     }
-
-    @UiHandler("link")
+    @UiHandler("root")
     public void onHover(MouseOutEvent event) {
         caseInfoPanel.setVisible(false);
     }
