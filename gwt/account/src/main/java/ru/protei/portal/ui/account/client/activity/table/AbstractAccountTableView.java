@@ -20,4 +20,6 @@ public interface AbstractAccountTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

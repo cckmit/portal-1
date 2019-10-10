@@ -106,7 +106,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             public void onSuccess(Platform result) {
                 fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                 fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                fireEvent(new Back());
+                fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
                 fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
@@ -167,6 +167,10 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             return;
         }
         projectRequest(view.project().getValue().getId(), this::fillProjectSpecificFieldsOnRefresh);
+    }
+
+    private boolean isNew(Platform platform) {
+        return platform.getId() == null;
     }
 
     private void fillProjectSpecificFieldsOnRefresh(Project project) {

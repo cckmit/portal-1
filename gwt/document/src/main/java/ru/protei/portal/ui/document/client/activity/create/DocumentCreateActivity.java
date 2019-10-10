@@ -61,7 +61,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         }
         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
         fireEvent(new DocumentEvents.ChangeModel());
-        fireEvent(new Back());
+        fireEvent(new DocumentEvents.Show(true));
     }
 
     @Override

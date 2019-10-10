@@ -22,13 +22,11 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Активность таблицы оборудования
@@ -70,6 +68,8 @@ public abstract class EquipmentTableActivity
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.EQUIPMENT ) :
                 new ActionBarEvents.Clear()
         );
+
+        clearScroll(event);
 
         query = makeQuery();
 
@@ -170,6 +170,13 @@ public abstract class EquipmentTableActivity
         return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
                 filterView.organizationCodes().getValue(), filterView.types().getValue(),
                 filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId, equipmentId );
+    }
+
+    private void clearScroll(EquipmentEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
     }
 
     @Inject

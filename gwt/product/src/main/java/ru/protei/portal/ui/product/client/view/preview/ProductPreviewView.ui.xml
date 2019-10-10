@@ -32,7 +32,9 @@
             </tab:TabWidget>
         </div>
         <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProducts}"/>
+            <div class="text-right">
+                <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToProducts}"/>
+            </div>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

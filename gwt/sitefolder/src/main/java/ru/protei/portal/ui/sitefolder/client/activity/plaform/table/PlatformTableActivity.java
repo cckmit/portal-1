@@ -1,9 +1,12 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -11,6 +14,7 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -26,7 +30,6 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPla
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class PlatformTableActivity implements
@@ -55,7 +58,7 @@ public abstract class PlatformTableActivity implements
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -65,6 +68,8 @@ public abstract class PlatformTableActivity implements
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
         }
+
+        clearScroll(event);
 
         loadTable();
     }
@@ -144,6 +149,7 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
+        persistScrollTopPosition();
         fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()));
     }
 
@@ -185,6 +191,7 @@ public abstract class PlatformTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
                     }
                 }));
     }
@@ -232,6 +239,29 @@ public abstract class PlatformTableActivity implements
         return query;
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearScroll(SiteFolderPlatformEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
+    }
+
     @Inject
     PolicyService policyService;
     @Inject
@@ -248,5 +278,6 @@ public abstract class PlatformTableActivity implements
     AbstractPagerView pagerView;
 
     private Long platformIdForRemove = null;
+    private Integer scrollTop;
     private AppEvents.InitDetails initDetails;
 }
