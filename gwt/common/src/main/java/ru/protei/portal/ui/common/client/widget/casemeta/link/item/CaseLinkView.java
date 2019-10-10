@@ -37,7 +37,6 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
 
-
     public CaseLinkView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
@@ -117,17 +116,11 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         if ( !En_CaseLink.CRM.equals(caseLink.getType()) ){
             return;
         }
-        caseInfoPanel.setVisible(true);
-    }
 
-    @UiHandler("root")
-    public void onMouseOver(MouseOverEvent event) {
-        if ( En_CaseLink.CRM_OLD.equals(caseLink.getType()) ){
-            return;
-        }
         if ( !hasInfo(caseLink) ){
             return;
         }
+
         caseInfoPanel.setVisible(true);
     }
 

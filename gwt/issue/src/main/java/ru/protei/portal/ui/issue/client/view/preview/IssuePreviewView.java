@@ -233,6 +233,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @UiHandler("copy")
     public void onCopyClick(ClickEvent event) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onCopyClicked();
         }
