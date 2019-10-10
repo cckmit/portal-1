@@ -65,6 +65,9 @@
     .attach-preview-btn{
       display: none;
     }
+    .attach-download-btn{
+      display: none;
+    }
     .attach-remove-btn{
       line-height: 0;
       font-size: 12px;
@@ -89,9 +92,20 @@
       display: none !important;
     }
   }
-  &.attach-hide-preview-btn{
+  &.attach-image{
+    .attach-preview-btn{
+      display: block !important;
+    }
+    .attach-download-btn{
+      display: none !important;
+    }
+  }
+  &.attach-file{
     .attach-preview-btn{
       display: none !important;
+    }
+    .attach-download-btn{
+      display: block !important;
     }
   }
 
@@ -167,9 +181,9 @@
     $background: "rgba(106,106,106,0.7)";
     background: #{$background};
     position: absolute;
-    width: 55px;
-    height: 40px;
-    top: 1px;
+    width: 58px;
+    height: 41px;
+    top: 0px;
     left: 1px;
     display: none;
     align-content: space-between;
@@ -179,14 +193,15 @@
     a {
       color: white;
     }
-    .fa-search-plus {
+    .attach-preview-btn, .attach-download-btn {
       $textShadow: "1px 1px 1px rgba(0,0,0,0.3)";
       text-shadow: #{$textShadow};
       font-size: 20px;
       line-height: 40px;
       margin: auto;
     }
-    .fa-times:not(.minimize) {
+
+    .attach-remove-btn:not(.minimize) {
       $boxShadow: "-1px 1px 1px 0px rgba(0, 0, 0, 0.37)";
       box-shadow: #{$boxShadow};
       background: rgb(207, 30, 30);
