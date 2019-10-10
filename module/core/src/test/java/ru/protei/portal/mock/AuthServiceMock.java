@@ -32,17 +32,10 @@ public class AuthServiceMock implements AuthService {
 
     public AuthServiceMock() {
         Company company = new Company( 0L );
-        Person person =  BaseServiceTest.createNewPerson(  new Company( 0L ) );
+        Person person =  BaseServiceTest.createNewPerson( company );
         person.setId( 0L );
         UserLogin userLogin = makeLogin( person );
         stubDescriptor = makeDescriptor( userLogin, person, company );
-    }
-
-    private UserSessionDescriptor makeDescriptor( UserLogin userLogin, Person person, Company company ) {
-        UserSessionDescriptor descriptor = new UserSessionDescriptor();
-        descriptor.init( makeUserSession( userLogin, person ) );
-        descriptor.login( userLogin, person, company );
-        return descriptor;
     }
 
     @Override
@@ -62,6 +55,10 @@ public class AuthServiceMock implements AuthService {
 
     public void makeThreadDescriptor( UserLogin userLogin, Person person, Company company ) {
         setThreadDescriptor(makeDescriptor(userLogin, person, company));
+    }
+
+    public void resetThreadDescriptor(  ) {
+        setThreadDescriptor(null);
     }
 
     @Override
@@ -99,6 +96,13 @@ public class AuthServiceMock implements AuthService {
         role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
         role.setScope(En_Scope.SYSTEM);
         return new HashSet<>(Arrays.asList(role));
+    }
+
+    private UserSessionDescriptor makeDescriptor( UserLogin userLogin, Person person, Company company ) {
+        UserSessionDescriptor descriptor = new UserSessionDescriptor();
+        descriptor.init( makeUserSession( userLogin, person ) );
+        descriptor.login( userLogin, person, company );
+        return descriptor;
     }
 
     private UserSessionDescriptor getDescriptor() {

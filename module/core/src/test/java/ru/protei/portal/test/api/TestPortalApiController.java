@@ -180,6 +180,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseCommentDAO.removeByCaseIds(Collections.singletonList(caseObjectFromDb.getId()));
         caseObjectDAO.removeByKey(caseObjectFromDb.getId());
+        authService.resetThreadDescriptor();
     }
 
     @Test
