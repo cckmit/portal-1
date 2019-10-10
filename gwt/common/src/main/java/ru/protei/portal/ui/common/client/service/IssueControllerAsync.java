@@ -22,7 +22,6 @@ public interface IssueControllerAsync {
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
-    void createIssue( CaseObject p, AsyncCallback<CaseObject> async );
     void saveIssueAndComment(CaseObject p, CaseComment c, AsyncCallback<CaseObjectWithCaseComment> callback );
 
     /**

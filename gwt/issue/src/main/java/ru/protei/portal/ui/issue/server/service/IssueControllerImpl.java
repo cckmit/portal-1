@@ -58,11 +58,10 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    @Override
-    public CaseObject createIssue( CaseObject caseObject ) throws RequestFailedException{
+    private CaseObject createIssue( CaseObject caseObject ) throws RequestFailedException{
         log.info( "saveIssue(): case={}", caseObject );
         if(caseObject == null || caseObject.getId() != null){
-            new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();

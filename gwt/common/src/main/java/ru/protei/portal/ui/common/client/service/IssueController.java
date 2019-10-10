@@ -25,8 +25,6 @@ public interface IssueController extends RemoteService {
 
     CaseObject getIssue( long id ) throws RequestFailedException;
 
-    CaseObject createIssue( CaseObject p ) throws RequestFailedException;
-
     CaseObjectWithCaseComment saveIssueAndComment(CaseObject p, CaseComment c ) throws RequestFailedException;
 
     /**

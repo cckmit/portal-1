@@ -177,7 +177,7 @@ public class MailNotificationProcessor {
 
         if (YT.equals( type )) {
             String remoteId = link.getRemoteId();
-            return new LinkData( config.data().youtrack().getYoutrackIssueUrl() + "/" + remoteId, remoteId );
+            return new LinkData( config.data().getCaseLinkConfig().getLinkYouTrack().replace("%id%", remoteId), remoteId );
         }
         if (CRM.equals( type )) {
             CaseInfo caseInfo = link.getCaseInfo();
