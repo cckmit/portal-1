@@ -71,6 +71,7 @@ public class BaseServiceTest {
         person.setCreated( new Date() );
         person.setCreator( "TEST" );
         person.setCompanyId( company.getId() );
+        person.setCompany( company );
         person.setDisplayName( "Test_Person" );
         person.setGender( En_Gender.MALE );
         return person;
