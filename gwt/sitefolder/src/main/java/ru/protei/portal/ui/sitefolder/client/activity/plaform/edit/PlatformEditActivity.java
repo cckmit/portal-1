@@ -106,7 +106,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             public void onSuccess(Platform result) {
                 fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                 fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                fireEvent(new Back());
+                fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
                 fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
@@ -158,6 +158,10 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                     view.attachmentsContainer().remove(attachment);
                     platform.getAttachments().remove(attachment);
                 }));
+    }
+
+    private boolean isNew(Platform platform) {
+        return platform.getId() == null;
     }
 
     @Override

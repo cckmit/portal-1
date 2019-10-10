@@ -241,6 +241,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof Company && id.equals(((Company) obj).getId());
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "Company{" +
                 "id=" + id +

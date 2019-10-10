@@ -77,7 +77,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 view.saveEnabled().setEnabled(true);
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProjectEvents.ChangeModel());
-                fireEvent(new ProjectEvents.Show());
+                fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
             }
         });
     }
@@ -85,6 +85,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
+    }
+
+    private boolean isNew(Project project) {
+        return project.getId() == null;
     }
 
     private void requestProject(Long projectId, Consumer<Project> successAction) {

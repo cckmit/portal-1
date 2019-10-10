@@ -87,6 +87,11 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         table.clearRows();
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable () {
 
         ClickColumn< UserLogin > type = new ClickColumn< UserLogin >() {

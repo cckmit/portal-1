@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -27,7 +28,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ServerTableActivity implements
@@ -56,19 +56,18 @@ public abstract class ServerTableActivity implements
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
-
-        platformId = event.platformId;
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.siteFolderServerCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_SERVER));
         }
 
+        platformId = event.platformId;
         if (platformId != null) {
             Set<EntityOption> options = new HashSet<>();
             EntityOption option = new EntityOption();

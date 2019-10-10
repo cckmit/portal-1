@@ -99,6 +99,11 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         return pagerContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
         removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);

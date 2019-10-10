@@ -153,7 +153,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         fireEvent(new CaseCommentEvents.OnDoneEvent(caseObjectWithCaseComment.getCaseComment()));
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new IssueEvents.ChangeModel());
-                        fireEvent(isNew(issue) ? new IssueEvents.Show() : new Back());
+                        fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
                     }))));
         }));
     }

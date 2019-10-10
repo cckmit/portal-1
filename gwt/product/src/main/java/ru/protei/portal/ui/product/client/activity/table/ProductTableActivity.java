@@ -1,15 +1,19 @@
 package ru.protei.portal.ui.product.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -53,17 +57,18 @@ public abstract class ProductTableActivity implements
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( ProductEvents.Show event ) {
+        init.parent.clear();
+        init.parent.add( view.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
+
         fireEvent(new ActionBarEvents.Clear());
         if(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE )){
             fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));
         }
 
-        init.parent.clear();
-        init.parent.add( view.asWidget() );
-
-        view.getPagerContainer().add( pagerView.asWidget() );
+        clearScroll(event);
 
         loadTable();
     }
@@ -101,6 +106,7 @@ public abstract class ProductTableActivity implements
     @Override
     public void onEditClicked(DevUnit value) {
         if (!value.isDeprecatedUnit()) {
+            persistScrollTopPosition();
             fireEvent( new ProductEvents.Edit ( value.getId() ));
         }
     }
@@ -133,6 +139,7 @@ public abstract class ProductTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
                     }
                 }));
     }
@@ -164,6 +171,29 @@ public abstract class ProductTableActivity implements
         view.triggerTableLoad();
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearScroll(ProductEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
+    }
+
     @Inject
     AbstractProductTableView view;
     @Inject
@@ -179,6 +209,7 @@ public abstract class ProductTableActivity implements
     @Inject
     PolicyService policyService;
 
+    private Integer scrollTop;
     private AppEvents.InitDetails init;
     private ProductQuery query;
 

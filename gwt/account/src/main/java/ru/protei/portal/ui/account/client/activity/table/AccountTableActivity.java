@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.account.client.activity.table;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -67,7 +70,9 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 new ActionBarEvents.Clear()
         );
 
-        requestAccounts( 0 );
+        clearScroll( event );
+
+        requestAccounts( this.page );
     }
 
     @Event
@@ -114,6 +119,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onEditClicked( UserLogin value ) {
+        persistScrollTopPosition();
         fireEvent( new AccountEvents.Edit( value.getId() ) );
     }
 
@@ -127,13 +133,14 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestAccounts( 0 );
+        this.page = 0;
+        requestAccounts( this.page );
     }
 
     @Override
     public void onPageSelected( int page ) {
-        pagerView.setCurrentPage( page );
-        requestAccounts( page );
+        this.page = page;
+        requestAccounts( this.page );
     }
 
     private void requestAccounts( int page ) {
@@ -153,9 +160,10 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                         if ( isFirstChunk ) {
                             pagerView.setTotalCount( r.getTotalCount() );
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
-                            pagerView.setCurrentPage( 0 );
                         }
+                        pagerView.setCurrentPage( page );
                         view.addRecords( r.getResults() );
+                        restoreScrollTopPositionOrClearSelection();
                     }
                 } )
                 .withErrorMessage( lang.errGetList() ) );
@@ -192,6 +200,30 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         );
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearScroll(AccountEvents.Show event) {
+        if (event.clearScroll ) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+            this.page = 0;
+        }
+    }
+
     @Inject
     Lang lang;
 
@@ -220,4 +252,8 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private static String CREATE_ACTION;
 
     private long marker;
+
+    private Integer scrollTop;
+
+    private int page = 0;
 }

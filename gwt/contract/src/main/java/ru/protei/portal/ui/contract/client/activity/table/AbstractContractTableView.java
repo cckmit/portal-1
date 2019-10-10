@@ -18,7 +18,15 @@ public interface AbstractContractTableView extends IsWidget {
 
     void setTotalRecords(int totalRecords);
 
+    int getPageCount();
+
+    void scrollTo(int page);
+
     HasWidgets getPreviewContainer();
 
     HTMLPanel getFilterContainer();
+
+    HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

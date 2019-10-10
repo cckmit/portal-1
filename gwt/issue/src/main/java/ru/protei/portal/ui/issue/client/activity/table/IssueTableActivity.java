@@ -86,10 +86,6 @@ public abstract class IssueTableActivity
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -109,6 +105,8 @@ public abstract class IssueTableActivity
         }
 
         toggleMsgSearchThreshold();
+
+        clearScroll(event);
 
         loadTable();
     }
@@ -473,6 +471,13 @@ public abstract class IssueTableActivity
 
     private void updateInitiatorSelector() {
         filterParamView.updateInitiators();
+    }
+
+    private void clearScroll(IssueEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
     }
 
     @Inject

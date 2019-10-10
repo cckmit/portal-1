@@ -139,7 +139,7 @@
         <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
             <div class="card card-transparent no-margin">
                 <div class="text-right">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
                 </div>
             </div>
         </g:HTMLPanel>

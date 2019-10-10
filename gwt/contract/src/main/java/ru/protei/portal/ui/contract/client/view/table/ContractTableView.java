@@ -45,6 +45,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         });
 
         editClickColumn.setEditHandler(activity);
+        editClickColumn.setColumnProvider(columnProvider);
         table.setLoadHandler(activity);
     }
 
@@ -70,6 +71,16 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     }
 
     @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo(int page) {
+        table.scrollToPage(page);
+    }
+
+    @Override
     public HasWidgets getPreviewContainer() {
         return previewContainer;
     }
@@ -77,6 +88,16 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     @Override
     public HTMLPanel getFilterContainer() {
         return filterContainer;
+    }
+
+    @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
     }
 
     private void initTable() {
@@ -143,6 +164,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     private EditClickColumn<Contract> editClickColumn;
