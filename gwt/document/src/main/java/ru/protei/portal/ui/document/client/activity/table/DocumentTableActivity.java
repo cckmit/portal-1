@@ -140,7 +140,6 @@ public abstract class DocumentTableActivity
     public void onProjectColumnClicked(Document value) {
         if (value == null || value.getProject() == null)
             return;
-        fireEvent(new ProjectEvents.Show());
         fireEvent(new ProjectEvents.ShowFullScreen(value.getProject().getId()));
     }
 

@@ -89,7 +89,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
             companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
                     .withSuccess(result -> {
-                        fireEvent(new CompanyEvents.Show());
+                        fireEvent(isNew(tempCompany) ? new CompanyEvents.Show(true) : new Back());
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new CompanyEvents.ChangeModel());
                     })
@@ -134,6 +134,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         caseTag.setCompanyId(tempCompany.getId());
         caseTag.setCompanyName(tempCompany.getCname());
         fireEvent(new CaseTagEvents.Update(caseTag, false));
+    }
+
+    private boolean isNew(Company company) {
+        return company.getId() == null;
     }
 
     private boolean validateFieldsAndGetResult() {

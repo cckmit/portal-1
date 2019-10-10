@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
@@ -213,8 +212,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 .withSuccess(value -> {
                     fireEvent(new ContractEvents.ChangeModel());
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(isNew(contract) ? new ContractEvents.Show(true) : new Back());
                 }));
+    }
+
+    private boolean isNew(Contract contract) {
+        return contract.getId() == null;
     }
 
     private Long getOptionIdOrNull(EntityOption option) {

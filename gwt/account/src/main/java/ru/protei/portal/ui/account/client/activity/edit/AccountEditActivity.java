@@ -76,7 +76,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
             @Override
             public void onSuccess( UserLogin userLogin ) {
-                fireEvent( new Back() );
+                fireEvent( isNew( account ) ? new AccountEvents.Show( true ) : new Back() );
             }
         } );
     }
@@ -108,6 +108,10 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     @Override
     public void onCancelClicked() {
         fireEvent( new Back() );
+    }
+
+    private boolean isNew(UserLogin userLogin) {
+        return userLogin.getId() == null;
     }
 
     private void requestAccount( Long id, Consumer< UserLogin > successAction ) {

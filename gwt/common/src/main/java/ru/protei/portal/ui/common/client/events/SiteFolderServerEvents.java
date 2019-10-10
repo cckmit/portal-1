@@ -15,12 +15,9 @@ public class SiteFolderServerEvents {
     public static class Show {
         @Name("platform")
         public Long platformId;
-        @Omit
-        public Boolean clearScroll = false;
         public Show () {}
         public Show (Long platformId) {
             this.platformId = platformId;
-            this.clearScroll = true;
         }
     }
 
