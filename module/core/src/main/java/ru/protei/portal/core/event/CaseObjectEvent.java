@@ -2,11 +2,9 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.Collection;
 import java.util.Date;
@@ -20,13 +18,10 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private CaseObject oldState;
     private Person person;
     private ServiceModule serviceModule;
+    private DiffCollectionResult<CaseLink> mergeLinks;
 
-    private CaseObjectEvent(Object source, ServiceModule module, CaseObject newState, CaseObject oldState, Person person) {
+    private CaseObjectEvent(Object source) {
         super(source);
-        this.serviceModule = module;
-        this.newState = newState;
-        this.oldState = oldState;
-        this.person = person;
     }
 
     public boolean isCreateEvent () {
@@ -107,48 +102,36 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return person;
     }
 
+    public DiffCollectionResult<CaseLink> getMergeLinks() {
+        return mergeLinks;
+    }
 
-    public static class Builder {
+    public static CaseObjectEvent create( Object source) {
+        return create(source, ServiceModule.GENERAL);
+    }
 
-        private Object source;
-        private ServiceModule serviceModule;
-        private CaseObject newState;
-        private CaseObject oldState;
-        private Person person;
+    public static CaseObjectEvent create( Object source, ServiceModule serviceModule) {
+        CaseObjectEvent event = new CaseObjectEvent(source);
+        event.serviceModule = serviceModule;
+        return event;
+    }
 
-        public Builder(Object source) {
-            this.source = source;
-            this.serviceModule = ServiceModule.GENERAL;
-        }
+    public CaseObjectEvent withNewState(CaseObject newState) {
+        this.newState = newState;
+        return this;
+    }
 
-        public Builder(Object source, ServiceModule serviceModule) {
-            this.source = source;
-            this.serviceModule = serviceModule;
-        }
+    public CaseObjectEvent withOldState(CaseObject oldState) {
+        this.oldState = oldState;
+        return this;
+    }
 
-        public Builder withNewState(CaseObject newState) {
-            this.newState = newState;
-            return this;
-        }
-
-        public Builder withOldState(CaseObject oldState) {
-            this.oldState = oldState;
-            return this;
-        }
-
-        public Builder withPerson(Person person) {
-            this.person = person;
-            return this;
-        }
-
-        public CaseObjectEvent build() {
-            return new CaseObjectEvent(
-                    source,
-                    serviceModule,
-                    newState,
-                    oldState,
-                    person
-            );
-        }
+    public CaseObjectEvent withPerson(Person person) {
+        this.person = person;
+        return this;
+    }
+    public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
+        this.mergeLinks = mergeLinks;
+        return this;
     }
 }

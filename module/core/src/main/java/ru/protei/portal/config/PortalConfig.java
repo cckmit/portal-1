@@ -7,9 +7,10 @@ import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 /**
  * Created by michael on 31.05.17.
  */
-public class PortalConfig extends AbstractPropertiesReloadableConfig<PortalConfigData> {
+public class PortalConfig extends AbstractPropertiesReloadableConfig<PortalConfigData>
+ {
 
-    public PortalConfig(String sourcePath) throws ConfigException {
+    public PortalConfig( String sourcePath) throws ConfigException {
         super(sourcePath);
     }
 

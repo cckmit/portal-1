@@ -50,10 +50,10 @@ public class EventAssemblerTest {
         CaseService caseService = ctx.getBean(CaseService.class);
 
         //First portion
-        CaseObjectEvent objectEvent = new CaseObjectEvent.Builder(caseService)
+        CaseObjectEvent objectEvent = CaseObjectEvent.create(caseService)
                 .withNewState(object)
                 .withPerson(person)
-                .build();
+                ;
         CaseCommentEvent commentEvent = new CaseCommentEvent.Builder(caseService)
                 .withState(object)
                 .withCaseComment(comment)
@@ -67,10 +67,10 @@ public class EventAssemblerTest {
                 .build();
 
         //Second portion
-        CaseObjectEvent secondEvent = new CaseObjectEvent.Builder(caseService)
+        CaseObjectEvent secondEvent = CaseObjectEvent.create(caseService)
                 .withNewState(newObject)
                 .withPerson(person)
-                .build();
+                ;
         CaseCommentEvent secondCommentEvent = new CaseCommentEvent.Builder(caseService)
                 .withState(newObject)
                 .withCaseComment(comment)

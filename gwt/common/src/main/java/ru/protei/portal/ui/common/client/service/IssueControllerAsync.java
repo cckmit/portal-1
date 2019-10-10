@@ -22,8 +22,6 @@ public interface IssueControllerAsync {
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
-    void saveIssue( CaseObject p, AsyncCallback< CaseObject > callback );
-
     void saveIssueAndComment(CaseObject p, CaseComment c, AsyncCallback<CaseObjectWithCaseComment> callback );
 
     /**

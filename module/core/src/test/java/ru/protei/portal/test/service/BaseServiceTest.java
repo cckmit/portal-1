@@ -71,6 +71,7 @@ public class BaseServiceTest {
         person.setCreated( new Date() );
         person.setCreator( "TEST" );
         person.setCompanyId( company.getId() );
+        person.setCompany( company );
         person.setDisplayName( "Test_Person" );
         person.setGender( En_Gender.MALE );
         return person;
@@ -140,7 +141,7 @@ public class BaseServiceTest {
 
     protected CaseObject makeCaseObject( En_CaseType caseType, Person person) {
         return checkResultAndGetData(
-                caseService.saveCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
+                caseService.createCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
         );
     }
 

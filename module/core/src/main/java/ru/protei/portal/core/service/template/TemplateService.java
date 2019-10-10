@@ -4,7 +4,8 @@ import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.template.PreparedTemplate;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.utils.LinkData;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public interface TemplateService {
     PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent caseObject, List< CaseComment > caseComments, String urlTemplate, Collection< String > recipients );
+            AssembledCaseEvent caseObject, List<CaseComment> caseComments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients );
 
     PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson );
 
