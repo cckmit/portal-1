@@ -201,13 +201,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.initiatorState().setEnabled(companyOption != null);
         view.initiatorUpdateCompany(companyOption);
 
-        setPlatformsByCompanyId(companyOption.getId());
-
         if ( companyOption == null ) {
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
             view.initiator().setValue(null);
         } else {
             Long selectedCompanyId = companyOption.getId();
+
+            setPlatformsByCompanyId(selectedCompanyId);
+
             companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions,
                             CollectionUtils.isEmpty(subscriptions) ? lang.issueCompanySubscriptionNotDefined() : lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()))));
