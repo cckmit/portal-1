@@ -359,6 +359,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setPlatformFilter(Selector.SelectorFilter<EntityOption> filter){
+        platform.setFilter(filter);
+    }
+
+    @Override
     public HasVisibility platformVisibility() {
         return platformContainer;
     }

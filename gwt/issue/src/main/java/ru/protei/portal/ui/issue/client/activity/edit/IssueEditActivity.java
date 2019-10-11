@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -21,13 +22,11 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -201,6 +200,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.initiatorState().setEnabled(companyOption != null);
         view.initiatorUpdateCompany(companyOption);
+
+        setPlatformsByCompanyId(companyOption.getId());
 
         if ( companyOption == null ) {
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
@@ -554,6 +555,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return saving;
     }
 
+    private void setViewPlatformFilter(SearchResult<Platform> searchResult) {
+        view.setPlatformFilter(entityOption -> searchResult.getResults().stream().anyMatch(platform -> platform.getId().equals(entityOption.getId())));
+    }
+
+    private void setPlatformsByCompanyId(Long companyId) {
+        PlatformQuery query = new PlatformQuery(Arrays.asList(companyId));
+        platformController.getPlatforms(query, new FluentCallback<SearchResult<Platform>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(this::setViewPlatformFilter));
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -574,6 +586,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     LocalStorageService localStorageService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    SiteFolderControllerAsync platformController;
 
     private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
