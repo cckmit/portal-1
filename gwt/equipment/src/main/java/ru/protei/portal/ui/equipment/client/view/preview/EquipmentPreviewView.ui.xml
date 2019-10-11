@@ -5,7 +5,7 @@
 
     <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed card-with-fixable-footer no-margin">
         <div class="card-body">
-            <h4 class="m-r-50">
+            <h4 class="m-r-50 m-b-0">
                 <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
             </h4>
 
@@ -15,7 +15,6 @@
                 <small ui:field="createdBy"/>
             </div>
 
-            <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
 
             <h5><ui:text from="{lang.equipmentCommonHeader}"/></h5>
             <div class="small">
@@ -40,6 +39,9 @@
             <div>
                 <g:Anchor ui:field="primaryUse" styleName="decimal-number full-screen-link" target="_blank" href="#"/>
             </div>
+
+            <h5><ui:text from="{lang.equipmentComment}"/></h5>
+            <g:Label styleName="small pre-formatted-info" ui:field="comment"/>
 
             <h5><ui:text from="{lang.equipmentDocuments}"/></h5>
             <g:HTMLPanel ui:field="documents" styleName="equipment-document-preview"/>
