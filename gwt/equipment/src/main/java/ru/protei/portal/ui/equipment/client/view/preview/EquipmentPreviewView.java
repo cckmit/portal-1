@@ -85,6 +85,15 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public void setFooterFixed(boolean isFixed) {
+        if (isFixed) {
+            getWidget().addStyleName("card-with-fixable-footer");
+            return;
+        }
+        getWidget().removeStyleName("card-with-fixable-footer");
+    }
+
+    @Override
     public void setCopyBtnEnabledStyle( boolean isEnabled ){
         if (isEnabled) {
             copy.removeStyleName( "link-disabled" );

@@ -26,7 +26,9 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setManager( String value );
 
-    void setCopyBtnEnabledStyle( boolean isEnabled );
+    void setFooterFixed(boolean isFixed);
+
+    void setCopyBtnEnabledStyle(boolean isEnabled );
 
     void setRemoveBtnEnabledStyle( boolean isEnabled );
 

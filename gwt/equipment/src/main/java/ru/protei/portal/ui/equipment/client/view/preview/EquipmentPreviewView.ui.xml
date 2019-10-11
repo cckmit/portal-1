@@ -3,9 +3,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed card-with-fixable-footer no-margin">
+    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed no-margin">
         <div class="card-body">
-            <h4 class="m-r-50 m-b-0">
+            <h4 class="no-margin">
                 <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
             </h4>
 
@@ -33,11 +33,11 @@
             </div>
 
             <h5><ui:text from="{lang.equipmentDecimalNumber}"/></h5>
-            <div class="decimal-number" ui:field="number"/>
+            <div ui:field="number"/>
 
             <h5><ui:text from="{lang.equipmentPrimaryUse}"/></h5>
             <div>
-                <g:Anchor ui:field="primaryUse" styleName="decimal-number full-screen-link" target="_blank" href="#"/>
+                <g:Anchor ui:field="primaryUse" styleName="full-screen-link" target="_blank" href="#"/>
             </div>
 
             <h5><ui:text from="{lang.equipmentComment}"/></h5>
