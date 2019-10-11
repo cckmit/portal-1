@@ -102,6 +102,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 
+    void setPlatformFilter(Selector.SelectorFilter<EntityOption> filter);
+
     void initiatorUpdateCompany(Company company);
 
     void initiatorSelectorAllowAddNew(boolean b);
