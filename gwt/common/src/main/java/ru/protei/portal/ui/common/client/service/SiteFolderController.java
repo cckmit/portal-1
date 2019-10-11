@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -26,7 +27,7 @@ public interface SiteFolderController extends RemoteService {
     SearchResult<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException;
 
 
-    List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException;
+    List<PlatformOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException;
 
     List<EntityOption> getServersOptionList(ServerQuery query) throws RequestFailedException;
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -118,22 +119,22 @@ public class Platform implements Serializable, Removable {
         this.attachments = attachments;
     }
 
-    public static Platform fromEntityOption(EntityOption entityOption) {
-        if (entityOption == null) {
+    public static Platform fromPlatformOption(PlatformOption platformOption) {
+        if (platformOption == null) {
             return null;
         }
 
         Platform platform = new Platform();
-        platform.setId(entityOption.getId());
-        platform.setName(entityOption.getDisplayText());
+        platform.setId(platformOption.getId());
+        platform.setName(platformOption.getDisplayText());
         return platform;
     }
 
-    public EntityOption toEntityOption() {
-        EntityOption entityOption = new EntityOption();
-        entityOption.setId(getId());
-        entityOption.setDisplayText(getName());
-        return entityOption;
+    public PlatformOption toPlatformOption() {
+        PlatformOption platformOption = new PlatformOption();
+        platformOption.setId(getId());
+        platformOption.setDisplayText(getName());
+        return platformOption;
     }
 
 

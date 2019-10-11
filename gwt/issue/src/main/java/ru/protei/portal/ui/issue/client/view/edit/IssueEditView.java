@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -354,12 +355,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<EntityOption> platform() {
+    public HasValue<PlatformOption> platform() {
         return platform;
     }
 
     @Override
-    public void setPlatformFilter(Selector.SelectorFilter<EntityOption> filter){
+    public void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter){
         platform.setFilter(filter);
     }
 
