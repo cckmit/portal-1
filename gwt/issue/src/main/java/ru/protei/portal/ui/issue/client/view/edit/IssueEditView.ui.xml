@@ -19,7 +19,7 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-lg-8 order-last order-lg-first">
                     <g:HTMLPanel ui:field="numberContainer" styleName="col-md-12">
                         <h5 class="number-copy-panel no-margin p-b-10">
                             <i ui:field="privacyIcon"/>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4">
+                <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
                         <div class="card-body">
                             <div class="form-group-attached">

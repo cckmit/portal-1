@@ -3,6 +3,7 @@ package ru.protei.portal.app.portal.client.view.auth;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -92,6 +93,11 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         password.setText("");
     }
 
+    @Override
+    public void setLogoByLocale(String locale) {
+        logo.setSrc("./images/logo-blue-" + locale + ".svg");
+    }
+
     @UiHandler( "locale" )
     public void onLocaleClicked( ValueChangeEvent<LocaleImage> event ) {
         if ( activity != null ) {
@@ -137,6 +143,8 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     DivElement errorMessage;
     @UiField
     LocaleBtnGroup locale;
+    @UiField
+    ImageElement logo;
 
     AbstractAuthActivity activity;
 
