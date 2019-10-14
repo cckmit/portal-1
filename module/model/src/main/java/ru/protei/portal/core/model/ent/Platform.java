@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -134,6 +133,7 @@ public class Platform implements Serializable, Removable {
         PlatformOption platformOption = new PlatformOption();
         platformOption.setId(getId());
         platformOption.setDisplayText(getName());
+        platformOption.setCompanyId(getCompanyId());
         return platformOption;
     }
 
