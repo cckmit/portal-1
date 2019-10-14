@@ -567,7 +567,9 @@ public abstract class CaseCommentListActivity
                 lastCommentView.showAttachments(!tempAttachments.isEmpty());
             }
         } else {
-            fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
+            if (tempAttachments.isEmpty()) {
+                fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
+            }
             AbstractCaseCommentItemView itemView = makeCommentView(caseComment);
             lastCommentView = itemView;
             view.addCommentToFront(itemView.asWidget());
