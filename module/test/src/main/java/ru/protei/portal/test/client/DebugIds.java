@@ -200,6 +200,7 @@ public class DebugIds {
         String PRIVACY_ICON_PUBLIC = "issue-privacy-icon-public";
         String NUMBER_INPUT = "issue-number-input";
         String NAME_INPUT = "issue-name-input";
+        String NAME_FIELD = "issue-name-field";
         String LINKS_BUTTON = "issue-links-button";
         String LINKS_CONTAINER = "issue-links-container";
         String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
@@ -220,6 +221,7 @@ public class DebugIds {
         String TIME_ELAPSED = "issue-time-elapsed";
         String TIME_ELAPSED_INPUT = "issue-time-elapsed-input";
         String DESCRIPTION_INPUT = "issue-description-input";
+        String DESCRIPTION_FIELD = "issue-description-field";
         String NOTIFIERS_SELECTOR_ADD_BUTTON = "issue-notifiers-selector-add-button";
         String NOTIFIERS_SELECTOR_CLEAR_BUTTON = "issue-notifiers-selector-clear-button";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-attachment-upload-button";

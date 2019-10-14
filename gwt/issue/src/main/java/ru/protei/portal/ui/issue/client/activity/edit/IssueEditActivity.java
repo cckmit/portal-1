@@ -59,6 +59,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
+    }
+
+    @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
     }
@@ -344,7 +349,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        view.name().setValue(issue.getName());
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
@@ -357,8 +361,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isPrivate().setValue(issue.isPrivateCase());
 
-        view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
-        view.description().setValue(issue.getInfo());
+        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
+        if ( isAllowedEditNameAndDescription ) {
+            view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
+            view.description().setValue(issue.getInfo());
+            view.switchToRONameDescriptionView(false);
+            view.name().setValue(issue.getName());
+        } else {
+            view.switchToRONameDescriptionView(true);
+            view.setDescriptionRO(issue.getInfo());
+            view.setNameRO(issue.getName());
+        }
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
@@ -503,6 +516,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return issue.getId() == null;
     }
 
+    private boolean isSelfIssue(CaseObject issue) {
+        return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
+    }
+
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;
@@ -590,12 +607,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     SiteFolderControllerAsync platformController;
 
+    @ContextAware
+    CaseObject issue;
+
     private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
+    private Profile authProfile;
+
     private AppEvents.InitDetails initDetails;
-    @ContextAware
-    CaseObject issue;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
     private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";

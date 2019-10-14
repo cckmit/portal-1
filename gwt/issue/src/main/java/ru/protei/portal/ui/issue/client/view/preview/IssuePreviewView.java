@@ -194,11 +194,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setPlatformVisibility(boolean visible) {
         if (visible) {
-            platformLabel.removeClassName("hide");
+            platformContainer.removeClassName("hide");
+            productContainer.replaceClassName("col-md-6", "col-md-3");
         } else {
-            platformLabel.addClassName("hide");
+            platformContainer.addClassName("hide");
+            productContainer.replaceClassName("col-md-3", "col-md-6");
         }
-        platform.setVisible(visible);
     }
 
     @UiHandler( "number" )
@@ -358,11 +359,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HeadingElement subscriptionsLabel;
     @UiField
-    HeadingElement platformLabel;
+    LabelElement platformLabel;
     @UiField
     LabelElement criticalityLabel;
     @UiField
     SpanElement timeElapsedLabel;
+    @UiField
+    DivElement productContainer;
+    @UiField
+    DivElement platformContainer;
 
     AbstractIssuePreviewActivity activity;
 
