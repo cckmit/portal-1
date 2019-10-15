@@ -84,7 +84,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(view.isAttached() && issue.getId().equals(event.issueId) && !event.attachments.isEmpty()) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
         }
     }
@@ -489,11 +489,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
+        if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
+            issue.setAttachments(new ArrayList<>());
+
         if (attachments != null && !attachments.isEmpty()) {
             view.attachmentsContainer().add(attachments);
-            if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
-                issue.setAttachments(new ArrayList<>());
-
             issue.getAttachments().addAll(attachments);
             issue.setAttachmentExists(true);
         }
