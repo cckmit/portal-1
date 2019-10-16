@@ -9,13 +9,13 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -26,7 +26,6 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -207,7 +206,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             Long selectedCompanyId = companyOption.getId();
 
-            setPlatformsByCompanyId(selectedCompanyId);
+            view.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
             companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions,
@@ -400,7 +399,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
-        view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption(issue.getPlatformName(), issue.getPlatformId()));
+        view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
 
@@ -556,17 +555,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return saving;
     }
 
-    private void setViewPlatformFilter(SearchResult<Platform> searchResult) {
-        view.setPlatformFilter(entityOption -> searchResult.getResults().stream().anyMatch(platform -> platform.getId().equals(entityOption.getId())));
-    }
-
-    private void setPlatformsByCompanyId(Long companyId) {
-        PlatformQuery query = new PlatformQuery(Arrays.asList(companyId));
-        platformController.getPlatforms(query, new FluentCallback<SearchResult<Platform>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(this::setViewPlatformFilter));
-    }
-
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -587,8 +575,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     LocalStorageService localStorageService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    SiteFolderControllerAsync platformController;
 
     private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
