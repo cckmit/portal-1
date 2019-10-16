@@ -3,7 +3,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" styleName="employee">
-        <div class="header-block">
+        <div class="header-block" ui:field="employeeContainer">
             <h2 class="name" ui:field="name"></h2>
             <p class="controls">
                 <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
@@ -40,6 +40,13 @@
             <g:HTMLPanel ui:field="positionContainer" styleName="contacts position" visible="false">
                 <i class="fa fa-street-view"></i>
                 <span ui:field="position"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="fireDateContainer" styleName="contacts position" visible="false">
+                <i class="fa fa-info-circle"></i>
+                <b>
+                    <span><ui:text from="{lang.employeeFired}"/></span>
+                    <span ui:field="fireDate"/>
+                </b>
             </g:HTMLPanel>
         </div>
 

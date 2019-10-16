@@ -137,10 +137,19 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
         Element employeeInfo = DOM.createDiv();
-        employeeInfo.appendChild(LabelValuePairBuilder.make()
-                .addIconValuePair("fa fa-user-circle", employee.getDisplayName(), "contacts")
-                .toElement());
 
+        if (employee.isFired()) employeeInfo.addClassName("fired");
+
+        if (employee.isFired()){
+            employeeInfo.appendChild(LabelValuePairBuilder.make()
+                    .addIconValuePair("fa fa-ban text-danger", employee.getDisplayName(), "contacts fired")
+                    .toElement());
+        }
+        else {
+            employeeInfo.appendChild(LabelValuePairBuilder.make()
+                    .addIconValuePair("fa fa-user-circle", employee.getDisplayName(), "contacts")
+                    .toElement());
+        }
         employeeInfo.appendChild(LabelValuePairBuilder.make()
                 .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts")
                 .toElement());
@@ -150,6 +159,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeContactsBlock(EmployeeShortView employee) {
         Element employeeContacts = DOM.createDiv();
+
+        if (employee.isFired()) employeeContacts.addClassName("fired");
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
         String phones = infoFacade.publicPhonesAsFormattedString(true);
@@ -170,6 +181,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeDepartmentBlock(EmployeeShortView employee) {
         Element employeeDepartment = DOM.createDiv();
+
+        if (employee.isFired()) employeeDepartment.addClassName("fired");
+
         employeeDepartment.addClassName("department");
         Element department = DOM.createDiv();
         Element departmentParent = DOM.createDiv();
@@ -193,12 +207,18 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                         .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts")
                         .toElement());
             }
-            employeeDepartment.appendChild(department);
             if (mainEntry.getPositionName() != null){
                 department.appendChild(LabelValuePairBuilder.make()
                         .addIconValuePair("fa fa-street-view", mainEntry.getPositionName(), "contacts")
                         .toElement());
             }
+            employeeDepartment.appendChild(department);
+        }
+        else if (employee.isFired()){
+            department.appendChild(LabelValuePairBuilder.make()
+                    .addIconValuePair("fa fa-info-circle", lang.employeeFired() + (employee.getFireDate() == null ? "" : " " + DateFormatter.formatDateOnly(employee.getFireDate())), "contacts")
+                    .toElement());
+            employeeDepartment.appendChild(department);
         }
 
         return employeeDepartment.getString();
@@ -206,6 +226,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeAdditionalBlock(EmployeeShortView employee) {
         Element employeeAdditional = DOM.createDiv();
+
+        if (employee.isFired()) employeeAdditional.addClassName("fired");
+
         employeeAdditional.appendChild(
                 LabelValuePairBuilder.make()
                         .addLabelValuePair("IP", employee.getIpAddress(), "contacts")

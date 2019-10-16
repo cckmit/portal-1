@@ -133,7 +133,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
 
     private EmployeeQuery makeQuery() {
-        return new EmployeeQuery( false, false, true,
+        return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
                 null,
                 filterView.searchPattern().getValue(),
                 normalizePhoneNumber(filterView.workPhone().getValue()),
@@ -170,6 +170,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
         itemView.setPhoto(AvatarUtils.getAvatarUrl(employee.getId(), En_CompanyCategory.HOME.getId(), null));
         itemView.setIP(employee.getIpAddress());
+        if(employee.isFired())
+            itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
 
         return itemView;
     }
