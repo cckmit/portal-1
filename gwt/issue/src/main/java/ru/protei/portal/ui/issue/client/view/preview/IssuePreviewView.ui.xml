@@ -23,7 +23,7 @@
                     <div class="inline pull-right">
                         <small ui:field="createdBy"/>
                     </div>
-                    <h5 ui:field="name"/>
+                    <h5 ui:field="name" class="no-margin semi-bold"/>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
                                            enabled="false" showLabel="false"/>
@@ -45,13 +45,20 @@
                                     <div ui:field="state"/>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3" ui:field="productContainer">
                                 <div class="form-group form-group-default">
                                     <label ui:field="productLabel" class="fade"><ui:text from="{lang.issueProduct}"/></label>
                                     <span ui:field="product"/>
                                 </div>
                             </div>
+                            <div class="col-md-3" ui:field="platformContainer">
+                                <div class="form-group form-group-default">
+                                    <label ui:field="platformLabel" class="fade"><ui:text from="{lang.issuePlatformHeader}"/></label>
+                                    <g:Anchor ui:field="platform" styleName="full-screen-link" href="#"/>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">
@@ -100,9 +107,6 @@
 
                     <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>
-
-                    <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
-                    <g:Anchor ui:field="platform" styleName="full-screen-link" href="#"/>
 
                     <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
                         <h5 class="col-md-12">

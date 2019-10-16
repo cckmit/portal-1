@@ -119,6 +119,11 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
-    String DESCRIPTION = "description";
+    void switchToRONameDescriptionView(boolean b);
 
+    void setDescriptionRO(String value);
+
+    void setNameRO(String name);
+
+    String DESCRIPTION = "description";
 }

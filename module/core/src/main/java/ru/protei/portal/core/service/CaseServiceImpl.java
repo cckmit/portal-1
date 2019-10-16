@@ -303,6 +303,14 @@ public class CaseServiceImpl implements CaseService {
                     caseObject.getId(), oldState.getState(), caseObject.getState(), workflow);
             throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
         }
+
+        boolean isSelfCase = Objects.equals(initiator.getId(), oldState.getCreator().getId());
+        boolean isChangedNameOrDescription = !Objects.equals(oldState.getName(), caseObject.getName()) || !Objects.equals(oldState.getInfo(), caseObject.getInfo());
+        if ( !isSelfCase && isChangedNameOrDescription ) {
+            log.info("Trying edit not self name or description for the issue {}", caseObject.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION);
+        }
+
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW && isStateReopenNotAllowed(token, oldState, caseObject)) {
             throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
         }
@@ -325,7 +333,7 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        if(oldState.getState() != caseObject.getState()){
+        if(!Objects.equals(oldState.getState(),caseObject.getState())){
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
             if (messageId == null) {
                 log.error("State message for the issue {} isn't saved!", caseObject.getId());

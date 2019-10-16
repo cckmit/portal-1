@@ -1877,4 +1877,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCreate();
 
     String issueInitiatorInfo();
+
+    String errNotAllowedChangeIssueNameOrDescription();
 }
