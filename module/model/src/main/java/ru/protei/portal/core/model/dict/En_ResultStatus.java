@@ -130,5 +130,10 @@ public enum En_ResultStatus {
      */
     INVALID_CURRENT_PASSWORD,
 
-    AUTH_FAILURE
+    AUTH_FAILURE,
+
+    /**
+     * Редактирование названия или описания чужих обращений запрещено
+     */
+    NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION
 }

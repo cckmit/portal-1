@@ -10,7 +10,6 @@
                 <div class="card card-default no-border">
                     <div class="card-body no-padding">
                         <table:InfiniteTableWidget ui:field="table" styleName="table table-hover employee-registration"/>
-                        <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
                     </div>
                 </div>
             </g:HTMLPanel>
