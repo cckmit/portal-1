@@ -4044,6 +4044,7 @@ label {
 
 .number-copy-panel {
   display: inline-block!important;
+  padding-right: 30px;
   .copy-issue-description {
     margin-left: 3px;
     display: none;
@@ -4123,4 +4124,9 @@ table {
     top: 15%;
     right: 10px;
   }
+}
+
+.thumbnail-photo{
+  object-fit: cover;
+  object-position: 0px 25%;
 }
