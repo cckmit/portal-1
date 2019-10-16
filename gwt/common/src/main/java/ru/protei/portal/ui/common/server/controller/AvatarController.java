@@ -8,20 +8,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.winter.core.utils.mime.MimeUtils;
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 @RestController
 public class AvatarController {
 
-    private static final String NOPHOTO_PATH = "/images/nophoto.png";
+    private static final String NOPHOTO_PATH = "./images/nophoto.png";
+
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
 
     @Autowired
@@ -31,10 +33,22 @@ public class AvatarController {
     private ServletContext context;
 
 
+    @RequestMapping( value = "/avatars/{gender}/{fileName:.+}" )
+    public void getAvatar(
+            @PathVariable String gender,
+            @PathVariable String fileName,
+            HttpServletResponse response ) throws IOException {
+
+        En_Gender g = En_Gender.parse(gender);
+
+        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
+
+        loadFile( context.getRealPath( g.equals(En_Gender.MALE) ? AvatarUtils.MALE_AVATAR_URL : g.equals(En_Gender.FEMALE) ? AvatarUtils.FEMALE_AVATAR_URL : AvatarUtils.NOGENDER_AVATAR_URL ), response );
+    }
+
     @RequestMapping( value = "/avatars/{fileName:.+}" )
     public void getAvatar(@PathVariable String fileName,
-                                  HttpServletRequest request,
-                                  HttpServletResponse response ) throws IOException {
+                          HttpServletResponse response ) throws IOException {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
@@ -50,7 +64,7 @@ public class AvatarController {
             try ( InputStream is = new FileInputStream( file ) ) {
 
                 response.setContentLength( new Long( file.length() ).intValue() );
-                response.setContentType( MimeUtils.getContentType( file.getName() ) );
+                response.setContentType( Files.probeContentType( file.toPath() ) );
                 IOUtils.copy( is, response.getOutputStream() );
 
                 response.setHeader( "Cache-control", "" );

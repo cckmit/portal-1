@@ -19,8 +19,8 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <div class="row">
-                <div class="col-lg-8">
-                    <g:HTMLPanel ui:field="numberContainer" styleName="col-md-12">
+                <div class="col-lg-8 order-last order-lg-first">
+                    <g:HTMLPanel ui:field="numberContainer">
                         <h5 class="number-copy-panel no-margin p-b-10">
                             <i ui:field="privacyIcon"/>
                             <g:InlineLabel ui:field="numberLabel"/>
@@ -33,6 +33,7 @@
                             <small ui:field="createdBy"/>
                         </div>
                     </g:HTMLPanel>
+
                     <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
                         <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn"/>
 
@@ -42,15 +43,18 @@
                             </label>
                             <g:TextBox ui:field="name" styleName="form-control"/>
                         </div>
-
                     </g:HTMLPanel>
+
+                    <h5 ui:field="nameRO" class="no-margin semi-bold"/>
 
                     <div class="row form-group">
                         <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"
                                                tagCaseType="CRM_SUPPORT"/>
                     </div>
 
-                    <div class="row form-group ">
+                    <g:Label ui:field="descriptionRO" styleName="form-group pre-formatted-info markdown p-t-15" />
+
+                    <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
                         <div class="col-md-12">
                             <div class="form-group-default">
                                 <label class="fade" ui:field="descriptionLabel">
@@ -59,7 +63,7 @@
                                 <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
                             </div>
                         </div>
-                    </div>
+                    </g:HTMLPanel>
 
                     <div class="row form-group">
                         <div class="col-md-12">
@@ -90,7 +94,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4">
+                <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
                         <div class="card-body">
                             <div class="form-group-attached">
@@ -127,9 +131,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="m-t-10">
-                                <ui:text from="{lang.issueInitiatorInfo}"/>
-                            </p>
+                            <div class="form-group m-t-10 m-b-0">
+                                <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
+                            </div>
                             <div class="form-group-attached form-group">
                                 <div class="row">
                                     <div class="col-md-12">

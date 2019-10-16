@@ -100,6 +100,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
         view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
+        view.setLogoByLocale(currentLocale);
 
         view.rememberMe().setValue(false);
     }

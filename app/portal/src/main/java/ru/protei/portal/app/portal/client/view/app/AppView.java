@@ -46,9 +46,15 @@ public class AppView extends Composite
     }
 
     @Override
-    public void setUser( String name, String company, String photoSrc) {
+    public void setUser(String name, String company, String photoSrc) {
         username.setInnerText(name);
         photo.setSrc(photoSrc);
+    }
+
+    @Override
+    public void setLogoByLocale(String locale) {
+        logoImgWhite.setSrc("./images/logo-white-" + locale + ".svg");
+        logoImgBlue.setSrc("./images/logo-blue-" + locale + ".svg");
     }
 
     @Override
@@ -275,6 +281,10 @@ public class AppView extends Composite
     DivElement headerDiv;
     @UiField
     DivElement brandDiv;
+    @UiField
+    ImageElement logoImgWhite;
+    @UiField
+    ImageElement logoImgBlue;
 
 
     AbstractAppActivity activity;
