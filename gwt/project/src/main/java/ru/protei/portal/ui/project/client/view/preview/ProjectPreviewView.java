@@ -94,6 +94,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         this.contract.setText(value);
     }
 
+    @Override
+    public void setPlatform(String value, String link) {
+        platform.setText(value);
+        platform.setHref(link);
+    }
+
     @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -146,6 +152,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
         contract.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
+        platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
     }
 
     @UiField
@@ -158,6 +165,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Anchor header;
     @UiField
     Anchor contract;
+    @UiField
+    Anchor platform;
     @UiField
     DivElement description;
     @UiField

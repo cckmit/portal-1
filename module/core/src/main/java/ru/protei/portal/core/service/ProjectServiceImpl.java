@@ -70,6 +70,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     PersonDAO personDAO;
 
+    @Autowired
+    PlatformDAO platformDAO;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
@@ -132,6 +135,13 @@ public class ProjectServiceImpl implements ProjectService {
     public Result<Project> getProject(AuthToken token, Long id ) {
 
         CaseObject project = caseObjectDAO.get( id );
+
+        Platform platform = platformDAO.getByCondition("project_id=?", id);
+
+        if (platform != null && platform.getId() != null) {
+            project.setPlatformId(platform.getId());
+            project.setPlatformName(platform.getName());
+        }
 
         if (project == null) {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");

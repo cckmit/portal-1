@@ -97,6 +97,15 @@
                     <div class="row form-group">
                         <div class="col-md-12">
                             <h5>
+                                <ui:text from="{lang.projectSiteFolder}"/>
+                            </h5>
+                            <g:Anchor ui:field="platform" href="#" target="_blank"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
                                 <ui:text from="{lang.equipmentDocuments}"/>
                             </h5>
                             <g:HTMLPanel ui:field="documents"

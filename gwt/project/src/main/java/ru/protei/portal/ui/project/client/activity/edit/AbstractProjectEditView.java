@@ -43,6 +43,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
+    void setPlatform(String value, String link);
+
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
 }

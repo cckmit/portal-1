@@ -6,4 +6,7 @@ public interface AbstractPlatformPreviewActivity {
     void onFullScreenClicked();
 
     void onGoToIssuesClicked();
+
+    void onProjectClicked();
+
 }

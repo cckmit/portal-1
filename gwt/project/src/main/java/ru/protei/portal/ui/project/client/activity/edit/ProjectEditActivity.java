@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.util.PlatformUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -126,6 +127,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) );
         view.saveEnabled().setEnabled(true);
+
+        view.setPlatform("", "");
     }
 
     private void fillView(Project project) {
@@ -145,6 +148,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.showComments(true);
         view.showDocuments(true);
+
+        view.setPlatform(project.getPlatformName() == null ? "" : project.getPlatformName(), PlatformUtils.makeLink(project.getPlatformId()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)

@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.util.PlatformUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.stream.Collectors;
@@ -109,6 +110,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
         view.setContractNumber(value.getContractId() == null ? "" : lang.contractNum(value.getContractNumber()));
+        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), PlatformUtils.makeLink(value.getPlatformId()));
 
         if( value.getTeam() != null ) {
             StringBuilder teamBuilder = new StringBuilder();

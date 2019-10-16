@@ -60,6 +60,11 @@
                     <team:TeamSelector ui:field="team" addStyleNames="form-group col-md-12"/>
                 </div>
 
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.projectSiteFolder}"/></label><br/>
+                    <g:Anchor ui:field="platform" href="#" target="_blank"/>
+                </div>
+
                 <div class="form-group col-md-12" ui:field="documents">
                     <label><ui:text from="{lang.equipmentDocuments}"/></label>
                     <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>

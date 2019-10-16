@@ -6,12 +6,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ProjectUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
@@ -29,6 +27,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         event.parent.add(view.asWidget());
 
         platformId = event.platform.getId();
+        projectId = event.platform.getProjectId();
 
         platformRequest(event.platform.getId(), this::fillView);
         view.footerContainerVisibility().setVisible(false);
@@ -70,6 +69,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
         view.setName(value.getName() == null ? "" : value.getName());
         view.setParameters(value.getParams() == null ? "" : value.getParams());
+        view.setProject(value.getProjectName() == null ? "" : value.getProjectName(), ProjectUtils.makeLink(value.getProjectId()));
         view.setComment(value.getComment() == null ? "" : value.getComment());
 
         view.attachmentsContainer().clear();
@@ -105,6 +105,13 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         fireEvent(new SiteFolderPlatformEvents.Show());
     }
 
+    @Override
+    public void onProjectClicked() {
+        if (projectId != null) {
+            fireEvent(new ProjectEvents.ShowFullScreen(projectId));
+        }
+    }
+
     @Inject
     AbstractPlatformPreviewView view;
     @Inject
@@ -114,5 +121,6 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
 
     private Long platformId;
+    private Long projectId;
     private AppEvents.InitDetails initDetails;
 }

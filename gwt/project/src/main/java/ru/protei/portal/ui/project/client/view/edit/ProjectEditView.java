@@ -128,6 +128,13 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return saveButton;
     }
 
+    @Override
+    public void setPlatform(String value, String link) {
+        platform.setText(value);
+        platform.setHref(link);
+    }
+
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -219,6 +226,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     DivElement documents;
     @UiField
     HTMLPanel documentsContainer;
+    @UiField
+    Anchor platform;
 
     @UiField
     Button saveButton;

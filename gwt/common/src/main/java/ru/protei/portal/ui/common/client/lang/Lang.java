@@ -1117,6 +1117,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderParamsLocal();
 
+    String siteFolderProject();
+
     String siteFolderComment();
 
     String siteFolderIP();
@@ -1879,6 +1881,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSearch();
 
     String projectCreate();
+
+    String projectSiteFolder();
 
     String issueInitiatorInfo();
 }
