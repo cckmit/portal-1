@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -76,7 +77,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void showComments(boolean isShow);
     boolean isAttached();
-    HasValue<EntityOption> platform();
+    HasValue<PlatformOption> platform();
 
     HasVisibility platformVisibility();
 
@@ -102,6 +103,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 
+    void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
+
     void initiatorUpdateCompany(Company company);
 
     void initiatorSelectorAllowAddNew(boolean b);
@@ -116,6 +119,11 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
-    String DESCRIPTION = "description";
+    void switchToRONameDescriptionView(boolean b);
 
+    void setDescriptionRO(String value);
+
+    void setNameRO(String name);
+
+    String DESCRIPTION = "description";
 }

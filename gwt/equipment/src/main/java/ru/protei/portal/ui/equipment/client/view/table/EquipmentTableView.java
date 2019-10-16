@@ -118,7 +118,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
                 cell.addClassName( "equipment-name-column" );
-                String nameSldWrksHtml = "<div><i><small><i class='fa fa-file-o m-r-5'></i>" + value.getNameSldWrks() + "</small></i></div>";
+                String nameSldWrksHtml = "<div><small><i class=\"far fa-file m-r-5\"></i>" + value.getNameSldWrks() + "</small></div>";
                 cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() + nameSldWrksHtml ) );
             }
         };
@@ -139,12 +139,10 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 cell.addClassName( "equipment-number-column" );
 
                 Element root = DOM.createDiv();
-                root.setClassName( "decimal-numbers" );
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
                     numElem.setInnerText( DecimalNumberFormatter.formatNumber( number ) );
-                    numElem.setClassName("decimal-number");
                     if ( number.isReserve() ) {
                         Element isReserveEl = DOM.createElement("i");
                         isReserveEl.addClassName( "fa fa-flag text-danger m-l-10" );
@@ -170,7 +168,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 if ( value.getComment() == null ) {
                     return;
                 }
-                cell.setInnerHTML( "<div><i><small>" + value.getComment() + "</small></i></div>" );
+                cell.setInnerHTML( "<div><small>" + value.getComment() + "</small></div>" );
             }
         };
         columns.add( comment );
@@ -217,11 +215,9 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
             public void fillColumnValue ( Element cell, Equipment value ) {
                 cell.setClassName( "equipment-number-column" );
                 Element root = DOM.createDiv();
-                root.setClassName( "decimal-numbers" );
-
                 if (value != null && value.getLinkedEquipmentDecimalNumbers() != null) {
                     root.setInnerHTML(StringUtils.join(
-                            "<div class='decimal-number'>",
+                            "<div>",
                             value.getLinkedEquipmentDecimalNumbers().stream()
                                     .map(DecimalNumberFormatter::formatNumber).collect(Collectors.joining(", ")),
                             "</div>"
@@ -245,7 +241,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 String managerHtml = "";
                 if ( value.getManagerShortName() != null ) {
-                    managerHtml = "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
+                    managerHtml = "<div><small><i class='far fa-user m-r-5'></i>" + value.getManagerShortName() + "</small></div>";
                 }
 
                 cell.setInnerHTML( HTMLHelper.wrapDiv( StringUtils.emptyIfNull(value.getProjectName()) + managerHtml ) );

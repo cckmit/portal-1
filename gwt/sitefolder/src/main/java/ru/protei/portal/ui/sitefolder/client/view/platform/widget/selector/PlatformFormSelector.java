@@ -2,13 +2,14 @@ package ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.List;
 
-public class PlatformFormSelector extends FormSelector<EntityOption> implements SelectorWithModel<EntityOption> {
+public class PlatformFormSelector extends FormSelector<PlatformOption> implements SelectorWithModel<PlatformOption> {
 
     @Inject
     void init(PlatformModel model) {
@@ -20,7 +21,7 @@ public class PlatformFormSelector extends FormSelector<EntityOption> implements 
     }
 
     @Override
-    public void fillOptions(List<EntityOption> options) {
+    public void fillOptions(List<PlatformOption> options) {
         clearOptions();
 
         if (defaultValue != null) {

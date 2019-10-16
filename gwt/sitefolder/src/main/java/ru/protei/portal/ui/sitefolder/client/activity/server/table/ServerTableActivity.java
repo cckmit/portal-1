@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -69,8 +70,8 @@ public abstract class ServerTableActivity implements
 
         platformId = event.platformId;
         if (platformId != null) {
-            Set<EntityOption> options = new HashSet<>();
-            EntityOption option = new EntityOption();
+            Set<PlatformOption> options = new HashSet<>();
+            PlatformOption option = new PlatformOption();
             option.setId(platformId);
             options.add(option);
             filterView.platforms().setValue(options);
@@ -248,7 +249,7 @@ public abstract class ServerTableActivity implements
         query.setPlatformIds(filterView.platforms().getValue() == null
                 ? null
                 : filterView.platforms().getValue().stream()
-                .map(EntityOption::getId)
+                .map(PlatformOption::getId)
                 .collect(Collectors.toList())
         );
         query.setIp(filterView.ip().getValue());

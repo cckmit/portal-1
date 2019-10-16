@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -103,7 +104,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public Result<List<EntityOption>> listPlatformsOptionList( AuthToken token, PlatformQuery query) {
+    public Result<List<PlatformOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query) {
 
         List<Platform> result = platformDAO.listByQuery(query);
 
@@ -111,8 +112,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<EntityOption> options = result.stream()
-                .map(p -> new EntityOption(p.getName(), p.getId()))
+        List<PlatformOption> options = result.stream()
+                .map(p -> new PlatformOption(p.getName(), p.getId(), p.getCompanyId()))
                 .collect(Collectors.toList());
 
         return ok(options);

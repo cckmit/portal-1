@@ -15,16 +15,14 @@ import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
@@ -57,6 +55,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 }
             }
         });
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
     }
 
     @Event
@@ -207,6 +210,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.initiator().setValue(null);
         } else {
             Long selectedCompanyId = companyOption.getId();
+
+            view.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+
             companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions,
                             CollectionUtils.isEmpty(subscriptions) ? lang.issueCompanySubscriptionNotDefined() : lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()))));
@@ -342,7 +348,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        view.name().setValue(issue.getName());
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
@@ -355,8 +360,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isPrivate().setValue(issue.isPrivateCase());
 
-        view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
-        view.description().setValue(issue.getInfo());
+        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
+        if ( isAllowedEditNameAndDescription ) {
+            view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
+            view.description().setValue(issue.getInfo());
+            view.switchToRONameDescriptionView(false);
+            view.name().setValue(issue.getName());
+        } else {
+            view.switchToRONameDescriptionView(true);
+            view.setDescriptionRO(issue.getInfo());
+            view.setNameRO(issue.getName());
+        }
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
@@ -398,7 +412,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
-        view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption(issue.getPlatformName(), issue.getPlatformId()));
+        view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
 
@@ -501,6 +515,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return issue.getId() == null;
     }
 
+    private boolean isSelfIssue(CaseObject issue) {
+        return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
+    }
+
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;
@@ -575,12 +593,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 
+    @ContextAware
+    CaseObject issue;
+
     private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
+    private Profile authProfile;
+
     private AppEvents.InitDetails initDetails;
-    @ContextAware
-    CaseObject issue;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
     private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
