@@ -127,9 +127,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="m-t-10">
-                                <ui:text from="{lang.issueInitiatorInfo}"/>
-                            </p>
+                            <div class="form-group m-t-10 m-b-0">
+                                <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
+                            </div>
                             <div class="form-group-attached form-group">
                                 <div class="row">
                                     <div class="col-md-12">

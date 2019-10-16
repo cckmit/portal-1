@@ -40,7 +40,18 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <style><#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false></style>
+    <style>
+        .markdown p,
+        .markdown blockquote,
+        .markdown ul,
+        .markdown ol,
+        .markdown dl,
+        .markdown table,
+        .markdown pre {
+            font-size: 14px !important;
+        }
+        <#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false>
+    </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
@@ -204,7 +215,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_description}
                     </td>
-                    <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
+                    <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
                 </tr>
                 <#if attachments??>
                     <tr>
@@ -257,9 +268,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em">${caseComment.text}</div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
                         </#if>
                     </#if>
                 </div>

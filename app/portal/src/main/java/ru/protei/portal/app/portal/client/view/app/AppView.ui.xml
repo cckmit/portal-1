@@ -43,7 +43,7 @@
 
             <div class="d-flex align-items-center">
                 <locale:LocaleSelector ui:field="locale" addStyleNames="m-r-20"/>
-                <div class="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+                <div class="pull-left p-r-10 fs-14 d-lg-block d-none">
                     <span class="semi-bold" ui:field="username"/>
                 </div>
                 <div class="dropdown pull-right">
