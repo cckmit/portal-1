@@ -82,6 +82,10 @@ public class Project extends AuditableObject implements Removable {
 
     private EntityOption contragent;
 
+    private String platformName;
+
+    private Long platformId;
+
     public Long getId() {
         return id;
     }
@@ -252,6 +256,22 @@ public class Project extends AuditableObject implements Removable {
         this.contragent = contragent;
     }
 
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
+    }
+
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
     public static Project fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
@@ -305,6 +325,12 @@ public class Project extends AuditableObject implements Removable {
             projectInfo.setContragent(new EntityOption(project.getInitiatorCompany().getCname(), project.getInitiatorCompanyId()));
         }
 
+        if (project.getPlatformId() != null){
+            projectInfo.setPlatformId(project.getPlatformId());
+            projectInfo.setPlatformName(project.getPlatformName());
+
+        }
+
         return projectInfo;
     }
 
@@ -345,6 +371,8 @@ public class Project extends AuditableObject implements Removable {
                 ", deleted=" + deleted +
                 ", manager" + manager +
                 ", contragent" + contragent +
+                ", platformName" + platformName +
+                ", platformId" + platformId +
                 '}';
     }
 }

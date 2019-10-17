@@ -69,4 +69,9 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
             }
         });
     }
+
+    @Override
+    public Platform getByProjectId(Long id) {
+        return (id == null ? null : getByCondition("project_id=?", id));
+    }
 }

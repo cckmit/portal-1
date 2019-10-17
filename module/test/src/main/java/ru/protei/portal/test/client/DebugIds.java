@@ -373,6 +373,7 @@ public class DebugIds {
         String DOCUMENTS_CONTAINER = "project-preview-documents-container";
         String COMMENTS_CONTAINER = "project-preview-comments-container";
         String CONTRACT_LABEL = "project-preview-contract-label";
+        String PLATFORM_LABEL = "project-preview-platform-label";
         String TO_CONTRACT_BUTTON = "project-preview-to-contract-button";
     }
 

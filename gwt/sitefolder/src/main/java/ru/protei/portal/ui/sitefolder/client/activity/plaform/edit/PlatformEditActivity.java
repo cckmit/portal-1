@@ -189,6 +189,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.companyEnabled().setEnabled(false);
         view.managerEnabled().setEnabled(false);
         view.companyValidator().setValid(true);
+        view.project().setValue(new EntityOption(project.getName(), project.getId()));
         fireShowCompanyContacts(project.getContragent().getId());
     }
 
@@ -219,7 +220,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
             fireShowCompanyContacts(platform.getCompanyId());
         }
-        view.project().setValue(platform.getProjectId() == null ? null : new EntityOption(platform.getProjectName(), platform.getProjectId()));
         view.name().setValue(platform.getName());
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
