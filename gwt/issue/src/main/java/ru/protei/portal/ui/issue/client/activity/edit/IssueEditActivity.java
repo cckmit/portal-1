@@ -315,6 +315,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.attachmentsContainer().clear();
 
         if (isNew(issue)) {
+            view.setCaseNumber(null);
             view.numberContainerVisibility().setVisible(false);
             view.showComments(false);
             view.getCommentsContainer().clear();
