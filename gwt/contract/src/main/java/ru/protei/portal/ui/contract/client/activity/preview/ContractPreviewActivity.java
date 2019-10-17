@@ -14,13 +14,13 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.client.util.ProjectUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.HelperFunc.isEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
@@ -56,13 +56,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     @Override
-    public void onProjectClicked() {
-        if (projectId != null) {
-            fireEvent(new ProjectEvents.ShowFullScreen(projectId));
-        }
-    }
-
-    @Override
     public void onFullScreenClicked() {
         fireEvent(new ContractEvents.ShowFullScreen(contractId));
     }
@@ -84,7 +77,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     onError(null);
                     return;
                 }
-                projectId = result.getProjectId();
                 contractId = result.getId();
                 fillView(result);
             }
@@ -114,7 +106,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
 
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), ProjectUtils.makeLink(value.getProjectId()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
@@ -146,7 +138,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     @Inject
     private ContractControllerAsync contractController;
 
-    private Long projectId;
     private Long contractId;
 
     private DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");

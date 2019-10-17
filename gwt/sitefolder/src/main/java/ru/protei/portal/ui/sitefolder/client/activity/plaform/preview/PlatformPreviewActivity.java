@@ -27,7 +27,6 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         event.parent.add(view.asWidget());
 
         platformId = event.platform.getId();
-        projectId = event.platform.getProjectId();
 
         platformRequest(event.platform.getId(), this::fillView);
         view.footerContainerVisibility().setVisible(false);
@@ -58,6 +57,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     private void fillProjectSpecificFields (Project project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
+        view.setProject(project.getName(), ProjectUtils.makeLink(project.getId()));
         if (project.getContragent() != null) fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
         else fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), null));
     }
@@ -69,7 +69,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
         view.setName(value.getName() == null ? "" : value.getName());
         view.setParameters(value.getParams() == null ? "" : value.getParams());
-        view.setProject(value.getProjectName() == null ? "" : value.getProjectName(), ProjectUtils.makeLink(value.getProjectId()));
+
         view.setComment(value.getComment() == null ? "" : value.getComment());
 
         view.attachmentsContainer().clear();
@@ -105,12 +105,6 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         fireEvent(new SiteFolderPlatformEvents.Show());
     }
 
-    @Override
-    public void onProjectClicked() {
-        if (projectId != null) {
-            fireEvent(new ProjectEvents.ShowFullScreen(projectId));
-        }
-    }
 
     @Inject
     AbstractPlatformPreviewView view;
@@ -121,6 +115,5 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
 
     private Long platformId;
-    private Long projectId;
     private AppEvents.InitDetails initDetails;
 }

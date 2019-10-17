@@ -127,8 +127,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) );
         view.saveEnabled().setEnabled(true);
-
-        view.setPlatform("", "");
     }
 
     private void fillView(Project project) {
@@ -148,8 +146,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.showComments(true);
         view.showDocuments(true);
-
-        view.setPlatform(project.getPlatformName() == null ? "" : project.getPlatformName(), PlatformUtils.makeLink(project.getPlatformId()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)

@@ -136,15 +136,15 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseObject project = caseObjectDAO.get( id );
 
-        Platform platform = platformDAO.getByCondition("project_id=?", id);
-
-        if (platform != null && platform.getId() != null) {
-            project.setPlatformId(platform.getId());
-            project.setPlatformName(platform.getName());
-        }
-
         if (project == null) {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+        }
+
+        Platform platform = platformDAO.getByProjectId(id);
+
+        if (platform != null) {
+            project.setPlatformId(platform.getId());
+            project.setPlatformName(platform.getName());
         }
 
         helper.fillAll( project );

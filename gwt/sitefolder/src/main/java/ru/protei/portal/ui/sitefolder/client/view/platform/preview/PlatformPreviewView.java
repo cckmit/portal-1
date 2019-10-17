@@ -101,15 +101,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
-   /* @UiHandler("project")
-    public void onProjectClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onProjectClicked();
-        }
-    }*/
-
     @UiField
     HTMLPanel preview;
     @UiField

@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.util.ContractUtils;
 import ru.protei.portal.ui.common.client.util.PlatformUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -67,12 +68,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     }
 
     @Override
-    public void onContractLinkClicked() {
-        if (project == null || project.getContractId() == null ) return;
-        fireEvent(new ContractEvents.ShowFullScreen(project.getContractId()));
-    }
-
-    @Override
     public void onProductLinkClicked() {
         if (project.getSingleProduct() != null) {
             fireEvent(new ProductEvents.ShowFullScreen(project.getSingleProduct().getId()));
@@ -109,7 +104,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContractNumber(value.getContractId() == null ? "" : lang.contractNum(value.getContractNumber()));
+        view.setContract(value.getContractNumber() == null ? "" : lang.contractNum(value.getContractNumber()), ContractUtils.makeLink(value.getContractId()));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), PlatformUtils.makeLink(value.getPlatformId()));
 
         if( value.getTeam() != null ) {

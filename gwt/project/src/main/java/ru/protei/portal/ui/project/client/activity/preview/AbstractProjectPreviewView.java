@@ -33,7 +33,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setCustomerType( String value );
 
-    void setContractNumber(String contractNumber);
+    void setContract(String value, String link);
 
     void setPlatform(String value, String link);
 

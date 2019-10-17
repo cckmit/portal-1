@@ -90,8 +90,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setContractNumber(String value) {
-        this.contract.setText(value);
+    public void setContract(String value, String link) {
+        contract.setText(value);
+        contract.setHref(link);
     }
 
     @Override
@@ -120,15 +121,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         event.preventDefault();
         if (activity != null) {
             activity.onProductLinkClicked();
-        }
-    }
-
-    @UiHandler("contract")
-    public void onToContractLinkClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onContractLinkClicked();
         }
     }
 
