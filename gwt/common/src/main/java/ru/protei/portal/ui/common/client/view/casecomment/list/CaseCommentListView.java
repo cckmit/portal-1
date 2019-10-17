@@ -99,14 +99,14 @@ public class CaseCommentListView
         timeElapsedType.setValue( null );
     }
 
-    @Override
-    public HasVisibility timeElapsedVisibility() {
-        return timeElapsed;
-    }
-
-    @Override
-    public HasVisibility timeElapsedTypeVisibility() {
-        return timeElapsedType;
+    public void setTimeElapsedVisibility(boolean visible) {
+        timeElapsed.setVisible(visible);
+        timeElapsedType.setVisible(visible);
+        if (visible) {
+            timeElapsedInfoContainer.removeClassName("hide");
+        } else {
+            timeElapsedInfoContainer.addClassName("hide");
+        }
     }
 
     @Override
@@ -310,6 +310,8 @@ public class CaseCommentListView
     ToggleButton isDisplayPreview;
     @UiField
     HTMLPanel messageBlock;
+    @UiField
+    Element timeElapsedInfoContainer;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
