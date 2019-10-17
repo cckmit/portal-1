@@ -1672,6 +1672,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentElapsedTimeTypeLabel();
 
+    String issueCommentElapsedTimeTypeChange();
+
     String selectValue();
 
     String privilegeContract();
@@ -1883,4 +1885,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueInitiatorInfo();
 
     String errNotAllowedChangeIssueNameOrDescription();
+
+    String timeElapsedInfo();
 }

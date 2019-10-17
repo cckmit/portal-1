@@ -15,7 +15,7 @@
             </li>
             <i ui:field="privateComment"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
-            <g:Label ui:field="timeElapsed" styleName="time-label"/>
+            <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
             <li ui:field="status"/>
             <li ui:field="options">
                 <span class="options">
