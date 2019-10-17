@@ -6,6 +6,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -15,8 +17,7 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.util.ContractUtils;
-import ru.protei.portal.ui.common.client.util.PlatformUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.stream.Collectors;
@@ -104,8 +105,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContract(value.getContractNumber() == null ? "" : lang.contractNum(value.getContractNumber()), ContractUtils.makeLink(value.getContractId()));
-        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), PlatformUtils.makeLink(value.getPlatformId()));
+        view.setContract(value.getContractNumber() == null ? "" : lang.contractNum(value.getContractNumber()), LinkUtils.makeLink(Contract.class, value.getContractId()));
+        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makeLink(Platform.class, value.getPlatformId()));
 
         if( value.getTeam() != null ) {
             StringBuilder teamBuilder = new StringBuilder();

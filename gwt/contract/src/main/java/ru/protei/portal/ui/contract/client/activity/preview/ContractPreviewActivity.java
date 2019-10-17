@@ -11,10 +11,11 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.util.ProjectUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
@@ -105,8 +106,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
-
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), ProjectUtils.makeLink(value.getProjectId()));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makeLink(Project.class, value.getProjectId()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)

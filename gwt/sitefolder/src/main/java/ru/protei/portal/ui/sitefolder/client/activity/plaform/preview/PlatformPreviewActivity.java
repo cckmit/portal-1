@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.util.ProjectUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
@@ -57,9 +57,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     private void fillProjectSpecificFields (Project project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        view.setProject(project.getName(), ProjectUtils.makeLink(project.getId()));
-        if (project.getContragent() != null) fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
-        else fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), null));
+        view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
+        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent() == null ? null : project.getContragent().getId()).readOnly());
     }
 
 
@@ -80,6 +79,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
             projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
         }
         else {
+            view.setProject("", "");
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
             view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
             fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
