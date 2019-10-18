@@ -201,6 +201,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         return platformContainer;
     }
 
+    @Override
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
     @UiHandler( "number" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -354,7 +359,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     AnchorElement platform;
     @UiField
+    HTMLPanel previewWrapperContainer;
+    @UiField
     HTMLPanel platformContainer;
+
 
     AbstractIssuePreviewActivity activity;
 

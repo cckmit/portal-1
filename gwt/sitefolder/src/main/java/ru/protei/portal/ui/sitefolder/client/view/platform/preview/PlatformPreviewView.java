@@ -72,6 +72,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         return attachmentContainer;
     }
 
+    @Override
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
     @UiHandler("openServersButton")
     public void openButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -120,6 +125,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     Button backButton;
     @UiField
     HTMLPanel footerContainer;
+    @UiField
+    HTMLPanel previewWrapperContainer;
 
     private AbstractPlatformPreviewActivity activity;
 

@@ -94,6 +94,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         this.contract.setText(value);
     }
 
+    @Override
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
     @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -180,6 +185,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel documents;
     @UiField
     HTMLPanel commentsContainer;
+    @UiField
+    HTMLPanel previewWrapperContainer;
 
     @Inject
     @UiField

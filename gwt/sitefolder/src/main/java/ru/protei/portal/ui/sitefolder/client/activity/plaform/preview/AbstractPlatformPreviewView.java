@@ -26,4 +26,6 @@ public interface AbstractPlatformPreviewView extends IsWidget {
     HasWidgets serversContainer();
 
     HasAttachments attachmentsContainer();
+
+    void isFullScreen(boolean isFullScreen);
 }

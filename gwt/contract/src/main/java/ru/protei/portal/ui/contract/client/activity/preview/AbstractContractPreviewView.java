@@ -40,4 +40,6 @@ public interface AbstractContractPreviewView extends IsWidget {
     void setProject(String value);
 
     HasVisibility footerVisibility();
+
+    void isFullScreen(boolean isFullScreen);
 }

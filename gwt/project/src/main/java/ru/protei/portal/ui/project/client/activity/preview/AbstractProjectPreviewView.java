@@ -35,6 +35,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setContractNumber(String contractNumber);
 
+    void isFullScreen(boolean isFullScreen);
+
     HasVisibility backButtonVisibility();
 
     HasWidgets getCommentsContainer();

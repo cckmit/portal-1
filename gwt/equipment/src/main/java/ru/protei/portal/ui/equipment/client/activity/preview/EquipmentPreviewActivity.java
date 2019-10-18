@@ -48,6 +48,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         }
 
         fillView( event.equipment );
+        view.isFullScreen(false);
     }
 
     @Event
@@ -56,6 +57,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         initDetails.parent.add( view.asWidget() );
 
         fillView( event.equipmentId );
+        view.isFullScreen(true);
     }
 
     @Event

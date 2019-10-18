@@ -89,6 +89,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         fillView(issueCaseNumber);
         view.backBtnVisibility().setVisible(false);
+        view.isFullScreen(false);
     }
 
     @Event
@@ -102,6 +103,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         fillView(issueCaseNumber);
         view.backBtnVisibility().setVisible(true);
+        view.isFullScreen(true);
     }
 
     @Event
