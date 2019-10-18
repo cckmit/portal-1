@@ -1299,6 +1299,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeMainPosition();
 
+    String employeeFired();
+
+    String employeeShowFired();
+
     String initiatorSelectACompany();
     String serverAccessParamsColumn();
 
