@@ -364,7 +364,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     LocaleButtonSelector locale;
 
     @UiField
-    OptionItem sendWelcomeEmail;
+    CheckBox sendWelcomeEmail;
 
     //@UiField
     //HTMLPanel contactDeleted;
