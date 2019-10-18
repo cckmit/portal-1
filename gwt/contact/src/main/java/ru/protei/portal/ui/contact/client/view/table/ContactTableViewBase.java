@@ -53,7 +53,9 @@ public abstract class ContactTableViewBase extends Composite {
             public void fillColumnValue(Element cell, Person value) {
                 Element root = DOM.createDiv();
 
-                if (value.isFired() || value.isDeleted()) root.addClassName("fired");
+                if (value.isFired() || value.isDeleted()) {
+                    root.addClassName("fired");
+                }
 
                 cell.appendChild(root);
 
@@ -73,7 +75,7 @@ public abstract class ContactTableViewBase extends Composite {
 
     public static String makeFiredOrDeleted(Person value, Lang lang) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<i class='fa fa-ban text-danger'></i> <b class='text-danger'>");
+        sb.append("<i class='fa fa-ban text-danger'></i> <b>");
         if (value.isFired()) {
             sb.append(lang.contactFiredShort());
             if (value.isDeleted()) {
