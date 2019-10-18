@@ -244,7 +244,7 @@
         <div class="card-footer text-right">
             <div class="card card-transparent no-margin">
                 <div class="pull-right">
-                    <option:OptionItem ui:field="sendWelcomeEmail" styleName="pull-left checkbox single" name="{lang.sendEmail}"/>
+                    <option:OptionItem ui:field="sendWelcomeEmail" styleName="pull-left checkbox single no-margin-bottom" name="{lang.sendEmail}"/>
                     <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                     <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                     <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"

@@ -1533,6 +1533,9 @@ a {
     content: "\f13e";
     font-size: 1.2em;
   }
+  &.input-group-addon-up-hovering{
+    background-color: #00A1A1;
+  }
 }
 
 /**** Dashboard ****/
@@ -4003,7 +4006,7 @@ label {
   padding: 8px 5px;
   background-color: #ededed;
   border-top: 1px solid #dadada;
-  z-index: 100;
+  z-index: 150;
 }
 
 .pre-formatted-info {
@@ -4129,4 +4132,21 @@ table {
 .thumbnail-photo{
   object-fit: cover;
   object-position: 0px 25%;
+}
+
+.no-shadow {
+  box-shadow: none !important;
+}
+
+.no-outline {
+  outline: none !important;
+}
+
+.input-group-addon {
+  padding-top: 16px;
+  padding-left: 8px;
+}
+
+.no-margin-bottom {
+  margin-bottom: 0px !important;
 }
