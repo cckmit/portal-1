@@ -215,6 +215,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             projectRequest(platform.getProjectId(), this::fillProjectSpecificFieldsOnLoad);
         }
         else{
+            view.project().setValue(null);
             clearProjectSpecificFields();
             view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
             view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
