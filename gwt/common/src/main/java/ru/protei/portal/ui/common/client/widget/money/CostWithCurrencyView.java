@@ -59,6 +59,14 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
         currency.setValue(value);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        cost.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdCurrency(String debugId) {
+        currency.setEnsureDebugId(debugId);
+    }
+
     @UiField
     LongBox cost;
     @Inject
