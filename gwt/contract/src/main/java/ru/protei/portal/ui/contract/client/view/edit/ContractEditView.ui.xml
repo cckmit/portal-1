@@ -30,53 +30,49 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-3">
-                                <label><ui:text from="{lang.contractNumber}"/></label>
+                                <label ui:field="numberLabel"><ui:text from="{lang.contractNumber}"/></label>
                                 <validatefield:ValidableTextBox ui:field="number" styleName="form-control" notNull="true"/>
                             </div>
                             <div class="form-group col-md-3">
-                                <label><ui:text from="{lang.contractType}"/></label>
+                                <label ui:field="typeLabel"><ui:text from="{lang.contractType}"/></label>
                                 <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}" validation="true" hideNullValue="true"/>
                             </div>
                             <div class="form-group col-md-3">
-                                <label><ui:text from="{lang.contractState}"/></label>
+                                <label ui:field="stateLabel"><ui:text from="{lang.contractState}"/></label>
                                 <selector:ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
                             </div>
                             <div class="form-group col-md-3">
-                                <label><ui:text from="{lang.contractParent}"/></label>
+                                <label ui:field="contractParentLabel"><ui:text from="{lang.contractParent}"/></label>
                                 <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
                             </div>
 
                             <div class="form-group col-md-12">
-                                <label><ui:text from="{lang.contractDescription}"/></label>
+                                <label ui:field="descriptionLabel"><ui:text from="{lang.contractDescription}"/></label>
                                 <textarea:AutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label>
-                                    <ui:text from="{lang.contractDateSigning}"/>
-                                </label>
+                                <label ui:field="dateSigningLabel"><ui:text from="{lang.contractDateSigning}"/></label>
                                 <single:SinglePicker ui:field="dateSigning" formatValue="dd.MM.yyyy" />
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label class="">
-                                    <ui:text from="{lang.contractDateValid}"/>
-                                </label>
+                                <label ui:field="dateValidLabel"><ui:text from="{lang.contractDateValid}"/></label>
                                 <single:SinglePicker ui:field="dateValid" formatValue="dd.MM.yyyy" />
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label><ui:text from="{lang.contractCost}"/></label>
+                                <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
                                 <money:CostWithCurrencyView ui:field="costWithCurrency" defaultCurrency="RUB"/>
                             </div>
 
                             <div class="form-group col-md-6">
-                                <label><ui:text from="{lang.contractProject}"/></label>
+                                <label ui:field="projectLabel"><ui:text from="{lang.contractProject}"/></label>
                                 <project:ProjectButtonSelector ui:field="project" hasNullValue="true" defaultValue="{lang.contractProjectNotDefined}"/>
                             </div>
 
                             <div class="form-group col-md-6">
-                                <label><ui:text from="{lang.contractDirection}"/></label>
+                                <label ui:field="directionLabel"><ui:text from="{lang.contractDirection}"/></label>
                                 <productdirection:ProductDirectionButtonSelector ui:field="direction" validation="true" hideNullValue="true" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
                             </div>
                         </div>
@@ -95,21 +91,21 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <label><ui:text from="{lang.contractOrganization}"/></label>
+                                <label ui:field="organizationLabel"><ui:text from="{lang.contractOrganization}"/></label>
                                 <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <label><ui:text from="{lang.contractCurator}"/></label>
+                                <label ui:field="curatorLabel"><ui:text from="{lang.contractCurator}"/></label>
                                 <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
                             </div>
 
                             <div class="form-group col-md-6">
-                                <label><ui:text from="{lang.contractManager}"/></label>
+                                <label ui:field="managerLabel"><ui:text from="{lang.contractManager}"/></label>
                                 <person:EmployeeButtonSelector ui:field="manager" enabled="false" defaultValue="{lang.selectAccountPerson}"/>
                             </div>
 
                             <div class="form-group col-md-6">
-                                <label><ui:text from="{lang.contractContragent}"/></label>
+                                <label ui:field="contragentLabel"><ui:text from="{lang.contractContragent}"/></label>
                                 <company:CompanySelector ui:field="contragent" enabled="false" defaultValue="{lang.selectAccountCompany}"/>
                             </div>
                         </div>
