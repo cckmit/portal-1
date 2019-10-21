@@ -15,5 +15,10 @@ public enum En_PhoneOfficeType implements Serializable {
     /**
      * международная
      */
-    INTERNATIONAL
+    INTERNATIONAL,
+
+    /**
+     * Офисная
+     */
+    OFFICE
 }

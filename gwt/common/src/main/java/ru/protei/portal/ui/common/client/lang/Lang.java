@@ -1895,4 +1895,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotAllowedChangeIssueNameOrDescription();
 
     String timeElapsedInfo();
+
+    String phoneOfficeTypeOffice();
 }
