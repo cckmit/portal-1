@@ -103,22 +103,14 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setProject(String value) {
+    public void setProject(String value, String link) {
         project.setText(value);
+        project.setHref(link);
     }
 
     @Override
     public HasVisibility footerVisibility() {
         return footerContainer;
-    }
-
-    @UiHandler("project")
-    public void onProjectClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onProjectClicked();
-        }
     }
 
     @UiHandler("header")

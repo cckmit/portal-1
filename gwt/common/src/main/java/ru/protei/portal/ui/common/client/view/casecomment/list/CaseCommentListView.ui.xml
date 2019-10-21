@@ -62,6 +62,8 @@
                             </div>
                         </div>
 
+                        <small ui:field="timeElapsedInfoContainer" class="text-muted hide"><ui:text from='{lang.timeElapsedInfo}'/></small>
+
                         <div ui:field="commentPreviewContainer" class="message-preview hide">
                             <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/>
                                 <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn p-t-3"

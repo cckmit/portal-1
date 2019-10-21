@@ -5,12 +5,12 @@
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed no-border">
         <div class="card-body">
-            <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete" ui:field="contactFired">
-                <i class="fa fa-info-circle"/>
+            <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete text-danger" ui:field="contactFired">
+                <i class="fa fa-ban"/>
                 <label><ui:text from="{lang.contactFired}"/></label>
             </g:HTMLPanel>
-            <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete" ui:field="contactDeleted">
-                <i class="fa fa-info-circle"/>
+            <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete text-danger" ui:field="contactDeleted">
+                <i class="fa fa-ban"/>
                 <label><ui:text from="{lang.contactDeleted}"/></label>
             </g:HTMLPanel>
             <h4 class="m-r-50">

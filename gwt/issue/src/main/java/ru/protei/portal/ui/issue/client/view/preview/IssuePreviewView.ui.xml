@@ -59,6 +59,13 @@
                             </div>
                         </div>
 
+<!--
+                        <g:HTMLPanel ui:field="platformContainer">
+                            <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
+                            <a href="#" ui:field="platform" class="full-screen-link" target="_blank"/>
+                        </g:HTMLPanel>
+-->
+
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <div class="form-group form-group-default">

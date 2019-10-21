@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Активность карточки создания и редактирования проектов

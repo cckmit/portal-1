@@ -353,8 +353,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HeadingElement subscriptionsLabel;
     @UiField
-    LabelElement platformLabel;
-    @UiField
     LabelElement criticalityLabel;
     @UiField
     SpanElement timeElapsedLabel;
@@ -364,6 +362,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     DivElement productContainer;
     @UiField
     DivElement platformContainer;
+    @UiField
+    LabelElement platformLabel;
 
     AbstractIssuePreviewActivity activity;
 

@@ -67,7 +67,7 @@
 
             <div class="small">
                 <b><ui:text from="{lang.contractProject}: "/></b>
-                <g:Anchor ui:field="project" href="#"/>
+                <g:Anchor ui:field="project" href="#" target="_blank"/>
             </div>
 
             <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>

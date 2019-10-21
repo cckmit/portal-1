@@ -361,12 +361,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isPrivate().setValue(issue.isPrivateCase());
 
+        view.name().setValue(issue.getName());
+        view.description().setValue(issue.getInfo());
+
         boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
         if ( isAllowedEditNameAndDescription ) {
             view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
-            view.description().setValue(issue.getInfo());
             view.switchToRONameDescriptionView(false);
-            view.name().setValue(issue.getName());
         } else {
             view.switchToRONameDescriptionView(true);
             view.setDescriptionRO(issue.getInfo());
