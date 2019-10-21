@@ -186,25 +186,25 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_NUMBER);
-        number.ensureDebugId(DebugIds.CONTRACT.CONTRACT_NUMBER_INPUT);
+        numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NUMBER);
+        number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
 
-        typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_TYPE);
+        typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.TYPE);
         type.setEnsureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
 
-        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_STATE);
+        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.STATE);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
 
-        contractParentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_PARENT);
+        contractParentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.PARENT);
         contractParent.setEnsureDebugId(DebugIds.CONTRACT.PARENT_SELECTOR);
 
-        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_DESCRIPTION);
+        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
         description.ensureDebugId(DebugIds.CONTRACT.DESCRIPTION_INPUT);
 
         dateSigningLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_SIGNING);
         dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_INPUT);
 
-        dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_SIGNING);
+        dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
         dateValid.setEnsureDebugId(DebugIds.CONTRACT.DATE_VALID_INPUT);
 
         costWithCurrencyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COST_WITH_CURRENCY);
@@ -228,6 +228,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
         contragentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRAGENT);
         contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
+
+        dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
     }
 
     @UiField

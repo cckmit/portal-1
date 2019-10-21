@@ -90,6 +90,10 @@ public class ContractDatesList
         container.add( itemWidget );
     }
 
+    public void setEnsureDebugId(String debugId) {
+        add.ensureDebugId(debugId);
+    }
+
     @UiField
     FlowPanel container;
     @UiField

@@ -185,6 +185,7 @@ public class AppView extends Composite
         username.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.USER_NAME_LABEL);
         navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
         logo.ensureDebugId(DebugIds.APP_VIEW.DASHBOARD_BUTTON);
+        fixSidebarButton.ensureDebugId(DebugIds.APP_VIEW.FIX_SIDEBAR_BUTTON);
     }
 
     private void initHandlers() {

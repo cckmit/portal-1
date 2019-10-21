@@ -17,11 +17,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractDatesTypeSelector;
 
 import java.util.Date;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class ContractDateItem
         extends Composite
@@ -30,6 +33,7 @@ public class ContractDateItem
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        setTestAttributes();
         comment.getElement().setAttribute( "placeholder", lang.contractPaymentCommentPlaceholder() );
     }
 
@@ -82,6 +86,15 @@ public class ContractDateItem
         value.setNotify(notify.getValue());
     }
 
+    private void setTestAttributes() {
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.ITEM);
+        type.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.TYPE_BUTTON);
+        date.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.DATE_INPUT);
+        comment.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.COMMENT_INPUT);
+        notify.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.NOTIFY_SWITCHER);
+        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.REMOVE_BUTTON);
+    }
+
     @UiField
     TextBox comment;
     @UiField
@@ -97,6 +110,8 @@ public class ContractDateItem
 
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel root;
 
     private ContractDate value = new ContractDate();
 

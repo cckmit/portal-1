@@ -32,6 +32,7 @@ public class DebugIds {
         String USER_NAME_LABEL = "app-user-name-label";
         String SIDEBAR = "app-sidebar";
         String DASHBOARD_BUTTON = "app-dashboard-button";
+        String FIX_SIDEBAR_BUTTON = "app-fix-sidebar-button";
     }
 
     public interface PROFILE {
@@ -460,5 +461,50 @@ public class DebugIds {
     public interface TAG_SELECTOR_POPUP {
         String ITEM = "tag-selector-popup-item";
         String EDIT_BUTTON = "tag-selector-popup-edit-button";
+    }
+
+    public interface CONTRACT {
+        String NUMBER_INPUT = "contract-number-input";
+        String TYPE_SELECTOR = "contract-type-selector";
+        String STATE_SELECTOR = "contract-state-selector";
+        String PARENT_SELECTOR = "contract-parent-selector";
+        String DESCRIPTION_INPUT = "contract-description-input";
+        String DATE_SIGNING_INPUT = "contract-date-signing-input";
+        String DATE_VALID_INPUT = "contract-date-valid-input";
+        String COST_INPUT = "contract-cost-input";
+        String CURRENCY_BUTTON = "contract-currency-button";
+        String PROJECT_SELECTOR = "contract-project-selector";
+        String DIRECTION_SELECTOR = "contract-direction-selector";
+        String ORGANIZATION_SELECTOR = "contract-organization-selector";
+        String CURATOR_SELECTOR = "contract-curator-selector";
+        String MANAGER_SELECTOR = "contract-manager-selector";
+        String CONTRAGENT_SELECTOR = "contract-contragent-selector";
+        String ADD_DATES_BUTTON = "contract-add-dates-button";
+
+        interface LABEL {
+            String NUMBER = "contract-number-label";
+            String TYPE = "contract-type-label";
+            String STATE = "contract-state-label";
+            String PARENT = "contract-parent-label";
+            String DESCRIPTION = "contract-description-label";
+            String DATE_SIGNING = "contract-date-signing-label";
+            String DATE_VALID = "contract-date-valid-label";
+            String COST_WITH_CURRENCY = "contract-cost-with-currency-label";
+            String PROJECT = "contract-project-label";
+            String DIRECTION = "contract-direction-label";
+            String ORGANIZATION = "contract-organization-label";
+            String CURATOR = "contract-curator-label";
+            String MANAGER = "contract-manager-label";
+            String CONTRAGENT = "contract-contragent-label";
+        }
+
+        interface DATE_ITEM {
+            String ITEM = "contract-date-item";
+            String TYPE_BUTTON = "contract-date-item-type-button";
+            String DATE_INPUT = "contract-date-item-date-input";
+            String COMMENT_INPUT = "contract-date-item-comment-input";
+            String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
+            String REMOVE_BUTTON = "contract-date-item-remove-button";
+        }
     }
 }
