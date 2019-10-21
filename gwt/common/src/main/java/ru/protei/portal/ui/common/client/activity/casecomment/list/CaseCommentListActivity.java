@@ -94,8 +94,7 @@ public abstract class CaseCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
-        view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
+        view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.enabledNewComment(isModifyEnabled);
         view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?

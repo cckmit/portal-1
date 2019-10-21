@@ -6,12 +6,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
@@ -61,8 +59,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     private void fillProjectSpecificFields (Project project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        if (project.getContragent() != null) fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent().getId()).readOnly());
-        else fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), null));
+        view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
+        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent() == null ? null : project.getContragent().getId()).readOnly());
     }
 
 
@@ -72,6 +70,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
         view.setName(value.getName() == null ? "" : value.getName());
         view.setParameters(value.getParams() == null ? "" : value.getParams());
+
         view.setComment(value.getComment() == null ? "" : value.getComment());
 
         view.attachmentsContainer().clear();
@@ -82,6 +81,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
             projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
         }
         else {
+            view.setProject("", "");
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
             view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
             fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
@@ -106,6 +106,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     public void onGoToIssuesClicked() {
         fireEvent(new SiteFolderPlatformEvents.Show());
     }
+
 
     @Inject
     AbstractPlatformPreviewView view;

@@ -51,8 +51,8 @@ public class En_ResultStatusLang {
             case DECIMAL_NUMBER_ALREADY_EXIST: return lang.errDecimalNumberAlreadyExist();
             case PROHIBITED_PRIVATE_COMMENT: return lang.errIssueCommentProhibitedPrivate();
             case INVALID_CASE_UPDATE_CASE_IS_CLOSED: return lang.errInvalidCaseUpdateCaseIsClosed();
-            case INVALID_CURRENT_PASSWORD:
-                return lang.errInvalidCurrentPassword();
+            case INVALID_CURRENT_PASSWORD: return lang.errInvalidCurrentPassword();
+            case NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION: return lang.errNotAllowedChangeIssueNameOrDescription();
             default: return lang.errUnknownResult();
         }
     }

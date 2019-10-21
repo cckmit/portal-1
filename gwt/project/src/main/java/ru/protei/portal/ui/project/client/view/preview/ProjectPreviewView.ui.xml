@@ -90,7 +90,16 @@
                             <h5>
                                 <ui:text from="{lang.contract}"/>
                             </h5>
-                            <g:Anchor ui:field="contract" href="#"/>
+                            <g:Anchor ui:field="contract" href="#" target="_blank"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <h5>
+                                <ui:text from="{lang.projectSiteFolder}"/>
+                            </h5>
+                            <g:Anchor ui:field="platform" href="#" target="_blank"/>
                         </div>
                     </div>
 

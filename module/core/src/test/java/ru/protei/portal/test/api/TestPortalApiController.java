@@ -192,6 +192,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         startCaseObject.setName(ISSUES_PREFIX + "new");
 
+        authService.makeThreadDescriptor( userLogin, person, company );
         ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
         resultActions
                 .andExpect(status().isOk())
@@ -203,6 +204,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
         Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
         Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
+        authService.resetThreadDescriptor();
     }
 
     @AfterClass

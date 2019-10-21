@@ -5,7 +5,6 @@
 
     <stylesheet src="css/pages.css"/>
 
-    <stylesheet src="css/animate.css"/>
     <stylesheet src="css/modal.css"/>
     <stylesheet src="css/switcher.css"/>
     <stylesheet src="css/select2.css"/>
@@ -16,7 +15,6 @@
 
     <stylesheet src="css/pages-icons.css"/>
     <stylesheet src="css/font-awesome.min.css"/>
-    <stylesheet src="css/advance-fonts.css"/>
 
     <source path='client'/>
     <source path='shared'/>

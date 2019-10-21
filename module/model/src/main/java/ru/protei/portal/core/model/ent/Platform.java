@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -38,9 +38,6 @@ public class Platform implements Serializable, Removable {
 
     @JdbcColumn(name = "project_id")
     private Long projectId;
-
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
-    private String projectName;
 
     @JdbcColumn(name="case_id")
     private Long caseId;
@@ -122,14 +119,6 @@ public class Platform implements Serializable, Removable {
         this.projectId = projectId;
     }
 
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
     public void setManager(Person manager) {
         this.manager = manager;
     }
@@ -150,22 +139,23 @@ public class Platform implements Serializable, Removable {
         this.attachments = attachments;
     }
 
-    public static Platform fromEntityOption(EntityOption entityOption) {
-        if (entityOption == null) {
+    public static Platform fromPlatformOption(PlatformOption platformOption) {
+        if (platformOption == null) {
             return null;
         }
 
         Platform platform = new Platform();
-        platform.setId(entityOption.getId());
-        platform.setName(entityOption.getDisplayText());
+        platform.setId(platformOption.getId());
+        platform.setName(platformOption.getDisplayText());
         return platform;
     }
 
-    public EntityOption toEntityOption() {
-        EntityOption entityOption = new EntityOption();
-        entityOption.setId(getId());
-        entityOption.setDisplayText(getName());
-        return entityOption;
+    public PlatformOption toPlatformOption() {
+        PlatformOption platformOption = new PlatformOption();
+        platformOption.setId(getId());
+        platformOption.setDisplayText(getName());
+        platformOption.setCompanyId(getCompanyId());
+        return platformOption;
     }
 
 
@@ -200,7 +190,6 @@ public class Platform implements Serializable, Removable {
                 ", caseId=" + caseId +
                 ", serversCount=" + serversCount +
                 ", projectId=" + projectId +
-                ", projectName=" + projectName +
                 '}';
     }
 }

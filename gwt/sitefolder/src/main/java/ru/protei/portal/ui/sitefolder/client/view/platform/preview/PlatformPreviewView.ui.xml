@@ -39,6 +39,13 @@
                         <span class="pre-formatted-info" ui:field="parameters"/>
                     </div>
 
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.siteFolderProject}: "/>
+                        </b>
+                        <g:Anchor styleName="pre-formatted-info" ui:field="project" href="#" target="_blank"/>
+                    </div>
+
                     <h5>
                         <ui:text from="{lang.siteFolderAttachments}"/>
                     </h5>

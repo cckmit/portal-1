@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.service.SiteFolderService;
 import ru.protei.portal.ui.common.client.service.SiteFolderController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -54,11 +55,11 @@ public class SiteFolderControllerImpl implements SiteFolderController {
 
 
     @Override
-    public List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException {
+    public List<PlatformOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException {
 
         log.info("getPlatformsOptionList(): query={}", query);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Result<List<EntityOption>> response = siteFolderService.listPlatformsOptionList(descriptor.makeAuthToken(), query);
+        Result<List<PlatformOption>> response = siteFolderService.listPlatformsOptionList(descriptor.makeAuthToken(), query);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

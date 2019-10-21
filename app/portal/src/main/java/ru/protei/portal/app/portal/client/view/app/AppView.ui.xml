@@ -7,23 +7,21 @@
 
     <g:HTMLPanel ui:field="globalContainer">
         <g:HTMLPanel ui:field="navbar" styleName="page-sidebar">
-            <div class="sidebar-header sidebar-closed-header">
+            <div class="sidebar-header sidebar-closed-header p-l-15">
                 <g:Anchor ui:field="logo" >
-                    <img class="brand" height="30" src="./images/logo.svg" width="30"/>
-                    <b class="m-l-5" style=""><ui:text from="{lang.proteiTitleShort}"/></b>
+                    <img ui:field="logoImgWhite" class="brand" height="32" src="./images/logo-white-ru.svg"/>
                 </g:Anchor>
 
                 <g:HTMLPanel ui:field="closedSidebarControlsContainer" styleName="sidebar-header-controls closed-sidebar-controls">
-                    <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
+                    <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-50">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </g:HTMLPanel>
                 <div ui:field="openedSidebarControlsContainer" class="sidebar-header-controls">
-                    <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
+                    <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-50">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </div>
-
             </div>
 
             <div class="sidebar-menu">
@@ -41,19 +39,16 @@
         <div class="header" ui:field="headerDiv">
             <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up fas fa-bars"/>
 
-
             <div>
                 <div ui:field="brandDiv" class="brand inline">
-                    <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
-                    <b class="m-l-5"><ui:text from="{lang.proteiTitleShort}"/></b>
+                    <img ui:field="logoImgBlue" alt="logo" height="32" src="./images/logo-blue-ru.svg"/>
                 </div>
                 <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin inline no-style p-l-30 p-r-20"/>
             </div>
 
-
             <div class="d-flex align-items-center">
                 <locale:LocaleSelector ui:field="locale" addStyleNames="m-r-20"/>
-                <div class="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+                <div class="pull-left p-r-10 fs-14 d-lg-block d-none">
                     <span class="semi-bold" ui:field="username"/>
                 </div>
                 <div class="dropdown pull-right">

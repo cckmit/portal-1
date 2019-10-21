@@ -128,6 +128,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return saveButton;
     }
 
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {

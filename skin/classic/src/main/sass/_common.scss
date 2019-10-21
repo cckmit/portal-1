@@ -607,11 +607,11 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 40px;
+          height: 50px;
 
           > div {
-            height: 40px;
-            max-height: 40px;
+            height: 50px;
+            max-height: 50px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1021,7 +1021,7 @@ label.bordered:after {
     > label {
       color: rgba(44,44,44,.35);
       font-weight: 500;
-      font-family: montserrat;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 10.5px;
       letter-spacing: .06em;
       text-transform: uppercase;
@@ -2697,10 +2697,6 @@ a {
       }
     }
 
-    input {
-      font-family: GostARegular, serif;
-    }
-
     &.has-error {
       label {
         color: $error_color !important
@@ -2716,11 +2712,6 @@ a {
       }
     }
   }
-}
-
-.decimal-number {
-  font-family: GostARegular, serif;
-  font-size: 18px;
 }
 
 .document-name {
@@ -2779,7 +2770,7 @@ a {
   margin: auto;
   width: 16.6%;
   text-align: center;
-  font-family: montserrat, serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 10.5px;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -4151,13 +4142,3 @@ table {
   margin-bottom: 0px !important;
 }
 
-.closed-sidebar-controls {
-  margin-left: 16px;
-  .fix-sidebar-button{
-    padding-right: 28px;
-  }
-}
-
-.sidebar-closed-header {
-  padding-right: 0 !important;
-}

@@ -103,8 +103,9 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setProject(String value) {
+    public void setProject(String value, String link) {
         project.setText(value);
+        project.setHref(link);
     }
 
     @Override
@@ -117,14 +118,6 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         previewWrapperContainer.setStyleName("preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
-    @UiHandler("project")
-    public void onProjectClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onProjectClicked();
-        }
-    }
 
     @UiHandler("header")
     public void onFullScreenClicked(ClickEvent event) {

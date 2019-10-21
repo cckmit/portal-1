@@ -5,6 +5,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -31,6 +32,8 @@ public abstract class ContactTableViewBase extends Composite {
                 root.appendChild(fioElement);
 
                 if (value.isFired() || value.isDeleted()) {
+                    root.addClassName("fired");
+
                     Element stateElement = DOM.createDiv();
                     stateElement.setInnerHTML( makeFiredOrDeleted(value, lang));
                     root.appendChild(stateElement);
@@ -50,6 +53,11 @@ public abstract class ContactTableViewBase extends Composite {
             @Override
             public void fillColumnValue(Element cell, Person value) {
                 Element root = DOM.createDiv();
+
+                if (value.isFired() || value.isDeleted()) {
+                    root.addClassName("fired");
+                }
+
                 cell.appendChild(root);
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
@@ -68,7 +76,7 @@ public abstract class ContactTableViewBase extends Composite {
 
     public static String makeFiredOrDeleted(Person value, Lang lang) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<i class='fa fa-info-circle'></i> <b>");
+        sb.append("<i class='fa fa-ban text-danger'></i> <b>");
         if (value.isFired()) {
             sb.append(lang.contactFiredShort());
             if (value.isDeleted()) {
@@ -92,6 +100,8 @@ public abstract class ContactTableViewBase extends Composite {
 
             @Override
             public void fillColumnValue(Element cell, Person value) {
+                if (value.isFired() || value.isDeleted()) cell.addClassName("fired");
+
                 String html = "<div><div>" +  value.getCompany().getCname() + "<div>";
                 if ( value.getPosition() != null ) {
                     html += "<small><i>" + value.getPosition() + "</i></small>";

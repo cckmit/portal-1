@@ -1117,6 +1117,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderParamsLocal();
 
+    String siteFolderProject();
+
     String siteFolderComment();
 
     String siteFolderIP();
@@ -1298,6 +1300,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeCompany();
 
     String employeeMainPosition();
+
+    String employeeFired();
+
+    String employeeShowFired();
 
     String initiatorSelectACompany();
     String serverAccessParamsColumn();
@@ -1672,6 +1678,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentElapsedTimeTypeLabel();
 
+    String issueCommentElapsedTimeTypeChange();
+
     String selectValue();
 
     String privilegeContract();
@@ -1880,5 +1888,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCreate();
 
+    String projectSiteFolder();
+
     String issueInitiatorInfo();
+
+    String errNotAllowedChangeIssueNameOrDescription();
+
+    String timeElapsedInfo();
 }

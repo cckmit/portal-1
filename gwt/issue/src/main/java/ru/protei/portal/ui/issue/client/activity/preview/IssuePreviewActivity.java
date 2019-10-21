@@ -15,8 +15,9 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.util.PlatformUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
@@ -192,8 +193,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setName( value.getName() == null ? "" : value.getName() );
 
         view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
-        view.setPlatformLink(PlatformUtils.makeLink(value.getPlatformId()));
-        view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+        view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
+        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
 
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
 

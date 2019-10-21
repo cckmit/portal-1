@@ -53,6 +53,12 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
+    public void setProject(String value, String link) {
+        project.setText(value);
+        project.setHref(link);
+    }
+
+    @Override
     public void setComment(String value) {
         comment.setText(value);
     }
@@ -110,6 +116,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     SpanElement manager;
     @UiField
     SpanElement parameters;
+    @UiField
+    Anchor project;
     @UiField
     Label comment;
     @UiField

@@ -22,14 +22,14 @@
                     <div class="card-body">
                         <div class="row">
                             <g:HTMLPanel styleName="form-group col-md-12 text-complete" ui:field="contactFired">
-                                <i class="fa fa-info-circle"/>
-                                <label>
+                                <i class="fa fa-ban text-danger"/>
+                                <label class="text-danger">
                                     <ui:text from="{lang.contactFired}"/>
                                 </label>
                             </g:HTMLPanel>
                             <g:HTMLPanel styleName="form-group col-md-12 text-complete" ui:field="contactDeleted">
-                                <i class="fa fa-info-circle"/>
-                                <label>
+                                <i class="fa fa-ban text-danger"/>
+                                <label class="text-danger">
                                     <ui:text from="{lang.contactDeleted}"/>
                                 </label>
                             </g:HTMLPanel>

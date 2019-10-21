@@ -25,4 +25,6 @@ public interface AbstractAppView extends IsWidget {
     HasWidgets getActionBarContainer();
 
     HasValue<LocaleImage> locale();
+
+    void setLogoByLocale(String locale);
 }

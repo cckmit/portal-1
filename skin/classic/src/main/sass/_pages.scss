@@ -94,6 +94,18 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 
 .fix-sidebar-button{
   padding-left: 2px !important;
+  margin-left: 63px;
+}
+
+.closed-sidebar-controls {
+  margin-left: 16px;
+  .fix-sidebar-button{
+    padding-right: 29px;
+  }
+}
+
+.sidebar-closed-header {
+  padding-right: 0 !important;
 }
 
 [data-toggle-pin=sidebar] > i:before {

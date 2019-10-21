@@ -53,11 +53,13 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUser( event.profile.getShortName(),
+        view.setUser(event.profile.getShortName(),
                 event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(),
                 AvatarUtils.getAvatarUrl(event.profile));
+
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
-        view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
+        view.locale().setValue(LocaleImage.findByLocale(currentLocale));
+        view.setLogoByLocale(currentLocale);
 
         Scheduler.get().scheduleDeferred( (Command) () -> {
             if ( initialToken == null || initialToken.isEmpty() || initialToken.equals( UiConstants.LOGIN_PAGE ) ) {
