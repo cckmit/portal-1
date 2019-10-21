@@ -4150,3 +4150,14 @@ table {
 .no-margin-bottom {
   margin-bottom: 0px !important;
 }
+
+.closed-sidebar-controls {
+  margin-left: 16px;
+  .fix-sidebar-button{
+    padding-right: 28px;
+  }
+}
+
+.sidebar-closed-header {
+  padding-right: 0 !important;
+}

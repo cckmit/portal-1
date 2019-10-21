@@ -32,11 +32,17 @@ public class AppView extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         initHandlers();
-        fixSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
-        boolean isFixed = Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-sidebar", "false" ));
-        if (isFixed){
-            fixSidebar();
-            fixSidebarButton.removeStyleName("hide");
+        fixOpenedSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
+        fixClosedSidebarButton.getElement().setAttribute("data-toggle-pin", "sidebar");
+        isFixedOpened = Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-opened-sidebar", "false" ));
+        isFixedClosed = Boolean.parseBoolean( localStorageService.getOrDefault( "fixed-closed-sidebar", "false" ));
+        if (isFixedOpened){
+            fixOpenedSidebar();
+            fixOpenedSidebarButton.removeStyleName("hide");
+            closedSidebarControlsContainer.addStyleName("hide");
+        }
+        if (isFixedClosed){
+            fixClosedSidebar();
         }
     }
 
@@ -140,14 +146,25 @@ public class AppView extends Composite
         activity.onLocaleChanged(event.getValue().getLocale());
     }
 
-    @UiHandler("fixSidebarButton")
-    public void onChecked (ClickEvent event){
+    @UiHandler("fixOpenedSidebarButton")
+    public void onOpenedChecked(ClickEvent event){
 
-        if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")){
-            fixSidebar();
+        if (!fixOpenedSidebarButton.getStyleName().contains("fixed-sidebar")){
+            fixOpenedSidebar();
         }
         else {
-            unfixSidebar();
+            unfixOpenedSidebar();
+        }
+    }
+
+    @UiHandler("fixClosedSidebarButton")
+    public void onClosedChecked(ClickEvent event){
+
+        if (!fixClosedSidebarButton.getStyleName().contains("fixed-sidebar")){
+            fixClosedSidebar();
+        }
+        else {
+            unfixClosedSidebar();
         }
     }
 
@@ -185,35 +202,64 @@ public class AppView extends Composite
         RootPanel.get().sinkEvents( Event.ONKEYUP );
         RootPanel.get().addHandler( this, KeyUpEvent.getType() );
 
+        closedSidebarControlsContainer.sinkEvents( Event.ONMOUSEOVER );
+        closedSidebarControlsContainer.addHandler(DomEvent::stopPropagation, MouseOverEvent.getType() );
+
+        closedSidebarControlsContainer.sinkEvents( Event.ONMOUSEOUT );
+        closedSidebarControlsContainer.addHandler(DomEvent::stopPropagation, MouseOutEvent.getType() );
+
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
-            RootPanel.get().addStyleName("sidebar-visible");
-            navbar.getElement().getStyle().setProperty("transform", "translate(200px, 0px)");
-            fixSidebarButton.removeStyleName("hide");
+            if (!isFixedOpened && !isFixedClosed) {
+                RootPanel.get().addStyleName("sidebar-visible");
+                navbar.getElement().getStyle().setProperty("transform", "translate(200px, 0px)");
+                fixOpenedSidebarButton.removeStyleName("hide");
+
+                closedSidebarControlsContainer.addStyleName("hide");
+            }
         }, MouseOverEvent.getType() );
 
         navbar.sinkEvents( Event.ONMOUSEOUT );
         navbar.addHandler( event -> {
-            RootPanel.get().removeStyleName("sidebar-visible");
-            navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
-            if (!fixSidebarButton.getStyleName().contains("fixed-sidebar")) fixSidebarButton.addStyleName("hide");
+            if (!isFixedOpened && !isFixedClosed) {
+                RootPanel.get().removeStyleName("sidebar-visible");
+                navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+                if (!fixOpenedSidebarButton.getStyleName().contains("fixed-sidebar"))
+                    fixOpenedSidebarButton.addStyleName("hide");
+
+                closedSidebarControlsContainer.removeStyleName("hide");
+            }
         }, MouseOutEvent.getType() );
     }
 
-    private void fixSidebar(){
-        localStorageService.set( "fixed-sidebar", "true");
+    private void fixOpenedSidebar(){
+        localStorageService.set( "fixed-opened-sidebar", "true");
+        isFixedOpened = true;
         RootPanel.get().addStyleName("menu-pin");
         actionBarContainer.removeStyleName("p-l-30");
         actionBarContainer.addStyleName("p-l-40");
-        fixSidebarButton.addStyleName("fixed-sidebar");
+        fixOpenedSidebarButton.addStyleName("fixed-sidebar");
     }
 
-    private void unfixSidebar(){
-        localStorageService.set( "fixed-sidebar", "false");
+    private void unfixOpenedSidebar(){
+        localStorageService.set( "fixed-opened-sidebar", "false");
+        isFixedOpened = false;
         RootPanel.get().removeStyleName("menu-pin");
         actionBarContainer.removeStyleName("p-l-40");
         actionBarContainer.addStyleName("p-l-30");
-        fixSidebarButton.removeStyleName("fixed-sidebar");
+        fixOpenedSidebarButton.removeStyleName("fixed-sidebar");
+    }
+
+    private void fixClosedSidebar(){
+        localStorageService.set( "fixed-closed-sidebar", "true");
+        isFixedClosed = true;
+        fixClosedSidebarButton.addStyleName("fixed-sidebar");
+    }
+
+    private void unfixClosedSidebar(){
+        localStorageService.set( "fixed-closed-sidebar", "false");
+        isFixedClosed = false;
+        fixClosedSidebarButton.removeStyleName("fixed-sidebar");
     }
 
     private void openSidebar(){
@@ -265,7 +311,9 @@ public class AppView extends Composite
     @UiField
     Button profile;
     @UiField
-    Button fixSidebarButton;
+    Button fixOpenedSidebarButton;
+    @UiField
+    Button fixClosedSidebarButton;
     @Inject
     @UiField(provided = true)
     LocaleSelector locale;
@@ -275,11 +323,18 @@ public class AppView extends Composite
     DivElement headerDiv;
     @UiField
     DivElement brandDiv;
+    @UiField
+    DivElement openedSidebarControlsContainer;
+    @UiField
+    HTMLPanel closedSidebarControlsContainer;
 
 
     AbstractAppActivity activity;
 
     interface AppViewUiBinder extends UiBinder< Widget, AppView > {}
+
+    boolean isFixedOpened = false;
+    boolean isFixedClosed = false;
 
     private static AppViewUiBinder ourUiBinder = GWT.create( AppViewUiBinder.class );
 }

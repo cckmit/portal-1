@@ -123,3 +123,7 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   margin-right: -15px;
   margin-left: -15px;
 }
+
+.fixed-sidebar[data-toggle-pin=sidebar] > i:before {
+  content: "\f192"
+}

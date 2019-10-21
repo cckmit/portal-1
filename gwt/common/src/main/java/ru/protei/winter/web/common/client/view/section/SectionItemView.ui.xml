@@ -3,10 +3,11 @@
     <g:HTMLPanel ui:field="root" tag='li' >
         <g:Anchor ui:field="anchor" href="#">
             <span class="title" ui:field="title"/>
-        </g:Anchor>
+
         <span class="icon-thumbnail hide" ui:field="iconTrumbnail">
             <i ui:field="icon"/>
         </span>
+        </g:Anchor>
         <g:Label ui:field="subSectionIcon" visible="false" styleName="sub-menu-icon"/>
         <g:HTMLPanel ui:field="subSection" tag="ul" visible="false" styleName="sub-menu collapsed"/>
     </g:HTMLPanel>

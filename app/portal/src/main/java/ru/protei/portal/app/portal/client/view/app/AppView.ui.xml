@@ -7,17 +7,23 @@
 
     <g:HTMLPanel ui:field="globalContainer">
         <g:HTMLPanel ui:field="navbar" styleName="page-sidebar">
-            <div class="sidebar-header">
+            <div class="sidebar-header sidebar-closed-header">
                 <g:Anchor ui:field="logo" >
                     <img class="brand" height="30" src="./images/logo.svg" width="30"/>
                     <b class="m-l-5" style=""><ui:text from="{lang.proteiTitleShort}"/></b>
                 </g:Anchor>
 
-                <div class="sidebar-header-controls">
-                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
+                <g:HTMLPanel ui:field="closedSidebarControlsContainer" styleName="sidebar-header-controls closed-sidebar-controls">
+                    <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
+                        <i class="far fs-12"></i>
+                    </g:Button>
+                </g:HTMLPanel>
+                <div ui:field="openedSidebarControlsContainer" class="sidebar-header-controls">
+                    <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-45">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </div>
+
             </div>
 
             <div class="sidebar-menu">
