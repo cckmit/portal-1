@@ -13,12 +13,12 @@
                 </g:Anchor>
 
                 <g:HTMLPanel ui:field="closedSidebarControlsContainer" styleName="sidebar-header-controls closed-sidebar-controls">
-                    <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-50">
+                    <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </g:HTMLPanel>
                 <div ui:field="openedSidebarControlsContainer" class="sidebar-header-controls">
-                    <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-50">
+                    <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </div>
