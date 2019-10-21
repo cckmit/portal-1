@@ -39,6 +39,8 @@ import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.portal.mock.PortalScheduleTasksStub;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.mock.ReportControlServiceMock;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
@@ -226,6 +228,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportControlService getReportControlService() {
         return new ReportControlServiceMock();
+    }
+
+    @Bean(name = "portalScheduler")
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return new PortalScheduleTasksStub();
     }
 
     @Bean
