@@ -7,6 +7,7 @@
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
+             xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -61,6 +62,13 @@
                                 <devunit:DevUnitMultiSelector ui:field="children"/>
                             </g:HTMLPanel>
                         </div>
+
+                        <g:HTMLPanel ui:field="aliasesContainer" styleName="row">
+                            <div class="form-group col-md-12">
+                                <label><ui:text from="{lang.productAliases}"/></label>
+                                <alias:StringSelectInput ui:field="aliases"/>
+                            </div>
+                        </g:HTMLPanel>
                     </div>
                 </div>
             </div>

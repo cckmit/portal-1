@@ -3,6 +3,7 @@ package ru.protei.portal.ui.product.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -53,18 +54,23 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setConfiguration(String value ) {
+    public void setConfiguration(String value) {
         this.configuration.getElement().setInnerHTML(value);
     }
 
     @Override
-    public void setHistoryVersion(String value ) {
+    public void setHistoryVersion(String value) {
         this.historyVersion.getElement().setInnerHTML(value);
     }
 
     @Override
-    public void setCdrDescription(String value ) {
+    public void setCdrDescription(String value) {
         this.cdrDescription.getElement().setInnerHTML(value);
+    }
+
+    @Override
+    public void setAliases(String value) {
+        this.aliases.setInnerText(value);
     }
 
     @Override
@@ -123,6 +129,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     HTMLPanel backButtonPanel;
     @UiField
     Button backButton;
+    @UiField
+    ParagraphElement aliases;
 
     AbstractProductPreviewActivity activity;
 

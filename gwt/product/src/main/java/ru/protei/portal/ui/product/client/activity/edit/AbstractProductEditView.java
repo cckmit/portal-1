@@ -2,6 +2,7 @@ package ru.protei.portal.ui.product.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -55,6 +56,11 @@ public interface AbstractProductEditView extends IsWidget {
     void setConfigurationPreviewAllowing( boolean isPreviewAllowed );
 
     void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed );
+
+    HasValue<List<String>> aliases();
+    HasVisibility aliasesVisible();
+
+    HasEnabled typeEnabled();
 
     String HISTORY_VERSION = "historyVersion";
     String CONFIGURATION = "configuration";

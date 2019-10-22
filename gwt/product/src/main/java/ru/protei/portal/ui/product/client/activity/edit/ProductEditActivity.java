@@ -184,6 +184,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.configuration().setValue("");
         view.cdrDescription().setValue("");
         view.productSubscriptions().setValue(new ArrayList<>());
+        view.aliases().setValue(new ArrayList<>());
+        view.aliasesVisible().setVisible(false);
     }
 
     private void fillView(DevUnit devUnit) {
@@ -194,6 +196,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue(devUnit.getName());
         view.type().setValue(isCreate ? En_DevUnitType.COMPLEX : devUnit.getType());
         currType = isCreate ? En_DevUnitType.COMPLEX : devUnit.getType();
+        view.typeEnabled().setEnabled(isCreate);
         view.info().setValue(devUnit.getInfo());
         view.productSubscriptions().setValue(
                 devUnit.getSubscriptions().stream()
@@ -224,6 +227,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
         view.historyVersion().setValue(devUnit.getHistoryVersion());
+
+        view.aliases().setValue(product.getAliases());
+        view.aliasesVisible().setVisible(devUnit.getType().equals(En_DevUnitType.PRODUCT));
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -257,6 +263,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         product.setCdrDescription(view.cdrDescription().getValue());
         product.setConfiguration(view.configuration().getValue());
         product.setHistoryVersion(view.historyVersion().getValue());
+
+        product.setAliases(view.aliases().getValue());
     }
 
     private void resetValidationStatus(){

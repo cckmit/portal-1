@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -27,6 +28,7 @@ import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActiv
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -127,6 +129,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             childrenContainer.addStyleName("col-md-12");
 
             children.setTypes(En_DevUnitType.PRODUCT);
+
+            aliases.getValue().clear();
+            aliasesContainer.setVisible(false);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
             descriptionLabel.setInnerText(lang.productDescription());
@@ -138,6 +143,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
+
+            aliases.getValue().clear();
+            aliasesContainer.setVisible(true);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
             descriptionLabel.setInnerText(lang.componentDescription());
@@ -149,6 +157,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
+
+            aliases.getValue().clear();
+            aliasesContainer.setVisible(false);
         }
     }
 
@@ -194,6 +205,20 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         verifiableIcon.setClassName(status.getStyle());
     }
 
+    @Override
+    public HasValue<List<String>> aliases() {
+        return aliases;
+    }
+
+    @Override
+    public HasVisibility aliasesVisible() {
+        return aliasesContainer;
+    }
+
+    @Override
+    public HasEnabled typeEnabled() {
+        return type;
+    }
 
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
@@ -293,9 +318,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     LabelElement parentsContainerLabel;
     @UiField
     LabelElement childrenContainerLabel;
+    @Inject
+    @UiField(provided = true)
+    StringSelectInput aliases;
+    @UiField
+    HTMLPanel aliasesContainer;
 
     AbstractProductEditActivity activity;
-
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductEditView > {}

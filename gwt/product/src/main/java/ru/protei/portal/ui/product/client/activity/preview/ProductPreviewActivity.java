@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Активность карточки просмотра продукта
@@ -36,11 +38,11 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     }
 
     @Event
-    public void onShow( ProductEvents.ShowPreview event ) {
+    public void onShow(ProductEvents.ShowPreview event) {
         event.parent.clear();
-        event.parent.add( view.asWidget(event.isShouldWrap) );
+        event.parent.add(view.asWidget(event.isShouldWrap));
 
-        fillView( event.product );
+        fillView(event.product);
         view.showFullScreen(false);
     }
 
@@ -66,12 +68,13 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         fireEvent(new ProductEvents.Show());
     }
 
-    private void fillView(DevUnit product ) {
+    private void fillView(DevUnit product) {
         this.productId = product.getId();
         view.setName(product.getName());
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
-        view.setInfo( product.getInfo() );
+        view.setInfo(product.getInfo());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
+        view.setAliases(CollectionUtils.isEmpty(product.getAliases()) ? "" : product.getAliases().stream().collect(Collectors.joining(", ")));
 
         List<String> list = new ArrayList<>();
         list.add(product.getConfiguration());

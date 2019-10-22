@@ -22,6 +22,10 @@ p {
   line-height: 18px;
 }
 
+.btn.disabled, .btn[disabled] {
+  pointer-events: none;
+}
+
 .page-sidebar {
   .sidebar-header {
     color: white !important;

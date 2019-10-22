@@ -17,15 +17,22 @@ public class DisplayOption {
         this.name = name;
     }
 
-    public DisplayOption( String name, String style, String icon ) {
-        this.icon = icon;
-        this.name = name;
-        this.style = style;
-    }
-
     public DisplayOption( String name, String imageSrc ) {
         this.name = name;
         this.imageSrc = imageSrc;
+    }
+
+    public DisplayOption( String name, String style, String icon ) {
+        this.name = name;
+        this.style = style;
+        this.icon = icon;
+    }
+
+    public DisplayOption( String name, String info, String style, String icon ) {
+        this.name = name;
+        this.info = info;
+        this.style = style;
+        this.icon = icon;
     }
 
     public String getName() {

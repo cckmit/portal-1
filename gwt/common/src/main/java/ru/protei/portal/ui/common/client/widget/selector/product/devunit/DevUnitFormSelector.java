@@ -29,6 +29,7 @@ public class DevUnitFormSelector extends FormSelector<ProductShortView> implemen
             }
             return new DisplayOption(
                     value.getName(),
+                    value.getAliases(),
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );

@@ -214,7 +214,8 @@ public abstract class Selector<T>
             }
 
             String entryText = entry.getValue().getName().toLowerCase();
-            if (searchText.isEmpty() || entryText.contains(searchText)) {
+            String entryInfo = entry.getValue().getInfo() == null ? "" : entry.getValue().getInfo().toLowerCase();
+            if (searchText.isEmpty() || entryText.contains(searchText) || entryInfo.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
                 if (itemView != null) {
                     popup.getChildContainer().add(itemView);
