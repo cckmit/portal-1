@@ -42,6 +42,7 @@
 <@set name="_phone_type_text" value="${phone_type_text}"/>
 <@set name="_phone_type_international" value="${phone_type_international}"/>
 <@set name="_phone_type_long_distance" value="${phone_type_long_distance}"/>
+<@set name="_phone_type_office" value="${phone_type_office}"/>
 
 <@set name="_additional_resource" value="${additional_resource}"/>
 <@set name="_operating_system" value="${operating_system}"/>
@@ -219,6 +220,7 @@
                         <#switch (eq.name())!''>
                             <#case "LONG_DISTANCE">${_phone_type_long_distance}<#break>
                             <#case "INTERNATIONAL">${_phone_type_international}<#break>
+                            <#case "OFFICE">${_phone_type_office}<#break>
                         </#switch><#sep>, </#sep><#rt>
                     </#list><#rt>
                 </#if><#rt>
