@@ -79,6 +79,21 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
         }
     }
 
+    @Override
+    public void showFullScreen(boolean isFullScreen) {
+        backButtonPanel.setVisible(isFullScreen);
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onBackButtonClicked();
+        }
+    }
+
 
     @UiField
     Anchor displayName;
@@ -102,6 +117,12 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     HTMLPanel contactFired;
     @UiField
     HTMLPanel contactDeleted;
+    @UiField
+    HTMLPanel previewWrapperContainer;
+    @UiField
+    HTMLPanel backButtonPanel;
+    @UiField
+    Button backButton;
 
     @Inject
     @UiField

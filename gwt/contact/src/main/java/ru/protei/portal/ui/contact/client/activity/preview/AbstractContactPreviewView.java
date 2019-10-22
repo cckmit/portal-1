@@ -28,4 +28,7 @@ public interface AbstractContactPreviewView extends IsWidget {
     HasVisibility deletedMsgVisibility();
 
     void setGenderImage(String icon);
+
+    void showFullScreen(boolean isFullScreen);
+
 }

@@ -3987,7 +3987,7 @@ label {
 /*60px - высота заголовка pages header*/
 
 .card-with-fixable-footer{
-  height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px);
 }
 
 .card-with-fixable-footer .card-footer {
