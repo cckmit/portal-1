@@ -117,6 +117,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
+        Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
         Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
 
         contactService.saveContact(applyChangesContact(), new AsyncCallback<Person>() {
@@ -132,7 +133,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     userLogin.setPerson(person);
                     userLogin.setInfo(person.getDisplayName());
                 }
-                contactService.saveAccount(userLogin, sendWelcomeEmail, new RequestCallback<Boolean>() {
+                contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireErrorMessage(lang.errEditContactLogin());
@@ -299,7 +300,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.firedMsgVisibility().setVisible(person.isFired());
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
         view.sendWelcomeEmailVisibility().setVisible(false);
-        view.sendWelcomeEmail().setValue(false);
+        view.sendWelcomeEmail().setValue(true);
 
         view.showInfo(userLogin.getId() != null);
     }

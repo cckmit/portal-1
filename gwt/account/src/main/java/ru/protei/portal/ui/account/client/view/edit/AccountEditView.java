@@ -181,9 +181,8 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @UiField
     Button cancelButton;
-
     @UiField
-    OptionItem sendWelcomeEmail;
+    CheckBox sendWelcomeEmail;
 
     Timer timer = new Timer() {
         @Override
