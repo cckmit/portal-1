@@ -6,7 +6,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed card card-transparent no-margin ">
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder card-body no-padding">
             <div class="card card-default no-border">
                 <div class="card-body">

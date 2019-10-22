@@ -70,7 +70,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
-        rootWrapper.setStyleName("preview-wrapper card-with-fixable-footer", isFullScreen);
+        rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
     @Override

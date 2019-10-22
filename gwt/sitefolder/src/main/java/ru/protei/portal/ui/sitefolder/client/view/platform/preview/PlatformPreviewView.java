@@ -80,7 +80,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void isFullScreen(boolean isFullScreen) {
-        previewWrapperContainer.setStyleName("preview-wrapper card-with-fixable-footer", isFullScreen);
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
     @UiHandler("openServersButton")

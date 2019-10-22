@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed">
+    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
             <h4 ui:field="header" class="m-r-50"/>
             <g:Anchor href="javascript:void(0)" ui:field="downloadButton" target="_blank">
