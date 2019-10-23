@@ -89,6 +89,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
+    public Person getEmployeeByOldId(long id) {
+        Person person = getByCondition("Person.old_id=?", id);
+        return person != null && ifPersonIsEmployee(person) ? person : null;
+    }
+
+    @Override
     public boolean isEmployee(Person p) {
         return ifPersonIsEmployee(p);
     }

@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 
 import javax.servlet.ServletContext;
@@ -32,12 +34,14 @@ public class AvatarController {
     @Autowired
     private ServletContext context;
 
+    @Autowired
+    private PersonDAO personDAO;
 
     @RequestMapping( value = "/avatars/{gender}/{fileName:.+}" )
     public void getAvatar(
             @PathVariable String gender,
             @PathVariable String fileName,
-            HttpServletResponse response ) throws IOException {
+            HttpServletResponse response) throws IOException {
 
         En_Gender g = En_Gender.parse(gender);
 
@@ -47,10 +51,28 @@ public class AvatarController {
     }
 
     @RequestMapping( value = "/avatars/{fileName:.+}" )
-    public void getAvatar(@PathVariable String fileName,
-                          HttpServletResponse response ) throws IOException {
+    public void getAvatar(
+            @PathVariable String fileName,
+            HttpServletResponse response) throws IOException {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
+
+        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
+    }
+
+    @RequestMapping( value = "/avatars/old/{id}" )
+    public void getAvatarByOldId(
+            @PathVariable String id,
+            HttpServletResponse response) throws IOException {
+
+        if (!id.matches("[0-9]+")) return;
+
+        Person person = personDAO.getEmployeeByOldId(Long.parseLong(id));
+        if (person == null) return;
+
+        String newFileName = person.getId() + ".jpg";
+
+        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + newFileName , response ) ) return;
 
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
