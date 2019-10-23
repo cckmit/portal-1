@@ -282,6 +282,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "международную";
             case LONG_DISTANCE:
                 return "междугороднюю";
+            case OFFICE:
+                return "офисную";
 
         }
         return "";
