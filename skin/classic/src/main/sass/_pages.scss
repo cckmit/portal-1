@@ -139,3 +139,10 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 .fixed-sidebar[data-toggle-pin=sidebar] > i:before {
   content: "\f192"
 }
+
+.checkbox input[type=checkbox] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  display: none;
+}
