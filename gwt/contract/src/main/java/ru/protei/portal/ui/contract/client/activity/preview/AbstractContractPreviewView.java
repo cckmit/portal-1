@@ -37,7 +37,7 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setChildContracts(String value);
 
-    void setProject(String value);
+    void setProject(String value, String link);
 
     HasVisibility footerVisibility();
 }

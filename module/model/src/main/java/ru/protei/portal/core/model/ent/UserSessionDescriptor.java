@@ -82,4 +82,12 @@ public class UserSessionDescriptor {
             ids.addAll( company.getChildCompanies().stream().map( Company::getId ).collect( Collectors.toList()) );
         return ids;
     }
+
+    @Override
+    public String toString() {
+        return "UserSessionDescriptor{" +
+                "session=" + (session == null ? "null" : (session.getSessionId() + " personId=" + session.getPersonId())) +
+                ", login=" + (login == null ? "null" : (login.getUlogin() + " loginId=" + login.getId())) +
+                '}';
+    }
 }

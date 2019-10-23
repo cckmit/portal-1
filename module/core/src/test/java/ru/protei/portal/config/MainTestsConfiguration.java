@@ -41,6 +41,8 @@ import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.portal.mock.PortalScheduleTasksStub;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.mock.ReportControlServiceMock;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
@@ -568,6 +570,11 @@ public class MainTestsConfiguration {
         return new ReportControlServiceMock();
     }
 
+    @Bean(name = "portalScheduler")
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return new PortalScheduleTasksStub();
+    }
+
     @Bean
     public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
 
@@ -584,6 +591,11 @@ public class MainTestsConfiguration {
     @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
         return new EmployeeRegistrationServiceImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationReminderService getEmployeeRegistrationReminderService() {
+        return new EmployeeRegistrationReminderServiceImpl();
     }
 
     @Bean

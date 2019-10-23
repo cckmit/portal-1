@@ -42,7 +42,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         List< Long > categoryIds = companyQuery.getCategoryIds();
 
-        log.debug( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
+        log.info( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
                 companyQuery.getSearchString(), categoryIds,
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
@@ -53,7 +53,7 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List< CompanyGroup > getCompanyGroups( String searchPattern ) throws RequestFailedException {
 
-        log.debug("getCompanyGroups: searchPattern={}", searchPattern);
+        log.info("getCompanyGroups: searchPattern={}", searchPattern);
 
         CompanyGroupQuery query = new CompanyGroupQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
@@ -68,7 +68,7 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public Boolean saveCompany( Company company ) throws RequestFailedException {
 
-        log.debug( "saveCompany(): company={}", company );
+        log.info( "saveCompany(): company={}", company );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -82,7 +82,7 @@ public class CompanyControllerImpl implements CompanyController {
         else
             response = companyService.updateCompany( descriptor.makeAuthToken(), company );
 
-        log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
+        log.info( "saveCompany(): response.isOk()={}", response.isOk() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -91,7 +91,7 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public Boolean updateState(Long companyId, boolean isArchived) throws RequestFailedException {
-        log.debug("updateState(): companyId={} | isArchived={}", companyId, isArchived);
+        log.info("updateState(): companyId={} | isArchived={}", companyId, isArchived);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -101,7 +101,7 @@ public class CompanyControllerImpl implements CompanyController {
             throw new RequestFailedException(response.getStatus());
         }
 
-        log.debug("updateState(): response.getData()={}", response.isOk());
+        log.info("updateState(): response.getData()={}", response.isOk());
 
         return response.getData() != null;
     }
@@ -109,11 +109,11 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public Boolean isCompanyNameExists( String name, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
+        log.info( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
 
         Result<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
 
-        log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
+        log.info( "isCompanyNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -123,11 +123,11 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public Boolean isGroupNameExists(String name, Long excludeId) throws RequestFailedException {
 
-        log.debug( "isGroupNameExists(): name={} | excludeId={}", name, excludeId );
+        log.info( "isGroupNameExists(): name={} | excludeId={}", name, excludeId );
 
         Result<Boolean> response = companyService.isGroupNameExists(name, excludeId);
 
-        log.debug( "isGroupNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
+        log.info( "isGroupNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -137,13 +137,13 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public Company getCompany( long id ) throws RequestFailedException {
-        log.debug( "getCompany(): id={}", id );
+        log.info( "getCompany(): id={}", id );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Company> response = companyService.getCompany( descriptor.makeAuthToken(),  id );
 
-        log.debug( "getCompany(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
+        log.info( "getCompany(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -152,12 +152,12 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
-        log.debug( "getCompanyOptionList()" );
+        log.info( "getCompanyOptionList()" );
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result< List< EntityOption > > result = companyService.companyOptionList( descriptor.makeAuthToken(), query);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -168,11 +168,11 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List< EntityOption > getGroupOptionList() throws RequestFailedException {
 
-        log.debug( "getGroupOptionList()" );
+        log.info( "getGroupOptionList()" );
 
         Result< List< EntityOption > > result = companyService.groupOptionList();
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -183,14 +183,14 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List< EntityOption > getCategoryOptionList() throws RequestFailedException {
 
-        log.debug( "getCategoryOptionList()" );
+        log.info( "getCategoryOptionList()" );
 
         Set<UserRole> availableRoles = getDescriptorAndCheckSession().getLogin().getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
         Result< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -200,7 +200,7 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
-        log.debug( "getCompanySubscription()" );
+        log.info( "getCompanySubscription()" );
 
         Result< List< CompanySubscription > > result = companyService.getCompanySubscriptions( companyId );
 

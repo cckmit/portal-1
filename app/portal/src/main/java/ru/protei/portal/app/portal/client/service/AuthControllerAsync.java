@@ -15,7 +15,7 @@ public interface AuthControllerAsync {
      * @param password пароль (не пустая строка)
      * @return профиль пользователя
      */
-    void authentificate(String login, String password, AsyncCallback<Profile> async);
+    void authenticate( String login, String password, AsyncCallback<Profile> async);
 
     /**
      * Выход пользователя

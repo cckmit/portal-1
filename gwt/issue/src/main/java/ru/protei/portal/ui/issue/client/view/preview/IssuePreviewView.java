@@ -187,18 +187,24 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setPlatform(String value) {
-        this.platform.setText(value);
+    public void setPlatformName(String value) {
+        platform.setInnerText(value);
+    }
+
+    @Override
+    public void setPlatformLink(String link) {
+        platform.setHref(link);
     }
 
     @Override
     public void setPlatformVisibility(boolean visible) {
         if (visible) {
-            platformLabel.removeClassName("hide");
+            platformContainer.removeClassName("hide");
+            productContainer.replaceClassName("col-md-6", "col-md-3");
         } else {
-            platformLabel.addClassName("hide");
+            platformContainer.addClassName("hide");
+            productContainer.replaceClassName("col-md-3", "col-md-6");
         }
-        platform.setVisible(visible);
     }
 
     @UiHandler( "number" )
@@ -217,15 +223,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
-    @UiHandler("platform")
-    public void onPlatformExtLinkClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onPlatformExtLinkClicked();
-        }
-    }
-
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
@@ -233,6 +230,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @UiHandler("copy")
     public void onCopyClick(ClickEvent event) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onCopyClicked();
         }
@@ -262,7 +260,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
         platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PLATFORM);
-        platform.ensureDebugId(DebugIds.ISSUE_PREVIEW.PLATFORM);
+        platform.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PLATFORM);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
@@ -289,8 +287,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     HeadingElement name;
-    @UiField
-    Anchor platform;
     @UiField
     DivElement info;
     @Inject
@@ -357,11 +353,17 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HeadingElement subscriptionsLabel;
     @UiField
-    HeadingElement platformLabel;
-    @UiField
     LabelElement criticalityLabel;
     @UiField
     SpanElement timeElapsedLabel;
+    @UiField
+    AnchorElement platform;
+    @UiField
+    DivElement productContainer;
+    @UiField
+    DivElement platformContainer;
+    @UiField
+    LabelElement platformLabel;
 
     AbstractIssuePreviewActivity activity;
 

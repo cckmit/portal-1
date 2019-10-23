@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
@@ -137,7 +136,7 @@ public class IssueFilterUtils {
         return option;
     }
 
-    public static List< Long > getProductsIdList( Set< ProductShortView > productSet ) {
+    public static Set< Long > getProductsIdList( Set< ProductShortView > productSet ) {
 
         if ( productSet == null || productSet.isEmpty() ) {
             return null;
@@ -145,16 +144,16 @@ public class IssueFilterUtils {
         return productSet
                 .stream()
                 .map( ProductShortView::getId )
-                .collect( Collectors.toList() );
+                .collect( Collectors.toSet() );
     }
 
-    public static Set< ProductShortView > getProducts( List< Long > managerIds ) {
+    public static Set< ProductShortView > getProducts( Set< Long > productIds ) {
 
-        if ( managerIds == null || managerIds.isEmpty() ) {
+        if ( productIds == null || productIds.isEmpty() ) {
             return null;
         }
         Set< ProductShortView > products = new HashSet<>();
-        for ( Long id : managerIds ) {
+        for ( Long id : productIds ) {
             ProductShortView prd = new ProductShortView();
             prd.setId( id );
             products.add( prd );
@@ -186,16 +185,14 @@ public class IssueFilterUtils {
         return persons;
     }
 
-    public static CaseQuery makeCaseQuery(AbstractIssueFilterWidgetView filterWidgetView, boolean isFillSearchString) {
+    public static CaseQuery makeCaseQuery(AbstractIssueFilterWidgetView filterWidgetView) {
         CaseQuery query = new CaseQuery();
         query.setType(En_CaseType.CRM_SUPPORT);
-        if (isFillSearchString) {
-            String searchString = filterWidgetView.searchPattern().getValue();
-            query.setCaseNumbers( searchCaseNumber( searchString, filterWidgetView.searchByComments().getValue() ) );
-            if (query.getCaseNumbers() == null) {
-                query.setSearchStringAtComments(filterWidgetView.searchByComments().getValue());
-                query.setSearchString( isBlank( searchString ) ? null : searchString );
-            }
+        String searchString = filterWidgetView.searchPattern().getValue();
+        query.setCaseNumbers(searchCaseNumber(searchString, filterWidgetView.searchByComments().getValue()));
+        if (query.getCaseNumbers() == null) {
+            query.setSearchStringAtComments(filterWidgetView.searchByComments().getValue());
+            query.setSearchString(isBlank(searchString) ? null : searchString);
         }
         query.setViewPrivate(filterWidgetView.searchPrivate().getValue());
         query.setSortField(filterWidgetView.sortField().getValue());

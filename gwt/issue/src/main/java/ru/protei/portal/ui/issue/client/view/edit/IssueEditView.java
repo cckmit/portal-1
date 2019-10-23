@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -23,6 +24,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -344,6 +346,29 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void switchToRONameDescriptionView(boolean isRO) {
+        descriptionContainer.setVisible(!isRO);
+        nameContainer.setVisible(!isRO);
+
+        descriptionRO.setVisible(isRO);
+        if (isRO) {
+            nameRO.removeClassName(UiConstants.Styles.HIDE);
+        } else {
+            nameRO.addClassName(UiConstants.Styles.HIDE);
+        }
+    }
+
+    @Override
+    public void setDescriptionRO(String value) {
+        descriptionRO.setText(value);
+    }
+
+    @Override
+    public void setNameRO(String name) {
+        nameRO.setInnerText(name);
+    }
+
+    @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
     }
@@ -354,8 +379,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<EntityOption> platform() {
+    public HasValue<PlatformOption> platform() {
         return platform;
+    }
+
+    @Override
+    public void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter){
+        platform.setFilter(filter);
     }
 
     @Override
@@ -431,6 +461,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         privacyButton.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
+        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
         caseMetaView.setEnsureDebugLinkId(DebugIds.ISSUE.LINKS_BUTTON);
         caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE.LINKS_CONTAINER);
         caseMetaView.setEnsureDebugIdLinkSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
@@ -449,6 +480,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED);
         timeElapsedInput.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_INPUT);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
+        descriptionRO.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD);
         notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
         notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
@@ -592,6 +624,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel timeElapsedEditContainer;
     @UiField
     LabelElement nameLabel;
+    @UiField
+    HeadingElement nameRO;
+    @UiField
+    Label descriptionRO;
+    @UiField
+    HTMLPanel descriptionContainer;
 
     private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
         @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }

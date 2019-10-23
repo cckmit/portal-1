@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,7 +22,7 @@ public class ProjectQuery extends BaseQuery {
 
     private Boolean onlyMineProjects;
 
-    private List<Long> productIds;
+    private Set<Long> productIds;
 
     private En_CustomerType customerType;
 
@@ -31,7 +30,9 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
-    private Boolean independentProject;
+    private Boolean contractIndependentProject;
+
+    private Boolean platformIndependentProject;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -47,7 +48,7 @@ public class ProjectQuery extends BaseQuery {
         this.states = state;
     }
 
-    public ProjectQuery(Date createdFrom, Date createdTo, List<Long> productIds, String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public ProjectQuery(Date createdFrom, Date createdTo, Set<Long> productIds, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.createdFrom = createdFrom;
         this.createdTo = createdTo;
@@ -86,11 +87,11 @@ public class ProjectQuery extends BaseQuery {
         this.onlyMineProjects = onlyMineProjects;
     }
 
-    public List<Long> getProductIds() {
+    public Set<Long> getProductIds() {
         return productIds;
     }
 
-    public void setProductIds(List<Long> productIds) {
+    public void setProductIds(Set<Long> productIds) {
         this.productIds = productIds;
     }
 
@@ -118,12 +119,20 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Boolean getIndependentProject() {
-        return independentProject;
+    public Boolean getContractIndependentProject() {
+        return contractIndependentProject;
     }
 
-    public void setIndependentProject(Boolean independentProject) {
-        this.independentProject = independentProject;
+    public void setContractIndependentProject(Boolean contractIndependentProject) {
+        this.contractIndependentProject = contractIndependentProject;
+    }
+
+    public Boolean getPlatformIndependentProject() {
+        return platformIndependentProject;
+    }
+
+    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
+        this.platformIndependentProject = platformIndependentProject;
     }
 
     @Override
@@ -135,7 +144,8 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                independentProject != null;
+                contractIndependentProject != null ||
+                platformIndependentProject != null;
     }
 
     @Override
@@ -154,6 +164,8 @@ public class ProjectQuery extends BaseQuery {
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
                 ", offset=" + offset +
+                ", contractIndependentProject=" + contractIndependentProject +
+                ", platformIndependentProject=" + platformIndependentProject +
                 '}';
     }
 }

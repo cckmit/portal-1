@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public interface SiteFolderService {
     Result<SearchResult<Server>> getServersWithAppsNames( AuthToken token, ServerQuery query);
 
 
-    Result<List<EntityOption>> listPlatformsOptionList( AuthToken token, PlatformQuery query);
+    Result<List<PlatformOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query);
 
     Result<List<EntityOption>> listServersOptionList( AuthToken token, ServerQuery query);
 

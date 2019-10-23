@@ -26,8 +26,7 @@
             <div class="login-container-wrapper">
                 <div class="login-header">
                     <div class="brand">
-                        <img src="./images/logo_blue.png" width="40" height="40"/>
-                        <span ui:field="header"><ui:text from="{lang.proteiTitleShort}"/></span>
+                        <img ui:field="logo" src="./images/logo-blue-ru.svg" height="40"/>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-locked"/>

@@ -164,9 +164,10 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
             AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
             if (category == AttachmentType.AttachmentCategory.IMAGE) {
                 view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
+                view.asWidget().addStyleName("attach-image");
             }else {
                 view.setPicture(category.picture);
-                view.asWidget().addStyleName("attach-hide-preview");
+                view.asWidget().addStyleName("attach-file");
             }
         }else
             view.asWidget().addStyleName("attach-minimize");

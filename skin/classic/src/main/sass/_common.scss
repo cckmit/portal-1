@@ -1021,7 +1021,7 @@ label.bordered:after {
     > label {
       color: rgba(44,44,44,.35);
       font-weight: 500;
-      font-family: montserrat;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 10.5px;
       letter-spacing: .06em;
       text-transform: uppercase;
@@ -2694,10 +2694,6 @@ a {
       }
     }
 
-    input {
-      font-family: GostARegular, serif;
-    }
-
     &.has-error {
       label {
         color: $error_color !important
@@ -2713,11 +2709,6 @@ a {
       }
     }
   }
-}
-
-.decimal-number {
-  font-family: GostARegular, serif;
-  font-size: 18px;
 }
 
 .document-name {
@@ -2776,7 +2767,7 @@ a {
   margin: auto;
   width: 16.6%;
   text-align: center;
-  font-family: montserrat, serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 10.5px;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -3981,10 +3972,10 @@ label {
     }
   }
   @media (max-width: 991px) {
-      .table-pager {
-        margin-left: 15px;
-        width: calc(100% - 15px);
-      }
+    .table-pager {
+      margin-left: 15px;
+      width: calc(100% - 15px);
+    }
   }
 
 }

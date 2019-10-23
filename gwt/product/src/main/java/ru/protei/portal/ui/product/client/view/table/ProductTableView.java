@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableView;
 
-public class ProductTableView extends Composite implements AbstractProductTableView{
+public class ProductTableView extends Composite implements AbstractProductTableView {
 
     @Inject
     public void onInit(EditClickColumn<DevUnit> editClickColumn, ArchiveClickColumn<DevUnit> archiveClickColumn) {
@@ -100,6 +100,11 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     public void updateRow(DevUnit item) {
         if(item != null)
             table.updateRow(item);
+    }
+
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
     }
 
     private void initTable () {

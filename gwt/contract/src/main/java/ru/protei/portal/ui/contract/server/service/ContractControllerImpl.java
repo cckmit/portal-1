@@ -25,19 +25,19 @@ public class ContractControllerImpl implements ContractController {
 
     @Override
     public SearchResult<Contract> getContracts(ContractQuery query) throws RequestFailedException {
-        log.debug(" get contracts: offset={} | limit={}", query.getOffset(), query.getLimit());
+        log.info(" get contracts: offset={} | limit={}", query.getOffset(), query.getLimit());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(contractService.getContracts(token, query));
     }
 
     @Override
     public Contract getContract(Long id) throws RequestFailedException {
-        log.debug(" get contract, id: {}", id);
+        log.info(" get contract, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Contract> response = contractService.getContract(descriptor.makeAuthToken(), id);
-        log.debug(" get contract, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+        log.info(" get contract, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -52,7 +52,7 @@ public class ContractControllerImpl implements ContractController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("create contract, id: {}", HelperFunc.nvlt(contract.getId(), "new"));
+        log.info("create contract, id: {}", HelperFunc.nvlt(contract.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         contract.setCreatorId(descriptor.getPerson().getId());
@@ -64,10 +64,10 @@ public class ContractControllerImpl implements ContractController {
             response = contractService.updateContract(descriptor.makeAuthToken(), contract);
         }
 
-        log.debug("create contract, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("create contract, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("create contract, applied id: {}", response.getData());
+            log.info("create contract, applied id: {}", response.getData());
             return response.getData();
         }
 

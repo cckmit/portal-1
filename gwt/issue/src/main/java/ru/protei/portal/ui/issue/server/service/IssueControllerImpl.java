@@ -33,7 +33,7 @@ public class IssueControllerImpl implements IssueController {
 
     @Override
     public SearchResult<CaseShortView> getIssues(CaseQuery query) throws RequestFailedException {
-        log.debug("getIssues(): caseNo={} | companyId={} | productId={} | managerId={} | searchPattern={} | " +
+        log.info("getIssues(): caseNo={} | companyId={} | productId={} | managerId={} | searchPattern={} | " +
                         "state={} | importance={} | sortField={} | sortDir={} | caseService={}",
                 query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(),
                 query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService);
@@ -44,12 +44,12 @@ public class IssueControllerImpl implements IssueController {
 
     @Override
     public CaseObject getIssue( long number ) throws RequestFailedException {
-        log.debug("getIssue(): number: {}", number);
+        log.info("getIssue(): number: {}", number);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
-        log.debug("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
+        log.info("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -60,7 +60,7 @@ public class IssueControllerImpl implements IssueController {
 
     @Override
     public CaseObject saveIssue( CaseObject caseObject ) throws RequestFailedException{
-        log.debug( "saveIssue(): case={}", caseObject );
+        log.info( "saveIssue(): case={}", caseObject );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -74,32 +74,32 @@ public class IssueControllerImpl implements IssueController {
         else
             response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
 
-        log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
+        log.info( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        log.debug( "saveIssue(): id={}", response.getData().getId() );
+        log.info( "saveIssue(): id={}", response.getData().getId() );
         return response.getData();
     }
 
     @Override
     public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
-        log.debug("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
+        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
             CaseObject saved = saveIssue(caseObject);
             return new CaseObjectWithCaseComment(saved, null);
         }
         Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
-        log.debug("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
+        log.info("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response);
     }
 
     @Override
     public CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException {
-        log.debug("getIssueShortInfo(): number: {}", caseNumber);
+        log.info("getIssueShortInfo(): number: {}", caseNumber);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
-        log.debug("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
+        log.info("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
             throw new RequestFailedException( response.getStatus() );
@@ -121,11 +121,11 @@ public class IssueControllerImpl implements IssueController {
 
         En_CaseType type = En_CaseType.CRM_SUPPORT;
 
-        log.debug( "getStatesByCaseType: caseType={} ", type );
+        log.info( "getStatesByCaseType: caseType={} ", type );
 
         Result< List<En_CaseState> > result = caseService.stateList( type );
 
-        log.debug("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
+        log.info("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());

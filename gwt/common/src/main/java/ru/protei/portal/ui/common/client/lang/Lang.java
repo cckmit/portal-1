@@ -381,6 +381,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueComment();
 
+    String errEditTimeElapsedType();
+
     String selectCompanyGroup();
 
     String activeRecords();
@@ -1115,6 +1117,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderParamsLocal();
 
+    String siteFolderProject();
+
     String siteFolderComment();
 
     String siteFolderIP();
@@ -1136,6 +1140,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderPlatformNotRemoved();
 
     String siteFolderPlatformNotSaved();
+
+    String siteFolderPlatformSaved();
 
     String siteFolderPlatformName();
 
@@ -1668,6 +1674,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentElapsedTimeTypeLabel();
 
+    String issueCommentElapsedTimeTypeChange();
+
     String selectValue();
 
     String privilegeContract();
@@ -1876,5 +1884,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCreate();
 
+    String projectSiteFolder();
+
     String issueInitiatorInfo();
+
+    String errNotAllowedChangeIssueNameOrDescription();
+
+    String timeElapsedInfo();
 }

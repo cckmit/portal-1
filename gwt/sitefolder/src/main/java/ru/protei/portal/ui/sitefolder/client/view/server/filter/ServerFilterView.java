@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
@@ -57,7 +58,7 @@ public class ServerFilterView extends Composite implements AbstractServerFilterV
     }
 
     @Override
-    public HasValue<Set<EntityOption>> platforms() {
+    public HasValue<Set<PlatformOption>> platforms() {
         return platforms;
     }
 
@@ -105,7 +106,7 @@ public class ServerFilterView extends Composite implements AbstractServerFilterV
     }
 
     @UiHandler("platforms")
-    public void onPlatformsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+    public void onPlatformsSelected(ValueChangeEvent<Set<PlatformOption>> event) {
         fireChangeTimer();
     }
 

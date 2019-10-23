@@ -30,14 +30,14 @@ public class PersonControllerImpl implements PersonController {
 
     public List<PersonShortView> getPersonViewList( PersonQuery query ) throws RequestFailedException {
 
-        log.debug( "getPersonViewList(): searchPattern={} | companyId={} | sortField={} | sortDir={}",
+        log.info( "getPersonViewList(): searchPattern={} | companyId={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getSortField(), query.getSortDir() );
 
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result< List< PersonShortView > > result = personService.shortViewList( authToken, query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -47,12 +47,12 @@ public class PersonControllerImpl implements PersonController {
 
     @Override
     public Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException {
-        log.debug( "getPersonName: ids={}", ids );
+        log.info( "getPersonName: ids={}", ids );
 
 
         Result<Map<Long, String>> result = personService.getPersonNames(ids);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

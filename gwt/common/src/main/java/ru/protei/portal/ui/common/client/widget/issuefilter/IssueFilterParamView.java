@@ -51,6 +51,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
+        searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
     }
 
     @Override
@@ -76,6 +77,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public HasValue<Boolean> searchByComments() {
         return searchByComments;
+    }
+
+    @Override
+    public HasVisibility searchByCommentsWarningVisibility() {
+        return searchByCommentsWarning;
     }
 
     @Override
@@ -201,7 +207,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
         tags.setValue(null);
-        toggleMsgSearchThreshold();
     }
 
     @Override
@@ -222,21 +227,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
-    }
-
-    @Override
-    public void toggleMsgSearchThreshold() {
-        if (searchByComments.getValue()) {
-            int actualLength = search.getValue().length();
-            if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
-                searchByCommentsWarning.setVisible(false);
-            } else {
-                searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
-                searchByCommentsWarning.setVisible(true);
-            }
-        } else if (searchByCommentsWarning.isVisible()) {
-            searchByCommentsWarning.setVisible(false);
-        }
     }
 
     @Override
@@ -314,7 +304,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("searchByComments")
     public void onSearchByCommentsChanged(ValueChangeEvent<Boolean> event) {
-        toggleMsgSearchThreshold();
         onFilterChanged();
     }
 
@@ -440,7 +429,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             timer = new Timer() {
                 @Override
                 public void run() {
-                    toggleMsgSearchThreshold();
                     onFilterChanged();
                 }
             };

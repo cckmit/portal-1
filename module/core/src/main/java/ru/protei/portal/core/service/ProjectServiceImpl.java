@@ -70,6 +70,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     PersonDAO personDAO;
 
+    @Autowired
+    PlatformDAO platformDAO;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
@@ -82,9 +85,9 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
 
-        List<Long> productIds = null;
+        Set<Long> productIds = null;
         if (query.getDirectionId() != null){
-            productIds = new ArrayList<>();
+            productIds = new HashSet<>();
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
@@ -135,6 +138,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (project == null) {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
+        }
+
+        Platform platform = platformDAO.getByProjectId(id);
+
+        if (platform != null) {
+            project.setPlatformId(platform.getId());
+            project.setPlatformName(platform.getName());
         }
 
         helper.fillAll( project );
@@ -483,16 +493,12 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
 
-        List<Long> productIds = null;
         if (projectQuery.getDirectionId() != null) {
-            productIds = new ArrayList<>();
-            productIds.add(projectQuery.getDirectionId());
+            caseQuery.setProductDirectionId(projectQuery.getDirectionId());
         }
         if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
-            productIds = new ArrayList<>();
-            productIds.addAll(projectQuery.getProductIds());
+            caseQuery.setProductIds(projectQuery.getProductIds());
         }
-        caseQuery.setProductIds(productIds);
 
         if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
             UserSessionDescriptor descriptor = authService.findSession(authToken);
@@ -507,11 +513,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
         caseQuery.setCreatedTo(projectQuery.getCreatedTo());
-
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setIndependentProject(projectQuery.getIndependentProject());
+        caseQuery.setContractIndependentProject(projectQuery.getContractIndependentProject());
+        caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
+        caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 
         return caseQuery;
     }

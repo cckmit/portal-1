@@ -120,7 +120,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void fillView(Contract value) {
         this.contract = value;
 
-        view.setIndependentProjects(true);
+        view.setContractIndependentProjects(true);
 
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {
@@ -217,8 +217,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 .withSuccess(value -> {
                     fireEvent(new ContractEvents.ChangeModel());
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(isNew(contract) ? new ContractEvents.Show(true) : new Back());
                 }));
+    }
+
+    private boolean isNew(Contract contract) {
+        return contract.getId() == null;
     }
 
     private Long getOptionIdOrNull(EntityOption option) {

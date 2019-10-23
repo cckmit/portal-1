@@ -75,7 +75,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
             query.setCreatedTo(createdInterval.to);
         }
         query.setCustomerType(view.customerType().getValue());
-        query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect(Collectors.toList()));
+        query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect(Collectors.toSet()));
         query.setLimit(100);
         return query;
     }

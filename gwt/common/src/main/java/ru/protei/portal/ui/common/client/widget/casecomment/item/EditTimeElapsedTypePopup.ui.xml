@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root">
+        <timeElapsed:ElapsedTimeTypeSelector ui:field="typeSelector"/>
+        <g:Button ui:field="confirmBtn" styleName="btn btn-success btn-xs" text="{lang.msgOK}"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

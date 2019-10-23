@@ -173,8 +173,18 @@ public class CaseObjectSqlBuilder {
                 args.add(query.getLocal());
             }
 
-            if (query.getIndependentProject() != null && query.getIndependentProject()) {
+            if (query.getContractIndependentProject() != null && query.getContractIndependentProject()) {
                 condition.append(" and case_object.id NOT IN (SELECT contract.project_id FROM contract WHERE contract.project_id IS NOT NULL)");
+            }
+
+            if (query.getPlatformIndependentProject() != null && query.getPlatformIndependentProject()) {
+                condition.append(" and case_object.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
+            }
+
+            if (query.getProductDirectionId() != null) {
+                condition
+                        .append(" and product_id = ")
+                        .append(query.getProductDirectionId());
             }
         });
     }

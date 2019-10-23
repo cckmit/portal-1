@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -85,10 +86,6 @@ public abstract class IssueTableActivity
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
-        if (event.clearSelection) {
-            view.clearSelection();
-            event.clearSelection = false;
-        }
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -107,7 +104,9 @@ public abstract class IssueTableActivity
             filterParamView.updateInitiators();
         }
 
-        filterParamView.toggleMsgSearchThreshold();
+        toggleMsgSearchThreshold();
+
+        clearScroll(event);
 
         loadTable();
     }
@@ -199,7 +198,7 @@ public abstract class IssueTableActivity
         }
 
         loadTable();
-        filterParamView.toggleMsgSearchThreshold();
+        toggleMsgSearchThreshold();
     }
 
     @Override
@@ -340,6 +339,18 @@ public abstract class IssueTableActivity
         });
     }
 
+    @Override
+    public void toggleMsgSearchThreshold() {
+        if (filterParamView.searchByComments().getValue()) {
+            int actualLength = filterParamView.searchPattern().getValue().length();
+            filterParamView.searchByCommentsWarningVisibility().setVisible(actualLength < CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS);
+            filterView.createEnabled().setEnabled(actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS);
+        } else if (filterParamView.searchByCommentsWarningVisibility().isVisible()) {
+            filterParamView.searchByCommentsWarningVisibility().setVisible(false);
+            filterView.createEnabled().setEnabled(true);
+        }
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();
@@ -380,14 +391,14 @@ public abstract class IssueTableActivity
     }
 
     private CaseQuery getQuery() {
-        return IssueFilterUtils.makeCaseQuery(filterParamView, true);
+        return IssueFilterUtils.makeCaseQuery(filterParamView);
     }
 
     private CaseFilter fillUserFilter() {
         CaseFilter filter = new CaseFilter();
         filter.setName(filterView.filterName().getValue());
         filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView, false);
+        CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView);
         filter.setParams(query);
         query.setSearchString(filterParamView.searchPattern().getValue());
         return filter;
@@ -460,6 +471,13 @@ public abstract class IssueTableActivity
 
     private void updateInitiatorSelector() {
         filterParamView.updateInitiators();
+    }
+
+    private void clearScroll(IssueEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
     }
 
     @Inject

@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -27,8 +27,17 @@ public class Platform implements Serializable, Removable {
     @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
     private Person manager;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+    }, mappedColumn = "displayShortName")
+    private String caseManagerShortName;
+
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
+
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
 
     @JdbcColumn(name="case_id")
     private Long caseId;
@@ -98,6 +107,18 @@ public class Platform implements Serializable, Removable {
         return manager;
     }
 
+    public String getCaseManagerShortName() {
+        return caseManagerShortName;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
     public void setManager(Person manager) {
         this.manager = manager;
     }
@@ -118,28 +139,42 @@ public class Platform implements Serializable, Removable {
         this.attachments = attachments;
     }
 
-    public static Platform fromEntityOption(EntityOption entityOption) {
-        if (entityOption == null) {
+    public static Platform fromPlatformOption(PlatformOption platformOption) {
+        if (platformOption == null) {
             return null;
         }
 
         Platform platform = new Platform();
-        platform.setId(entityOption.getId());
-        platform.setName(entityOption.getDisplayText());
+        platform.setId(platformOption.getId());
+        platform.setName(platformOption.getDisplayText());
         return platform;
     }
 
-    public EntityOption toEntityOption() {
-        EntityOption entityOption = new EntityOption();
-        entityOption.setId(getId());
-        entityOption.setDisplayText(getName());
-        return entityOption;
+    public PlatformOption toPlatformOption() {
+        PlatformOption platformOption = new PlatformOption();
+        platformOption.setId(getId());
+        platformOption.setDisplayText(getName());
+        platformOption.setCompanyId(getCompanyId());
+        return platformOption;
     }
 
 
     @Override
     public boolean isAllowedRemove() {
         return id != null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof Platform && id.equals(((Platform) obj).getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -154,6 +189,7 @@ public class Platform implements Serializable, Removable {
                 ", company=" + company +
                 ", caseId=" + caseId +
                 ", serversCount=" + serversCount +
+                ", projectId=" + projectId +
                 '}';
     }
 }

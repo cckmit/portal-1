@@ -20,4 +20,12 @@ public class AuthToken {
     private String sid;
 
     private String ip;
+
+    @Override
+    public String toString() {
+        return "AuthToken{" +
+                "sid='" + sid + '\'' +
+                ", ip='" + ip + '\'' +
+                '}';
+    }
 }

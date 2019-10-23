@@ -310,7 +310,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Long includedProduct = factory.makeProduct( "product_included_1" );
         Long includedProduct2 = factory.makeProduct( "product_included_2" );
         Long excludedProduct = factory.makeProduct( "product_excluded" );
-        model.productsIncludedIds( listOf( includedProduct, includedProduct2 ) );
+        model.productsIncludedIds( setOf( includedProduct, includedProduct2 ) );
 
         Company includedCompany = factory.makeCompany( "company_included_1" );
         Company includedCompany2 = factory.makeCompany( "company_included_2" );
@@ -485,7 +485,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             this.prefix = testDataPrefix + "_";
         }
 
-        public void productsIncludedIds( List<Long> productIncludedIds ) {
+        public void productsIncludedIds( Set<Long> productIncludedIds ) {
             this.productIncludedIds = productIncludedIds;
         }
 
@@ -523,7 +523,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         List<Long> caseTagIncludedIds = new ArrayList<>();
         List<Long> caseIds = new ArrayList<>();
         List<Long> caseTagIds = new ArrayList<>();
-        List<Long> productIncludedIds;
+        Set<Long> productIncludedIds;
         List<Long> companysIncludedIds;
 
         private Person person;

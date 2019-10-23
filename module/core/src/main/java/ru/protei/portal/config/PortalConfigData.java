@@ -309,7 +309,7 @@ public class PortalConfigData {
                 throw new ConfigException(e);
             }
 
-            logger.debug("legacy config, driver={}, url={}, export={}, import={}", jdbcDriver, jdbcURL, exportEnabled, importEnabled);
+            logger.info("legacy config, driver={}, url={}, export={}, import={}", jdbcDriver, jdbcURL, exportEnabled, importEnabled);
         }
 
         public String getJdbcDriver() {

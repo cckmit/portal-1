@@ -55,7 +55,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         organizationCode.setValue(null);
         dateRange.setValue(null);
         documentType.setValue(null);
-        approved.setValue(null);
+        approved.setValue(true);
         keywords.setValue(new LinkedList<>());
         sortDir.setValue(false);
         showDeprecated.setValue(false);

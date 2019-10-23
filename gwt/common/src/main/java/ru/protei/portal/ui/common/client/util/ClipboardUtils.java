@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.util;
 public class ClipboardUtils {
     public static native int copyToClipboard(String text) /*-{
         var textArea = document.createElement("textarea");
+        textArea.style.position = "fixed";
         document.body.appendChild(textArea);
 
         textArea.value = text;

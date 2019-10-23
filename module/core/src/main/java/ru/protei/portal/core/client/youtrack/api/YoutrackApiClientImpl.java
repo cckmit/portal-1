@@ -21,6 +21,7 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
 
     @Override
     public Result<String> removeCrmNumber( IssueApi issue ) {
+        log.info( "removeCrmNumber(): {}", issue );
         String url = IssueQueryBuilder.create( getBaseUrl(), issue.id ).build();
         String body = makeChangeCustomField( issue.getCrmNumberField(), null );
         return client.update( url, String.class, body );
@@ -28,6 +29,7 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
 
     @Override
     public Result<String> setCrmNumber( IssueApi issue, Long caseNumber ) {
+        log.info( "setCrmNumber(): caseNumber {}, issue {} ", caseNumber, issue );
         String url = IssueQueryBuilder.create( getBaseUrl(), issue.id ).build();
         String body = makeChangeCustomField( issue.getCrmNumberField(), String.valueOf( caseNumber ) );
         return client.update( url, String.class, body );
@@ -35,6 +37,7 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
 
     @Override
     public Result<IssueApi> getIssue( String issueId ) {
+        log.info( "getIssue(): {}", issueId );
         String url = IssueQueryBuilder.create( getBaseUrl(), issueId ).preset().
                 idAndCustomFieldsDefaults().build();
         return client.read( url, IssueApi.class );

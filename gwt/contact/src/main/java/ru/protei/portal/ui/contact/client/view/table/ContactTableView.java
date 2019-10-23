@@ -91,6 +91,11 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
         table.clearRows();
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.CONTACT_EDIT );
 

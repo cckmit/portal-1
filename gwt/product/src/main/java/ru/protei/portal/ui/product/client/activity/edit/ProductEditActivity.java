@@ -107,14 +107,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
                 resetView();
-                goBack();
+                fireEvent(isNew(product) ? new ProductEvents.Show(true) : new Back());
             }
         });
     }
 
     @Override
     public void onCancelClicked() {
-        goBack();
+        fireEvent(new Back());
     }
 
     @Override
@@ -152,8 +152,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
     }
 
-    private void goBack() {
-        fireEvent(new Back());
+    private boolean isNew(DevUnit product) {
+        return product.getId() == null;
     }
 
     private void requestProduct(Long productId) {

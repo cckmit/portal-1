@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -103,7 +104,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public Result<List<EntityOption>> listPlatformsOptionList( AuthToken token, PlatformQuery query) {
+    public Result<List<PlatformOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query) {
 
         List<Platform> result = platformDAO.listByQuery(query);
 
@@ -111,8 +112,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<EntityOption> options = result.stream()
-                .map(p -> new EntityOption(p.getName(), p.getId()))
+        List<PlatformOption> options = result.stream()
+                .map(p -> new PlatformOption(p.getName(), p.getId(), p.getCompanyId()))
                 .collect(Collectors.toList());
 
         return ok(options);
@@ -271,6 +272,15 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(platform.getCaseId());
+        caseObject.setName(platform.getName());
+
+        boolean caseStatus = caseObjectDAO.partialMerge(caseObject, "CASE_NAME");
+        if (!caseStatus) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
         Platform result = platformDAO.get(platform.getId());
 
         if (result == null) {
@@ -320,9 +330,21 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     public Result<Boolean> removePlatform( AuthToken token, long id) {
 
+        Platform platform = platformDAO.get(id);
+
+        if (platform == null){
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(platform.getCaseId());
+        caseObject.setDeleted(true);
+
+        boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
         boolean result = platformDAO.removeByKey(id);
 
-        return ok(result);
+        if (result && resultCase) return ok (result);
+        else return error(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override

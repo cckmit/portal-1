@@ -44,8 +44,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public void setIndependentProjects(Boolean independentProjects) {
-        project.setIndependentProject(independentProjects);
+    public void setContractIndependentProjects(Boolean contractIndependentProject) {
+        project.setContractIndependentProject(contractIndependentProject);
     }
 
     @Override

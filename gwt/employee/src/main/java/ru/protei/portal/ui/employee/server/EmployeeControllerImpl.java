@@ -29,19 +29,19 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     public SearchResult< EmployeeShortView > getEmployees(EmployeeQuery query ) throws RequestFailedException {
-        log.debug( "getEmployees(): query={}", query );
+        log.info( "getEmployees(): query={}", query );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
     }
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
-        log.debug( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         Result< List< PersonShortView > > result = employeeService.shortViewList( query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

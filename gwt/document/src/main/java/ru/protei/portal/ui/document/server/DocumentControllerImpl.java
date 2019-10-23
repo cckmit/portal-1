@@ -27,19 +27,19 @@ public class DocumentControllerImpl implements DocumentController {
 
     @Override
     public SearchResult<Document> getDocuments(DocumentQuery query) throws RequestFailedException {
-        log.debug("get documents: offset={} | limit={}", query.getOffset(), query.getLimit());
+        log.info("get documents: offset={} | limit={}", query.getOffset(), query.getLimit());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(documentService.getDocuments(token, query));
     }
 
     @Override
     public Document getDocument(Long id) throws RequestFailedException {
-        log.debug("get document, id: {}", id);
+        log.info("get document, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         Result<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
-        log.debug("get document, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+        log.info("get document, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -54,7 +54,7 @@ public class DocumentControllerImpl implements DocumentController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("save document, id: {}", HelperFunc.nvlt(document.getId(), "new"));
+        log.info("save document, id: {}", HelperFunc.nvlt(document.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Document> response;
@@ -70,10 +70,10 @@ public class DocumentControllerImpl implements DocumentController {
             response = documentService.updateDocument(descriptor.makeAuthToken(), document);
         }
 
-        log.debug("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("save role, applied id: {}", response.getData().getId());
+            log.info("save role, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
@@ -82,7 +82,7 @@ public class DocumentControllerImpl implements DocumentController {
 
     @Override
     public Boolean updateState(Long documentId, En_DocumentState state) throws RequestFailedException {
-        log.debug("change state document, id: {} | state: {}", documentId, state);
+        log.info("change state document, id: {} | state: {}", documentId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result response = documentService.updateState(descriptor.makeAuthToken(), documentId, state);
@@ -91,17 +91,17 @@ public class DocumentControllerImpl implements DocumentController {
             throw new RequestFailedException(response.getStatus());
         }
 
-        log.debug("change state document, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("change state document, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         return response.getData() != null;
     }
 
     @Override
     public SearchResult<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
-        log.debug("get projectDocuments, id: {}", projectId);
+        log.info("get projectDocuments, id: {}", projectId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         Result<SearchResult<Document>> response = documentService.getProjectDocuments(token, projectId);
-        log.debug("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
+        log.info("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
         return ServiceUtils.checkResultAndGetData(response);
     }
 

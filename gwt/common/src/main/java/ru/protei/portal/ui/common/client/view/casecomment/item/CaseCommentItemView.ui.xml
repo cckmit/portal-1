@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:issuelink='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
-             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:workType='urn:import:ru.protei.portal.ui.common.client.widget.casecomment.item'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -14,8 +15,8 @@
             </li>
             <i ui:field="privateComment"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
-            <li ui:field="timeElapsed" class="time-label"/>
-            <li ui:field="status" class="status"/>
+            <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
+            <li ui:field="status"/>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">

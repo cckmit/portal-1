@@ -30,7 +30,7 @@ public abstract class ProjectPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.PROJECT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PROJECT, DebugIds.SIDEBAR_MENU.PROJECT ) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( new ProjectEvents.Show( true ) ) );
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class ProjectPage
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new ProjectEvents.Show( true ) );
     }
 
     private void fireSelectTab() {
@@ -63,6 +63,5 @@ public abstract class ProjectPage
     Lang lang;
 
     private String ТAB;
-    private ProjectEvents.Show show = new ProjectEvents.Show();
 }
 

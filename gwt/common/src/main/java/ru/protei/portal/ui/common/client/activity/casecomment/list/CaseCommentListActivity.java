@@ -94,8 +94,7 @@ public abstract class CaseCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
-        view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
+        view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.enabledNewComment(isModifyEnabled);
         view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
@@ -404,11 +403,25 @@ public abstract class CaseCommentListActivity
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
 
+        itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
+
         itemView.enabledEdit( isModifyEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
         itemView.enableReply(isModifyEnabled);
+        itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
         itemViewToModel.put( itemView, value );
 
         return itemView;
+    }
+
+    private void updateTimeElapsedType(En_TimeElapsedType type, CaseComment value, AbstractCaseCommentItemView itemView) {
+        value.setTimeElapsedType(type);
+        caseCommentController.updateCaseTimeElapsedType(value.getId(), type, new FluentCallback<Boolean>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errEditTimeElapsedType(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(updated -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fillTimeElapsed(value, itemView);
+                })
+        );
     }
 
     private void fillTimeElapsed( CaseComment value, AbstractCaseCommentItemView itemView ) {
@@ -419,6 +432,8 @@ public abstract class CaseCommentListActivity
                     ).toString()
             );
         }
+
+        itemView.setTimeElapsedType(value.getTimeElapsedType());
     }
 
     private void bindAttachmentsToComment(AbstractCaseCommentItemView itemView, List<CaseAttachment> caseAttachments){

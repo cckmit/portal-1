@@ -13,7 +13,12 @@ public class SiteFolderPlatformEvents {
 
     @Url(value = "sfplatforms", primary = true)
     public static class Show {
-        public Show() {}
+        @Omit
+        public Boolean clearScroll = false;
+        public Show () {}
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
+        }
     }
 
     @Url(value = "sfplatform")

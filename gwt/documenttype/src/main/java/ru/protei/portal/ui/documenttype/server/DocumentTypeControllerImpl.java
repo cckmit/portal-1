@@ -24,7 +24,7 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
 
     @Override
     public List<DocumentType> getDocumentTypes(DocumentTypeQuery query) throws RequestFailedException {
-        log.debug("get document type list");
+        log.info("get document type list");
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<List<DocumentType>> response = documentTypeService.documentTypeList(descriptor.makeAuthToken(), query);
@@ -45,10 +45,10 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
         }
 
         Result<DocumentType> response = documentTypeService.saveDocumentType( descriptor.makeAuthToken(), type );
-        log.debug("store document type, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("store document type, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("store document type, applied id: {}", response.getData().getId());
+            log.info("store document type, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
