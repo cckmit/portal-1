@@ -7,13 +7,18 @@
 
     <g:HTMLPanel ui:field="globalContainer">
         <g:HTMLPanel ui:field="navbar" styleName="page-sidebar">
-            <div class="sidebar-header p-l-15">
+            <div class="sidebar-header sidebar-closed-header p-l-15">
                 <g:Anchor ui:field="logo" >
                     <img ui:field="logoImgWhite" class="brand" height="32" src="./images/logo-white-ru.svg"/>
                 </g:Anchor>
 
-                <div class="sidebar-header-controls">
-                    <g:Button ui:field="fixSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none m-l-50">
+                <g:HTMLPanel ui:field="closedSidebarControlsContainer" styleName="sidebar-header-controls closed-sidebar-controls">
+                    <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
+                        <i class="far fs-12"></i>
+                    </g:Button>
+                </g:HTMLPanel>
+                <div ui:field="openedSidebarControlsContainer" class="sidebar-header-controls">
+                    <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
                         <i class="far fs-12"></i>
                     </g:Button>
                 </div>
@@ -49,7 +54,7 @@
                 <div class="dropdown pull-right">
                     <g:Button ui:field="profile" styleName="profile-dropdown-toggle">
                         <span class="thumbnail-wrapper d32 circular inline">
-                            <img ui:field="photo" src="#" alt="" width="32" height="32"/>
+                            <img ui:field="photo" src="#" alt="" width="32" height="32" class="thumbnail-photo"/>
                         </span>
                     </g:Button>
                     <g:FocusPanel ui:field="menuBarFocus">
@@ -76,6 +81,8 @@
                 <g:HTMLPanel ui:field="container" styleName="content"/>
             </div>
         </div>
+
+
 
         <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-notice-right"/>
     </g:HTMLPanel>

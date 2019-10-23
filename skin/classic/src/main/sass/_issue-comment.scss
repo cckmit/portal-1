@@ -66,7 +66,8 @@
 }
 
 .chats .image img {
-  max-width: 100%
+  max-width: 100%;
+  margin-top: -3px;
 }
 
 .chats .image + .message {
@@ -82,7 +83,7 @@
 }
 
 .chats .message {
-  border: 1px solid rgba(0,0,0,.07);
+  border: 1px solid rgba(0,0,0,.2);
   padding: 7px 12px;
   font-size: 12px;
   position: relative;
@@ -117,7 +118,7 @@
   top: 10px;
   left: -14px;
   border: 7px solid transparent;
-  border-right-color: rgba(0,0,0,.07);
+  border-right-color: rgba(0,0,0,.3);
   height: 0px;
 }
 
@@ -235,7 +236,7 @@
   left: auto;
   right: -14px;
   border-right-color: transparent;
-  border-left-color: #ccd0d4
+  border-left-color: #b5b5b5
 }
 
 .chats .right .message:after {

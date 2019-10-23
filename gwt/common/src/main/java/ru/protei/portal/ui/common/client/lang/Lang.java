@@ -213,6 +213,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactSocialNet();
 
+    String goToContacts();
+
     String workAddress();
 
     String homeAddress();

@@ -85,30 +85,18 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    public void setFooterFixed(boolean isFixed) {
-        if (isFixed) {
-            getWidget().addStyleName("card-with-fixable-footer");
-            return;
-        }
-        getWidget().removeStyleName("card-with-fixable-footer");
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
     @Override
     public void setCopyBtnEnabledStyle( boolean isEnabled ){
-        if (isEnabled) {
-            copy.removeStyleName( "link-disabled" );
-        } else {
-            copy.addStyleName( "link-disabled" );
-        }
+        copy.setStyleName("link-disabled", !isEnabled);
     }
 
     @Override
     public void setRemoveBtnEnabledStyle( boolean isEnabled ){
-        if (isEnabled) {
-            remove.removeStyleName( "link-disabled" );
-        } else {
-            remove.addStyleName( "link-disabled" );
-        }
+        remove.setStyleName("link-disabled", !isEnabled);
     }
 
     @UiHandler( "copy" )
@@ -160,6 +148,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     HTMLPanel documents;
     @UiField
     ImageElement typeImage;
+    @UiField
+    HTMLPanel previewWrapperContainer;
 
     AbstractEquipmentPreviewActivity activity;
 

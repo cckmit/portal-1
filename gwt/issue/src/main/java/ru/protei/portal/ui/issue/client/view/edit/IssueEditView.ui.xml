@@ -35,7 +35,7 @@
                     </g:HTMLPanel>
 
                     <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
-                        <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn"/>
+                        <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn no-shadow no-outline"/>
 
                         <div class="form-input-group">
                             <label ui:field="nameLabel" class="fade">

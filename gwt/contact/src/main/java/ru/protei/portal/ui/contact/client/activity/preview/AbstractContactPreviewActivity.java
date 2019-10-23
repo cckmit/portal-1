@@ -5,4 +5,6 @@ package ru.protei.portal.ui.contact.client.activity.preview;
  */
 public interface AbstractContactPreviewActivity {
     void onFullScreenPreviewClicked ();
+
+    void onBackButtonClicked();
 }

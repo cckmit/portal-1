@@ -43,7 +43,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         event.parent.add( view.asWidget() );
 
         fillView( event.projectId );
-
+        view.isFullScreen(false);
         view.backButtonVisibility().setVisible( false );
     }
 
@@ -53,7 +53,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         initDetails.parent.add( view.asWidget() );
 
         fillView( event.projectId );
-
+        view.isFullScreen(true);
         view.backButtonVisibility().setVisible( true );
     }
 

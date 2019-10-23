@@ -30,6 +30,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
         platformRequest(event.platform.getId(), this::fillView);
         view.footerContainerVisibility().setVisible(false);
+        view.isFullScreen(false);
     }
 
     @Event
@@ -39,6 +40,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
         platformRequest(event.platformId, this::fillView);
         view.footerContainerVisibility().setVisible(true);
+        view.isFullScreen(true);
     }
 
     @Event

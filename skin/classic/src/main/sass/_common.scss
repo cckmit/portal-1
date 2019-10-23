@@ -958,6 +958,7 @@ label.bordered:after {
 
 
 .preview-wrapper,
+.preview-card,
 .filter-container .card {
   overflow-y: auto;
   box-sizing: border-box;
@@ -1532,6 +1533,9 @@ a {
     font-family: "Font Awesome 5 Free", serif;
     content: "\f13e";
     font-size: 1.2em;
+  }
+  &.input-group-addon-up-hovering{
+    background-color: #00A1A1;
   }
 }
 
@@ -3983,7 +3987,7 @@ label {
 /*60px - высота заголовка pages header*/
 
 .card-with-fixable-footer{
-  height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px);
 }
 
 .card-with-fixable-footer .card-footer {
@@ -3994,7 +3998,7 @@ label {
   padding: 8px 5px;
   background-color: #ededed;
   border-top: 1px solid #dadada;
-  z-index: 100;
+  z-index: 150;
 }
 
 .pre-formatted-info {
@@ -4035,6 +4039,7 @@ label {
 
 .number-copy-panel {
   display: inline-block!important;
+  padding-right: 30px;
   .copy-issue-description {
     margin-left: 3px;
     display: none;
@@ -4115,3 +4120,26 @@ table {
     right: 10px;
   }
 }
+
+.thumbnail-photo{
+  object-fit: cover;
+  object-position: 0px 25%;
+}
+
+.no-shadow {
+  box-shadow: none !important;
+}
+
+.no-outline {
+  outline: none !important;
+}
+
+.input-group-addon {
+  padding-top: 16px;
+  padding-left: 8px;
+}
+
+.no-margin-bottom {
+  margin-bottom: 0px !important;
+}
+

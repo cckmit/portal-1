@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default no-border card-fixed">
+    <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
             <g:HTMLPanel ui:field="employeeNameBlock" visible="false">
                 <h5><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></h5>

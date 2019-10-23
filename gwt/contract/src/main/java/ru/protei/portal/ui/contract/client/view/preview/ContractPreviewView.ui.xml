@@ -3,80 +3,84 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="card card-default no-border card-fixed no-margin card-with-fixable-footer">
-        <div class="card-body">
-            <h4 class="m-r-50">
-                <g:Anchor href="#" ui:field="header"/>
-            </h4>
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
+        <div class="preview card-body no-padding">
+            <div class="card no-border">
+                <div class="card-body">
+                    <h4 class="m-r-50">
+                        <g:Anchor href="#" ui:field="header"/>
+                    </h4>
 
-            <img ui:field="state" src="" class="preview-title-image_right"/>
+                    <img ui:field="state" src="" class="preview-title-image_right"/>
 
-            <small ui:field="type"/>
+                    <small ui:field="type"/>
 
-            <div class="small hint-text pre-formatted-info">
-                <g:InlineLabel ui:field="description" styleName="m-l--3"/>
+                    <div class="small hint-text pre-formatted-info">
+                        <g:InlineLabel ui:field="description" styleName="m-l--3"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractDateSigning}: "/></b>
+                        <span ui:field="dateSigning"/>
+                    </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.contractDateValid}: "/></b>
+                        <span ui:field="dateValid"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractDirection}: "/></b>
+                        <span ui:field="direction"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractParent}: "/></b>
+                        <span ui:field="contractParent"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractChild}: "/></b>
+                        <span ui:field="contractChild"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.contractWorkGroup}"/></h5>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractOrganization}: "/></b>
+                        <span ui:field="organization"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractManager}: "/></b>
+                        <span ui:field="manager"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractCurator}: "/></b>
+                        <span ui:field="curator"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractContragent}: "/></b>
+                        <span ui:field="contragent"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractProject}: "/></b>
+                        <g:Anchor ui:field="project" href="#" target="_blank"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>
+
+                    <label ui:field="dates"/>
+
+                    <h5><ui:text from="{lang.comments}"/></h5>
+
+                    <g:HTMLPanel ui:field="commentContainer"/>
+                </div>
             </div>
-
-            <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractDateSigning}: "/></b>
-                <span ui:field="dateSigning"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.contractDateValid}: "/></b>
-                <span ui:field="dateValid"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractDirection}: "/></b>
-                <span ui:field="direction"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractParent}: "/></b>
-                <span ui:field="contractParent"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractChild}: "/></b>
-                <span ui:field="contractChild"/>
-            </div>
-
-            <h5><ui:text from="{lang.contractWorkGroup}"/></h5>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractOrganization}: "/></b>
-                <span ui:field="organization"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractManager}: "/></b>
-                <span ui:field="manager"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractCurator}: "/></b>
-                <span ui:field="curator"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractContragent}: "/></b>
-                <span ui:field="contragent"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.contractProject}: "/></b>
-                <g:Anchor ui:field="project" href="#" target="_blank"/>
-            </div>
-
-            <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>
-
-            <label ui:field="dates"/>
-
-            <h5><ui:text from="{lang.comments}"/></h5>
-
-            <g:HTMLPanel ui:field="commentContainer"/>
         </div>
         <g:HTMLPanel ui:field="footerContainer" styleName="card-footer">
             <div class="card card-transparent no-margin">
