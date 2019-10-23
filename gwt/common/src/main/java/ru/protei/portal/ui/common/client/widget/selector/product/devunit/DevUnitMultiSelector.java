@@ -74,7 +74,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView
         }
         options.stream()
                 .filter(option -> !Objects.equals(option, exclude))
-                .forEach(option -> addOption(option.getName(), option));
+                .forEach(option -> addOption(option.getName(), option.getAliases(), false, option));
     }
 
     @Inject

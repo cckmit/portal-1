@@ -68,11 +68,16 @@ public abstract class MultipleSelector<T>
     public void setHasAnyValue( boolean hasAnyValue ) {
         this.hasAnyValue = hasAnyValue;
     }
+
     public void addOption( String name, T value ) {
-        addOption(name, null, value);
+        addOption( name, null, false, value );
     }
 
     public void addOption( String name, String info, T value ) {
+        addOption( name, info, true, value );
+    }
+
+    public void addOption( String name, String info, boolean infoVisible, T value ) {
         SelectableItem itemView;
         if ( value == null && hasAnyValue ) {
             itemView = makeAnySelectorItem( name );
@@ -80,6 +85,7 @@ public abstract class MultipleSelector<T>
             itemView = itemFactory.get();
             itemView.setText( name );
             itemView.setInfo( info );
+            itemView.setInfoVisible( infoVisible );
             itemView.addValueChangeHandler( this );
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );

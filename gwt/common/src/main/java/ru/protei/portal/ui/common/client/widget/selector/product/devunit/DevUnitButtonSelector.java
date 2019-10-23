@@ -28,6 +28,7 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
             }
             return new DisplayOption(
                     value.getName(),
+                    value.getAliases(),
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );
