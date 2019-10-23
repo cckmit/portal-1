@@ -32,6 +32,8 @@ public class DebugIds {
         String USER_NAME_LABEL = "app-user-name-label";
         String SIDEBAR = "app-sidebar";
         String DASHBOARD_BUTTON = "app-dashboard-button";
+        String FIX_CLOSED_SIDEBAR_BUTTON = "app-fix-closed-sidebar-button";
+        String FIX_OPENED_SIDEBAR_BUTTON = "app-fix-opened-sidebar-button";
     }
 
     public interface PROFILE {

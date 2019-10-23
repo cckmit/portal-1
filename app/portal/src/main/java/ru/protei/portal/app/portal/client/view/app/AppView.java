@@ -190,6 +190,8 @@ public class AppView extends Composite
         username.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.USER_NAME_LABEL);
         navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
         logo.ensureDebugId(DebugIds.APP_VIEW.DASHBOARD_BUTTON);
+        fixClosedSidebarButton.ensureDebugId(DebugIds.APP_VIEW.FIX_CLOSED_SIDEBAR_BUTTON);
+        fixOpenedSidebarButton.ensureDebugId(DebugIds.APP_VIEW.FIX_OPENED_SIDEBAR_BUTTON);
     }
 
     private void initHandlers() {
@@ -197,10 +199,10 @@ public class AppView extends Composite
         RootPanel.get().addHandler( this, KeyUpEvent.getType() );
 
         closedSidebarControlsContainer.sinkEvents( Event.ONMOUSEOVER );
-        closedSidebarControlsContainer.addHandler(DomEvent::stopPropagation, MouseOverEvent.getType() );
+        closedSidebarControlsContainer.addHandler(DomEvent::stopPropagation, MouseOverEvent.getType());
 
         closedSidebarControlsContainer.sinkEvents( Event.ONMOUSEOUT );
-        closedSidebarControlsContainer.addHandler(DomEvent::stopPropagation, MouseOutEvent.getType() );
+        closedSidebarControlsContainer.addHandler(DomEvent::stopPropagation, MouseOutEvent.getType());
 
         navbar.sinkEvents( Event.ONMOUSEOVER );
         navbar.addHandler( event -> {
