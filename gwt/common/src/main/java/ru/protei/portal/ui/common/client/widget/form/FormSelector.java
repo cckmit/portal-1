@@ -1,19 +1,21 @@
 package ru.protei.portal.ui.common.client.widget.form;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
@@ -25,8 +27,6 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
-        anchor.getElement().setAttribute("style", "position: absolute; padding-left: 90px; padding-top: 7px; z-index: 10;");
-        anchor.setVisible(false);
     }
 
     @Override
@@ -39,9 +39,19 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         if ( selectedValue.getIcon() != null ) {
             innerHtml += "<i class='" + selectedValue.getIcon() + "'></i>";
         }
+
         innerHtml += selectedValue.getName() == null ? "" : selectedValue.getName();
 
         text.setInnerHTML(innerHtml);
+
+        if (selectedValue.getExternalLink() != null) {
+            Element element = DOM.createAnchor();
+            element.addClassName("fa fa-share m-l-5");
+            element.setAttribute("href", selectedValue.getExternalLink());
+            element.setAttribute("target", "_blank");
+            addOnAnchorClickListener(element, popup);
+            text.appendChild(element);
+        }
     }
 
     @Override
@@ -87,14 +97,6 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         formContainer.addStyleName(DISABLE_STYLENAME);
     }
 
-    public void setAnchorVisible(boolean isVisible) {
-        anchor.setVisible(isVisible);
-    }
-
-    public void setAnchorHref(String href) {
-        anchor.setHref(href);
-    }
-
     public void setValidation(boolean isValidable){
         this.isValidable = isValidable;
     }
@@ -128,13 +130,15 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
             showPopup(formContainer);
         }, ClickEvent.getType());
 
-        anchor.addClickHandler(event -> {
-            event.stopPropagation();
-            popup.hide();
-        });
-
         popup.addCloseHandler(event -> formContainer.removeStyleName(FOCUS_STYLENAME));
     }
+
+    private native void addOnAnchorClickListener(Element element, SelectorPopup popup) /*-{
+        element.addEventListener("click", function (event) {
+            event.stopPropagation();
+            popup.@ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup::hide()();
+        })
+    }-*/;
 
     @UiField
     HTMLPanel formContainer;
@@ -142,8 +146,6 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
     LabelElement label;
     @UiField
     SpanElement text;
-    @UiField
-    Anchor anchor;
 
     private boolean isValidable;
 

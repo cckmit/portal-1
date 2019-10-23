@@ -400,12 +400,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setAnchorVisibility(boolean isVisible) {
-        platform.setAnchorVisible(isVisible);
     }
 
     @Override
     public void setAnchorHref(String href) {
-        platform.setAnchorHref(href);
     }
 
     @UiHandler("platform")

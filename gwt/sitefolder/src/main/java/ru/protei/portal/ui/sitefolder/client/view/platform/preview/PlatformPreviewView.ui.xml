@@ -65,9 +65,9 @@
 
             </div>
         </g:HTMLPanel>
-        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer text-right">
+        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer forcibly-bottom text-right">
             <div class="card card-transparent no-margin">
-                <div class="text-right">
+                <div class="text-right m-r-15">
                     <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>
                 </div>
             </div>

@@ -21,8 +21,7 @@ public class PlatformFormSelector extends FormSelector<PlatformOption> implement
 
         setDisplayOptionCreator(value -> {
             DisplayOption displayOption = new DisplayOption(value == null ? defaultValue : value.getDisplayText());
-            displayOption.setAnchorIcon(value == null ? null : "fa fa-share fa-xs");
-            displayOption.setAnchorHref(value == null ? null : LinkUtils.makeLink(Platform.class, value.getId()));
+            displayOption.setExternalLink(value == null ? null : LinkUtils.makeLink(Platform.class, value.getId()));
 
             return displayOption;
         });
