@@ -20,4 +20,6 @@ public interface AbstractIssueEditActivity {
     void onDisplayPreviewChanged( String description, boolean isDisplay );
 
     void onCopyClicked();
+
+    void onPlatformChanged();
 }

@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
@@ -24,6 +25,8 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
+        anchor.getElement().setAttribute("style", "position: absolute; padding-left: 90px; padding-top: 7px; z-index: 10;");
+        anchor.setVisible(false);
     }
 
     @Override
@@ -84,6 +87,14 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         formContainer.addStyleName(DISABLE_STYLENAME);
     }
 
+    public void setAnchorVisible(boolean isVisible) {
+        anchor.setVisible(isVisible);
+    }
+
+    public void setAnchorHref(String href) {
+        anchor.setHref(href);
+    }
+
     public void setValidation(boolean isValidable){
         this.isValidable = isValidable;
     }
@@ -117,6 +128,11 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
             showPopup(formContainer);
         }, ClickEvent.getType());
 
+        anchor.addClickHandler(event -> {
+            event.stopPropagation();
+            popup.hide();
+        });
+
         popup.addCloseHandler(event -> formContainer.removeStyleName(FOCUS_STYLENAME));
     }
 
@@ -126,6 +142,8 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
     LabelElement label;
     @UiField
     SpanElement text;
+    @UiField
+    Anchor anchor;
 
     private boolean isValidable;
 

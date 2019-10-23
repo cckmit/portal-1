@@ -44,11 +44,23 @@ public class SelectorItem
     }
 
     public void setStyle( String style ) {
-        anchor.setStyleName( style );
+        item.setStyleName( style );
     }
 
     public void setIcon( String className ) {
         icon.setClassName( className );
+    }
+
+    public void setAnchorIcon(String className) {
+        anchor.setStyleName(className);
+        anchor.getElement().setAttribute("style", "padding: 3px 10px;");
+        anchor.setVisible(true);
+        root.getElement().setAttribute("style", "display: flex");
+        item.getElement().setAttribute("style", "padding-left: 3px; width: 100%;");
+    }
+
+    public void setAnchorHref(String href) {
+        anchor.setHref(href);
     }
 
     public void setImage( String src ) {
@@ -56,14 +68,14 @@ public class SelectorItem
         image.setSrc( src );
     }
 
-    @UiHandler( "anchor" )
+    @UiHandler("item")
     public void onAnchorClicked( ClickEvent event ) {
         event.preventDefault();
 
         ClickEvent.fireNativeEvent( event.getNativeEvent(), this );
     }
 
-    @UiHandler("anchor")
+    @UiHandler("item")
     public void onKeyUpEvent( KeyUpEvent event) {
         event.preventDefault();
 
@@ -71,7 +83,7 @@ public class SelectorItem
     }
 
     public void setFocus(boolean isFocused) {
-        anchor.setFocus(isFocused);
+        item.setFocus(isFocused);
     }
 
     @UiField
@@ -79,6 +91,9 @@ public class SelectorItem
 
     @UiField
     Anchor anchor;
+
+    @UiField
+    Anchor item;
 
     @UiField
     Element icon;

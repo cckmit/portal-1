@@ -398,6 +398,22 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return timeElapsedHeader;
     }
 
+    @Override
+    public void setAnchorVisibility(boolean isVisible) {
+        platform.setAnchorVisible(isVisible);
+    }
+
+    @Override
+    public void setAnchorHref(String href) {
+        platform.setAnchorHref(href);
+    }
+
+    @UiHandler("platform")
+    public void onPlatformChanged(ValueChangeEvent<PlatformOption> event) {
+        if (activity != null) {
+            activity.onPlatformChanged();
+        }
+    }
 
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {

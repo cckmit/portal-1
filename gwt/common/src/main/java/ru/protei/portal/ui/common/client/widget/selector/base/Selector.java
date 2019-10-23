@@ -139,6 +139,9 @@ public abstract class Selector<T>
         }
         itemView.setIcon(option.getIcon());
 
+        itemView.setAnchorIcon(option.getAnchorIcon());
+        itemView.setAnchorHref(option.getAnchorHref());
+
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
         if (value == null) {

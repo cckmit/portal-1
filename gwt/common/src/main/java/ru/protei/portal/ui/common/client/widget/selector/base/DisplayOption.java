@@ -10,6 +10,8 @@ public class DisplayOption {
     private String style;
     private String icon;
     private String imageSrc;
+    private String anchorIcon;
+    private String anchorHref;
 
     public DisplayOption() {}
 
@@ -54,6 +56,22 @@ public class DisplayOption {
 
     public String getStyle() {
         return style;
+    }
+
+    public String getAnchorIcon() {
+        return anchorIcon;
+    }
+
+    public String getAnchorHref() {
+        return anchorHref;
+    }
+
+    public void setAnchorHref(String anchorHref) {
+        this.anchorHref = anchorHref;
+    }
+
+    public void setAnchorIcon(String anchorIcon) {
+        this.anchorIcon = anchorIcon;
     }
 
     public void setStyle( String style ) {
