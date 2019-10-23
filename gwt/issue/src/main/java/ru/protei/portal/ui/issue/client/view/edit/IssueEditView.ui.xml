@@ -158,6 +158,7 @@
                                         <selector:PlatformFormSelector ui:field="platform"
                                                                        validation="false"
                                                                        header="{lang.siteFolderPlatform}"
+                                                                       activateExternalLinks="true"
                                                                        mandatory="false"/>
                                     </div>
                                 </g:HTMLPanel>

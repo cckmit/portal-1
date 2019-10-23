@@ -21,7 +21,7 @@ public class PlatformFormSelector extends FormSelector<PlatformOption> implement
 
         setDisplayOptionCreator(value -> {
             DisplayOption displayOption = new DisplayOption(value == null ? defaultValue : value.getDisplayText());
-            displayOption.setExternalLink(value == null ? null : LinkUtils.makeLink(Platform.class, value.getId()));
+            displayOption.setExternalLink((value == null || !externalLinksActive) ? null : LinkUtils.makeLink(Platform.class, value.getId()));
 
             return displayOption;
         });
@@ -44,4 +44,10 @@ public class PlatformFormSelector extends FormSelector<PlatformOption> implement
     }
 
     private String defaultValue = null;
+
+    public void setActivateExternalLinks(boolean isActive) {
+        this.externalLinksActive = isActive;
+    }
+
+    private boolean externalLinksActive = false;
 }
