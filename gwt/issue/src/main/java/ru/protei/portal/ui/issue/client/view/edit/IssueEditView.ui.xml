@@ -52,7 +52,7 @@
                                                tagCaseType="CRM_SUPPORT"/>
                     </div>
 
-                    <g:Label ui:field="descriptionRO" styleName="form-group pre-formatted-info markdown p-t-15" />
+                    <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
 
                     <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
                         <div class="col-md-12">

@@ -370,7 +370,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.switchToRONameDescriptionView(false);
         } else {
             view.switchToRONameDescriptionView(true);
-            view.setDescriptionRO(issue.getInfo());
+            renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
             view.setNameRO(issue.getName());
         }
 
