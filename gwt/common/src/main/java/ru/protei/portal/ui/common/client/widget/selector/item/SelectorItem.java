@@ -56,7 +56,7 @@ public class SelectorItem
         image.setSrc( src );
     }
 
-    @UiHandler("anchor")
+    @UiHandler( "anchor" )
     public void onAnchorClicked( ClickEvent event ) {
         event.preventDefault();
 

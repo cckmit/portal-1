@@ -43,11 +43,11 @@ public class PlatformFormSelector extends FormSelector<PlatformOption> implement
         this.defaultValue = defaultValue;
     }
 
-    private String defaultValue = null;
-
     public void setActivateExternalLinks(boolean isActive) {
         this.externalLinksActive = isActive;
     }
+
+    private String defaultValue = null;
 
     private boolean externalLinksActive = false;
 }

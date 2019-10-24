@@ -75,10 +75,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility copyVisibility();
 
-    void setAnchorVisibility(boolean isVisible);
-
-    void setAnchorHref(String href);
-
     void showComments(boolean isShow);
     boolean isAttached();
     HasValue<PlatformOption> platform();

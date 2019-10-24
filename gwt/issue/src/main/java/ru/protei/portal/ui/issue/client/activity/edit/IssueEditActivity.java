@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
-import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 
@@ -274,17 +273,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Override
-    public void onPlatformChanged() {
-        if (view.platform().getValue() == null) {
-            view.setAnchorVisibility(false);
-            view.setAnchorHref("#");
-        } else {
-            view.setAnchorVisibility(true);
-            view.setAnchorHref(LinkUtils.makeLink(Platform.class, view.platform().getValue().getId()));
-        }
-    }
-
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
@@ -429,8 +417,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
-
-        onPlatformChanged();
 
         fillViewForJira(issue);
 
