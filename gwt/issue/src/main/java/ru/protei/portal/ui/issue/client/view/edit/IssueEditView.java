@@ -195,6 +195,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasEnabled platformState() {
+        return platform;
+    }
+
+    @Override
     public HasVisibility numberVisibility(){
         return numberLabel;
     }

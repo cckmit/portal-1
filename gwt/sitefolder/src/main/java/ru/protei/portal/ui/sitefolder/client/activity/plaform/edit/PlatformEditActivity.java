@@ -259,6 +259,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         else {
             platform.setProjectId(view.project().getValue().getId());
             platform.setCompany(null);
+            platform.setCompanyId(null);
             platform.setManager(null);
         }
     }
