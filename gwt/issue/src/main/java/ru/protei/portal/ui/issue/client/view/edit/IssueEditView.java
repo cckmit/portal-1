@@ -350,17 +350,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         descriptionContainer.setVisible(!isRO);
         nameContainer.setVisible(!isRO);
 
-        descriptionRO.setVisible(isRO);
         if (isRO) {
             nameRO.removeClassName(UiConstants.Styles.HIDE);
+            descriptionRO.removeClassName(UiConstants.Styles.HIDE);
         } else {
             nameRO.addClassName(UiConstants.Styles.HIDE);
+            descriptionRO.addClassName(UiConstants.Styles.HIDE);
         }
     }
 
     @Override
     public void setDescriptionRO(String value) {
-        descriptionRO.setText(value);
+        descriptionRO.setInnerHTML(value);
     }
 
     @Override
@@ -479,7 +480,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED);
         timeElapsedInput.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_INPUT);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
-        descriptionRO.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD);
+        descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
         notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
@@ -629,7 +630,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HeadingElement nameRO;
     @UiField
-    Label descriptionRO;
+    DivElement descriptionRO;
     @UiField
     HTMLPanel descriptionContainer;
 
