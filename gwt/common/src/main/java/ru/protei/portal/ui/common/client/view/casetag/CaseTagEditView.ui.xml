@@ -9,18 +9,18 @@
         <div class="card-body">
             <div class="row">
                 <div class="form-group col-md-6">
-                    <label><ui:text from="{lang.tagName}"/></label>
+                    <label ui:field="tagNameLabel"><ui:text from="{lang.tagName}"/></label>
                     <g:TextBox ui:field="name" styleName="form-control"/>
                 </div>
                 <div class="form-group col-md-6">
-                    <label><ui:text from="{lang.tagColor}"/></label>
+                    <label ui:field="tagColorLabel"><ui:text from="{lang.tagColor}"/></label>
                     <colorpicker:ColorPicker ui:field="color"/>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-md-12">
                     <g:HTMLPanel ui:field="companyPanel" visible="false">
-                        <label><ui:text from="{lang.tagCompany}"/></label>
+                        <label ui:field="tagCompanyLabel"><ui:text from="{lang.tagCompany}"/></label>
                         <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
                     </g:HTMLPanel>
                 </div>

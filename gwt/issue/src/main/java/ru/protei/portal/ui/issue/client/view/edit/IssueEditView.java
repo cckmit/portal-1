@@ -499,6 +499,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         product.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PRODUCT);
         manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
         timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.TIME_ELAPSED);
+        newIssueTimeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NEW_ISSUE_TIME_ELAPSED);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
         subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.SUBSCRIPTIONS);
         notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
@@ -602,6 +603,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiField
     LabelElement timeElapsedLabel;
+    @UiField
+    LabelElement newIssueTimeElapsedLabel;
     @UiField
     LabelElement descriptionLabel;
     @UiField

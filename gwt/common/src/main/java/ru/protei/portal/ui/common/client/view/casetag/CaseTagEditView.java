@@ -1,11 +1,13 @@
 package ru.protei.portal.ui.common.client.view.casetag;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -18,6 +20,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue(lang.selectIssueCompany());
+        ensureDebugIds();
     }
 
     @Override
@@ -68,6 +71,15 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
         label.setText(lang.tagAuthor() + " " + author);
     }
 
+    private void ensureDebugIds() {
+        tagNameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.NAME_LABEL);
+        tagColorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COLOR_LABEL);
+        tagCompanyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COMPANY_LABEL);
+        label.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.AUTHOR_LABEL);
+        name.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.NAME_INPUT);
+        company.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.COMPANY_SELECTOR);
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -83,6 +95,15 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
 
     @UiField
     Label label;
+
+    @UiField
+    LabelElement tagNameLabel;
+
+    @UiField
+    LabelElement tagColorLabel;
+
+    @UiField
+    LabelElement tagCompanyLabel;
 
     @Inject
     @UiField(provided = true)

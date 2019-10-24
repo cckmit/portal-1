@@ -13,11 +13,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.test.client.DebugIds;
 
 public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled {
 
     public CleanableSearchBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -128,6 +130,10 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         this.addonIcon.setClassName(icon);
         this.addon.removeClassName("hide");
         this.textBox.removeStyleName("rounded-left-3");
+    }
+
+    private void ensureDebugIds() {
+        textBox.getElement().setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CLEANABLE_SEARCH_BOX.SEARCH_INPUT);
     }
 
     @UiField
