@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -36,6 +37,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     public void onInit() {
         setWidget(ourUiBinder.createAndBindUi(this));
         super.init();
+        ensureDebugIds();
     }
 
     @Override
@@ -90,6 +92,10 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
 
     public void setEditTagsEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    private void ensureDebugIds() {
+        addButton.ensureDebugId(DebugIds.ISSUE.ADD_TAG_BUTTON);
     }
 
     private void resetSearchFilter() {

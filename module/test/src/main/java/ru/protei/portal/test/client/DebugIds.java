@@ -212,6 +212,7 @@ public class DebugIds {
         String LINK_INFO_CONTAINER = "issue-link-info-container";
         String LINK_REMOVE_BUTTON = "issue-link-remove-button";
         String TAGS_BUTTON = "issue-tags-button";
+        String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
@@ -244,6 +245,7 @@ public class DebugIds {
             String PRODUCT = "issue-label-product";
             String MANAGER = "issue-label-manager";
             String TIME_ELAPSED = "issue-label-time-elapsed";
+            String NEW_ISSUE_TIME_ELAPSED = "issue-label-new-issue-time-elapsed";
             String INFO = "issue-label-info";
             String SUBSCRIPTIONS = "issue-label-subscriptions";
             String NOTIFIERS = "issue-label-notifiers";
@@ -463,6 +465,8 @@ public class DebugIds {
     public interface TAG_SELECTOR_POPUP {
         String ITEM = "tag-selector-popup-item";
         String EDIT_BUTTON = "tag-selector-popup-edit-button";
+        String NAME = "tag-selector-popup-name";
+        String COMPANY_NAME = "tab-selector-popup-company-name";
     }
 
     public interface CONTRACT {
@@ -507,5 +511,33 @@ public class DebugIds {
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
         }
+    }
+
+    public interface CLEANABLE_SEARCH_BOX {
+        String SEARCH_INPUT = "cleanable-search-box-search-input";
+    }
+
+    public interface DIALOG_DETAILS {
+        String MODAL_DIALOG = "dialog-details-modal-dialog";
+        String NAME = "dialog-details-name";
+        String CLOSE_BUTTON = "dialog-details-close-button";
+        String REMOVE_BUTTON = "dialog-details-remove-button";
+        String SAVE_BUTTON = "dialog-details-save-button";
+        String CANCEL_BUTTON = "dialog-details-cancel-button";
+
+        interface TAG {
+            String NAME_LABEL = "dialog-details-tag-name-label";
+            String COMPANY_LABEL = "dialog-details-tag-company-label";
+            String COLOR_LABEL = "dialog-details-tag-color-label";
+            String AUTHOR_LABEL = "dialog-details-author-label";
+            String NAME_INPUT = "dialog-details-tag-name-input";
+            String COMPANY_SELECTOR = "dialog-details-tag-company-selector";
+            String COMPANY = "dialog-details-tag-company";
+        }
+    }
+
+    public interface COLOR_PICKER {
+        String BUTTON = "color-picker-button";
+        String INPUT = "color-picker-input";
     }
 }
