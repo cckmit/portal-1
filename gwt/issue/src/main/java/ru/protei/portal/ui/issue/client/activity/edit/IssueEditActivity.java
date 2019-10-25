@@ -127,7 +127,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onSaveClicked() {
 
-        if (!validateView()) {
+        if (!validateView(issue)) {
             return;
         }
 
@@ -361,17 +361,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isPrivate().setValue(issue.isPrivateCase());
 
-        view.name().setValue(issue.getName());
-        view.description().setValue(issue.getInfo());
-
         boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
         if ( isAllowedEditNameAndDescription ) {
             view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
             view.switchToRONameDescriptionView(false);
+            view.name().setValue(issue.getName());
+            view.description().setValue(issue.getInfo());
         } else {
             view.switchToRONameDescriptionView(true);
-            renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
             view.setNameRO(issue.getName());
+            renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
         }
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
@@ -439,11 +438,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_EDIT + "_" + key, "false" ) );
     }
 
-    private void fillIssueObject(CaseObject issue){
-        issue.setName(view.name().getValue());
+    private void fillIssueObject(CaseObject issue) {
+        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
+        if (isAllowedEditNameAndDescription) {
+            issue.setName(view.name().getValue());
+            issue.setInfo(view.description().getValue());
+        }
         issue.setPrivateCase( view.isPrivate().getValue() );
-        issue.setInfo(view.description().getValue());
-
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
 
@@ -474,7 +475,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setJiraMetaData(view.jiraSlaSelector().getValue());
     }
 
-    private boolean validateView() {
+    private boolean validateView(CaseObject issue) {
         if(view.company().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
             return false;
@@ -491,7 +492,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             }
         }
 
-        boolean isFieldsValid = view.nameValidator().isValid() &&
+        boolean isRO = !(isNew(issue) || isSelfIssue(issue));
+        boolean isFieldsValid = (isRO || view.nameValidator().isValid()) &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid();
