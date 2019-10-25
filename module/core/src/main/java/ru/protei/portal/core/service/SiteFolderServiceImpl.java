@@ -113,7 +113,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         List<PlatformOption> options = result.stream()
-                .map(p -> new PlatformOption(p.getName(), p.getId(), p.getCompanyId()))
+                .map(p -> new PlatformOption(p.getName(), p.getId(), p.getProjectId() == null ? p.getCompanyId() : caseObjectDAO.get(p.getProjectId()).getInitiatorCompanyId()))
                 .collect(Collectors.toList());
 
         return ok(options);
