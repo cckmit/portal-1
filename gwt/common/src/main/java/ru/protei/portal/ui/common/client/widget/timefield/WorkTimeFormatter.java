@@ -11,7 +11,7 @@ public class WorkTimeFormatter {
         day = lang.timeDayLiteral();
         hour = lang.timeHourLiteral();
         minute = lang.timeMinuteLiteral();
-        placeholder = " 1" + day + " 1" + hour + " 1" + minute;
+        placeholder = "1" + day + " 1" + hour + " 1" + minute;
         pattern = "^(\\d+" + RegExp.quote(day) + "\\s*)?(\\d+" + RegExp.quote(hour) + "\\s*)?(\\d+" + RegExp.quote(minute) + "\\s*)?" + RegExp.quote(unknown) + "?$"; // any order (didn't work):  "^(?:(\\d+" + day + "\\s*)?|(\\d+" + hour + "\\s*)?|(\\d+" + minute + "\\s*)?){1,3}$"
         regexp = RegExp.compile(pattern, "i");
     }

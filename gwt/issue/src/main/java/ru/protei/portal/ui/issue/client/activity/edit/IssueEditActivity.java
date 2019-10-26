@@ -362,13 +362,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isPrivate().setValue(issue.isPrivateCase());
 
         boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
-        if ( isAllowedEditNameAndDescription ) {
-            view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
+        if (isAllowedEditNameAndDescription) {
+            view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
             view.switchToRONameDescriptionView(false);
             view.name().setValue(issue.getName());
             view.description().setValue(issue.getInfo());
+            view.setNameRO(null);
+            view.setDescriptionRO(null);
         } else {
             view.switchToRONameDescriptionView(true);
+            view.name().setValue(null);
+            view.description().setValue(null);
             view.setNameRO(issue.getName());
             renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
         }
