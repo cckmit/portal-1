@@ -367,10 +367,23 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private boolean isOnlyTimeElapsedTypeChanged(CaseComment prevComment, CaseComment comment) {
-        return prevComment.getCaseAttachments().equals(comment.getCaseAttachments())
-                && prevComment.getText().equals(comment.getText())
-                && ((prevComment.getTimeElapsed() == null && comment.getTimeElapsed() == null) || (prevComment.getTimeElapsed().equals(comment.getTimeElapsed())))
-                && prevComment.getTimeElapsedType() != comment.getTimeElapsedType();
+        if (Objects.equals(prevComment.getTimeElapsedType(), comment.getTimeElapsedType())) {
+            return false;
+        }
+
+        if (!Objects.equals(prevComment.getCaseAttachments(), comment.getCaseAttachments())) {
+            return false;
+        }
+
+        if (!Objects.equals(prevComment.getText(), comment.getText())) {
+            return false;
+        }
+
+        if (!Objects.equals(prevComment.getTimeElapsed(), comment.getTimeElapsed())) {
+            return false;
+        }
+
+        return true;
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
