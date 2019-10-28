@@ -115,6 +115,9 @@ public class DebugIds {
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
         @Deprecated String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
         String DATE_RANGE_SELECTOR = "filter-date-range-selector";
+        String DATE_CREATED_RANGE_INPUT = "filter-date-created-range-input";
+        String DATE_MODIFIED_RANGE_INPUT = "filter-date-modified-range-input";
+        String DATE_CREATED_RANGE_BUTTON = "filter-date-created-range-button";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
         String PRODUCT_SELECTOR_ADD_BUTTON = "filter-product-selector-add-button";
