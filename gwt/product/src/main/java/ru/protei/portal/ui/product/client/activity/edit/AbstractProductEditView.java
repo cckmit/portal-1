@@ -39,7 +39,7 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setMutableState(En_DevUnitType value);
 
-    void setTypeImage(String src);
+    void setTypeImage(String src, String title);
     void setTypeImageVisibility(boolean isVisible);
 
     HasValue<String> wikiLink();

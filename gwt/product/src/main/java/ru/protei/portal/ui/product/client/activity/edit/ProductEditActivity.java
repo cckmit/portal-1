@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -171,7 +172,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         currType = isCreate ? En_DevUnitType.COMPLEX : devUnit.getType();
         view.type().setValue(currType);
         view.typeVisibility().setVisible(isCreate);
-        view.setTypeImage(isCreate || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc());
+        view.setTypeImage(isCreate || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isCreate);
         view.setMutableState(currType);
 
@@ -266,6 +267,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     TextRenderControllerAsync textRenderController;
     @Inject
     LocalStorageService localStorageService;
+    @Inject
+    En_DevUnitTypeLang typeLang;
 
     private Long productId;
     private DevUnit product;

@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.product.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -89,14 +91,18 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setTypeImage(String src) {
-        typeImage.setUrl(src);
-        typeImage.setTitle("");
+    public void setTypeImage(String src, String title) {
+        typeImage.setSrc(src);
+        typeImage.setTitle(title);
     }
 
     @Override
     public void setTypeImageVisibility(boolean isVisible) {
-        typeImage.setVisible(isVisible);
+        if (isVisible) {
+            typeImageContainer.removeClassName("hide");
+        } else {
+            typeImageContainer.addClassName("hide");
+        }
     }
 
     @Override
@@ -327,7 +333,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     HTMLPanel aliasesContainer;
     @UiField
-    Image typeImage;
+    DivElement typeImageContainer;
+    @UiField
+    ImageElement typeImage;
 
     AbstractProductEditActivity activity;
 
