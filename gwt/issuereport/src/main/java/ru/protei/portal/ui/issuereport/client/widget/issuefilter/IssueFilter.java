@@ -328,11 +328,11 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
             modifiedRangeContainer.removeClassName(HIDE);
             sortByContainer.removeClassName(HIDE);
-            dateLabel.setInnerText(lang.created());
+            labelCreated.setInnerText(lang.created());
         } else {
             modifiedRangeContainer.addClassName(HIDE);
             sortByContainer.addClassName(HIDE);
-            dateLabel.setInnerText(lang.period());
+            labelCreated.setInnerText(lang.period());
         }
         initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
@@ -503,20 +503,40 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_CREATED_RANGE_INPUT);
+        dateCreatedRange.getRelative().ensureDebugId(DebugIds.FILTER.DATE_CREATED_RANGE_BUTTON);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_MODIFIED_RANGE_INPUT);
+        dateModifiedRange.getRelative().ensureDebugId(DebugIds.FILTER.DATE_MODIFIED_RANGE_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
         companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
         companies.setClearEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_CLEAR_BUTTON);
+        companies.setItemContainerEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ITEM_CONTAINER);
+        companies.setLabelEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_LABEL);
         products.setAddEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ADD_BUTTON);
         products.setClearEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_CLEAR_BUTTON);
+        products.setItemContainerEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ITEM_CONTAINER);
+        products.setLabelEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_LABEL);
         managers.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ADD_BUTTON);
         managers.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_CLEAR_BUTTON);
+        managers.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ITEM_CONTAINER);
+        managers.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_LABEL);
         initiators.setAddEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_ADD_BUTTON);
         initiators.setClearEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_CLEAR_BUTTON);
+        initiators.setItemContainerEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_ITEM_CONTAINER);
+        initiators.setLabelEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_LABEL);
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
+        tags.setAddEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ADD_BUTTON);
+        tags.setClearEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_CLEAR_BUTTON);
+        tags.setItemContainerEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ITEM_CONTAINER);
+        tags.setLabelEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_LABEL);
+        labelCreated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_CREATED_RANGE_LABEL);
+        labelUpdated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_MODIFIED_RANGE_LABEL);
+        labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
+        labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
+        labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
+        labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
     }
 
     @Inject
@@ -599,7 +619,17 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @UiField
     DivElement stateContainer;
     @UiField
-    LabelElement dateLabel;
+    LabelElement labelCreated;
+    @UiField
+    LabelElement labelUpdated;
+    @UiField
+    LabelElement labelSortBy;
+    @UiField
+    LabelElement labelSearchPrivate;
+    @UiField
+    LabelElement labelIssueImportance;
+    @UiField
+    LabelElement labelIssueState;
 
     private AbstractIssueFilterModel model;
     private Timer timer = null;

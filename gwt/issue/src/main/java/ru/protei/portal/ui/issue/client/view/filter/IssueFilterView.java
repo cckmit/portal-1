@@ -208,6 +208,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
         okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
+        createBtn.ensureDebugId(DebugIds.FILTER.CREATE_BUTTON);
         saveBtn.ensureDebugId(DebugIds.FILTER.SAVE_BUTTON);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
         removeBtn.ensureDebugId(DebugIds.FILTER.REMOVE_BUTTON);
