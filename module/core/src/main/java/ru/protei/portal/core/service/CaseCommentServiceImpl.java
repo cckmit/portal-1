@@ -152,7 +152,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType) && !isOnlyTimeElapsedTypeChanged(resultData.getOldCaseComment(), resultData.getCaseComment())) {
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
             publisherService.publishEvent(new CaseCommentEvent.Builder(this)
                     .withPerson(person)
@@ -364,13 +364,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         return ok( commentId);
-    }
-
-    private boolean isOnlyTimeElapsedTypeChanged(CaseComment prevComment, CaseComment comment) {
-        return prevComment.getCaseAttachments().equals(comment.getCaseAttachments())
-                && prevComment.getText().equals(comment.getText())
-                && ((prevComment.getTimeElapsed() == null && comment.getTimeElapsed() == null) || (prevComment.getTimeElapsed().equals(comment.getTimeElapsed())))
-                && prevComment.getTimeElapsedType() != comment.getTimeElapsedType();
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
