@@ -841,6 +841,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String keywordInputPlaceholder();
 
+    String aliasInputPlaceholder();
+
     String inventoryNumber();
 
     String customer();
