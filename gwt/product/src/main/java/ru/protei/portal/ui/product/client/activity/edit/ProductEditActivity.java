@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -136,18 +135,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         if (type.getId() != product.getTypeId()) {
             view.parents().setValue(null);
             view.children().setValue(null);
-        } else {
-            view.parents().setValue(product.getParents() != null ? product.getParents().stream()
-                    .map(DevUnit::toProductShortView)
-                    .collect(Collectors.toSet())
-                    : null
-            );
-
-            view.children().setValue(product.getChildren() != null ? product.getChildren().stream()
-                    .map(DevUnit::toProductShortView)
-                    .collect(Collectors.toSet())
-                    : null
-            );
+            view.aliases().setValue(null);
+            view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
         }
     }
 
@@ -178,9 +167,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setCurrentProduct(isCreate ? null : devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
         view.info().setValue(devUnit.getInfo());
+
         currType = isCreate ? En_DevUnitType.COMPLEX : devUnit.getType();
         view.type().setValue(currType);
-        view.typeEnabled().setEnabled(isCreate);
+        view.typeVisibility().setVisible(isCreate);
+        view.setTypeImage(isCreate || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc());
+        view.setTypeImageVisibility(!isCreate);
         view.setMutableState(currType);
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() != null ? devUnit.getSubscriptions().stream()
@@ -212,7 +204,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.historyVersion().setValue(devUnit.getHistoryVersion());
 
         view.aliases().setValue(product.getAliases());
-        view.aliasesVisible().setVisible(currType.equals(En_DevUnitType.PRODUCT));
+        view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -220,23 +212,27 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private void fillDto(DevUnit product) {
+
         product.setName(view.name().getValue().trim());
-        product.setTypeId(view.type().getValue().getId());
         product.setInfo(view.info().getValue().trim());
+
+        boolean isCreate = product.getId() == null;
+        if (isCreate) {
+            product.setTypeId(view.type().getValue().getId());
+        }
+
         product.setSubscriptions(view.productSubscriptions().getValue().stream()
                 .map( Subscription::toProductSubscription )
                 .collect(Collectors.toList())
         );
 
         Set<ProductShortView> productShortViewsParent = view.parents().getValue();
-
         product.setParents(productShortViewsParent != null ? productShortViewsParent.stream()
                 .map(DevUnit::fromProductShortView)
                 .collect(Collectors.toList()) : null
         );
 
         Set<ProductShortView> productShortViewsChildren = view.children().getValue();
-
         product.setChildren(productShortViewsChildren != null ? productShortViewsChildren.stream()
                 .map(DevUnit::fromProductShortView)
                 .collect(Collectors.toList()) : null

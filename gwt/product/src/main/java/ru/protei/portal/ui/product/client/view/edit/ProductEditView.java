@@ -14,6 +14,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -88,6 +89,17 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
+    public void setTypeImage(String src) {
+        typeImage.setUrl(src);
+        typeImage.setTitle("");
+    }
+
+    @Override
+    public void setTypeImageVisibility(boolean isVisible) {
+        typeImage.setVisible(isVisible);
+    }
+
+    @Override
     public HasValidable nameValidator() { return name; }
 
     @Override
@@ -129,9 +141,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             childrenContainer.addStyleName("col-md-12");
 
             children.setTypes(En_DevUnitType.PRODUCT);
-
-            aliases.getValue().clear();
-            aliasesContainer.setVisible(false);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
             descriptionLabel.setInnerText(lang.productDescription());
@@ -143,9 +152,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
-
-            aliases.getValue().clear();
-            aliasesContainer.setVisible(true);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
             descriptionLabel.setInnerText(lang.componentDescription());
@@ -157,9 +163,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
-
-            aliases.getValue().clear();
-            aliasesContainer.setVisible(false);
         }
     }
 
@@ -211,12 +214,12 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasVisibility aliasesVisible() {
+    public HasVisibility aliasesVisibility() {
         return aliasesContainer;
     }
 
     @Override
-    public HasEnabled typeEnabled() {
+    public HasVisibility typeVisibility() {
         return type;
     }
 
@@ -323,6 +326,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     StringSelectInput aliases;
     @UiField
     HTMLPanel aliasesContainer;
+    @UiField
+    Image typeImage;
 
     AbstractProductEditActivity activity;
 

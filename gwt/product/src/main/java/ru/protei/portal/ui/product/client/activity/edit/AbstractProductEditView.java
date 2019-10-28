@@ -25,6 +25,7 @@ public interface AbstractProductEditView extends IsWidget {
     HasValue<String> name();
 
     HasValue<En_DevUnitType> type();
+    HasVisibility typeVisibility();
 
     HasValidable nameValidator();
 
@@ -37,6 +38,9 @@ public interface AbstractProductEditView extends IsWidget {
     void setNameStatus ( NameStatus status );
 
     void setMutableState(En_DevUnitType value);
+
+    void setTypeImage(String src);
+    void setTypeImageVisibility(boolean isVisible);
 
     HasValue<String> wikiLink();
 
@@ -58,9 +62,7 @@ public interface AbstractProductEditView extends IsWidget {
     void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
     HasValue<List<String>> aliases();
-    HasVisibility aliasesVisible();
-
-    HasEnabled typeEnabled();
+    HasVisibility aliasesVisibility();
 
     String HISTORY_VERSION = "historyVersion";
     String CONFIGURATION = "configuration";
