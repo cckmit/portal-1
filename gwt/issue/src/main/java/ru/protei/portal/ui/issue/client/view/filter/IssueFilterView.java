@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -203,6 +204,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     private void ensureDebugIds() {
+        labelFilters.setId(DebugIds.FILTER.FILTERS_LABEL);
         filterCollapseBtn.ensureDebugId(DebugIds.FILTER.COLLAPSE_BUTTON);
         filterRestoreBtn.ensureDebugId(DebugIds.FILTER.RESTORE_BUTTON);
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
@@ -250,6 +252,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Anchor filterRestoreBtn;
     @UiField
     Anchor filterCollapseBtn;
+    @UiField
+    LabelElement labelFilters;
 
     private AbstractIssueFilterActivity activity;
 

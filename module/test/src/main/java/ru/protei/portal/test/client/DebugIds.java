@@ -105,12 +105,14 @@ public class DebugIds {
     }
 
     public interface FILTER {
+        String FILTERS_LABEL = "filter-filters-label";
         String COLLAPSE_BUTTON = "filter-collapse-button";
         String RESTORE_BUTTON = "filter-restore-button";
 
         String SEARCH_INPUT = "filter-search-input";
         String SEARCH_CLEAR_BUTTON = "filter-search-clear-button";
         String SEARCH_BY_COMMENTS_TOGGLE = "filter-search-by-comments-toggle";
+        String SEARCH_BY_WARNING_COMMENTS_LABEL = "filter-search-by-comments-warning-label";
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
