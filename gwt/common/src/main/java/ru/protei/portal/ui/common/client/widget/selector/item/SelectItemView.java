@@ -20,6 +20,7 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 public class SelectItemView extends Composite implements HasEnabled {
     public SelectItemView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        setTestAttributes();
     }
 
     @Override

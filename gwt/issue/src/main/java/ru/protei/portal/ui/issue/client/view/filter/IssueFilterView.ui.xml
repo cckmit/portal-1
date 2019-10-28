@@ -6,7 +6,7 @@
 
     <g:HTMLPanel ui:field="root" styleName="card card-default no-border card-fixed issue-filter filter-collapsable">
         <div class="filter-header">
-            <label><ui:text from="{lang.filters}"/></label>
+            <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>
             <g:Anchor ui:field="filterCollapseBtn" styleName="btn btn-default btn-sm filter-btn-collapse">
                 <span class="fas fa-compress-arrows-alt"/>
             </g:Anchor>
