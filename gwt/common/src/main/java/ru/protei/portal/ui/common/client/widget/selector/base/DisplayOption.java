@@ -28,13 +28,6 @@ public class DisplayOption {
         this.icon = icon;
     }
 
-    public DisplayOption( String name, String info, String style, String icon ) {
-        this.name = name;
-        this.info = info;
-        this.style = style;
-        this.icon = icon;
-    }
-
     public String getName() {
         return name;
     }

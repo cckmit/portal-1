@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -27,8 +28,7 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
                 return new DisplayOption(defaultValue);
             }
             return new DisplayOption(
-                    value.getName(),
-                    value.getAliases(),
+                    value.getName() + ( HelperFunc.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")"),
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );

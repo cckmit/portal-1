@@ -225,7 +225,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @Override
     public ProductShortView toProductShortView() {
-        return new ProductShortView(this.id, this.name, this.stateId, CollectionUtils.isEmpty(this.aliases) ? "" : this.aliases.stream().collect(Collectors.joining()));
+        return new ProductShortView(this.id, this.name, this.stateId, CollectionUtils.isEmpty(this.aliases) ? "" : this.aliases.stream().collect(Collectors.joining(", ")));
     }
 
     public ProductDirectionInfo toProductDirectionInfo() {

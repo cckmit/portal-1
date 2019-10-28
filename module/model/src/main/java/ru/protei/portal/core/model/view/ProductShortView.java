@@ -77,7 +77,7 @@ public class ProductShortView implements Serializable {
     public static ProductShortView fromProduct( DevUnit product ) {
         if(product == null) return null;
         return new ProductShortView(product.getId(), product.getName(), product.getStateId(),
-                CollectionUtils.isEmpty(product.getAliases()) ? "" : product.getAliases().stream().collect(Collectors.joining()));
+                CollectionUtils.isEmpty(product.getAliases()) ? "" : product.getAliases().stream().collect(Collectors.joining(", ")));
     }
 
     @Override

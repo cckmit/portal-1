@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -74,7 +75,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView
         }
         options.stream()
                 .filter(option -> !Objects.equals(option, exclude))
-                .forEach(option -> addOption(option.getName(), option.getAliases(), false, option));
+                .forEach(option -> addOption((option.getName() + (HelperFunc.isEmpty(option.getAliases()) ? "" : " (" + option.getAliases() + ")")), option));
     }
 
     @Inject
