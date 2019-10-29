@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Application;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ApplicationQuery;
@@ -38,6 +39,7 @@ public interface SiteFolderController extends RemoteService {
 
     Application getApplication(long id) throws RequestFailedException;
 
+    List<Long> getConnectedIssues(Long id) throws RequestFailedException;
 
     Platform savePlatform(Platform platform) throws RequestFailedException;
 

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -26,9 +27,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
@@ -87,29 +86,41 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         });
     }
 
+    @Event
+    public void onConfirmClicked(ConfirmDialogEvents.Confirm event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+
+        savePlatform();
+    }
+
     @Override
     public void onSaveClicked() {
-
         if (!isValid()) {
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
-        fillPlatform(platform);
 
-        siteFolderController.savePlatform(platform, new RequestCallback<Platform>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
+        if (isNew(platform)) {
+            savePlatform();
+            return;
+        }
 
-            @Override
-            public void onSuccess(Platform result) {
-                fireEvent(new SiteFolderPlatformEvents.ChangeModel());
-                fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
-            }
-        });
+        if (!companyChanged()) {
+            savePlatform();
+        } else {
+            siteFolderController.getConnectedIssues(platform.getId(), new FluentCallback<List<Long>>()
+                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR)))
+                    .withSuccess(caseNumbers -> {
+                        if (caseNumbers.isEmpty()) {
+                            savePlatform();
+                        } else {
+                            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.connectedIssuesExistDialog(reduceCaseNumbers(caseNumbers))));
+                        }
+                    })
+            );
+        }
     }
 
     @Override
@@ -160,10 +171,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 }));
     }
 
-    private boolean isNew(Platform platform) {
-        return platform.getId() == null;
-    }
-
     @Override
     public void refreshProjectSpecificFields() {
         if (view.project().getValue() == null) {
@@ -171,6 +178,41 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             return;
         }
         projectRequest(view.project().getValue().getId(), this::fillProjectSpecificFieldsOnRefresh);
+    }
+
+    private void savePlatform() {
+        fillPlatform(platform);
+
+        siteFolderController.savePlatform(platform, new RequestCallback<Platform>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Platform result) {
+                fireEvent(new SiteFolderPlatformEvents.ChangeModel());
+                fireEvent(new SiteFolderPlatformEvents.Changed(result));
+                fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
+            }
+        });
+    }
+
+    private boolean isNew(Platform platform) {
+        return platform.getId() == null;
+    }
+
+    private boolean companyChanged() {
+        if (view.company().getValue() == null && platform.getCompanyId() != null) {
+            return true;
+        }
+
+        if (view.company().getValue() != null && !Objects.equals(view.company().getValue().getId(), platform.getCompanyId())) {
+            return true;
+        }
+
+        return false;
     }
 
     private void fillProjectSpecificFieldsOnRefresh(Project project) {
@@ -279,6 +321,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             platform.setAttachments(new ArrayList<>());
         }
         platform.getAttachments().addAll(attachments);
+    }
+
+    private String reduceCaseNumbers(List<Long> caseNumbers) {
+        return caseNumbers.stream()
+                .map(String::valueOf)
+                .reduce((num1, num2) -> num1 + ", " + num2)
+                .orElse("");
     }
 
     @Inject

@@ -57,6 +57,9 @@ public interface SiteFolderService {
 
 
     @Privileged(En_Privilege.SITE_FOLDER_EDIT)
+    Result<List<Long>> getConnectedIssues(AuthToken token, Long id);
+
+    @Privileged(En_Privilege.SITE_FOLDER_EDIT)
     Result<Platform> updatePlatform( AuthToken token, Platform platform);
 
     @Privileged(En_Privilege.SITE_FOLDER_EDIT)

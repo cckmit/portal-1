@@ -262,9 +262,27 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         return ok(result);
     }
 
+    @Override
+    public Result<List<Long>> getConnectedIssues(AuthToken token, Long id) {
+        if (id == null) {
+            return error(En_ResultStatus.NOT_CREATED);
+        }
+
+        List<Long> result = caseObjectDAO.getCaseNumbersByPlatformId(id);
+
+        if (result == null) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        return ok(result);
+    }
 
     @Override
     public Result<Platform> updatePlatform( AuthToken token, Platform platform) {
+
+        if (!Objects.equals(platformDAO.get(platform.getId()).getCompanyId(), platform.getCompanyId())) {
+            caseObjectDAO.removeConnectionsWithPlatform(platform.getId());
+        }
 
         boolean status = platformDAO.merge(platform);
 
