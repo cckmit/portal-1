@@ -186,6 +186,12 @@ public class CaseObjectSqlBuilder {
                         .append(" and product_id = ")
                         .append(query.getProductDirectionId());
             }
+
+            if (query.getPlatformId() != null) {
+                condition
+                        .append(" and platform_id = ")
+                        .append(query.getPlatformId());
+            }
         });
     }
 }

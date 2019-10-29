@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -265,7 +267,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     public Result<List<Long>> getConnectedIssues(AuthToken token, Long id) {
         if (id == null) {
-            return error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         List<Long> result = caseObjectDAO.getCaseNumbersByPlatformId(id);
@@ -278,10 +280,19 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public Result<Platform> updatePlatform( AuthToken token, Platform platform) {
+    @Transactional
+    public Result<Platform> updatePlatform(AuthToken token, Platform platform, Person person) {
 
         if (!Objects.equals(platformDAO.get(platform.getId()).getCompanyId(), platform.getCompanyId())) {
-            caseObjectDAO.removeConnectionsWithPlatform(platform.getId());
+            CaseQuery caseQuery = new CaseQuery();
+            caseQuery.setPlatformId(platform.getId());
+            List<CaseObject> issues = caseObjectDAO.getCases(caseQuery);
+
+            for (CaseObject issue : issues) {
+                issue.setPlatformId(null);
+                jdbcManyRelationsHelper.fill(issue, "attachments");
+                caseService.updateCaseObject(token, issue, person);
+            }
         }
 
         boolean status = platformDAO.merge(platform);
@@ -425,4 +436,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    CaseService caseService;
 }

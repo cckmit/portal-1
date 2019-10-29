@@ -140,7 +140,7 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         if (platform.getId() == null) {
             response = siteFolderService.createPlatform(descriptor.makeAuthToken(), platform);
         } else {
-            response = siteFolderService.updatePlatform(descriptor.makeAuthToken(), platform);
+            response = siteFolderService.updatePlatform(descriptor.makeAuthToken(), platform, descriptor.getPerson());
         }
         log.info("savePlatform(): {}", response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {

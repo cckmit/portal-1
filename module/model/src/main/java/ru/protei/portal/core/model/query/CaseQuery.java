@@ -84,6 +84,8 @@ public class CaseQuery extends BaseQuery {
 
     private Long productDirectionId;
 
+    private Long platformId;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -127,6 +129,7 @@ public class CaseQuery extends BaseQuery {
         setContractIndependentProject(query.getContractIndependentProject());
         setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionId(query.getProductDirectionId());
+        setPlatformId(query.getPlatformId());
     }
 
     public Long getId() {
@@ -339,6 +342,14 @@ public class CaseQuery extends BaseQuery {
         this.productDirectionId = productDirectionId;
     }
 
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -363,7 +374,8 @@ public class CaseQuery extends BaseQuery {
                 local != null ||
                 contractIndependentProject != null ||
                 platformIndependentProject != null ||
-                productDirectionId != null;
+                productDirectionId != null ||
+                platformId != null;
     }
 
     @Override
