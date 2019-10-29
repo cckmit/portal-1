@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CaseObjectCommentEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -283,15 +284,29 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Transactional
     public Result<Platform> updatePlatform(AuthToken token, Platform platform, Person person) {
 
-        if (!Objects.equals(platformDAO.get(platform.getId()).getCompanyId(), platform.getCompanyId())) {
+        if (!Objects.equals(platformDAO.get(platform.getId()).getCompanyId(), platform.getCompanyId()) &&
+            !caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()).isEmpty()) {
+
             CaseQuery caseQuery = new CaseQuery();
             caseQuery.setPlatformId(platform.getId());
-            List<CaseObject> issues = caseObjectDAO.getCases(caseQuery);
+            List<CaseObject> oldStates = caseObjectDAO.getCases(caseQuery);
+            List<CaseObject> newStates = caseObjectDAO.getCases(caseQuery);
+            newStates.forEach(caseObject -> {
+                caseObject.setPlatformId(null);
+                caseObject.setPlatformName(null);
+            });
 
-            for (CaseObject issue : issues) {
-                issue.setPlatformId(null);
-                jdbcManyRelationsHelper.fill(issue, "attachments");
-                caseService.updateCaseObject(token, issue, person);
+            caseObjectDAO.removeConnectionsWithPlatform(platform.getId());
+
+            for (int i = 0; i < oldStates.size(); i++) {
+                jdbcManyRelationsHelper.fill(oldStates.get(i), "attachments");
+                jdbcManyRelationsHelper.fill(newStates.get(i), "attachments");
+
+                publisherService.publishEvent(CaseObjectEvent.create(this)
+                        .withNewState(newStates.get(i))
+                        .withOldState(oldStates.get(i))
+                        .withPerson(person)
+                );
             }
         }
 
@@ -437,5 +452,5 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
     @Autowired
-    CaseService caseService;
+    EventPublisherService publisherService;
 }
