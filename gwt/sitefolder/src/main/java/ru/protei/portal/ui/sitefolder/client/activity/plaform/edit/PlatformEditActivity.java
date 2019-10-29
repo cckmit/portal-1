@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;

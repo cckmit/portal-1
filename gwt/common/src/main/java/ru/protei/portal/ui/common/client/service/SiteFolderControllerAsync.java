@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Application;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ApplicationQuery;
@@ -10,7 +9,6 @@ import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
