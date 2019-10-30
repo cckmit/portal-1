@@ -94,6 +94,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         }
         query.setOnlyParentCompanies( isParentIdIsNull );
         query.setSortHomeCompaniesAtBegin( true );
+        query.setShowDeprecated(false);
         return query;
     }
 
