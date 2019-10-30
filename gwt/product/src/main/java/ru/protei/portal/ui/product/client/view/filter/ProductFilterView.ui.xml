@@ -8,7 +8,7 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.productSearchNameOrAlias}" styleName="form-group col-md-12"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">

@@ -1899,4 +1899,6 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedInfo();
 
     String productAliases();
+
+    String productSearchNameOrAlias();
 }

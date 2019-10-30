@@ -70,11 +70,10 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     private void fillView(DevUnit product) {
         this.productId = product.getId();
-        view.setName(product.getName());
+        view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + product.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setInfo(product.getInfo());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
-        view.setAliases(CollectionUtils.isEmpty(product.getAliases()) ? "" : product.getAliases().stream().collect(Collectors.joining(", ")));
 
         List<String> list = new ArrayList<>();
         list.add(product.getConfiguration());

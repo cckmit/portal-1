@@ -8,7 +8,6 @@
         <div class="card-body">
             <h4 class="m-r-50">
                 <g:Anchor ui:field="productName" href="#"/>
-                <p ui:field="aliases"/>
             </h4>
 
             <img ui:field="typeImage" src="" class="preview-title-image_right"/>

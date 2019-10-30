@@ -27,6 +27,4 @@ public interface AbstractProductPreviewView extends IsWidget {
     void showFullScreen(boolean isFullScreen);
 
     Widget asWidget(boolean isForTableView);
-
-    void setAliases(String value);
 }

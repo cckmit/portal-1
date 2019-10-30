@@ -69,11 +69,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setAliases(String value) {
-        this.aliases.setInnerText(value);
-    }
-
-    @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
     }
@@ -129,8 +124,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     HTMLPanel backButtonPanel;
     @UiField
     Button backButton;
-    @UiField
-    ParagraphElement aliases;
 
     AbstractProductPreviewActivity activity;
 

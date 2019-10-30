@@ -30,7 +30,7 @@
                                         <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3" notNull="true"/>
                                     </div>
                                     <typebtn:ProductTypeBtnGroup ui:field="type" styleName="input-group-append du-selector-inline"/>
-                                    <div class="du-type"><img ui:field="typeImage" src=""/></div>
+                                    <div ui:field="typeImageContainer" class="du-type"><img ui:field="typeImage" src=""/></div>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
