@@ -33,7 +33,6 @@ public class StringSelectInput
         setUnfilledInputWidth();
     }
 
-
     @Override
     public void setValue(List<String> values, boolean fireEvents) {
         if (values == null) {
@@ -84,6 +83,10 @@ public class StringSelectInput
 
     public void setFocused() {
         input.setFocus(true);
+    }
+
+    public void setPlaceholder(String placeholder) {
+        input.getElement().setPropertyString("placeholder", placeholder);
     }
 
     @UiHandler("input")

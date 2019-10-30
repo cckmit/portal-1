@@ -124,4 +124,5 @@
   <include file="2019-09-06-add-jira-sla-map-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-10-03-add-project_id-column-to-platform.xml" relativeToChangelogFile="true"/>
   <include file="2019-10-04-modify-platform-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-10-22-modify-dev_unit-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

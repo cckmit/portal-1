@@ -7,6 +7,7 @@
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
+             xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -29,6 +30,7 @@
                                         <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3" notNull="true"/>
                                     </div>
                                     <typebtn:ProductTypeBtnGroup ui:field="type" styleName="input-group-append du-selector-inline"/>
+                                    <div ui:field="typeImageContainer" class="du-type m-l-5"><img ui:field="typeImage" src=""/></div>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
@@ -54,13 +56,20 @@
                         <div class="row">
                             <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
                                 <label ui:field="parentsContainerLabel"/>
-                                <devunit:DevUnitMultiSelector ui:field="parents"/>
+                                <devunit:DevUnitMultiSelector ui:field="parents" hasNullValue="false"/>
                             </g:HTMLPanel>
                             <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
                                 <label ui:field="childrenContainerLabel"/>
-                                <devunit:DevUnitMultiSelector ui:field="children"/>
+                                <devunit:DevUnitMultiSelector ui:field="children" hasNullValue="false"/>
                             </g:HTMLPanel>
                         </div>
+
+                        <g:HTMLPanel ui:field="aliasesContainer" styleName="row">
+                            <div class="form-group col-md-12">
+                                <label><ui:text from="{lang.productAliases}"/></label>
+                                <alias:StringSelectInput ui:field="aliases" placeholder="{lang.aliasInputPlaceholder}"/>
+                            </div>
+                        </g:HTMLPanel>
                     </div>
                 </div>
             </div>
