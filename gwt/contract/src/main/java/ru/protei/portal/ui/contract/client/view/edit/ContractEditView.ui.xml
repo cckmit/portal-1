@@ -20,7 +20,7 @@
             <div class="container-fluid padding-15">
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
-                        <div class="card-title">
+                        <div ui:field="commonHeader" class="card-title">
                             <ui:text from="{lang.contractCommonHeader}"/>
                         </div>
                         <p class="small hint-text">
@@ -84,7 +84,7 @@
             <div class="container-fluid padding-15 bg-white">
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
-                        <div class="card-title">
+                        <div ui:field="workGroupHeader" class="card-title">
                             <ui:text from="{lang.contractWorkGroup}"/>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
             <div class="container-fluid padding-15">
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
-                        <div class="card-title">
+                        <div ui:field="deliveryAndPaymentsPeriodHeader" class="card-title">
                             <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
                         </div>
                     </div>
@@ -132,8 +132,7 @@
             <div class="card card-transparent no-margin">
                 <div class="text-right">
                     <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                    <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"
-                              text="{lang.buttonCancel}"/>
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
                 </div>
             </div>
         </div>
