@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.widget.contractdates.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -91,6 +92,7 @@ public class ContractDateItem
         type.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.TYPE_BUTTON);
         date.getElement().getFirstChildElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.DATE_CONTAINER);
         comment.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.COMMENT_INPUT);
+        notifyLabel.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.NOTIFY_LABEL);
         notify.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.NOTIFY_SWITCHER);
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.REMOVE_BUTTON);
     }
@@ -112,6 +114,8 @@ public class ContractDateItem
     Lang lang;
     @UiField
     HTMLPanel root;
+    @UiField
+    LabelElement notifyLabel;
 
     private ContractDate value = new ContractDate();
 
