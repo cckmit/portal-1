@@ -46,6 +46,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         project.setRequestByOnLoad(false);
+        contragent.showDeprecated(false);
     }
 
     @Override
