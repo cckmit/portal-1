@@ -17,6 +17,8 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Активность создания проекта с минимальным набором параметров
@@ -42,8 +44,11 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 
     @Event
     public void onSetProduct(ProductEvents.Set event) {
-        if (event.product == null) return;
-        view.products().getValue().add(event.product.toProductShortView());
+        if (event.product == null) {
+            return;
+        }
+
+        view.product().setValue(event.product.toProductShortView());
     }
 
     @Override
@@ -77,7 +82,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
         view.customerType().setValue(project.getCustomerType());
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
-        view.products().setValue(project.getProducts());
+        view.product().setValue(project.getSingleProduct());
     }
 
     private void fillProject() {
@@ -87,7 +92,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         project.setProductDirection(EntityOption.fromProductDirectionInfo(view.direction().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
-        project.setProducts(view.products().getValue());
+        project.setProducts(view.product().getValue() == null ? null : new HashSet<>(Collections.singleton(view.product().getValue())));
         project.setTeam(new ArrayList<>());
     }
 
