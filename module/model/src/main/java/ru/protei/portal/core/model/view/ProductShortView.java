@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.io.Serializable;
+import java.util.stream.Collectors;
 
 /**
  * Сокращенное представление продукта
@@ -11,6 +13,7 @@ public class ProductShortView implements Serializable {
     private Long id;
     private String name;
     private int stateId;
+    private String aliases;
 
     public ProductShortView() {
     }
@@ -19,6 +22,13 @@ public class ProductShortView implements Serializable {
         this.id = id;
         this.name = name;
         this.stateId = stateId;
+    }
+
+    public ProductShortView( Long id, String name, int stateId, String aliases ) {
+        this.id = id;
+        this.name = name;
+        this.stateId = stateId;
+        this.aliases = aliases;
     }
 
     public Long getId() {
@@ -45,6 +55,10 @@ public class ProductShortView implements Serializable {
         this.stateId = stateId;
     }
 
+    public String getAliases() {
+        return aliases;
+    }
+
     @Override
     public boolean equals( Object obj ) {
         if (obj instanceof ProductShortView) {
@@ -61,9 +75,9 @@ public class ProductShortView implements Serializable {
     }
 
     public static ProductShortView fromProduct( DevUnit product ) {
-        if(product == null)
-            return null;
-        return new ProductShortView( product.getId(), product.getName(), product.getStateId() );
+        if(product == null) return null;
+        return new ProductShortView(product.getId(), product.getName(), product.getStateId(),
+                CollectionUtils.isEmpty(product.getAliases()) ? "" : product.getAliases().stream().collect(Collectors.joining(", ")));
     }
 
     @Override
