@@ -16,6 +16,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.ArrayList;
+
 /**
  * Активность создания проекта с минимальным набором параметров
  */
@@ -86,6 +88,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         project.setCustomerType(view.customerType().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setProducts(view.products().getValue());
+        project.setTeam(new ArrayList<>());
     }
 
     private boolean validate() {
