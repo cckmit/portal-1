@@ -372,12 +372,13 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent(new CaseCommentEvent.Builder(caseService, ServiceModule.HPSM)
-                .withState(obj)
+        eventPublisherService.publishEvent( CaseCommentEvent.create(caseService, ServiceModule.HPSM)
+                .withNewState(obj) //TODO зачем сетить оба ? (модуль под удаление)
+                .withOldState(obj)
                 .withCaseComment(comment)
                 .withAddedAttachments(addedAttachments)
                 .withPerson(contactPerson)
-                .build());
+                );
 
         return comment;
     }

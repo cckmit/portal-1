@@ -19,16 +19,10 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
     private Person person;
 
     private CaseAttachmentEvent(
-            Object source, ServiceModule serviceModule,
-            Person person, CaseObject caseObject,
-            Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments
+            Object source, ServiceModule serviceModule
     ) {
         super(source);
         this.serviceModule = serviceModule;
-        this.person = person;
-        this.caseObject = caseObject;
-        this.addedAttachments = addedAttachments;
-        this.removedAttachments = removedAttachments;
     }
 
     public CaseObject getCaseObject() {
@@ -62,54 +56,33 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
     public CaseComment getRemovedCaseComment() { return null; }
 
 
-    public static class Builder {
-
-        private Object source;
-        private ServiceModule serviceModule;
-        private CaseObject caseObject;
-        private Collection<Attachment> addedAttachments;
-        private Collection<Attachment> removedAttachments;
-        private Person person;
-
-        public Builder(Object source) {
-            this.source = source;
-            this.serviceModule = ServiceModule.GENERAL;
-        }
-
-        public Builder(Object source, ServiceModule serviceModule) {
-            this.source = source;
-            this.serviceModule = serviceModule;
-        }
-
-        public Builder withCaseObject(CaseObject caseObject) {
-            this.caseObject = caseObject;
-            return this;
-        }
-
-        public Builder withAddedAttachments(Collection<Attachment> addedAttachments) {
-            this.addedAttachments = addedAttachments;
-            return this;
-        }
-
-        public Builder withRemovedAttachments(Collection<Attachment> removedAttachments) {
-            this.removedAttachments = removedAttachments;
-            return this;
-        }
-
-        public Builder withPerson(Person person) {
-            this.person = person;
-            return this;
-        }
-
-        public CaseAttachmentEvent build() {
-            return new CaseAttachmentEvent(
-                    source,
-                    serviceModule,
-                    person,
-                    caseObject,
-                    addedAttachments,
-                    removedAttachments
-            );
-        }
+    public static CaseAttachmentEvent create( Object source) {
+        return create(source, ServiceModule.GENERAL);
     }
+
+    public static CaseAttachmentEvent create( Object source, ServiceModule serviceModule) {
+        CaseAttachmentEvent event = new CaseAttachmentEvent( source, serviceModule );
+        return event;
+    }
+
+    public CaseAttachmentEvent withCaseObject(CaseObject caseObject) {
+        this.caseObject = caseObject;
+        return this;
+    }
+
+    public CaseAttachmentEvent withAddedAttachments(Collection<Attachment> addedAttachments) {
+        this.addedAttachments = addedAttachments;
+        return this;
+    }
+
+    public CaseAttachmentEvent withRemovedAttachments(Collection<Attachment> removedAttachments) {
+        this.removedAttachments = removedAttachments;
+        return this;
+    }
+
+    public CaseAttachmentEvent withPerson(Person person) {
+        this.person = person;
+        return this;
+    }
+
 }

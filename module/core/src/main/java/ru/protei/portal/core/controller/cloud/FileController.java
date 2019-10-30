@@ -297,11 +297,11 @@ public class FileController {
             return;
         }
 
-        publisherService.publishEvent(new CaseAttachmentEvent.Builder(this)
+        publisherService.publishEvent( CaseAttachmentEvent.create(this)
                 .withCaseObject(issue.getData())
                 .withAddedAttachments(Collections.singletonList(attachment))
                 .withPerson(initiator)
-                .build());
+                );
     }
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {

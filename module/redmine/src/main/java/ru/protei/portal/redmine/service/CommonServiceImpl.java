@@ -82,11 +82,11 @@ public final class CommonServiceImpl implements CommonService {
             caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
         }
 
-        eventPublisherService.publishEvent(new CaseAttachmentEvent.Builder(this, ServiceModule.REDMINE)
+        eventPublisherService.publishEvent( CaseAttachmentEvent.create(this, ServiceModule.REDMINE)
                 .withCaseObject(obj)
                 .withAddedAttachments(addedAttachments)
                 .withPerson(contactPerson)
-                .build());
+                );
     }
 
     @Override
@@ -108,11 +108,12 @@ public final class CommonServiceImpl implements CommonService {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent(new CaseCommentEvent.Builder(caseService, ServiceModule.REDMINE)
-                .withState(obj)
+        eventPublisherService.publishEvent( CaseCommentEvent.create(caseService, ServiceModule.REDMINE)
+                .withNewState(obj)
+                .withOldState(obj)
                 .withCaseComment(comment)
                 .withPerson(contactPerson)
-                .build());
+                );
 
         return comment;
     }

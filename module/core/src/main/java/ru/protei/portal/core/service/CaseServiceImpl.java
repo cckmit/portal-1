@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.CaseObjectCommentEvent;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
@@ -244,15 +244,24 @@ public class CaseServiceImpl implements CaseService {
             newState.setNotifiers(caseObject.getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
 
-            publisherService.publishEvent( CaseObjectCommentEvent.create(this)
+            publisherService.publishEvent( CaseObjectEvent.create(this)
                     .withPerson(initiator)
                     .withOldState(oldState)
                     .withNewState(newState)
+//                    .withCaseComment(commentResultData.getCaseComment())
+//                    .withOldCaseComment(commentResultData.getOldCaseComment())
+//                    .withAddedAttachments(commentResultData.getAddedAttachments())
+//                    .withRemovedAttachments(commentResultData.getRemovedAttachments())
+                    .withLinks( objectResultData.getMergeLinks() )
+            );
+
+            publisherService.publishEvent( CaseCommentEvent.create(this)
+                    .withPerson(initiator)
+                    .withOldState(oldState)
                     .withCaseComment(commentResultData.getCaseComment())
                     .withOldCaseComment(commentResultData.getOldCaseComment())
                     .withAddedAttachments(commentResultData.getAddedAttachments())
                     .withRemovedAttachments(commentResultData.getRemovedAttachments())
-                    .withLinks( objectResultData.getMergeLinks() )
             );
         }
 

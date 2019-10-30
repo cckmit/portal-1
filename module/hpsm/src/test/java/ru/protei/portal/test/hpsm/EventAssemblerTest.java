@@ -54,36 +54,39 @@ public class EventAssemblerTest {
                 .withNewState(object)
                 .withPerson(person)
                 ;
-        CaseCommentEvent commentEvent = new CaseCommentEvent.Builder(caseService)
-                .withState(object)
+        CaseCommentEvent commentEvent = CaseCommentEvent.create(caseService)
+                .withNewState(object)
+                .withOldState(object)
                 .withCaseComment(comment)
                 .withPerson(person)
-                .build();
-        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent.Builder(this)
+                ;
+        CaseAttachmentEvent attachmentEvent = CaseAttachmentEvent.create(this)
                 .withCaseObject(object)
                 .withAddedAttachments(attachment)
                 .withRemovedAttachments(removedAttachment)
                 .withPerson(person)
-                .build();
+                ;
 
         //Second portion
         CaseObjectEvent secondEvent = CaseObjectEvent.create(caseService)
                 .withNewState(newObject)
                 .withPerson(person)
                 ;
-        CaseCommentEvent secondCommentEvent = new CaseCommentEvent.Builder(caseService)
-                .withState(newObject)
+        CaseCommentEvent secondCommentEvent = CaseCommentEvent.create(caseService)
+                .withNewState(object)
+                .withOldState(object)
                 .withCaseComment(comment)
                 .withPerson(person)
-                .build();
+                ;
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
-        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent.Builder(caseService)
-                .withState(newObject)
+        CaseCommentEvent thirdCommentEvent = CaseCommentEvent.create(caseService)
+                .withNewState(object)
+                .withOldState(object)
                 .withCaseComment(comment2)
                 .withPerson(person)
-                .build();
+                ;
 
 
         //This is where the fun begin

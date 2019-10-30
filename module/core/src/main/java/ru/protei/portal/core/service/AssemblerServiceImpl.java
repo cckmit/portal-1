@@ -32,7 +32,6 @@ public class AssemblerServiceImpl implements AsseblerService {
     }
 
     private Result<AssembledCaseEvent> assembleEvent( AssembledCaseEvent fromEvent ) {
-        log.warn( "assembleEvent(): Not implemented." );//TODO NotImplemented
         if (fromEvent == null) return Result.error( En_ResultStatus.INCORRECT_PARAMS );
 
         Result<AssembledCaseEvent> result = ok( fromEvent );
@@ -40,33 +39,33 @@ public class AssemblerServiceImpl implements AsseblerService {
         result.flatMap( e -> {
 
             if (e.isCaseObjectFilled()) {
-                log.info( "assembleEvent(): caseObject is filled" );
+                log.info( "assembleEvent(): CaseObjectID={} caseObject is filled", e.getCaseObjectId() );
                 return ok( e );
             }
 
-            log.info( "assembleEvent(): Try to fill caseObject" );
+            log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject" );
             return caseService.getCaseObject( at, e.getCaseNumber() ).map( co -> {
                 e.setInitialCaseObject( co );
                 return e;
-            } ).ifOk( r-> log.info( "assembleEvent(): CaseObject is filled." ) );
+            } ).ifOk( r-> log.info( "assembleEvent(): CaseObjectID={} CaseObject is filled.", e.getCaseObjectId() ) );
 
         } ).flatMap( e -> {
 
             CaseObject caseObject = e.getCaseObject();
 
             if (e.isCaseCommentsFilled()) {
-                log.info( "assembleEvent(): Comments are filled" );
+                log.info( "assembleEvent(): CaseObjectID={} Comments are filled", e.getCaseObjectId() );
                 return ok( e );
             }
 
-            log.info( "assembleEvent(): Try to fill comments" );
+            log.info( "assembleEvent(): CaseObjectID={} Try to fill comments", e.getCaseObjectId() );
             Date upperBoundDate = makeCommentUpperBoundDate( e );
             return caseCommentService.getCaseCommentList( at, En_CaseType.CRM_SUPPORT,
                     new CaseCommentQuery( caseObject.getId(), upperBoundDate ) )
                     .map( caseComments -> {
                         e.setInitialCaseComments( caseComments );
                         return e;
-                    } ).ifOk( r-> log.info( "assembleEvent(): Comments are filled." ) );
+                    } ).ifOk( r-> log.info( "assembleEvent(): CaseObjectID={} Comments are filled.", e.getCaseObjectId() ) );
 
         } )
         ;
@@ -97,7 +96,7 @@ public class AssemblerServiceImpl implements AsseblerService {
     @Autowired
     CaseService caseService;
 
-    AuthToken at = new AuthToken("", "");//TODO AuthToken for assemble event
+    AuthToken at = null;//TODO AuthToken for assemble event
 
 
     private final ExecutorService assebleExecutor = Executors.newCachedThreadPool( new ThreadFactory() {//tofo fixetThreadPool

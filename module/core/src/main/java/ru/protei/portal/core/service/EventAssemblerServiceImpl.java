@@ -32,12 +32,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         handleEventForAssemble(event, new AssembledCaseEvent(event));
     }
 
-    @Override
-    @EventListener
-    public void publishEvent(CaseObjectCommentEvent event) {
-        handleEventForAssemble(event, new AssembledCaseEvent(event));
-    }
-
     private void handleEventForAssemble(AbstractCaseEvent event, AssembledCaseEvent assembledEvent) {
 
         if (isEagerPush(event)) {

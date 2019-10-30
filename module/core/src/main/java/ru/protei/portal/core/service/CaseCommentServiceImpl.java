@@ -68,13 +68,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
-            publisherService.publishEvent(new CaseCommentEvent.Builder(this)
+            publisherService.publishEvent( CaseCommentEvent.create(this)
                     .withPerson(person)
                     .withOldState(caseObjectOld)
                     .withNewState(caseObjectNew)
                     .withCaseComment(resultData.getCaseComment())
                     .withAddedAttachments(resultData.getAddedAttachments())
-                    .build());
+                    );
         }
 
         return ok(resultData.getCaseComment());
@@ -154,7 +154,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
-            publisherService.publishEvent(new CaseCommentEvent.Builder(this)
+            publisherService.publishEvent( CaseCommentEvent.create(this)
                     .withPerson(person)
                     .withOldState(caseObjectOld)
                     .withNewState(caseObjectNew)
@@ -162,7 +162,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .withCaseComment(resultData.getCaseComment())
                     .withRemovedAttachments(resultData.getRemovedAttachments())
                     .withAddedAttachments(resultData.getAddedAttachments())
-                    .build());
+                    );
         }
 
         return ok( resultData.getCaseComment());
@@ -293,13 +293,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
-        publisherService.publishEvent(new CaseCommentEvent.Builder(this)
+        publisherService.publishEvent( CaseCommentEvent.create(this)
                 .withOldState(caseObjectOld)
                 .withNewState(caseObjectNew)
                 .withRemovedCaseComment(removedComment)
                 .withRemovedAttachments(removedAttachments)
                 .withPerson(person)
-                .build());
+                );
 
         return ok( isRemoved);
     }

@@ -84,11 +84,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             if(result.isOk() && issue != null && ud != null ) {
                 jdbcManyRelationsHelper.fill(issue, "attachments");
-                publisherService.publishEvent(new CaseAttachmentEvent.Builder(this)
+                publisherService.publishEvent( CaseAttachmentEvent.create(this)
                         .withCaseObject(issue)
                         .withRemovedAttachments(Collections.singletonList(attachment))
                         .withPerson(ud.getPerson())
-                        .build());
+                        );
             }
 
             return result;
