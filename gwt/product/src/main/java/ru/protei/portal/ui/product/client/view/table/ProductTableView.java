@@ -119,7 +119,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
             builder.append(devUnit.isActiveUnit() ? "<div>" : "<div class='deprecated-entity'><i class='fa fa-lock m-r-5'></i> ")
                     .append(devUnit.getName())
                     .append(CollectionUtils.isEmpty(devUnit.getAliases()) ? "" :
-                            " (" + devUnit.getAliases().stream().collect(Collectors.joining(" ,")) + ")")
+                            " (" + devUnit.getAliases().stream().collect(Collectors.joining(", ")) + ")")
                     .append("</div>");
             if (StringUtils.isNotEmpty(devUnit.getInfo())) {
                 builder.append("<small><i>")
