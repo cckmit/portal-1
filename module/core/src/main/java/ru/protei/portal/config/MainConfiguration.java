@@ -652,6 +652,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AsseblerService getAssemblerService() {
+        return new AssemblerServiceImpl();
+    }
+
+    @Bean
     public EventExpirationControl getEventExpirationControl() {
         return new EventExpirationControl();
     }

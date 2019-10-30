@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.events;
+package ru.protei.portal.core.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.utils.EventExpirationControl;
-import ru.protei.portal.core.service.EventPublisherService;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,7 +42,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
         if (isEagerPush(event)) {
             logger.info("Eager push on event for case {}", event.getCaseObject().defGUID());
-            publisherService.publishEvent(assembledEvent);
+            assemblerService.proceed(assembledEvent);
             return;
         }
 
@@ -83,7 +82,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
         if (isEagerPush(event)) {
             logger.info("Eager push on event for case {}", event.getCaseObject().defGUID());
-            publisherService.publishEvent(new AssembledCaseEvent(event));
+            assemblerService.proceed(new AssembledCaseEvent(event));
             return;
         }
 
@@ -109,10 +108,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         return assembledEventsMap.getOrDefault(key, null);
     }
 
-    @Override
-    public void forcePublishCaseRelatedEvents(Long caseId) {
-        assembledEventsMap.keySet().stream().filter(x -> x.b.equals(caseId)).forEach(this::publishAndClear);
-    }
 
     @Override
     public int getEventsCount() {
@@ -138,7 +133,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         AssembledCaseEvent personsEvent = assembledEventsMap.get(key);
         logger.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(),
                 personsEvent.getInitiator().getDisplayName());
-        publisherService.publishEvent(personsEvent);
+        assemblerService.proceed(personsEvent);
         assembledEventsMap.remove(key);
     }
 
@@ -161,7 +156,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     private static Logger logger = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 
     @Autowired
-    EventPublisherService publisherService;
+    AsseblerService assemblerService;
     @Autowired
     EventExpirationControl eventExpirationControl;
 }

@@ -130,7 +130,7 @@ public class HpsmServiceImpl implements HpsmService {
 
     @Override
     @EventListener
-    public void onAssembledCaseEvent(AssembledCaseEvent event) {
+    public void onAssembledCaseEvent(AssembledCaseEvent event                                                                                                                                                                                                                                                                                                                                                                                                                                               ) {
         if (!portalConfig.data().integrationConfig().isHpsmEnabled()) {
             return;
         }

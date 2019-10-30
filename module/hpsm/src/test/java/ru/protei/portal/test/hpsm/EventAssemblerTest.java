@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import java.util.ArrayList;

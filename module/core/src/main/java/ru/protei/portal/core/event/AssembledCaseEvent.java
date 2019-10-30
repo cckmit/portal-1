@@ -1,6 +1,9 @@
 package ru.protei.portal.core.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -12,6 +15,57 @@ import java.util.*;
 import static java.lang.System.currentTimeMillis;
 
 public class AssembledCaseEvent extends ApplicationEvent {
+
+    public boolean isCaseObjectFilled() {
+        return initState!=null;
+    }
+
+    public boolean isCaseCommentsFilled() {
+        return caseComments!=null;
+    }
+
+    public long getCaseNumber() {
+        return getCaseObject().getCaseNumber();
+    }
+
+    public void setInitialCaseObject( CaseObject caseObject ) {
+        initState = caseObject;
+    }
+
+    public void setInitialCaseComments( List<CaseComment> caseComments ) {
+        this.caseComments = caseComments;
+    }
+
+    public List<CaseComment> getAllComments() {
+        List<CaseComment> comments = new ArrayList<>(  caseComments );
+        if (getRemovedComment() != null) {
+            comments.add(getRemovedComment());
+        }
+
+        if (getCaseComment() != null) {
+            boolean isNewCommentPresents = comments.stream()
+                    .anyMatch(comment ->
+                            Objects.equals(comment.getId(), getCaseComment().getId())
+                    );
+
+            if (!isNewCommentPresents) {
+                comments.add(getCaseComment());
+            }
+        }
+        return comments;
+    }
+
+    public Person getCreator() {
+        return getCaseObject().getCreator();
+    }
+
+    public Person getManager() {
+        return getCaseObject().getManager();
+    }
+
+    public Long getCaseObjectId() {
+        return getCaseObject().getId();
+    }
 
     private CaseObject lastState;
     private CaseObject initState;
@@ -26,6 +80,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     private Person initiator;
     private ServiceModule serviceModule;
+    private List<CaseComment> caseComments;
     // Measured in ms
     private final long timeCreated;
     private long lastUpdated;
@@ -291,4 +346,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isPrivacyChanged()
                 || isProductChanged();
     }
+
+    private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );
 }
