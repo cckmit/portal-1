@@ -69,6 +69,10 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         selectorToQuery.put(selector, query);
     }
 
+    public void updateQuery(SelectorWithModel<EntityOption> selector, Boolean isShowDeprecated) {
+        selectorToQuery.get(selector).setShowDeprecated(isShowDeprecated);
+    }
+
     private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
@@ -94,7 +98,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         }
         query.setOnlyParentCompanies( isParentIdIsNull );
         query.setSortHomeCompaniesAtBegin( true );
-        query.setShowDeprecated(false);
         return query;
     }
 

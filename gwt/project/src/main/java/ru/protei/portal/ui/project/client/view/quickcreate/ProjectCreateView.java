@@ -32,6 +32,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        company.showDeprecated(false);
     }
 
     @Override

@@ -20,6 +20,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue(lang.selectIssueCompany());
+        company.showDeprecated(false);
         ensureDebugIds();
     }
 

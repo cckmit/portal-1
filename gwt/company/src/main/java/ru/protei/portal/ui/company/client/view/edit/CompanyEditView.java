@@ -43,6 +43,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         parentCompany.setDefaultValue(lang.selectIssueCompany());
         parentCompany.showOnlyParentCompanies(true);
+        parentCompany.showDeprecated(false);
     }
 
     @Override

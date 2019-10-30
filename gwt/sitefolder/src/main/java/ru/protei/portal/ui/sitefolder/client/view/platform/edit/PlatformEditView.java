@@ -29,6 +29,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     public void onInit() {
 
         initWidget(ourUiBinder.createAndBindUi(this));
+        company.showDeprecated(false);
     }
 
     @Override
