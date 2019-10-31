@@ -1,12 +1,16 @@
 package ru.protei.portal.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
@@ -67,12 +71,15 @@ import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadFactory;
 
 
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @EnableScheduling
+@EnableAsync
 @PropertySource("classpath:spring.properties")
 public class MainConfiguration {
 
@@ -91,6 +98,31 @@ public class MainConfiguration {
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
         return new PortalConfig("portal.properties");
+    }
+
+    /**
+     * Запуск фоновых блокирующих задач( доступ к базе данных или IO )
+     */
+    @Bean(name = BACKGROUND_BLOCKED_TASKS)
+    public Executor threadPoolTaskExecutor() {
+        int maxPoolSize = 50; //взять из winter.properties
+        int cps = maxPoolSize/8;
+        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+        te.setCorePoolSize(cps);// основное количество обрабатывающих потоков (Должен быть меньше максимально пула соединений к базе данных, например =1/8)
+        te.setMaxPoolSize(2*cps); //при превышении очереди добавить потоки, но не более MaxPoolSize (Должен быть больше CorePoolSize, например =2*CorePoolSize)
+        te.setQueueCapacity(2*2*cps+cps); // при превышении очереди и превышении MaxPoolSize задача отбрасывается! (Должен быть больше МaxPoolSize, например =2*МaxPoolSize+1)
+        te.setKeepAliveSeconds(2); //удалять поток если больше CorePoolSize и не переиспользован в течении этого времени (не сразу удалять поток, а погодя )
+        te.setAllowCoreThreadTimeOut(true); //удалять в том числе потоки из CorePoolSize согласно setKeepAliveSeconds  (экономит память снижая производительность, актуально при большом числе потоков)
+        te.setThreadFactory( new ThreadFactory() {
+            @Override
+            public Thread newThread( Runnable r ) {
+                Thread thread = new Thread( r );
+                thread.setName("T-"+thread.getId()+" background-blocked-tasks-thread-pool"  );
+                return thread;
+            }
+        } );
+
+        return te;
     }
 
     @Bean
@@ -808,4 +840,8 @@ public class MainConfiguration {
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
     }
+
+    public static final String BACKGROUND_BLOCKED_TASKS = "backgroundDbTasks";
+
+    private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

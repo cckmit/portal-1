@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -13,22 +14,18 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_BLOCKED_TASKS;
 
 
 public class AssemblerServiceImpl implements AsseblerService {
+
+    @Async(BACKGROUND_BLOCKED_TASKS)
     @Override
     public void proceed( final AssembledCaseEvent assembledEvent ) {
-        CompletableFuture.supplyAsync( () ->
-                assembleEvent( assembledEvent ), assebleExecutor ).thenAccept( assembleResult ->
-                assembleResult.ifOk( assembledCaseEvent ->
-                        publisherService.publishEvent( assembledCaseEvent ) )
-
-        );
+        assembleEvent( assembledEvent ).ifOk( assembledCaseEvent ->
+                publisherService.publishEvent( assembledCaseEvent ) );
     }
 
     private Result<AssembledCaseEvent> assembleEvent( AssembledCaseEvent fromEvent ) {
@@ -39,11 +36,11 @@ public class AssemblerServiceImpl implements AsseblerService {
         result.flatMap( e -> {
 
             if (e.isCaseObjectFilled()) {
-                log.info( "assembleEvent(): CaseObjectID={} caseObject is filled", e.getCaseObjectId() );
+                log.info( "assembleEvent(): CaseObjectID={} caseObject is filled.", e.getCaseObjectId() );
                 return ok( e );
             }
 
-            log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject" );
+            log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject." );
             return caseService.getCaseObject( at, e.getCaseNumber() ).map( co -> {
                 e.setInitialCaseObject( co );
                 return e;
@@ -54,14 +51,13 @@ public class AssemblerServiceImpl implements AsseblerService {
             CaseObject caseObject = e.getCaseObject();
 
             if (e.isCaseCommentsFilled()) {
-                log.info( "assembleEvent(): CaseObjectID={} Comments are filled", e.getCaseObjectId() );
+                log.info( "assembleEvent(): CaseObjectID={} Comments are filled.", e.getCaseObjectId() );
                 return ok( e );
             }
 
-            log.info( "assembleEvent(): CaseObjectID={} Try to fill comments", e.getCaseObjectId() );
+            log.info( "assembleEvent(): CaseObjectID={} Try to fill comments.", e.getCaseObjectId() );
             Date upperBoundDate = makeCommentUpperBoundDate( e );
-            return caseCommentService.getCaseCommentList( at, En_CaseType.CRM_SUPPORT,
-                    new CaseCommentQuery( caseObject.getId(), upperBoundDate ) )
+            return caseCommentService.getCaseCommentList( at, En_CaseType.CRM_SUPPORT, new CaseCommentQuery( caseObject.getId(), upperBoundDate ) )
                     .map( caseComments -> {
                         e.setInitialCaseComments( caseComments );
                         return e;
@@ -99,12 +95,5 @@ public class AssemblerServiceImpl implements AsseblerService {
     AuthToken at = null;//TODO AuthToken for assemble event
 
 
-    private final ExecutorService assebleExecutor = Executors.newCachedThreadPool( new ThreadFactory() {//tofo fixetThreadPool
-        @Override
-        public Thread newThread( Runnable r ) {
-            return new Thread( r, "assemble-event-pool-" + threadNumber.getAndIncrement() );
-        }
-    } );
-    private final AtomicInteger threadNumber = new AtomicInteger( 1 );
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

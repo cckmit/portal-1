@@ -10,6 +10,7 @@ import ru.protei.portal.core.service.EventPublisherService;
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -23,7 +24,14 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
     ApplicationEventPublisher eventPublisher;
 
     public AsyncEventPublisherService () {
-        executorService = Executors.newFixedThreadPool(3);
+        executorService = Executors.newFixedThreadPool(3, new ThreadFactory() {
+            @Override
+            public Thread newThread( Runnable r ) {
+                Thread thread = new Thread( r );
+                thread.setName("T-"+thread.getId()+" event-publisher"  );
+                return thread;
+            }
+        });
     }
 
     @Override
