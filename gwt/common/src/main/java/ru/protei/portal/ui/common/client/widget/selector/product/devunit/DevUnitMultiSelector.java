@@ -48,11 +48,6 @@ public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView
         this.exclude = exclude;
         fillOptions();
     }
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
-        if (model != null) {
-            model.updateQuery(this, enDevUnitState, enDevUnitType);
-        }
-    }
 
     public void refreshOptions() {
         model.getOptionsFromServer(this);
