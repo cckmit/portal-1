@@ -257,17 +257,11 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
         caseObject.setTypeId(En_CaseType.PROJECT.getId());
         caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
-        caseObject.setStateId(project.getState() == null ? En_RegionState.UNKNOWN.getId() : project.getState().getId());
+        caseObject.setStateId(project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
-        caseObject.setManagerId(project.getTeam()
-                .stream()
-                .filter(personProjectMemberView -> personProjectMemberView.getRole() == En_DevUnitPersonRoleType.HEAD_MANAGER)
-                .map(PersonShortView::getId)
-                .findFirst()
-                .orElse(null)
-        );
+        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());

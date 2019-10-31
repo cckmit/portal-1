@@ -21,7 +21,7 @@ public interface AbstractProjectCreateView extends IsWidget {
     HasValue<ProductDirectionInfo> direction();
     HasValue<En_CustomerType> customerType();
     HasValue<EntityOption> company();
-    HasValue<Set<ProductShortView>> products();
+    HasValue<ProductShortView> product();
     HasValidable nameValidator();
     HasValidable regionValidator();
     HasValidable directionValidator();
