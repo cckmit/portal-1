@@ -22,6 +22,7 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
 
     ExecutorService executorService;
     ApplicationEventPublisher eventPublisher;
+    int maxQueueSize=0;
 
     public AsyncEventPublisherService () {
         executorService = Executors.newFixedThreadPool(3, new ThreadFactory() {
@@ -39,8 +40,11 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
         final long start = System.currentTimeMillis();
         // размер очереди на момент добавления задачи в очередь
         final int size = ((ThreadPoolExecutor) executorService).getQueue().size();
+        if (maxQueueSize < size) {
+            maxQueueSize = size;
+        }
         executorService.submit( () -> {
-            logger.info( "publishEvent(): Queue_size={} timeSpentInQueue={}ms {} ", size, System.currentTimeMillis() - start, event );
+            logger.info( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
             eventPublisher.publishEvent( event );
         } );
     }

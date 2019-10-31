@@ -105,8 +105,8 @@ public class MainConfiguration {
      */
     @Bean(name = BACKGROUND_BLOCKED_TASKS)
     public Executor threadPoolTaskExecutor() {
-        int maxPoolSize = 50; //взять из winter.properties
-        int cps = maxPoolSize/8;
+        int maxDbConnectionPoolSize = 50; //взять из winter.properties
+        int cps = maxDbConnectionPoolSize/8; //не занимать все соединения на фоновые задачи
         ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
         te.setCorePoolSize(cps);// основное количество обрабатывающих потоков (Должен быть меньше максимально пула соединений к базе данных, например =1/8)
         te.setMaxPoolSize(2*cps); //при превышении очереди добавить потоки, но не более MaxPoolSize (Должен быть больше CorePoolSize, например =2*CorePoolSize)

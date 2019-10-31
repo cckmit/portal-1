@@ -14,19 +14,22 @@ public interface AbstractCaseEvent {
 
     Person getPerson();
 
-    CaseObject getCaseObject();
+    Long getCaseObjectId();
+//    CaseObject getCaseObject();
+//
+//    CaseObject getNewState();
+//
+//    CaseObject getOldState();
+//
+//    CaseComment getCaseComment();
 
-    CaseObject getNewState();
+//    CaseComment getOldCaseComment();
+//
+//    CaseComment getRemovedCaseComment();
 
-    CaseObject getOldState();
-
-    CaseComment getCaseComment();
-
-    CaseComment getOldCaseComment();
-
-    CaseComment getRemovedCaseComment();
-
-    Collection<Attachment> getAddedAttachments();
-
-    Collection<Attachment> getRemovedAttachments();
+//    Collection<Attachment> getAddedAttachments();
+//
+//    Collection<Attachment> getRemovedAttachments();
+//
+    Object getSource();
 }

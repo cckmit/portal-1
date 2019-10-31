@@ -10,7 +10,7 @@ public interface EventAssemblerService {
 
     void publishEvent(CaseCommentEvent event);
 
-//    void publishEvent(CaseObjectCommentEvent event);
+    void publishEvent(CaseObjectCommentEvent event);
 
     void publishEvent(CaseAttachmentEvent event);
 

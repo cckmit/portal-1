@@ -10,6 +10,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
@@ -108,7 +109,7 @@ public final class CommonServiceImpl implements CommonService {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent( CaseCommentEvent.create(caseService, ServiceModule.REDMINE)
+        eventPublisherService.publishEvent( CaseObjectCommentEvent.create(caseService, ServiceModule.REDMINE)
                 .withNewState(obj)
                 .withOldState(obj)
                 .withCaseComment(comment)

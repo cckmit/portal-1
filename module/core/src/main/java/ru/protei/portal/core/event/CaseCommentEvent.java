@@ -16,8 +16,9 @@ import java.util.Collections;
  */
 public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-    private CaseObject newState;
-    private CaseObject oldState;
+//    private CaseObject newState;
+//    private CaseObject oldState;
+    private Long caseObjectId;
     private CaseComment caseComment;
     private CaseComment oldCaseComment;
     private CaseComment removedCaseComment;
@@ -34,16 +35,20 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return serviceModule;
     }
 
-    public CaseObject getCaseObject() {
-        return newState != null ? newState : oldState;
-    }
+//    public CaseObject getCaseObject() {
+//        return newState != null ? newState : oldState;
+//    }
+//
+//    public CaseObject getNewState() {
+//        return newState;
+//    }
+//
+//    public CaseObject getOldState() {
+//        return oldState;
+//    }
 
-    public CaseObject getNewState() {
-        return newState;
-    }
-
-    public CaseObject getOldState() {
-        return oldState;
+    public Long getCaseObjectId(){
+        return caseObjectId;
     }
 
     public CaseComment getCaseComment() {
@@ -85,15 +90,20 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return this;
     }
 
-    public CaseCommentEvent withNewState(CaseObject newState) {
-        this.newState = newState;
+    public CaseCommentEvent withCaseObjectId( Long caseObjectId ) {
+        this.caseObjectId = caseObjectId;
         return this;
     }
 
-    public CaseCommentEvent withOldState(CaseObject oldState) {
-        this.oldState = oldState;
-        return this;
-    }
+//    public CaseCommentEvent withNewState(CaseObject newState) {
+//        this.newState = newState;
+//        return this;
+//    }
+//
+//    public CaseCommentEvent withOldState(CaseObject oldState) {
+//        this.oldState = oldState;
+//        return this;
+//    }
 
     public CaseCommentEvent withCaseComment(CaseComment caseComment) {
         this.caseComment = caseComment;
@@ -119,5 +129,6 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         this.removedAttachments = removedAttachments;
         return this;
     }
+
 
 }
