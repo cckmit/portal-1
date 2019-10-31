@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
@@ -66,8 +67,8 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public HasValue<Set<ProductShortView>> products() {
-        return products;
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Override
     public void refreshProducts() {
-        products.refreshOptions();
+        product.refreshOptions();
     }
 
     @UiHandler("saveBtn")
@@ -140,7 +141,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Inject
     @UiField(provided = true)
-    DevUnitMultiSelector products;
+    DevUnitButtonSelector product;
 
     @UiField
     Button saveBtn;

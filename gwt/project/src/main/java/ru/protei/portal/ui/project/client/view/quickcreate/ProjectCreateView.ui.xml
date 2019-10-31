@@ -56,7 +56,7 @@
                 <label>
                     <ui:text from="{lang.projectProducts}"/>
                 </label>
-                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
+                <productselector:devunit.DevUnitButtonSelector ui:field="product" hasNullValue="false"/>
             </div>
         </div>
         <div class="text-right p-t-10">

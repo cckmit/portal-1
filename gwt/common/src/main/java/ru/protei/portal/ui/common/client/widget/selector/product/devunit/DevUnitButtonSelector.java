@@ -40,6 +40,10 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
         }
     }
 
+    public void refreshOptions() {
+        model.getOptionsFromServer(this);
+    }
+
     public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
