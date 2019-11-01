@@ -71,7 +71,7 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
-                condition.append(" and (document.name like ? or CO.case_name like ?)");
+                condition.append(" and (document.name like ? or document.decimal_number like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);
@@ -103,9 +103,9 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 args.add(query.getManagerId());
             }
 
-            if (query.getProjectId() != null) {
-                condition.append(" and document.project_id= ?");
-                args.add(query.getProjectId());
+            if (query.getProjectIds() != null) {
+                condition.append(" and document.project_id in ");
+                condition.append(HelperFunc.makeInArg(query.getProjectIds()));
             }
 
             if (CollectionUtils.isNotEmpty(query.getOrganizationCodes())) {

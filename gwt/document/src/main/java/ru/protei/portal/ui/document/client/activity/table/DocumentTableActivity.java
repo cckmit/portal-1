@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -30,6 +31,7 @@ import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilte
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public abstract class DocumentTableActivity
@@ -195,7 +197,8 @@ public abstract class DocumentTableActivity
                 managerId,
                 filterView.content().getValue(),
                 filterView.approved().getValue(),
-                filterView.showDeprecated().getValue() ? null : En_DocumentState.ACTIVE
+                filterView.showDeprecated().getValue() ? null : En_DocumentState.ACTIVE,
+                filterView.projects().getValue() == null || filterView.projects().getValue().isEmpty() ? null : filterView.projects().getValue().stream().map(EntityOption::getId).collect(Collectors.toList())
         );
     }
 
