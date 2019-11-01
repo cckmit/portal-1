@@ -116,7 +116,8 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public Long getAndIncrementEmailLastId( Long caseId ) {
-        String selectForUpdate = ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.query().forUpdate().
+        String selectForUpdate = ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.query().
+                forUpdate().
                 select( COLUMN_EMAIL_LAST_ID ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
 
         Long lastId = jdbcTemplate.queryForObject( selectForUpdate, Long.class, caseId );
