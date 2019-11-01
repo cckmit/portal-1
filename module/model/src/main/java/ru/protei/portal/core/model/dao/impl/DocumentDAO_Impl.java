@@ -103,7 +103,7 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 args.add(query.getManagerId());
             }
 
-            if (query.getProjectIds() != null) {
+            if (CollectionUtils.isNotEmpty(query.getProjectIds())) {
                 condition.append(" and document.project_id in ");
                 condition.append(HelperFunc.makeInArg(query.getProjectIds()));
             }

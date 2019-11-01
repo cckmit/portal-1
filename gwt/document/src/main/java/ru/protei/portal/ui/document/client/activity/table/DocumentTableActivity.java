@@ -198,7 +198,7 @@ public abstract class DocumentTableActivity
                 filterView.content().getValue(),
                 filterView.approved().getValue(),
                 filterView.showDeprecated().getValue() ? null : En_DocumentState.ACTIVE,
-                filterView.projects().getValue() == null || filterView.projects().getValue().isEmpty() ? null : filterView.projects().getValue().stream().map(EntityOption::getId).collect(Collectors.toList())
+                filterView.projects().getValue() == null ? null : filterView.projects().getValue().stream().map(EntityOption::getId).collect(Collectors.toList())
         );
     }
 
