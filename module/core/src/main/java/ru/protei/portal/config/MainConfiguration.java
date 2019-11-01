@@ -48,7 +48,7 @@ import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
-import ru.protei.portal.core.utils.EventExpirationControl;
+//import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -73,6 +73,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 @Configuration
@@ -106,13 +107,14 @@ public class MainConfiguration {
     @Bean(name = BACKGROUND_BLOCKED_TASKS)
     public Executor threadPoolTaskExecutor() {
         int maxDbConnectionPoolSize = 50; //взять из winter.properties
-        int cps = maxDbConnectionPoolSize/8; //не занимать все соединения на фоновые задачи
+        int cps = maxDbConnectionPoolSize/8+1; //не занимать все соединения на фоновые задачи
         ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
         te.setCorePoolSize(cps);// основное количество обрабатывающих потоков (Должен быть меньше максимально пула соединений к базе данных, например =1/8)
         te.setMaxPoolSize(2*cps); //при превышении очереди добавить потоки, но не более MaxPoolSize (Должен быть больше CorePoolSize, например =2*CorePoolSize)
         te.setQueueCapacity(2*2*cps+cps); // при превышении очереди и превышении MaxPoolSize задача отбрасывается! (Должен быть больше МaxPoolSize, например =2*МaxPoolSize+1)
         te.setKeepAliveSeconds(2); //удалять поток если больше CorePoolSize и не переиспользован в течении этого времени (не сразу удалять поток, а погодя )
         te.setAllowCoreThreadTimeOut(true); //удалять в том числе потоки из CorePoolSize согласно setKeepAliveSeconds  (экономит память снижая производительность, актуально при большом числе потоков)
+        te.setRejectedExecutionHandler( new ThreadPoolExecutor.CallerRunsPolicy() ); //при переполнении очереди и превышении MaxPoolSize выполнять задачу на вызывающем потоке
         te.setThreadFactory( new ThreadFactory() {
             @Override
             public Thread newThread( Runnable r ) {
@@ -688,10 +690,10 @@ public class MainConfiguration {
         return new AssemblerServiceImpl();
     }
 
-    @Bean
-    public EventExpirationControl getEventExpirationControl() {
-        return new EventExpirationControl();
-    }
+//    @Bean
+//    public EventExpirationControl getEventExpirationControl() {
+//        return new EventExpirationControl();
+//    }
 
     @Bean
     public DocumentService getDocumentService() {

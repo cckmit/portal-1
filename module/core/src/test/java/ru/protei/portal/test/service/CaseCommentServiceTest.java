@@ -159,7 +159,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1, fromDb.getTimeElapsed());
 
-        CaseObject caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
+        CaseObject caseObjectWithComment = checkResultAndGetData(caseService.getCaseObjectByNumber(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", timeElapsed1, caseObjectWithComment.getTimeElapsed());
 
         // Comment 2
@@ -172,7 +172,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         assertEquals("Expected elapsed time for " + comment2.getText(), timeElapsed2, fromDb.getTimeElapsed());
 
-        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
+        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObjectByNumber(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1 + timeElapsed2), caseObjectWithComment.getTimeElapsed());
 
         //  Change comment 1
@@ -183,7 +183,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1Changed, fromDb.getTimeElapsed());
 
-        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
+        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObjectByNumber(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1Changed + timeElapsed2), caseObjectWithComment.getTimeElapsed());
     }
 

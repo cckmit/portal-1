@@ -4,8 +4,10 @@ import com.thoughtworks.xstream.XStream;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
@@ -135,7 +137,9 @@ public class LiveSampleTest extends BaseServiceTest {
 
         final CaseComment comment = new CaseComment("qwe");
         final CaseService caseService = ctx.getBean(CaseService.class);
-        final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseService, object, new Person());
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( caseService, ServiceModule.HPSM, new Person(), null, object );
+        final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
+        assembledCaseEvent.attachEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseComment(comment);
 
         final BackChannelEventHandler handler = backChannelFactory.createHandler(msg, assembledCaseEvent);

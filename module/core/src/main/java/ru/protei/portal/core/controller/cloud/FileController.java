@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -33,7 +35,7 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
 
 import javax.annotation.PostConstruct;
@@ -70,6 +72,9 @@ public class FileController {
 
     @Autowired
     PortalConfig config;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
@@ -291,16 +296,16 @@ public class FileController {
     }
 
     private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
-        Result<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
+        Result<CaseObject> issue = caseService.getCaseObjectByNumber(token, caseNumber);
         if (issue.isError()) {
             logger.error("Notification error! Database exception: " + issue.getStatus().name());
             return;
         }
-
-        publisherService.publishEvent( CaseAttachmentEvent.create(this)
-                .withCaseObject(issue.getData())
+        List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( issue.getData().getId() );
+        publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, issue.getData().getId(), oldAttachments)
+//                .withCaseObject(issue.getData())
                 .withAddedAttachments(Collections.singletonList(attachment))
-                .withPerson(initiator)
+//                .withPerson(initiator)
                 );
     }
 

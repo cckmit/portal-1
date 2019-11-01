@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
@@ -58,7 +59,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
+//        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
 
         Result<CaseCommentSaveOrUpdateResult> result = addCaseCommentWithoutEvent(token, caseType, comment);
         if (result.isError()) {
@@ -67,12 +68,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
-            publisherService.publishEvent( CaseCommentEvent.create(this)
-                    .withPerson(person)
-                    .withOldState(caseObjectOld)
-                    .withNewState(caseObjectNew)
-                    .withCaseComment(resultData.getCaseComment())
+//            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId())
+//                    .withPerson(person)
+//                    .withOldState(caseObjectOld)
+//                    .withNewState(caseObjectNew)
+                    .withNewCaseComment(resultData.getCaseComment())
                     .withAddedAttachments(resultData.getAddedAttachments())
                     );
         }
@@ -144,7 +145,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Transactional
     public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
 
-        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
+//        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
 
         Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, person);
         if (result.isError()) {
@@ -153,13 +154,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
-            publisherService.publishEvent( CaseCommentEvent.create(this)
-                    .withPerson(person)
-                    .withOldState(caseObjectOld)
-                    .withNewState(caseObjectNew)
+//            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId())
+//                    .withPerson(person)
+//                    .withOldState(caseObjectOld)
+//                    .withNewState(caseObjectNew)
                     .withOldCaseComment(resultData.getOldCaseComment())
-                    .withCaseComment(resultData.getCaseComment())
+                    .withNewCaseComment(resultData.getCaseComment())
                     .withRemovedAttachments(resultData.getRemovedAttachments())
                     .withAddedAttachments(resultData.getAddedAttachments())
                     );
@@ -292,13 +293,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
-        CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
-        publisherService.publishEvent( CaseCommentEvent.create(this)
-                .withOldState(caseObjectOld)
-                .withNewState(caseObjectNew)
+//        CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
+        publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, caseObjectOld.getId())
+//                .withOldState(caseObjectOld)
+//                .withNewState(caseObjectNew)
                 .withRemovedCaseComment(removedComment)
                 .withRemovedAttachments(removedAttachments)
-                .withPerson(person)
+//                .withPerson(person)
                 );
 
         return ok( isRemoved);

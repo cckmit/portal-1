@@ -48,7 +48,7 @@ public class IssueControllerImpl implements IssueController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        Result<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
+        Result<CaseObject> response = caseService.getCaseObjectByNumber( descriptor.makeAuthToken(), number );
         log.info("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {

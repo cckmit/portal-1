@@ -14,7 +14,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
@@ -67,7 +69,11 @@ public class TemplateServiceImplTest {
         CaseObject lastState = createNewCaseObject(person, 4 * DAY + 15 * HOUR + 48 * MINUTE);
 
         Object dummyCaseService = new Object();
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
+//        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
+        assembledCaseEvent.attachEvent(caseObjectEvent);
+
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
 
@@ -93,7 +99,11 @@ public class TemplateServiceImplTest {
         CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
 
         Object dummyCaseService = new Object();
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
+//        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
+        assembledCaseEvent.attachEvent(caseObjectEvent);
+
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
         DiffCollectionResult<LinkData> linkData = new DiffCollectionResult<>();

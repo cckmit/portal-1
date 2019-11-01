@@ -63,6 +63,11 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
+    public List<CaseComment> getCommentsByCaseID( Long caseId ) {
+        return getListByCondition("CASE_ID=?", caseId);
+    }
+
+    @Override
     public List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Integer> terminatedStates,
                                                                       List<Long> companiesIds, Set<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
                                                                       List<Long> tagsIds) {

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -53,10 +54,21 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<CaseObject> getCaseObject( AuthToken token, long number ) {
+    public Result<CaseObject> getCaseObjectById( AuthToken token, Long caseID ) {
+        CaseObject caseObject = caseObjectDAO.get( caseID );
+
+        return fillCaseObject( token, caseObject );
+    }
+
+    @Override
+    public Result<CaseObject> getCaseObjectByNumber( AuthToken token, long number ) {
 
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
+        return fillCaseObject( token, caseObject );
+    }
+
+    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -86,7 +98,7 @@ public class CaseServiceImpl implements CaseService {
             caseObject.getManager().resetPrivacyInfo();
         }
         if ( isNotEmpty(caseObject.getNotifiers())) {
-            caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
+            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
         }
 
         return ok(caseObject);
@@ -195,9 +207,9 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent( CaseObjectEvent.create(this)
-                .withNewState(newState)
-                .withPerson(initiator)
+        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState )
+//                .withNewState(newState)
+//                .withPerson(initiator)
                 .withLinks(mergeLinks)
         );
 
@@ -218,10 +230,10 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getCaseObject().getAttachments());
             newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( CaseObjectEvent.create(this)
-                    .withNewState(newState)
-                    .withOldState(oldState)
-                    .withPerson(initiator)
+            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
+//                    .withNewState(newState)
+//                    .withOldState(oldState)
+//                    .withPerson(initiator)
             );
         }
 
@@ -244,10 +256,10 @@ public class CaseServiceImpl implements CaseService {
             newState.setNotifiers(caseObject.getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
 
-            publisherService.publishEvent( CaseObjectEvent.create(this)
-                    .withPerson(initiator)
-                    .withOldState(oldState)
-                    .withNewState(newState)
+            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
+//                    .withPerson(initiator)
+//                    .withOldState(oldState)
+//                    .withNewState(newState)
 //                    .withCaseComment(commentResultData.getCaseComment())
 //                    .withOldCaseComment(commentResultData.getOldCaseComment())
 //                    .withAddedAttachments(commentResultData.getAddedAttachments())
@@ -255,10 +267,10 @@ public class CaseServiceImpl implements CaseService {
                     .withLinks( objectResultData.getMergeLinks() )
             );
 
-            publisherService.publishEvent( CaseCommentEvent.create(this)
-                    .withPerson(initiator)
-                    .withOldState(oldState)
-                    .withCaseComment(commentResultData.getCaseComment())
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, initiator, oldState.getId())
+//                    .withPerson(initiator)
+//                    .withOldState(oldState)
+                    .withNewCaseComment(commentResultData.getCaseComment())
                     .withOldCaseComment(commentResultData.getOldCaseComment())
                     .withAddedAttachments(commentResultData.getAddedAttachments())
                     .withRemovedAttachments(commentResultData.getRemovedAttachments())
@@ -555,9 +567,9 @@ public class CaseServiceImpl implements CaseService {
             linksDiff.putSameEntries( caseObject.getLinks() );
         }
 
-        publisherService.publishEvent( CaseObjectEvent.create(this)
-                .withOldState(caseObject)
-                .withNewState(caseObject)
+        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, null, caseObject, caseObject)//TODO link need Person!
+//                .withOldState(caseObject)
+//                .withNewState(caseObject)
                 .withLinks( linksDiff )
         );
         return ok(caseObject.getId());

@@ -3,7 +3,6 @@ package ru.protei.portal.core.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -24,12 +23,14 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return caseComments!=null;
     }
 
-    public long getCaseNumber() {
-        return getCaseObject().getCaseNumber();
+    public Long getCaseNumber() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return null;
+        return caseObject.getCaseNumber();
     }
 
-    public void setInitialCaseObject( CaseObject caseObject ) {
-        initState = caseObject;
+    public void setLastCaseObject( CaseObject caseObject ) {
+        lastState = caseObject;
     }
 
     public void setInitialCaseComments( List<CaseComment> caseComments ) {
@@ -64,7 +65,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public Long getCaseObjectId() {
-        return getCaseObject().getId();
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return caseObjectId;
+        return caseObject.getId();
     }
 
     public String getExtAppType() {
@@ -76,7 +79,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
-    private CaseComment comment;
+    private CaseComment newComment;
     private CaseComment oldComment;
     private CaseComment removedComment;
     private Collection<Attachment> addedAttachments;
@@ -88,20 +91,22 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Person initiator;
     private ServiceModule serviceModule;
     private List<CaseComment> caseComments;
+    private boolean isEagerEvent;
     // Measured in ms
     private final long timeCreated;
     private long lastUpdated;
 
     public AssembledCaseEvent(AbstractCaseEvent ace) {
-        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPerson());
+        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPerson(), ace.isEagerEvent());
     }
 
-    public AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator ) {
+    public AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator, boolean isEagerEvent ) {
         super( source );
         this.caseObjectId = caseObjectId;
         this.initiator = initiator;
         this.serviceModule = serviceModule;
         this.timeCreated = currentTimeMillis();
+        this.isEagerEvent = isEagerEvent;
     }
 
 //    public AssembledCaseEvent( Object source, CaseObject lastState, Person initiator) {
@@ -117,15 +122,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
     //    public AssembledCaseEvent(CaseObjectEvent objectEvent) {
     //        this(objectEvent.getServiceModule(), objectEvent.getSource(), objectEvent.getOldState(),
     //                objectEvent.getNewState(), objectEvent.getPerson());
-                this.initState = state;
-        this.lastState = lastState;
-        this.initiator = currentPerson;
-        this.serviceModule = module;
-        this.timeCreated = currentTimeMillis();
+                this.initState = objectEvent.getOldState();
+        this.lastState = objectEvent.getNewState();
+        this.initiator = objectEvent.getPerson();
+        this.serviceModule = objectEvent.getServiceModule();
+//        this.timeCreated = currentTimeMillis();
         this.lastUpdated = timeCreated;
         this.addedAttachments = new ArrayList<>();
         this.removedAttachments = new ArrayList<>();
         mergeLinks = objectEvent.getMergeLinks();
+        isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
     }
 
     public void attachEvent( CaseCommentEvent commentEvent ) {
@@ -133,11 +139,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
 //        this(commentEvent.getServiceModule(), commentEvent.getSource(), commentEvent.getOldState(), commentEvent.getNewState(),
 //                commentEvent.getPerson());
         oldComment = commentEvent.getOldCaseComment();
-        comment = commentEvent.getCaseComment();
+        newComment = commentEvent.getNewCaseComment();
         addedAttachments.addAll(commentEvent.getAddedAttachments());
         removedAttachments.addAll(commentEvent.getRemovedAttachments());
         removedComment = commentEvent.getRemovedCaseComment();
+        isEagerEvent = isEagerEvent||commentEvent.isEagerEvent();
     }
+
 
     public void attachEvent( CaseObjectCommentEvent objectCommentEvent ) {
 //    public AssembledCaseEvent(CaseObjectCommentEvent objectCommentEvent) {
@@ -145,11 +153,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
 //                    objectCommentEvent.getOldState(), objectCommentEvent.getNewState(),
 //                    objectCommentEvent.getPerson());
         oldComment = objectCommentEvent.getOldCaseComment();
-        comment = objectCommentEvent.getCaseComment();
+        newComment = objectCommentEvent.getCaseComment();
         addedAttachments.addAll( objectCommentEvent.getAddedAttachments() );
         removedAttachments.addAll( objectCommentEvent.getRemovedAttachments() );
         removedComment = objectCommentEvent.getRemovedCaseComment();
         mergeLinks = objectCommentEvent.getMergeLinks();
+        isEagerEvent = isEagerEvent || objectCommentEvent.isEagerEvent();
     }
 
 
@@ -175,27 +184,27 @@ public class AssembledCaseEvent extends ApplicationEvent {
 //    }
 
     public CaseComment getCaseComment() {
-        return comment;
+        return newComment;
     }
 
-    public void setComment(CaseComment comment) {
-        this.comment = comment;
+    public void setNewComment( CaseComment newComment ) {
+        this.newComment = newComment;
     }
 
-    public boolean isLastStateSet() {
-        return lastState != null;
-    }
+//    public boolean isLastStateSet() {
+//        return lastState != null;
+//    }
 
     public boolean isCreateEvent() {
         return this.initState == null;
     }
 
-    public boolean isUpdateEvent() {
-        return this.initState != null;
+    private boolean isUpdateEvent() {
+        return this.initState != null ;//&& lastState!=null;
     }
 
     public boolean isCommentAttached() {
-        return this.comment != null;
+        return this.newComment != null;
     }
 
     public boolean isCommentRemoved() {
@@ -246,18 +255,22 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEvent() && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
     }
 
-    public void attachCaseObject(CaseObject caseObject) {
-        lastState = caseObject;
-        lastUpdated = currentTimeMillis();
+    public boolean isEagerEvent() {
+        return isEagerEvent;
     }
 
+//    public void attachCaseObject(CaseObject caseObject) {
+//        lastState = caseObject;
+//        lastUpdated = currentTimeMillis();
+//    }
+
     public void attachCaseComment(CaseComment caseComment) {
-        comment = caseComment;
+        newComment = caseComment;
         lastUpdated = currentTimeMillis();
     }
 
     public void includeCaseComments (List<CaseComment> commentList) {
-        comment = CollectionUtils.lastOrDefault(commentList, comment);
+        newComment = CollectionUtils.lastOrDefault(commentList, newComment );
         lastUpdated = currentTimeMillis();
     }
 
@@ -359,7 +372,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean isAttachedCommentNotPrivate() {
-        return comment != null && !comment.isPrivateComment();
+        return newComment != null && !newComment.isPrivateComment();
     }
 
     private boolean isRemovedCommentNotPrivate() {

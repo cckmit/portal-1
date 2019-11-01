@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
@@ -11,6 +12,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -76,18 +78,21 @@ public class AttachmentServiceImpl implements AttachmentService {
                 }
             } );
 
-            CaseObject issue = caseObjectDAO.get(ca.getCaseId());
+//            CaseObject issue = caseObjectDAO.get(ca.getCaseId());
             Attachment attachment = attachmentDAO.get(id);
             UserSessionDescriptor ud = authService.findSession( token );
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
-            if(result.isOk() && issue != null && ud != null ) {
-                jdbcManyRelationsHelper.fill(issue, "attachments");
-                publisherService.publishEvent( CaseAttachmentEvent.create(this)
-                        .withCaseObject(issue)
+            if(result.isOk()
+//                    && issue != null
+                    && ud != null ) {
+//                jdbcManyRelationsHelper.fill(issue, "attachments");
+                List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( ca.getCaseId() );
+                publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, ud.getPerson(), ca.getCaseId(), oldAttachments )
+//                        .withCaseObject(issue)
                         .withRemovedAttachments(Collections.singletonList(attachment))
-                        .withPerson(ud.getPerson())
+//                        .withPerson(ud.getPerson())
                         );
             }
 

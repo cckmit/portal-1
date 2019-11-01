@@ -19,9 +19,14 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private Person person;
     private ServiceModule serviceModule;
     private DiffCollectionResult<CaseLink> mergeLinks;
+    private boolean isEagerEvent;
 
-    private CaseObjectEvent(Object source) {
+    public CaseObjectEvent(  Object source, ServiceModule serviceModule, Person person, CaseObject oldState,  CaseObject newState ) {
         super(source);
+        this.serviceModule = serviceModule;
+        this.person = person;
+        this.oldState = oldState;
+        this.newState = newState;
     }
 
     public boolean isCreateEvent () {
@@ -102,36 +107,43 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return person;
     }
 
+    @Override
+    public Long getCaseObjectId() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return null;
+        return caseObject.getId();
+    }
+
+    @Override
+    public boolean isEagerEvent() {
+        return isEagerEvent;
+    }
+
     public DiffCollectionResult<CaseLink> getMergeLinks() {
         return mergeLinks;
     }
 
-    public static CaseObjectEvent create( Object source) {
-        return create(source, ServiceModule.GENERAL);
-    }
 
-    public static CaseObjectEvent create( Object source, ServiceModule serviceModule) {
-        CaseObjectEvent event = new CaseObjectEvent(source);
-        event.serviceModule = serviceModule;
-        return event;
-    }
 
-    public CaseObjectEvent withNewState(CaseObject newState) {
-        this.newState = newState;
-        return this;
-    }
+//    public CaseObjectEvent withNewState(CaseObject newState) {
+//        this.newState = newState;
+//        return this;
+//    }
+//
+//    public CaseObjectEvent withOldState(CaseObject oldState) {
+//        this.oldState = oldState;
+//        return this;
+//    }
 
-    public CaseObjectEvent withOldState(CaseObject oldState) {
-        this.oldState = oldState;
-        return this;
-    }
-
-    public CaseObjectEvent withPerson(Person person) {
-        this.person = person;
-        return this;
-    }
+//    public CaseObjectEvent withPerson(Person person) {
+//        this.person = person;
+//        return this;
+//    }
     public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         this.mergeLinks = mergeLinks;
         return this;
     }
+
+
+
 }

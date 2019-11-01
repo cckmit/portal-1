@@ -26,8 +26,10 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query);
 
+    Result<CaseObject> getCaseObjectById( AuthToken token, Long caseID );
+
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<CaseObject> getCaseObject( AuthToken token, long number );
+    Result<CaseObject> getCaseObjectByNumber( AuthToken token, long number );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )

@@ -4,9 +4,7 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.CaseServiceImpl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,16 +17,20 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
 //    private CaseObject newState;
 //    private CaseObject oldState;
     private Long caseObjectId;
-    private CaseComment caseComment;
+    private CaseComment newCaseComment;
     private CaseComment oldCaseComment;
     private CaseComment removedCaseComment;
     private Person person;
     private ServiceModule serviceModule;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
+    private boolean isEagerEvent;
 
-    private CaseCommentEvent(Object source) {
+    public CaseCommentEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId) {
         super(source);
+        this.serviceModule = serviceModule;
+        this.person = person;
+        this.caseObjectId = caseObjectId;
     }
 
     public ServiceModule getServiceModule() {
@@ -51,8 +53,13 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return caseObjectId;
     }
 
-    public CaseComment getCaseComment() {
-        return caseComment;
+    @Override
+    public boolean isEagerEvent() {
+        return isEagerEvent;
+    }
+
+    public CaseComment getNewCaseComment() {
+        return newCaseComment;
     }
 
     public CaseComment getOldCaseComment() {
@@ -75,25 +82,16 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return removedAttachments == null? Collections.emptyList(): removedAttachments;
     }
 
-    public static CaseCommentEvent create( Object source ) {
-        return create(source, ServiceModule.GENERAL);
-    }
 
-    public static CaseCommentEvent create( Object source, ServiceModule serviceModule ) {
-        CaseCommentEvent event = new CaseCommentEvent(source);
-        event.serviceModule = serviceModule;
-        return event;
-    }
+//    public CaseCommentEvent withPerson(Person person) {
+//        this.person = person;
+//        return this;
+//    }
 
-    public CaseCommentEvent withPerson(Person person) {
-        this.person = person;
-        return this;
-    }
-
-    public CaseCommentEvent withCaseObjectId( Long caseObjectId ) {
-        this.caseObjectId = caseObjectId;
-        return this;
-    }
+//    public CaseCommentEvent withCaseObjectId( Long caseObjectId ) {
+//        this.caseObjectId = caseObjectId;
+//        return this;
+//    }
 
 //    public CaseCommentEvent withNewState(CaseObject newState) {
 //        this.newState = newState;
@@ -105,8 +103,8 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
 //        return this;
 //    }
 
-    public CaseCommentEvent withCaseComment(CaseComment caseComment) {
-        this.caseComment = caseComment;
+    public CaseCommentEvent withNewCaseComment( CaseComment caseComment) {
+        this.newCaseComment = caseComment;
         return this;
     }
 

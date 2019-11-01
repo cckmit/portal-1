@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -41,10 +42,13 @@ public class AssemblerServiceImpl implements AsseblerService {
             }
 
             log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject." );
-            return caseService.getCaseObject( at, e.getCaseNumber() ).map( co -> {
-                e.setInitialCaseObject( co );
-                return e;
-            } ).ifOk( r-> log.info( "assembleEvent(): CaseObjectID={} CaseObject is filled.", e.getCaseObjectId() ) );
+            e.setLastCaseObject( caseObjectDAO.get( e.getCaseObjectId() ) );
+//            return caseService.getCaseObjectById( at, e.getCaseObjectId() ).map( co -> {//TODO проблемы авторизации и проверки прав hasAccessForCaseObject(...)
+//                e.setInitialCaseObject( co );
+//                return e;
+//            } ).ifOk( r-> log.info( "assembleEvent(): CaseObjectID={} CaseObject is filled.", e.getCaseObjectId() ) );
+            log.info( "assembleEvent(): CaseObjectID={} CaseObject is filled.", e.getCaseObjectId() );
+            return ok(e);
 
         } ).flatMap( e -> {
 
@@ -90,7 +94,8 @@ public class AssemblerServiceImpl implements AsseblerService {
     CaseCommentService caseCommentService;
 
     @Autowired
-    CaseService caseService;
+//    CaseService caseService;
+    CaseObjectDAO caseObjectDAO;
 
     AuthToken at = null;//TODO AuthToken for assemble event
 

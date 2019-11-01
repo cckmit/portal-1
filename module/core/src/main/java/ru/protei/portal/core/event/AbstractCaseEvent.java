@@ -32,4 +32,6 @@ public interface AbstractCaseEvent {
 //    Collection<Attachment> getRemovedAttachments();
 //
     Object getSource();
+
+    boolean isEagerEvent();
 }

@@ -14,15 +14,25 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
 
     private final ServiceModule serviceModule;
     private CaseObject caseObject;
+    private Collection<Attachment> oldAttachments;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
     private Person person;
+    private boolean isEagerEvent;
+    private Long caseObjectId;
 
-    private CaseAttachmentEvent(
-            Object source, ServiceModule serviceModule
+    public CaseAttachmentEvent(
+            Object source, ServiceModule serviceModule,
+            Person person,
+            Long caseObjectId,
+            Collection<Attachment> oldAttachments
+
     ) {
         super(source);
         this.serviceModule = serviceModule;
+        this.person = person;
+        this.caseObjectId = caseObjectId;
+        this.oldAttachments = oldAttachments;
     }
 
     public CaseObject getCaseObject() {
@@ -41,6 +51,16 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
         return person;
     }
 
+    @Override
+    public Long getCaseObjectId() {
+        return caseObjectId;
+    }
+
+    @Override
+    public boolean isEagerEvent() {
+        return isEagerEvent;
+    }
+
     public ServiceModule getServiceModule() {
         return serviceModule;
     }
@@ -56,19 +76,10 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
     public CaseComment getRemovedCaseComment() { return null; }
 
 
-    public static CaseAttachmentEvent create( Object source) {
-        return create(source, ServiceModule.GENERAL);
-    }
-
-    public static CaseAttachmentEvent create( Object source, ServiceModule serviceModule) {
-        CaseAttachmentEvent event = new CaseAttachmentEvent( source, serviceModule );
-        return event;
-    }
-
-    public CaseAttachmentEvent withCaseObject(CaseObject caseObject) {
-        this.caseObject = caseObject;
-        return this;
-    }
+//    public CaseAttachmentEvent withCaseObject(CaseObject caseObject) {
+//        this.caseObject = caseObject;
+//        return this;
+//    }
 
     public CaseAttachmentEvent withAddedAttachments(Collection<Attachment> addedAttachments) {
         this.addedAttachments = addedAttachments;
@@ -80,9 +91,9 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
         return this;
     }
 
-    public CaseAttachmentEvent withPerson(Person person) {
-        this.person = person;
-        return this;
-    }
+//    public CaseAttachmentEvent withPerson(Person person) {
+//        this.person = person;
+//        return this;
+//    }
 
 }

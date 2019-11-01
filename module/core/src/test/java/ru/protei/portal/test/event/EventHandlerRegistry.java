@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class EventHandlerRegistry {
 
     @EventListener
     public void handleCaseCommentEvent (CaseCommentEvent event) {
-        logger.debug("received case-comment event, comment {}", event.getCaseComment());
+        logger.debug("received case-comment event, comment {}", event.getNewCaseComment());
         this.commentEvents.add(event);
     }
 }

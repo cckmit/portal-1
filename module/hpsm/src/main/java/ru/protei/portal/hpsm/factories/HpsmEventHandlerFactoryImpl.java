@@ -132,9 +132,9 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
                 logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
 
-                eventPublisherService.publishEvent( CaseObjectEvent.create(caseService, ServiceModule.HPSM)
-                        .withNewState(obj)
-                        .withPerson(contactPerson)
+                eventPublisherService.publishEvent( new CaseObjectEvent(caseService, ServiceModule.HPSM, contactPerson, null, obj)
+//                        .withNewState(obj)
+//                        .withPerson(contactPerson)
                 );
 
                 createComment(request, contactPerson, obj, caseObjId);
@@ -237,10 +237,10 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
 
-            eventPublisherService.publishEvent( CaseObjectEvent.create(caseService, ServiceModule.HPSM)
-                    .withNewState(object)
-                    .withOldState(oldState)
-                    .withPerson(contactPerson)
+            eventPublisherService.publishEvent( new CaseObjectEvent(caseService, ServiceModule.HPSM, contactPerson, oldState, object)
+//                    .withNewState(object)
+//                    .withOldState(oldState)
+//                    .withPerson(contactPerson)
             );
 
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
@@ -372,12 +372,12 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent( CaseCommentEvent.create(caseService, ServiceModule.HPSM)
-                .withNewState(obj) //TODO зачем сетить оба ? (модуль под удаление)
-                .withOldState(obj)
-                .withCaseComment(comment)
+        eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId())
+//                .withNewState(obj) //TODO зачем сетить оба ? (модуль под удаление)
+//                .withOldState(obj)
+                .withNewCaseComment(comment)
                 .withAddedAttachments(addedAttachments)
-                .withPerson(contactPerson)
+//                .withPerson(contactPerson)
                 );
 
         return comment;

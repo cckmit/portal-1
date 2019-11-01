@@ -29,6 +29,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -340,13 +341,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
-        if(existing.isEmpty() && added.isEmpty() && removed.isEmpty())
+        if(existing.isEmpty() && isEmpty(added) && isEmpty(removed))
             return Collections.emptyMap();
 
         Map<String, Object> model = new HashMap<>(3);
-        model.put( "attachments", existing);
-        model.put( "removedAttachments", removed);
-        model.put( "addedAttachments", added);
+        model.put( "attachments", emptyIfNull( existing ));
+        model.put( "removedAttachments", emptyIfNull(removed));
+        model.put( "addedAttachments", emptyIfNull(added));
 
         return model;
     }

@@ -3,6 +3,7 @@ package ru.protei.portal.test.hpsm;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
@@ -12,7 +13,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import java.util.ArrayList;
@@ -50,42 +51,42 @@ public class EventAssemblerTest {
         CaseService caseService = ctx.getBean(CaseService.class);
 
         //First portion
-        CaseObjectEvent objectEvent = CaseObjectEvent.create(caseService)
-                .withNewState(object)
-                .withPerson(person)
+        CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, object)
+//                .withNewState(object)
+//                .withPerson(person)
                 ;
-        CaseCommentEvent commentEvent = CaseCommentEvent.create(caseService)
-                .withNewState(object)
-                .withOldState(object)
-                .withCaseComment(comment)
-                .withPerson(person)
+        CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId())
+//                .withNewState(object)
+//                .withOldState(object)
+                .withNewCaseComment(comment)
+//                .withPerson(person)
                 ;
-        CaseAttachmentEvent attachmentEvent = CaseAttachmentEvent.create(this)
-                .withCaseObject(object)
+        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, object.getId(), object.getAttachments())
+//                .withCaseObject(object)
                 .withAddedAttachments(attachment)
                 .withRemovedAttachments(removedAttachment)
-                .withPerson(person)
+//                .withPerson(person)
                 ;
 
         //Second portion
-        CaseObjectEvent secondEvent = CaseObjectEvent.create(caseService)
-                .withNewState(newObject)
-                .withPerson(person)
+        CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, newObject)
+//                .withNewState(newObject)
+//                .withPerson(person)
                 ;
-        CaseCommentEvent secondCommentEvent = CaseCommentEvent.create(caseService)
-                .withNewState(object)
-                .withOldState(object)
-                .withCaseComment(comment)
-                .withPerson(person)
+        CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId())
+//                .withNewState(object)
+//                .withOldState(object)
+                .withNewCaseComment(comment)
+//                .withPerson(person)
                 ;
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
-        CaseCommentEvent thirdCommentEvent = CaseCommentEvent.create(caseService)
-                .withNewState(object)
-                .withOldState(object)
-                .withCaseComment(comment2)
-                .withPerson(person)
+        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId())
+//                .withNewState(object)
+//                .withOldState(object)
+                .withNewCaseComment(comment2)
+//                .withPerson(person)
                 ;
 
 

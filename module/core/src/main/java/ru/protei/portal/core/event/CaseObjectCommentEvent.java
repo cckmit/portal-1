@@ -20,9 +20,11 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
     private DiffCollectionResult<CaseLink> mergeLinks;
+    private boolean isEagerEvent;
 
-    private CaseObjectCommentEvent(Object source){
+    public CaseObjectCommentEvent( Object source, ServiceModule serviceModule){
         super(source);
+        this.serviceModule = serviceModule;
     }
 
     public ServiceModule getServiceModule() {
@@ -31,6 +33,18 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
 
     public Person getPerson() {
         return person;
+    }
+
+    @Override
+    public Long getCaseObjectId() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return null;
+        return caseObject.getId();
+    }
+
+    @Override
+    public boolean isEagerEvent() {
+        return isEagerEvent;
     }
 
     public CaseObject getCaseObject() {
@@ -69,15 +83,6 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
         return mergeLinks;
     }
 
-    public static CaseObjectCommentEvent create( Object source) {
-        return create(source, ServiceModule.GENERAL);
-    }
-
-    public static CaseObjectCommentEvent create( Object source, ServiceModule serviceModule) {
-        CaseObjectCommentEvent event = new CaseObjectCommentEvent( source );
-        event.serviceModule = serviceModule;
-        return event;
-    }
 
     public CaseObjectCommentEvent withPerson( Person person) {
         this.person = person;

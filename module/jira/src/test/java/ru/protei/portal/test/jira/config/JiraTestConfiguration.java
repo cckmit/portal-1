@@ -13,11 +13,11 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
-import ru.protei.portal.core.service.EventAssemblerService;
-import ru.protei.portal.core.service.EventAssemblerServiceImpl;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.utils.EventExpirationControl;
+//import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
@@ -226,8 +226,8 @@ public class JiraTestConfiguration {
         return new EventAssemblerServiceImpl();
     }
 
-    @Bean
-    public EventExpirationControl getEventExpirationControl() {
-        return new EventExpirationControl();
-    }
+//    @Bean
+//    public EventExpirationControl getEventExpirationControl() {
+//        return new EventExpirationControl();
+//    }
 }
