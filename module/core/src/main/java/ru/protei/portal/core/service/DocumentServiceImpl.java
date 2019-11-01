@@ -25,9 +25,7 @@ import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
@@ -302,7 +300,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Result<SearchResult<Document>> getProjectDocuments( AuthToken token, Long projectId) {
         DocumentQuery query = new DocumentQuery();
-        query.setProjectId(projectId);
+        query.setProjectIds(new LinkedList<>(Collections.singletonList(projectId)));
         return getDocuments(token, query);
     }
 

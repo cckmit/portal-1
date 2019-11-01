@@ -6,6 +6,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
@@ -24,6 +25,8 @@ public interface AbstractDocumentFilterView extends IsWidget {
     HasValue<PersonShortView> manager();
 
     HasValue<En_SortField> sortField();
+
+    HasValue<Set<EntityOption>> projects();
 
     HasValue<Set<En_OrganizationCode>> organizationCodes();
 

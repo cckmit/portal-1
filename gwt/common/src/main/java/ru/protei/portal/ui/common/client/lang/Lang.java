@@ -1905,4 +1905,6 @@ public interface Lang extends Messages, ContactItemLang {
     String productAliases();
 
     String productSearchNameOrAlias();
+
+    String documentSearchNameOrDesignation();
 }
