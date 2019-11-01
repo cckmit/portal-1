@@ -356,9 +356,21 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Person && Objects.equals(id, ((Person)obj).getId());
+    public int hashCode() {
+        return Objects.hash( id );
     }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals( id, person.id );
+    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        return obj instanceof Person && Objects.equals(id, ((Person)obj).getId());
+//    }
 
     public String getRelations() {
         return relations;

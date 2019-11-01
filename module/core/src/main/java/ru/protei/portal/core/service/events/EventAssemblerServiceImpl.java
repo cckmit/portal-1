@@ -27,7 +27,9 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseObjectEvent event) {
+        log.info( "publishEvent(): CaseObjectEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
+        log.info( "publishEvent(): Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
 //        handleEventForAssemble(event, assembledPrevEvent);
     }
@@ -35,7 +37,9 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseCommentEvent event) {
+        log.info( "publishEvent(): CaseCommentEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
+        log.info( "publishEvent(): Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
 //        handleEventForAssemble(event, assembledPrevEvent);
     }
@@ -43,13 +47,16 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseObjectCommentEvent event) {
+        log.info( "publishEvent(): CaseObjectCommentEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
+        log.info( "publishEvent(): Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
 //        handleEventForAssemble(event, assembledPrevEvent);
     }
 
     private AssembledCaseEvent getAssembledCaseEvent( AbstractCaseEvent event ) {
         Tuple<Person, Long> key = makeEventKey(event);
+        log.info( "publishEvent getAssembledCaseEvent(): {}",  key);
         return assembledEventsMap.computeIfAbsent(key, k->new AssembledCaseEvent( event ));//concurrency
     }
 
@@ -99,7 +106,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
 //        if (isEagerPush(event)) {
         if (event.isEagerEvent()) {
-            logger.info("Eager push on event for case {}", event.getCaseObject().defGUID());
+            log.info("Eager push on event for case {}", event.getCaseObject().defGUID());
             assemblerService.proceed(new AssembledCaseEvent(event));
             return;
         }
@@ -107,12 +114,12 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         Tuple<Person, Long> key = makeEventKey(event);
 
         if (!assembledEventsMap.containsKey(key)) {
-            logger.info("Put event for case {} to map, no previous event found", event.getCaseObject().defGUID());
+            log.info("Put event for case {} to map, no previous event found", event.getCaseObject().defGUID());
             assembledEventsMap.put(key, new AssembledCaseEvent(event));
             return;
         }
 
-        logger.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
+        log.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
         AssembledCaseEvent assembledPrevEvent = assembledEventsMap.get(key);
         assembledPrevEvent.synchronizeAttachments(
                 event.getAddedAttachments(),
@@ -143,14 +150,14 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 .collect(Collectors.toList());
 
         if (!events.isEmpty()) {
-            logger.debug("publish set of events, initiators : {}", events.size());
-            events.forEach(this::publishAndClear);
+            log.debug("publish set of events, initiators : {}", events.size());
+//            events.forEach(this::publishAndClear);
         }
     }
 
     private void publishAndClear(Tuple<Person, Long> key) {
         AssembledCaseEvent personsEvent = assembledEventsMap.remove(key);
-        logger.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObjectId(),
+        log.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObjectId(),
                 personsEvent.getInitiator().getDisplayName());
         assemblerService.proceed(personsEvent);
 //        assembledEventsMap.remove(key);
@@ -169,17 +176,20 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     //Time interval for events checking, MS
     private final static long SCHEDULE_TIME = 1 * SEC;
     //app types for eager push
-    private final static Set<String> EAGER_PUSH = new HashSet<String>() {{
+    private final static Set<String> EAGER_PUSH = new HashSet<String>() {{//TODO add flag into events
         add("junit-test");
         add(En_ExtAppType.REDMINE.getCode());
     }};
-    private static Logger logger = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 
     public boolean isExpired(AssembledCaseEvent event) {
         if (event.isEagerEvent()) {
             return (currentTimeMillis() - event.getLastUpdated()) >= 2 * SEC;
         }
-        return (currentTimeMillis() - event.getLastUpdated()) >= config.data().eventAssemblyConfig().getWaitingPeriodMillis();
+        long lastUpdated = event.getLastUpdated();
+        long l = currentTimeMillis() - lastUpdated;
+        long waitingPeriodMillis = config.data().eventAssemblyConfig().getWaitingPeriodMillis();
+        return l  >= waitingPeriodMillis;
     }
 
     @Autowired

@@ -100,12 +100,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPerson(), ace.isEagerEvent());
     }
 
-    public AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator, boolean isEagerEvent ) {
+    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator, boolean isEagerEvent ) {
         super( source );
         this.caseObjectId = caseObjectId;
         this.initiator = initiator;
         this.serviceModule = serviceModule;
         this.timeCreated = currentTimeMillis();
+        lastUpdated = timeCreated;
         this.isEagerEvent = isEagerEvent;
     }
 
@@ -122,12 +123,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
     //    public AssembledCaseEvent(CaseObjectEvent objectEvent) {
     //        this(objectEvent.getServiceModule(), objectEvent.getSource(), objectEvent.getOldState(),
     //                objectEvent.getNewState(), objectEvent.getPerson());
-                this.initState = objectEvent.getOldState();
+        this.lastUpdated = currentTimeMillis();
+        this.initState = objectEvent.getOldState();
         this.lastState = objectEvent.getNewState();
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
 //        this.timeCreated = currentTimeMillis();
-        this.lastUpdated = timeCreated;
         this.addedAttachments = new ArrayList<>();
         this.removedAttachments = new ArrayList<>();
         mergeLinks = objectEvent.getMergeLinks();
@@ -138,6 +139,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
 //    public AssembledCaseEvent(CaseCommentEvent commentEvent) {
 //        this(commentEvent.getServiceModule(), commentEvent.getSource(), commentEvent.getOldState(), commentEvent.getNewState(),
 //                commentEvent.getPerson());
+        this.lastUpdated = currentTimeMillis();
         oldComment = commentEvent.getOldCaseComment();
         newComment = commentEvent.getNewCaseComment();
         addedAttachments.addAll(commentEvent.getAddedAttachments());
@@ -152,6 +154,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
 //            this(objectCommentEvent.getServiceModule(), objectCommentEvent.getSource(),
 //                    objectCommentEvent.getOldState(), objectCommentEvent.getNewState(),
 //                    objectCommentEvent.getPerson());
+        this.lastUpdated = currentTimeMillis();
         oldComment = objectCommentEvent.getOldCaseComment();
         newComment = objectCommentEvent.getCaseComment();
         addedAttachments.addAll( objectCommentEvent.getAddedAttachments() );
@@ -392,4 +395,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+    }
 }
