@@ -1,102 +1,141 @@
 package ru.protei.portal.util;
 
-import com.ibm.icu.text.Transliterator;
-
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class TransliterationUtils {
+    static Map<Character, String> rusToLatinCharacters = new HashMap<>();
+    static Map<Character, String> hardNoise = new HashMap<>();
+    static List<Character> vowels = new LinkedList<>();
+
+    static {
+        vowels.add('a');
+        vowels.add('е');
+        vowels.add('ё');
+        vowels.add('и');
+        vowels.add('о');
+        vowels.add('у');
+        vowels.add('ы');
+        vowels.add('э');
+        vowels.add('ю');
+        vowels.add('я');
+
+        vowels.add('А');
+        vowels.add('Е');
+        vowels.add('Ё');
+        vowels.add('И');
+        vowels.add('О');
+        vowels.add('У');
+        vowels.add('Ы');
+        vowels.add('Э');
+        vowels.add('Ю');
+        vowels.add('Я');
+
+        hardNoise.put('е', "ye");
+        hardNoise.put('ё', "yo");
+        hardNoise.put('ю', "yu");
+        hardNoise.put('я', "ya");
+
+        hardNoise.put('Е', "Ye");
+        hardNoise.put('Ё', "Yo");
+        hardNoise.put('Ю', "Yu");
+        hardNoise.put('Я', "Ya");
+
+        rusToLatinCharacters.put('а', "a");
+        rusToLatinCharacters.put('б', "b");
+        rusToLatinCharacters.put('в', "v");
+        rusToLatinCharacters.put('г', "g");
+        rusToLatinCharacters.put('д', "d");
+        rusToLatinCharacters.put('е', "e");
+        rusToLatinCharacters.put('ё', "e");
+        rusToLatinCharacters.put('ж', "zh");
+        rusToLatinCharacters.put('з', "z");
+        rusToLatinCharacters.put('и', "i");
+        rusToLatinCharacters.put('й', "y");
+        rusToLatinCharacters.put('к', "k");
+        rusToLatinCharacters.put('л', "l");
+        rusToLatinCharacters.put('м', "m");
+        rusToLatinCharacters.put('н', "n");
+        rusToLatinCharacters.put('о', "o");
+        rusToLatinCharacters.put('п', "p");
+        rusToLatinCharacters.put('р', "r");
+        rusToLatinCharacters.put('с', "s");
+        rusToLatinCharacters.put('т', "t");
+        rusToLatinCharacters.put('у', "u");
+        rusToLatinCharacters.put('ф', "f");
+        rusToLatinCharacters.put('х', "kh");
+        rusToLatinCharacters.put('ц', "ts");
+        rusToLatinCharacters.put('ч', "ch");
+        rusToLatinCharacters.put('ш', "sh");
+        rusToLatinCharacters.put('щ', "shch");
+        rusToLatinCharacters.put('ъ', "ʺ");
+        rusToLatinCharacters.put('ы', "y");
+        rusToLatinCharacters.put('ь', "ʹ");
+        rusToLatinCharacters.put('э', "e");
+        rusToLatinCharacters.put('ю', "u");
+        rusToLatinCharacters.put('я', "a");
+
+        rusToLatinCharacters.put('А', "A");
+        rusToLatinCharacters.put('Б', "B");
+        rusToLatinCharacters.put('В', "V");
+        rusToLatinCharacters.put('Г', "G");
+        rusToLatinCharacters.put('Д', "D");
+        rusToLatinCharacters.put('Е', "E");
+        rusToLatinCharacters.put('Ё', "E");
+        rusToLatinCharacters.put('Ж', "Zh");
+        rusToLatinCharacters.put('З', "Z");
+        rusToLatinCharacters.put('И', "I");
+        rusToLatinCharacters.put('Й', "Y");
+        rusToLatinCharacters.put('К', "K");
+        rusToLatinCharacters.put('Л', "L");
+        rusToLatinCharacters.put('М', "M");
+        rusToLatinCharacters.put('Н', "N");
+        rusToLatinCharacters.put('О', "O");
+        rusToLatinCharacters.put('П', "P");
+        rusToLatinCharacters.put('Р', "R");
+        rusToLatinCharacters.put('С', "S");
+        rusToLatinCharacters.put('Т', "T");
+        rusToLatinCharacters.put('У', "U");
+        rusToLatinCharacters.put('Ф', "F");
+        rusToLatinCharacters.put('Х', "Kh");
+        rusToLatinCharacters.put('Ц', "Ts");
+        rusToLatinCharacters.put('Ч', "Ch");
+        rusToLatinCharacters.put('Ш', "Sh");
+        rusToLatinCharacters.put('Щ', "Shch");
+        rusToLatinCharacters.put('Ъ', "ʺ");
+        rusToLatinCharacters.put('Ы', "Y");
+        rusToLatinCharacters.put('Ь', "ʹ");
+        rusToLatinCharacters.put('Э', "E");
+        rusToLatinCharacters.put('Ю', "U");
+        rusToLatinCharacters.put('Я', "A");
+    }
+
     public static void main(String[] args) {
-        String msg = "приехать ко мне";
-//        Transliterator toLatin = Transliterator.getInstance("Russian-Latin/BGN");
-//        System.out.println(
-//                toLatin.transliterate(toLatin.transliterate(msg))
-//        );
-
-//        a b v g d ye yë zh z i y k l m n o p r s t u f kh ts ch sh shch ʺ y ʹ e yu ya
-
-//        Map<Character, String> rusToLatin = new HashMap<>();
-//
-//        rusToLatin.put('а', "a");
-//        rusToLatin.put('б', "b");
-//        rusToLatin.put('в', "v");
-//        rusToLatin.put('г', "g");
-//        rusToLatin.put('д', "d");
-//        rusToLatin.put('е', "ye");
-//        rusToLatin.put('ё', "yo");
-//        rusToLatin.put('ж', "zh");
-//        rusToLatin.put('з', "z");
-//        rusToLatin.put('и', "i");
-//        rusToLatin.put('й', "y");
-//        rusToLatin.put('к', "k");
-//        rusToLatin.put('л', "l");
-//        rusToLatin.put('м', "m");
-//        rusToLatin.put('н', "n");
-//        rusToLatin.put('о', "o");
-//        rusToLatin.put('п', "p");
-//        rusToLatin.put('р', "r");
-//        rusToLatin.put('с', "s");
-//        rusToLatin.put('т', "t");
-//        rusToLatin.put('у', "u");
-//        rusToLatin.put('ф', "f");
-//        rusToLatin.put('х', "kh");
-//        rusToLatin.put('ц', "ts");
-//        rusToLatin.put('ч', "ch");
-//        rusToLatin.put('ш', "sh");
-//        rusToLatin.put('щ', "shch");
-//        rusToLatin.put('ъ', "ʺ");
-//        rusToLatin.put('ы', "y");
-//        rusToLatin.put('ь', "ʹ");
-//        rusToLatin.put('э', "e");
-//        rusToLatin.put('ю', "yu");
-//        rusToLatin.put('я', "ya");
-//
-//        rusToLatin.put('А', "A");
-//        rusToLatin.put('Б', "B");
-//        rusToLatin.put('В', "V");
-//        rusToLatin.put('Г', "G");
-//        rusToLatin.put('Д', "D");
-//        rusToLatin.put('Е', "Ye");
-//        rusToLatin.put('Ё', "Yo");
-//        rusToLatin.put('Ж', "Zh");
-//        rusToLatin.put('З', "Z");
-//        rusToLatin.put('И', "I");
-//        rusToLatin.put('Й', "Y");
-//        rusToLatin.put('К', "K");
-//        rusToLatin.put('Л', "L");
-//        rusToLatin.put('М', "M");
-//        rusToLatin.put('Н', "N");
-//        rusToLatin.put('О', "O");
-//        rusToLatin.put('П', "P");
-//        rusToLatin.put('Р', "R");
-//        rusToLatin.put('С', "S");
-//        rusToLatin.put('Т', "T");
-//        rusToLatin.put('У', "U");
-//        rusToLatin.put('Ф', "F");
-//        rusToLatin.put('Х', "Kh");
-//        rusToLatin.put('Ц', "Ts");
-//        rusToLatin.put('Ч', "Ch");
-//        rusToLatin.put('Ш', "Sh");
-//        rusToLatin.put('Щ', "Shch");
-//        rusToLatin.put('Ъ', "ʺ");
-//        rusToLatin.put('Ы', "Y");
-//        rusToLatin.put('Ь', "ʹ");
-//        rusToLatin.put('Э', "E");
-//        rusToLatin.put('Ю', "Yu");
-//        rusToLatin.put('Я', "Ya");
-
-        System.out.println("Привет мир");
+        System.out.println(rusToLatin("приvet весnа"));
     }
     
-    private static String toLatin(String input, Map<Character, String> library) {
+    private static String rusToLatin(String input) {
         StringBuilder stringBuilder = new StringBuilder();
 
         char[] chars = input.toCharArray();
-        for (char currChar : chars) {
-            String letter = library.get(currChar);
-            stringBuilder.append(letter == null ? currChar : letter);
+
+        stringBuilder.append(transliterate(null, chars[0]));
+        for (int i = 1; i < chars.length; i++) {
+            stringBuilder.append(transliterate(chars[i - 1], chars[i]));
         }
 
         return stringBuilder.toString();
+    }
+
+    private static String transliterate(Character prevChar, Character currChar) {
+        if (hardNoise.containsKey(currChar) && vowels.contains(prevChar)) {
+            return hardNoise.get(currChar);
+        } else if (rusToLatinCharacters.containsKey(currChar)) {
+            return rusToLatinCharacters.get(currChar);
+        } else {
+            return String.valueOf(currChar);
+        }
     }
 }

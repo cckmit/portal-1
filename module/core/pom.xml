@@ -142,11 +142,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>61.1</version>
-        </dependency>
-        <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.model</artifactId>
             <version>4.0.0</version>
