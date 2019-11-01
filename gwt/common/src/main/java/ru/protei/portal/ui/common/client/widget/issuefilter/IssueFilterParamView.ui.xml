@@ -26,17 +26,17 @@
         </g:HTMLPanel>
 
         <div class="form-group col-md-12 resize-md-6">
-            <label><ui:text from="{lang.created}"/></label>
+            <label ui:field="labelCreated"><ui:text from="{lang.created}"/></label>
             <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
         </div>
 
         <div class="form-group col-md-12 resize-md-6">
-            <label><ui:text from="{lang.updated}"/></label>
+            <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
             <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
         </div>
 
         <div class="form-group col-md-12 resize-md-6">
-            <label><ui:text from="{lang.sortBy}"/></label>
+            <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
             <div class="control-group">
                 <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
                 <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-default sorting_button"/>
@@ -69,17 +69,17 @@
                                       addStyleNames="form-group col-md-12 resize-md-6"/>
 
         <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-12 resize-md-6">
-            <label><ui:text from="{lang.searchPrivate}"/></label>
+            <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
             <threestate:ThreeStateButton ui:field="searchPrivate"/>
         </g:HTMLPanel>
 
         <div class="form-group col-md-12 resize-md-6">
-            <label><ui:text from="{lang.issueImportance}"/></label>
+            <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label>
             <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
         </div>
 
         <div class="form-group col-md-12">
-            <label><ui:text from="{lang.issueState}"/></label>
+            <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
             <issuestate:IssueStatesOptionList ui:field="state"/>
         </div>
     </g:HTMLPanel>

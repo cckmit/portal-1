@@ -35,15 +35,15 @@
 
         <div class="row">
             <div class="form-group col-md-4">
-                <label ui:field="dateLabel"><ui:text from="{lang.created}"/></label>
+                <label ui:field="labelCreated"><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
             <div ui:field="modifiedRangeContainer" class="form-group col-md-4">
-                <label><ui:text from="{lang.updated}"/></label>
+                <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
                 <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
             <div ui:field="sortByContainer" class="form-group col-md-4">
-                <label><ui:text from="{lang.sortBy}"/></label>
+                <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
                     <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
@@ -79,7 +79,7 @@
                                           addStyleNames="form-group col-md-4"/>
 
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4">
-                <label><ui:text from="{lang.searchPrivate}"/></label>
+                <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
                 <threestate:ThreeStateButton ui:field="searchPrivate"/>
             </g:HTMLPanel>
         </div>
@@ -87,12 +87,12 @@
         <div class="row">
 
             <div ui:field="importanceContainer" class="form-group col-md-4">
-                <label><ui:text from="{lang.issueImportance}"/></label><br/>
+                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
                 <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
             </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8">
-                <label><ui:text from="{lang.issueState}"/></label>
+                <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>
             </div>
         </div>
