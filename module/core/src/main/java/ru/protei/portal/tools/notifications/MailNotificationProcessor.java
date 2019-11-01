@@ -11,12 +11,10 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -47,7 +45,7 @@ public class MailNotificationProcessor {
 
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
-    private final static Semaphore messageIdSemaphore = new Semaphore(1);
+//    private final static Semaphore messageIdSemaphore = new Semaphore(1);
     public static final LinkData EMPTY_LINK = new LinkData( "#", "" );
 
     @Autowired
@@ -116,12 +114,12 @@ public class MailNotificationProcessor {
 //                comments.add(event.getCaseComment());
 //            }
 //        }
-        List<CaseComment> comments =  event.getAllComments();
+//        List<CaseComment> comments =  event.getAllComments();
 
-        try {
-            messageIdSemaphore.acquire();
+//        try {
+//            messageIdSemaphore.acquire();
 
-            Long lastMessageId = getEmailLastId(event.getCaseObjectId());
+//            Long lastMessageId = getEmailLastId(event.getCaseObjectId());
             Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
             final boolean IS_PRIVATE_RECIPIENT = true;
 
@@ -133,6 +131,9 @@ public class MailNotificationProcessor {
 
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
+
+            List<CaseComment> comments =  event.getAllComments();
+            Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
             if ( isPrivateCase(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
@@ -146,12 +147,12 @@ public class MailNotificationProcessor {
                 performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
 
-            caseService.updateEmailLastId(event.getCaseObjectId(), lastMessageId + 1);
-        } catch (InterruptedException e) {
-            log.warn("Case notification :: semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
-        } finally {
-            messageIdSemaphore.release();
-        }
+
+//        } catch (InterruptedException e) {
+//            log.warn("Case notification :: semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
+//        } finally {
+//            messageIdSemaphore.release();
+//        }
     }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
@@ -593,10 +594,10 @@ public class MailNotificationProcessor {
         return notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList());
     }
 
-    private Long getEmailLastId(Long caseId) {
-        Result<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
-        return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
-    }
+//    private Long getEmailLastId(Long caseId) {
+//        Result<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
+//        return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
+//    }
 
     private NotificationEntry fetchNotificationEntryFromPerson(Person person) {
         if (person == null || person.isFired() || person.isDeleted()) {

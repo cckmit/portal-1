@@ -64,8 +64,8 @@ public interface CaseService {
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId);
 
-    Result<Long> getEmailLastId( Long caseId);
-    Result<Boolean> updateEmailLastId( Long caseId, Long emailLastId);
+//    Result<Long> getEmailLastId( Long caseId);
+    Result<Long> getAndIncrementEmailLastId( Long caseId );
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);

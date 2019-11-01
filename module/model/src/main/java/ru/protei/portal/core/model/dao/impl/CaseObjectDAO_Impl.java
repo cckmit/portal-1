@@ -115,9 +115,14 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public boolean updateEmailLastId(Long caseId, Long emailLastId) {
-        String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + emailLastId + " WHERE " + getIdColumnName() + " = " + caseId;
-        return jdbcTemplate.update(sql) > 0;
+    public Long getAndIncrementEmailLastId( Long caseId ) {
+        String selectForUpdate = ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.query().forUpdate().
+                select( COLUMN_EMAIL_LAST_ID ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
+
+        Long lastId = jdbcTemplate.queryForObject( selectForUpdate, Long.class, caseId );
+        String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + COLUMN_EMAIL_LAST_ID + "+1 WHERE " + getIdColumnName() + " = " + caseId;
+        jdbcTemplate.update(sql);
+        return lastId;
     }
 
     @Override
@@ -126,11 +131,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return jdbcTemplate.update(sql, extAppType) > 0;
     }
 
-    @Override
-    public Long getEmailLastId(Long caseId) {
-        String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, caseId);
-    }
+//    @Override
+//    public Long getEmailLastId(Long caseId) {
+//        String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
+//        return jdbcTemplate.queryForObject(sql, Long.class, caseId);
+//    }
 
     @Override
     public int removeByNameLike(String name) {

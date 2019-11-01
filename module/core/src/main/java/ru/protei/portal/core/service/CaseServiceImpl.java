@@ -471,29 +471,30 @@ public class CaseServiceImpl implements CaseService {
          updateExistsAttachmentsFlag(caseId, isExists));
     }
 
+//    @Override
+//    public Result<Long> getEmailLastId( Long caseId) {
+//        if (caseId == null) {
+//            return error(En_ResultStatus.INCORRECT_PARAMS);
+//        }
+//
+//        Long lastMessageId = caseObjectDAO.getEmailLastId(caseId);
+//        if (lastMessageId == null) {
+//            lastMessageId = 0L;
+//        }
+//
+//        return ok(lastMessageId);
+//    }
+
     @Override
-    public Result<Long> getEmailLastId( Long caseId) {
+    public Result<Long> getAndIncrementEmailLastId( Long caseId ) {
         if (caseId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Long lastMessageId = caseObjectDAO.getEmailLastId(caseId);
-        if (lastMessageId == null) {
-            lastMessageId = 0L;
-        }
+        Long previousId = caseObjectDAO.getAndIncrementEmailLastId(caseId);
+        if(previousId==null) previousId = 0L;
 
-        return ok(lastMessageId);
-    }
-
-    @Override
-    public Result<Boolean> updateEmailLastId( Long caseId, Long emailLastId) {
-        if (caseId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        boolean result = caseObjectDAO.updateEmailLastId(caseId, emailLastId);
-
-        return ok(result);
+        return ok(previousId);
     }
 
     @Override
