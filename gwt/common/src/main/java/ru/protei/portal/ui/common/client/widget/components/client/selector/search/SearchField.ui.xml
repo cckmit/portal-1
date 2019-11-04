@@ -1,0 +1,8 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel styleName="searchbox" ui:field="searchContainer">
+        <g:TextBox ui:field="search"/>
+        <i class="fa fa-search"></i>
+    </g:HTMLPanel>
+</ui:UiBinder>

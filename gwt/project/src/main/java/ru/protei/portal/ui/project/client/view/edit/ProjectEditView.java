@@ -68,7 +68,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         productDirection.setHideNullValue(isHideNullValue);
         projectRegion.setHideNullValue(isHideNullValue);
         customerType.setHideNullValue(isHideNullValue);
-        company.setHideNullValue(isHideNullValue);
+//        company.setHideNullValue(isHideNullValue);
     }
 
     @Override

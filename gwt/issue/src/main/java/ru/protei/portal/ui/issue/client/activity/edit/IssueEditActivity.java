@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 
@@ -68,8 +69,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onShow( IssueEvents.Edit event ) {
+        sp.start( "onShow" );
         initDetails.parent.clear();
+        sp.check( "clear" );
         initDetails.parent.add(view.asWidget());
+        sp.check( "add view" );
 
         if (event.id == null) {
             if (issue != null) {
@@ -82,6 +86,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             requestIssue(event.id, this::initialView);
         }
+        sp.stop( "onShow end." );
     }
 
     @Event
@@ -620,6 +625,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @ContextAware
     CaseObject issue;
+
+    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
+        @Override
+        public void append( String message, double currentTime ) {
+            log.info("IssueEditActivity: "+ message+" "+currentTime);
+
+        }
+    } );
 
     private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;

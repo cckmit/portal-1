@@ -11,10 +11,12 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -28,12 +30,16 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
@@ -44,6 +50,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Активность таблицы обращений
@@ -64,7 +72,8 @@ public abstract class IssueTableActivity
         filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
-        filterParamView.setInitiatorCompaniesSupplier(() -> filterParamView.companies().getValue());
+        filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
+        filterParamView.setCompaniesModel( companySelectorModel );
 
         pagerView.setActivity( this );
 
@@ -80,10 +89,13 @@ public abstract class IssueTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
+        sp.start( "onShow" );
         applyFilterViewPrivileges();
 
         initDetails.parent.clear();
+        sp.check( "clear" );
         initDetails.parent.add( view.asWidget() );
+        sp.check( "add view" );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
 
@@ -109,6 +121,7 @@ public abstract class IssueTableActivity
         clearScroll(event);
 
         loadTable();
+        sp.stop( "onShow end." );
     }
 
     @Event
@@ -514,6 +527,55 @@ public abstract class IssueTableActivity
 
     @Inject
     IssueFilterService issueFilterService;
+
+
+    @Inject
+    CompanyControllerAsync companyService;
+
+
+    AsyncSelectorModel<EntityOption> companySelectorModel = new AsyncSelectorModel<EntityOption>() {
+        @Override
+        public EntityOption get( int elementIndex, LoadingHandler loadingHandler ) {
+            if(options==null|| options.size() <= elementIndex) {
+                loadingHandler.onLoadingStart();
+                requestOptions(loadingHandler);
+                return null;
+            }
+            return options.get( elementIndex );
+        }
+
+        CompanyQuery query = new CompanyQuery();
+        {
+            query.setSortHomeCompaniesAtBegin( true );
+        }
+
+        private void requestOptions( LoadingHandler loadingHandler ) {
+            companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
+                @Override
+                public void onError( Throwable throwable ) {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess( List<EntityOption> options ) {
+                    IssueTableActivity.this.options = options;
+                    loadingHandler.onLoadingComplete();
+                }
+            } );
+        }
+    };
+
+    private List<EntityOption> options;
+
+    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
+        @Override
+        public void append( String message, double currentTime ) {
+            log.info("IssueTableActivity: "+ message+" "+currentTime);
+
+        }
+    } );
+
+    private static final Logger log = Logger.getLogger( IssueTableActivity.class.getName() );
 
     private static String CREATE_ACTION;
     private AbstractIssueFilterWidgetView filterParamView;

@@ -8,103 +8,145 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * Селектор списка компаний
  */
-public class CompanySelector extends ButtonSelector< EntityOption > implements SelectorWithModel<EntityOption> {
+public class CompanySelector
+        extends ButtonPopupSingleSelector< EntityOption >
+        implements SelectorWithModel<EntityOption>
+    , HasValidable
+{
 
     @Inject
     public void init( CompanyModel companyModel ) {
         model = companyModel;
         model.subscribe(this, categories);
-        setSelectorModel(model);
+//        setSelectorModel( (ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel) model );
 
         setSearchEnabled( true );
-        setSearchAutoFocus( true );
+//        setSearchAutoFocus( true );
+//
+//        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
+        setSelectorItemRenderer( (SelectorItemRenderer<EntityOption>) value -> value == null ? defaultValue : value.getDisplayText() );
+    }
 
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
+//    @Override
+//    protected void showPopup( IsWidget relative ) {
+//        popup = popupProvider.get();
+//        popup.setSearchVisible( true );
+//        popup.setSearchAutoFocus( true );
+//
+//        if ( vcHandler != null ) {
+//            vcHandler.removeHandler();
+//        }
+//
+//        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( filter( options ) ) );
+//
+//        popup.getChildContainer().clear();
+//        popup.showNear( relative );
+//
+//        fillFilteredItems( filter(options) );
+//    }
+
+    @Override
+    public void setValid( boolean isValid ) {
+        log.warning( "setValid(): Not implemented." );//TODO NotImplemented
+
     }
 
     @Override
-    protected void showPopup( IsWidget relative ) {
-        popup = popupProvider.get();
-        popup.setSearchVisible( true );
-        popup.setSearchAutoFocus( true );
-
-        if ( vcHandler != null ) {
-            vcHandler.removeHandler();
-        }
-
-        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( filter( options ) ) );
-
-        popup.getChildContainer().clear();
-        popup.showNear( relative );
-
-        fillFilteredItems( filter(options) );
+    public boolean isValid() {
+        log.warning( "isValid(): Not implemented." );//TODO NotImplemented
+        return false;
     }
 
     @Override
     public void clearOptions() {
-        super.clearOptions();
+//        super.clearOptions();
         this.options = null;
     }
 
-    private void fillFilteredItems(List<EntityOption> options ) {
-        StringBuilder result = new StringBuilder();
-
-        Map< String, EntityOption > optionMap = new HashMap<>();
-        String companyId = getClass().getName()+":"+( new Date().getTime())+":";
-
-        if ( defaultValue != null && hasNullValue ) {
-            result
-                    .append( "<li><a href='#'><span id='" )
-                    .append( companyId+"null" )
-                    .append( "'>" )
-                    .append( defaultValue )
-                    .append( "</span><link rel=\"icon\"/></a></li>" );
-            optionMap.put( companyId, null );
-        }
-
-        options.forEach( item -> {
-            String id = companyId+item.getId();
-            result
-                    .append( "<li><a href='#'><span id='" )
-                    .append( id ).append( "'>" )
-                    .append( item.getDisplayText() )
-                    .append( "</span></a></li>" );
-            optionMap.put( id, item );
-        } );
-
-        popup.childContainer.getElement().setInnerHTML( result.toString() );
-
-        if ( regHandler != null ) {
-            regHandler.removeHandler();
-        }
-
-        regHandler = popup.childContainer.addDomHandler( clickEvent -> {
-            clickEvent.preventDefault();
-
-            Element handledElement = clickEvent.getNativeEvent().getEventTarget().cast();
-            Element target = handledElement;
-            if ( handledElement.hasTagName( "li" ) || handledElement.hasTagName( "a" )) {
-                target = handledElement.getElementsByTagName( "span" ).getItem( 0 );
-            }
-            String id = target.getAttribute( "id" );
-
-            EntityOption option = optionMap.get( id );
-            setValue( option, true );
-            checkValueIsValid();
-            popup.hide();
-        }, ClickEvent.getType() );
+    private static final Logger log = Logger.getLogger( CompanySelector.class.getName() );
+    @Override
+    public Collection<EntityOption> getValues() {
+        log.warning( "getValues(): Not implemented." );//TODO NotImplemented
+        return null;
     }
+
+    @Override
+    public void setSelectorModel( SelectorModel<EntityOption> selectorModel ) {
+        log.warning( "setSelectorModel(): Not implemented." );//TODO NotImplemented
+
+    }
+
+
+    @Override
+    public void refreshValue() {
+        log.warning( "refreshValue(): Not implemented." );//TODO NotImplemented
+
+    }
+
+//    private void fillFilteredItems(List<EntityOption> options ) {
+//        StringBuilder result = new StringBuilder();
+//
+//        Map< String, EntityOption > optionMap = new HashMap<>();
+//        String companyId = getClass().getName()+":"+( new Date().getTime())+":";
+//
+//        if ( defaultValue != null && hasNullValue ) {
+//            result
+//                    .append( "<li><a href='#'><span id='" )
+//                    .append( companyId+"null" )
+//                    .append( "'>" )
+//                    .append( defaultValue )
+//                    .append( "</span><link rel=\"icon\"/></a></li>" );
+//            optionMap.put( companyId, null );
+//        }
+//
+//        options.forEach( item -> {
+//            String id = companyId+item.getId();
+//            result
+//                    .append( "<li><a href='#'><span id='" )
+//                    .append( id ).append( "'>" )
+//                    .append( item.getDisplayText() )
+//                    .append( "</span></a></li>" );
+//            optionMap.put( id, item );
+//        } );
+//
+//        popup.childContainer.getElement().setInnerHTML( result.toString() );
+//
+//        if ( regHandler != null ) {
+//            regHandler.removeHandler();
+//        }
+//
+//        regHandler = popup.childContainer.addDomHandler( clickEvent -> {
+//            clickEvent.preventDefault();
+//
+//            Element handledElement = clickEvent.getNativeEvent().getEventTarget().cast();
+//            Element target = handledElement;
+//            if ( handledElement.hasTagName( "li" ) || handledElement.hasTagName( "a" )) {
+//                target = handledElement.getElementsByTagName( "span" ).getItem( 0 );
+//            }
+//            String id = target.getAttribute( "id" );
+//
+//            EntityOption option = optionMap.get( id );
+//            setValue( option, true );
+//            checkValueIsValid();
+//            popup.hide();
+//        }, ClickEvent.getType() );
+//    }
 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
@@ -113,6 +155,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
             applyValueIfOneOption();
         }
     }
+
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
@@ -145,16 +188,16 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
         }
     }
 
-    private List<EntityOption> filter( List<EntityOption> options ) {
-        return options.stream()
-                .filter( this::applyPredicate )
-                .collect( Collectors.toList() );
-    }
+//    private List<EntityOption> filter( List<EntityOption> options ) {
+//        return options.stream()
+//                .filter( this::applyPredicate )
+//                .collect( Collectors.toList() );
+//    }
 
-    private boolean applyPredicate(EntityOption op) {
-        if (filter != null && !filter.isDisplayed(op)) return false;
-        return op.getDisplayText().toLowerCase().contains(popup.search.getValue().toLowerCase());
-    }
+//    private boolean applyPredicate(EntityOption op) {
+//        if (filter != null && !filter.isDisplayed(op)) return false;
+//        return op.getDisplayText().toLowerCase().contains(popup.search.getValue().toLowerCase());
+//    }
 
     @Inject
     private Provider<SelectorPopup> popupProvider;
