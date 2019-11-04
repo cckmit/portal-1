@@ -33,5 +33,5 @@ public interface AbstractCaseEvent {
 //
     Object getSource();
 
-    boolean isEagerEvent();
+    boolean isEagerEvent();// нужен для Redmine
 }

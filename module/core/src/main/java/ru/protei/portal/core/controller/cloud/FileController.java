@@ -296,13 +296,15 @@ public class FileController {
     }
 
     private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
-        Result<CaseObject> issue = caseService.getCaseObjectByNumber(token, caseNumber);
-        if (issue.isError()) {
-            logger.error("Notification error! Database exception: " + issue.getStatus().name());
+//        Result<CaseObject> issue = caseService.getCaseObjectByNumber(token, caseNumber);
+        Result<Long> caseIdResult = caseService.getCaseIdByNumber( token, caseNumber );
+        if (caseIdResult.isError()) {
+            logger.error("Notification error! Database exception: " + caseIdResult);
             return;
         }
-        List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( issue.getData().getId() );
-        publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, issue.getData().getId(), oldAttachments)
+        Long caseId = caseIdResult.getData();
+        List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( caseId );
+        publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, caseId, oldAttachments)
 //                .withCaseObject(issue.getData())
                 .withAddedAttachments(Collections.singletonList(attachment))
 //                .withPerson(initiator)

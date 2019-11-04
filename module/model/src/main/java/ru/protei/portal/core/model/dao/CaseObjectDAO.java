@@ -46,4 +46,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     SqlCondition caseQueryCondition (CaseQuery query);
 
     int countByQuery(CaseQuery query);
+
+    String getExternalAppName( Long caseId );
 }

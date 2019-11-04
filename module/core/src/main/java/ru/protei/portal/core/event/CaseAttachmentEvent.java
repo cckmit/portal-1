@@ -13,7 +13,7 @@ import java.util.Collections;
 public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private final ServiceModule serviceModule;
-    private CaseObject caseObject;
+//    private CaseObject caseObject;
     private Collection<Attachment> oldAttachments;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
@@ -35,9 +35,9 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
         this.oldAttachments = oldAttachments;
     }
 
-    public CaseObject getCaseObject() {
-        return caseObject;
-    }
+//    public CaseObject getCaseObject() {
+//        return caseObject;
+//    }
 
     public Collection<Attachment> getAddedAttachments() {
         return addedAttachments == null? Collections.emptyList(): addedAttachments;
@@ -65,10 +65,10 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
         return serviceModule;
     }
 
-    public CaseObject getNewState() { return caseObject; }
-
-    public CaseObject getOldState() { return caseObject; }
-
+//    public CaseObject getNewState() { return caseObject; }
+//
+//    public CaseObject getOldState() { return caseObject; }
+//
     public CaseComment getCaseComment() { return null; }
 
     public CaseComment getOldCaseComment() { return null; }

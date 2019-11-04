@@ -112,7 +112,7 @@ public class CaseObject extends AuditableObject {
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
-    @JdbcColumn(name = "EXT_APP")
+    @JdbcColumn(name = Columns.EXT_APP)
     private String extAppType;
 
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
@@ -536,6 +536,10 @@ public class CaseObject extends AuditableObject {
     @Override
     public String getAuditType() {
         return "CaseObject";
+    }
+
+    public interface Columns {
+        String EXT_APP = "EXT_APP";
     }
 
     @Override

@@ -73,4 +73,6 @@ public interface CaseService {
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 
     Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff );
+
+    Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
 }

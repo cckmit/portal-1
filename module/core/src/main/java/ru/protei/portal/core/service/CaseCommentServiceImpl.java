@@ -12,10 +12,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -69,7 +66,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
 //            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId())
+            boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent)
 //                    .withPerson(person)
 //                    .withOldState(caseObjectOld)
 //                    .withNewState(caseObjectNew)
@@ -155,7 +153,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
 //            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId())
+            boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent)
 //                    .withPerson(person)
 //                    .withOldState(caseObjectOld)
 //                    .withNewState(caseObjectNew)
@@ -256,7 +255,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        CaseObject caseObjectOld = caseObjectDAO.get(removedComment.getCaseId());
+//        CaseObject caseObjectOld = caseObjectDAO.get(removedComment.getCaseId());
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(
                 token,
                 caseType,
@@ -294,7 +293,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
 //        CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
-        publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, caseObjectOld.getId())
+        boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
+        publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, caseId, isEagerEvent)
 //                .withOldState(caseObjectOld)
 //                .withNewState(caseObjectNew)
                 .withRemovedCaseComment(removedComment)

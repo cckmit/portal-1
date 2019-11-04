@@ -242,7 +242,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
+    public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {//TODO обратно разделить
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -267,7 +267,8 @@ public class CaseServiceImpl implements CaseService {
                     .withLinks( objectResultData.getMergeLinks() )
             );
 
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, initiator, oldState.getId())
+            boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseObject.getId() ) );
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, initiator, caseObject.getId(), isEagerEvent)
 //                    .withPerson(initiator)
 //                    .withOldState(oldState)
                     .withNewCaseComment(commentResultData.getCaseComment())
@@ -574,6 +575,13 @@ public class CaseServiceImpl implements CaseService {
                 .withLinks( linksDiff )
         );
         return ok(caseObject.getId());
+    }
+
+    @Override
+    public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {
+        Long caseId = caseObjectDAO.getCaseIdByNumber( caseNumber );
+        if(caseId==null) error( En_ResultStatus.NOT_FOUND );
+        return ok(caseId);
     }
 
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {

@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 04.05.17.
@@ -118,7 +119,7 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     public boolean isEagerEvent() {
         CaseObject caseObject = getCaseObject();
         if(caseObject==null) return false;
-        return En_ExtAppType.REDMINE.equals( caseObject.getExtAppType() );
+        return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType() );
     }
 
     public DiffCollectionResult<CaseLink> getMergeLinks() {

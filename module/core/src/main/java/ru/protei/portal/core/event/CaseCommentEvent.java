@@ -26,11 +26,12 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
     private Collection<Attachment> removedAttachments;
     private boolean isEagerEvent;
 
-    public CaseCommentEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId) {
+    public CaseCommentEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId, boolean isEagerEvent) {
         super(source);
         this.serviceModule = serviceModule;
         this.person = person;
         this.caseObjectId = caseObjectId;
+        this.isEagerEvent = isEagerEvent;
     }
 
     public ServiceModule getServiceModule() {

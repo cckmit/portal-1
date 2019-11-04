@@ -164,7 +164,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent || objectCommentEvent.isEagerEvent();
     }
 
+    public void attachEvent( CaseAttachmentEvent event ) {
+        this.lastUpdated = currentTimeMillis();
+        synchronizeAttachments( event.getAddedAttachments(), event.getRemovedAttachments() );
 
+    }
 //    public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
 //        this(attachmentEvent.getSource(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
 //        addedAttachments.addAll(attachmentEvent.getAddedAttachments());
@@ -298,7 +302,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return removedAttachments;
     }
 
-    public void synchronizeAttachments(Collection<Attachment> added, Collection<Attachment> removed){
+    private void synchronizeAttachments(Collection<Attachment> added, Collection<Attachment> removed){
         if(added == null)
             added = Collections.emptyList();
         if(removed == null)

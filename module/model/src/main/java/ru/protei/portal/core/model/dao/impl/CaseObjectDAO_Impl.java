@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
@@ -16,8 +17,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -107,6 +110,14 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public String getExternalAppName( Long caseId ) {
+        String select = query().
+                select( EXT_APP ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
+
+        return jdbcTemplate.queryForObject( select, String.class, caseId );
+    }
+
+    @Override
     public List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers) {
         return partialGetListByCondition("case_object.CASENO in (" + caseNumbers.stream()
                 .map(String::valueOf)
@@ -115,9 +126,9 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    @Transactional
     public Long getAndIncrementEmailLastId( Long caseId ) {
-        String selectForUpdate = ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.query().
-                forUpdate().
+        String selectForUpdate = query().forUpdate().
                 select( COLUMN_EMAIL_LAST_ID ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
 
         Long lastId = jdbcTemplate.queryForObject( selectForUpdate, Long.class, caseId );

@@ -55,7 +55,7 @@ public class EventAssemblerTest {
 //                .withNewState(object)
 //                .withPerson(person)
                 ;
-        CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId())
+        CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
 //                .withNewState(object)
 //                .withOldState(object)
                 .withNewCaseComment(comment)
@@ -73,7 +73,7 @@ public class EventAssemblerTest {
 //                .withNewState(newObject)
 //                .withPerson(person)
                 ;
-        CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId())
+        CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
 //                .withNewState(object)
 //                .withOldState(object)
                 .withNewCaseComment(comment)
@@ -82,7 +82,7 @@ public class EventAssemblerTest {
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
-        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId())
+        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
 //                .withNewState(object)
 //                .withOldState(object)
                 .withNewCaseComment(comment2)

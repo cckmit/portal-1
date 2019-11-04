@@ -29,7 +29,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void publishEvent(CaseObjectEvent event) {
         log.info( "publishEvent(): CaseObjectEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "publishEvent(): Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "publishEvent(): CaseObjectEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
 //        handleEventForAssemble(event, assembledPrevEvent);
     }
@@ -39,7 +39,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void publishEvent(CaseCommentEvent event) {
         log.info( "publishEvent(): CaseCommentEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "publishEvent(): Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "publishEvent(): CaseCommentEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
 //        handleEventForAssemble(event, assembledPrevEvent);
     }
@@ -49,7 +49,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void publishEvent(CaseObjectCommentEvent event) {
         log.info( "publishEvent(): CaseObjectCommentEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "publishEvent(): Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "publishEvent(): CaseObjectCommentEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
 //        handleEventForAssemble(event, assembledPrevEvent);
     }
@@ -103,28 +103,31 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseAttachmentEvent event) {
-
+        log.info( "publishEvent(): CaseAttachmentEvent id={} {}", event.getCaseObjectId(), event.getPerson() );
+        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
+        log.info( "publishEvent(): CaseAttachmentEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        assembledPrevEvent.attachEvent( event );
 //        if (isEagerPush(event)) {
-        if (event.isEagerEvent()) {
-            log.info("Eager push on event for case {}", event.getCaseObject().defGUID());
-            assemblerService.proceed(new AssembledCaseEvent(event));
-            return;
-        }
-
-        Tuple<Person, Long> key = makeEventKey(event);
-
-        if (!assembledEventsMap.containsKey(key)) {
-            log.info("Put event for case {} to map, no previous event found", event.getCaseObject().defGUID());
-            assembledEventsMap.put(key, new AssembledCaseEvent(event));
-            return;
-        }
-
-        log.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
-        AssembledCaseEvent assembledPrevEvent = assembledEventsMap.get(key);
-        assembledPrevEvent.synchronizeAttachments(
-                event.getAddedAttachments(),
-                event.getRemovedAttachments()
-        );
+//        if (event.isEagerEvent()) {
+//            log.info("Eager push on event for case {}", event.getCaseObject().defGUID());
+//            assemblerService.proceed(new AssembledCaseEvent(event));
+//            return;
+//        }
+//
+//        Tuple<Person, Long> key = makeEventKey(event);
+//
+//        if (!assembledEventsMap.containsKey(key)) {
+//            log.info("Put event for case {} to map, no previous event found", event.getCaseObject().defGUID());
+//            assembledEventsMap.put(key, new AssembledCaseEvent(event));
+//            return;
+//        }
+//
+//        log.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
+//        AssembledCaseEvent assembledPrevEvent = assembledEventsMap.get(key);
+//        assembledPrevEvent.synchronizeAttachments(
+//                event.getAddedAttachments(),
+//                event.getRemovedAttachments()
+//        );
     }
 
     @Override

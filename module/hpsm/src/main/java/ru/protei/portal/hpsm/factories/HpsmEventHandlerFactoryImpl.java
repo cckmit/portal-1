@@ -372,7 +372,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId())
+        eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), false)
 //                .withNewState(obj) //TODO зачем сетить оба ? (модуль под удаление)
 //                .withOldState(obj)
                 .withNewCaseComment(comment)
