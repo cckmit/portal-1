@@ -112,8 +112,9 @@ public abstract class IssueReportCreateActivity implements Activity,
         isSaving = true;
 
         reportController.createReport(report, new FluentCallback<Long>()
-                .withResult(() -> isSaving = false)
+                .withError(t -> isSaving = false)
                 .withSuccess(result -> {
+                    isSaving = false;
                     fireEvent(new Back());
                     fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueReportEvents.Show());

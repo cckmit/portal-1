@@ -103,21 +103,21 @@ public class CaseCommentEvents {
 
         private Consumer<CaseComment> consumer;
     }
-
-    public static class OnSavingEvent {
-        public OnSavingEvent() {}
-    }
-
-    public static class OnDoneEvent {
-
-        public OnDoneEvent() {
-            this.caseComment = null;
-        }
-
-        public OnDoneEvent(CaseComment caseComment) {
-            this.caseComment = caseComment;
-        }
-
-        public CaseComment caseComment;
-    }
+//
+//    public static class OnSavingEvent {
+//        public OnSavingEvent() {}
+//    }
+//
+//    public static class OnDoneEvent {
+//
+//        public OnDoneEvent() {
+//            this.caseComment = null;
+//        }
+//
+//        public OnDoneEvent(CaseComment caseComment) {
+//            this.caseComment = caseComment;
+//        }
+//
+//        public CaseComment caseComment;
+//    }
 }

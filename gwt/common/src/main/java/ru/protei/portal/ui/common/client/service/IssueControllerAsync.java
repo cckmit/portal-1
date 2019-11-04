@@ -2,12 +2,10 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -22,7 +20,7 @@ public interface IssueControllerAsync {
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
-    void saveIssueAndComment(CaseObject p, CaseComment c, AsyncCallback<CaseObjectWithCaseComment> callback );
+    void saveIssue( CaseObject p, AsyncCallback<Long> callback );
 
     /**
      * Получение списка статусов

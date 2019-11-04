@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -137,28 +136,41 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return;
         }
         lockSave();
-        fireEvent(new CaseCommentEvents.OnSavingEvent());
+        issueService.saveIssue( issue, new FluentCallback<Long>()
+                .withError(throwable -> {
+                    unlockSave();
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(caseId -> {
+                    unlockSave();
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IssueEvents.ChangeModel());//TODO скорее всего избыточно, удалить
+                    fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
+                }));
 
-        fireEvent(new CaseCommentEvents.ValidateComment(isNew(issue), isValid -> {
-            if (!isValid) {
-                unlockSave();
-                fireEvent(new CaseCommentEvents.OnDoneEvent());
-                fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
-                return;
-            }
-            fireEvent(new CaseCommentEvents.GetCurrentComment(comment -> issueService.saveIssueAndComment(issue, comment, new FluentCallback<CaseObjectWithCaseComment>()
-                    .withResult(this::unlockSave)
-                    .withError(throwable -> {
-                        fireEvent(new CaseCommentEvents.OnDoneEvent());
-                        defaultErrorHandler.accept(throwable);
-                    })
-                    .withSuccess(caseObjectWithCaseComment -> {
-                        fireEvent(new CaseCommentEvents.OnDoneEvent(caseObjectWithCaseComment.getCaseComment()));
-                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        fireEvent(new IssueEvents.ChangeModel());
-                        fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
-                    }))));
-        }));
+
+//        fireEvent(new CaseCommentEvents.OnSavingEvent());
+
+//        fireEvent(new CaseCommentEvents.ValidateComment(isNew(issue), isValid -> {
+//            if (!isValid) {
+//                unlockSave();
+//                fireEvent(new CaseCommentEvents.OnDoneEvent());
+//                fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
+//                return;
+//            }
+//            fireEvent(new CaseCommentEvents.GetCurrentComment(comment -> issueService.saveIssue(issue, comment, new FluentCallback<CaseComment>()
+//                    .withResult(this::unlockSave)
+//                    .withError(throwable -> {
+//                        fireEvent(new CaseCommentEvents.OnDoneEvent());
+//                        defaultErrorHandler.accept(throwable);
+//                    })
+//                    .withSuccess(caseComment -> {
+//                        fireEvent(new CaseCommentEvents.OnDoneEvent(caseComment));
+//                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+//                        fireEvent(new IssueEvents.ChangeModel());
+//                        fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
+//                    }))));
+//        }));
     }
 
     @Override

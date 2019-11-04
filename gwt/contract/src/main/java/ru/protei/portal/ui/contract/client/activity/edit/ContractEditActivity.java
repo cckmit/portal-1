@@ -211,10 +211,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void saveContract() {
         view.saveEnabled().setEnabled(false);
         contractService.saveContract(contract, new FluentCallback<Long>()
-                .withResult(() -> {
+                .withError(t -> {
                     view.saveEnabled().setEnabled(true);
                 })
                 .withSuccess(value -> {
+                    view.saveEnabled().setEnabled(true);
                     fireEvent(new ContractEvents.ChangeModel());
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(isNew(contract) ? new ContractEvents.Show(true) : new Back());

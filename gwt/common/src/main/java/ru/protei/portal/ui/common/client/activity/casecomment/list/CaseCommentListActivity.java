@@ -128,18 +128,18 @@ public abstract class CaseCommentListActivity
         }
     }
 
-    @Event
-    public void onSavingEvent(CaseCommentEvents.OnSavingEvent event) {
-        lockSave();
-    }
-
-    @Event
-    public void onDoneEvent(CaseCommentEvents.OnDoneEvent event) {
-        unlockSave();
-        if (event.caseComment != null) {
-            storage.remove(makeStorageKey(event.caseComment.getCaseId()));
-        }
-    }
+//    @Event
+//    public void onSavingEvent(CaseCommentEvents.OnSavingEvent event) {
+//        lockSave();
+//    }
+//
+//    @Event
+//    public void onDoneEvent(CaseCommentEvents.OnDoneEvent event) {
+//        unlockSave();
+//        if (event.caseComment != null) {
+//            storage.remove(makeStorageKey(event.caseComment.getCaseId()));
+//        }
+//    }
 
 
     @Override
@@ -507,9 +507,14 @@ public abstract class CaseCommentListActivity
 
         boolean isEdit = comment.getId() != null;
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
-                .withResult(this::unlockSave)
-                .withErrorMessage(lang.errEditIssueComment())
-                .withSuccess(result -> onCommentSent(isEdit, result))
+                .withError( t -> {
+                    unlockSave();
+                    fireEvent( lang.errEditIssueComment() );
+                } )
+                .withSuccess( result -> {
+                    unlockSave();
+                    onCommentSent( isEdit, result );
+                } )
         );
     }
 

@@ -78,16 +78,16 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
-        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
+    public Long saveIssue( CaseObject caseObject ) throws RequestFailedException {
+        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
             CaseObject saved = createIssue(caseObject);
-            return new CaseObjectWithCaseComment(saved, null);
+            return saved.getId();
         }
-        Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
-        log.info("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
-        return checkResultAndGetData(response);
+        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
+        log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
+        return checkResultAndGetData(response).getId();
     }
 
     @Override

@@ -64,7 +64,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             return;
         }
 
-        initWidgets();
+//        initWidgets(); //TODO Зачем каждый раз релоадить три таблицы если релоадим в onShow ?
     }
 
     private void initWidgets(){
