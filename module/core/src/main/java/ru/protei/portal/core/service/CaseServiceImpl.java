@@ -240,7 +240,7 @@ public class CaseServiceImpl implements CaseService {
         return ok(objectResultData.getCaseObject());
     }
 
-    @Override
+//    @Override
     @Transactional
     public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {//TODO обратно разделить
 

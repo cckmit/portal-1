@@ -154,7 +154,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
         if (!events.isEmpty()) {
             log.debug("publish set of events, initiators : {}", events.size());
-//            events.forEach(this::publishAndClear);
+            events.forEach(this::publishAndClear);
         }
     }
 
@@ -179,10 +179,10 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     //Time interval for events checking, MS
     private final static long SCHEDULE_TIME = 1 * SEC;
     //app types for eager push
-    private final static Set<String> EAGER_PUSH = new HashSet<String>() {{//TODO add flag into events
-        add("junit-test");
-        add(En_ExtAppType.REDMINE.getCode());
-    }};
+//    private final static Set<String> EAGER_PUSH = new HashSet<String>() {{//TODO add flag into events
+//        add("junit-test");
+//        add(En_ExtAppType.REDMINE.getCode());
+//    }};
     private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 
     public boolean isExpired(AssembledCaseEvent event) {

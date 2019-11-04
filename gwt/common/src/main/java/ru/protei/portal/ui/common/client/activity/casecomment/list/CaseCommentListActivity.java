@@ -110,14 +110,14 @@ public abstract class CaseCommentListActivity
         );
     }
 
-    @Event
-    public void onValidateComment(CaseCommentEvents.ValidateComment event) {
-        if (event.isNewCase()) {
-            event.validate(true);
-            return;
-        }
-        event.validate(isValid());
-    }
+//    @Event
+//    public void onValidateComment(CaseCommentEvents.ValidateComment event) {
+//        if (event.isNewCase()) {
+//            event.validate(true);
+//            return;
+//        }
+//        event.validate(isValid());
+//    }
 
     @Event
     public void onGetCurrentComment(CaseCommentEvents.GetCurrentComment event) {

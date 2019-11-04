@@ -307,6 +307,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
             added = Collections.emptyList();
         if(removed == null)
             removed = Collections.emptyList();
+        if (addedAttachments == null) addedAttachments = new ArrayList<>();
+        if (removedAttachments == null) removedAttachments = new ArrayList<>();
 
         addedAttachments.addAll(added);
         removedAttachments.addAll(removed);
@@ -319,15 +321,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 addedAttachments.remove(removedAttachment);
                 itRemove = true;
             }
-            if(lastState.getAttachments().contains(removedAttachment)){ //remove not mailed attachment in comment
-                lastState.getAttachments().remove(removedAttachment);
-                itRemove = true;
-            }
+//            if(lastState.getAttachments().contains(removedAttachment)){ //remove not mailed attachment in comment
+//                lastState.getAttachments().remove(removedAttachment);
+//                itRemove = true;
+//            }
             if (itRemove) {
                 it.remove();
             }
         }
-        lastUpdated = currentTimeMillis();
+//        lastUpdated = currentTimeMillis();
     }
 
     public long getTimeCreated() {
