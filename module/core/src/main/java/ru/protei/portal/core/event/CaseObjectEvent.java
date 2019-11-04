@@ -2,6 +2,7 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -19,7 +20,6 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private Person person;
     private ServiceModule serviceModule;
     private DiffCollectionResult<CaseLink> mergeLinks;
-    private boolean isEagerEvent;
 
     public CaseObjectEvent(  Object source, ServiceModule serviceModule, Person person, CaseObject oldState,  CaseObject newState ) {
         super(source);
@@ -116,7 +116,9 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
 
     @Override
     public boolean isEagerEvent() {
-        return isEagerEvent;
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return false;
+        return En_ExtAppType.REDMINE.equals( caseObject.getExtAppType() );
     }
 
     public DiffCollectionResult<CaseLink> getMergeLinks() {
