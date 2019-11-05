@@ -120,7 +120,7 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
     public void setCategories( List< En_CompanyCategory > categories ) {
         this.categories = categories;
         if ( model != null ) {
-            model.updateQuery( this, this.categories );
+            model.showOnlyParentCompanies( this, this.categories );
         }
     }
 
@@ -132,7 +132,7 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
 
     public void showDeprecated(Boolean isShowDeprecated) {
         if (model != null) {
-            model.updateQuery(this, isShowDeprecated);
+            model.showOnlyParentCompanies(this, isShowDeprecated);
         }
     }
 

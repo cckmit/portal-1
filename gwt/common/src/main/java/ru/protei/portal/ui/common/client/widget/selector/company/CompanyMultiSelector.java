@@ -24,32 +24,17 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
  */
 public class CompanyMultiSelector
         extends InputPopupMultiSelector< EntityOption >
-//        implements SelectorWithModel< EntityOption >
 {
 
     @Inject
     public void init( CompanyModel model, Lang lang ) {
-//        model.subscribe( this, categories );
-//        setSelectorModel( (ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel) model );
+        setAsyncSelectorModel( model );
+        setSelectorItemRenderer( model );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
-        setSelectorItemRenderer( new SelectorItemRenderer<EntityOption>() {
-            @Override
-            public String getElementName( EntityOption value ) {
-                return value == null ? "" : value.getDisplayText();
-            }
-        } );
 
         setSearchEnabled( true );
         setPageSize( 10 );
     }
-
-    private static final Logger log = Logger.getLogger( CompanyMultiSelector.class.getName() );
-
-    private List<En_CompanyCategory > categories = Arrays.asList(
-            En_CompanyCategory.CUSTOMER,
-            En_CompanyCategory.PARTNER,
-            En_CompanyCategory.SUBCONTRACTOR,
-            En_CompanyCategory.HOME);
 
 }

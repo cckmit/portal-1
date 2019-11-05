@@ -88,6 +88,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
         searchHandler.onSearch(searchString);
     }
 
+    public void setSearchAutoFocus(boolean isSearchAutoFocus){//TODO
+        //
+    }
+
     public void setPageSize(int pageSize) {
         getSelector().setPageSize(pageSize);
     }

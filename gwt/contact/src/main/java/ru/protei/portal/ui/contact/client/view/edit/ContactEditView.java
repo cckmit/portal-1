@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
@@ -35,11 +36,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        company.setCategories( Arrays.asList(
+        companyModel.setCategories( Arrays.asList(
                 En_CompanyCategory.CUSTOMER,
                 En_CompanyCategory.PARTNER,
                 En_CompanyCategory.SUBCONTRACTOR ) );
-        company.showDeprecated(false);
+        company.setAsyncSelectorModel( companyModel );
     }
 
     @Override
@@ -178,10 +179,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return sendWelcomeEmail;
     }
 
-    @Override
-    public HasValidable companyValidator(){
-        return company;
-    }
+//    @Override
+//    public HasValidable companyValidator(){
+//        return company;
+//    }
 
     @Override
     public HasValidable firstNameValidator(){
@@ -367,8 +368,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField
     CheckBox sendWelcomeEmail;
 
-    //@UiField
-    //HTMLPanel contactDeleted;
+    @Inject
+    CompanyModel companyModel;
 
     Timer changeContactLoginTimer = new Timer() {
         @Override

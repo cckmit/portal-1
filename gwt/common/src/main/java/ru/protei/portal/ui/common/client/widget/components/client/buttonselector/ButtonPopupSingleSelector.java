@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -21,8 +22,9 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.item.
 /**
  * Cелектор c выпадающим списком, одиночный выбор
  */
-public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector
-        implements HasValue<T>, HasEnabled, HasVisibility {
+public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
+        implements HasValue<T>, HasEnabled, HasVisibility
+{
 
     public ButtonPopupSingleSelector() {
         initWidget(bsUiBinder.createAndBindUi(this));
@@ -82,12 +84,12 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector
     }
 
     public void setValidation(boolean isValidable){
-
+        this.isValidable = isValidable;
     }
 
     public void setHeader( String header ) {
-//        this.label.removeClassName("hide");
-//        this.label.setInnerText( header );
+        this.label.removeClassName("hide");
+        this.label.setInnerText( header );
     }
 
     @Override
@@ -121,6 +123,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector
 
     @UiField
     HTMLPanel root;
+    @UiField
+    LabelElement label;
+
+    private boolean isValidable;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupSingleSelector> {
     }

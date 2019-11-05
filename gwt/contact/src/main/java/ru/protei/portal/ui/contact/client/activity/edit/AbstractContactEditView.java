@@ -61,7 +61,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasValue<Boolean> sendWelcomeEmail();
 
-    HasValidable companyValidator();
+//    HasValidable companyValidator();
 
     HasValidable firstNameValidator();
 

@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Cелектор c выпадающим списком, множественный выбор
  */
-public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector
+public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         implements HasValue<Set<T>>, HasEnabled, HasVisibility {
 
 
