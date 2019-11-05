@@ -1,5 +1,7 @@
 package ru.protei.portal.util;
 
+import ru.protei.portal.core.model.helper.StringUtils;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +55,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('ж', "zh");
         rusToLatinCharacters.put('з', "z");
         rusToLatinCharacters.put('и', "i");
-        rusToLatinCharacters.put('й', "y");
+        rusToLatinCharacters.put('й', "i");
         rusToLatinCharacters.put('к', "k");
         rusToLatinCharacters.put('л', "l");
         rusToLatinCharacters.put('м', "m");
@@ -87,7 +89,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Ж', "Zh");
         rusToLatinCharacters.put('З', "Z");
         rusToLatinCharacters.put('И', "I");
-        rusToLatinCharacters.put('Й', "Y");
+        rusToLatinCharacters.put('Й', "I");
         rusToLatinCharacters.put('К', "K");
         rusToLatinCharacters.put('Л', "L");
         rusToLatinCharacters.put('М', "M");
@@ -112,11 +114,11 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Я', "A");
     }
 
-    public static void main(String[] args) {
-        System.out.println(rusToLatin("приvet весnа"));
-    }
-    
-    private static String rusToLatin(String input) {
+    public static String rusToLatin(String input) {
+        if (StringUtils.isBlank(input)) {
+            return "";
+        }
+
         StringBuilder stringBuilder = new StringBuilder();
 
         char[] chars = input.toCharArray();

@@ -4,6 +4,8 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.util.TransliterationUtils;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -43,6 +45,7 @@ public class PreparedTemplate {
         try {
             model.put( "userName", receiver );
             model.put( "showPrivacy", isShowPrivacy );
+            model.put("lang", lang);
             Template template = templateConfiguration.getTemplate( String.format( nameTemplate, lang ), Locale.forLanguageTag( lang ) );
             template.process( model, writer );
             return writer.toString();
