@@ -42,11 +42,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return getList(query);
     }
 
-    @Override
-    public Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        applyFilterByScope( token, query );
-        return getList(query);
-    }
+//    @Override
+//    public Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
+//        applyFilterByScope( token, query );
+//        return getList(query);
+//    }
 
     @Override
     @Transactional

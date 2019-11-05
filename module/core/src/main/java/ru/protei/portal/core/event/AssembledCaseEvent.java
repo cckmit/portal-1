@@ -319,6 +319,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     @Override
     public String toString() {
-        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+        return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
     }
 }

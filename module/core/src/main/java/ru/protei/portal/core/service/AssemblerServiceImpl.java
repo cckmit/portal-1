@@ -6,14 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.service.auth.AuthService;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
@@ -33,35 +38,31 @@ public class AssemblerServiceImpl implements AsseblerService {
 
     private Result<AssembledCaseEvent> fillCaseObject( AssembledCaseEvent e ) {
         if (e.isCaseObjectFilled()) {
-            log.info( "assembleEvent(): CaseObjectID={} caseObject is filled.", e.getCaseObjectId() );
+            log.info( "fillCaseObject(): CaseObjectID={} caseObject is already filled.", e.getCaseObjectId() );
             return ok( e );
         }
 
-        log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject." );
+       log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
+
         e.setLastCaseObject( caseObjectDAO.get( e.getCaseObjectId() ) );
-//            return caseService.getCaseObjectById( at, e.getCaseObjectId() ).map( co -> {//TODO проблемы авторизации и проверки прав hasAccessForCaseObject(...)
-//                e.setInitialCaseObject( co );
-//                return e;
-//            } ).ifOk( r-> log.info( "assembleEvent(): CaseObjectID={} CaseObject is filled.", e.getCaseObjectId() ) );
-        log.info( "assembleEvent(): CaseObjectID={} CaseObject is filled.", e.getCaseObjectId() );
+
+        log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
         return ok( e );
     }
 
     private Result<AssembledCaseEvent> fillComments( AssembledCaseEvent e ) {
-        CaseObject caseObject = e.getCaseObject();
-
         if (e.isCaseCommentsFilled()) {
-            log.info( "assembleEvent(): CaseObjectID={} Comments are filled.", e.getCaseObjectId() );
+            log.info( "fillComments(): CaseObjectID={} Comments are already filled.", e.getCaseObjectId() );
             return ok( e );
         }
 
-        log.info( "assembleEvent(): CaseObjectID={} Try to fill comments.", e.getCaseObjectId() );
+        log.info( "fillComments(): CaseObjectID={} Try to fill comments.", e.getCaseObjectId() );
         Date upperBoundDate = makeCommentUpperBoundDate( e );
-        return caseCommentService.getCaseCommentList( at, En_CaseType.CRM_SUPPORT, new CaseCommentQuery( caseObject.getId(), upperBoundDate ) )
-                .map( caseComments -> {
-                    e.setInitialCaseComments( caseComments );
-                    return e;
-                } ).ifOk( r -> log.info( "assembleEvent(): CaseObjectID={} Comments are filled.", e.getCaseObjectId() ) );
+
+        e.setInitialCaseComments( caseCommentDAO.getCaseComments(new CaseCommentQuery( e.getCaseObjectId(), upperBoundDate )) );
+
+        log.info( "assembleEvent(): CaseObjectID={} Comments are successfully filled.", e.getCaseObjectId() );
+        return ok( e );
     }
 
     private Date makeCommentUpperBoundDate( AssembledCaseEvent event ) {
@@ -82,13 +83,10 @@ public class AssemblerServiceImpl implements AsseblerService {
     EventPublisherService publisherService;
 
     @Autowired
-    CaseCommentService caseCommentService;
+    CaseCommentDAO caseCommentDAO;
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
-//    CaseService caseService;
-
-    AuthToken at = null;//TODO AuthToken for assemble event
 
 
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
