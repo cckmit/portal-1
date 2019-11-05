@@ -54,7 +54,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onShow(IssueReportEvents.Create event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        view.getIssueFilter().setTransliterationFunction(str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str));
+        view.getIssueFilter().setTransliterationFunction(input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName()));
 
         isSaving = false;
         view.reset();

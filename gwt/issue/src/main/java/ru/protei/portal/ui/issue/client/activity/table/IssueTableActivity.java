@@ -67,7 +67,7 @@ public abstract class IssueTableActivity
         filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
-        filterParamView.setTransliterationFunction(str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str));
+        filterParamView.setTransliterationFunction(input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName()));
         filterParamView.setInitiatorCompaniesSupplier(() -> filterParamView.companies().getValue());
 
         pagerView.setActivity( this );
@@ -112,7 +112,7 @@ public abstract class IssueTableActivity
 
         clearScroll(event);
 
-        view.setTransliterationFunction(str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str));
+        view.setTransliterationFunction(input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName()));
 
         loadTable();
     }

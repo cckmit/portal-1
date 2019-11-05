@@ -30,7 +30,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -178,21 +177,21 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
-        view.setCreatedBy(lang.createBy(transliterationFunction.apply(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
+        view.setCreatedBy(lang.createBy(transliteration(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
 
         view.setState( value.getStateId() );
         view.setImportance( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
 
-        String contact = value.getInitiator() == null ? "" : transliterationFunction.apply(value.getInitiator().getDisplayName());
+        String contact = value.getInitiator() == null ? "" : transliteration(value.getInitiator().getDisplayName());
         Company initiatorCompany = value.getInitiatorCompany();
         if ( initiatorCompany != null ) {
-            contact += " (" + transliterationFunction.apply(initiatorCompany.getCname()) + ")";
+            contact += " (" + transliteration(initiatorCompany.getCname()) + ")";
         }
         view.setContact( contact );
-        String manager = value.getManager() == null ? "" : transliterationFunction.apply(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
+        String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
         view.setManager( manager );
-        view.setName( value.getName() == null ? "" : transliterationFunction.apply(value.getName()));
+        view.setName( value.getName() == null ? "" : transliteration(value.getName()));
 
         view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
@@ -266,12 +265,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private void fillSubscriptions( CaseObject value ) {
         List<CompanySubscription> companySubscriptions = value.getInitiatorCompany() == null ? null : value.getInitiatorCompany().getSubscriptions();
         String subscribers = formSubscribers( value.getNotifiers(), companySubscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
-        view.setSubscriptionEmails( transliterationFunction.apply(subscribers) );
+        view.setSubscriptionEmails( transliteration(subscribers) );
 
         companyService.getCompanyWithParentCompanySubscriptions( value.getInitiatorCompanyId(), new ShortRequestCallback<List<CompanySubscription>>()
                 .setOnSuccess( subscriptions -> {
                     String subscribers2 = formSubscribers( value.getNotifiers(), subscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
-                    view.setSubscriptionEmails( transliterationFunction.apply(subscribers2) );
+                    view.setSubscriptionEmails( transliteration(subscribers2) );
                 } ) );
     }
 
@@ -345,6 +344,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().add(attachs);
     }
 
+    private String transliteration(String input) {
+        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -369,5 +372,4 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private AppEvents.InitDetails initDetails;
     private WorkTimeFormatter workTimeFormatter;
     private CaseObject caseObject;
-    private Function<String, String> transliterationFunction = str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str);
 }

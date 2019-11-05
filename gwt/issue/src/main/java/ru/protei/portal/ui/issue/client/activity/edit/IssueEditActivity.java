@@ -632,5 +632,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
     private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
-    private Function<String, String> transliterationFunction = str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str);
+    private Function<String, String> transliterationFunction = input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
 }

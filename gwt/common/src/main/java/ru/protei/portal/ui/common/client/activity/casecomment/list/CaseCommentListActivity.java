@@ -35,7 +35,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -401,7 +400,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(transliterationFunction.apply(value.getCaseManagerShortName()));
+            itemView.setManager(transliteration(value.getCaseManagerShortName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -607,9 +606,9 @@ public abstract class CaseCommentListActivity
 
     private String getOwnerName(CaseComment caseComment) {
         if (!StringUtils.isEmpty(caseComment.getOriginalAuthorName()))
-            return transliterationFunction.apply(caseComment.getOriginalAuthorName());
+            return transliteration(caseComment.getOriginalAuthorName());
         if (caseComment.getAuthor() != null)
-            return transliterationFunction.apply(caseComment.getAuthor().getDisplayName());
+            return transliteration(caseComment.getAuthor().getDisplayName());
         return "Unknown";
     }
 
@@ -658,6 +657,10 @@ public abstract class CaseCommentListActivity
                 .withSuccess(consumer));
     }
 
+    private String transliteration(String input) {
+        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
     private final Timer changedPreviewTimer = new Timer() {
         @Override
         public void run() {
@@ -704,5 +707,4 @@ public abstract class CaseCommentListActivity
     private LocalStorageService storage;
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
-    private Function<String, String> transliterationFunction = str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str);
 }

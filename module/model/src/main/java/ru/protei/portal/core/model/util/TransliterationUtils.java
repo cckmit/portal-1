@@ -2,10 +2,7 @@ package ru.protei.portal.core.model.util;
 
 import ru.protei.portal.core.model.helper.StringUtils;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TransliterationUtils {
     static Map<Character, String> rusToLatinCharacters = new HashMap<>();
@@ -124,9 +121,13 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Я', "Ia");
     }
 
-    public static String rusToLatin(String input) {
+    public static String toLatin(String input, String locale) {
         if (StringUtils.isBlank(input)) {
             return "";
+        }
+
+        if (Objects.equals(locale, "ru")) {
+            return input;
         }
 
         StringBuilder stringBuilder = new StringBuilder();

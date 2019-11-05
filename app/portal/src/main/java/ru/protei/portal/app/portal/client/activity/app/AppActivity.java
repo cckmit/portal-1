@@ -25,7 +25,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 
 /**
@@ -57,8 +56,8 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUser(transliterationFunction.apply(event.profile.getShortName()),
-                event.profile.getCompany() == null ? "" : transliterationFunction.apply(event.profile.getCompany().getCname()),
+        view.setUser(transliteration(event.profile.getShortName()),
+                event.profile.getCompany() == null ? "" : transliteration(event.profile.getCompany().getCname()),
                 AvatarUtils.getAvatarUrl(event.profile));
 
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
@@ -135,6 +134,10 @@ public abstract class AppActivity
         pingTimer.cancel();
     }
 
+    private String transliteration(String input) {
+        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
     @Inject
     AbstractAppView view;
     @Inject
@@ -155,5 +158,4 @@ public abstract class AppActivity
             pingServer();
         }
     };
-    private Function<String, String> transliterationFunction = str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str);
 }
