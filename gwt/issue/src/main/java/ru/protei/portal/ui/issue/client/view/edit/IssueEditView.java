@@ -53,6 +53,7 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -457,6 +458,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             comments.removeClassName(UiConstants.Styles.HIDE);
         else
             comments.addClassName(UiConstants.Styles.HIDE);
+    }
+
+    @Override
+    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
+        manager.setTransliterationFunction(transliterationFunction);
+        company.setTransliterationFunction(transliterationFunction);
+        initiator.setTransliterationFunction(transliterationFunction);
+        notifiers.setTransliterationFunction(transliterationFunction);
     }
 
     private void ensureDebugIds() {

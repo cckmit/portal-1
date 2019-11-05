@@ -1,4 +1,4 @@
-package ru.protei.portal.util;
+package ru.protei.portal.core.model.util;
 
 import ru.protei.portal.core.model.helper.StringUtils;
 
@@ -10,30 +10,35 @@ import java.util.Map;
 public class TransliterationUtils {
     static Map<Character, String> rusToLatinCharacters = new HashMap<>();
     static Map<Character, String> hardNoise = new HashMap<>();
-    static List<Character> vowels = new LinkedList<>();
+    static List<Character> vowelsAndSigns = new LinkedList<>();
+    static Map<String, String> hardNoiseWithDots = new HashMap<>();
 
     static {
-        vowels.add('a');
-        vowels.add('е');
-        vowels.add('ё');
-        vowels.add('и');
-        vowels.add('о');
-        vowels.add('у');
-        vowels.add('ы');
-        vowels.add('э');
-        vowels.add('ю');
-        vowels.add('я');
+        vowelsAndSigns.add('a');
+        vowelsAndSigns.add('е');
+        vowelsAndSigns.add('ё');
+        vowelsAndSigns.add('и');
+        vowelsAndSigns.add('о');
+        vowelsAndSigns.add('у');
+        vowelsAndSigns.add('ъ');
+        vowelsAndSigns.add('ы');
+        vowelsAndSigns.add('ь');
+        vowelsAndSigns.add('э');
+        vowelsAndSigns.add('ю');
+        vowelsAndSigns.add('я');
 
-        vowels.add('А');
-        vowels.add('Е');
-        vowels.add('Ё');
-        vowels.add('И');
-        vowels.add('О');
-        vowels.add('У');
-        vowels.add('Ы');
-        vowels.add('Э');
-        vowels.add('Ю');
-        vowels.add('Я');
+        vowelsAndSigns.add('А');
+        vowelsAndSigns.add('Е');
+        vowelsAndSigns.add('Ё');
+        vowelsAndSigns.add('И');
+        vowelsAndSigns.add('О');
+        vowelsAndSigns.add('У');
+        vowelsAndSigns.add('Ъ');
+        vowelsAndSigns.add('Ы');
+        vowelsAndSigns.add('Ь');
+        vowelsAndSigns.add('Э');
+        vowelsAndSigns.add('Ю');
+        vowelsAndSigns.add('Я');
 
         hardNoise.put('е', "ye");
         hardNoise.put('ё', "yo");
@@ -45,6 +50,11 @@ public class TransliterationUtils {
         hardNoise.put('Ю', "Yu");
         hardNoise.put('Я', "Ya");
 
+        hardNoiseWithDots.put("Е.", "E.");
+        hardNoiseWithDots.put("Ё.", "E.");
+        hardNoiseWithDots.put("Ю.", "Y.");
+        hardNoiseWithDots.put("Я.", "Y.");
+
         rusToLatinCharacters.put('а', "a");
         rusToLatinCharacters.put('б', "b");
         rusToLatinCharacters.put('в', "v");
@@ -55,7 +65,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('ж', "zh");
         rusToLatinCharacters.put('з', "z");
         rusToLatinCharacters.put('и', "i");
-        rusToLatinCharacters.put('й', "i");
+        rusToLatinCharacters.put('й', "y");
         rusToLatinCharacters.put('к', "k");
         rusToLatinCharacters.put('л', "l");
         rusToLatinCharacters.put('м', "m");
@@ -74,10 +84,10 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('щ', "shch");
         rusToLatinCharacters.put('ъ', "ʺ");
         rusToLatinCharacters.put('ы', "y");
-        rusToLatinCharacters.put('ь', "ʹ");
+        rusToLatinCharacters.put('ь', "");
         rusToLatinCharacters.put('э', "e");
         rusToLatinCharacters.put('ю', "u");
-        rusToLatinCharacters.put('я', "a");
+        rusToLatinCharacters.put('я', "ia");
 
         rusToLatinCharacters.put('А', "A");
         rusToLatinCharacters.put('Б', "B");
@@ -89,12 +99,12 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Ж', "Zh");
         rusToLatinCharacters.put('З', "Z");
         rusToLatinCharacters.put('И', "I");
-        rusToLatinCharacters.put('Й', "I");
+        rusToLatinCharacters.put('Й', "Y");
         rusToLatinCharacters.put('К', "K");
         rusToLatinCharacters.put('Л', "L");
         rusToLatinCharacters.put('М', "M");
         rusToLatinCharacters.put('Н', "N");
-        rusToLatinCharacters.put('О', "O");
+        rusToLatinCharacters.put('О', "Yo");
         rusToLatinCharacters.put('П', "P");
         rusToLatinCharacters.put('Р', "R");
         rusToLatinCharacters.put('С', "S");
@@ -108,10 +118,10 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Щ', "Shch");
         rusToLatinCharacters.put('Ъ', "ʺ");
         rusToLatinCharacters.put('Ы', "Y");
-        rusToLatinCharacters.put('Ь', "ʹ");
+        rusToLatinCharacters.put('Ь', "");
         rusToLatinCharacters.put('Э', "E");
-        rusToLatinCharacters.put('Ю', "U");
-        rusToLatinCharacters.put('Я', "A");
+        rusToLatinCharacters.put('Ю', "Yu");
+        rusToLatinCharacters.put('Я', "Ia");
     }
 
     public static String rusToLatin(String input) {
@@ -120,6 +130,8 @@ public class TransliterationUtils {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
+
+        input = staticReplaces(input);
 
         char[] chars = input.toCharArray();
 
@@ -132,7 +144,7 @@ public class TransliterationUtils {
     }
 
     private static String transliterate(Character prevChar, Character currChar) {
-        if (hardNoise.containsKey(currChar) && vowels.contains(prevChar)) {
+        if (hardNoise.containsKey(currChar) && (prevChar == null || vowelsAndSigns.contains(prevChar))) {
             return hardNoise.get(currChar);
         } else if (rusToLatinCharacters.containsKey(currChar)) {
             return rusToLatinCharacters.get(currChar);
@@ -140,4 +152,21 @@ public class TransliterationUtils {
             return String.valueOf(currChar);
         }
     }
+
+    private static String staticReplaces(String input) {
+        String result = input;
+        result = result.replace("НТЦ", "NTC");
+        result = result.replace("Протей", "Protei");
+
+        for (Map.Entry<String, String> currMap : hardNoiseWithDots.entrySet()) {
+            result = result.replace(currMap.getKey(), currMap.getValue());
+        }
+
+        return result;
+    }
+
+//      for tests
+//    public static void main(String[] args) {
+//        System.out.println(rusToLatin(""));
+//    }
 }

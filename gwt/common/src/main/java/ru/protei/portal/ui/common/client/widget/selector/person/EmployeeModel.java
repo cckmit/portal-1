@@ -62,8 +62,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
         }
     }
 
-    private boolean requested;
-
     private void refreshOptions() {
         if (requested) return;
         requested = true;
@@ -95,9 +93,9 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     @Inject
     Lang lang;
 
-    private List< PersonShortView > list = new ArrayList<>();
-
     Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
-
     Long myId;
+
+    private boolean requested;
+    private List< PersonShortView > list = new ArrayList<>();
 }

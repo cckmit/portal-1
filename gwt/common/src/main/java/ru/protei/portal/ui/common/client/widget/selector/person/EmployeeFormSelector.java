@@ -8,6 +8,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Селектор сотрудников домашней компании
@@ -23,11 +24,11 @@ public class EmployeeFormSelector extends FormSelector<PersonShortView> implemen
 
         setDisplayOptionCreator(value -> {
             if (value == null) {
-                return new DisplayOption(defaultValue);
+                return new DisplayOption(transliterationFunction.apply(defaultValue));
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    transliterationFunction.apply(value.getDisplayShortName()),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "");
         } );
@@ -41,12 +42,21 @@ public class EmployeeFormSelector extends FormSelector<PersonShortView> implemen
             addOption(null);
         }
 
-        persons.forEach(this :: addOption);
+        persons.forEach(value -> {
+            value.setDisplayShortName(transliterationFunction.apply(value.getDisplayShortName()));
+            addOption(value);
+        });
     }
 
     public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
+
+    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
+        this.transliterationFunction = transliterationFunction;
+    }
+
+    private Function<String, String> transliterationFunction = str -> str;
 
     private String defaultValue = null;
 }

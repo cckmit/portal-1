@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Представление создания и редактирования обращения
@@ -127,4 +128,6 @@ public interface AbstractIssueEditView extends IsWidget {
     void setNameRO(String name);
 
     String DESCRIPTION = "description";
+
+    void setTransliterationFunction(Function<String, String> transliterationFunction);
 }

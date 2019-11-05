@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.function.Function;
+
 /**
  * Представление таблицы контактов
  */
@@ -32,4 +34,6 @@ public interface AbstractIssueTableView extends IsWidget {
     HasWidgets getPagerContainer();
 
     void clearSelection();
+
+    void setTransliterationFunction(Function<String, String> transliterationFunction);
 }

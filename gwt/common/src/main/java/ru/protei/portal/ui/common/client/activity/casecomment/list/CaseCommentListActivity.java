@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -33,6 +35,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -398,7 +401,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(value.getCaseManagerShortName());
+            itemView.setManager(transliterationFunction.apply(value.getCaseManagerShortName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -604,9 +607,9 @@ public abstract class CaseCommentListActivity
 
     private String getOwnerName(CaseComment caseComment) {
         if (!StringUtils.isEmpty(caseComment.getOriginalAuthorName()))
-            return caseComment.getOriginalAuthorName();
+            return transliterationFunction.apply(caseComment.getOriginalAuthorName());
         if (caseComment.getAuthor() != null)
-            return caseComment.getAuthor().getDisplayName();
+            return transliterationFunction.apply(caseComment.getAuthor().getDisplayName());
         return "Unknown";
     }
 
@@ -701,4 +704,5 @@ public abstract class CaseCommentListActivity
     private LocalStorageService storage;
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
+    private Function<String, String> transliterationFunction = str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str);
 }

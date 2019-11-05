@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -17,7 +19,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
-import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
@@ -29,6 +30,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -176,21 +178,21 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
-        view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
+        view.setCreatedBy(lang.createBy(transliterationFunction.apply(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
 
         view.setState( value.getStateId() );
         view.setImportance( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
 
-        String contact = value.getInitiator() == null ? "" : value.getInitiator().getDisplayName();
+        String contact = value.getInitiator() == null ? "" : transliterationFunction.apply(value.getInitiator().getDisplayName());
         Company initiatorCompany = value.getInitiatorCompany();
         if ( initiatorCompany != null ) {
-            contact += " (" + initiatorCompany.getCname() + ")";
+            contact += " (" + transliterationFunction.apply(initiatorCompany.getCname()) + ")";
         }
         view.setContact( contact );
-        String manager = value.getManager() == null ? "" : value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")";
+        String manager = value.getManager() == null ? "" : transliterationFunction.apply(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
         view.setManager( manager );
-        view.setName( value.getName() == null ? "" : value.getName() );
+        view.setName( value.getName() == null ? "" : transliterationFunction.apply(value.getName()));
 
         view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
@@ -264,12 +266,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private void fillSubscriptions( CaseObject value ) {
         List<CompanySubscription> companySubscriptions = value.getInitiatorCompany() == null ? null : value.getInitiatorCompany().getSubscriptions();
         String subscribers = formSubscribers( value.getNotifiers(), companySubscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
-        view.setSubscriptionEmails( subscribers );
+        view.setSubscriptionEmails( transliterationFunction.apply(subscribers) );
 
         companyService.getCompanyWithParentCompanySubscriptions( value.getInitiatorCompanyId(), new ShortRequestCallback<List<CompanySubscription>>()
                 .setOnSuccess( subscriptions -> {
                     String subscribers2 = formSubscribers( value.getNotifiers(), subscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
-                    view.setSubscriptionEmails( subscribers2 );
+                    view.setSubscriptionEmails( transliterationFunction.apply(subscribers2) );
                 } ) );
     }
 
@@ -367,4 +369,5 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private AppEvents.InitDetails initDetails;
     private WorkTimeFormatter workTimeFormatter;
     private CaseObject caseObject;
+    private Function<String, String> transliterationFunction = str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str);
 }

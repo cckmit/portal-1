@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -16,6 +17,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -44,6 +46,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Активность таблицы обращений
@@ -64,6 +67,7 @@ public abstract class IssueTableActivity
         filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
+        filterParamView.setTransliterationFunction(str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str));
         filterParamView.setInitiatorCompaniesSupplier(() -> filterParamView.companies().getValue());
 
         pagerView.setActivity( this );
@@ -107,6 +111,8 @@ public abstract class IssueTableActivity
         toggleMsgSearchThreshold();
 
         clearScroll(event);
+
+        view.setTransliterationFunction(str -> Objects.equals(LocaleInfo.getCurrentLocale().getLocaleName(), "ru") ? str : TransliterationUtils.rusToLatin(str));
 
         loadTable();
     }

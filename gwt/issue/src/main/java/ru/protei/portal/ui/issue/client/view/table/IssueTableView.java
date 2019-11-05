@@ -26,6 +26,8 @@ import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.function.Function;
+
 
 /**
  * Представление таблицы обращений
@@ -93,6 +95,12 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void clearSelection() {
         columnProvider.setSelectedValue(null);
+    }
+
+    @Override
+    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
+        manager.setTransliterationFunction(transliterationFunction);
+        contact.setTransliterationFunction(transliterationFunction);
     }
 
     @Override

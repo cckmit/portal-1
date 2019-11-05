@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSele
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class InitiatorMultiSelector
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
         for ( PersonShortView option : emptyIfNull( options) ) {
-            addOption( option.getDisplayShortName(), option );
+            addOption( transliterationFunction.apply(option.getDisplayShortName()), option );
         }
     }
 
@@ -97,4 +98,10 @@ public class InitiatorMultiSelector
             return Collections.EMPTY_SET;
         }
     };
+
+    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
+        this.transliterationFunction = transliterationFunction;
+    }
+
+    private Function<String, String> transliterationFunction = str -> str;
 }

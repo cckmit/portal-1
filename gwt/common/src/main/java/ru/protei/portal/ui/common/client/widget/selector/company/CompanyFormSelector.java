@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +31,7 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? transliterationFunction.apply(defaultValue) : transliterationFunction.apply(value.getDisplayText()) ) );
     }
 
     @Override
@@ -107,6 +108,7 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
+        options.forEach(option -> option.setDisplayText(transliterationFunction.apply(option.getDisplayText())));
         this.options = options;
         if (deferedApplyValueIfOneOption) {
             applyValueIfOneOption();
@@ -150,6 +152,10 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
         }
     }
 
+    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
+        this.transliterationFunction = transliterationFunction;
+    }
+
     private List<EntityOption> filter( List<EntityOption> options ) {
         return options.stream()
                 .filter( this::applyPredicate )
@@ -178,4 +184,5 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
 
     protected String defaultValue = null;
     private boolean deferedApplyValueIfOneOption = false;
+    private Function<String, String> transliterationFunction = str -> str;
 }

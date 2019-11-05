@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface AbstractIssueFilterWidgetView extends IsWidget {
@@ -95,4 +96,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     void addUserFilterDisplayOption(CaseFilterShortView value);
 
     void presetFilterType();
+
+    void setTransliterationFunction(Function<String, String> transliterationFunction);
 }

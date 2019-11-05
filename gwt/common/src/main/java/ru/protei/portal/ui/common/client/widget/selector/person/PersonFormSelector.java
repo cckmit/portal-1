@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Селектор person
@@ -26,11 +27,11 @@ public class PersonFormSelector extends FormSelector< PersonShortView > implemen
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> {
             if ( value == null ) {
-                return new DisplayOption( defaultValue );
+                return new DisplayOption( transliterationFunction.apply(defaultValue) );
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    transliterationFunction.apply(value.getDisplayShortName()),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "" );
         } );
@@ -38,6 +39,7 @@ public class PersonFormSelector extends FormSelector< PersonShortView > implemen
 
     public void fillOptions( List< PersonShortView > persons ){
         clearOptions();
+        persons.forEach(person -> person.setDisplayShortName(transliterationFunction.apply(person.getDisplayShortName())));
         this.persons = persons;
     }
 
@@ -75,6 +77,11 @@ public class PersonFormSelector extends FormSelector< PersonShortView > implemen
         }
     }
 
+    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
+        this.transliterationFunction = transliterationFunction;
+    }
+
+
     @Inject
     Lang lang;
 
@@ -84,4 +91,5 @@ public class PersonFormSelector extends FormSelector< PersonShortView > implemen
     private boolean fired = false;
     private Set<Long> companyIds;
     private List<PersonShortView> persons;
+    private Function<String, String> transliterationFunction = str -> str;
 }

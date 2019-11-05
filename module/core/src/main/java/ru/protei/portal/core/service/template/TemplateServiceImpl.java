@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
-import ru.protei.portal.util.TransliterationUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
