@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contract.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -45,6 +46,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         project.setRequestByOnLoad(false);
+        contragent.showDeprecated(false);
     }
 
     @Override
@@ -186,6 +188,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
+        commonHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COMMON_HEADER);
+        workGroupHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.WORKGROUP_HEADER);
+        deliveryAndPaymentsPeriodHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DELIVERY_AND_PAYMENTS_PERIOD_HEADER);
+
         numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NUMBER);
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
 
@@ -229,6 +236,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
 
         dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
+
+        saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
     }
 
     @UiField
@@ -307,6 +317,14 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     LabelElement managerLabel;
     @UiField
     LabelElement contragentLabel;
+    @UiField
+    DivElement commonHeader;
+    @UiField
+    DivElement workGroupHeader;
+    @UiField
+    DivElement deliveryAndPaymentsPeriodHeader;
+    @UiField
+    Button cancelButton;
 
     private AbstractContractEditActivity activity;
 

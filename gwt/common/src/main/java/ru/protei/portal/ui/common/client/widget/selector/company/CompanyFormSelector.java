@@ -130,6 +130,12 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
         }
     }
 
+    public void showDeprecated(Boolean isShowDeprecated) {
+        if (model != null) {
+            model.updateQuery(this, isShowDeprecated);
+        }
+    }
+
     public void applyValueIfOneOption() {
         if ( options == null ) {
             deferedApplyValueIfOneOption = true;

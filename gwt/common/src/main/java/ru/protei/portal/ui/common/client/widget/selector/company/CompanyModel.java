@@ -69,6 +69,12 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         selectorToQuery.put(selector, query);
     }
 
+    public void updateQuery(SelectorWithModel<EntityOption> selector, Boolean isShowDeprecated) {
+        if (selectorToQuery.get(selector) != null) {
+            selectorToQuery.get(selector).setShowDeprecated(isShowDeprecated);
+        }
+    }
+
     private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override

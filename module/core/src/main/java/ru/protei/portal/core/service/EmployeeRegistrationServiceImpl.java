@@ -16,12 +16,9 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 import static ru.protei.portal.api.struct.Result.error;
@@ -153,22 +150,35 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
 
-        boolean needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE);
-
-        String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
-
-        String configure = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )
-                ? "перенастройка": "настройка";
+        String needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
+                "\n Требуется установить новый телефон." : "";
+        String needConfigure = "\n Необходима " + (contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
+                "настройка" : "перенастройка"
+        ) + " офисной телефонии";
+        String needCommunication =
+                contains(resourceList, En_PhoneOfficeType.INTERNATIONAL) ||
+                contains(resourceList, En_PhoneOfficeType.LONG_DISTANCE) ?
+                join("\n", "Необходимо включить связь: ",
+                        join(removeItem(resourceList, En_PhoneOfficeType.OFFICE), r -> getPhoneOfficeTypeName(r), ", ")
+                ).toString() : "";
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
-                needPhone ? "\n Требуется установить новый телефон." : "",
-                "\n", "Необходима ", configure, " офисной телефонии",
-                "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
+                needPhone,
+                needConfigure,
+                needCommunication
         ).toString();
+
+        String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
 
         youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
         );
+    }
+
+    private Collection<En_PhoneOfficeType> removeItem(Collection<En_PhoneOfficeType> resourceList, En_PhoneOfficeType removedItem) {
+        List<En_PhoneOfficeType> result = new ArrayList<>(resourceList);
+        result.remove(removedItem);
+        return result;
     }
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {

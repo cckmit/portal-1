@@ -843,6 +843,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String keywordInputPlaceholder();
 
+    String aliasInputPlaceholder();
+
     String inventoryNumber();
 
     String customer();
@@ -1899,4 +1901,10 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedInfo();
 
     String phoneOfficeTypeOffice();
+
+    String productAliases();
+
+    String productSearchNameOrAlias();
+
+    String documentSearchNameOrDesignation();
 }

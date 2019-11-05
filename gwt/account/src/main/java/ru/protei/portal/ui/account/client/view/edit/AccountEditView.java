@@ -36,6 +36,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        company.showDeprecated(false);
     }
 
     @Override

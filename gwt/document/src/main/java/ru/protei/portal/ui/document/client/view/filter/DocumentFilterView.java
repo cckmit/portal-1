@@ -15,12 +15,14 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -59,6 +61,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         keywords.setValue(new LinkedList<>());
         sortDir.setValue(false);
         showDeprecated.setValue(false);
+        projects.setValue(null);
     }
 
     @Override
@@ -79,6 +82,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> projects() {
+        return projects;
     }
 
     @Override
@@ -148,6 +156,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiHandler("manager")
     public void onManagerSelected(ValueChangeEvent<PersonShortView> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("projects")
+    public void onProjectsChanged(ValueChangeEvent<Set<EntityOption>> event) {
         fireChangeTimer();
     }
 
@@ -240,6 +253,10 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Inject
     @UiField(provided = true)
     StringSelectInput keywords;
+
+    @Inject
+    @UiField(provided = true)
+    ProjectMultiSelector projects;
 
     AbstractDocumentFilterActivity activity;
 

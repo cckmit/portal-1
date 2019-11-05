@@ -16,7 +16,7 @@
         </div>
 
         <div class="col-md-2">
-            <label class="m-r-5"><ui:text from="{lang.contractDatesNotify}"/></label>
+            <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.contractDatesNotify}"/></label>
             <switcher:Switcher ui:field="notify"/>
         </div>
 
