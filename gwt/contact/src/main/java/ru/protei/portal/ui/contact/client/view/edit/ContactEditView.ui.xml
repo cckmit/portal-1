@@ -241,15 +241,12 @@
             </div>
         </div>
 
-        <div class="card-footer text-right">
-            <div class="card card-transparent no-margin">
-                <div class="pull-right">
-                    <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox" text="{lang.sendEmail}"/>
-                    <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
-                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                    <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"
-                              text="{lang.buttonCancel}"/>
-                </div>
+        <div class="card-footer">
+            <div class="pull-right">
+                <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox" text="{lang.sendEmail}"/>
+                <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
             </div>
         </div>
     </g:HTMLPanel>
