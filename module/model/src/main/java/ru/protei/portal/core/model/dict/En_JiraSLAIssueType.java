@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 public enum En_JiraSLAIssueType {
     SERVICE("Service", false, true),
     ERROR("Error", true, false),
-    ;
+    IMPROVEMENT("Improvement", false, false),
+    CONSULTATION("Consultation", false, false);
 
     private String issueType;
     private boolean byJira;
@@ -43,5 +44,11 @@ public enum En_JiraSLAIssueType {
         return Arrays.stream(values())
             .filter(it -> it.byPortal)
             .collect(Collectors.toList());
+    }
+
+    public static List<En_JiraSLAIssueType> byJiraOrPortal() {
+        return Arrays.stream(values())
+                .filter(it -> it.byJira || it.byPortal)
+                .collect(Collectors.toList());
     }
 }

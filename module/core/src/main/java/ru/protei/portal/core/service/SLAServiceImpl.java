@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.JiraSLAMapEntryDAO;
+import ru.protei.portal.core.model.dict.En_JiraSLAIssueType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.JiraSLAMapEntry;
 
@@ -22,7 +23,9 @@ public class SLAServiceImpl implements SLAService {
 
     @Override
     public Result<JiraSLAMapEntry> getJiraSLAEntry(AuthToken token, long mapId, String issueType, String severity) {
-        JiraSLAMapEntry result = jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(mapId, issueType, severity);
+        boolean isSeverityMustBe = En_JiraSLAIssueType.byJiraOrPortal().contains(En_JiraSLAIssueType.forIssueType(issueType));
+        JiraSLAMapEntry result = isSeverityMustBe ? jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(mapId, issueType, severity) :
+                jiraSLAMapEntryDAO.getByIssueType(mapId, issueType);
         return result == null ? error(NOT_FOUND) : ok(result);
     }
 

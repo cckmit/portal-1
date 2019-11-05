@@ -11,4 +11,6 @@ public interface JiraSLAMapEntryDAO extends PortalBaseDAO<JiraSLAMapEntry> {
     List<JiraSLAMapEntry> listByIssueType(long mapId, String issueType);
 
     JiraSLAMapEntry getByIssueTypeAndSeverity(long mapId, String issueType, String severity);
+
+    JiraSLAMapEntry getByIssueType(long mapId, String issueType);
 }

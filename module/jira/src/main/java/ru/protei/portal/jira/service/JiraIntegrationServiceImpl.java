@@ -17,9 +17,11 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.jira.utils.CommonUtils;
@@ -385,7 +387,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         boolean isSeverityShouldBeSaved = En_JiraSLAIssueType.byJira().contains(En_JiraSLAIssueType.forIssueType(issueType));
         if (isSeverityShouldBeSaved) {
             String severity = CommonUtils.getIssueSeverity(issue);
-            jiraExtAppData.setSlaSeverity(severity);
+            String severityDigits = JiraUtils.extractDigitsFromName(StringUtils.emptyIfNull(severity));
+            jiraExtAppData.setSlaSeverity(StringUtils.isEmpty(severityDigits) ? severity : severityDigits);
         }
         return jiraExtAppData;
     }

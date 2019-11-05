@@ -19,13 +19,13 @@
     <dependencies>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <scope>runtime</scope>
+            <artifactId>gwt-user</artifactId>
             <version>${project.gwt.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
+            <artifactId>gwt-servlet</artifactId>
+            <scope>runtime</scope>
             <version>${project.gwt.version}</version>
         </dependency>
 

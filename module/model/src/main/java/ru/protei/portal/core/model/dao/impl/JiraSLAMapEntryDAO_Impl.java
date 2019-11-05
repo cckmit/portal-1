@@ -21,4 +21,9 @@ public class JiraSLAMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraSLAMapEntry> 
     public JiraSLAMapEntry getByIssueTypeAndSeverity(long mapId, String issueType, String severity) {
         return getByCondition("MAP_ID=? and issue_type=? and severity=?", mapId, issueType, severity);
     }
+
+    @Override
+    public JiraSLAMapEntry getByIssueType(long mapId, String issueType) {
+        return getByCondition("MAP_ID=? and issue_type=?", mapId, issueType);
+    }
 }
