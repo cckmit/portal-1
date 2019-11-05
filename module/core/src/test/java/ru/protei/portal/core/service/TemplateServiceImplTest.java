@@ -69,7 +69,6 @@ public class TemplateServiceImplTest {
         CaseObject lastState = createNewCaseObject(person, 4 * DAY + 15 * HOUR + 48 * MINUTE);
 
         Object dummyCaseService = new Object();
-//        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
         assembledCaseEvent.attachEvent(caseObjectEvent);
@@ -99,7 +98,6 @@ public class TemplateServiceImplTest {
         CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
 
         Object dummyCaseService = new Object();
-//        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
         assembledCaseEvent.attachEvent(caseObjectEvent);

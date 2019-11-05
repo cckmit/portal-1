@@ -208,8 +208,6 @@ public class CaseServiceImpl implements CaseService {
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
         publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState )
-//                .withNewState(newState)
-//                .withPerson(initiator)
                 .withLinks(mergeLinks)
         );
 
@@ -231,56 +229,10 @@ public class CaseServiceImpl implements CaseService {
             newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
             publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
-//                    .withNewState(newState)
-//                    .withOldState(oldState)
-//                    .withPerson(initiator)
             );
         }
 
         return ok(objectResultData.getCaseObject());
-    }
-
-//    @Override
-    @Transactional
-    public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {//TODO обратно разделить
-
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
-
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
-        CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
-
-        if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
-            // From GWT-side we get partially filled object, that's why we need to refresh state from db
-            CaseObject newState = caseObjectDAO.get(caseObject.getId());
-            newState.setAttachments(caseObject.getAttachments());
-            newState.setNotifiers(caseObject.getNotifiers());
-            jdbcManyRelationsHelper.fill(oldState, "attachments");
-
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
-//                    .withPerson(initiator)
-//                    .withOldState(oldState)
-//                    .withNewState(newState)
-//                    .withCaseComment(commentResultData.getCaseComment())
-//                    .withOldCaseComment(commentResultData.getOldCaseComment())
-//                    .withAddedAttachments(commentResultData.getAddedAttachments())
-//                    .withRemovedAttachments(commentResultData.getRemovedAttachments())
-                    .withLinks( objectResultData.getMergeLinks() )
-            );
-
-            boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseObject.getId() ) );
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, initiator, caseObject.getId(), isEagerEvent)
-//                    .withPerson(initiator)
-//                    .withOldState(oldState)
-                    .withNewCaseComment(commentResultData.getCaseComment())
-                    .withOldCaseComment(commentResultData.getOldCaseComment())
-                    .withAddedAttachments(commentResultData.getAddedAttachments())
-                    .withRemovedAttachments(commentResultData.getRemovedAttachments())
-            );
-        }
-
-        return Result.ok(
-                new CaseObjectWithCaseComment(objectResultData.getCaseObject(), commentResultData.getCaseComment())
-        );
     }
 
     private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
@@ -472,20 +424,6 @@ public class CaseServiceImpl implements CaseService {
          updateExistsAttachmentsFlag(caseId, isExists));
     }
 
-//    @Override
-//    public Result<Long> getEmailLastId( Long caseId) {
-//        if (caseId == null) {
-//            return error(En_ResultStatus.INCORRECT_PARAMS);
-//        }
-//
-//        Long lastMessageId = caseObjectDAO.getEmailLastId(caseId);
-//        if (lastMessageId == null) {
-//            lastMessageId = 0L;
-//        }
-//
-//        return ok(lastMessageId);
-//    }
-
     @Override
     public Result<Long> getAndIncrementEmailLastId( Long caseId ) {
         if (caseId == null) {
@@ -570,8 +508,6 @@ public class CaseServiceImpl implements CaseService {
         }
 
         publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, null, caseObject, caseObject)//TODO link need Person!
-//                .withOldState(caseObject)
-//                .withNewState(caseObject)
                 .withLinks( linksDiff )
         );
         return ok(caseObject.getId());

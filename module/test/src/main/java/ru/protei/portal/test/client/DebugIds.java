@@ -512,8 +512,13 @@ public class DebugIds {
         String MANAGER_SELECTOR = "contract-manager-selector";
         String CONTRAGENT_SELECTOR = "contract-contragent-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
+        String SAVE_BUTTON = "contract-save-button";
+        String CANCEL_BUTTON = "contract-cancel-button";
 
         interface LABEL {
+            String COMMON_HEADER = "contract-common-header";
+            String WORKGROUP_HEADER = "contract-workgroup-header";
+            String DELIVERY_AND_PAYMENTS_PERIOD_HEADER = "contract-delivery-and-payments-period-header";
             String NUMBER = "contract-number-label";
             String TYPE = "contract-type-label";
             String STATE = "contract-state-label";
@@ -535,6 +540,7 @@ public class DebugIds {
             String TYPE_BUTTON = "contract-date-item-type-button";
             String DATE_CONTAINER = "contract-date-item-date-container";
             String COMMENT_INPUT = "contract-date-item-comment-input";
+            String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
         }

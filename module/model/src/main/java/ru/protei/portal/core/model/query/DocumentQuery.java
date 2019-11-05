@@ -21,13 +21,14 @@ public class DocumentQuery extends BaseQuery {
     private Boolean isApproved;
     private List<String> decimalNumbers;
     private List<Long> equipmentIds;
-    private Long projectId;
+    private List<Long> projectIds;
     private En_DocumentState state;
 
     public DocumentQuery() {
     }
 
-    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String inTextQuery, Boolean isApproved, En_DocumentState state) {
+    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from,
+                         Date to, List<String> keywords, Long managerId, String inTextQuery, Boolean isApproved, En_DocumentState state, List<Long> projectIds) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;
         this.from = from;
@@ -38,6 +39,7 @@ public class DocumentQuery extends BaseQuery {
         this.inTextQuery = inTextQuery;
         this.isApproved = isApproved;
         this.state = state;
+        this.projectIds = projectIds;
     }
 
     public En_DocumentState getState() { return state; }
@@ -132,11 +134,11 @@ public class DocumentQuery extends BaseQuery {
         this.equipmentIds = equipmentIds;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public List<Long> getProjectIds() {
+        return projectIds;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 }

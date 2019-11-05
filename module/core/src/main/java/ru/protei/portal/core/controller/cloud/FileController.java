@@ -35,6 +35,7 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
 
@@ -68,7 +69,7 @@ public class FileController {
     FileStorage fileStorage;
 
     @Autowired
-    EventAssemblerService publisherService;
+    EventPublisherService publisherService;
 
     @Autowired
     PortalConfig config;
@@ -280,12 +281,6 @@ public class FileController {
         if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
-//        try {
-//            shareNotification(attachment, caseId, null, person);
-//        }catch (NullPointerException e){
-//            logger.error("Notification error! "+ e.getMessage());
-//        }
-
         return caseAttachId.getData();
     }
 
@@ -296,7 +291,6 @@ public class FileController {
     }
 
     private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
-//        Result<CaseObject> issue = caseService.getCaseObjectByNumber(token, caseNumber);
         Result<Long> caseIdResult = caseService.getCaseIdByNumber( token, caseNumber );
         if (caseIdResult.isError()) {
             logger.error("Notification error! Database exception: " + caseIdResult);
@@ -305,9 +299,7 @@ public class FileController {
         Long caseId = caseIdResult.getData();
         List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( caseId );
         publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, caseId, oldAttachments)
-//                .withCaseObject(issue.getData())
                 .withAddedAttachments(Collections.singletonList(attachment))
-//                .withPerson(initiator)
                 );
     }
 

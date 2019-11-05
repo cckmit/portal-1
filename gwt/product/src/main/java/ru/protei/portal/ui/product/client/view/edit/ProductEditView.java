@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.product.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,11 +16,13 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -83,6 +87,21 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public HasValue<En_DevUnitType> type() {
         return type;
+    }
+
+    @Override
+    public void setTypeImage(String src, String title) {
+        typeImage.setSrc(src);
+        typeImage.setTitle(title);
+    }
+
+    @Override
+    public void setTypeImageVisibility(boolean isVisible) {
+        if (isVisible) {
+            typeImageContainer.removeClassName("hide");
+        } else {
+            typeImageContainer.addClassName("hide");
+        }
     }
 
     @Override
@@ -194,6 +213,20 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         verifiableIcon.setClassName(status.getStyle());
     }
 
+    @Override
+    public HasValue<List<String>> aliases() {
+        return aliases;
+    }
+
+    @Override
+    public HasVisibility aliasesVisibility() {
+        return aliasesContainer;
+    }
+
+    @Override
+    public HasVisibility typeVisibility() {
+        return type;
+    }
 
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
@@ -293,9 +326,17 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     LabelElement parentsContainerLabel;
     @UiField
     LabelElement childrenContainerLabel;
+    @Inject
+    @UiField(provided = true)
+    StringSelectInput aliases;
+    @UiField
+    HTMLPanel aliasesContainer;
+    @UiField
+    DivElement typeImageContainer;
+    @UiField
+    ImageElement typeImage;
 
     AbstractProductEditActivity activity;
-
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductEditView > {}

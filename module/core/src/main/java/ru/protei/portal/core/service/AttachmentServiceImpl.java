@@ -47,7 +47,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     FileStorage fileStorage;
 
     @Autowired
-    EventAssemblerService publisherService;
+    EventPublisherService publisherService;
 
     @Autowired
     AuthService authService;
@@ -78,21 +78,16 @@ public class AttachmentServiceImpl implements AttachmentService {
                 }
             } );
 
-//            CaseObject issue = caseObjectDAO.get(ca.getCaseId());
             Attachment attachment = attachmentDAO.get(id);
             UserSessionDescriptor ud = authService.findSession( token );
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
             if(result.isOk()
-//                    && issue != null
                     && ud != null ) {
-//                jdbcManyRelationsHelper.fill(issue, "attachments");
                 List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( ca.getCaseId() );
                 publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, ud.getPerson(), ca.getCaseId(), oldAttachments )
-//                        .withCaseObject(issue)
                         .withRemovedAttachments(Collections.singletonList(attachment))
-//                        .withPerson(ud.getPerson())
                         );
             }
 

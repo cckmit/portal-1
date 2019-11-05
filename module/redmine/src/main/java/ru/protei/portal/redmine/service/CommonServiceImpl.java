@@ -10,7 +10,6 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
@@ -22,7 +21,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
-import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
@@ -84,9 +82,7 @@ public final class CommonServiceImpl implements CommonService {
         }
 
         eventPublisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.REDMINE, contactPerson, obj.getId(), obj.getAttachments())
-//                .withCaseObject(obj)
                 .withAddedAttachments(addedAttachments)
-//                .withPerson(contactPerson)
                 );
     }
 
@@ -109,11 +105,8 @@ public final class CommonServiceImpl implements CommonService {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent( new CaseObjectCommentEvent(caseService, ServiceModule.REDMINE)
-                .withNewState(obj)
-                .withOldState(obj)
-                .withCaseComment(comment)
-                .withPerson(contactPerson)
+        eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.REDMINE, contactPerson, caseObjId, false)
+                .withNewCaseComment(comment)
                 );
 
         return comment;

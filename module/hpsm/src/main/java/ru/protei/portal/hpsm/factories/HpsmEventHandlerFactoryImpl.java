@@ -53,9 +53,6 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
         CaseObject object = appData == null ? null : caseObjectDAO.get(appData.getId());
 
         if (object != null && HpsmUtils.testBind(object, instance)) {
-
-//            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getId()))
-//                return new RejectHandler("Wrong company");
             logger.debug("return update handler");
             return new UpdateCaseHandler(object, caseObjectDAO.get(object.getId()));
         }
@@ -132,10 +129,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
                 logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
 
-                eventPublisherService.publishEvent( new CaseObjectEvent(caseService, ServiceModule.HPSM, contactPerson, null, obj)
-//                        .withNewState(obj)
-//                        .withPerson(contactPerson)
-                );
+                eventPublisherService.publishEvent( new CaseObjectEvent(caseService, ServiceModule.HPSM, contactPerson, null, obj) );
 
                 createComment(request, contactPerson, obj, caseObjId);
 
@@ -237,11 +231,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
 
-            eventPublisherService.publishEvent( new CaseObjectEvent(caseService, ServiceModule.HPSM, contactPerson, oldState, object)
-//                    .withNewState(object)
-//                    .withOldState(oldState)
-//                    .withPerson(contactPerson)
-            );
+            eventPublisherService.publishEvent( new CaseObjectEvent(caseService, ServiceModule.HPSM, contactPerson, oldState, object) );
 
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
                 logger.debug("append comment text from message");
@@ -373,11 +363,8 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
         }
 
         eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), false)
-//                .withNewState(obj) //TODO зачем сетить оба ? (модуль под удаление)
-//                .withOldState(obj)
                 .withNewCaseComment(comment)
                 .withAddedAttachments(addedAttachments)
-//                .withPerson(contactPerson)
                 );
 
         return comment;

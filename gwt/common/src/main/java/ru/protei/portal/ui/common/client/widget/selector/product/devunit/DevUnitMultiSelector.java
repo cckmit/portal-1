@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -47,11 +48,6 @@ public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView
         this.exclude = exclude;
         fillOptions();
     }
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
-        if (model != null) {
-            model.updateQuery(this, enDevUnitState, enDevUnitType);
-        }
-    }
 
     public void refreshOptions() {
         model.getOptionsFromServer(this);
@@ -74,7 +70,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector<ProductShortView
         }
         options.stream()
                 .filter(option -> !Objects.equals(option, exclude))
-                .forEach(option -> addOption(option.getName(), option));
+                .forEach(option -> addOption((option.getName() + (HelperFunc.isEmpty(option.getAliases()) ? "" : " (" + option.getAliases() + ")")), option));
     }
 
     @Inject

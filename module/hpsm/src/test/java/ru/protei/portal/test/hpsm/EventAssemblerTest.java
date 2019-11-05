@@ -51,50 +51,32 @@ public class EventAssemblerTest {
         CaseService caseService = ctx.getBean(CaseService.class);
 
         //First portion
-        CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, object)
-//                .withNewState(object)
-//                .withPerson(person)
-                ;
+        CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, object);
         CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-//                .withNewState(object)
-//                .withOldState(object)
                 .withNewCaseComment(comment)
-//                .withPerson(person)
                 ;
         CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, object.getId(), object.getAttachments())
-//                .withCaseObject(object)
                 .withAddedAttachments(attachment)
                 .withRemovedAttachments(removedAttachment)
-//                .withPerson(person)
                 ;
 
         //Second portion
-        CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, newObject)
-//                .withNewState(newObject)
-//                .withPerson(person)
-                ;
+        CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, newObject);
         CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-//                .withNewState(object)
-//                .withOldState(object)
-                .withNewCaseComment(comment)
-//                .withPerson(person)
-                ;
+                .withNewCaseComment(comment);
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
         CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-//                .withNewState(object)
-//                .withOldState(object)
                 .withNewCaseComment(comment2)
-//                .withPerson(person)
                 ;
 
 
         //This is where the fun begin
         EventAssemblerService assemblerService = ctx.getBean(EventAssemblerService.class);
-        assemblerService.publishEvent(objectEvent);
-        assemblerService.publishEvent(commentEvent);
-        assemblerService.publishEvent(attachmentEvent);
+        assemblerService.onCaseObjectEvent(objectEvent);
+        assemblerService.onCaseCommentEvent(commentEvent);
+        assemblerService.onCaseAttachmentEvent(attachmentEvent);
 
         //Test on event assembling (comment + object)
         Assert.assertEquals(1, assemblerService.getEventsCount());
@@ -105,7 +87,7 @@ public class EventAssemblerTest {
         Assert.assertNotEquals(assemblerService.getEvent(person, object.getId()).getRemovedAttachments(), null);
 
         //Test on second case object for same person
-        assemblerService.publishEvent(secondEvent);
+        assemblerService.onCaseObjectEvent(secondEvent);
         Assert.assertEquals(assemblerService.getEvent(person, newObject.getId()).getLastState(), newObject);
 
         //Test on time delay publishing
@@ -113,13 +95,13 @@ public class EventAssemblerTest {
         Assert.assertEquals(0, assemblerService.getEventsCount());
 
         //Test on second case comment for same person
-        assemblerService.publishEvent(objectEvent);
-        assemblerService.publishEvent(commentEvent);
+        assemblerService.onCaseObjectEvent(objectEvent);
+        assemblerService.onCaseCommentEvent(commentEvent);
         Assert.assertEquals(1, assemblerService.getEventsCount());
         AssembledCaseEvent firstEvent = assemblerService.getEvent(person, object.getId());
-        assemblerService.publishEvent(secondCommentEvent);
+        assemblerService.onCaseCommentEvent(secondCommentEvent);
         Assert.assertEquals(assemblerService.getEvent(person, object.getId()), firstEvent);
-        assemblerService.publishEvent(thirdCommentEvent);
+        assemblerService.onCaseCommentEvent(thirdCommentEvent);
         Assert.assertNotEquals(assemblerService.getEvent(person, object.getId()), firstEvent);
     }
 

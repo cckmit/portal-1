@@ -45,7 +45,6 @@ public class MailNotificationProcessor {
 
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
-//    private final static Semaphore messageIdSemaphore = new Semaphore(1);
     public static final LinkData EMPTY_LINK = new LinkData( "#", "" );
 
     @Autowired
@@ -89,37 +88,6 @@ public class MailNotificationProcessor {
 
         log.info( "Case notification :: subscribers: {}", join( notifiers, ni->ni.getAddress(), ",") );
 
-//        CaseObject caseObject = event.getCaseObject();
-//
-//        Date upperBoundDate = makeCommentUpperBoundDate(event);
-//        Result<List<CaseComment>> allComments = caseCommentService.getCaseCommentList(null, En_CaseType.CRM_SUPPORT, new CaseCommentQuery(caseObject.getId(), upperBoundDate));
-//
-//        if (allComments.isError()) {
-//            log.error("Case notification :: failed to retrieve comments for caseId={}", caseObject.getId());
-//            return;
-//        }
-//
-//        List<CaseComment> comments = allComments.getData();
-//        if (event.getRemovedComment() != null) {
-//            comments.add(event.getRemovedComment());
-//        }
-//
-//        if (event.getCaseComment() != null) {
-//            boolean isNewCommentPresents = comments.stream()
-//                    .anyMatch(comment ->
-//                            Objects.equals(comment.getId(), event.getCaseComment().getId())
-//                    );
-//
-//            if (!isNewCommentPresents) {
-//                comments.add(event.getCaseComment());
-//            }
-//        }
-//        List<CaseComment> comments =  event.getAllComments();
-
-//        try {
-//            messageIdSemaphore.acquire();
-
-//            Long lastMessageId = getEmailLastId(event.getCaseObjectId());
             Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
             final boolean IS_PRIVATE_RECIPIENT = true;
 
@@ -147,12 +115,6 @@ public class MailNotificationProcessor {
                 performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
 
-
-//        } catch (InterruptedException e) {
-//            log.warn("Case notification :: semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
-//        } finally {
-//            messageIdSemaphore.release();
-//        }
     }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
@@ -307,13 +269,6 @@ public class MailNotificationProcessor {
 
     private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {
         return "case." + caseNumber + "." + id + "-" + recipientAddressHashCode;
-    }
-
-    private Date makeCommentUpperBoundDate(AssembledCaseEvent event) {
-        Date upperBoundDate = event.getCaseComment() == null || event.getRemovedComment() != null ?
-                new Date(event.getLastUpdated()) :
-                event.getCaseComment().getCreated();
-        return addSeconds(upperBoundDate, 1);
     }
 
     // -----------------------
@@ -593,11 +548,6 @@ public class MailNotificationProcessor {
     private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {
         return notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList());
     }
-
-//    private Long getEmailLastId(Long caseId) {
-//        Result<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
-//        return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
-//    }
 
     private NotificationEntry fetchNotificationEntryFromPerson(Person person) {
         if (person == null || person.isFired() || person.isDeleted()) {

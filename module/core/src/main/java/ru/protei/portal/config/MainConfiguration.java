@@ -10,7 +10,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
@@ -25,6 +24,7 @@ import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
@@ -68,9 +68,12 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
+import ru.protei.winter.jdbc.config.JdbcConfig;
+import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.concurrent.*;
 
 
@@ -82,6 +85,8 @@ import java.util.concurrent.*;
 @PropertySource("classpath:spring.properties")
 public class MainConfiguration {
 
+    @Autowired
+    JdbcConfig jdbcConfig;
     @Inject
     private JdbcObjectMapperRegistrator objectMapperRegistrator;
 
@@ -100,49 +105,15 @@ public class MainConfiguration {
     }
 
     /**
-     * Запуск фоновых блокирующих задач( доступ к базе данных или IO )
+     * Запуск фоновых задач
      */
-    @Bean(name = BACKGROUND_BLOCKED_TASKS)
+    @Bean(name = BACKGROUND_TASKS)
     public Executor threadPoolTaskExecutor() {
+        JdbcConfigData.JdbcConnectionParam connectionParam = CollectionUtils.getFirst( jdbcConfig.data().getConnections() );
         int maxDbConnectionPoolSize = 50; //взять из winter.properties
-        int cps = maxDbConnectionPoolSize/8+1; //не занимать все соединения на фоновые задачи
-        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutorAdapter(cps);
-        te.setCorePoolSize(cps);// основное количество обрабатывающих потоков (Должен быть меньше максимально пула соединений к базе данных, например =1/8)
-        te.setMaxPoolSize(2*cps); //при превышении очереди добавить потоки, но не более MaxPoolSize (Должен быть больше CorePoolSize, например =2*CorePoolSize)
-        te.setQueueCapacity(2*2*cps+cps); // при превышении очереди и превышении MaxPoolSize задача отбрасывается! (Должен быть больше МaxPoolSize, например =2*МaxPoolSize+1)
-        te.setKeepAliveSeconds(2); //удалять поток если больше CorePoolSize и не переиспользован в течении этого времени (не сразу удалять поток, а погодя )
-        te.setAllowCoreThreadTimeOut(false); //удалять в том числе потоки из CorePoolSize согласно setKeepAliveSeconds  (экономит память снижая производительность, актуально при большом числе потоков)
-        te.setRejectedExecutionHandler( new ThreadPoolExecutor.CallerRunsPolicy() ); //при переполнении очереди и превышении MaxPoolSize выполнять задачу на вызывающем потоке
-        te.setThreadFactory( new ThreadFactory() {
-            @Override
-            public Thread newThread( Runnable r ) {
-                Thread thread = new Thread( r );
-                thread.setName("T-"+thread.getId()+" background-blocked-task"  );
-                return thread;
-            }
-        } );
-
-        return te;
-    }
-
-    class ThreadPoolTaskExecutorAdapter extends ThreadPoolTaskExecutor {
-        public ThreadPoolTaskExecutorAdapter( int corePollSize ) {
-            this.corePollSize = corePollSize;
-        }
-
-        @Override
-        public ThreadPoolExecutor getThreadPoolExecutor() throws IllegalStateException {
-            ThreadPoolExecutor threadPoolExecutor = super.getThreadPoolExecutor();
-            int queueSize = threadPoolExecutor.getQueue().size();
-            int activeCount = getActiveCount();
-            log.debug( "background-blocked-tasks-thread-pool: activeThreads={} queueSize={}", activeCount, queueSize );
-            if(activeCount > corePollSize ){
-                log.warn( "background-blocked-tasks-thread-pool(): Queue is overflowed! Try to increase QueueCapacity. activeThreads={} queueSize={}", activeCount, queueSize );
-            }
-            return threadPoolExecutor;
-        }
-
-        private int corePollSize;
+        if (connectionParam != null)
+            maxDbConnectionPoolSize = connectionParam.getMaxPoolSize();
+        return new BackgroundTaskThreadPoolTaskExecutor( maxDbConnectionPoolSize );
     }
 
     @Bean
@@ -861,7 +832,7 @@ public class MainConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
-    public static final String BACKGROUND_BLOCKED_TASKS = "backgroundDbTasks";
+    public static final String BACKGROUND_TASKS = "backgroundTasks";
 
     private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

@@ -14,8 +14,6 @@ import java.util.Collections;
  */
 public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-//    private CaseObject newState;
-//    private CaseObject oldState;
     private Long caseObjectId;
     private CaseComment newCaseComment;
     private CaseComment oldCaseComment;
@@ -37,18 +35,6 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
     public ServiceModule getServiceModule() {
         return serviceModule;
     }
-
-//    public CaseObject getCaseObject() {
-//        return newState != null ? newState : oldState;
-//    }
-//
-//    public CaseObject getNewState() {
-//        return newState;
-//    }
-//
-//    public CaseObject getOldState() {
-//        return oldState;
-//    }
 
     public Long getCaseObjectId(){
         return caseObjectId;
@@ -82,27 +68,6 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
     public Collection<Attachment> getRemovedAttachments() {
         return removedAttachments == null? Collections.emptyList(): removedAttachments;
     }
-
-
-//    public CaseCommentEvent withPerson(Person person) {
-//        this.person = person;
-//        return this;
-//    }
-
-//    public CaseCommentEvent withCaseObjectId( Long caseObjectId ) {
-//        this.caseObjectId = caseObjectId;
-//        return this;
-//    }
-
-//    public CaseCommentEvent withNewState(CaseObject newState) {
-//        this.newState = newState;
-//        return this;
-//    }
-//
-//    public CaseCommentEvent withOldState(CaseObject oldState) {
-//        this.oldState = oldState;
-//        return this;
-//    }
 
     public CaseCommentEvent withNewCaseComment( CaseComment caseComment) {
         this.newCaseComment = caseComment;

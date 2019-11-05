@@ -30,56 +30,8 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         this.newState = newState;
     }
 
-    public boolean isCreateEvent () {
-        return this.oldState == null;
-    }
-
-    public boolean isUpdateEvent () {
-        return this.oldState != null;
-    }
-
-    public boolean isCaseStateChanged () {
-        return isUpdateEvent() && newState.getState() != oldState.getState();
-    }
-
-    public boolean isCaseImportanceChanged () {
-        return isUpdateEvent() && !newState.getImpLevel().equals(oldState.getImpLevel());
-    }
-
-    public boolean isManagerChanged () {
-        return isUpdateEvent() && !HelperFunc.equals(newState.getManagerId(),oldState.getManagerId());
-    }
-
-    public boolean isProductChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getProductId(), oldState.getProductId() );
-    }
-
-    public boolean isInitiatorChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorId(), oldState.getInitiatorId() );
-    }
-
-    public boolean isInitiatorCompanyChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorCompanyId(), oldState.getInitiatorCompanyId() );
-    }
-
-    public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getInfo(), oldState.getInfo() );
-    }
-
-    public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getName(), oldState.getName() );
-    }
-
-    public boolean isPrivacyChanged(){
-        return isUpdateEvent() && newState.isPrivateCase() != oldState.isPrivateCase();
-    }
-
     public ServiceModule getServiceModule() {
         return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
-    }
-
-    public Date getEventDate () {
-        return new Date(getTimestamp());
     }
 
     public CaseObject getCaseObject () {
@@ -95,14 +47,6 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     }
 
     public CaseComment getCaseComment() { return null; }
-
-    public CaseComment getOldCaseComment() { return null; }
-
-    public CaseComment getRemovedCaseComment() { return null; }
-
-    public Collection<Attachment> getAddedAttachments() { return null; }
-
-    public Collection<Attachment> getRemovedAttachments() { return null; }
 
     public Person getPerson() {
         return person;
@@ -126,22 +70,6 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return mergeLinks;
     }
 
-
-
-//    public CaseObjectEvent withNewState(CaseObject newState) {
-//        this.newState = newState;
-//        return this;
-//    }
-//
-//    public CaseObjectEvent withOldState(CaseObject oldState) {
-//        this.oldState = oldState;
-//        return this;
-//    }
-
-//    public CaseObjectEvent withPerson(Person person) {
-//        this.person = person;
-//        return this;
-//    }
     public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         this.mergeLinks = mergeLinks;
         return this;
