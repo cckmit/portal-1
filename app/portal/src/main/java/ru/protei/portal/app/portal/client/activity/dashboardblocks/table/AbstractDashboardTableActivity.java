@@ -2,7 +2,7 @@ package ru.protei.portal.app.portal.client.activity.dashboardblocks.table;
 
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 
 import java.util.Set;
@@ -15,5 +15,5 @@ public interface AbstractDashboardTableActivity extends ClickColumn.Handler<Case
     void removeView(AbstractDashboardTableView view);
     void onFastOpenClicked(AbstractDashboardTableView view);
     void onSearchChanged(AbstractDashboardTableView view, String search);
-    void onInitiatorSelected(AbstractDashboardTableView view, PersonShortView person);
+    void onCompanySelected(AbstractDashboardTableView view, EntityOption company);
 }

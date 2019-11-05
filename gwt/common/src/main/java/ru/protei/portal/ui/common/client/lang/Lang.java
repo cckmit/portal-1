@@ -1067,6 +1067,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String withoutContact();
 
+    String anyCompany();
+
     String filters();
 
     String sendEmail();
