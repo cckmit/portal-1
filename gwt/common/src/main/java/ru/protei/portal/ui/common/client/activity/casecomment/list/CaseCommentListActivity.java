@@ -110,15 +110,6 @@ public abstract class CaseCommentListActivity
         );
     }
 
-//    @Event
-//    public void onValidateComment(CaseCommentEvents.ValidateComment event) {
-//        if (event.isNewCase()) {
-//            event.validate(true);
-//            return;
-//        }
-//        event.validate(isValid());
-//    }
-
     @Event
     public void onGetCurrentComment(CaseCommentEvents.GetCurrentComment event) {
         if (StringUtils.isEmpty(view.message().getValue())) {
@@ -127,19 +118,6 @@ public abstract class CaseCommentListActivity
             event.provide(buildCaseComment());
         }
     }
-
-//    @Event
-//    public void onSavingEvent(CaseCommentEvents.OnSavingEvent event) {
-//        lockSave();
-//    }
-//
-//    @Event
-//    public void onDoneEvent(CaseCommentEvents.OnDoneEvent event) {
-//        unlockSave();
-//        if (event.caseComment != null) {
-//            storage.remove(makeStorageKey(event.caseComment.getCaseId()));
-//        }
-//    }
 
 
     @Override

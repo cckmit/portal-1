@@ -56,8 +56,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-//        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
-
         Result<CaseCommentSaveOrUpdateResult> result = addCaseCommentWithoutEvent(token, caseType, comment);
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
@@ -65,12 +63,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-//            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent)
-//                    .withPerson(person)
-//                    .withOldState(caseObjectOld)
-//                    .withNewState(caseObjectNew)
                     .withNewCaseComment(resultData.getCaseComment())
                     .withAddedAttachments(resultData.getAddedAttachments())
                     );
@@ -143,8 +137,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Transactional
     public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
 
-//        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
-
         Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, person);
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
@@ -152,12 +144,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-//            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent)
-//                    .withPerson(person)
-//                    .withOldState(caseObjectOld)
-//                    .withNewState(caseObjectNew)
                     .withOldCaseComment(resultData.getOldCaseComment())
                     .withNewCaseComment(resultData.getCaseComment())
                     .withRemovedAttachments(resultData.getRemovedAttachments())
@@ -255,7 +243,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-//        CaseObject caseObjectOld = caseObjectDAO.get(removedComment.getCaseId());
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(
                 token,
                 caseType,
@@ -292,14 +279,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
-//        CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
         publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, caseId, isEagerEvent)
-//                .withOldState(caseObjectOld)
-//                .withNewState(caseObjectNew)
                 .withRemovedCaseComment(removedComment)
                 .withRemovedAttachments(removedAttachments)
-//                .withPerson(person)
                 );
 
         return ok( isRemoved);

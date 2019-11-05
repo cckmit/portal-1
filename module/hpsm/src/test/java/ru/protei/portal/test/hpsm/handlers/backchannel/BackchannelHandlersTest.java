@@ -42,7 +42,6 @@ public class BackchannelHandlersTest {
         object.setState(WORKAROUND);
         CaseComment comment = new CaseComment("qwe");
         CaseService caseService = ctx.getBean(CaseService.class);
-//        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseService, object, new Person());
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( caseService, ServiceModule.HPSM, new Person(), null, object );
         final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
         assembledCaseEvent.attachEvent( caseObjectEvent );

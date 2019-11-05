@@ -68,29 +68,6 @@ public class CaseCommentEvents {
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
 
-//    /**
-//     * Провалидировать комментарий
-//     */
-//    public static class ValidateComment {
-//
-//        public ValidateComment(boolean isNewCase, Consumer<Boolean> onValidate) {
-//            this.isNewCase = isNewCase;
-//            this.onValidate = onValidate;
-//        }
-//
-//        public void validate(boolean isValid) {
-//            onValidate.accept(isValid);
-//        }
-//
-//        public boolean isNewCase() {
-//            return isNewCase;
-//        }
-//
-//        private boolean isNewCase;
-//
-//        private Consumer<Boolean> onValidate;
-//    }
-
     public static class GetCurrentComment {
 
         public GetCurrentComment(Consumer<CaseComment> consumer) {
@@ -103,21 +80,5 @@ public class CaseCommentEvents {
 
         private Consumer<CaseComment> consumer;
     }
-//
-//    public static class OnSavingEvent {
-//        public OnSavingEvent() {}
-//    }
-//
-//    public static class OnDoneEvent {
-//
-//        public OnDoneEvent() {
-//            this.caseComment = null;
-//        }
-//
-//        public OnDoneEvent(CaseComment caseComment) {
-//            this.caseComment = caseComment;
-//        }
-//
-//        public CaseComment caseComment;
-//    }
+
 }

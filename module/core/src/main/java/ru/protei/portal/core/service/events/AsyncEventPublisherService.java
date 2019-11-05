@@ -29,7 +29,7 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
             @Override
             public Thread newThread( Runnable r ) {
                 Thread thread = new Thread( r );
-                thread.setName("T-"+thread.getId()+" event-publisher"  );
+                thread.setName( "T-" + thread.getId() + " event-publisher" );
                 return thread;
             }
         });
@@ -44,7 +44,11 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
             maxQueueSize = size;
         }
         executorService.submit( () -> {
-            logger.info( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
+            if(size > 50) {
+                logger.warn( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
+            }else{
+                logger.info( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
+            }
             eventPublisher.publishEvent( event );
         } );
     }

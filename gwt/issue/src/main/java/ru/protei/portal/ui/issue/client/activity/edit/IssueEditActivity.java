@@ -148,29 +148,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
                 }));
 
-
-//        fireEvent(new CaseCommentEvents.OnSavingEvent());
-
-//        fireEvent(new CaseCommentEvents.ValidateComment(isNew(issue), isValid -> {
-//            if (!isValid) {
-//                unlockSave();
-//                fireEvent(new CaseCommentEvents.OnDoneEvent());
-//                fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
-//                return;
-//            }
-//            fireEvent(new CaseCommentEvents.GetCurrentComment(comment -> issueService.saveIssue(issue, comment, new FluentCallback<CaseComment>()
-//                    .withResult(this::unlockSave)
-//                    .withError(throwable -> {
-//                        fireEvent(new CaseCommentEvents.OnDoneEvent());
-//                        defaultErrorHandler.accept(throwable);
-//                    })
-//                    .withSuccess(caseComment -> {
-//                        fireEvent(new CaseCommentEvents.OnDoneEvent(caseComment));
-//                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                        fireEvent(new IssueEvents.ChangeModel());
-//                        fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
-//                    }))));
-//        }));
     }
 
     @Override

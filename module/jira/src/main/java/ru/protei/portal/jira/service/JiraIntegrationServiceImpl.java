@@ -106,7 +106,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 return null;
             }
 
-//            AssembledCaseEvent caseEvent = new AssembledCaseEvent(ServiceModule.JIRA, this, caseObjectDAO.get(caseObj.getId()), caseObj, personMapper.toProteiPerson(event.getUser()));
             CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( event.getUser() ), caseObjectDAO.get( caseObj.getId() ), caseObj );
             AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
             caseEvent.attachEvent(caseObjectEvent);
@@ -148,7 +147,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
         final CaseObject caseObj = new CaseObject();
-//        final AssembledCaseEvent caseEvent = new AssembledCaseEvent(ServiceModule.JIRA, this, null, caseObj, personMapper.toProteiPerson(initiator));
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ), null, caseObj );
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
         caseEvent.attachEvent(caseObjectEvent);

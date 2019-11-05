@@ -94,11 +94,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public List< CaseObject > getCases(CaseQuery query) {
-//        SqlCondition condition = caseQueryCondition( query );
-//        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
-//                "id", "CASENO", "IMPORTANCE", "STATE", "CREATED", "INFO", "InitiatorName" ).getResults();
-
-        //
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);
     }
@@ -142,12 +137,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         String sql = "UPDATE " + getTableName() + " SET creator = initiator WHERE creator IS NULL AND EXT_APP = ?";
         return jdbcTemplate.update(sql, extAppType) > 0;
     }
-
-//    @Override
-//    public Long getEmailLastId(Long caseId) {
-//        String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
-//        return jdbcTemplate.queryForObject(sql, Long.class, caseId);
-//    }
 
     @Override
     public int removeByNameLike(String name) {

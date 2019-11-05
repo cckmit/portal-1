@@ -98,9 +98,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         final long priorityMapId = endpoint.getPriorityMapId();
         final long statusMapId = endpoint.getStatusMapId();
 
-//        final CaseObject oldObj = event.getInitState();
-//        final CaseObject newObj = event.getLastState();
-
         logger.debug("Trying to get redmine priority level id matching with portal: {}", newObj.getImpLevel());
         final RedminePriorityMapEntry redminePriorityMapEntry =
                 priorityMapEntryDAO.getByPortalPriorityId(newObj.getImpLevel(), priorityMapId);
@@ -138,8 +135,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     @Autowired
     private RedmineService service;
 
-//    @Autowired
-//    private CaseObjectDAO caseObjectDAO;
 
     @Autowired
     private RedminePriorityMapEntryDAO priorityMapEntryDAO;

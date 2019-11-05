@@ -39,10 +39,6 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person initiator );
 
-//    @Privileged({ En_Privilege.ISSUE_EDIT })
-//    @Auditable( En_AuditType.ISSUE_MODIFY )
-//    Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject p, CaseComment c, Person initiator );
-
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 
     Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
@@ -64,7 +60,6 @@ public interface CaseService {
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId);
 
-//    Result<Long> getEmailLastId( Long caseId);
     Result<Long> getAndIncrementEmailLastId( Long caseId );
 
     @Privileged({ En_Privilege.ISSUE_VIEW })

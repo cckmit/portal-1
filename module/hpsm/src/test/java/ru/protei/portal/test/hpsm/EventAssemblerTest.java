@@ -51,42 +51,24 @@ public class EventAssemblerTest {
         CaseService caseService = ctx.getBean(CaseService.class);
 
         //First portion
-        CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, object)
-//                .withNewState(object)
-//                .withPerson(person)
-                ;
+        CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, object);
         CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-//                .withNewState(object)
-//                .withOldState(object)
                 .withNewCaseComment(comment)
-//                .withPerson(person)
                 ;
         CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, object.getId(), object.getAttachments())
-//                .withCaseObject(object)
                 .withAddedAttachments(attachment)
                 .withRemovedAttachments(removedAttachment)
-//                .withPerson(person)
                 ;
 
         //Second portion
-        CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, newObject)
-//                .withNewState(newObject)
-//                .withPerson(person)
-                ;
+        CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, newObject);
         CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-//                .withNewState(object)
-//                .withOldState(object)
-                .withNewCaseComment(comment)
-//                .withPerson(person)
-                ;
+                .withNewCaseComment(comment);
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
         CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-//                .withNewState(object)
-//                .withOldState(object)
                 .withNewCaseComment(comment2)
-//                .withPerson(person)
                 ;
 
 
