@@ -29,11 +29,11 @@ public class SimpleSelectorPopup extends BasePopupView
     @Override
     protected void onLoad() {
 
-        Event.sinkEvents(childContainer.getElement(), Event.ONSCROLL);
-        childContainer.addHandler(new ScrollHandler() {
+//        Event.sinkEvents(root.getElement(), Event.ONSCROLL);
+        root.addDomHandler(new ScrollHandler() {
             @Override
             public void onScroll(ScrollEvent scrollEvent) {
-                Element e = childContainer.getElement();
+                Element e = root.getElement();
                 if (e.getScrollTop() + e.getClientHeight() >= e.getScrollHeight()) {
                     if (popupHandler != null) {
                         popupHandler.onEndOfScroll();

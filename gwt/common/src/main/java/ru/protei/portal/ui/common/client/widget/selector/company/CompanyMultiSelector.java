@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -40,43 +41,10 @@ public class CompanyMultiSelector
         } );
 
         setSearchEnabled( true );
-        setPageSize( 30 );
+        setPageSize( 10 );
     }
-
-    public void fillOptions( List< EntityOption > options ) {
-
-//        clearOptions();
-//        for ( EntityOption option : emptyIfNull( options) ) {
-//            addOption(  option.getDisplayText(), option );
-//        }
-    }
-
 
     private static final Logger log = Logger.getLogger( CompanyMultiSelector.class.getName() );
-//
-//    @Override
-//    public void refreshValue() {
-//        log.warning( "refreshValue(): Not implemented." );//TODO NotImplemented
-//
-//    }
-//
-//    @Override
-//    public void clearOptions() {
-//        log.warning( "clearOptions(): Not implemented." );//TODO NotImplemented
-//
-//    }
-//
-//    @Override
-//    public Collection<EntityOption> getValues() {
-//        return getValue();
-//    }
-//
-//    @Override
-//    public void setSelectorModel( SelectorModel<EntityOption> selectorModel ) {
-//        log.warning( "setSelectorModel(): Not implemented." );//TODO NotImplemented
-//
-//    }
-
 
     private List<En_CompanyCategory > categories = Arrays.asList(
             En_CompanyCategory.CUSTOMER,
