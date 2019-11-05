@@ -14,7 +14,7 @@ import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.config.MainConfiguration.BACKGROUND_BLOCKED_TASKS;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 /**
  * Реализация сервиса управления аудитом
@@ -48,7 +48,7 @@ public class AuditServiceImpl implements AuditService {
         return ok( list );
     }
 
-    @Async(BACKGROUND_BLOCKED_TASKS)
+    @Async(BACKGROUND_TASKS)
     @Override
     public Result< AuditObject > saveAuditObject( AuditObject auditObject ) {
 
