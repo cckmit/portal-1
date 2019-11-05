@@ -5,11 +5,11 @@ import ru.protei.portal.core.model.ent.Person;
 
 public interface EventAssemblerService {
 
-    void publishEvent(CaseObjectEvent event);
+    void onCaseObjectEvent( CaseObjectEvent event);
 
-    void publishEvent(CaseCommentEvent event);
+    void onCaseCommentEvent( CaseCommentEvent event);
 
-    void publishEvent(CaseAttachmentEvent event);
+    void onCaseAttachmentEvent( CaseAttachmentEvent event);
 
     AssembledCaseEvent getEvent(Person person, Long caseId);
 

@@ -35,6 +35,7 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
 
@@ -68,7 +69,7 @@ public class FileController {
     FileStorage fileStorage;
 
     @Autowired
-    EventAssemblerService publisherService;
+    EventPublisherService publisherService;
 
     @Autowired
     PortalConfig config;

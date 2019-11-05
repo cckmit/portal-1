@@ -74,9 +74,9 @@ public class EventAssemblerTest {
 
         //This is where the fun begin
         EventAssemblerService assemblerService = ctx.getBean(EventAssemblerService.class);
-        assemblerService.publishEvent(objectEvent);
-        assemblerService.publishEvent(commentEvent);
-        assemblerService.publishEvent(attachmentEvent);
+        assemblerService.onCaseObjectEvent(objectEvent);
+        assemblerService.onCaseCommentEvent(commentEvent);
+        assemblerService.onCaseAttachmentEvent(attachmentEvent);
 
         //Test on event assembling (comment + object)
         Assert.assertEquals(1, assemblerService.getEventsCount());
@@ -87,7 +87,7 @@ public class EventAssemblerTest {
         Assert.assertNotEquals(assemblerService.getEvent(person, object.getId()).getRemovedAttachments(), null);
 
         //Test on second case object for same person
-        assemblerService.publishEvent(secondEvent);
+        assemblerService.onCaseObjectEvent(secondEvent);
         Assert.assertEquals(assemblerService.getEvent(person, newObject.getId()).getLastState(), newObject);
 
         //Test on time delay publishing
@@ -95,13 +95,13 @@ public class EventAssemblerTest {
         Assert.assertEquals(0, assemblerService.getEventsCount());
 
         //Test on second case comment for same person
-        assemblerService.publishEvent(objectEvent);
-        assemblerService.publishEvent(commentEvent);
+        assemblerService.onCaseObjectEvent(objectEvent);
+        assemblerService.onCaseCommentEvent(commentEvent);
         Assert.assertEquals(1, assemblerService.getEventsCount());
         AssembledCaseEvent firstEvent = assemblerService.getEvent(person, object.getId());
-        assemblerService.publishEvent(secondCommentEvent);
+        assemblerService.onCaseCommentEvent(secondCommentEvent);
         Assert.assertEquals(assemblerService.getEvent(person, object.getId()), firstEvent);
-        assemblerService.publishEvent(thirdCommentEvent);
+        assemblerService.onCaseCommentEvent(thirdCommentEvent);
         Assert.assertNotEquals(assemblerService.getEvent(person, object.getId()), firstEvent);
     }
 

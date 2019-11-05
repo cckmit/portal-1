@@ -42,7 +42,7 @@ public class AssemblerServiceImpl implements AsseblerService {
             return ok( e );
         }
 
-       log.info( "assembleEvent(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
+       log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
 
         e.setLastCaseObject( caseObjectDAO.get( e.getCaseObjectId() ) );
 
@@ -61,7 +61,7 @@ public class AssemblerServiceImpl implements AsseblerService {
 
         e.setInitialCaseComments( caseCommentDAO.getCaseComments(new CaseCommentQuery( e.getCaseObjectId(), upperBoundDate )) );
 
-        log.info( "assembleEvent(): CaseObjectID={} Comments are successfully filled.", e.getCaseObjectId() );
+        log.info( "fillComments(): CaseObjectID={} Comments are successfully filled.", e.getCaseObjectId() );
         return ok( e );
     }
 

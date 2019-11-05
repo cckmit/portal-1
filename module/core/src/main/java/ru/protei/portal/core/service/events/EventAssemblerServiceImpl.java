@@ -26,25 +26,25 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     @Override
     @EventListener
-    public void publishEvent(CaseObjectEvent event) {
+    public void onCaseObjectEvent( CaseObjectEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "publishEvent(): CaseObjectEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "onCaseObjectEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
     }
 
     @Override
     @EventListener
-    public void publishEvent(CaseCommentEvent event) {
+    public void onCaseCommentEvent( CaseCommentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "publishEvent(): CaseCommentEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "onCaseCommentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
     }
 
     @Override
     @EventListener
-    public void publishEvent(CaseAttachmentEvent event) {
+    public void onCaseAttachmentEvent( CaseAttachmentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "publishEvent(): CaseAttachmentEvent: Assembled id={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "onCaseAttachmentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachEvent( event );
     }
 

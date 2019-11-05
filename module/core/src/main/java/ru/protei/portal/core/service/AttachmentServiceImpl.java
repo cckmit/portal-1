@@ -47,7 +47,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     FileStorage fileStorage;
 
     @Autowired
-    EventAssemblerService publisherService;
+    EventPublisherService publisherService;
 
     @Autowired
     AuthService authService;
