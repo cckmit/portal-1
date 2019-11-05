@@ -24,7 +24,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
     public void fillFromBegin(ItemsContainer<T> itemsContainer) {
         fromIndex = 0;
         if (hasNullValue) {
-            itemsContainer.fill(null, makeElementName(null));
+            itemsContainer.fill(null, makeElementHtml(null));
         }
         fromIndex = fillElements(itemsContainer, fromIndex, pageSize);
     }
@@ -61,6 +61,10 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         return selectorItemRenderer.getElementName(t);
     }
 
+    public String makeElementHtml(T t) {
+        return selectorItemRenderer.getElementHtml(t);
+    }
+
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
@@ -85,7 +89,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
                 continue;
             }
 
-            container.fill(element, elementName);
+            container.fill(element, makeElementHtml(element));
 
             i++;
         }

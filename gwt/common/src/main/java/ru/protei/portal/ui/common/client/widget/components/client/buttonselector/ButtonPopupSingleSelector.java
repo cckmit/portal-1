@@ -18,12 +18,13 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.bases
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.single.SingleValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.button.ValueButton;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
  * Cелектор c выпадающим списком, одиночный выбор
  */
 public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
-        implements HasValue<T>, HasEnabled, HasVisibility
+        implements HasValidable, HasValue<T>, HasEnabled, HasVisibility
 {
 
     public ButtonPopupSingleSelector() {
@@ -83,6 +84,19 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     public void setEnsureDebugId( String companySelector ) {
     }
 
+    @Override
+    public boolean isValid(){
+        return getValue() != null;
+    }
+
+    @Override
+    public void setValid(boolean isValid){
+        if(isValid)
+            button.removeStyleName(ERROR_STYLENAME);
+        else
+            button.addStyleName(ERROR_STYLENAME);
+    }
+
     public void setValidation(boolean isValidable){
         this.isValidable = isValidable;
     }
@@ -125,7 +139,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     HTMLPanel root;
     @UiField
     LabelElement label;
-
+    private static final String ERROR_STYLENAME ="has-error";
     private boolean isValidable;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupSingleSelector> {

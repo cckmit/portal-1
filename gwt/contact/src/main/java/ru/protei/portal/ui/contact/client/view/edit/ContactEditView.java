@@ -179,10 +179,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return sendWelcomeEmail;
     }
 
-//    @Override
-//    public HasValidable companyValidator(){
-//        return company;
-//    }
+    @Override
+    public HasValidable companyValidator(){
+        return company;
+    }
 
     @Override
     public HasValidable firstNameValidator(){

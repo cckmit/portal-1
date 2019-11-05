@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.bases
 import ru.protei.portal.ui.common.client.widget.components.client.selector.button.ValueButton;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 
-import java.util.List;
 import java.util.Set;
 
 /**

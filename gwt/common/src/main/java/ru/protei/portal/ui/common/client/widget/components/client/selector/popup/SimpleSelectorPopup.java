@@ -29,7 +29,6 @@ public class SimpleSelectorPopup extends BasePopupView
     @Override
     protected void onLoad() {
 
-//        Event.sinkEvents(root.getElement(), Event.ONSCROLL);
         root.addDomHandler(new ScrollHandler() {
             @Override
             public void onScroll(ScrollEvent scrollEvent) {

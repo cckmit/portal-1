@@ -400,7 +400,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         if (isNew(issue) && !isRestoredIssue) {
-            view.applyCompanyValueIfOneOption();
+//            view.applyCompanyValueIfOneOption();
             view.platformState().setEnabled( false );
         } else {
             Company initiatorCompany = issue.getInitiatorCompany();

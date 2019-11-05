@@ -27,7 +27,7 @@ public class CompanySelector
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 //
-        setSelectorItemRenderer( (SelectorItemRenderer<EntityOption>) value -> value == null ? defaultValue : value.getDisplayText() );
+        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getDisplayText() );
     }
 
 

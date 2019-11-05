@@ -1,14 +1,15 @@
 package ru.protei.portal.ui.common.client.widget.components.client.form;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -21,9 +22,7 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.bases
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.single.SingleValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
@@ -32,47 +31,31 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 public class FormSelector<T> extends AbstractPopupSelector<T>
         implements HasValidable, HasValue<T>, HasEnabled, HasVisibility {
 
-    public void FormSelector() {
+    @Inject
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
     }
 
     @Override
-    public void fillSelectorView(DisplayOption selectedValue) {
-        if ( selectedValue == null ) {
-            return;
-        }
-
-        String innerHtml = "";
-        if ( selectedValue.getIcon() != null ) {
-            innerHtml += "<i class='" + selectedValue.getIcon() + "'></i>";
-        }
-
-        innerHtml += selectedValue.getName() == null ? "" : selectedValue.getName();
-
-        text.setInnerHTML(innerHtml);
-
-        if (selectedValue.getExternalLink() != null) {
-            Element element = DOM.createAnchor();
-            element.addClassName("fa fa-share m-l-5");
-            element.setAttribute("href", selectedValue.getExternalLink());
-            element.setAttribute("target", "_blank");
-            addOnAnchorClickListener(element, popup);
-            text.appendChild(element);
-        }
-    }
-
-    @Override
-    public void onClick( ClickEvent event ) {
+    protected void onSelectionChanged() {
         formContainer.removeStyleName(FOCUS_STYLENAME);
-        super.onClick(event);
+        T value = selector.getValue();
+        showValue(value);
 
         if(isValidable)
             setValid( isValid() );
+
+        ValueChangeEvent.fire(this, value);
     }
 
     @Override
     public void setValue(T value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(T value, boolean fireEvents) {
         selector.setValue(value);
         showValue(value);
         if (fireEvents) {
@@ -80,6 +63,16 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         }
         if(isValidable)
             setValid( isValid() );
+    }
+
+    @Override
+    public T getValue() {
+        return selector.getValue();
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler( ValueChangeHandler<T> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
     @Override
@@ -126,6 +119,12 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         formContainer.removeStyleName(REQUIRED_STYLENAME);
     }
 
+    public void onShowPopupClicked( HTMLPanel button) {
+        getPopup().getChildContainer().clear();
+        selector.fillFromBegin(this);
+        getPopup().showNear(button);
+    }
+
     public void setEnsureDebugId(String debugId) {
         formContainer.ensureDebugId(debugId);
         text.setId(DebugIds.DEBUG_ID_PREFIX + debugId + "-text");
@@ -139,18 +138,20 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         formContainer.sinkEvents(Event.ONCLICK);
         formContainer.addHandler(event -> {
             formContainer.addStyleName(FOCUS_STYLENAME);
-            showPopup(formContainer);
+            onShowPopupClicked(formContainer);
         }, ClickEvent.getType());
 
-        popup.addCloseHandler(event -> formContainer.removeStyleName(FOCUS_STYLENAME));
     }
 
-    private native void addOnAnchorClickListener(Element element, SelectorPopup popup) /*-{
-        element.addEventListener("click", function (event) {
-            event.stopPropagation();
-            popup.@ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup::hide()();
-        })
-    }-*/;
+    @Override
+    public void onPopupUnload( SelectorPopup selectorPopup ) {
+        super.onPopupUnload( selectorPopup );
+        formContainer.removeStyleName(FOCUS_STYLENAME);
+    }
+
+    protected void showValue( T value) {
+        this.text.setInnerHTML(selector.makeElementHtml(value));
+    }
 
     protected SelectorItem makeSelectorItem() {
         return new PopupSelectorItem();

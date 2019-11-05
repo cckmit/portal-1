@@ -14,8 +14,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectionModel;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.multi.MultiSelectionModel;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.multi.MultiValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
@@ -23,7 +21,6 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Cелектор c выпадающим списком, множественный выбор
@@ -134,7 +131,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector
 
     private void addItem(T item) {
         SelectItemView itemView = itemViewProvider.get();
-        itemView.setValue( getSelector().makeElementName( item));
+        itemView.setValue( getSelector().makeElementHtml( item));
         itemView.setEnabled(isEnabled);
 
         itemViews.add( itemView );

@@ -110,8 +110,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void initiatorSelectorAllowAddNew(boolean b);
 
-    void applyCompanyValueIfOneOption();
-
     void setTagsAddButtonEnabled(boolean enabled);
 
     void setTagsEditButtonEnabled(boolean enabled);
