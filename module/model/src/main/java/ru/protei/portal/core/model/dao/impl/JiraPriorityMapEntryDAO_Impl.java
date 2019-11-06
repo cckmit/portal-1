@@ -26,16 +26,6 @@ public class JiraPriorityMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraPriority
 
     @Override
     public JiraPriorityMapEntry getByJiraPriorityName(long mapId, String jiraName) {
-        if (jiraName == null)
-            return null;
-
-        JiraPriorityMapEntry entry = getByCondition("map_id=? and jira_priority_name = ?", mapId, jiraName);
-
-        if (entry == null) {
-            String digits = JiraUtils.extractDigitsFromName(jiraName);
-            entry = digits != null ? getByCondition("map_id=? and jira_priority_name like ?", mapId, digits+"%") : null;
-        }
-
-        return entry;
+        return getByCondition("map_id=? and jira_priority_name = ?", mapId, jiraName);
     }
 }

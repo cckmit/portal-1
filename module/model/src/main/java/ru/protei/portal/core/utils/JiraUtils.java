@@ -2,9 +2,6 @@ package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class JiraUtils {
 
     public static JiraIssueData convert(ExternalCaseAppData appData) {
@@ -27,11 +24,6 @@ public class JiraUtils {
         return Long.parseLong(appData.getExtAppCaseId().substring(0, appData.getExtAppCaseId().indexOf('_')), 10);
     }
 
-    public static String extractDigitsFromName(String name) {
-        Matcher m = pattern.matcher(name);
-        return m.matches() ? m.group(1) : null;
-    }
-
     public static class JiraIssueData {
 
         public long endpointId;
@@ -44,6 +36,4 @@ public class JiraUtils {
             this.projectId = projectId;
         }
     }
-
-    private static Pattern pattern = Pattern.compile(".*([0-9]{1,2}).*");
 }

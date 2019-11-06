@@ -387,8 +387,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         boolean isSeverityShouldBeSaved = En_JiraSLAIssueType.byJira().contains(En_JiraSLAIssueType.forIssueType(issueType));
         if (isSeverityShouldBeSaved) {
             String severity = CommonUtils.getIssueSeverity(issue);
-            String severityDigits = JiraUtils.extractDigitsFromName(StringUtils.emptyIfNull(severity));
-            jiraExtAppData.setSlaSeverity(StringUtils.isEmpty(severityDigits) ? severity : severityDigits);
+            jiraExtAppData.setSlaSeverity(severity);
         }
         return jiraExtAppData;
     }
