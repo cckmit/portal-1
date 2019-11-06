@@ -28,7 +28,6 @@ import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractI
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class IssueReportCreateActivity implements Activity,
@@ -54,7 +53,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onShow(IssueReportEvents.Create event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        view.getIssueFilter().setTransliterationFunction(input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName()));
+        view.getIssueFilter().setTransliterationFunction(this::transliteration);
 
         isSaving = false;
         view.reset();
@@ -206,6 +205,10 @@ public abstract class IssueReportCreateActivity implements Activity,
             return Arrays.asList(En_ReportType.values());
         }
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
+    }
+
+    private String transliteration(String input) {
+        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

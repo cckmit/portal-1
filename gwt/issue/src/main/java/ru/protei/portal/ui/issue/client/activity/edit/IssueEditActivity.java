@@ -31,7 +31,6 @@ import ru.protei.portal.ui.common.shared.model.*;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -316,7 +315,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
-        view.setTransliterationFunction(transliterationFunction);
+        view.setTransliterationFunction(this::transliteration);
 
         view.attachmentsContainer().clear();
 
@@ -335,7 +334,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.numberContainerVisibility().setVisible(true);
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            view.setCreatedBy(lang.createBy(transliterationFunction.apply(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
+            view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
             fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                     .withCaseType(En_CaseType.CRM_SUPPORT)
                     .withCaseId(issue.getId())
@@ -353,7 +352,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                             .stream()
                             .map(notifier -> {
                                     PersonShortView personShortView = PersonShortView.fromPerson(notifier);
-                                    personShortView.setDisplayShortName(transliterationFunction.apply(personShortView.getDisplayShortName()));
+                                    personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
 
                                     return personShortView;
                                 })
@@ -426,7 +425,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initiatorCompany = policyService.getUserCompany();
             }
             EntityOption company = EntityOption.fromCompany(initiatorCompany);
-            company.setDisplayText(transliterationFunction.apply(company.getDisplayText()));
+            company.setDisplayText(transliteration(company.getDisplayText()));
             view.company().setValue(company, true);
         }
 
@@ -599,6 +598,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return saving;
     }
 
+    private String transliteration(String input) {
+        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -632,5 +635,4 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
     private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
-    private Function<String, String> transliterationFunction = input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
 }
