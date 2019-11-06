@@ -7,8 +7,7 @@ import java.util.stream.Collectors;
 
 public enum En_JiraSLAIssueType {
     SERVICE("Service", false, true),
-    ERROR("Error", true, false),
-    ;
+    ERROR("Error", true, false);
 
     private String issueType;
     private boolean byJira;

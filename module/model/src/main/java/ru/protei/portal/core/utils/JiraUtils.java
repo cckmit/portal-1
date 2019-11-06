@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.helper;
+package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 
