@@ -3,7 +3,7 @@
 
     <g:HTMLPanel ui:field="inputContainer">
         <g:Button ui:field="button" styleName="btn dashboard-btn">
-            <i class="fa fa-address-book"/>
+            <i class="fa fa-building"/>
         </g:Button>
     </g:HTMLPanel>
 
