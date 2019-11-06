@@ -108,6 +108,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue<EntityOption> company() { return company; }
 
     @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
+
+    @Override
     public HasValue<En_CustomerType> customerType() { return customerType; }
 
     @Override
@@ -127,7 +132,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasEnabled saveEnabled() {
         return saveButton;
     }
-
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {

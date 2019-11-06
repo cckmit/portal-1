@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -112,6 +113,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.direction().setValue(null);
         view.customerType().setValue(null);
         view.company().setValue(null);
+        view.companyEnabled().setEnabled(true);
         view.team().setValue(null);
         view.product().setValue(null);
         view.setHideNullValue(true);
@@ -136,6 +138,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
+        view.companyEnabled().setEnabled(project.getId() == null);
         view.description().setText(project.getDescription());
         view.product().setValue(project.getSingleProduct());
         view.customerType().setValue(project.getCustomerType());
@@ -187,6 +190,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
         if(view.company().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (project.getCustomer() != null && !Objects.equals(project.getCustomer().getId(), view.company().getValue().getId())) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectCannotChangeCompany(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 

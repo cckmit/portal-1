@@ -85,15 +85,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         });
     }
 
-    @Event
-    public void onConfirmClicked(ConfirmDialogEvents.Confirm event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-
-        savePlatform();
-    }
-
     @Override
     public void onSaveClicked() {
         if (!isValid()) {
@@ -115,7 +106,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                         if (caseNumbers.isEmpty()) {
                             savePlatform();
                         } else {
-                            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.connectedIssuesExistDialog(reduceCaseNumbers(caseNumbers))));
+                            fireEvent(new NotifyEvents.Show(lang.errSavePlatformConnectedIssuesExist(), NotifyEvents.NotifyType.ERROR));
                         }
                     })
             );

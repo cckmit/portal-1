@@ -1900,5 +1900,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String phoneOfficeTypeOffice();
 
-    String connectedIssuesExistDialog(String issueNumbers);
+    String errSavePlatformConnectedIssuesExist();
+
+    String errSaveProjectCannotChangeCompany();
 }
