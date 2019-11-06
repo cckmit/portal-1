@@ -395,6 +395,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
+    String dashboardSelectCompany();
+
     String issueCommentChangeStatusTo();
 
     String issueCommentChangeImportanceTo();
@@ -1066,8 +1068,6 @@ public interface Lang extends Messages, ContactItemLang {
     String id();
 
     String withoutContact();
-
-    String anyCompany();
 
     String filters();
 

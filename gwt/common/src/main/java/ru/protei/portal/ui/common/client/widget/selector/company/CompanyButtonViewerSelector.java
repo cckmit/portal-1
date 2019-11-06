@@ -29,7 +29,7 @@ public class CompanyButtonViewerSelector extends Selector<EntityOption> implemen
             if (value == null) {
                 return new DisplayOption(defaultValue);
             }
-            return new DisplayOption(value.getDisplayText(), "", "");
+            return new DisplayOption(value.getDisplayText());
         });
     }
 

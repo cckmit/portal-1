@@ -16,7 +16,7 @@
             </g:Button>
             <div class="rightSide">
                 <searchbtn:SearchButton ui:field="search" styleName="dashboard-search-btn" placeholder="{lang.issueNumber}"/>
-                <company:CompanyButtonViewerSelector ui:field="companiesBtn" styleName="dashboard-btn" defaultValue="{lang.anyCompany}"/>
+                <company:CompanyButtonViewerSelector ui:field="companiesBtn" styleName="dashboard-btn" defaultValue="{lang.dashboardSelectCompany}"/>
                 <importance:CustomImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-sm"/>
             </div>
         </div>
