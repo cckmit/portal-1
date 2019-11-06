@@ -6,7 +6,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -24,7 +23,6 @@ import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.factories.BackChannelHandlerFactory;
-import ru.protei.portal.hpsm.factories.BackChannelHandlerFactoryImpl;
 import ru.protei.portal.hpsm.handlers.BackChannelEventHandler;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
@@ -139,8 +137,8 @@ public class LiveSampleTest extends BaseServiceTest {
         final CaseService caseService = ctx.getBean(CaseService.class);
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( caseService, ServiceModule.HPSM, new Person(), null, object );
         final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
-        assembledCaseEvent.attachEvent( caseObjectEvent );
-        assembledCaseEvent.attachCaseComment(comment);
+        assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
+//        assembledCaseEvent.attachCaseComment(comment);
 
         final BackChannelEventHandler handler = backChannelFactory.createHandler(msg, assembledCaseEvent);
         handler.handle(assembledCaseEvent, msg, testServiceInstance);

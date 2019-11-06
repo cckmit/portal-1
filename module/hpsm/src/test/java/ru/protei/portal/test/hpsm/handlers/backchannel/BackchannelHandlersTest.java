@@ -44,8 +44,8 @@ public class BackchannelHandlersTest {
         CaseService caseService = ctx.getBean(CaseService.class);
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( caseService, ServiceModule.HPSM, new Person(), null, object );
         final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
-        assembledCaseEvent.attachEvent( caseObjectEvent );
-        assembledCaseEvent.attachCaseComment(comment);
+        assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
+//        assembledCaseEvent.attachCaseComment(comment);
         BackChannelEventHandler handler = factory.createHandler(message, assembledCaseEvent);
         ServiceInstance instance = ctx.getBean(ServiceInstanceImpl.class);
         try {

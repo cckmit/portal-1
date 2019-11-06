@@ -33,7 +33,6 @@ import ru.protei.portal.test.service.CaseCommentServiceTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,7 +70,7 @@ public class TemplateServiceImplTest {
         Object dummyCaseService = new Object();
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
-        assembledCaseEvent.attachEvent(caseObjectEvent);
+        assembledCaseEvent.attachCaseObjectEvent(caseObjectEvent);
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
@@ -100,7 +99,7 @@ public class TemplateServiceImplTest {
         Object dummyCaseService = new Object();
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseObjectEvent);
-        assembledCaseEvent.attachEvent(caseObjectEvent);
+        assembledCaseEvent.attachCaseObjectEvent(caseObjectEvent);
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 

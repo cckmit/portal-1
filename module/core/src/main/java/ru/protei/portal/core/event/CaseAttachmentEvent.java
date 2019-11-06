@@ -10,6 +10,9 @@ import ru.protei.portal.core.model.ent.Person;
 import java.util.Collection;
 import java.util.Collections;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
 public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private final ServiceModule serviceModule;
@@ -23,7 +26,9 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
             Object source, ServiceModule serviceModule,
             Person person,
             Long caseObjectId,
-            Collection<Attachment> oldAttachments
+            Collection<Attachment> oldAttachments,
+            Collection<Attachment> addedAttachments,
+            Collection<Attachment> removedAttachments
 
     ) {
         super(source);
@@ -31,6 +36,8 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
         this.person = person;
         this.caseObjectId = caseObjectId;
         this.oldAttachments = oldAttachments;
+        this.addedAttachments = addedAttachments;
+        this.removedAttachments = removedAttachments;
     }
 
     public Collection<Attachment> getAddedAttachments() {
@@ -39,6 +46,10 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
 
     public Collection<Attachment> getRemovedAttachments() {
         return removedAttachments == null? Collections.emptyList(): removedAttachments;
+    }
+
+    public Collection<Attachment> getExistingAttachments() {
+        return oldAttachments;
     }
 
     public Person getPerson() {
@@ -61,14 +72,15 @@ public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCas
 
     public CaseComment getCaseComment() { return null; }
 
-    public CaseAttachmentEvent withAddedAttachments(Collection<Attachment> addedAttachments) {
-        this.addedAttachments = addedAttachments;
-        return this;
+    @Override
+    public String toString() {
+        return "CaseAttachmentEvent{" +
+                "caseObjectId=" + caseObjectId +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", person=" + (person==null?null:person.getId()) +
+                ", oldAttachments=" + toList(oldAttachments, Attachment::getId) +
+                ", addedAttachments=" + toList(addedAttachments, Attachment::getId) +
+                ", removedAttachments=" + toList(removedAttachments, Attachment::getId )+
+                '}';
     }
-
-    public CaseAttachmentEvent withRemovedAttachments(Collection<Attachment> removedAttachments) {
-        this.removedAttachments = removedAttachments;
-        return this;
-    }
-
 }

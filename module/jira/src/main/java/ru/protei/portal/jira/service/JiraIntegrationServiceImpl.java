@@ -108,7 +108,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( event.getUser() ), caseObjectDAO.get( caseObj.getId() ), caseObj );
             AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
-            caseEvent.attachEvent(caseObjectEvent);
+            caseEvent.attachCaseObjectEvent(caseObjectEvent);
 
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
@@ -149,7 +149,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         final CaseObject caseObj = new CaseObject();
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ), null, caseObj );
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
-        caseEvent.attachEvent(caseObjectEvent);
+        caseEvent.attachCaseObjectEvent(caseObjectEvent);
 
         caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
         caseObj.setCreated(issue.getCreationDate().toDate());

@@ -118,4 +118,17 @@ public class Attachment implements Serializable {
     public boolean equals(Object obj) {
         return obj instanceof Attachment && Objects.equals(id, ((Attachment) obj).getId());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( id );
+    }
+
+    @Override
+    public String toString() {
+        return "Attachment{" +
+                "id=" + id +
+                " fileName=" + fileName +
+                '}';
+    }
 }

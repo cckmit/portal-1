@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
 /**
  * Created by michael on 04.05.17.
  */
@@ -70,11 +72,39 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return mergeLinks;
     }
 
+    @Deprecated
     public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         this.mergeLinks = mergeLinks;
         return this;
     }
 
 
+    @Override
+    public String toString() {
+        return "CaseObjectEvent{" +
+                "caseObjectId=" + getCaseObjectId() +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", oldState=" + asString( oldState ) +
+                ", newState=" + asString( newState ) +
+                ", person=" + (person == null ? null : person.getId()) +
+                asString( mergeLinks ) +
+                '}';
+    }
 
+    private String asString( CaseObject caseObject ) {
+        if(caseObject==null) return null;
+        return "CaseObject{" +
+                "id=" + caseObject.getId() +
+                ", caseNumber=" + caseObject.getCaseNumber() +
+                ", typeId=" + caseObject.getTypeId() +
+                ", extId='" + caseObject.getExtId() + '\'' +
+                '}';
+    }
+
+    private String asString( DiffCollectionResult<CaseLink> mergeLinks ) {
+        if(mergeLinks==null) return ", links=[no changes]";
+        return  ", existLinks=" + toList(mergeLinks.getSameEntries(), CaseLink::getId ) +
+                ", addedLinks=" + toList(mergeLinks.getAddedEntries(), CaseLink::getId ) +
+                ", removedLinks=" + toList(mergeLinks.getRemovedEntries(), CaseLink::getId );
+    }
 }

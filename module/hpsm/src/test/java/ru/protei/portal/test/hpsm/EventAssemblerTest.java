@@ -52,24 +52,17 @@ public class EventAssemblerTest {
 
         //First portion
         CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, object);
-        CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-                .withNewCaseComment(comment)
-                ;
-        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, object.getId(), object.getAttachments())
-                .withAddedAttachments(attachment)
-                .withRemovedAttachments(removedAttachment)
-                ;
+        CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false, null, comment, null);
+        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, object.getId(), object.getAttachments(),
+                attachment, removedAttachment);
 
         //Second portion
         CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, ServiceModule.GENERAL, person, null, newObject);
-        CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-                .withNewCaseComment(comment);
+        CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false, null, comment, null);
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
-        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false)
-                .withNewCaseComment(comment2)
-                ;
+        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, ServiceModule.GENERAL, person, object.getId(), false, null, comment, null);
 
 
         //This is where the fun begin

@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.ent.CaseComment;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
@@ -126,7 +128,8 @@ public class StringUtils {
         return null == string ? null : string.trim();
     }
 
-    public static int length(String string) {
+    public static int length(CharSequence string) {
         return null == string ? 0 : string.length();
     }
+
 }
