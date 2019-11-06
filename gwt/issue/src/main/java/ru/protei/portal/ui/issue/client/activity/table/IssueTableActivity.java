@@ -46,7 +46,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Активность таблицы обращений
@@ -67,7 +66,7 @@ public abstract class IssueTableActivity
         filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
-        filterParamView.setTransliterationFunction(input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName()));
+        filterParamView.setTransliterationFunction(input -> TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName()));
         filterParamView.setInitiatorCompaniesSupplier(() -> filterParamView.companies().getValue());
 
         pagerView.setActivity( this );
@@ -112,7 +111,7 @@ public abstract class IssueTableActivity
 
         clearScroll(event);
 
-        view.setTransliterationFunction(input -> TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName()));
+        view.setTransliterationFunction(input -> TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName()));
 
         loadTable();
     }

@@ -39,7 +39,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 
-<#--  TranslitUtils.toLatin is ONLY for company names and person (creator, manager etc.) names  -->
+<#--  TranslitUtils.transliterate is ONLY for company names and person (creator, manager etc.) names  -->
 
 <html>
 <head>
@@ -64,7 +64,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         <#if createdByMe == true>
             ${_yourself}
         <#else>
-            ${(TranslitUtils.toLatin(case.creator.displayShortName, lang))!'?'}
+            ${(TranslitUtils.transliterate(case.creator.displayShortName, lang))!'?'}
         </#if>
         <span style="padding-left: 4px">
             <#if case.created??>
@@ -122,13 +122,13 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         <#if customerChanged>
                             <@changeTo
                                 old="${(oldInitiator.displayName)???then(
-                                    TranslitUtils.toLatin(oldInitiator.displayName, lang) +' ('+ (TranslitUtils.toLatin(oldInitiatorCompany.cname, lang)!'?') +')',
-                                    (TranslitUtils.toLatin(oldInitiatorCompany.cname))!'?'
+                                    TranslitUtils.transliterate(oldInitiator.displayName, lang) +' ('+ (TranslitUtils.transliterate(oldInitiatorCompany.cname, lang)!'?') +')',
+                                    (TranslitUtils.transliterate(oldInitiatorCompany.cname))!'?'
                                 )}"
-                                new="${TranslitUtils.toLatin(newCustomer, lang)}"
+                                new="${TranslitUtils.transliterate(newCustomer, lang)}"
                             />
                         <#else>
-                            ${TranslitUtils.toLatin(newCustomer, lang)}
+                            ${TranslitUtils.transliterate(newCustomer, lang)}
                         </#if>
                     </td>
                 </tr>
@@ -151,12 +151,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if managerChanged>
                                 <@changeTo
-                                    old="${(oldManager??)?then(((TranslitUtils.toLatin(oldManager.displayName, lang))!'') +' ('+ TranslitUtils.toLatin(oldManager.company.cname, lang) +')', '?')}"
-                                    new="${(manager??)?then(((TranslitUtils.toLatin(manager.displayName, lang))!'') +' ('+ TranslitUtils.toLatin(manager.company.cname, lang) +')', '?')}"
+                                    old="${(oldManager??)?then(((TranslitUtils.transliterate(oldManager.displayName, lang))!'') +' ('+ TranslitUtils.transliterate(oldManager.company.cname, lang) +')', '?')}"
+                                    new="${(manager??)?then(((TranslitUtils.transliterate(manager.displayName, lang))!'') +' ('+ TranslitUtils.transliterate(manager.company.cname, lang) +')', '?')}"
                                 />
                         <#else>
                             <#if manager??>
-                                ${TranslitUtils.toLatin(manager.displayName, lang)!''} (${TranslitUtils.toLatin(manager.company.cname, lang)})
+                                ${TranslitUtils.transliterate(manager.displayName, lang)!''} (${TranslitUtils.transliterate(manager.company.cname, lang)})
                             <#else>
                                 ?
                             </#if>
@@ -308,7 +308,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </#if>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
                         <#if caseComment.author??>
-                            ${TranslitUtils.toLatin(caseComment.author.displayName, lang)!''}
+                            ${TranslitUtils.transliterate(caseComment.author.displayName, lang)!''}
                         </#if>
                     </span>
                     <#if caseComment.caseState??>
@@ -316,7 +316,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#elseif caseComment.caseImportance??>
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
-                        ${_changedManagerTo} ${TranslitUtils.toLatin(caseComment.caseManager, lang)}
+                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManager, lang)}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
@@ -331,7 +331,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     </div>
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
-            ${_you} (<b>${TranslitUtils.toLatin(userName, lang)!'?'}</b>) ${_notification_footer}
+            ${_you} (<b>${TranslitUtils.transliterate(userName, lang)!'?'}</b>) ${_notification_footer}
             <#list recipients as recipient>
                 <#if recipient??>
                     ${recipient}<#sep>, </#sep>

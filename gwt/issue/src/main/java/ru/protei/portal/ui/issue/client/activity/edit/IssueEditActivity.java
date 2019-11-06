@@ -599,7 +599,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private String transliteration(String input) {
-        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

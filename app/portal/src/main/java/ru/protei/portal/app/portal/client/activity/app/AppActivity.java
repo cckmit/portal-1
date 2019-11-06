@@ -133,7 +133,7 @@ public abstract class AppActivity
     }
 
     private String transliteration(String input) {
-        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

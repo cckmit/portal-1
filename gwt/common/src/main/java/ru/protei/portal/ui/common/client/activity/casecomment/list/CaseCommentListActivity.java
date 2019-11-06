@@ -658,7 +658,7 @@ public abstract class CaseCommentListActivity
     }
 
     private String transliteration(String input) {
-        return TransliterationUtils.toLatin(input, LocaleInfo.getCurrentLocale().getLocaleName());
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private final Timer changedPreviewTimer = new Timer() {
