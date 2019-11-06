@@ -29,6 +29,8 @@ public class JiraSLAMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraSLAMapEntry> 
         if (StringUtils.isNotEmpty(severity)) {
             condition.append(" and severity=?");
             args.add(severity);
+        } else {
+            condition.append(" and severity is null");
         }
         return getByCondition(condition.toString(), args);
     }
