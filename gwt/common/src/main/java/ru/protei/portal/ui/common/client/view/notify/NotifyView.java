@@ -46,13 +46,9 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
     public void setType(NotifyEvents.NotifyType type) {
         iconContainer.clear();
         switch ( type ) {
-            case INFO:
-                return;
-            case ERROR:
-                iconContainer.add( iconError );
-                return;
-            case SUCCESS:
-                iconContainer.add( iconSuccess );
+            case INFO: iconContainer.add(iconInfo); break;
+            case ERROR: iconContainer.add(iconError); break;
+            case SUCCESS: iconContainer.add(iconSuccess); break;
         }
     }
 
@@ -79,6 +75,8 @@ public class NotifyView extends Composite implements AbstractNotifyView, ClickHa
     HTMLPanel notify;
     @UiField
     SpanElement title;
+    @UiField
+    HTMLPanel iconInfo;
     @UiField
     HTMLPanel iconSuccess;
     @UiField
