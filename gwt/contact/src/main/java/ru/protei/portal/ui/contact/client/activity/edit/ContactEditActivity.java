@@ -153,6 +153,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Override
     public void onChangeContactLogin() {
         view.sendWelcomeEmailVisibility().setVisible(true);
+        view.sendEmailWarningVisibility().setVisible(view.sendWelcomeEmail().getValue() && HelperFunc.isEmpty(view.workEmail().getText()) && HelperFunc.isEmpty(view.personalEmail().getText()));
 
         String value = view.login().getText().trim();
 
@@ -301,6 +302,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
         view.sendWelcomeEmailVisibility().setVisible(false);
         view.sendWelcomeEmail().setValue(true);
+        view.sendEmailWarningVisibility().setVisible(false);
 
         view.showInfo(userLogin.getId() != null);
     }

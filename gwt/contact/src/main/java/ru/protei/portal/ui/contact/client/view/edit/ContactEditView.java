@@ -232,6 +232,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return fireBtn;
     }
 
+    @Override
+    public HasVisibility sendEmailWarningVisibility() {
+        return sendWelcomeEmailWarning;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -365,6 +370,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     CheckBox sendWelcomeEmail;
+    @UiField
+    Label sendWelcomeEmailWarning;
 
     //@UiField
     //HTMLPanel contactDeleted;

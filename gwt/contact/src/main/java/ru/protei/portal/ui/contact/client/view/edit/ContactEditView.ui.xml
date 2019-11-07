@@ -243,7 +243,8 @@
 
         <div class="card-footer">
             <div class="pull-right">
-                <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox" text="{lang.sendEmail}"/>
+                <g:Label ui:field="sendWelcomeEmailWarning" text="{lang.sendEmailWarning}" visible="false" styleName="text-danger inline p-r-5"/>
+                <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox p-r-5" text="{lang.sendEmail}"/>
                 <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>

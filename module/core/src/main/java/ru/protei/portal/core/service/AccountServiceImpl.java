@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -138,10 +139,11 @@ public class AccountServiceImpl implements AccountService {
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
                 String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
-                NotificationEntry notificationEntry = NotificationEntry.email(address, person.getLocale());
-                UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry);
-
-                publisherService.publishEvent(userLoginUpdateEvent);
+                if (StringUtils.isNotBlank(address)) {
+                    NotificationEntry notificationEntry = NotificationEntry.email( address, person.getLocale() );
+                    UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent( userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry );
+                    publisherService.publishEvent( userLoginUpdateEvent );
+                }
             }
 
             return ok( userLogin );

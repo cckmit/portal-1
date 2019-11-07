@@ -84,4 +84,6 @@ public interface AbstractContactEditView extends IsWidget {
     HasVisibility deletedMsgVisibility();
 
     HasVisibility sendWelcomeEmailVisibility();
+
+    HasVisibility sendEmailWarningVisibility();
 }
