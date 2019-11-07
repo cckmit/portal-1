@@ -2644,17 +2644,17 @@ a {
 
 .dn {
 
-}
-
-.dn {
   .dn-container {
     width: 100%;
     display: flex;
     display: -webkit-flex;
     display: -ms-flexbox;
+    overflow-y: hidden;
+    overflow-x: auto;
 
     .dn-separator {
-      margin: 0 7px;
+      margin: 0 0.5em;
+      line-height: 2em;
     }
 
     .dn-classifier-code {
@@ -2666,7 +2666,7 @@ a {
     .dn-register-number, .dn-register-number-modifier {
       flex-shrink: 3;
       -webkit-flex-shrink: 3;
-      min-width: 50px;
+      min-width: 60px;
     }
 
     .dn-org-code {
@@ -2679,6 +2679,7 @@ a {
       min-width: 30px;
       border: 0;
       height: 28px;
+      margin: 3px 0;
 
       &.btn-down:after,
       &.btn-up-hovering:after {
@@ -2985,12 +2986,6 @@ ul.privileges {
   position: absolute;
   opacity: 1;
   transition: 0.2s;
-}
-
-.dn-add-button {
-  float: right;
-  padding-bottom: 12px;
-  padding-right: 14px;
 }
 
 .caret-icon:after {
