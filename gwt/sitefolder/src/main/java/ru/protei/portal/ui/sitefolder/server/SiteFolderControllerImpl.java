@@ -118,20 +118,6 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public List<Long> getConnectedIssues(Long id) throws RequestFailedException {
-        log.info("getApplication(id={})", id);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Result<List<Long>> response = siteFolderService.getConnectedIssues(descriptor.makeAuthToken(), id);
-        log.info("getApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-
-        return response.getData();
-    }
-
-    @Override
     public Platform savePlatform(Platform platform) throws RequestFailedException {
 
         log.info("savePlatform(): platform={}", platform);

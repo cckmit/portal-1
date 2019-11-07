@@ -35,8 +35,6 @@ public interface SiteFolderControllerAsync {
 
     void getApplication(long id, AsyncCallback<Application> async);
 
-    void getConnectedIssues(Long id, AsyncCallback<List<Long>> async);
-
     void savePlatform(Platform platform, AsyncCallback<Platform> async);
 
     void saveServer(Server server, Long serverIdOfAppsToBeCloned, AsyncCallback<Server> async);

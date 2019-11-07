@@ -265,48 +265,17 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public Result<List<Long>> getConnectedIssues(AuthToken token, Long id) {
-        if (id == null) {
+    @Transactional
+    public Result<Platform> updatePlatform(AuthToken token, Platform platform, Person person) {
+        Platform platformFromDb = platformDAO.get(platform.getId());
+
+        if (platformFromDb == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        List<Long> result = caseObjectDAO.getCaseNumbersByPlatformId(id);
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
-    }
-
-    @Override
-    @Transactional
-    public Result<Platform> updatePlatform(AuthToken token, Platform platform, Person person) {
-
-        if (!Objects.equals(platformDAO.get(platform.getId()).getCompanyId(), platform.getCompanyId()) &&
-            !caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()).isEmpty()) {
-
-            CaseQuery caseQuery = new CaseQuery();
-            caseQuery.setPlatformId(platform.getId());
-            List<CaseObject> oldStates = caseObjectDAO.getCases(caseQuery);
-            List<CaseObject> newStates = caseObjectDAO.getCases(caseQuery);
-            newStates.forEach(caseObject -> {
-                caseObject.setPlatformId(null);
-                caseObject.setPlatformName(null);
-            });
-
-            caseObjectDAO.removeConnectionsWithPlatform(platform.getId());
-
-            for (int i = 0; i < oldStates.size(); i++) {
-                jdbcManyRelationsHelper.fill(oldStates.get(i), "attachments");
-                jdbcManyRelationsHelper.fill(newStates.get(i), "attachments");
-
-                publisherService.publishEvent(CaseObjectEvent.create(this)
-                        .withNewState(newStates.get(i))
-                        .withOldState(oldStates.get(i))
-                        .withPerson(person)
-                );
-            }
+        if (!Objects.equals(platformFromDb.getCompanyId(), platform.getCompanyId()) &&
+            CollectionUtils.isNotEmpty(caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()))) {
+            return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PLATFORM_COMPANY);
         }
 
         boolean status = platformDAO.merge(platform);

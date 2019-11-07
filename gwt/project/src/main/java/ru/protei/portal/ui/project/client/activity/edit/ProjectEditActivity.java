@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -69,7 +68,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             @Override
             public void onError( Throwable throwable ) {
                 view.saveEnabled().setEnabled(true);
-                fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
@@ -190,11 +188,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
         if(view.company().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        if (project.getCustomer() != null && !Objects.equals(project.getCustomer().getId(), view.company().getValue().getId())) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveProjectCannotChangeCompany(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
