@@ -164,6 +164,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.setApprovedMode(approveMode);
         view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
+        view.resetFilename();
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();
         view.setDocumentUploaderLabel(isNew ? lang.uploadDocuments() : lang.reUploadDocuments());
