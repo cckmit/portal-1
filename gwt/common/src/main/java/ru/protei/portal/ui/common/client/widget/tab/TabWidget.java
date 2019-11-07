@@ -147,12 +147,20 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         popup.showNear(navDropdownTabsSelected);
     }
 
+    @UiHandler("collapse")
+    public void onCollapseClicked(ClickEvent event) {
+        event.preventDefault();
+        tabContent.setVisible(!tabContent.isVisible());
+    }
+
     @UiField
     HTMLPanel navTabs;
     @UiField
     InlineLabel navDropdownTabsSelected;
     @UiField
     HTMLPanel tabContent;
+    @UiField
+    Anchor collapse;
 
     private SelectorPopup popup = new SelectorPopup();
     private String currentTabName = null;
