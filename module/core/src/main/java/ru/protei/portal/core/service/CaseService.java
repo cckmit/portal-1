@@ -67,4 +67,5 @@ public interface CaseService {
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
+    Result<Long> getCaseNumberById( AuthToken token, Long caseId );
 }

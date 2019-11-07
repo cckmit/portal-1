@@ -113,6 +113,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     private PortalConfig config;
     @Autowired
     AsseblerService assemblerService;
+
     private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 }

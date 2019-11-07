@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -24,9 +25,12 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
@@ -78,13 +82,30 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
+    public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks ) {
+        return mergeLinks( token, caseId, caseLinks ).ifOk( mergedLinks -> {
+            if (mergedLinks.hasDifferences()) {
+                caseService.getCaseNumberById( token, caseId ).ifOk( caseNumber ->
+                        youtrackService.mergeYouTrackLinks( caseNumber,
+                                selectYouTrackLinkRemoteIds( mergedLinks.getAddedEntries() ),
+                                selectYouTrackLinkRemoteIds( mergedLinks.getRemovedEntries() )
+                        )
+                );
+            }
+            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
+        } ).flatMap( mergedLinks -> {
+            if (!mergedLinks.hasDifferences()) return ok( listOf( caseLinks ) );
+            return getLinks( token, caseId ); //TODO оптимизировать из mergedLinks (same + added)
+        } );
+    }
+
+    private Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Collection<CaseLink> caseLinks) {
         if (caseLinks == null) {
             return ok();
         }
 
         caseLinks.forEach(link -> link.setCaseId(caseId));
-        if ( caseId == null || caseNumber == null || !checkLinksIsValid(caseLinks)) {
+        if ( caseId == null || !checkLinksIsValid(caseLinks)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -98,10 +119,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
         List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseId.toString()));
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
-        DiffCollectionResult<CaseLink> caseLinksDiffResult = diffCollection(oldCaseLinks, caseLinks);
-        if ( isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
+        DiffCollectionResult<CaseLink> mergeLinks = diffCollection(oldCaseLinks, caseLinks);
+        if ( isNotEmpty(mergeLinks.getRemovedEntries())) {
             Set<Long> toRemoveIds = new HashSet<>();
-            caseLinksDiffResult.getRemovedEntries().forEach( link -> {
+            mergeLinks.getRemovedEntries().forEach( link -> {
                 toRemoveIds.add(link.getId());
                 if ( isNotCrmLink(link) ) {
                     return;
@@ -116,9 +137,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.removeByKeys(toRemoveIds);
         }
 
-        if ( isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
+        if ( isNotEmpty(mergeLinks.getAddedEntries())) {
             List<CaseLink> toAddLinks = new ArrayList<>();
-            emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
+            emptyIfNull(mergeLinks.getAddedEntries()).forEach( link -> {
                 if ( isNotCrmLink(link) ) {
                     return;
                 }
@@ -128,24 +149,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 }
                 toAddLinks.add(createCrossCRMLink(cId, caseId));
             });
-            toAddLinks.addAll(caseLinksDiffResult.getAddedEntries());
+            toAddLinks.addAll(mergeLinks.getAddedEntries());
             caseLinkDAO.persistBatch(toAddLinks);
         }
 
-        return ok(caseLinksDiffResult);
+        return ok(mergeLinks);
     }
 
     @Override
     public Result<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
         return youtrackService.getIssueInfo( ytId );
-    }
-
-    @Override
-    public Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setCaseId( caseId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
     }
 
     @Override
@@ -191,9 +204,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
     }
 
-    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseId, String youtrackId ) {
         CaseLink newLink = new CaseLink();
-        newLink.setCaseId( caseNumber );
+        newLink.setCaseId( caseId );
         newLink.setType( En_CaseLink.YT );
         newLink.setRemoteId( youtrackId );
         Long id = caseLinkDAO.persist( newLink );
@@ -244,7 +257,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return !En_CaseLink.CRM.equals(link.getType());
     }
 
-    private boolean checkLinksIsValid(List<CaseLink> caseLinks) {
+    private boolean checkLinksIsValid(Collection<CaseLink> caseLinks) {
         for (CaseLink link : caseLinks) {
             if ( link.getCaseId() == null || link.getType() == null || StringUtils.isBlank(link.getRemoteId())) {
                 return false;
@@ -280,5 +293,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set<UserRole> roles = descriptor.getLogin().getRoles();
         return !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+    }
+
+    private List<String> selectYouTrackLinkRemoteIds( Collection<CaseLink> links ) {
+        return stream(links).filter(  caseLink -> YT.equals( caseLink.getType() )).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
     }
 }

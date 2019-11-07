@@ -157,6 +157,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         }
 
         toggleLinksVisibility();
+
+        ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(links, null));
     }
 
     private void removeCaseTag(CaseTag item) {

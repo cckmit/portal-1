@@ -11,7 +11,9 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис управления контактами
@@ -34,4 +36,6 @@ public interface IssueController extends RemoteService {
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
     List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException;
+
+    List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links )  throws RequestFailedException;
 }

@@ -10,8 +10,8 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -19,7 +19,9 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
@@ -112,6 +114,12 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
+    public List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links ) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData( linkService.updateLinks( authToken, caseId, getCurrentPerson(), links ) );
+    }
+
+    @Override
     public List<En_CaseState> getStateList() throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -146,6 +154,9 @@ public class IssueControllerImpl implements IssueController {
 
     @Autowired
     CaseService caseService;
+
+    @Autowired
+    CaseLinkService linkService;
 
     @Autowired
     SessionService sessionService;

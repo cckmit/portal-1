@@ -26,7 +26,7 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     Long getCaseIdByNumber( long number );
 
-    Long getCaseNo( long caseId);
+    Long getCaseNumberById( long caseId);
     CaseObject getCaseByCaseno(long caseno);
 
     CaseObject getByExternalAppCaseId (String externalApplicationCaseId);

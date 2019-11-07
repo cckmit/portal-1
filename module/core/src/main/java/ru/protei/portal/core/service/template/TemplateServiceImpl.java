@@ -112,9 +112,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("addedLinks", mergeLinks == null ? null : mergeLinks.getAddedEntries());
         templateModel.put("removedLinks", mergeLinks == null ? null : mergeLinks.getRemovedEntries());
 
-//        Collection<Attachment> existingAttachments = new ArrayList<>(event.getExistingAttachments());
-//        existingAttachments.removeIf(a -> event.getRemovedAttachments().contains(a) || event.getAddedAttachments().contains(a));
-
         templateModel.putAll(
                 buildAttachmentModelKeys(
                         event.getExistingAttachments(),

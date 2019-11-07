@@ -107,6 +107,10 @@ public class DiffCollectionResult<T> implements Serializable {
         sameEntries.addAll(entries);
     }
 
+    public boolean hasDifferences() {
+        return !allDiffEntries.isEmpty();
+    }
+
     /**
      * удаленные узлы
      */

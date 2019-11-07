@@ -185,10 +185,10 @@ public class ServiceTestsConfiguration {
         return new EventAssemblerServiceImpl();
     }
 
-//    @Bean
-//    public EventExpirationControl getEventExpirationControl() {
-//        return new EventExpirationControl();
-//    }
+    @Bean
+    public AsseblerService getAssemblerService() {
+        return new AssemblerServiceImpl();
+    }
 
     @Bean
     public DocumentService getDocumentService() {

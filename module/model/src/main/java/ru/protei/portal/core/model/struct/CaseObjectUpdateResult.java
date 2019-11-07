@@ -8,23 +8,18 @@ public class CaseObjectUpdateResult  {
 
     private CaseObject caseObject;
     private boolean isUpdated;
-    private DiffCollectionResult<CaseLink> mergeLinks;
 
     public CaseObjectUpdateResult() {}
 
-    public CaseObjectUpdateResult(CaseObject caseObject, DiffCollectionResult<CaseLink> mergeLinks, boolean isUpdated) {
+    public CaseObjectUpdateResult(CaseObject caseObject, boolean isUpdated) {
         this.caseObject = caseObject;
         this.isUpdated = isUpdated;
-        this.mergeLinks = mergeLinks;
     }
 
     public CaseObject getCaseObject() {
         return caseObject;
     }
 
-    public DiffCollectionResult<CaseLink> getMergeLinks() {
-        return mergeLinks;
-    }
 
     public boolean isUpdated() {
         return isUpdated;
@@ -35,7 +30,6 @@ public class CaseObjectUpdateResult  {
         return "CaseObjectUpdateResult{" +
                 "caseObject=" + caseObject +
                 ", isUpdated=" + isUpdated +
-                ", mergeLinks=" + mergeLinks +
                 '}';
     }
 }
