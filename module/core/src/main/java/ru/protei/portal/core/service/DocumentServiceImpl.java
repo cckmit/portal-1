@@ -384,13 +384,17 @@ public class DocumentServiceImpl implements DocumentService {
     private boolean isValidDocument(Document document){
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
+
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
         Project project = Project.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
-        if (project == null) return false;
-        else {
-            if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
-                return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-            }
+        if (project == null) {
+            return false;
+        }
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
     }
