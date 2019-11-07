@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseLinksEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -50,6 +53,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Autowired
     private CaseService caseService;
+
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
@@ -145,12 +151,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
-        Long caseId = getCaseIdByCaseNumber( caseNumber );
-        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+        Result<Long> caseIdResult = getCaseIdByCaseNumber( authToken, caseNumber );
+        Long caseObjectId = caseIdResult.getData();
+        Result<List<CaseLink>> existingLinksResult = caseIdResult.flatMap( caseId ->
+                getLinks(authToken, caseId ) );
+
+        return existingLinksResult.flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
                 CaseLink::getCaseId ).orElseGet( ignore ->
-                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( caseLInk ->
-                        sendMailNotificationLinkAdded( caseNumber, caseLInk )
+                addCaseLinkOnToYoutrack( caseObjectId, youtrackId ).flatMap( addedLink ->
+                        sendNotificationLinkAdded( authToken, caseObjectId, existingLinksResult.getData(), addedLink )
                 )
         );
     }
@@ -158,17 +168,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
-        Long caseId = getCaseIdByCaseNumber( caseNumber );
-        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+        Result<Long> caseIdResult = getCaseIdByCaseNumber( authToken, caseNumber );
+        Long caseObjectId = caseIdResult.getData();
+        Result<List<CaseLink>> existingLinksResult = caseIdResult.flatMap( caseId ->
+                getLinks(authToken, caseId ) );
+
+        return existingLinksResult.flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
                 removeCaseLinkOnToYoutrack( caseLink ).flatMap( removedLink ->
-                        sendMailNotificationLinkRemoved( caseNumber, removedLink )
+                        sendNotificationLinkRemoved( authToken, caseObjectId, existingLinksResult.getData(), removedLink )
                 )
         );
     }
 
-    private Long getCaseIdByCaseNumber( Long caseNumber ) {
-        return caseObjectDAO.getCaseIdByNumber( caseNumber );
+    private Result<Long> getCaseIdByCaseNumber( AuthToken authToken, Long caseNumber ) {
+        return caseService.getCaseIdByNumber( authToken, caseNumber );
     }
 
     private Result<CaseLink> findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
@@ -200,18 +214,26 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLink);
     }
 
-    private Result<Long> sendMailNotificationLinkAdded( Long caseNumber, CaseLink caseLInk ) {
+    private Result<Long> sendNotificationLinkAdded( AuthToken token, Long caseId, Collection<CaseLink> existingLinks, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
+        diff.putSameEntries( existingLinks );
         diff.putAddedEntry( caseLInk );
-        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+        return sendNotificationLinkChanged( token, caseId, diff ).map( ignore ->
                 caseLInk.getId() );
     }
 
-    private Result<Long> sendMailNotificationLinkRemoved( Long caseNumber, CaseLink caseLInk ) {
+    private Result<Long> sendNotificationLinkRemoved( AuthToken token, Long caseId, Collection<CaseLink> existingLinks, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
+        diff.putSameEntries( existingLinks );
         diff.putRemovedEntry( caseLInk );
-        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+        return sendNotificationLinkChanged(token, caseId, diff ).map( ignore ->
                 caseLInk.getId() );
+    }
+
+    public Result<Void> sendNotificationLinkChanged(AuthToken token, Long caseId, DiffCollectionResult<CaseLink> linksDiff ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, linksDiff ));
+        return ok();
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

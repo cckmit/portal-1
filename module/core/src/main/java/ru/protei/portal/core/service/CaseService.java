@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -66,8 +65,6 @@ public interface CaseService {
     Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
-
-    Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff );
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
 }

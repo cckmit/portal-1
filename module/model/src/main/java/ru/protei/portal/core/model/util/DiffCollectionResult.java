@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class DiffCollectionResult<T> implements Serializable {
         allDiffEntries.add(entry);
     }
 
-    public void putAddedEntries(List<T> entries) {
+    public void putAddedEntries(Collection<T> entries) {
         if (addedEntries == null) {
             addedEntries = new ArrayList<T>();
         }
@@ -79,7 +80,7 @@ public class DiffCollectionResult<T> implements Serializable {
         allDiffEntries.add(entry);
     }
 
-    public void putRemovedEntries(List<T> entries) {
+    public void putRemovedEntries(Collection<T> entries) {
         if (removedEntries == null) {
             removedEntries = new ArrayList<T>();
         }
@@ -99,7 +100,7 @@ public class DiffCollectionResult<T> implements Serializable {
         sameEntries.add(entry);
     }
 
-    public void putSameEntries(List<T> entries) {
+    public void putSameEntries( Collection<T> entries) {
         if (sameEntries == null) {
             sameEntries = new ArrayList<T>();
         }

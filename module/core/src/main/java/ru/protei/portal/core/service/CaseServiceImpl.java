@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseLinksEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
@@ -207,9 +207,8 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState )
-                .withLinks(mergeLinks)
-        );
+        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState ));
+        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, initiator, caseId, mergeLinks ));
 
         return ok(newState);
     }
@@ -500,18 +499,6 @@ public class CaseServiceImpl implements CaseService {
                 .map( this::fillYouTrackInfo );
     }
 
-    @Override
-    public Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff ) {
-        CaseObject caseObject = caseObjectDAO.getCaseByCaseno( caseNumber );
-        if (!isEmpty( caseObject.getLinks() )) {
-            linksDiff.putSameEntries( caseObject.getLinks() );
-        }
-
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, null, caseObject, caseObject)//TODO link need Person!
-                .withLinks( linksDiff )
-        );
-        return ok(caseObject.getId());
-    }
 
     @Override
     public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {

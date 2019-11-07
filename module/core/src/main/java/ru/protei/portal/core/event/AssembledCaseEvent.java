@@ -15,7 +15,7 @@ import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class AssembledCaseEvent extends ApplicationEvent {
-
+private Object attachmentLock = new Object();
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
@@ -55,20 +55,27 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.lastState = objectEvent.getNewState();
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
-        mergeLinks = objectEvent.getMergeLinks();
+
         isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
+    }
+
+    public void attachLinkEvent( CaseLinksEvent event ) {
+        this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||event.isEagerEvent();
+        mergeLinks = event.getMergeLinks();//TODO
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
         this.lastUpdated = currentTimeMillis();
-        oldComment = commentEvent.getOldCaseComment();
+        isEagerEvent = isEagerEvent||commentEvent.isEagerEvent();
+        oldComment = commentEvent.getOldCaseComment();//TODO
         newComment = commentEvent.getNewCaseComment();
         removedComment = commentEvent.getRemovedCaseComment();
-        isEagerEvent = isEagerEvent||commentEvent.isEagerEvent();
     }
 
     public void attachAttachmentEvent( CaseAttachmentEvent event ) {
         this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||event.isEagerEvent();
         synchronizeAttachments( event.getExistingAttachments(), event.getAddedAttachments(), event.getRemovedAttachments() );
     }
 
@@ -140,11 +147,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isEagerEvent;
     }
 
-    @Deprecated
-    public void attachCaseComment(CaseComment caseComment) {
-        newComment = caseComment;
-        lastUpdated = currentTimeMillis();
-    }
+//    @Deprecated
+//    public void attachCaseComment(CaseComment caseComment) {
+//        newComment = caseComment;
+//        lastUpdated = currentTimeMillis();
+//    }
 
     @Deprecated
     public void includeCaseComments (List<CaseComment> commentList) {
@@ -178,7 +185,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return removedAttachments;
     }
 
-    private void synchronizeAttachments( Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed ){
+    private  void synchronizeAttachments( Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed ){
         if(added == null)
             added = Collections.emptyList();
         if(removed == null)
@@ -186,33 +193,35 @@ public class AssembledCaseEvent extends ApplicationEvent {
 //        if(existing == null)
 //            existing = Collections.emptyList();
 
-        log.info( "synchronizeAttachments(): before +{} -{} {} ", toList( addedAttachments, Attachment::getId ), toList( removedAttachments, Attachment::getId ), toList( existingAttachments, Attachment::getId ) );
+        synchronized(attachmentLock){
+            log.info( "synchronizeAttachments(): before +{} -{} {} ", toList( addedAttachments, Attachment::getId ), toList( removedAttachments, Attachment::getId ), toList( existingAttachments, Attachment::getId ) );
 
-        if (addedAttachments == null) addedAttachments = new ArrayList<>();
-        if (removedAttachments == null) removedAttachments = new ArrayList<>();
-        if (existingAttachments == null && existing!=null) existingAttachments = new ArrayList<>(existing);
+            if (addedAttachments == null) addedAttachments = new ArrayList<>();
+            if (removedAttachments == null) removedAttachments = new ArrayList<>();
+            if (existingAttachments == null && existing != null) existingAttachments = new ArrayList<>( existing );
 
-        log.info( "synchronizeAttachments(): -> +{} -{} {} ", toList( added, Attachment::getId ), toList( removed, Attachment::getId ), toList( existing, Attachment::getId ) );
-        addedAttachments.addAll(added);
-        removedAttachments.addAll(removed);
+            log.info( "synchronizeAttachments(): -> +{} -{} {} ", toList( added, Attachment::getId ), toList( removed, Attachment::getId ), toList( existing, Attachment::getId ) );
+            addedAttachments.addAll( added );
+            removedAttachments.addAll( removed );
 
-        Iterator<Attachment> it = removedAttachments.iterator();
-        while (it.hasNext()){
-            Attachment removedAttachment = it.next();
-            if(addedAttachments.contains(removedAttachment)){ //if you add and remove an attachment in a row
-                addedAttachments.remove(removedAttachment);
-                it.remove();
-                continue;
+            Iterator<Attachment> it = removedAttachments.iterator();
+            while (it.hasNext()) {
+                Attachment removedAttachment = it.next();
+                if (addedAttachments.contains( removedAttachment )) { //if you add and remove an attachment in a row
+                    addedAttachments.remove( removedAttachment );
+                    it.remove();
+                    continue;
+                }
             }
-        }
 
-        if(existingAttachments!=null){
-            if (existing != null) existingAttachments.retainAll( existing );
-            existingAttachments.removeAll( addedAttachments );
-            existingAttachments.removeAll( removedAttachments );
-        }
+            if (existingAttachments != null) {
+                if (existing != null) existingAttachments.retainAll( existing );
+                existingAttachments.removeAll( addedAttachments );
+                existingAttachments.removeAll( removedAttachments );
+            }
 
-        log.info( "synchronizeAttachments(): after +{} -{} {} ", toList( addedAttachments, Attachment::getId ), toList( removedAttachments, Attachment::getId ), toList( existingAttachments, Attachment::getId ) );
+            log.info( "synchronizeAttachments(): after +{} -{} {} ", toList( addedAttachments, Attachment::getId ), toList( removedAttachments, Attachment::getId ), toList( existingAttachments, Attachment::getId ) );
+        }
     }
 
     public long getLastUpdated() {

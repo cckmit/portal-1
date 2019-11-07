@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service.events;
 
+import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.Person;
 
@@ -11,7 +12,10 @@ public interface EventAssemblerService {
 
     void onCaseAttachmentEvent( CaseAttachmentEvent event);
 
-    AssembledCaseEvent getEvent(Person person, Long caseId);
+    @EventListener
+    void onCaseLinkEvent( CaseLinksEvent event );
+
+    AssembledCaseEvent getEvent( Person person, Long caseId);
 
     int getEventsCount();
 

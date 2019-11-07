@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.AsseblerService;
 //import ru.protei.portal.core.utils.EventExpirationControl;
@@ -43,6 +44,14 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
         log.info( "onCaseAttachmentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
         assembledPrevEvent.attachAttachmentEvent( event );
+    }
+
+    @Override
+    @EventListener
+    public void onCaseLinkEvent( CaseLinksEvent event) {
+        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
+        log.info( "onCaseLinkEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        assembledPrevEvent.attachLinkEvent( event );
     }
 
     @Override

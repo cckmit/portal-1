@@ -22,7 +22,7 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private CaseObject oldState;
     private Person person;
     private ServiceModule serviceModule;
-    private DiffCollectionResult<CaseLink> mergeLinks;
+
 
     public CaseObjectEvent(  Object source, ServiceModule serviceModule, Person person, CaseObject oldState,  CaseObject newState ) {
         super(source);
@@ -68,17 +68,6 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType() );
     }
 
-    public DiffCollectionResult<CaseLink> getMergeLinks() {
-        return mergeLinks;
-    }
-
-    @Deprecated
-    public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
-        this.mergeLinks = mergeLinks;
-        return this;
-    }
-
-
     @Override
     public String toString() {
         return "CaseObjectEvent{" +
@@ -87,7 +76,7 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
                 ", oldState=" + asString( oldState ) +
                 ", newState=" + asString( newState ) +
                 ", person=" + (person == null ? null : person.getId()) +
-                asString( mergeLinks ) +
+
                 '}';
     }
 
@@ -101,10 +90,5 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
                 '}';
     }
 
-    private String asString( DiffCollectionResult<CaseLink> mergeLinks ) {
-        if(mergeLinks==null) return ", links=[no changes]";
-        return  ", existLinks=" + toList(mergeLinks.getSameEntries(), CaseLink::getId ) +
-                ", addedLinks=" + toList(mergeLinks.getAddedEntries(), CaseLink::getId ) +
-                ", removedLinks=" + toList(mergeLinks.getRemovedEntries(), CaseLink::getId );
-    }
+
 }
