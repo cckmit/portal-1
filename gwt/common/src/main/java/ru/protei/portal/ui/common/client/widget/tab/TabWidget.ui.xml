@@ -4,7 +4,7 @@
     <g:HTMLPanel>
         <div style="display: flex;">
             <div class="p-t-10">
-                <g:Anchor ui:field="collapse" styleName="fas fa-arrow-up" href="#"/>
+                <g:Anchor ui:field="collapse" styleName="fas fa-arrow-up" visible="false" href="#"/>
             </div>
             <div style="width: 100%;">
                 <g:HTMLPanel ui:field="navTabs" tag="ul"

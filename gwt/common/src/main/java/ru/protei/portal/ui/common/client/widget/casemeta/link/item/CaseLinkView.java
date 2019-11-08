@@ -39,7 +39,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     public CaseLinkView() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        ensureDebugIds();
+//        ensureDebugIds();
         setTestAttributes();
     }
 
@@ -99,7 +99,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @Override
     public void setEnabled(boolean enabled) {
-        remove.setVisible(enabled);
+        remove.getElement().setAttribute("style", "opacity: .0; pointer-events: none");
     }
 
     @UiHandler("link")
@@ -113,19 +113,12 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @UiHandler("root")
     public void onHover(MouseOverEvent event) {
-        if ( En_CaseLink.CRM_OLD.equals(caseLink.getType()) ){
-            return;
-        }
-
-        if ( !hasInfo(caseLink) ){
-            return;
-        }
-
-        caseInfoPanel.setVisible(true);
+        remove.getElement().setAttribute("style", "opacity: .6; cursor: pointer;");
     }
+
     @UiHandler("root")
     public void onHover(MouseOutEvent event) {
-        caseInfoPanel.setVisible(false);
+        remove.getElement().setAttribute("style", "opacity: .0; pointer-events: none;");
     }
 
     @UiHandler("remove")
@@ -171,21 +164,21 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     private void fillPopup( String name, String description, En_ImportanceLevel importanceLevel, En_CaseState caseState ) {
         header.setInnerText( name );
         importance.addClassName( ImportanceStyleProvider.getImportanceIcon( importanceLevel ));
-        state.addClassName( "label label-" + caseState.toString().toLowerCase() + " m-r-5");
-        state.setInnerText(caseStateLang.getStateName(caseState));
-        info.setInnerText(description);
+//        state.addClassName( "label label-" + caseState.toString().toLowerCase() + " m-r-5");
+        state.setInnerHTML("<i class=\"fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase() + "\"></i>" + caseStateLang.getStateName(caseState));
+//        info.setInnerText(description);
     }
 
     private boolean hasInfo( CaseLink caseLink ) {
         return caseLink.getCaseInfo()!=null || caseLink.getYouTrackInfo()!=null;
     }
 
-    private void ensureDebugIds() {
-        if ( !DebugInfo.isDebugIdEnabled() ) {
-            return;
-        }
-        caseInfoPanel.ensureDebugId(DebugIds.ISSUE.LINK_INFO_CONTAINER);
-    }
+//    private void ensureDebugIds() {
+//        if ( !DebugInfo.isDebugIdEnabled() ) {
+//            return;
+//        }
+//        caseInfoPanel.ensureDebugId(DebugIds.ISSUE.LINK_INFO_CONTAINER);
+//    }
 
     private void setTestAttributes() {
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_REMOVE_BUTTON);
@@ -208,17 +201,15 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     @UiField
     Anchor remove;
     @UiField
-    HTMLPanel caseInfoPanel;
-    @UiField
-    HeadingElement header;
+    SpanElement header;
     @UiField
     SpanElement importance;
     @UiField
     SpanElement state;
     @UiField
-    DivElement info;
-    @UiField
     Anchor link;
+    @UiField
+    FocusPanel root;
 
    Set<En_CaseState> doneStates = setOf( DONE, VERIFIED, CANCELED, CLOSED, SOLVED_DUP, SOLVED_FIX, SOLVED_NOAP, IGNORED );
 

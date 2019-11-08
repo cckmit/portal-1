@@ -76,6 +76,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility copyVisibility();
 
+    void setLinks(Set<CaseLink> links);
+
     void showComments(boolean isShow);
     boolean isAttached();
     HasValue<PlatformOption> platform();

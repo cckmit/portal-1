@@ -54,6 +54,30 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         return tabContent.remove(widget);
     }
 
+    @Override
+    public void onTabSelected(String tabName) {
+        setNavItemSelected(tabName);
+        setNavItemDropdownSelected(tabName);
+        setPaneSelected(tabName);
+    }
+
+    @UiHandler("navDropdownTabsSelected")
+    public void navDropdownTabsSelectedClick(ClickEvent event) {
+        event.preventDefault();
+        popup.showNear(navDropdownTabsSelected);
+    }
+
+    @UiHandler("collapse")
+    public void onCollapseClicked(ClickEvent event) {
+        event.preventDefault();
+        tabContent.setVisible(!tabContent.isVisible());
+        collapse.setStyleName(tabContent.isVisible() ? "fas fa-arrow-up" : "fas fa-arrow-down");
+    }
+
+    public void setCollapsible(boolean isCollapsible) {
+        collapse.setVisible(isCollapsible);
+    }
+
     public void setTabNameActiveByDefault(String tabNameActiveByDefault) {
         this.tabNameActiveByDefault = tabNameActiveByDefault;
         onTabSelected(tabNameActiveByDefault);
@@ -112,13 +136,6 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         popup.getChildContainer().clear();
     }
 
-    @Override
-    public void onTabSelected(String tabName) {
-        setNavItemSelected(tabName);
-        setNavItemDropdownSelected(tabName);
-        setPaneSelected(tabName);
-    }
-
     private void setNavItemSelected(String tabName) {
         for (Map.Entry<String, TabWidgetNavItem> entry : tabNameToNavItem.entrySet()) {
             entry.getValue().setInActive();
@@ -139,18 +156,6 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
                 entry.getValue().setActive();
             }
         }
-    }
-
-    @UiHandler("navDropdownTabsSelected")
-    public void navDropdownTabsSelectedClick(ClickEvent event) {
-        event.preventDefault();
-        popup.showNear(navDropdownTabsSelected);
-    }
-
-    @UiHandler("collapse")
-    public void onCollapseClicked(ClickEvent event) {
-        event.preventDefault();
-        tabContent.setVisible(!tabContent.isVisible());
     }
 
     @UiField

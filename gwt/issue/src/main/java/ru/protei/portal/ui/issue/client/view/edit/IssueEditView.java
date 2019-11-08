@@ -405,6 +405,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return timeElapsedHeader;
     }
 
+    @Override
+    public void setLinks(Set<CaseLink> links) {
+
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
