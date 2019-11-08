@@ -9,4 +9,5 @@ public interface AbstractContactEditActivity {
     void onFireClicked();
     void onChangeContactLogin();
     void onChangeContactPassword();
+    void onChangeSendWelcomeEmail();
 }
