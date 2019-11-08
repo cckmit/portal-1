@@ -138,7 +138,6 @@
                                     <ui:text from="{lang.workEmail}"/>
                                 </label>
                                 <validatefield:ValidableTextBox ui:field="workEmail"
-                                                                regexp="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>
@@ -147,7 +146,6 @@
                                     <ui:text from="{lang.personalEmail}"/>
                                 </label>
                                 <validatefield:ValidableTextBox ui:field="personalEmail"
-                                                                regexp="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>

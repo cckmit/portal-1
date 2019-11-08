@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -38,6 +39,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
                 En_CompanyCategory.CUSTOMER,
                 En_CompanyCategory.PARTNER,
                 En_CompanyCategory.SUBCONTRACTOR ) );
+        workEmail.setRegexp( CrmConstants.Masks.EMAIL );
+        personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
     }
 
     @Override
