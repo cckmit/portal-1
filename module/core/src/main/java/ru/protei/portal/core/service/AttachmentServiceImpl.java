@@ -85,9 +85,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             if(result.isOk()
                     && ud != null ) {
-                List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( ca.getCaseId() );
                 publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
-                        ud.getPerson(), ca.getCaseId(), oldAttachments, null, Collections.singletonList(attachment)));
+                        ud.getPerson(), ca.getCaseId(), null, Collections.singletonList(attachment)));
             }
 
             return result;

@@ -161,6 +161,11 @@ public class CollectionUtils {
         return new HashSet<>( Arrays.asList( elements ));
     }
 
+    public static <T> Set<T> setOf(Collection<T> elements){
+        if(elements == null) return Collections.EMPTY_SET;
+        return new HashSet<>( elements );
+    }
+
     public static <T> T findPreviousElement(Set<T> set, T element) {
         T prevEl = null;
         for (T el : set) {

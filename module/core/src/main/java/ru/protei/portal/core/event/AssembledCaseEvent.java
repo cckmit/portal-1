@@ -10,22 +10,21 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static java.lang.System.currentTimeMillis;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class AssembledCaseEvent extends ApplicationEvent {
-private Object attachmentLock = new Object();
+
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
     protected CaseComment newComment;
     private CaseComment oldComment;
     private CaseComment removedComment;
-    protected Collection<Attachment> addedAttachments;
-    private Collection<Attachment> removedAttachments;
-    private Collection<Attachment> existingAttachments;
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
+    private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
 
     private Person initiator;
     private ServiceModule serviceModule;
@@ -62,7 +61,7 @@ private Object attachmentLock = new Object();
     public void attachLinkEvent( CaseLinksEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
-        mergeLinks = event.getMergeLinks();//TODO
+        mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId );
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
@@ -76,7 +75,7 @@ private Object attachmentLock = new Object();
     public void attachAttachmentEvent( CaseAttachmentEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
-        synchronizeAttachments( event.getExistingAttachments(), event.getAddedAttachments(), event.getRemovedAttachments() );
+        attachments = synchronizeDiffs( attachments, event.getAttachments(), Attachment::getId );
     }
 
     public CaseComment getCaseComment() {
@@ -148,11 +147,15 @@ private Object attachmentLock = new Object();
     }
 
     public boolean isLinksFilled() {
-        return mergeLinks.hasSameEntries();
+        synchronized (mergeLinks){
+            return mergeLinks.hasSameEntries();
+        }
     }
 
     public boolean isAttachmentsFilled() {
-        return existingAttachments!=null;
+        synchronized (attachments){
+            return attachments.hasSameEntries();
+        }
     }
 
     @Deprecated
@@ -162,9 +165,11 @@ private Object attachmentLock = new Object();
     }
 
     @Deprecated
-    public void includeCaseAttachments (List<Attachment> attachments) {
-        this.addedAttachments.addAll(attachments);
+    public void includeCaseAttachments (List<Attachment> attachments1) {
         this.lastUpdated = currentTimeMillis();
+        DiffCollectionResult<Attachment> diff = new DiffCollectionResult<>();
+        diff.putAddedEntries( attachments1 );
+        attachments = synchronizeDiffs( attachments, diff, Attachment::getId );
     }
 
     public CaseComment getOldComment() {
@@ -176,54 +181,16 @@ private Object attachmentLock = new Object();
     }
 
     public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments;
+        return attachments.getAddedEntries();
     }
 
     public Collection<Attachment> getExistingAttachments() {
-        return existingAttachments;
+        attachments = synchronizeExists( attachments, Attachment::getId );
+        return attachments.getSameEntries();
     }
 
     public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments;
-    }
-
-    private  void synchronizeAttachments( Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed ){
-        if(added == null)
-            added = Collections.emptyList();
-        if(removed == null)
-            removed = Collections.emptyList();
-//        if(existing == null)
-//            existing = Collections.emptyList();
-
-        synchronized(attachmentLock){
-            log.info( "synchronizeAttachments(): before +{} -{} {} ", toList( addedAttachments, Attachment::getId ), toList( removedAttachments, Attachment::getId ), toList( existingAttachments, Attachment::getId ) );
-
-            if (addedAttachments == null) addedAttachments = new ArrayList<>();
-            if (removedAttachments == null) removedAttachments = new ArrayList<>();
-            if (existingAttachments == null && existing != null) existingAttachments = new ArrayList<>( existing );
-
-            log.info( "synchronizeAttachments(): -> +{} -{} {} ", toList( added, Attachment::getId ), toList( removed, Attachment::getId ), toList( existing, Attachment::getId ) );
-            addedAttachments.addAll( added );
-            removedAttachments.addAll( removed );
-
-            Iterator<Attachment> it = removedAttachments.iterator();
-            while (it.hasNext()) {
-                Attachment removedAttachment = it.next();
-                if (addedAttachments.contains( removedAttachment )) { //if you add and remove an attachment in a row
-                    addedAttachments.remove( removedAttachment );
-                    it.remove();
-                    continue;
-                }
-            }
-
-            if (existingAttachments != null) {
-                if (existing != null) existingAttachments.retainAll( existing );
-                existingAttachments.removeAll( addedAttachments );
-                existingAttachments.removeAll( removedAttachments );
-            }
-
-            log.info( "synchronizeAttachments(): after +{} -{} {} ", toList( addedAttachments, Attachment::getId ), toList( removedAttachments, Attachment::getId ), toList( existingAttachments, Attachment::getId ) );
-        }
+        return attachments.getRemovedEntries();
     }
 
     public long getLastUpdated() {
@@ -251,6 +218,7 @@ private Object attachmentLock = new Object();
     }
 
     public DiffCollectionResult<CaseLink> getMergeLinks() {
+        mergeLinks = synchronizeExists( mergeLinks, CaseLink::getId );
         return mergeLinks;
     }
 
@@ -295,12 +263,6 @@ private Object attachmentLock = new Object();
         return caseComments!=null;
     }
 
-    public Long getCaseNumber() {
-        CaseObject caseObject = getCaseObject();
-        if(caseObject==null) return null;
-        return caseObject.getCaseNumber();
-    }
-
     public void setLastCaseObject( CaseObject caseObject ) {
         lastState = caseObject;
     }
@@ -311,6 +273,16 @@ private Object attachmentLock = new Object();
 
     public void setExistingLinks( List<CaseLink> existingLinks ) {
         mergeLinks.putSameEntries( existingLinks );
+    }
+
+    public void setExistingAttachments( List<Attachment> existingAttachments ) {
+        attachments.putSameEntries( existingAttachments );
+    }
+
+    public Long getCaseNumber() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return null;
+        return caseObject.getCaseNumber();
     }
 
     public List<CaseComment> getAllComments() {
@@ -344,6 +316,52 @@ private Object attachmentLock = new Object();
         CaseObject caseObject = getCaseObject();
         if(caseObject==null) return caseObjectId;
         return caseObject.getId();
+    }
+
+    //Только добавленные и удаленные
+    private <T> DiffCollectionResult<T> synchronizeDiffs( DiffCollectionResult<T> source, DiffCollectionResult<T> other, Function<T, Object> getId ) {
+        if(!other.hasDifferences()) return source;
+        synchronized (source){
+            log.info( "synchronizeDiffs(): before +{} -{} {} ", toList( source.getAddedEntries(), getId ), toList( source.getRemovedEntries(), getId ), toList( source.getSameEntries(), getId ) );
+            log.info( "synchronizeDiffs(): -> +{} -{} {}", toList( other.getAddedEntries(), getId ), toList( other.getRemovedEntries(), getId ) , toList( other.getSameEntries(), getId ) );
+
+            source.putAddedEntries( other.getAddedEntries() );
+            source.putRemovedEntries( other.getRemovedEntries() );
+
+            Set<T> addedAttachments = setOf(source.getAddedEntries());
+            Set<T> removedAttachments = setOf( source.getRemovedEntries() );
+
+            Iterator<T> it = removedAttachments.iterator();
+            while (it.hasNext()) {
+                T removedAttachment = it.next();
+                if (addedAttachments.contains( removedAttachment )) { //if you add and remove an attachment in a row
+                    addedAttachments.remove( removedAttachment );
+                    it.remove();
+                    continue;
+                }
+            }
+
+            log.info( "synchronizeDiffs(): after +{} -{} {} ", toList( source.getAddedEntries(), getId ), toList( source.getRemovedEntries(), getId ), toList( source.getSameEntries(), getId ) );
+
+            DiffCollectionResult<T> result = new DiffCollectionResult<>();
+            result.putAddedEntries( addedAttachments );
+            result.putRemovedEntries( removedAttachments );
+            result.putSameEntries( source.getSameEntries() );
+            return result;
+        }
+    }
+
+    // Убрать из существующих элементов добавленные и удаленные
+    private <T> DiffCollectionResult<T> synchronizeExists( DiffCollectionResult<T> diff,Function<T, Object> getId) {
+        log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
+        if (diff.hasSameEntries()){
+            synchronized (diff) {
+                diff.getSameEntries().removeAll( emptyIfNull( diff.getAddedEntries() ) );
+                diff.getSameEntries().removeAll( emptyIfNull( diff.getRemovedEntries() ) );
+            }
+        }
+        log.info( "synchronizeExists(): after +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
+        return diff;
     }
 
     private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );

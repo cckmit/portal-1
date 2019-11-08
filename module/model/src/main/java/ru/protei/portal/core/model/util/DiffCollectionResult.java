@@ -62,6 +62,7 @@ public class DiffCollectionResult<T> implements Serializable {
     }
 
     public void putAddedEntries(Collection<T> entries) {
+        if (entries == null) return;
         if (addedEntries == null) {
             addedEntries = new ArrayList<T>();
         }
@@ -83,6 +84,7 @@ public class DiffCollectionResult<T> implements Serializable {
     }
 
     public void putRemovedEntries(Collection<T> entries) {
+        if (entries == null) return;
         if (removedEntries == null) {
             removedEntries = new ArrayList<T>();
         }
@@ -103,6 +105,7 @@ public class DiffCollectionResult<T> implements Serializable {
     }
 
     public void putSameEntries( Collection<T> entries) {
+        if (entries == null) return;
         if (sameEntries == null) {
             sameEntries = new ArrayList<T>();
         }

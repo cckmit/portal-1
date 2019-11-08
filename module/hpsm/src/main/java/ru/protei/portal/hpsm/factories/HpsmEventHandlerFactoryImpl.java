@@ -363,7 +363,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent( new CaseAttachmentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), null, addedAttachments, null));
+        eventPublisherService.publishEvent( new CaseAttachmentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), addedAttachments, null));
         eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), false, null, comment, null));
 
         return comment;

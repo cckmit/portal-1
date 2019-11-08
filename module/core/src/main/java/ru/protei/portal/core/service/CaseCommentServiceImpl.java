@@ -59,7 +59,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
-                    null, resultData.getAddedAttachments(), null
+                    resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent,
@@ -142,7 +142,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
-                    null, resultData.getAddedAttachments(), resultData.getRemovedAttachments())
+                    resultData.getAddedAttachments(), resultData.getRemovedAttachments())
             );
             publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
@@ -275,7 +275,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, person, caseId, null, null, removedAttachments ) );
+        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, person, caseId, null, removedAttachments ) );
         publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person, caseId, isEagerEvent, null, null, removedComment ) );
 
         return ok( isRemoved);

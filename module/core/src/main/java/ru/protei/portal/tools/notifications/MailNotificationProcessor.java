@@ -115,7 +115,7 @@ public class MailNotificationProcessor {
                 performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
         } catch (Exception e) {
-            log.error( "Can't sent mail notification with case id = {}. Exception = {}", event.getCaseObjectId(), e.getMessage() );
+            log.error( "Can't sent mail notification with case id = {}. Exception: ", event.getCaseObjectId(), e );
         }
     }
 

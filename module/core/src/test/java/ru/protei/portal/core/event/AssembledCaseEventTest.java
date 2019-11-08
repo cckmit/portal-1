@@ -20,7 +20,8 @@ public class AssembledCaseEventTest {
     public void attachCommentEvent_old_attachments() {
         List<Attachment> old = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, null, null ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null ) );
+        assembled.setExistingAttachments( old );
 
         Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
@@ -31,7 +32,7 @@ public class AssembledCaseEventTest {
     public void attachCommentEvent_add_attachments() {
         List<Attachment> add = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, add, null ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
 
         Assert.assertTrue( isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
@@ -42,7 +43,7 @@ public class AssembledCaseEventTest {
     public void attachCommentEvent_del_attachments() {
         List<Attachment> del = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null, del ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
 
         Assert.assertTrue( isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
@@ -55,7 +56,8 @@ public class AssembledCaseEventTest {
         List<Attachment> old = listOf( makeAttachment(), makeAttachment() );
         List<Attachment> del = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, null, del ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
+        assembled.setExistingAttachments( old );
 
         Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
@@ -67,7 +69,8 @@ public class AssembledCaseEventTest {
         List<Attachment> old = listOf( makeAttachment(), makeAttachment() );
         List<Attachment> add = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, add, null ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
+        assembled.setExistingAttachments( old );
 
         Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
@@ -80,7 +83,8 @@ public class AssembledCaseEventTest {
         List<Attachment> add = listOf( makeAttachment(), makeAttachment() );
         List<Attachment> del = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, add, del ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, del ) );
+        assembled.setExistingAttachments( old );
 
         Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
@@ -94,9 +98,10 @@ public class AssembledCaseEventTest {
         List<Attachment> add = listOf( makeAttachment(), makeAttachment() );
         List<Attachment> del = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, null, null ) );
-        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, old, add, null ) );
-        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, old, null, del ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null ) );
+        assembled.setExistingAttachments( old );
+        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
+        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
 
         Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
         Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
@@ -119,10 +124,11 @@ public class AssembledCaseEventTest {
 
         List<Attachment> del = listOf( oldDel, addDel );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, null, null ) );
-        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, old, add, null ) );
-        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, oldAndAdded, null, del ) );
-        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, old, listOf( addAdded2 ), null ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null ) );
+        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
+        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );//TODO
+        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, listOf( addAdded2 ), null ) );
+        assembled.setExistingAttachments( oldAndAdded );
 
         Assert.assertEquals( "Expected only intacted attachments. If Add and then Remove = not old.",
                 listOf( oldExists ), listOf( assembled.getExistingAttachments() ) );
@@ -137,7 +143,8 @@ public class AssembledCaseEventTest {
     public void attachCommentEvent_CaseCommentEvent_Preserv_existing_attachments() {
         List<Attachment> old = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, null, null ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null ) );
+        assembled.setExistingAttachments( old );
         //  CaseCommentEvent не должен затирать существующие вложения
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, null, null ) );
 
@@ -152,7 +159,8 @@ public class AssembledCaseEventTest {
         List<Attachment> add = listOf( makeAttachment(), makeAttachment() );
         List<Attachment> del = listOf( makeAttachment(), makeAttachment() );
 
-        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, old, add, del ) );
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, del ) );
+        assembled.setExistingAttachments( old );
         //  CaseCommentEvent не должен затирать
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false,  null, null, null ) );
 

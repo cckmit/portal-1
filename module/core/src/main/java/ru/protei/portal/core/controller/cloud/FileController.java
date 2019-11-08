@@ -124,8 +124,6 @@ public class FileController {
 
         AuthToken authToken = ud.makeAuthToken();
         Person creator = ud.getPerson();
-        Long caseId = caseService.getCaseIdByNumber( authToken, caseNumber ).getData();
-        List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( caseId );
         List<Attachment> bindAttachments = new ArrayList(  );
 
         try {
@@ -147,7 +145,7 @@ public class FileController {
 
                 if (caseNumber != null) {
                     En_CaseType caseType = En_CaseType.find(caseTypeId);
-                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(authToken, caseType, attachment, caseNumber);
                     if (caseAttachId.isError()) {
                         logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                         result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
@@ -166,8 +164,9 @@ public class FileController {
             result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
         }
 
-        if (caseId!=null && !isEmpty( bindAttachments ) && !isEmpty( oldAttachments )) {
-            shareNotification(caseId, creator, oldAttachments, bindAttachments );
+        if (!isEmpty( bindAttachments )) {
+            caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
+                shareNotification(caseId, creator, bindAttachments )  );
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
@@ -301,8 +300,8 @@ public class FileController {
         }
     }
 
-    private void shareNotification( Long caseId, Person initiator, List<Attachment> oldAttachments, List<Attachment> addedAttachments) {
-        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, caseId, oldAttachments,
+    private void shareNotification( Long caseId, Person initiator, List<Attachment> addedAttachments) {
+        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, caseId,
                 addedAttachments, null ));
     }
 

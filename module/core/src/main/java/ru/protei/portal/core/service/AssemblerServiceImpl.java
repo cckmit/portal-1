@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -57,7 +58,7 @@ public class AssemblerServiceImpl implements AsseblerService {
             return ok( e );
         }
         log.info( "fillAttachments(): CaseObjectID={} Try to fill attachments.", e.getCaseObjectId() );
-//        e.setExistingLinks(caseLinkDAO.getListByQuery(new CaseLinkQuery( e.getCaseObjectId(), false)));
+        e.setExistingAttachments(  attachmentDAO.getListByCaseId( e.getCaseObjectId() ));
         log.info( "fillAttachments(): CaseObjectID={} Attachments are successfully filled.", e.getCaseObjectId() );
 
         return ok( e );
@@ -117,6 +118,8 @@ public class AssemblerServiceImpl implements AsseblerService {
     @Autowired
     CaseLinkDAO caseLinkDAO;
 
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }
