@@ -153,7 +153,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Override
     public void onChangeContactLogin() {
         view.sendWelcomeEmailVisibility().setVisible(true);
-        view.sendEmailWarningVisibility().setVisible(view.sendWelcomeEmail().getValue() && HelperFunc.isEmpty(view.workEmail().getText()) && HelperFunc.isEmpty(view.personalEmail().getText()));
+        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
         String value = view.login().getText().trim();
 
@@ -197,7 +197,12 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
     }
 
-    private boolean isNew(Person person) {
+    @Override
+    public void onChangeSendWelcomeEmail() {
+        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
+    }
+
+    private boolean isNew( Person person) {
         return person.getId() == null;
     }
 
@@ -252,7 +257,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return view.companyValidator().isValid() &&
                 view.firstNameValidator().isValid() &&
                 view.lastNameValidator().isValid() &&
-                view.isValidLogin();
+                view.isValidLogin() &&
+                (view.workEmail().getText().isEmpty() || view.workEmailValidator().isValid()) &&
+                (view.personalEmail().getText().isEmpty() || view.personalEmailValidator().isValid());
     }
 
     private void initialView(Person person, UserLogin userLogin){
@@ -312,6 +319,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 HelperFunc.isEmpty(view.password().getText()) ||
                 (!HelperFunc.isEmpty(view.confirmPassword().getText()) &&
                         view.password().getText().equals(view.confirmPassword().getText()));
+    }
+
+    private boolean isVisibleSendEmailWarning() {
+        return view.sendWelcomeEmailVisibility().isVisible() &&
+                view.sendWelcomeEmail().getValue() &&
+                view.workEmail().getText().isEmpty() &&
+                view.personalEmail().getText().isEmpty();
     }
 
     @Inject

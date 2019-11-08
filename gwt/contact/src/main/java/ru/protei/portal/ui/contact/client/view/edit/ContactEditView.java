@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
@@ -193,6 +192,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasValidable workEmailValidator(){
+        return workEmail;
+    }
+
+    @Override
+    public HasValidable personalEmailValidator(){
+        return personalEmail;
+    }
+
+    @Override
     public boolean isValidLogin() {
         return status != null && status.equals(NameStatus.ERROR) ? false : true;
     }
@@ -271,6 +280,20 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         changeContactLoginTimer.schedule( 300 );
     }
 
+    @UiHandler({"workEmail", "personalEmail"})
+    public void onChangeEmail( KeyUpEvent keyUpEvent ) {
+        if (activity != null) {
+            activity.onChangeSendWelcomeEmail();
+        }
+    }
+
+    @UiHandler("sendWelcomeEmail")
+    public void onClickSendWelcomeEmail( ClickEvent event ) {
+        if (activity != null) {
+            activity.onChangeSendWelcomeEmail();
+        }
+    }
+
     @UiField
     Button saveButton;
 
@@ -309,10 +332,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     TextBox mobilePhone;
 
     @UiField
-    TextBox workEmail;
+    ValidableTextBox workEmail;
 
     @UiField
-    TextBox personalEmail;
+    ValidableTextBox personalEmail;
 
     @UiField
     TextBox workFax;
