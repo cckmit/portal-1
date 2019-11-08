@@ -32,7 +32,6 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     public void onShow(ProjectEvents.Search event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-        view.resetFilter();
     }
 
     @Event
