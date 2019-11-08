@@ -1909,4 +1909,8 @@ public interface Lang extends Messages, ContactItemLang {
     String productSearchNameOrAlias();
 
     String documentSearchNameOrDesignation();
+
+    String errSavePlatformConnectedIssuesExist();
+
+    String errSaveProjectCannotChangeCompany();
 }

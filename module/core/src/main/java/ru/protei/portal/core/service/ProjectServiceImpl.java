@@ -184,6 +184,10 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
 
+        if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
+            return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
+        }
+
         caseObject.setName( project.getName() );
         caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );

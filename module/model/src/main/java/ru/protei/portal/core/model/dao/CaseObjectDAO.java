@@ -33,6 +33,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers);
 
+    List<Long> getCaseNumbersByPlatformId(Long id);
+
     boolean updateEmailLastId(Long caseId, Long emailLastId);
     Long getEmailLastId(Long caseId);
 
