@@ -49,7 +49,7 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 String arg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                condition.append(" and UNIT_NAME like ? or ALIASES like ?");
+                condition.append(" and (UNIT_NAME like ? or ALIASES like ?)");
                 args.add(arg);
                 args.add(arg);
             }

@@ -92,7 +92,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         project.setProductDirection(EntityOption.fromProductDirectionInfo(view.direction().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
-        project.setProducts(view.product().getValue() == null ? null : new HashSet<>(Collections.singleton(view.product().getValue())));
+        project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
         project.setTeam(new ArrayList<>());
     }
 
