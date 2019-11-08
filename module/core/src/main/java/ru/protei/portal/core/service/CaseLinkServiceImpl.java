@@ -156,6 +156,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(mergeLinks);
     }
 
+    public Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
+        if (caseId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId( caseId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
+    }
+
     @Override
     public Result<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
         return youtrackService.getIssueInfo( ytId );
@@ -165,15 +173,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Transactional
     public Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Result<Long> caseIdResult = getCaseIdByCaseNumber( authToken, caseNumber );
-        Long caseObjectId = caseIdResult.getData();
-        Result<List<CaseLink>> existingLinksResult = caseIdResult.flatMap( caseId ->
-                getLinks(authToken, caseId ) );
+        Long caseId = caseIdResult.getData();
 
-        return existingLinksResult.flatMap( caseLinks ->
+        return caseIdResult.flatMap(
+                this::getYoutrackLinks ).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
                 CaseLink::getCaseId ).orElseGet( ignore ->
-                addCaseLinkOnToYoutrack( caseObjectId, youtrackId ).flatMap( addedLink ->
-                        sendNotificationLinkAdded( authToken, caseObjectId, existingLinksResult.getData(), addedLink )
+                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( addedLink ->
+                        sendNotificationLinkAdded( authToken, caseId, addedLink )
                 )
         );
     }
@@ -182,14 +189,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Transactional
     public Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Result<Long> caseIdResult = getCaseIdByCaseNumber( authToken, caseNumber );
-        Long caseObjectId = caseIdResult.getData();
-        Result<List<CaseLink>> existingLinksResult = caseIdResult.flatMap( caseId ->
-                getLinks(authToken, caseId ) );
+        Long caseId = caseIdResult.getData();
 
-        return existingLinksResult.flatMap( caseLinks ->
+        return caseIdResult.flatMap(
+                this::getYoutrackLinks).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
                 removeCaseLinkOnToYoutrack( caseLink ).flatMap( removedLink ->
-                        sendNotificationLinkRemoved( authToken, caseObjectId, existingLinksResult.getData(), removedLink )
+                        sendNotificationLinkRemoved( authToken, caseId, removedLink )
                 )
         );
     }
@@ -227,17 +233,15 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLink);
     }
 
-    private Result<Long> sendNotificationLinkAdded( AuthToken token, Long caseId, Collection<CaseLink> existingLinks, CaseLink caseLInk ) {
+    private Result<Long> sendNotificationLinkAdded( AuthToken token, Long caseId, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
-        diff.putSameEntries( existingLinks );
         diff.putAddedEntry( caseLInk );
         return sendNotificationLinkChanged( token, caseId, diff ).map( ignore ->
                 caseLInk.getId() );
     }
 
-    private Result<Long> sendNotificationLinkRemoved( AuthToken token, Long caseId, Collection<CaseLink> existingLinks, CaseLink caseLInk ) {
+    private Result<Long> sendNotificationLinkRemoved( AuthToken token, Long caseId, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
-        diff.putSameEntries( existingLinks );
         diff.putRemovedEntry( caseLInk );
         return sendNotificationLinkChanged(token, caseId, diff ).map( ignore ->
                 caseLInk.getId() );

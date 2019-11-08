@@ -25,7 +25,7 @@ private Object attachmentLock = new Object();
     protected Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
     private Collection<Attachment> existingAttachments;
-    private DiffCollectionResult <CaseLink> mergeLinks;
+    private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
 
     private Person initiator;
     private ServiceModule serviceModule;
@@ -147,11 +147,13 @@ private Object attachmentLock = new Object();
         return isEagerEvent;
     }
 
-//    @Deprecated
-//    public void attachCaseComment(CaseComment caseComment) {
-//        newComment = caseComment;
-//        lastUpdated = currentTimeMillis();
-//    }
+    public boolean isLinksFilled() {
+        return mergeLinks.hasSameEntries();
+    }
+
+    public boolean isAttachmentsFilled() {
+        return existingAttachments!=null;
+    }
 
     @Deprecated
     public void includeCaseComments (List<CaseComment> commentList) {
@@ -305,6 +307,10 @@ private Object attachmentLock = new Object();
 
     public void setInitialCaseComments( List<CaseComment> caseComments ) {
         this.caseComments = caseComments;
+    }
+
+    public void setExistingLinks( List<CaseLink> existingLinks ) {
+        mergeLinks.putSameEntries( existingLinks );
     }
 
     public List<CaseComment> getAllComments() {

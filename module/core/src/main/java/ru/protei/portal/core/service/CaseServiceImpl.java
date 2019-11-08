@@ -181,18 +181,6 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-//        DiffCollectionResult<CaseLink> mergeLinks = null;
-//        if (isNotEmpty(caseObject.getLinks())) {
-//            mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getLinks() ).getData();
-//        }
-//
-//        if (isNotEmpty(caseObject.getLinks())) {
-//            List<String> youtrackIds = selectYouTrackLinkRemoteIds( caseObject.getLinks() );
-//            for (String youtrackId : youtrackIds) {
-//                youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseObject.getCaseNumber());
-//            }
-//        }
-
         if (isNotEmpty(caseObject.getTags())) {
             caseObjectTagDAO.persistBatch(
                     caseObject.getTags()

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.apache.logging.log4j.ThreadContext.isEmpty;
+
 /**
  * результат сравнения двух коллекций (и map в том числе)
  * @param <T> тип элементов, хранящихся в сравниваемых коллекциях
@@ -109,6 +111,14 @@ public class DiffCollectionResult<T> implements Serializable {
 
     public boolean hasDifferences() {
         return !allDiffEntries.isEmpty();
+    }
+
+    public boolean hasSameEntries() {
+        return !isEmpty(sameEntries);
+    }
+
+    private boolean isEmpty( List<T> entries ) {
+        return entries == null || entries.isEmpty();
     }
 
     /**
