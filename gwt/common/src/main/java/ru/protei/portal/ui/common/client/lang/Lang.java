@@ -1913,4 +1913,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errSavePlatformConnectedIssuesExist();
 
     String errSaveProjectCannotChangeCompany();
+
+    String sendEmailWarning();
 }
