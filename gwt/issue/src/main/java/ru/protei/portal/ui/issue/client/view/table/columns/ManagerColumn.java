@@ -1,13 +1,13 @@
 package ru.protei.portal.ui.issue.client.view.table.columns;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import java.util.function.Function;
 
 /**
  * Колонка "Менеджер"
@@ -31,12 +31,12 @@ public class ManagerColumn extends ClickColumn<CaseShortView> {
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
-        String company = value == null ? null : transliterationFunction.apply(value.getManagerCompanyName());
+        String company = value == null ? null : transliteration(value.getManagerCompanyName());
         com.google.gwt.dom.client.Element companyElement= DOM.createLabel();
         companyElement.setInnerText( company == null ? "" : company );
         divElement.appendChild( companyElement );
 
-        String manager = value == null ? null : transliterationFunction.apply(value.getManagerName());
+        String manager = value == null ? null : transliteration(value.getManagerName());
         com.google.gwt.dom.client.Element managerElement = DOM.createElement( "p" );
         managerElement.setInnerText( manager == null ? "" : manager );
         divElement.appendChild( managerElement );
@@ -44,11 +44,9 @@ public class ManagerColumn extends ClickColumn<CaseShortView> {
         cell.appendChild( divElement );
     }
 
-    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
-        this.transliterationFunction = transliterationFunction;
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
-
-    private Function<String, String> transliterationFunction = str -> str;
 
     Lang lang;
 }

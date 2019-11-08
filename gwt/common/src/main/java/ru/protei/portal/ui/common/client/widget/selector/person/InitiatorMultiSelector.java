@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
-import liquibase.util.CollectionUtil;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -14,7 +11,6 @@ import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSele
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -40,7 +36,7 @@ public class InitiatorMultiSelector
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
         for ( PersonShortView option : emptyIfNull( options) ) {
-            addOption( transliterationFunction.apply(option.getDisplayShortName()), option );
+            addOption( option.getDisplayShortName(), option );
         }
     }
 
@@ -98,10 +94,4 @@ public class InitiatorMultiSelector
             return Collections.EMPTY_SET;
         }
     };
-
-    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
-        this.transliterationFunction = transliterationFunction;
-    }
-
-    private Function<String, String> transliterationFunction = str -> str;
 }

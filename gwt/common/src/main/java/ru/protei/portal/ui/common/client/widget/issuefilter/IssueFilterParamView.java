@@ -38,7 +38,6 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -189,13 +188,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void presetFilterType() {
         userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
-    }
-
-    @Override
-    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
-        companies.setTransliterationFunction(transliterationFunction);
-        initiators.setTransliterationFunction(transliterationFunction);
-        managers.setTransliterationFunction(transliterationFunction);
     }
 
     @Override

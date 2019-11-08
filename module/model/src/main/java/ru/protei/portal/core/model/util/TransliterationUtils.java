@@ -46,7 +46,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('щ', "shch");
         rusToLatinCharacters.put('ъ', "ʺ");
         rusToLatinCharacters.put('ы', "y");
-        rusToLatinCharacters.put('ь', "");
+        rusToLatinCharacters.put('ь', "'");
         rusToLatinCharacters.put('э', "e");
         rusToLatinCharacters.put('ю', "ju");
         rusToLatinCharacters.put('я', "ja");
@@ -80,7 +80,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Щ', "Shch");
         rusToLatinCharacters.put('Ъ', "ʺ");
         rusToLatinCharacters.put('Ы', "Y");
-        rusToLatinCharacters.put('Ь', "");
+        rusToLatinCharacters.put('Ь', "'");
         rusToLatinCharacters.put('Э', "E");
         rusToLatinCharacters.put('Ю', "Ju");
         rusToLatinCharacters.put('Я', "Ja");
@@ -101,7 +101,7 @@ public class TransliterationUtils {
 
         char[] chars = input.toCharArray();
 
-        for (int i = 1; i < chars.length; i++) {
+        for (int i = 0; i < chars.length; i++) {
             stringBuilder.append(transliterateChar(chars[i]));
         }
 
@@ -128,6 +128,6 @@ public class TransliterationUtils {
 
 //      for tests
 //    public static void main(String[] args) {
-//        System.out.println(rusToLatin(""));
+//        System.out.println(transliterate("Артемьев", "en"));
 //    }
 }

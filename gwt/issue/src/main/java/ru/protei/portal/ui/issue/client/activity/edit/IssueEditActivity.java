@@ -315,7 +315,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
-        view.setTransliterationFunction(this::transliteration);
 
         view.attachmentsContainer().clear();
 

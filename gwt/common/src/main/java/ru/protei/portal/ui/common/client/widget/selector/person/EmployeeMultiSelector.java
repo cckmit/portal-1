@@ -8,7 +8,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Селектор сотрудников
@@ -35,7 +34,7 @@ public class EmployeeMultiSelector
             addOption(lang.employeeWithoutManager(), new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
         for (PersonShortView personView : options) {
-            addOption(transliterationFunction.apply(personView.getDisplayShortName()), personView);
+            addOption(personView.getDisplayShortName(), personView);
         }
     }
 
@@ -49,11 +48,6 @@ public class EmployeeMultiSelector
         }
     }
 
-    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
-        this.transliterationFunction = transliterationFunction;
-    }
-
     private Lang lang;
     private boolean hasWithoutValue = false;
-    private Function<String, String> transliterationFunction = str -> str;
 }

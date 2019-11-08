@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Set;
-import java.util.function.Function;
 
 public interface AbstractIssueFilter {
     void setModel(AbstractIssueFilterModel model);
@@ -17,5 +16,4 @@ public interface AbstractIssueFilter {
     HasVisibility searchPrivateVisibility();
     HasValue<Set<EntityOption>> companies();
     void updateInitiators();
-    void setTransliterationFunction(Function<String, String> transliterationFunction);
 }

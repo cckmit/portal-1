@@ -42,7 +42,6 @@ import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractI
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -157,13 +156,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @Override
     public void updateInitiators() {
         initiators.updateCompanies();
-    }
-
-    @Override
-    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
-        companies.setTransliterationFunction(transliterationFunction);
-        managers.setTransliterationFunction(transliterationFunction);
-        initiators.setTransliterationFunction(transliterationFunction);
     }
 
     @UiHandler("userFilter")

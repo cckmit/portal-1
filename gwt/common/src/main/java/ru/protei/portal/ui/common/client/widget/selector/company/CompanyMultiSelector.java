@@ -9,7 +9,6 @@ import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSele
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
@@ -29,7 +28,7 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
         for ( EntityOption option : emptyIfNull( options) ) {
-            addOption( transliterationFunction.apply(option.getDisplayText()), option );
+            addOption( option.getDisplayText(), option );
         }
     }
 
@@ -38,10 +37,4 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
-
-    public void setTransliterationFunction(Function<String, String> transliterationFunction) {
-        this.transliterationFunction = transliterationFunction;
-    }
-
-    private Function<String, String> transliterationFunction = str -> str;
 }

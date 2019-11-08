@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -7,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -76,6 +78,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
             @Override
             public void onSuccess( List< PersonShortView > options ) {
                 requested = false;
+                transliteration(options);
                 int value = options.indexOf( new PersonShortView("", myId, false ) );
                 if ( value > 0 ) {
                     options.add(0, options.remove( value ) );
@@ -85,6 +88,10 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
                 notifySubscribers();
             }
         } );
+    }
+
+    private void transliteration(List<PersonShortView> options) {
+        options.forEach(option -> option.setDisplayShortName(TransliterationUtils.transliterate(option.getDisplayShortName(), LocaleInfo.getCurrentLocale().getLocaleName())));
     }
 
     @Inject

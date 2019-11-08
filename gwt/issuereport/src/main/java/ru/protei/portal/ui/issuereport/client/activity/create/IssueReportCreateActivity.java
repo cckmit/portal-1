@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -53,7 +52,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onShow(IssueReportEvents.Create event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        view.getIssueFilter().setTransliterationFunction(this::transliteration);
 
         isSaving = false;
         view.reset();
@@ -205,10 +203,6 @@ public abstract class IssueReportCreateActivity implements Activity,
             return Arrays.asList(En_ReportType.values());
         }
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject
