@@ -2243,11 +2243,13 @@ a {
     width: 18px;
     height: 18px;
     text-align: center;
-    line-height: 18px;
+    line-height: 22px;
     font-size: 10px;
     font-weight: bold;
     text-decoration: none;
     font-style: normal;
+    position: relative;
+    bottom: 1px;
     color: #333333;
   }
 
@@ -3670,7 +3672,7 @@ label {
   .case-link-close {
     height: 12px;
     width: 12px;
-    padding: 8px 2px 6px 4px;
+    padding: 7px 2px 6px 4px;
     font-size: 0.8em;
     color: inherit;
     cursor: pointer;

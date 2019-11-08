@@ -6,7 +6,6 @@
     <g:FocusPanel ui:field="root">
         <g:HTMLPanel ui:field="panel" styleName="case-link">
             <g:Anchor ui:field="link">
-                <span ui:field="icon" class="case-link-icon hide"/>
                 <span ui:field="importance"/>
                 <span ui:field="text" class="case-link-text"/>
                 <span ui:field="header" class="m-l-5"/>

@@ -26,7 +26,7 @@
             </div>
             <g:HTMLPanel ui:field="linksPanel" styleName="m-l-15 m-r-15 m-t-5 card card-default">
                 <div class="card-header">
-                    <label ui:field="linksLabel" class="card-title"><ui:text from="{lang.linkedWith}"/>: </label>
+                    <label ui:field="linksLabel" class="card-title" style="color: #b0b0b0"><ui:text from="{lang.linkedWith}"/>: </label>
                     <div class="card-controls">
                         <ul>
                             <li><g:Anchor ui:field="collapse" styleName="p-t-0 fas fa-chevron-up" href="#"/></li>

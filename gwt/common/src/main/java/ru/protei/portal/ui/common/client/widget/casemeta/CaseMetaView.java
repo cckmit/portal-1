@@ -175,7 +175,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     }
 
     private void toggleLinksVisibility() {
-        toggleVisibility(links, linksSection, linksLabel);
+        toggleVisibility(links, linksSection, null);
     }
 
     private void toggleTagsVisibility() {
@@ -187,6 +187,10 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             container.addStyleName( HIDE );
         } else {
             container.removeStyleName( HIDE );
+            if (label == null) {
+                return;
+            }
+
             if (showLabel) {
                 label.removeClassName( HIDE );
             } else {
