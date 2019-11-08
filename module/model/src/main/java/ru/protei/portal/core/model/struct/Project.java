@@ -216,7 +216,7 @@ public class Project extends AuditableObject implements Removable {
     }
 
     public ProductShortView getSingleProduct() {
-        return products.stream().findAny().orElse(null);
+        return products == null ? null : products.stream().findAny().orElse(null);
     }
 
     @Override
