@@ -97,11 +97,32 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     }
 
     private boolean validate() {
-        return view.nameValidator().isValid() &&
-                view.regionValidator().isValid() &&
-                view.directionValidator().isValid() &&
-                view.customerTypeValidator().isValid() &&
-                view.companyValidator().isValid();
+        if (!view.nameValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!view.regionValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectRegion(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!view.directionValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectDirection(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!view.customerTypeValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCustomerType(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!view.companyValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
     }
 
     @Inject
