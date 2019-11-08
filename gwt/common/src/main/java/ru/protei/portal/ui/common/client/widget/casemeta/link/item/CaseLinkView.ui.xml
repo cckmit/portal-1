@@ -5,11 +5,9 @@
 
     <g:FocusPanel ui:field="root">
         <g:HTMLPanel ui:field="panel" styleName="case-link">
-            <g:Anchor ui:field="link">
-                <span ui:field="importance"/>
-                <span ui:field="text" class="case-link-text"/>
-                <span ui:field="header" class="m-l-5"/>
-            </g:Anchor>
+            <span ui:field="importance"/>
+            <span ui:field="text" class="case-link-text"/>
+            <span ui:field="header" class="m-l-5"/>
             <g:Anchor ui:field="remove" href="#" styleName="case-link-close fas fa-times pull-right"/>
             <span ui:field="state" class="pull-right m-r-5"/>
         </g:HTMLPanel>

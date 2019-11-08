@@ -1838,11 +1838,6 @@ a {
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-
-        &:hover {
-          text-decoration: underline;
-          color: #365c92;
-        }
       }
 
       .case-link-icon {
@@ -3622,6 +3617,21 @@ label {
       position: relative;
       display: inline-block;
       outline: none;
+    }
+  }
+}
+
+.card-body {
+  .case-meta-links {
+    margin-left: -6px;
+  }
+}
+
+.card-header {
+  .card-title {
+    &.case-links-label {
+      color: #b0b0b0;
+      margin-left: -5px;
     }
   }
 }

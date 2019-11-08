@@ -193,8 +193,6 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     @UiField
     SpanElement state;
     @UiField
-    Anchor link;
-    @UiField
     FocusPanel root;
 
     Set<En_CaseState> doneStates = setOf( DONE, VERIFIED, CANCELED, CLOSED, SOLVED_DUP, SOLVED_FIX, SOLVED_NOAP, IGNORED );

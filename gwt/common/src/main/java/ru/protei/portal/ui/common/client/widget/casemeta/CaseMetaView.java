@@ -57,8 +57,11 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         toggleLinksVisibility();
 
         if (CollectionUtils.isEmpty(links)) {
+            linksPanel.setVisible(false);
             return;
         }
+
+        linksPanel.setVisible(true);
 
         links.forEach(this::makeCaseLinkViewAndAddToParent);
     }
@@ -152,6 +155,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         if (itemView != null) {
             linksContainer.remove(itemView);
         }
+
+        linksPanel.setVisible(!links.isEmpty());
 
         toggleLinksVisibility();
     }
@@ -283,6 +288,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
                     caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), caseLink.getRemoteId()));
 
                     addCaseLinkToList(caseLink);
+                    linksPanel.setVisible(true);
                 } )
         );
 
@@ -312,6 +318,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
                     caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), crmRemoteId.toString()));
 
                     addCaseLinkToList(caseLink);
+                    linksPanel.setVisible(true);
                 })
         );
     }
@@ -333,6 +340,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         toggleLinksVisibility();
 
         ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(links, null));
+        linksPanel.setVisible(true);
     }
 
     private void addCaseTag(CaseTag item) {
