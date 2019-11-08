@@ -4,16 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
@@ -90,7 +86,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Async(BACKGROUND_TASKS)
     @Override
-    public Result<Void> mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed ) {
+    public void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed ) {
 
         for (String youtrackId : emptyIfNull( removed )) {
             removeIssueCrmNumberIfSame( youtrackId, caseNumber);
@@ -99,8 +95,6 @@ public class YoutrackServiceImpl implements YoutrackService {
         for (String youtrackId : emptyIfNull( added)) {
             setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
         }
-
-        return ok();
     }
 
     private Result<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {

@@ -338,7 +338,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
-        if(existing.isEmpty() && isEmpty(added) && isEmpty(removed))
+        if(isEmpty(existing) && isEmpty(added) && isEmpty(removed))
             return Collections.emptyMap();
 
         Map<String, Object> model = new HashMap<>(3);

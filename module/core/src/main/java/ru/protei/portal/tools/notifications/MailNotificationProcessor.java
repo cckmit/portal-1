@@ -28,7 +28,6 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -88,6 +87,7 @@ public class MailNotificationProcessor {
 
         log.info( "Case notification :: subscribers: {}", join( notifiers, ni->ni.getAddress(), ",") );
 
+        try {
             Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
             final boolean IS_PRIVATE_RECIPIENT = true;
 
@@ -114,7 +114,9 @@ public class MailNotificationProcessor {
                 performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
                 performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
-
+        } catch (Exception e) {
+            log.error( "Can't sent mail notification with case id = {}. Exception = {}", event.getCaseObjectId(), e.getMessage() );
+        }
     }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {

@@ -36,5 +36,5 @@ public interface YoutrackService {
     Result<String> removeIssueCrmNumberIfSame( String youtrackId, Long caseNumber );
 
     @Async(BACKGROUND_TASKS)
-    Result<Void> mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed );
+    void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed );
 }
