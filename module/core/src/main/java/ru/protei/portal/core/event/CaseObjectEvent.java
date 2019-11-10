@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
 /**
  * Created by michael on 04.05.17.
  */
@@ -20,7 +22,7 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private CaseObject oldState;
     private Person person;
     private ServiceModule serviceModule;
-    private DiffCollectionResult<CaseLink> mergeLinks;
+
 
     public CaseObjectEvent(  Object source, ServiceModule serviceModule, Person person, CaseObject oldState,  CaseObject newState ) {
         super(source);
@@ -66,15 +68,27 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType() );
     }
 
-    public DiffCollectionResult<CaseLink> getMergeLinks() {
-        return mergeLinks;
+    @Override
+    public String toString() {
+        return "CaseObjectEvent{" +
+                "caseObjectId=" + getCaseObjectId() +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", oldState=" + asString( oldState ) +
+                ", newState=" + asString( newState ) +
+                ", person=" + (person == null ? null : person.getId()) +
+
+                '}';
     }
 
-    public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
-        this.mergeLinks = mergeLinks;
-        return this;
+    private String asString( CaseObject caseObject ) {
+        if(caseObject==null) return null;
+        return "CaseObject{" +
+                "id=" + caseObject.getId() +
+                ", caseNumber=" + caseObject.getCaseNumber() +
+                ", typeId=" + caseObject.getTypeId() +
+                ", extId='" + caseObject.getExtId() + '\'' +
+                '}';
     }
-
 
 
 }

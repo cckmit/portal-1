@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseLinksEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
@@ -181,18 +181,6 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        DiffCollectionResult<CaseLink> mergeLinks = null;
-        if (isNotEmpty(caseObject.getLinks())) {
-            mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() ).getData();
-        }
-
-        if (isNotEmpty(caseObject.getLinks())) {
-            List<String> youtrackIds = selectYouTrackLinkRemoteIds( caseObject.getLinks() );
-            for (String youtrackId : youtrackIds) {
-                youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseObject.getCaseNumber());
-            }
-        }
-
         if (isNotEmpty(caseObject.getTags())) {
             caseObjectTagDAO.persistBatch(
                     caseObject.getTags()
@@ -207,9 +195,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState )
-                .withLinks(mergeLinks)
-        );
+        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState ));
 
         return ok(newState);
     }
@@ -252,16 +238,6 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        caseLinkService.getYoutrackLinks( caseObject.getId() ).ifOk( oldLinks ->
-                mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
-        );
-
-        DiffCollectionResult<CaseLink> mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() )
-                .orElseThrow( result -> {
-                    log.info( "Failed to merge links for the issue {}", caseObject.getId() );
-                    return new ResultStatusException( result.getStatus() );
-                } ).getData();
-
         synchronizeTags(caseObject, authService.findSession(token));
         jdbcManyRelationsHelper.persist(caseObject, "tags");
 
@@ -272,7 +248,7 @@ public class CaseServiceImpl implements CaseService {
         persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
-            return new CaseObjectUpdateResult(caseObject, mergeLinks, isLinksChanged(mergeLinks));
+            return new CaseObjectUpdateResult(caseObject, false);
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
@@ -334,41 +310,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        return new CaseObjectUpdateResult(caseObject, mergeLinks, true);
-    }
-
-    private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {
-        DiffCollectionResult<String> youTrackLinkIdsDiff = CollectionUtils.
-                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
-
-        for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
-            youtrackService.removeIssueCrmNumberIfSame( youtrackId, caseNumber);
-        }
-
-        for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getAddedEntries())) {
-            youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
-        }
-    }
-
-    private List<String> selectYouTrackLinkRemoteIds( List<CaseLink> links ) {
-        return stream(links).filter(  caseLink -> YT.equals( caseLink.getType() )).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
-    }
-
-    private CaseCommentSaveOrUpdateResult performSaveOrUpdateCaseComment(AuthToken token, CaseComment caseComment, Person initiator) {
-        if (caseComment == null) {
-            return new CaseCommentSaveOrUpdateResult();
-        }
-        Result<CaseCommentSaveOrUpdateResult> response;
-        if (caseComment.getId() == null) {
-            response = caseCommentService.addCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment);
-        } else {
-            response = caseCommentService.updateCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment, initiator);
-        }
-        if (response.isError()) {
-            log.info("Failed to add/update comment with status {} : {}", response.getStatus(), caseComment);
-            throw new ResultStatusException(response.getStatus());
-        }
-        return response.getData();
+        return new CaseObjectUpdateResult(caseObject, true);
     }
 
     @Override
@@ -500,24 +442,19 @@ public class CaseServiceImpl implements CaseService {
                 .map( this::fillYouTrackInfo );
     }
 
-    @Override
-    public Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff ) {
-        CaseObject caseObject = caseObjectDAO.getCaseByCaseno( caseNumber );
-        if (!isEmpty( caseObject.getLinks() )) {
-            linksDiff.putSameEntries( caseObject.getLinks() );
-        }
-
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, null, caseObject, caseObject)//TODO link need Person!
-                .withLinks( linksDiff )
-        );
-        return ok(caseObject.getId());
-    }
 
     @Override
     public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {
         Long caseId = caseObjectDAO.getCaseIdByNumber( caseNumber );
         if(caseId==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseId);
+    }
+
+    @Override
+    public Result<Long> getCaseNumberById( AuthToken token, Long caseId ) {
+        Long caseNumber = caseObjectDAO.getCaseNumberById( caseId );
+        if(caseNumber==null) error( En_ResultStatus.NOT_FOUND );
+        return ok(caseNumber);
     }
 
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {

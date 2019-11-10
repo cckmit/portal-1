@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
@@ -42,12 +43,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return getList(query);
     }
 
-//    @Override
-//    public Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-//        applyFilterByScope( token, query );
-//        return getList(query);
-//    }
-
     @Override
     @Transactional
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
@@ -63,11 +58,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
+                    resultData.getAddedAttachments(), null
+            ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent)
-                    .withNewCaseComment(resultData.getCaseComment())
-                    .withAddedAttachments(resultData.getAddedAttachments())
-                    );
+            publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent,
+                    null, resultData.getCaseComment(), null ) );
         }
 
         return ok(resultData.getCaseComment());
@@ -145,12 +141,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent)
-                    .withOldCaseComment(resultData.getOldCaseComment())
-                    .withNewCaseComment(resultData.getCaseComment())
-                    .withRemovedAttachments(resultData.getRemovedAttachments())
-                    .withAddedAttachments(resultData.getAddedAttachments())
-                    );
+            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
+                    resultData.getAddedAttachments(), resultData.getRemovedAttachments())
+            );
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
+                            isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
         }
 
         return ok( resultData.getCaseComment());
@@ -280,10 +275,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, caseId, isEagerEvent)
-                .withRemovedCaseComment(removedComment)
-                .withRemovedAttachments(removedAttachments)
-                );
+        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, person, caseId, null, removedAttachments ) );
+        publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person, caseId, isEagerEvent, null, null, removedComment ) );
 
         return ok( isRemoved);
     }

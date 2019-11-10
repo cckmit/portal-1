@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 
 import java.util.Calendar;
@@ -32,7 +32,9 @@ public class AssemblerServiceImpl implements AsseblerService {
         if (sourceEvent == null) return;
 
         fillCaseObject( sourceEvent ).flatMap(
-                this::fillComments ).ifOk( filledEvent ->
+                this::fillComments ).flatMap(
+                this::fillAttachments ).flatMap(
+                this::fillLinks ).ifOk( filledEvent ->
                 publisherService.publishEvent( filledEvent ) );
     }
 
@@ -42,11 +44,36 @@ public class AssemblerServiceImpl implements AsseblerService {
             return ok( e );
         }
 
-       log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
+        log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
 
         e.setLastCaseObject( caseObjectDAO.get( e.getCaseObjectId() ) );
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
+        return ok( e );
+    }
+
+    private Result<AssembledCaseEvent> fillAttachments( AssembledCaseEvent e ) {//TODO
+        if (e.isAttachmentsFilled()) {
+            log.info( "fillAttachments(): CaseObjectID={} Attachments are already filled.", e.getCaseObjectId() );
+            return ok( e );
+        }
+        log.info( "fillAttachments(): CaseObjectID={} Try to fill attachments.", e.getCaseObjectId() );
+        e.setExistingAttachments(  attachmentDAO.getListByCaseId( e.getCaseObjectId() ));
+        log.info( "fillAttachments(): CaseObjectID={} Attachments are successfully filled.", e.getCaseObjectId() );
+
+        return ok( e );
+    }
+
+    private Result<AssembledCaseEvent> fillLinks( AssembledCaseEvent e ) {
+        if (e.isLinksFilled()) {
+            log.info( "fillLinks(): CaseObjectID={} Links are already filled.", e.getCaseObjectId() );
+            return ok( e );
+        }
+
+        log.info( "fillLinks(): CaseObjectID={} Try to fill links.", e.getCaseObjectId() );
+        e.setExistingLinks( caseLinkDAO.getListByQuery( new CaseLinkQuery( e.getCaseObjectId(), false ) ) );
+        log.info( "fillLinks(): CaseObjectID={} Links are successfully filled.", e.getCaseObjectId() );
+
         return ok( e );
     }
 
@@ -59,7 +86,7 @@ public class AssemblerServiceImpl implements AsseblerService {
         log.info( "fillComments(): CaseObjectID={} Try to fill comments.", e.getCaseObjectId() );
         Date upperBoundDate = makeCommentUpperBoundDate( e );
 
-        e.setInitialCaseComments( caseCommentDAO.getCaseComments(new CaseCommentQuery( e.getCaseObjectId(), upperBoundDate )) );
+        e.setInitialCaseComments( caseCommentDAO.getCaseComments( new CaseCommentQuery( e.getCaseObjectId(), upperBoundDate ) ) );
 
         log.info( "fillComments(): CaseObjectID={} Comments are successfully filled.", e.getCaseObjectId() );
         return ok( e );
@@ -88,6 +115,11 @@ public class AssemblerServiceImpl implements AsseblerService {
     @Autowired
     CaseObjectDAO caseObjectDAO;
 
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

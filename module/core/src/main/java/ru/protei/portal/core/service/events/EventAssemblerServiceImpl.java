@@ -8,15 +8,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.AsseblerService;
 //import ru.protei.portal.core.utils.EventExpirationControl;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -29,7 +27,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void onCaseObjectEvent( CaseObjectEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
         log.info( "onCaseObjectEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
-        assembledPrevEvent.attachEvent( event );
+        assembledPrevEvent.attachCaseObjectEvent( event );
     }
 
     @Override
@@ -37,7 +35,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void onCaseCommentEvent( CaseCommentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
         log.info( "onCaseCommentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
-        assembledPrevEvent.attachEvent( event );
+        assembledPrevEvent.attachCommentEvent( event );
     }
 
     @Override
@@ -45,7 +43,15 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     public void onCaseAttachmentEvent( CaseAttachmentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
         log.info( "onCaseAttachmentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
-        assembledPrevEvent.attachEvent( event );
+        assembledPrevEvent.attachAttachmentEvent( event );
+    }
+
+    @Override
+    @EventListener
+    public void onCaseLinkEvent( CaseLinksEvent event) {
+        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
+        log.info( "onCaseLinkEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        assembledPrevEvent.attachLinkEvent( event );
     }
 
     @Override
@@ -83,7 +89,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     private AssembledCaseEvent getAssembledCaseEvent( AbstractCaseEvent event ) {
         Tuple<Person, Long> key = makeEventKey(event);
-        log.info( "publishEvent getAssembledCaseEvent(): {}",  key);
+        log.info( "getAssembledCaseEvent(): Key {} for {}",  key, event);
         return assembledEventsMap.computeIfAbsent(key, k->new AssembledCaseEvent( event ));//concurrency
     }
 
@@ -107,6 +113,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     private PortalConfig config;
     @Autowired
     AsseblerService assemblerService;
+
     private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 }

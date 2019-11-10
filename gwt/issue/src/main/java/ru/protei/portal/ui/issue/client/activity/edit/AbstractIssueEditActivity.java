@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 
 import java.util.function.Consumer;
 
@@ -20,4 +21,6 @@ public interface AbstractIssueEditActivity {
     void onDisplayPreviewChanged( String description, boolean isDisplay );
 
     void onCopyClicked();
+
+    void onCaseMetaChanged( CaseMeta value );
 }

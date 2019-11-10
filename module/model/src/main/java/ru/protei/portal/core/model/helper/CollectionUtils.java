@@ -151,9 +151,19 @@ public class CollectionUtils {
         return new ArrayList<>( Arrays.asList( elements ));
     }
 
+    public static <T> List<T> listOf(Collection<T> elements){
+        if(elements == null) return Collections.EMPTY_LIST;
+        return new ArrayList<>( elements );
+    }
+
     public static <T> Set<T> setOf(T... elements){
         if(elements == null) return Collections.EMPTY_SET;
         return new HashSet<>( Arrays.asList( elements ));
+    }
+
+    public static <T> Set<T> setOf(Collection<T> elements){
+        if(elements == null) return Collections.EMPTY_SET;
+        return new HashSet<>( elements );
     }
 
     public static <T> T findPreviousElement(Set<T> set, T element) {

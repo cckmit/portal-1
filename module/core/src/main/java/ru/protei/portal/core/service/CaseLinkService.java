@@ -1,14 +1,17 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,11 +23,9 @@ public interface CaseLinkService {
     Result<List<CaseLink>> getLinks( AuthToken token, Long caseId);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> links);
+    Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks );
 
     Result<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId );
-
-    Result<List<CaseLink>> getYoutrackLinks( Long caseId);
 
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 

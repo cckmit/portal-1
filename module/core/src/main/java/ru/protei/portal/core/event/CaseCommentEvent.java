@@ -3,11 +3,17 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import static org.apache.commons.collections4.IterableUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
  * Created by michael on 04.05.17.
@@ -20,16 +26,19 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
     private CaseComment removedCaseComment;
     private Person person;
     private ServiceModule serviceModule;
-    private Collection<Attachment> addedAttachments;
-    private Collection<Attachment> removedAttachments;
     private boolean isEagerEvent;
 
-    public CaseCommentEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId, boolean isEagerEvent) {
+    public CaseCommentEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId, boolean isEagerEvent,
+                            CaseComment oldCaseComment, CaseComment newCaseComment, CaseComment removedCaseComment
+                            ) {
         super(source);
         this.serviceModule = serviceModule;
         this.person = person;
         this.caseObjectId = caseObjectId;
         this.isEagerEvent = isEagerEvent;
+        this.oldCaseComment = oldCaseComment;
+        this.newCaseComment = newCaseComment;
+        this.removedCaseComment = removedCaseComment;
     }
 
     public ServiceModule getServiceModule() {
@@ -61,38 +70,30 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return person;
     }
 
-    public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments == null? Collections.emptyList(): addedAttachments;
+    @Override
+    public String toString() {
+        return "CaseCommentEvent{" +
+                "caseObjectId=" + caseObjectId +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", person=" + (person==null?null:person.getId()) +
+                ", isEagerEvent=" + isEagerEvent +
+                ", newCaseComment=" + asString( newCaseComment) +
+                ", oldCaseComment=" + asString(oldCaseComment) +
+                ", removedCaseComment=" + asString(removedCaseComment) +
+                '}';
     }
 
-    public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments == null? Collections.emptyList(): removedAttachments;
+    private String asString( CaseComment caseComment ) {
+        if (caseComment == null) return "null";
+        return "{" +
+                "id=" + caseComment.getId() +
+                ", caseId=" + caseComment.getCaseId() +
+                ", privateComment=" + caseComment.isPrivateComment() +
+                ", text length='" + StringUtils.length( caseComment.getText() ) + '\'' +
+                ", timeElapsedType=" + caseComment.getTimeElapsedType() +
+                ", timeElapsed=" + caseComment.getTimeElapsed() +
+                ", remoteLink=" + caseComment.getRemoteLink() +
+                ", caseAttachments=" + toList( caseComment.getCaseAttachments(), CaseAttachment::getId ) +
+                '}';
     }
-
-    public CaseCommentEvent withNewCaseComment( CaseComment caseComment) {
-        this.newCaseComment = caseComment;
-        return this;
-    }
-
-    public CaseCommentEvent withOldCaseComment(CaseComment oldCaseComment) {
-        this.oldCaseComment = oldCaseComment;
-        return this;
-    }
-
-    public CaseCommentEvent withRemovedCaseComment(CaseComment removedCaseComment) {
-        this.removedCaseComment = removedCaseComment;
-        return this;
-    }
-
-    public CaseCommentEvent withAddedAttachments(Collection<Attachment> addedAttachments) {
-        this.addedAttachments = addedAttachments;
-        return this;
-    }
-
-    public CaseCommentEvent withRemovedAttachments(Collection<Attachment> removedAttachments) {
-        this.removedAttachments = removedAttachments;
-        return this;
-    }
-
-
 }

@@ -112,12 +112,9 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("addedLinks", mergeLinks == null ? null : mergeLinks.getAddedEntries());
         templateModel.put("removedLinks", mergeLinks == null ? null : mergeLinks.getRemovedEntries());
 
-        Collection<Attachment> existingAttachments = new ArrayList<>((oldState == null? newState.getAttachments(): oldState.getAttachments()));
-        existingAttachments.removeIf(a -> event.getRemovedAttachments().contains(a) || event.getAddedAttachments().contains(a));
-
         templateModel.putAll(
                 buildAttachmentModelKeys(
-                        existingAttachments,
+                        event.getExistingAttachments(),
                         event.getAddedAttachments(),
                         event.getRemovedAttachments())
         );
@@ -341,7 +338,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
-        if(existing.isEmpty() && isEmpty(added) && isEmpty(removed))
+        if(isEmpty(existing) && isEmpty(added) && isEmpty(removed))
             return Collections.emptyMap();
 
         Map<String, Object> model = new HashMap<>(3);

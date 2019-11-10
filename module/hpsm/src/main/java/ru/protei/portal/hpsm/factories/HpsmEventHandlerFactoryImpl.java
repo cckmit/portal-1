@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
@@ -362,10 +363,8 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), false)
-                .withNewCaseComment(comment)
-                .withAddedAttachments(addedAttachments)
-                );
+        eventPublisherService.publishEvent( new CaseAttachmentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), addedAttachments, null));
+        eventPublisherService.publishEvent( new CaseCommentEvent(caseService, ServiceModule.HPSM, contactPerson, obj.getId(), false, null, comment, null));
 
         return comment;
     }

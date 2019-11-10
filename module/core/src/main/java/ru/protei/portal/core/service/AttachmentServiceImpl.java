@@ -47,7 +47,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     FileStorage fileStorage;
 
     @Autowired
-    EventPublisherService publisherService;
+    EventAssemblerService publisherService;
 
     @Autowired
     AuthService authService;
@@ -85,10 +85,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             if(result.isOk()
                     && ud != null ) {
-                List<Attachment> oldAttachments = attachmentDAO.getListByCaseId( ca.getCaseId() );
-                publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, ud.getPerson(), ca.getCaseId(), oldAttachments )
-                        .withRemovedAttachments(Collections.singletonList(attachment))
-                        );
+                publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
+                        ud.getPerson(), ca.getCaseId(), null, Collections.singletonList(attachment)));
             }
 
             return result;

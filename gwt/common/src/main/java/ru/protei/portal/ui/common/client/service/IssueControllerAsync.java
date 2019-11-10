@@ -9,7 +9,9 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Асинхронный сервис управления обращениями
@@ -31,4 +33,6 @@ public interface IssueControllerAsync {
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 
     void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
+
+    void updateCaseLinks( Long caseId, Collection<CaseLink> links, AsyncCallback<List<CaseLink>> setFluentCallback );
 }

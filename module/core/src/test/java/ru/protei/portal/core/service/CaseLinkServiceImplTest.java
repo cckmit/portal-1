@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -18,6 +20,8 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 
 import java.util.Collections;
 
@@ -44,21 +48,20 @@ public class CaseLinkServiceImplTest {
 
     @Mock
     EventPublisherService publisherService;
+    @Autowired
+    EventAssemblerService assemblerService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks( this );
-        ReflectionTestUtils.setField(caseService, "publisherService", publisherService);
+        ReflectionTestUtils.setField(caseLinkService, "publisherService", publisherService);
     }
 
     @Test
     public void sendMailNotificationOnAddLinks() {
 
-        CaseObject caseObject = new CaseObject();
-        caseObject.setLinks( CollectionUtils.listOf( new CaseLink() ) );
-
         when( caseObjectDAO.getCaseIdByNumber( eq( CASE_NUMBER ) ) ).thenReturn( CASE_ID );
-        when( caseObjectDAO.getCaseByCaseno( eq( CASE_NUMBER ) ) ).thenReturn( caseObject );
+        when( caseObjectDAO.getCaseByCaseno( eq( CASE_NUMBER ) ) ).thenReturn( new CaseObject() );
         when( caseLinkDAO.getListByQuery( any( CaseLinkQuery.class ) ) ).thenReturn( Collections.EMPTY_LIST );
         when( caseLinkDAO.persist( any( CaseLink.class ) ) ).thenReturn( CASELINK_ID );
 

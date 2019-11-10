@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.util.SimpleProfiler;
+import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 
@@ -149,7 +150,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 .withSuccess(caseId -> {
                     unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeModel());//TODO скорее всего избыточно, удалить
+//                    fireEvent(new IssueEvents.ChangeModel());//TODO скорее всего избыточно, удалить
                     fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
                 }));
 
@@ -269,6 +270,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Override
+    public void onCaseMetaChanged( CaseMeta value ) {
+
+        issueService.updateCaseLinks( issue.getId(), value.getLinks(), new FluentCallback<List<CaseLink>>()
+                .withError( t -> view.links().setValue( null ) )//TODO rework CaseMetaView handlers
+                .withSuccess( caseLinks ->
+                        view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
+                ) );
+
+    }
+
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
@@ -345,7 +357,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+//        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
         view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
@@ -454,7 +466,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
-        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
+//        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
         issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
         issue.setPlatformId(view.platform().getValue() == null ? null : view.platform().getValue().getId());
 
