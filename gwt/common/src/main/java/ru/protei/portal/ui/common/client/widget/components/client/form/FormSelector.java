@@ -9,7 +9,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -17,6 +16,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
@@ -153,8 +153,10 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         this.text.setInnerHTML(selector.makeElementHtml(value));
     }
 
-    protected SelectorItem makeSelectorItem() {
-        return new PopupSelectorItem();
+    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectorItem item = new PopupSelectorItem();
+        item.setName(elementHtml);
+        return item;
     }
 
 

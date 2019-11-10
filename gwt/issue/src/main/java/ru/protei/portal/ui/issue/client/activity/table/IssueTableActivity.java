@@ -43,6 +43,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
@@ -77,7 +78,6 @@ public abstract class IssueTableActivity
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
         filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
-        filterParamView.setCompaniesModel( companySelectorModel );
 
         pagerView.setActivity( this );
 
@@ -532,102 +532,10 @@ public abstract class IssueTableActivity
     @Inject
     IssueFilterService issueFilterService;
 
-
-    @Inject
-    CompanyControllerAsync companyService;
-
-
-    AsyncSelectorModel<EntityOption> companySelectorModel = new AsyncSelectorModel<EntityOption>() {
-        boolean isRequested = false;
-        int total = Integer.MAX_VALUE;
-        int limit = 100;
-        private List<EntityOption> options = new ArrayList();
-        CompanyQuery query = new CompanyQuery();
-        LoadingHandler loadingHandler;
-
-        DataCache<EntityOption> cache =  new DataCache( new DataCache.DataCacheHandler() {
-            @Override
-            public void onDataCacheChanged() {
-                if (loadingHandler != null) loadingHandler.onLoadingComplete();
-            }
-        } );
-
-        @Override
-        public EntityOption get( int elementIndex, LoadingHandler loadingHandler ) {
-            if(total <= elementIndex) return null;
-            EntityOption option = cache.get( elementIndex );
-            if (option == null) {
-                this.loadingHandler = loadingHandler;
-                loadingHandler.onLoadingStart();
-            }
-            return option;
-        }
-
-        {
-            query.setSortHomeCompaniesAtBegin( true );
-            cache.setSavedChunks( 100 );
-            cache.setLoadHandler( new InfiniteLoadHandler() {
-                @Override
-                public void loadData( int offset, int limit, AsyncCallback handler ) {
-                    query.setOffset(offset);
-                    query.setLimit(limit);
-                    companyService.getCompanyOptionList( query, new RequestCallback<List<EntityOption>>() {
-                        @Override
-                        public void onError( Throwable throwable ) {
-                            fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                            handler.onFailure( throwable );
-                        }
-
-                        @Override
-                        public void onSuccess( List<EntityOption> opt ) {
-                            handler.onSuccess(opt);
-                            if(opt.size() < limit) total = offset+opt.size();
-                        }
-                    } );
-                }
-            });
-        }
-
-        //        @Override
-//        public EntityOption get( int elementIndex, LoadingHandler loadingHandler ) {
-//          if(total <= elementIndex) return null;
-//            if (options == null || options.size() <= elementIndex) {
-//                requestOptions( loadingHandler );
-//                return null;
-//            }
-//            return options.get( elementIndex );
-//        }
-        private void requestOptions( LoadingHandler loadingHandler ) {
-
-            if (isRequested) return;
-            isRequested = true;
-            int offset = options.size();
-            query.offset = offset;
-            loadingHandler.onLoadingStart();
-            companyService.getCompanyOptionList( query, new RequestCallback<List<EntityOption>>() {
-                @Override
-                public void onError( Throwable throwable ) {
-                    isRequested = false;
-                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                    loadingHandler.onLoadingComplete();
-                }
-
-                @Override
-                public void onSuccess( List<EntityOption> opt ) {
-                    isRequested = false;
-                    if(opt.size() < limit) total = offset+opt.size();
-                    options.addAll(  opt );
-                    loadingHandler.onLoadingComplete();
-                }
-            } );
-        }
-    };
-
-
     SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
         @Override
         public void append( String message, double currentTime ) {
-            log.info("IssueTableActivity: "+ message+" "+currentTime);
+            log.info("Profile IssueTableActivity: "+ message+" "+currentTime);
 
         }
     } );

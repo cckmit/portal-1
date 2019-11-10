@@ -1,14 +1,24 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:search="urn:import:ru.protei.portal.ui.common.client.widget.components.client.selector.search">
+             xmlns:search="urn:import:ru.protei.portal.ui.common.client.widget.components.client.selector.search"
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+>
 
-    <g:HTMLPanel ui:field="root" styleName="dropdown-menu">
-        <search:SearchField ui:field="searchField"/>
-        <g:HTMLPanel ui:field="childContainer" styleName="childContainer"/>
-        <g:Label ui:field="message" visible="false"/>
-        <g:HTMLPanel ui:field="loading" visible="false">
-            <i class='fa fa-spinner fa-pulse'></i>
-        </g:HTMLPanel>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" styleName="selector-popup">
+        <div class="dropdown-addbutton hide" ui:field="addContainer">
+            <g:Button ui:field="addButton"/>
+        </div>
+        <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="dropdown-searchbox hide1"/>
+        <div class="dropdown-menu full-width show">
+            <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="full-width"/>
+            <g:Label ui:field="message" visible="false"/>
+            <g:HTMLPanel ui:field="loading" visible="false">
+                <i class='fa fa-spinner fa-pulse'></i>
+            </g:HTMLPanel>
+        </div>
+
     </g:HTMLPanel>
 
 </ui:UiBinder>

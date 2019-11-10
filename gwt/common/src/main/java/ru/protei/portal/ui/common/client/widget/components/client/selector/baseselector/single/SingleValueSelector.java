@@ -44,6 +44,11 @@ public class SingleValueSelector<T> extends AbstractPageableSelector<T>
         public boolean isEmpty() {
             return selectedOption == null;
         }
+
+        @Override
+        public void clear() {
+            selectedOption = null;
+        }
     };
 
     @Override

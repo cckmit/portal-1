@@ -1,13 +1,11 @@
 package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.*;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.*;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.*;
 
 import java.util.Iterator;
@@ -58,9 +56,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     @Override
     public void onPopupUnload(SelectorPopup selectorPopup) {
-        if (getSelector().isHideSelectedFromChose()) {
             clearPopup();
-        }
     }
 
     @Override
@@ -89,7 +85,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public void setSearchAutoFocus(boolean isSearchAutoFocus){//TODO
-        //
+        if(getPopup() instanceof SelectorPopupWithSearch) ((SelectorPopupWithSearch) getPopup()).setSearchAutoFocus(isSearchAutoFocus);
     }
 
     public void setPageSize(int pageSize) {
@@ -170,9 +166,12 @@ public abstract class AbstractPopupSelector<T> extends Composite
     public void setPopup(SelectorPopup popup) {
         this.popup = popup;
         popup.setPopupHandler(this);
+        if (getPopup() instanceof SelectorPopupWithSearch) {
+            ((SelectorPopupWithSearch) getPopup()).setSearchHandler(this);
+        }
     }
 
-    protected abstract SelectorItem makeSelectorItem();
+    protected abstract SelectorItem makeSelectorItem( T element, String elementHtml );
 
     protected abstract AbstractPageableSelector getSelector();
 
@@ -183,10 +182,11 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     private Widget makeItemView(T t, String elementHtml) {
-        SelectorItem itemView = makeSelectorItem();
-        itemView.setElementHtml(elementHtml);
+        SelectorItem itemView = makeSelectorItem(t, elementHtml);
+//        itemView.setElementHtml(elementHtml);
         itemView.setValue(t);
         itemView.addSelectorHandler(this);
+        itemView.addKeyUpHandler( keyUpItemHandler );
         return itemView.asWidget();
     }
 
@@ -199,10 +199,42 @@ public abstract class AbstractPopupSelector<T> extends Composite
         }
     };
 
+    private void onArrowUp( SelectorItem item) {
+        HTMLPanel panel = (HTMLPanel) getPopup().getChildContainer();
+        int selectedItemIndex = panel.getWidgetIndex(item);
+        if (selectedItemIndex == 0) {
+            return;
+        }
+        SelectorItem previousSelectorItem = (SelectorItem) panel.getWidget(--selectedItemIndex);
+        previousSelectorItem.setFocus(true);
+    }
+
+    private void onArrowDown( SelectorItem item) {
+        HTMLPanel panel = (HTMLPanel) getPopup().getChildContainer();
+        int selectedItemIndex = panel.getWidgetIndex(item);
+        if (selectedItemIndex == panel.getWidgetCount() - 1) {
+            return;
+        }
+        SelectorItem nextSelectorItem = (SelectorItem) panel.getWidget(++selectedItemIndex);
+        nextSelectorItem.setFocus(true);
+    }
+
+
+    KeyUpHandler keyUpItemHandler = keyUpEvent -> {
+        keyUpEvent.preventDefault();
+        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            onArrowDown((SelectorItem) keyUpEvent.getSource());
+        }
+
+        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
+            onArrowUp((SelectorItem) keyUpEvent.getSource());
+        }
+    };
+
+
     private SelectorPopup popup;
 
     private String emptyListText = "-- No elements --";
 
     public static final String DISABLED = "disabled";
-
 }

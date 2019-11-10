@@ -5,5 +5,4 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.bases
 public interface SingleSelectionModel<T> extends SelectionModel<T> {
 
     T get();
-
 }

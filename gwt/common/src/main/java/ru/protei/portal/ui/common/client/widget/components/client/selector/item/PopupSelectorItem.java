@@ -1,15 +1,23 @@
 package ru.protei.portal.ui.common.client.widget.components.client.selector.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItemHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Вид одного элемента из выпадайки селектора
@@ -24,6 +32,12 @@ public class PopupSelectorItem<T>
 
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.POPUP.ITEM);
+        root.addDomHandler( event -> {
+            if(selectorItemHandler!=null) {
+                selectorItemHandler.onSelectorItemClicked(this);
+            }
+        }, KeyUpEvent.getType() );
     }
 
     @Override
@@ -32,47 +46,69 @@ public class PopupSelectorItem<T>
     }
 
     @Override
-    public void setElementHtml(String name ) {
-        text.getElement().setInnerHTML( name );
+    public HandlerRegistration addKeyUpHandler( KeyUpHandler keyUpHandler) {
+        return addHandler( keyUpHandler, KeyUpEvent.getType() );
     }
 
-    @UiHandler( "checkbox" )
-    public void onCheckboxClicked(ClickEvent event) {
-        selectorItemHandler.onSelectorItemClicked(this);
-        setSelectedStyle();
+    @Override
+    public void setElementHtml(String elementHtml ) {
+        root.getElement().setInnerHTML( elementHtml );
     }
 
-    @UiHandler( {"text", "info"}  )
+    @Override
+    public void setElementWidget(Widget widget ) {
+        root.add( widget );
+    }
+
+    public void setName( String name ) {
+        text.setInnerHTML( name );
+    }
+
+    public void setStyle( String style ) {
+        anchor.setStyleName( style );
+    }
+
+    public void setIcon( String className ) {
+        icon.setClassName( className );
+    }
+
+    public void setImage( String src ) {
+        image.removeClassName( "hide" );
+        image.setSrc( src );
+    }
+
+    @UiHandler( "anchor" )
     public void onAnchorClicked( ClickEvent event ) {
         event.preventDefault();
-        checkbox.setValue( !checkbox.getValue() );
+
         if(selectorItemHandler!=null) {
             selectorItemHandler.onSelectorItemClicked(this);
         }
     }
 
-    public void setEnsureDebugId( String debugId ) {
-        checkbox.ensureDebugId( debugId );
+    @UiHandler("anchor")
+    public void onKeyUpEvent( KeyUpEvent keyUpEvent) {
+        keyUpEvent.preventDefault();
+
+        KeyUpEvent.fireNativeEvent(keyUpEvent.getNativeEvent(), this);
     }
 
-    private void setSelectedStyle() {
-        if ( checkbox.getValue() ) {
-            text.addStyleName( SELECTED );
-            info.addStyleName( SELECTED );
-        } else {
-            text.removeStyleName( SELECTED );
-            info.removeStyleName( SELECTED );
-        }
+    @Override
+    public void setFocus( boolean isFocused ) {
+        anchor.setFocus( isFocused );
     }
 
+
     @UiField
-    HTMLPanel panel;
+    SpanElement text;
     @UiField
-    CheckBox checkbox;
+    HTMLPanel root;
     @UiField
-    InlineLabel text;
+    Anchor anchor;
     @UiField
-    InlineLabel info;
+    ImageElement image;
+    @UiField
+    Element icon;
 
     @Override
     public T getValue() {
@@ -83,9 +119,6 @@ public class PopupSelectorItem<T>
     public void setValue(T t) {
         value = t;
     }
-
-    public static final String SELECTED = "selected";
-
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectorItem> {
     }

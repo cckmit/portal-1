@@ -618,7 +618,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
         @Override
         public void append( String message, double currentTime ) {
-            log.info("IssueEditActivity: "+ message+" "+currentTime);
+            log.info("Profile IssueEditActivity: "+ message+" "+currentTime);
 
         }
     } );

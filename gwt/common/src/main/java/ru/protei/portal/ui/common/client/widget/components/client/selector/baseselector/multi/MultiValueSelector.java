@@ -4,10 +4,7 @@ import com.google.gwt.user.client.TakesValue;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectionModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 
 /**
@@ -42,7 +39,7 @@ public class MultiValueSelector<T> extends AbstractPageableSelector<T>
     }
 
     private MultiSelectionModel<T> selectionModel = new MultiSelectionModel<T>() {
-        protected Set<T> selectedOption = new TreeSet<T>();
+        protected List<T> selectedOption = new ArrayList<>();
 
         @Override
         public void select(T value) {
@@ -55,7 +52,7 @@ public class MultiValueSelector<T> extends AbstractPageableSelector<T>
 
         @Override
         public Set<T> get() {
-            return selectedOption;
+            return new HashSet<>( selectedOption );
         }
 
         @Override

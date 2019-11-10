@@ -6,4 +6,6 @@ public interface SelectionModel<T>{
     boolean isSelected( T t );
 
     boolean isEmpty();
+
+    void clear();
 }

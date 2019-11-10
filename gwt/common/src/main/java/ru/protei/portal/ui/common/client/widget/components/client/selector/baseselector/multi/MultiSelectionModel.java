@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.components.client.selector.base
 
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectionModel;
 
-import java.util.List;
 import java.util.Set;
 
 public interface MultiSelectionModel<T> extends SelectionModel<T> {

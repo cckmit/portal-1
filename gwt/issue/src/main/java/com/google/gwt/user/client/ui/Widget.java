@@ -419,13 +419,13 @@ public class Widget extends UIObject implements EventListener, HasAttachHandlers
   SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
     @Override
     public void append( String message, double currentTime ) {
-      if(currentTime < 2) return;
-      if (currentTime < 5) {
-        log.info( message + " " + currentTime + " " + Widget.this.getClass().getSimpleName() + " " + getStyleName());
+      if(currentTime < 5) return;
+      if (currentTime < 11) {
+        log.info( "Profile "+message + " " + currentTime + " " + Widget.this.getClass().getSimpleName() + " " + getStyleName());
         return;
       }
 
-      log.warning( message + " " + currentTime + " " + Widget.this.getClass().getSimpleName() + " " + getStyleName());
+      log.warning(  "Profile "+message + " " + currentTime + " " + Widget.this.getClass().getSimpleName() + " " + getStyleName());
 
     }
   } );

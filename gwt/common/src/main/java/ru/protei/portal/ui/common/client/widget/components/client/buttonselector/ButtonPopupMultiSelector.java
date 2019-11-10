@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.multi.MultiValueSelector;
@@ -98,8 +99,11 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(sb.toString());
     }
 
-    protected SelectorItem makeSelectorItem() {
-        return new PopupSelectorItem();
+    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectorItem item = new PopupSelectorItem();
+        item.setName(elementHtml);
+        item.getElement().addClassName( UiConstants.Styles.TEXT_CENTER);
+        return item;
     }
 
     @Override

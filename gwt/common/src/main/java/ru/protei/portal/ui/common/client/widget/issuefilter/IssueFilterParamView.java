@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
@@ -69,7 +70,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCompaniesModel( ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel<EntityOption> model ) {
+    public void setCompaniesModel( AsyncSelectorModel<EntityOption> model ) {
         companies.setAsyncSelectorModel( model );
     }
 

@@ -6,6 +6,7 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.Loadi
 
 /**
  * Кеш для асинхронных селекторов
+ * Запрос данных по необходимости чанками по ChunkSize, по умолчанию по 100 записей
  */
 public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T> {
 

@@ -170,3 +170,10 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
 }
+
+/* Попап селектора */
+.selector-popup{
+  position: absolute !important;
+  display: block !important;
+  float: left;
+}
