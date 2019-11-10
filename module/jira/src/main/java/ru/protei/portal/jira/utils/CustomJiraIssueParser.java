@@ -10,10 +10,7 @@ import org.joda.time.DateTime;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.*;
 import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOptionalJsonObject;
@@ -26,6 +23,7 @@ import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOp
 public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
     public static final String CUSTOM_FIELD_SEVERITY = "customfield_12405";
     public static final String SEVERITY_CODE_NAME = "severity";
+    public static final String CUSTOM_FILED_CLM = "customfield_22112";
     private final BasicIssueJsonParser basicIssueJsonParser = new BasicIssueJsonParser();
     private final StatusJsonParser statusJsonParser = new StatusJsonParser();
     private final VersionJsonParser versionJsonParser = new VersionJsonParser();
@@ -215,11 +213,15 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
 
     private Collection<IssueField> parseFields(final JSONObject issueJson) throws JSONException {
         final JSONObject json = issueJson.getJSONObject(FIELDS);
+        Set<IssueField> result = new HashSet<>();
         if (!json.isNull(CUSTOM_FIELD_SEVERITY)) {
             JSONObject severity = json.getJSONObject(CUSTOM_FIELD_SEVERITY);
-            return Collections.singleton(new IssueField(severity.getString("id"), SEVERITY_CODE_NAME, "string", severity.getString("value")));
+            result.add(new IssueField(severity.getString("id"), SEVERITY_CODE_NAME, "string", severity.getString("value")));
         }
+        if (!json.isNull(CUSTOM_FILED_CLM)) {
+            result.add(new IssueField(null, CUSTOM_FILED_CLM, "string", json.getString(CUSTOM_FILED_CLM)));
 
-        return Collections.emptyList();
+        }
+        return result;
     }
 }

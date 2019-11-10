@@ -1,10 +1,8 @@
 package ru.protei.portal.jira.service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.api.domain.Attachment;
-import com.atlassian.jira.rest.client.api.domain.Comment;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.jira.utils.CommonUtils;
+import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 
 import java.io.IOException;
@@ -356,7 +355,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private void updatePriorityAndInfo(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
 //        logger.debug("update case name, issue={}, case={}", issue.getKey(), caseObj.getCaseNumber());
-        caseObj.setName(issue.getKey() + " | " + issue.getSummary());
+        IssueField issueCLM = issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FILED_CLM);
+        caseObj.setName((issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary());
 
         // update severity
         String severityName = CommonUtils.getIssueSeverity(issue);

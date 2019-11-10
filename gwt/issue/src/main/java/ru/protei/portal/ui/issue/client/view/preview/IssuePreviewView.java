@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -106,13 +107,27 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setName( String value ) {
-        this.name.setInnerText( value );
-    }
+    public void setName( String value, boolean isJira ) {
+        if (!isJira || !value.startsWith("CLM")) {
+            this.name.setInnerHTML(value);
+        }
+        else {
+            String idCLM = value.split(" ")[0];
+            String remainingName = "&nbsp;" + value.substring(idCLM.length());
 
-    @Override
-    public String getName() {
-        return name.getInnerText();
+            AnchorElement jiraLink = DOM.createAnchor().cast();
+
+            jiraLink.setHref(JIRA_LINK + idCLM);
+            jiraLink.setTarget("_blank");
+            jiraLink.setInnerText(idCLM);
+
+            LabelElement nameWithoutLink = DOM.createLabel().cast();
+            nameWithoutLink.setInnerHTML(remainingName);
+
+            this.name.setInnerHTML("");
+            this.name.appendChild(jiraLink);
+            this.name.appendChild(nameWithoutLink);
+        }
     }
 
     @Override
@@ -291,7 +306,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement manager;
     @UiField
-    HeadingElement name;
+    SpanElement name;
     @UiField
     DivElement info;
     @Inject
@@ -373,6 +388,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     LabelElement platformLabel;
 
     AbstractIssuePreviewActivity activity;
+
+    private final String JIRA_LINK ="https://jira.billing.ru/browse/";
 
     interface IssuePreviewViewUiBinder extends UiBinder<HTMLPanel, IssuePreviewView> {}
     private static IssuePreviewViewUiBinder ourUiBinder = GWT.create( IssuePreviewViewUiBinder.class );

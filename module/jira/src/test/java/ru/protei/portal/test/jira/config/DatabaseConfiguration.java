@@ -40,7 +40,7 @@ public class DatabaseConfiguration {
      * Чейнджсеты ликвибейза применяются при инициализации его бина.
      * В нашем случае инициализируем бин вручную после разворачивания базы данных.
      */
-    @Bean
+   /* @Bean
     @Lazy
     public SpringLiquibase getSpringLiquibase(@Autowired DataSource dataSource) {
         SpringLiquibase springLiquibase = new WinterLiquibase();
@@ -54,5 +54,5 @@ public class DatabaseConfiguration {
     @Bean
     public EmbeddedDB getEmbeddedDB() {
         return new EmbeddedDBImpl();
-    }
+    }*/
 }
