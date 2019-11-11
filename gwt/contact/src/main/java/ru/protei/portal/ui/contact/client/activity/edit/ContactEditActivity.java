@@ -10,12 +10,10 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -108,15 +106,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        if(!isConfirmValidate()) {
+        if (passwordNotDefined()) {
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        if(!passwordConfirmed()) {
             fireEvent(new NotifyEvents.Show(lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
-        if (HelperFunc.isNotEmpty(view.login().getText()) && !Objects.equals(view.login().getText(), account.getUlogin()) && HelperFunc.isEmpty(view.password().getText())) {
-            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
         UserLogin userLogin = applyChangesLogin();
 
         Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
@@ -154,7 +153,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onChangeContactLogin() {
-        view.sendWelcomeEmailVisibility().setVisible(true);
+        view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
         String value = view.login().getText().trim();
@@ -316,11 +315,23 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.showInfo(userLogin.getId() != null);
     }
 
-    private boolean isConfirmValidate() {
+    private boolean passwordNotDefined() {
+        return HelperFunc.isNotEmpty(view.login().getText()) &&
+                !Objects.equals(view.login().getText().trim(), account.getUlogin()) &&
+                HelperFunc.isEmpty(view.password().getText());
+    }
+
+    private boolean passwordConfirmed() {
         return HelperFunc.isEmpty(view.login().getText()) ||
                 HelperFunc.isEmpty(view.password().getText()) ||
                 (!HelperFunc.isEmpty(view.confirmPassword().getText()) &&
                         view.password().getText().equals(view.confirmPassword().getText()));
+    }
+
+    private boolean isVisibleSendEmail() {
+        return HelperFunc.isNotEmpty(view.login().getText()) &&
+                (!Objects.equals(view.login().getText().trim(), account.getUlogin()) ||
+                HelperFunc.isNotEmpty(view.password().getText()));
     }
 
     private boolean isVisibleSendEmailWarning() {
@@ -337,12 +348,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Inject
     ContactControllerAsync contactService;
     @Inject
-    PolicyService policyService;
-
-    @Inject
     AccountControllerAsync accountService;
-    @Inject
-    CompanyControllerAsync companyService;
 
     private Person contact;
     private UserLogin account;
