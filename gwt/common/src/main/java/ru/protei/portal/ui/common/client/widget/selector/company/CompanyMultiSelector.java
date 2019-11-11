@@ -28,7 +28,7 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
         for ( EntityOption option : emptyIfNull( options) ) {
-            addOption(  option.getDisplayText(), option );
+            addOption( option.getDisplayText(), option );
         }
     }
 
@@ -37,5 +37,4 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
-
 }

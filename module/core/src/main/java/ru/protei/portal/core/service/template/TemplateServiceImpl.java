@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -68,6 +69,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "TextUtils", new TextUtils() );
         templateModel.put( "TimeElapsedFormatter", new WorkTimeFormatter() );
+        templateModel.put("TranslitUtils", new TransliterationUtils());
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );

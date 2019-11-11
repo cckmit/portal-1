@@ -20,7 +20,6 @@ public class EmployeeMultiSelector
     @Inject
     public void init(EmployeeModel model, Lang lang) {
         this.lang = lang;
-
         setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());

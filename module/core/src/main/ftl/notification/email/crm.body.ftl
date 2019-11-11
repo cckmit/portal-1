@@ -38,6 +38,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
+
+<#--  TranslitUtils.transliterate is ONLY for company names and person (creator, manager etc.) names  -->
+
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -57,7 +60,19 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
-        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayShortName)!'?'}</#if> <span style="padding-left: 4px"><#if case.created??>${case.created?datetime}<#else>?</#if></span>
+        ${_createdBy}
+        <#if createdByMe == true>
+            ${_yourself}
+        <#else>
+            ${(TranslitUtils.transliterate(case.creator.displayShortName, lang))!'?'}
+        </#if>
+        <span style="padding-left: 4px">
+            <#if case.created??>
+                ${case.created?datetime}
+            <#else>
+                ?
+            </#if>
+        </span>
     </div>
     <div style="margin-top: 12px">
         <table>
@@ -107,13 +122,13 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         <#if customerChanged>
                             <@changeTo
                                 old="${(oldInitiator.displayName)???then(
-                                        oldInitiator.displayName +' ('+ (oldInitiatorCompany.cname!'?') +')',
-                                        (oldInitiatorCompany.cname)!'?'
-                                    )}"
-                                new="${newCustomer}"
+                                    TranslitUtils.transliterate(oldInitiator.displayName, lang) +' ('+ (TranslitUtils.transliterate(oldInitiatorCompany.cname, lang)!'?') +')',
+                                    (TranslitUtils.transliterate(oldInitiatorCompany.cname))!'?'
+                                )}"
+                                new="${TranslitUtils.transliterate(newCustomer, lang)}"
                             />
-                            <#else>
-                                ${newCustomer}
+                        <#else>
+                            ${TranslitUtils.transliterate(newCustomer, lang)}
                         </#if>
                     </td>
                 </tr>
@@ -135,12 +150,16 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if managerChanged>
-                            <@changeTo
-                            old="${(oldManager??)?then(((oldManager.displayName)!'') +' ('+ oldManager.company.cname +')', '?')}"
-                            new="${(manager??)?then(((manager.displayName)!'') +' ('+ manager.company.cname +')', '?')}"
-                            />
+                                <@changeTo
+                                    old="${(oldManager??)?then(((TranslitUtils.transliterate(oldManager.displayName, lang))!'') +' ('+ TranslitUtils.transliterate(oldManager.company.cname, lang) +')', '?')}"
+                                    new="${(manager??)?then(((TranslitUtils.transliterate(manager.displayName, lang))!'') +' ('+ TranslitUtils.transliterate(manager.company.cname, lang) +')', '?')}"
+                                />
+                        <#else>
+                            <#if manager??>
+                                ${TranslitUtils.transliterate(manager.displayName, lang)!''} (${TranslitUtils.transliterate(manager.company.cname, lang)})
                             <#else>
-                                <#if manager??>${(manager.displayName)!''} (${manager.company.cname})<#else>?</#if>
+                                ?
+                            </#if>
                         </#if>
                     </td>
                 </tr>
@@ -288,14 +307,16 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </#if>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
-                        <#if caseComment.author??>${(caseComment.author.displayName)!''}</#if>
+                        <#if caseComment.author??>
+                            ${TranslitUtils.transliterate(caseComment.author.displayName, lang)!''}
+                        </#if>
                     </span>
                     <#if caseComment.caseState??>
                         ${_changedStateTo} ${caseComment.caseState}
                     <#elseif caseComment.caseImportance??>
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
-                        ${_changedManagerTo} ${caseComment.caseManager}
+                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManager, lang)}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
@@ -310,7 +331,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     </div>
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
-            ${_you} (<b>${userName!'?'}</b>) ${_notification_footer}
+            ${_you} (<b>${TranslitUtils.transliterate(userName, lang)!'?'}</b>) ${_notification_footer}
             <#list recipients as recipient>
                 <#if recipient??>
                     ${recipient}<#sep>, </#sep>
