@@ -150,7 +150,7 @@
                                                                    validation="false"
                                                                    header="{lang.issueInitiator}"
                                                                    mandatory="false"
-                                                                   fired="false"/>
+                                                                   />
                                     </div>
                                 </div>
                                 <g:HTMLPanel ui:field="platformContainer" styleName="row">

@@ -17,24 +17,35 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.single.SingleValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
  * Вид селектора
  */
 public class FormSelector<T> extends AbstractPopupSelector<T>
-        implements HasValidable, HasValue<T>, HasEnabled, HasVisibility {
+        implements HasValidable, HasValue<T>, HasEnabled, HasVisibility
+        , HasAddHandlers
+{
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
+
+        setPopup( popup );
+    }
+
+    public void setAddButtonVisible( boolean isVisible ) {
+        popup.setAddButton( isVisible );
     }
 
     @Override
@@ -73,6 +84,16 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler<T> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler( AddHandler handler ) {
+        return popup.addAddHandler( handler );
+    }
+
+    public void setAddButtonText(String addButtonText){
+        this.addButtonText = addButtonText;
+        popup.setAddButton( true, addButtonText );
     }
 
     @Override
@@ -173,12 +194,13 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
     }
     private SingleValueSelector<T> selector = new SingleValueSelector<T>();
     private boolean isValidable;
+    private String addButtonText;
 
     private static final String ERROR_STYLENAME ="has-error";
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
-
+    SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
     interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormSelector> { }
     private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
 

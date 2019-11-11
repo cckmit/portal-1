@@ -74,6 +74,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
+        initiator.setSelectorModel( initiatorModel );
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
 
@@ -319,7 +320,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompanies(InitiatorModel.makeCompanyIds(company));
+        initiatorModel.updateCompanies(null, InitiatorModel.makeCompanyIds(company), false);
     }
 
     @Override
@@ -670,6 +671,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     };
 
+    @Inject
+    InitiatorModel initiatorModel;
     private AbstractIssueEditActivity activity;
 
     interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}

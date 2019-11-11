@@ -12,17 +12,19 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 /**
  * Модель заявителей по обращению
  */
-public abstract class InitiatorModel implements Activity {
+public abstract class InitiatorModel implements Activity, SelectorModel<PersonShortView> {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -32,6 +34,8 @@ public abstract class InitiatorModel implements Activity {
     public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds, boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
+
+
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
@@ -39,12 +43,15 @@ public abstract class InitiatorModel implements Activity {
 
             @Override
             public void onSuccess(List<PersonShortView> options) {
+                InitiatorModel.this.options = options;
                 int value = options.indexOf(new PersonShortView("", myId, false));
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-                selector.fillOptions(options);
-                selector.refreshValue();
+                if(selector!=null){
+                    selector.fillOptions( options );
+                    selector.refreshValue();
+                }
             }
         });
     }
@@ -65,10 +72,16 @@ public abstract class InitiatorModel implements Activity {
         return companyIds;
     }
 
+    @Override
+    public PersonShortView get( int elementIndex ) {
+        if(size( options ) <= elementIndex) return null;
+        return options.get( elementIndex );
+    }
+
     @Inject
     PersonControllerAsync personService;
     @Inject
     Lang lang;
-
+    private List<PersonShortView> options;
     private Long myId;
 }
