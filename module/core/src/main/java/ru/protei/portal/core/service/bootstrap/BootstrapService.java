@@ -3,6 +3,7 @@ package ru.protei.portal.core.service.bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -11,11 +12,13 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.DocumentSvnService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -43,7 +46,7 @@ public class BootstrapService {
 //        autoPatchDefaultRoles();
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
-        patchNormalizeWorkersPhoneNumbers(); // remove once executed
+        //patchNormalizeWorkersPhoneNumbers(); // remove once executed
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
     }
@@ -257,6 +260,31 @@ public class BootstrapService {
                 });
     }
 
+    private void documentBuildFullIndex() {
+        // Данный метод создаст индексы для всех существующих документов
+        // Долгое выполнение
+        // Не запускать при существующем индексе! Запускать только при полностью утерянном индексе
+
+        log.info("Document index full build has started");
+
+        List<Document> partialDocuments = documentDAO.partialGetAll("id", "project_id");
+        int size = partialDocuments.size();
+        for (int i = 0; i < size; i++) {
+            Long documentId = partialDocuments.get(i).getId();
+            Long projectId = partialDocuments.get(i).getProjectId();
+            try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                documentSvnService.getDocument(projectId, documentId, out);
+                final byte[] fileData = out.toByteArray();
+                documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
+                log.info("Index created for document = {}, {}/{}", documentId, i, size);
+            } catch (Exception e) {
+                log.warn("Failed to create index for document = " + documentId + ", " + i + "/" + size, e);
+            }
+        }
+
+        log.info("Document index full build has ended");
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -288,4 +316,10 @@ public class BootstrapService {
     CaseTypeDAO caseTypeDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    DocumentDAO documentDAO;
+    @Autowired
+    DocumentSvnService documentSvnService;
+    @Autowired
+    DocumentStorageIndex documentStorageIndex;
 }

@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
-import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -25,7 +24,10 @@ import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
@@ -63,7 +65,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         try {
             checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -81,7 +83,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         try {
             checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -166,7 +168,7 @@ public class DocumentServiceImpl implements DocumentService {
                 log.error("createDocument(" + documentId + "): failed to save file to the svn", e);
                 try {
                     documentStorageIndex.removeDocument(documentId);
-                } catch (IOException e1) {
+                } catch (Exception e1) {
                     log.error("createDocument(" + documentId + "): failed to rollback document from the index", e1);
                 }
                 if (!documentDAO.removeByKey(documentId)) {
@@ -244,7 +246,7 @@ public class DocumentServiceImpl implements DocumentService {
         final InputStream fileInputStream;
         try {
             fileInputStream = fileItem.getInputStream();
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("updateDocumentAndContent(" + document.getId() + "): failed to get input stream from file item", e);
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -294,7 +296,7 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 try {
                     documentStorageIndex.updatePdfDocument(oldFileData, documentId, projectId);
-                } catch (IOException e1) {
+                } catch (Exception e1) {
                     log.error("updateDocumentAndContent(" + document.getId() + "): failed to rollback document from the index", e1);
                 }
                 return error(En_ResultStatus.INTERNAL_ERROR);
