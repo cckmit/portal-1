@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, JiraTestConfiguration.class})
 public class FieldMappingTest {
 
     @Autowired
