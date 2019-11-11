@@ -26,4 +26,14 @@ public class JiraStatusMapEntryDAO_ImplMock extends JiraStatusMapEntryDAO_Impl {
         if (statusMap == null) buildStatusMap();
         return statusName == null ? null : statusMap.get(statusName);
     }
+
+    @Override
+    public String getJiraStatus(long mapId, En_CaseState state) {
+        if (statusMap == null) buildStatusMap();
+
+        return statusMap.entrySet().stream()
+                .filter(entry -> state.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .findFirst().orElse(null);
+    }
 }

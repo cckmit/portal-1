@@ -9,14 +9,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.test.jira.config.DatabaseConfiguration;
 import ru.protei.portal.test.jira.config.JiraTestConfiguration;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
-@ContextConfiguration(classes = JiraTestConfiguration.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
 public class FieldMappingTest {
 
     @Autowired
@@ -28,7 +31,7 @@ public class FieldMappingTest {
         Map<String, En_CaseState> expectedMapping = new HashMap<>();
         expectedMapping.put("Authorized", En_CaseState.CREATED);
         expectedMapping.put("Studying", En_CaseState.OPENED);
-        expectedMapping.put("Request to customer", En_CaseState.INFO_REQUEST);
+        expectedMapping.put("Request to customer", En_CaseState.CUST_REQUEST);
         expectedMapping.put("Postpone", En_CaseState.PAUSED);
         expectedMapping.put("Soft Close", En_CaseState.DONE);
         expectedMapping.put("Nothing to change", En_CaseState.VERIFIED);
