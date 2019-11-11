@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="collapsiblePanel" styleName="m-l-15 m-r-15 m-t-5 card card-default">
+        <div class="card-header">
+            <label ui:field="headerLabel" class="card-title collapsible-label"/>
+            <div class="card-controls">
+                <ul>
+                    <li><g:Anchor ui:field="collapse" styleName="p-t-0 fas fa-chevron-up" href="#"/></li>
+                </ul>
+            </div>
+        </div>
+        <g:HTMLPanel ui:field="panelBody" styleName="card-body collapsible-panel-body">
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

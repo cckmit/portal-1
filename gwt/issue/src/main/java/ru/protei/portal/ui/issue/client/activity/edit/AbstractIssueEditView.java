@@ -76,8 +76,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility copyVisibility();
 
-    void setLinks(Set<CaseLink> links);
-
     void showComments(boolean isShow);
     boolean isAttached();
     HasValue<PlatformOption> platform();
@@ -127,6 +125,10 @@ public interface AbstractIssueEditView extends IsWidget {
     void setDescriptionRO(String value);
 
     void setNameRO(String name);
+
+    boolean isLinksPanelBodyVisible();
+
+    void setLinksPanelBodyVisible(boolean isVisible);
 
     String DESCRIPTION = "description";
 }

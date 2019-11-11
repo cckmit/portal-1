@@ -153,6 +153,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         defaultErrorHandler.accept(throwable);
                     })
                     .withSuccess(caseObjectWithCaseComment -> {
+                        localStorageService.set(LINKS_PANEL_BODY, String.valueOf(view.isLinksPanelBodyVisible()));
                         fireEvent(new CaseCommentEvents.OnDoneEvent(caseObjectWithCaseComment.getCaseComment()));
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new IssueEvents.ChangeModel());
@@ -163,6 +164,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
+        localStorageService.set(LINKS_PANEL_BODY, String.valueOf(view.isLinksPanelBodyVisible()));
         fireEvent(new Back());
     }
 
@@ -423,7 +425,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
-        view.setLinks(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+        view.setLinksPanelBodyVisible(Boolean.parseBoolean(localStorageService.get(LINKS_PANEL_BODY)));
 
         fillViewForJira(issue);
 
@@ -619,4 +621,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
     private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
+    private static final String LINKS_PANEL_BODY = "issue_edit_links_panel_body";
 }

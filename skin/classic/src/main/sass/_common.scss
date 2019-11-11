@@ -3621,19 +3621,17 @@ label {
   }
 }
 
-.card-body {
-  .case-meta-links {
-    margin-left: -6px;
-  }
-}
-
 .card-header {
   .card-title {
-    &.case-links-label {
+    &.collapsible-label {
       color: #b0b0b0;
       margin-left: -5px;
     }
   }
+}
+
+.collapsible-panel-body {
+  margin-left: -5px;
 }
 
 .case-link {

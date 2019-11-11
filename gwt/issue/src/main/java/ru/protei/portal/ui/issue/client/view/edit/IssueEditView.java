@@ -406,8 +406,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setLinks(Set<CaseLink> links) {
+    public boolean isLinksPanelBodyVisible() {
+        return caseMetaView.isLinksPanelBodyVisible();
+    }
 
+    @Override
+    public void setLinksPanelBodyVisible(boolean isVisible) {
+        caseMetaView.setLinksPanelBodyVisible(isVisible);
     }
 
     @UiHandler("company")

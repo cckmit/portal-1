@@ -167,7 +167,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     private void fillData(String name, En_ImportanceLevel importanceLevel, En_CaseState caseState ) {
         header.setInnerText( name );
         importance.addClassName( ImportanceStyleProvider.getImportanceIcon( importanceLevel ));
-        state.setInnerHTML("<i class=\"fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase() + "\"></i>" + caseStateLang.getStateName(caseState));
+        state.setInnerHTML(caseStateLang.getStateName(caseState) + "<i class=\"fas fa-circle m-l-5 state-" + caseState.toString().toLowerCase() + "\"></i>");
     }
 
     private void setTestAttributes() {
