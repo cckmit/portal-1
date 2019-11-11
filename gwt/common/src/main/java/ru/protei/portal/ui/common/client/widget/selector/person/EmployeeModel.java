@@ -78,11 +78,11 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
             @Override
             public void onSuccess( List< PersonShortView > options ) {
                 requested = false;
-                transliteration(options);
                 int value = options.indexOf( new PersonShortView("", myId, false ) );
                 if ( value > 0 ) {
                     options.add(0, options.remove( value ) );
                 }
+                transliteration(options);
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();

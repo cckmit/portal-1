@@ -39,11 +39,11 @@ public abstract class InitiatorModel implements Activity {
 
             @Override
             public void onSuccess(List<PersonShortView> options) {
-                transliteration(options);
                 int value = options.indexOf(new PersonShortView("", myId, false));
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
+                transliteration(options);
                 selector.fillOptions(options);
                 selector.refreshValue();
             }
