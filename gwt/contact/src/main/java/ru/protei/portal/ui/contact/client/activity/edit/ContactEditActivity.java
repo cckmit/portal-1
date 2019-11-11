@@ -19,6 +19,8 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.Objects;
+
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 /**
@@ -111,11 +113,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        UserLogin userLogin = applyChangesLogin();
-        if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
+        if (HelperFunc.isNotEmpty(view.login().getText()) && !Objects.equals(view.login().getText(), account.getUlogin()) && HelperFunc.isEmpty(view.password().getText())) {
             fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
+        UserLogin userLogin = applyChangesLogin();
 
         Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
         Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
