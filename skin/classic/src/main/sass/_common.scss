@@ -1917,10 +1917,6 @@ a {
     }
   }
 
-  &.link-completed .case-link-text{
-    text-decoration: line-through;
-  }
-
   .case-link-text {
     padding: 0 2px 0 0;
     -webkit-touch-callout: none;
@@ -1929,11 +1925,6 @@ a {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
-    &:hover {
-      text-decoration: underline;
-      color: #365c92;
-    }
 
     i:nth-child(2) {
       font-size: 0.6em;
@@ -3632,6 +3623,13 @@ label {
 
 .collapsible-panel-body {
   margin-left: -5px;
+  margin-right: -5px;
+}
+
+.case-link-root {
+  &:hover {
+    background-color: #F0F0F0;
+  }
 }
 
 .case-link {
@@ -3643,6 +3641,13 @@ label {
 
   &:first-child {
     padding-left: 0;
+  }
+
+  .link-broken {
+    opacity: .4;
+    &:hover {
+      cursor:not-allowed
+    }
   }
 
   .case-link-info {
@@ -3685,6 +3690,10 @@ label {
     color: inherit;
     cursor: pointer;
     box-sizing: unset;
+    opacity: .6;
+    &.case-link-close-hide {
+      opacity: .0;
+    }
   }
 
   .case-link-text {
@@ -3695,11 +3704,6 @@ label {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
-    &:hover {
-      text-decoration: underline;
-      color: #365c92;
-    }
   }
 
   .case-link-icon {
@@ -4150,5 +4154,9 @@ table {
 
 .no-margin-bottom {
   margin-bottom: 0px !important;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 

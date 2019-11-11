@@ -15,14 +15,9 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
-import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -147,13 +142,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @Override
     public void onGoToIssuesClicked() {
         fireEvent(new IssueEvents.Show());
-    }
-
-    @Override
-    public void onPlatformExtLinkClicked() {
-        if (caseObject != null && caseObject.getPlatformId() != null) {
-            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(caseObject.getPlatformId()));
-        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.casemeta.link.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -35,7 +36,6 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     public CaseLinkView() {
         initWidget(ourUiBinder.createAndBindUi(this));
-//        ensureDebugIds();
         setTestAttributes();
     }
 
@@ -91,29 +91,11 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @Override
     public void setEnabled(boolean enabled) {
-        remove.setEnabled(enabled);
-        if (enabled) {
-            remove.getElement().setAttribute("style", "opacity: .0;");
-        } else {
+        if (!enabled) {
             remove.setVisible(false);
-        }
-    }
-
-    @UiHandler("root")
-    public void onHover(MouseOverEvent event) {
-        root.getElement().setAttribute("style", "background-color: #F0F0F0");
-
-        if (remove.isEnabled()) {
-            remove.getElement().setAttribute("style", "opacity: .6; cursor: pointer;");
-        }
-    }
-
-    @UiHandler("root")
-    public void onHover(MouseOutEvent event) {
-        root.getElement().setAttribute("style", "background-color: white");
-
-        if (remove.isEnabled()) {
-            remove.getElement().setAttribute("style", "opacity: .0;");
+        } else {
+            root.addDomHandler(event -> remove.addStyleName("case-link-close-hide"), MouseOutEvent.getType());
+            root.addDomHandler(event -> remove.removeStyleName("case-link-close-hide"), MouseOverEvent.getType());
         }
     }
 
@@ -151,7 +133,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     private void processYouTrackInfo( YouTrackIssueInfo youTrackInfo ) {
         if (youTrackInfo == null) {
-            panel.getElement().addClassName( "link-broken" );
+            text.addClassName("link-broken");
             return;
         }
         fillData( youTrackInfo.getSummary(), youTrackInfo.getImportance(), youTrackInfo.getCaseState());
@@ -160,7 +142,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     private void fillCompletionState( En_CaseState caseState ) {
         if(doneStates.contains( caseState )) {
-            panel.getElement().addClassName( "link-completed" );
+            text.addClassName("line-through");
         }
     }
 

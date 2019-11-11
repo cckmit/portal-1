@@ -405,16 +405,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return timeElapsedHeader;
     }
 
-    @Override
-    public boolean isLinksPanelBodyVisible() {
-        return caseMetaView.isLinksPanelBodyVisible();
-    }
-
-    @Override
-    public void setLinksPanelBodyVisible(boolean isVisible) {
-        caseMetaView.setLinksPanelBodyVisible(isVisible);
-    }
-
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {

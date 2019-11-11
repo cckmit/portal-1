@@ -2,22 +2,15 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel>
-        <div style="display: flex;">
-            <div class="p-t-10">
-                <g:Anchor ui:field="collapse" styleName="fas fa-arrow-up" visible="false" href="#"/>
-            </div>
-            <div style="width: 100%;">
-                <g:HTMLPanel ui:field="navTabs" tag="ul"
-                             styleName="nav nav-tabs nav-tabs-simple d-none d-md-flex d-lg-flex d-xl-flex"/>
+        <g:HTMLPanel ui:field="navTabs" tag="ul"
+                     styleName="nav nav-tabs nav-tabs-simple d-none d-md-flex d-lg-flex d-xl-flex"/>
 
-                <div class="nav-tab-dropdown cs-wrapper full-width d-lg-none d-xl-none d-md-none">
-                    <div class="cs-select cs-skin-slide full-width">
-                        <g:InlineLabel ui:field="navDropdownTabsSelected" styleName="cs-placeholder"/>
-                    </div>
-                </div>
-
-                <g:HTMLPanel ui:field="tabContent" styleName="tab-content"/>
+        <div class="nav-tab-dropdown cs-wrapper full-width d-lg-none d-xl-none d-md-none">
+            <div class="cs-select cs-skin-slide full-width">
+                <g:InlineLabel ui:field="navDropdownTabsSelected" styleName="cs-placeholder"/>
             </div>
         </div>
+
+        <g:HTMLPanel ui:field="tabContent" styleName="tab-content"/>
     </g:HTMLPanel>
 </ui:UiBinder>

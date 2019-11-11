@@ -25,6 +25,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -43,6 +44,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        linksPanel.addClickHandler(event -> localStorageService.set(LINKS_PANEL_BODY, String.valueOf(linksPanel.isPanelBodyVisible())));
     }
 
     @Override
@@ -97,14 +99,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         });
     }
 
-    public boolean isLinksPanelBodyVisible() {
-        return linksPanel.isPanelBodyVisible();
-    }
-
-    public void setLinksPanelBodyVisible(boolean isVisible) {
-        linksPanel.setPanelBodyVisible(isVisible);
-    }
-
     public Set<CaseLink> getLinks() {
         return links;
     }
@@ -114,6 +108,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
         linkToViewModel.clear();
         linksPanel.clear();
+        linksPanel.setPanelBodyVisible(Boolean.parseBoolean(localStorageService.get(LINKS_PANEL_BODY)));
 
         toggleLinksVisibility(links, linksPanel);
 
@@ -404,6 +399,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     CreateCaseLinkPopup createCaseLinkPopup;
     @Inject
     CaseTagSelectorPopup caseTagSelectorPopup;
+    @Inject
+    LocalStorageService localStorageService;
 
     @Inject
     NotifyActivity activity;
@@ -439,6 +436,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     private HandlerRegistration tagsCreateHandlerRegistration;
 
     public static final String HIDE = "hide";
+    private static final String LINKS_PANEL_BODY = "case-link-panel-body";
 
     interface CaseMetaViewUiBinder extends UiBinder<HTMLPanel, CaseMetaView> {}
     private static CaseMetaViewUiBinder ourUiBinder = GWT.create(CaseMetaViewUiBinder.class);

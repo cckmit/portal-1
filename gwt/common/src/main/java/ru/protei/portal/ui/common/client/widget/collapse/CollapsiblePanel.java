@@ -3,6 +3,9 @@ package ru.protei.portal.ui.common.client.widget.collapse;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -11,10 +14,11 @@ import ru.protei.portal.test.client.DebugIds;
 
 import java.util.Iterator;
 
-public class CollapsiblePanel extends Composite implements HasWidgets {
+public class CollapsiblePanel extends Composite implements HasWidgets, HasClickHandlers {
 
     public CollapsiblePanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -37,10 +41,16 @@ public class CollapsiblePanel extends Composite implements HasWidgets {
         return panelBody.remove(w);
     }
 
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addHandler(handler, ClickEvent.getType());
+    }
+
     @UiHandler("collapse")
     public void onCollapseClicked(ClickEvent event) {
         event.preventDefault();
         setPanelVisible(!panelBody.isVisible());
+        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
     }
 
     public boolean isPanelBodyVisible() {
@@ -57,6 +67,10 @@ public class CollapsiblePanel extends Composite implements HasWidgets {
 
     public void setLabel(String label) {
         this.headerLabel.setInnerText(label);
+    }
+
+    private void ensureDebugIds() {
+        collapse.ensureDebugId(DebugIds.COLLAPSIBLE_PANEL.COLLAPSE_BUTTON);
     }
 
     private void setPanelVisible(boolean isVisible) {

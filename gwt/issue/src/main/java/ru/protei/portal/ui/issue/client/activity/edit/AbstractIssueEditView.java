@@ -126,9 +126,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setNameRO(String name);
 
-    boolean isLinksPanelBodyVisible();
-
-    void setLinksPanelBodyVisible(boolean isVisible);
-
     String DESCRIPTION = "description";
 }
