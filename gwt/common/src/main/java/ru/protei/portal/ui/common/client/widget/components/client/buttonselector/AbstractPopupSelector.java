@@ -171,6 +171,9 @@ public abstract class AbstractPopupSelector<T> extends Composite
         }
     }
 
+    /**
+     * Основной метод рендеринга элемента
+     */
     protected abstract SelectorItem makeSelectorItem( T element, String elementHtml );
 
     protected abstract AbstractPageableSelector getSelector();
@@ -183,7 +186,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     private Widget makeItemView(T t, String elementHtml) {
         SelectorItem itemView = makeSelectorItem(t, elementHtml);
-//        itemView.setElementHtml(elementHtml);
         itemView.setValue(t);
         itemView.addSelectorHandler(this);
         itemView.addKeyUpHandler( keyUpItemHandler );

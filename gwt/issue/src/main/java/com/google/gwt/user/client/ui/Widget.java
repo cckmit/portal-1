@@ -340,6 +340,7 @@ public class Widget extends UIObject implements EventListener, HasAttachHandlers
    * @see #doAttachChildren()
    */
   protected void onAttach() {
+sp.start( "onAttach" );
     if (isAttached()) {
       throw new IllegalStateException(
           "Should only call onAttach when the widget is detached from the browser's document");
@@ -349,17 +350,21 @@ public class Widget extends UIObject implements EventListener, HasAttachHandlers
 
     // Event hookup code
     DOM.setEventListener(getElement(), this);
+    sp.check( " DOM.setEventListener" );
     int bitsToAdd = eventsToSink;
     eventsToSink = -1;
     if (bitsToAdd > 0) {
       sinkEvents(bitsToAdd);
+      sp.check( " sinkEvents" );
     }
     doAttachChildren();
+    sp.check( " doAttachChildren" );
 
     // onLoad() gets called only *after* all of the children are attached and
     // the attached flag is set. This allows widgets to be notified when they
     // are fully attached, and panels when all of their children are attached.
     onLoad();
+    sp.start( "onAttach end-> onLoad()" );
     AttachEvent.fire(this, true);
   }
 

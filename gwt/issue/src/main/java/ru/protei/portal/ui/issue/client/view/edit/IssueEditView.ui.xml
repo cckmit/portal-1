@@ -55,7 +55,7 @@
                     <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
 
                     <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
-                        <div class="col-md-12">
+                        <div class="col-md-12 m1">
                             <div class="form-group-default">
                                 <label class="fade" ui:field="descriptionLabel">
                                     <ui:text from="{lang.description}"/>
@@ -66,7 +66,7 @@
                     </g:HTMLPanel>
 
                     <div class="row form-group">
-                        <div class="col-md-12">
+                        <div class="col-md-12 m2">
                             <label ui:field="attachmentsLabel">
                                 <ui:text from="{lang.issueAttachments}"/>
                             </label>
@@ -115,7 +115,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 m3">
                                         <devunit:DevUnitFormSelector ui:field="product"
                                                                      validation="false"
                                                                      header="{lang.issueProduct}"
@@ -123,7 +123,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 m4">
                                         <person:EmployeeFormSelector ui:field="manager"
                                                                      validation="false"
                                                                      header="{lang.issueManager}"
@@ -136,7 +136,7 @@
                             </div>
                             <div class="form-group-attached form-group">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 m5">
                                         <company:CompanyFormSelector ui:field="company"
                                                                      validation="false"
                                                                      header="{lang.issueCompany}"
@@ -145,7 +145,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 m6">
                                         <person:PersonFormSelector ui:field="initiator"
                                                                    validation="false"
                                                                    header="{lang.issueInitiator}"
@@ -154,7 +154,7 @@
                                     </div>
                                 </div>
                                 <g:HTMLPanel ui:field="platformContainer" styleName="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 m7">
                                         <selector:PlatformFormSelector ui:field="platform"
                                                                        validation="false"
                                                                        header="{lang.siteFolderPlatform}"
@@ -168,7 +168,7 @@
                                                      visible="false" styleName="form-group"/>
 
                             <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
-                                <div ui:field="timeElapsedHeader" class="col-md-12">
+                                <div ui:field="timeElapsedHeader" class="col-md-12 m8">
                                     <label ui:field="timeElapsedLabel">
                                         <ui:text from="{lang.timeElapsed}"/>
                                     </label>
@@ -197,7 +197,7 @@
                             </g:HTMLPanel>
 
                             <div class="row form-group">
-                                <div class="col-md-12">
+                                <div class="col-md-12 m9">
                                     <label ui:field="subscriptionsLabel">
                                         <ui:text from="{lang.companySubscription}"/>
                                     </label>
@@ -206,11 +206,12 @@
                             </div>
 
                             <div class="row form-group">
-                                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="col-md-12">
+                                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="col-md-12 m10">
                                     <label ui:field="notifiersLabel">
                                         <ui:text from="{lang.caseSubscription}"/>
                                     </label>
                                     <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
+                                                                  searchEnabled="true"
                                                                   buttonStyle="btn-info btn-xs"/>
                                 </g:HTMLPanel>
                             </div>

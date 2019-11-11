@@ -12,12 +12,16 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.multi.MultiValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
+import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,9 +138,10 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         clearButton.setVisible( !isEmpty() );
     }
 
-    protected PopupSelectorItem makeSelectorItem( T element, String elementHtml ) {
-        PopupSelectorItem item = new PopupSelectorItem();
-        item.setName( elementHtml );
+    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectableItem item = new PopupSelectableItem();
+        item.setText( elementHtml );
+        item.setSelected( CollectionUtils.contains( getValue(), element) );
         return item;
     }
 
@@ -217,15 +222,15 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         clear.setInnerText( text );
         clear.setClassName( "" );
     }
-//
-//    public void setButtonStyle(String style) {
-//        if (style != null) {
-//            caretButton.removeStyleName("bg-white no-border");
-//            clearButton.removeStyleName("bg-white no-border");
-//            caretButton.addStyleName(style);
-//            clearButton.addStyleName(style);
-//        }
-//    }
+
+    public void setButtonStyle(String style) {
+        if (style != null) {
+            caretButton.removeStyleName("bg-white no-border");
+            clearButton.removeStyleName("bg-white no-border");
+            caretButton.addStyleName(style);
+            clearButton.addStyleName(style);
+        }
+    }
 
     @UiField
     Button caretButton;

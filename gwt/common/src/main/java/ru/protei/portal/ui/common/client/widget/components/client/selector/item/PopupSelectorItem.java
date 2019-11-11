@@ -33,11 +33,22 @@ public class PopupSelectorItem<T>
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.POPUP.ITEM);
-        root.addDomHandler( event -> {
-            if(selectorItemHandler!=null) {
-                selectorItemHandler.onSelectorItemClicked(this);
-            }
-        }, KeyUpEvent.getType() );
+//        root.addDomHandler( event -> {
+//            if(selectorItemHandler!=null) {
+//                selectorItemHandler.onSelectorItemClickedItemClicked(this);
+//            }
+//        }, KeyUpEvent.getType() );
+    }
+
+
+    @Override
+    public T getValue() {
+        return value;
+    }
+
+    @Override
+    public void setValue(T t) {
+        value = t;
     }
 
     @Override
@@ -110,15 +121,6 @@ public class PopupSelectorItem<T>
     @UiField
     Element icon;
 
-    @Override
-    public T getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(T t) {
-        value = t;
-    }
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectorItem> {
     }

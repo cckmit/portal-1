@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Модель контактов домашней компании
  */
-public abstract class EmployeeModel implements Activity, SelectorModel< PersonShortView > {
+public abstract class EmployeeModel implements Activity, SelectorModel<PersonShortView>, ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel<PersonShortView> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
@@ -55,6 +55,12 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
         subscribers.remove( selector );
     }
 
+    @Override
+    public PersonShortView get( int elementIndex ) {
+        if(list.size() <= elementIndex) return null;
+        return list.get( elementIndex );
+    }
+
     private void notifySubscribers() {
         for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
             selector.fillOptions( list );
@@ -64,7 +70,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
 
     private boolean requested;
 
-    private void refreshOptions() {
+    public void refreshOptions() {
         if (requested) return;
         requested = true;
         employeeService.getEmployeeViewList( new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC ),

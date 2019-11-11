@@ -1,14 +1,18 @@
 package ru.protei.portal.ui.common.client.widget.components.client.selector.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.components.client.popup.BasePopupView;
 
 
@@ -16,20 +20,19 @@ import ru.protei.portal.ui.common.client.widget.components.client.popup.BasePopu
  * Вид попапа
  */
 public class SimpleSelectorPopup extends BasePopupView
-        implements SelectorPopup, Window.ScrollHandler {
-
-    private PopupHandler popupHandler;
+        implements SelectorPopup {
 
     public SimpleSelectorPopup() {
         setWidget(ourUiBinder.createAndBindUi(this));
         setAutoHideEnabled(true);
         setAutoHideOnHistoryEventsEnabled(true);
+        ensureDefaultDebugIds();
     }
 
     @Override
     protected void onLoad() {
 
-        root.addDomHandler(new ScrollHandler() {
+        scrolForPagingHandleRegistration = root.addDomHandler( new ScrollHandler() {
             @Override
             public void onScroll(ScrollEvent scrollEvent) {
                 Element e = root.getElement();
@@ -47,6 +50,7 @@ public class SimpleSelectorPopup extends BasePopupView
         return root;
     }
 
+    @Override
     public HasWidgets getChildContainer() {
         return childContainer;
     }
@@ -58,6 +62,7 @@ public class SimpleSelectorPopup extends BasePopupView
 
     @Override
     protected void onUnload() {
+        scrolForPagingHandleRegistration.removeHandler();
         popupHandler.onPopupUnload(this);
     }
 
@@ -72,6 +77,15 @@ public class SimpleSelectorPopup extends BasePopupView
         this.popupHandler = popupHandler;
     }
 
+    public void setEnsureDebugIdListContainer(String debugId) {
+        childContainer.ensureDebugId(debugId);
+    }
+
+    private void ensureDefaultDebugIds() {
+        setEnsureDebugIdListContainer( DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
+    }
+
+    HandlerRegistration scrolForPagingHandleRegistration;
     @UiField
     HTMLPanel childContainer;
 
@@ -82,6 +96,7 @@ public class SimpleSelectorPopup extends BasePopupView
     @UiField
     HTMLPanel loading;
 
+    private PopupHandler popupHandler;
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SimpleSelectorPopup> {
     }
 
