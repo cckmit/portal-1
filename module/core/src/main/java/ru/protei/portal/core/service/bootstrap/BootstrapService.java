@@ -3,6 +3,7 @@ package ru.protei.portal.core.service.bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -275,10 +276,16 @@ public class BootstrapService {
             try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 documentSvnService.getDocument(projectId, documentId, out);
                 final byte[] fileData = out.toByteArray();
+                if (fileData.length == 0) {
+                    log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
+                    continue;
+                }
                 documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
-                log.info("Index created for document = {}, {}/{}", documentId, i, size);
+                log.info("Index created for document({}), {}/{}", documentId, i + 1, size);
+            } catch (SVNException e) {
+                log.warn("Content for document(" + documentId + ") not found, " + (i + 1) + "/" + size, e);
             } catch (Exception e) {
-                log.warn("Failed to create index for document = " + documentId + ", " + i + "/" + size, e);
+                log.warn("Failed to create index for document(" + documentId + "), " + (i + 1) + "/" + size, e);
             }
         }
 
