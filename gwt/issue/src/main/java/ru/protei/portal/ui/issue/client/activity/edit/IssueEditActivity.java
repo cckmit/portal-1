@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -28,6 +29,7 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -211,6 +213,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
             view.initiator().setValue(null);
         } else {
+            initiatorSelectorAllowAddNew(companyOption.getId());
             Long selectedCompanyId = companyOption.getId();
 
             view.platform().setValue(null);
@@ -439,7 +442,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
         view.manager().setValue(value);
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-        view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
+        initiatorSelectorAllowAddNew(issue.getInitiatorCompanyId());
         view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
@@ -607,6 +610,19 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private void initiatorSelectorAllowAddNew(Long companyId) {
+        if (companyId == null) {
+            view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE));
+        } else if (companyId == 1) {
+            view.initiatorSelectorAllowAddNew(false);
+        } else {
+            companyService.getCompanies(new CompanyQuery(true), new FluentCallback<SearchResult<Company>>()
+                    .withSuccess(result -> view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) &&
+                                    result.getResults().stream().noneMatch(company -> Objects.equals(company.getId(), companyId))))
+            );
+        }
     }
 
     @Inject
