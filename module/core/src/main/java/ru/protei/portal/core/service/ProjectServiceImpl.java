@@ -501,7 +501,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
             UserSessionDescriptor descriptor = authService.findSession(authToken);
             if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+                caseQuery.setMemberId(descriptor.getPerson().getId());
             }
         }
 
