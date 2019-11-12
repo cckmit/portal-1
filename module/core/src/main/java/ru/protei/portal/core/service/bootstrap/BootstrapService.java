@@ -20,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -50,6 +51,7 @@ public class BootstrapService {
         //patchNormalizeWorkersPhoneNumbers(); // remove once executed
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
+        documentBuildFullIndex();
     }
 
     private void autoPatchDefaultRoles () {
@@ -261,10 +263,17 @@ public class BootstrapService {
                 });
     }
 
-    private void documentBuildFullIndex() {
-        // Данный метод создаст индексы для всех существующих документов
-        // Долгое выполнение
-        // Не запускать при существующем индексе! Запускать только при полностью утерянном индексе
+    private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
+
+        try {
+            if (documentStorageIndex.isIndexExists()) {
+                log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.");
+                return;
+            }
+        } catch (IOException e) {
+            log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.", e);
+            return;
+        }
 
         log.info("Document index full build has started");
 

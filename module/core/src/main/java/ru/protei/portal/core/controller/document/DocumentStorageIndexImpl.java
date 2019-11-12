@@ -130,6 +130,11 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
         return idList;
     }
 
+    @Override
+    public boolean isIndexExists() throws IOException {
+        return DirectoryReader.indexExists(index);
+    }
+
     private String convertPdfDocumentToString(byte[] pdfDocument) throws IOException {
         try (PDDocument document = PDDocument.load(pdfDocument)) {
             return new PDFTextStripper().getText(document);
