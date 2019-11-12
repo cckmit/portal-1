@@ -354,7 +354,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private void updatePriorityAndInfo(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
-//        logger.debug("update case name, issue={}, case={}", issue.getKey(), caseObj.getCaseNumber());
+        logger.debug("update case name, issue={}, case={}", issue.getKey(), caseObj.getCaseNumber());
         IssueField issueCLM = issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FILED_CLM);
         caseObj.setName((issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary());
 
