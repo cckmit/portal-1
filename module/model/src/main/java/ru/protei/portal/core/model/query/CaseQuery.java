@@ -66,7 +66,7 @@ public class CaseQuery extends BaseQuery {
 
     private String searchCasenoString;
 
-    private List<Long> memberIds;
+    private Long memberId;
 
     private List<Long> commentAuthorIds;
 
@@ -267,12 +267,12 @@ public class CaseQuery extends BaseQuery {
         this.viewPrivate = viewOnlyPrivate;
     }
 
-    public List<Long> getMemberIds() {
-        return memberIds;
+    public Long getMemberId() {
+        return memberId;
     }
 
-    public void setMemberIds(List<Long> memberIds) {
-        this.memberIds = memberIds;
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
     }
 
     public List<Long> getCommentAuthorIds() {
@@ -357,7 +357,7 @@ public class CaseQuery extends BaseQuery {
                 modifiedFrom != null ||
                 modifiedTo != null ||
                 StringUtils.isNotBlank(searchCasenoString) ||
-                CollectionUtils.isNotEmpty(memberIds) ||
+                memberId != null ||
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
@@ -387,7 +387,7 @@ public class CaseQuery extends BaseQuery {
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", searchCasenoString=" + searchCasenoString +
                 ", viewPrivate=" + viewPrivate +
-                ", memberIds=" + memberIds +
+                ", memberIds=" + memberId +
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
