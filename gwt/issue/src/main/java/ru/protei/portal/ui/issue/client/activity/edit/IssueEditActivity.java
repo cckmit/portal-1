@@ -426,13 +426,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initiatorCompany = policyService.getUserCompany();
             }
             EntityOption company = EntityOption.fromCompany(initiatorCompany);
-            company.setDisplayText(transliteration(company.getDisplayText()));
+            if (company != null) {
+                company.setDisplayText(transliteration(company.getDisplayText()));
+            }
             view.company().setValue(company, true);
         }
 
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         PersonShortView value = PersonShortView.fromPerson(issue.getManager());
-        value.setDisplayShortName(transliteration(value.getDisplayShortName()));
+        if (value != null) {
+            value.setDisplayShortName(transliteration(value.getDisplayShortName()));
+        }
         view.manager().setValue(value);
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );

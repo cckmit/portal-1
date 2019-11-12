@@ -191,7 +191,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setContact( contact );
         String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
         view.setManager( manager );
-        view.setName( value.getName() == null ? "" : transliteration(value.getName()), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()));
+        view.setName( value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()));
 
         view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
