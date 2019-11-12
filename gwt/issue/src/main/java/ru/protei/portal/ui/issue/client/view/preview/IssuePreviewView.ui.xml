@@ -23,7 +23,9 @@
                     <div class="inline pull-right">
                         <small ui:field="createdBy"/>
                     </div>
-                    <h5 ui:field="name" class="no-margin semi-bold"/>
+                    <h5  class="no-margin semi-bold">
+                        <span ui:field="name"/>
+                    </h5>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
                                            enabled="false" showLabel="false"/>
