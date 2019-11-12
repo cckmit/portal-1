@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -64,7 +65,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result<CaseFilter> saveIssueFilter( AuthToken token, CaseFilter filter) {
+    public Result<CaseFilter> saveIssueFilter(AuthToken token, CaseFilter filter) {
 
         log.debug("saveIssueFilter(): filter={} ", filter);
 
@@ -77,6 +78,12 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             filter.setLoginId(descriptor.getLogin().getId());
         }
         applyFilterByScope(descriptor, filter);
+
+        filter.setName(filter.getName().trim());
+
+        if (!isUniqueFilter(filter.getName(), filter.getLoginId(), filter.getType(), filter.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
 
         if (caseFilterDAO.saveOrUpdate(filter)) {
             return ok(filter);
@@ -100,7 +107,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     private boolean isNotValid( CaseFilter filter ) {
         return filter == null ||
                 filter.getType() == null ||
-                filter.getName() == null ||
+                HelperFunc.isEmpty(filter.getName()) ||
                 filter.getParams() == null;
     }
 
@@ -118,5 +125,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         ArrayList allowedCompanies = new ArrayList( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
+    }
+
+    private boolean isUniqueFilter( String name, Long loginId, En_CaseFilterType type, Long excludeId ) {
+        CaseFilter caseFilter = caseFilterDAO.checkExistsByParams( name, loginId, type );
+        return caseFilter == null || caseFilter.getId().equals( excludeId );
     }
 }

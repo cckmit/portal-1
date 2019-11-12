@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -252,6 +253,12 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @UiHandler("state")
     public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
         onIssueFilterChanged();
+    }
+
+    @UiHandler("filterName")
+    public void onNameKeyUp(KeyUpEvent event) {
+        filterNameChangedTimer.cancel();
+        filterNameChangedTimer.schedule(300);
     }
 
     @UiHandler( "resetBtn" )
@@ -539,6 +546,13 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
         labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
     }
+
+    Timer filterNameChangedTimer = new Timer() {
+        @Override
+        public void run() {
+            setFilterNameContainerErrorStyle(filterName.getValue().isEmpty());
+        }
+    };
 
     @Inject
     @UiField
