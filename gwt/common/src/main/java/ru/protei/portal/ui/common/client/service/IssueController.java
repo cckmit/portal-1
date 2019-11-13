@@ -35,7 +35,4 @@ public interface IssueController extends RemoteService {
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
-    List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException;
-
-    List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links )  throws RequestFailedException;
 }

@@ -8,10 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.AsseblerService;
-//import ru.protei.portal.core.utils.EventExpirationControl;
 
 import java.util.Collection;
 import java.util.Map;

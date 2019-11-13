@@ -157,7 +157,6 @@ public abstract class CaseCommentListActivity
                     }
                     view.removeComment(itemView);
                     itemViewToModel.remove(itemView);
-                    fireEvent(new IssueEvents.ChangeModel());
                     updateTimeElapsedInIssue(itemViewToModel.values());
                 })
         );

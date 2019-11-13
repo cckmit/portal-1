@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.portal.core.model.ent.CaseComment;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiConsumer;

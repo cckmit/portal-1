@@ -271,10 +271,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Override
-    public void onCaseMetaChanged( CaseMeta value ) {
+    public void onCaseMetaChanged( CaseMeta value ) {//TODO rework CaseMetaView handlers, separate links and tags
 
-        issueService.updateCaseLinks( issue.getId(), value.getLinks(), new FluentCallback<List<CaseLink>>()
-                .withError( t -> view.links().setValue( null ) )//TODO rework CaseMetaView handlers
+        caseLinkController.updateCaseLinks( issue.getId(), view.links().getValue(), new FluentCallback<List<CaseLink>>()
+                .withError( t -> view.links().setValue( null ) )
                 .withSuccess( caseLinks ->
                         view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
                 ) );
@@ -287,7 +287,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void requestCaseLinks( Long issueId ) {
-        issueService.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
+        caseLinkController.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
                 view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
         ) );
     }
@@ -623,6 +623,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     AbstractIssueEditView view;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    CaseLinkControllerAsync caseLinkController;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject

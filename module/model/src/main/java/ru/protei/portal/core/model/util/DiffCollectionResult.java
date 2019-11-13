@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
 
 /**
  * результат сравнения двух коллекций (и map в том числе)

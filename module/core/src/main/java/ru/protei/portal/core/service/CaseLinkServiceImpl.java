@@ -91,8 +91,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                                 selectYouTrackLinkRemoteIds( mergedLinks.getRemovedEntries() )
                         )
                 );
+                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
             }
-            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
         } ).flatMap( mergedLinks -> {
             if (!mergedLinks.hasDifferences()) return ok( listOf( caseLinks ) );
             return getLinks( token, caseId ); //TODO оптимизировать из mergedLinks (same + added)
@@ -101,7 +101,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Collection<CaseLink> caseLinks) {
         if (caseLinks == null) {
-            return ok();
+            return ok(new DiffCollectionResult());
         }
 
         caseLinks.forEach(link -> link.setCaseId(caseId));

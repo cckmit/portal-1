@@ -39,5 +39,4 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     int removeByCaseIds(List<Long> ids);
 
-    List<CaseComment> getCommentsByCaseID( Long caseId );
 }
