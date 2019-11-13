@@ -1838,11 +1838,6 @@ a {
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-
-        &:hover {
-          text-decoration: underline;
-          color: #365c92;
-        }
       }
 
       .case-link-icon {
@@ -1922,10 +1917,6 @@ a {
     }
   }
 
-  &.link-completed .case-link-text{
-    text-decoration: line-through;
-  }
-
   .case-link-text {
     padding: 0 2px 0 0;
     -webkit-touch-callout: none;
@@ -1934,11 +1925,6 @@ a {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
-    &:hover {
-      text-decoration: underline;
-      color: #365c92;
-    }
 
     i:nth-child(2) {
       font-size: 0.6em;
@@ -2243,11 +2229,13 @@ a {
     width: 18px;
     height: 18px;
     text-align: center;
-    line-height: 18px;
+    line-height: 22px;
     font-size: 10px;
     font-weight: bold;
     text-decoration: none;
     font-style: normal;
+    position: relative;
+    bottom: 1px;
     color: #333333;
   }
 
@@ -3604,20 +3592,42 @@ label {
   }
 }
 
+.card-header {
+  .card-title {
+    &.collapsible-label {
+      color: #b0b0b0;
+      margin-left: -5px;
+    }
+  }
+}
+
+.collapsible-panel-body {
+  margin-left: -5px;
+  margin-right: -5px;
+}
+
+.case-link-root {
+  &:hover {
+    background-color: #F0F0F0;
+  }
+}
+
 .case-link {
   position: relative;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  flex-direction: row;
   margin: 2px;
-  text-align: center;
   height: 24px;
   line-height: 24px;
   cursor: pointer;
 
   &:first-child {
     padding-left: 0;
+  }
+
+  .link-broken {
+    opacity: .4;
+    &:hover {
+      cursor:not-allowed
+    }
   }
 
   .case-link-info {
@@ -3655,11 +3665,15 @@ label {
   .case-link-close {
     height: 12px;
     width: 12px;
-    padding: 8px 2px 6px 4px;
+    padding: 7px 2px 6px 4px;
     font-size: 0.8em;
     color: inherit;
     cursor: pointer;
     box-sizing: unset;
+    opacity: .6;
+    &.case-link-close-hide {
+      opacity: .0;
+    }
   }
 
   .case-link-text {
@@ -3670,11 +3684,6 @@ label {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
-    &:hover {
-      text-decoration: underline;
-      color: #365c92;
-    }
   }
 
   .case-link-icon {
@@ -4046,5 +4055,9 @@ table {
 
 .no-margin-bottom {
   margin-bottom: 0px !important;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 

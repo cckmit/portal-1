@@ -10,5 +10,4 @@ public interface AbstractIssuePreviewActivity {
     void removeAttachment(Attachment attachment);
     void onGoToIssuesClicked();
     void onCopyClicked();
-    void onPlatformExtLinkClicked();
 }

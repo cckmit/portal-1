@@ -151,13 +151,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
-    public void onPlatformExtLinkClicked() {
-        if (caseObject != null && caseObject.getPlatformId() != null) {
-            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(caseObject.getPlatformId()));
-        }
-    }
-
-    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
