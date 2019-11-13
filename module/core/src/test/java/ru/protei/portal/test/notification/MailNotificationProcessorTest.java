@@ -91,7 +91,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         object = response.getData();
 
         // wait for async event
-        Thread.sleep(3500);
+        Thread.sleep(2000);
 
         MimeMessage msg = mockChannel.get();
         Assert.assertNotNull( msg );

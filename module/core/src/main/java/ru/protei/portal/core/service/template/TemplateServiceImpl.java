@@ -138,6 +138,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseState", En_CaseState.getById( caseObject.getStateId() ).getName() );
         templateModel.put( "importanceLevel", En_ImportanceLevel.getById( caseObject.getImpLevel() ).getCode() );
+        templateModel.put("TranslitUtils", new TransliterationUtils());
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
         template.setModel( templateModel );
