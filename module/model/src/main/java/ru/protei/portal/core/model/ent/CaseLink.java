@@ -117,7 +117,7 @@ public class CaseLink implements Serializable {
     }
 
     public boolean isPrivate() {
-        return type != null && type.isForcePrivacy() && ( caseInfo != null && caseInfo.isPrivateCase() );
+        return (type != null && type.isForcePrivacy()) || ( caseInfo != null && caseInfo.isPrivateCase() );
     }
 
     @Override
