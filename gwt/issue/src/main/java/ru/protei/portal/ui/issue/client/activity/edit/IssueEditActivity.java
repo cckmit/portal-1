@@ -381,13 +381,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.switchToRONameDescriptionView(false);
             view.name().setValue(issue.getName());
             view.description().setValue(issue.getInfo());
-            view.setNameRO(null);
+            view.setNameRO(null, false);
             view.setDescriptionRO(null);
         } else {
             view.switchToRONameDescriptionView(true);
             view.name().setValue(null);
             view.description().setValue(null);
-            view.setNameRO(issue.getName());
+            view.setNameRO(issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()));
             renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
         }
 
