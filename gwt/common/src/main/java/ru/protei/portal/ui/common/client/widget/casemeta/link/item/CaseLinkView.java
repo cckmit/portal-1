@@ -86,7 +86,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @Override
     public boolean isEnabled() {
-        return remove.isEnabled();
+        return remove.isVisible();
     }
 
     @Override
@@ -103,7 +103,6 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     public void onRootClick(ClickEvent event) {
         event.preventDefault();
         if (caseLink != null && HelperFunc.isNotEmpty(caseLink.getLink())) {
-            event.preventDefault();
             Window.open(caseLink.getLink(),"_blank","");
         }
     }
