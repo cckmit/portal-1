@@ -164,6 +164,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.setApprovedMode(approveMode);
         view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
+        view.resetFilename();
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();
         view.setDocumentUploaderLabel(isNew ? lang.uploadDocuments() : lang.reUploadDocuments());
@@ -197,14 +198,12 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     }
 
     private void fillDTO(Document document) {
-        boolean isNew = document.getId() == null;
-
         document.setName(view.name().getValue());
         document.setApproved(view.approved().getValue());
         document.setType(view.documentType().getValue());
         document.setVersion(view.version().getValue());
         document.setInventoryNumber(view.approved().getValue() ? view.inventoryNumber().getValue() : null);
-        document.setDecimalNumber(isNew ? view.decimalNumber().getValue() + "-" + view.documentType().getValue().getShortName() : view.decimalNumber().getValue());
+        document.setDecimalNumber(getDecimalNumberFromView(document));
         document.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         document.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         document.setAnnotation(view.annotation().getValue());
@@ -273,6 +272,17 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
             return lang.negativeInventoryNumber();
         }
         return null;
+    }
+
+    private String getDecimalNumberFromView(Document document) {
+        boolean isNew = document.getId() == null;
+        if (!isNew) {
+            return view.decimalNumber().getValue();
+        }
+        if (view.documentType().getValue() == null || StringUtils.isBlank(view.documentType().getValue().getShortName())) {
+            return view.decimalNumber().getValue();
+        }
+        return view.decimalNumber().getValue() + view.documentType().getValue().getShortName();
     }
 
     @Inject

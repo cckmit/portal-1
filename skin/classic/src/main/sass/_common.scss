@@ -2644,17 +2644,17 @@ a {
 
 .dn {
 
-}
-
-.dn {
   .dn-container {
     width: 100%;
     display: flex;
     display: -webkit-flex;
     display: -ms-flexbox;
+    overflow-y: hidden;
+    overflow-x: auto;
 
     .dn-separator {
-      margin: 0 7px;
+      margin: 0 0.5em;
+      line-height: 2em;
     }
 
     .dn-classifier-code {
@@ -2666,7 +2666,7 @@ a {
     .dn-register-number, .dn-register-number-modifier {
       flex-shrink: 3;
       -webkit-flex-shrink: 3;
-      min-width: 50px;
+      min-width: 60px;
     }
 
     .dn-org-code {
@@ -2679,6 +2679,7 @@ a {
       min-width: 30px;
       border: 0;
       height: 28px;
+      margin: 3px 0;
 
       &.btn-down:after,
       &.btn-up-hovering:after {
@@ -2985,12 +2986,6 @@ ul.privileges {
   position: absolute;
   opacity: 1;
   transition: 0.2s;
-}
-
-.dn-add-button {
-  float: right;
-  padding-bottom: 12px;
-  padding-right: 14px;
 }
 
 .caret-icon:after {
@@ -3417,7 +3412,7 @@ div.select2-container {
       }
     }
 
-    .content {
+    .info {
       position: relative;
       width: 100%;
       height: 40px;
@@ -3428,6 +3423,7 @@ div.select2-container {
         display: block;
         height: 20px;
         white-space: pre-line;
+        word-break: break-word;
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 1em;
@@ -3795,85 +3791,6 @@ label {
 
 .preview-value-label {
   margin-top: 4px !important;
-}
-
-.prodoc-list {
-
-  .prodoc-list-item {
-    position: relative;
-    max-width: 100% !important;
-    height: 40px !important;
-    overflow: hidden;
-    animation: animation-sf-shadow-fade-out 0.3s;
-    display: flex;
-    flex-direction: row;
-
-    .approve {
-      position: relative;
-      height: 40px;
-      line-height: 40px;
-      width: 50px;
-      text-align: center;
-      vertical-align: middle;
-
-      > * {
-        display: inline-block;
-      }
-    }
-
-    .content {
-      position: relative;
-      width: 100%;
-      height: 40px;
-      line-height: 40px;
-      vertical-align: middle;
-
-      > * {
-        display: block;
-        height: 20px;
-        white-space: pre-line;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 1em;
-        font-family: inherit;
-      }
-      > .decimal-number {
-        line-height: 25px;
-      }
-      > .information {
-        line-height: 20px;
-      }
-    }
-
-    .controls {
-      position: relative;
-      height: 40px;
-      line-height: 40px;
-      vertical-align: middle;
-      display: flex;
-      flex-direction: row;
-
-      > * {
-        display: block;
-        height: 40px;
-        width: 30px;
-        line-height: 40px;
-        text-align: center;
-        vertical-align: middle;
-      }
-
-      &:after {
-        content: "";
-        display: block;
-        clear: both;
-      }
-    }
-  }
-
-  .prodoc-list-item:hover, .prodoc-list-item:active {
-    animation: animation-sf-shadow-fade-in 0.3s;
-    box-shadow: 1px 1px 2px 0 #cfd2d7;
-  }
 }
 
 .width-auto {
