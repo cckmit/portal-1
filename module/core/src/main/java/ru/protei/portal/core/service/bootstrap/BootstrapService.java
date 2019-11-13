@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.SVNException;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -266,6 +267,10 @@ public class BootstrapService {
     private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
 
         try {
+            if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
+                // disable index at non internal stand
+                return;
+            }
             if (documentStorageIndex.isIndexExists()) {
                 log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.");
                 return;
@@ -338,4 +343,6 @@ public class BootstrapService {
     DocumentSvnService documentSvnService;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
+    @Autowired
+    PortalConfig config;
 }
