@@ -98,8 +98,7 @@
         </div>
 
         <div class="row">
-
-            <div ui:field="filterNameContainer" class="form-group col-md-12">
+            <div ui:field="filterNameContainer" class="form-group col-md-12 user-filter-name">
                 <label class="bold"><ui:text from="{lang.issueFilterName}"/></label>
                 <div class="input-group">
                     <g:TextBox ui:field="filterName" styleName="form-control"/>

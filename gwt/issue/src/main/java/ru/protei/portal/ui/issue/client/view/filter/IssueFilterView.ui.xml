@@ -20,7 +20,7 @@
         </div>
 
         <div class="card-footer filter-content text-right">
-            <div class="text-left hide" ui:field="filterNameContainer">
+            <div class="user-filter-name hide" ui:field="filterNameContainer">
                 <label class="bold"><ui:text from="{lang.issueFilterName}"/></label>
                 <div class="input-group">
                     <g:TextBox ui:field="filterName" styleName="form-control"/>
