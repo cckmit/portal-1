@@ -211,6 +211,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
             view.initiator().setValue(null);
         } else {
+            initiatorSelectorAllowAddNew(companyOption.getId());
             Long selectedCompanyId = companyOption.getId();
 
             view.platform().setValue(null);
@@ -439,7 +440,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
         view.manager().setValue(value);
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-        view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
+        initiatorSelectorAllowAddNew(issue.getInitiatorCompanyId());
         view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
@@ -609,6 +610,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
+    private void initiatorSelectorAllowAddNew(Long companyId) {
+        if (companyId == null) {
+            return;
+        }
+
+        view.initiatorSelectorAllowAddNew(policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -629,6 +638,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     LocalStorageService localStorageService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    HomeCompanyService homeCompanyService;
 
     @ContextAware
     CaseObject issue;
