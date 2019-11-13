@@ -617,8 +617,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         if (companyId == null) {
             view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE));
         } else {
-            boolean homeCompany = HomeCompaniesUtils.isHomeCompany(companyId);
-            view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompany);
+            view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !HomeCompaniesUtils.isHomeCompany(companyId));
         }
     }
 
