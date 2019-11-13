@@ -98,8 +98,7 @@
         </div>
 
         <div class="row">
-
-            <div ui:field="filterNameContainer" class="form-group col-md-12">
+            <div ui:field="filterNameContainer" class="form-group col-md-12 user-filter-name">
                 <label class="bold"><ui:text from="{lang.issueFilterName}"/></label>
                 <div class="input-group">
                     <g:TextBox ui:field="filterName" styleName="form-control"/>
@@ -114,7 +113,7 @@
 
             <div class="col-md-12 m-t-15 text-right">
                 <g:Button ui:field="createBtn" styleName="btn btn-white btn-sm" text="{lang.buttonCreate}"/>
-                <g:Button ui:field="saveBtn" styleName="btn btn-white btn-sm" text="{lang.buttonModify}"/>
+                <g:Button ui:field="editBtn" styleName="btn btn-white btn-sm" text="{lang.buttonModify}"/>
                 <g:Button ui:field="resetBtn" styleName="btn btn-white btn-sm" text="{lang.buttonReset}"/>
                 <g:Button ui:field="removeBtn" styleName="btn btn-white btn-sm" text="{lang.buttonRemove}"/>
             </div>
