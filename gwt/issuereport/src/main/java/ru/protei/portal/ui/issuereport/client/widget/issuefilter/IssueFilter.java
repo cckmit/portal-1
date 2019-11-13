@@ -94,7 +94,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         tags.setValue(null);
         toggleMsgSearchThreshold();
         removeBtn.setVisible(false);
-        saveBtn.setVisible(false);
+        editBtn.setVisible(false);
         createBtn.setVisible(true);
         resetBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
@@ -267,8 +267,8 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         onIssueFilterChanged();
     }
 
-    @UiHandler("saveBtn")
-    public void onSaveClicked(ClickEvent event) {
+    @UiHandler( "editBtn" )
+    public void onEditClicked(ClickEvent event) {
         isCreateFilterAction = false;
         showUserFilterName();
     }
@@ -309,7 +309,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         showUserFilterControls();
         if (userFilter.getValue() == null) {
             removeBtn.setVisible(false);
-            saveBtn.setVisible(false);
+            editBtn.setVisible(false);
         }
     }
 
@@ -373,7 +373,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
 
     private void setUserFilterControlsVisibility(boolean hasVisible) {
         createBtn.setVisible(hasVisible);
-        saveBtn.setVisible(hasVisible);
+        editBtn.setVisible(hasVisible);
         resetBtn.setVisible(hasVisible);
         removeBtn.setVisible(hasVisible);
     }
@@ -614,7 +614,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @UiField
     Button createBtn;
     @UiField
-    Button saveBtn;
+    Button editBtn;
     @UiField
     Button removeBtn;
     @UiField
