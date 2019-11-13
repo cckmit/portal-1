@@ -8,7 +8,7 @@
                     <i ui:field="addonIcon"/>
                 </span>
             </div>
-            <g:TextBox ui:field="textBox" styleName="form-control"/>
+            <g:TextBox ui:field="textBox" styleName="form-control rounded-right-3 rounded-left-3"/>
 
             <g:Anchor ui:field="textBoxAction" styleName="icon cleanable-search-icon"/>
         </div>
