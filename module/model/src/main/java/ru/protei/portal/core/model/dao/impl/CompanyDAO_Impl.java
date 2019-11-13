@@ -43,6 +43,12 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return partialMerge(tempCompany, "is_deprecated");
     }
 
+    @Override
+    public List<Long> getAllHomeCompanyIds() {
+        String query = "SELECT companyId FROM company_group_home";
+        return jdbcTemplate.queryForList(query, Long.class);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );

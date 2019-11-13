@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
+import ru.protei.portal.ui.common.client.util.HomeCompaniesUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -615,13 +616,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void initiatorSelectorAllowAddNew(Long companyId) {
         if (companyId == null) {
             view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE));
-        } else if (companyId == 1) {
-            view.initiatorSelectorAllowAddNew(false);
         } else {
-            companyService.getCompanies(new CompanyQuery(true), new FluentCallback<SearchResult<Company>>()
-                    .withSuccess(result -> view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) &&
-                                    result.getResults().stream().noneMatch(company -> Objects.equals(company.getId(), companyId))))
-            );
+            boolean homeCompany = HomeCompaniesUtils.isHomeCompany(companyId);
+            view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompany);
         }
     }
 
