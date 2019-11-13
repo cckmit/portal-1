@@ -10,7 +10,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -27,10 +26,8 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
-import ru.protei.portal.ui.common.client.util.HomeCompaniesUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -615,10 +612,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void initiatorSelectorAllowAddNew(Long companyId) {
         if (companyId == null) {
-            view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE));
-        } else {
-            view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !HomeCompaniesUtils.isHomeCompany(companyId));
+            return;
         }
+
+        view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
     }
 
     @Inject
@@ -641,6 +638,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     LocalStorageService localStorageService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    HomeCompanyService homeCompanyService;
 
     @ContextAware
     CaseObject issue;

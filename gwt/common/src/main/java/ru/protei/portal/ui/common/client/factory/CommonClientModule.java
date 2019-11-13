@@ -27,7 +27,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
-import ru.protei.portal.ui.common.client.service.FillService;
+import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
@@ -81,7 +81,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
 
-        bind( FillService.class ).asEagerSingleton();
+        bind( HomeCompanyService.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
