@@ -395,6 +395,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
+    String dashboardSelectCompany();
+
     String issueCommentChangeStatusTo();
 
     String issueCommentChangeImportanceTo();
@@ -1907,4 +1909,10 @@ public interface Lang extends Messages, ContactItemLang {
     String productSearchNameOrAlias();
 
     String documentSearchNameOrDesignation();
+
+    String errSavePlatformConnectedIssuesExist();
+
+    String errSaveProjectCannotChangeCompany();
+
+    String sendEmailWarning();
 }

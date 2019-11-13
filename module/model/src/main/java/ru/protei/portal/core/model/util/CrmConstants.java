@@ -34,4 +34,8 @@ public class CrmConstants {
     public interface CaseTag {
         Long NOT_SPECIFIED = -1L;
     }
+
+    public interface Masks {
+        String EMAIL = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+$";
+    }
 }

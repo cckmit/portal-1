@@ -17,8 +17,8 @@ import ru.protei.portal.ui.equipment.client.activity.document.list.item.Abstract
 
 public class EquipmentDocumentsListItemView extends Composite implements AbstractEquipmentDocumentsListItemView {
 
-    private final static String ICON_APPROVED = "fa-check-circle-o";
-    private final static String ICON_NOT_APPROVED = "fa-file-text-o";
+    private final static String ICON_APPROVED = "fa-check-circle";
+    private final static String ICON_NOT_APPROVED = "fa-file-alt";
 
     @Inject
     public void onInit() {

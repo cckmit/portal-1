@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -199,6 +201,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
             view.initiator().setValue(null);
         } else {
+            initiatorSelectorAllowAddNew(companyOption.getId());
             Long selectedCompanyId = companyOption.getId();
 
             view.platform().setValue(null);
@@ -219,9 +222,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             PersonShortView initiator = null;
             if ( issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
                 initiator = PersonShortView.fromPerson(issue.getInitiator());
+                initiator.setDisplayShortName(transliteration(initiator.getDisplayShortName()));
             } else if ( profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
+                initiator = new PersonShortView(transliteration(profile.getShortName()), profile.getId(), profile.isFired());
             }
+
             view.initiator().setValue(initiator);
         }
 
@@ -332,7 +337,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.numberContainerVisibility().setVisible(true);
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            view.setCreatedBy(lang.createBy(issue.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(issue.getCreated())));
+            view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
             fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                     .withCaseType(En_CaseType.CRM_SUPPORT)
                     .withCaseId(issue.getId())
@@ -346,7 +351,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
             view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
-                    issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
+                    issue.getNotifiers()
+                            .stream()
+                            .map(notifier -> {
+                                PersonShortView personShortView = PersonShortView.fromPerson(notifier);
+                                personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
+
+                                return personShortView;
+                            })
+                            .collect(Collectors.toSet()));
             view.caseSubscriptionContainer().setVisible(true);
         } else {
             view.caseSubscriptionContainer().setVisible(false);
@@ -370,13 +383,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.switchToRONameDescriptionView(false);
             view.name().setValue(issue.getName());
             view.description().setValue(issue.getInfo());
-            view.setNameRO(null);
+            view.setNameRO(null, false);
             view.setDescriptionRO(null);
         } else {
             view.switchToRONameDescriptionView(true);
             view.name().setValue(null);
             view.description().setValue(null);
-            view.setNameRO(issue.getName());
+            view.setNameRO(issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()));
             renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
         }
 
@@ -414,13 +427,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             if ( initiatorCompany == null ) {
                 initiatorCompany = policyService.getUserCompany();
             }
-            view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
+            EntityOption company = EntityOption.fromCompany(initiatorCompany);
+            if (company != null) {
+                company.setDisplayText(transliteration(company.getDisplayText()));
+            }
+            view.company().setValue(company, true);
         }
 
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
-        view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
+        PersonShortView value = PersonShortView.fromPerson(issue.getManager());
+        if (value != null) {
+            value.setDisplayShortName(transliteration(value.getDisplayShortName()));
+        }
+        view.manager().setValue(value);
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-        view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
+        initiatorSelectorAllowAddNew(issue.getInitiatorCompanyId());
         view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
@@ -586,6 +607,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return saving;
     }
 
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private void initiatorSelectorAllowAddNew(Long companyId) {
+        if (companyId == null) {
+            return;
+        }
+
+        view.initiatorSelectorAllowAddNew(policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -606,6 +639,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     LocalStorageService localStorageService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    HomeCompanyService homeCompanyService;
 
     @ContextAware
     CaseObject issue;

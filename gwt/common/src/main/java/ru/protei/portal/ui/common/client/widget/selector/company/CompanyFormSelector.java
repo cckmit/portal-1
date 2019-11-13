@@ -30,7 +30,7 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText()) );
     }
 
     @Override

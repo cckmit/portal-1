@@ -35,6 +35,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     Long getAndIncrementEmailLastId( Long caseId );
 //    Long getEmailLastId(Long caseId);
+    List<Long> getCaseNumbersByPlatformId(Long id);
+
 
     boolean updateNullCreatorByExtAppType(String extAppType);
 

@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class StringUtils {

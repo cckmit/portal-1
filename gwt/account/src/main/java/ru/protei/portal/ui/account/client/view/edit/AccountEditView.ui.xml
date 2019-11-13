@@ -68,7 +68,7 @@
         </div>
         <div class="card-footer">
             <div class="pull-right">
-                <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox" text="{lang.sendEmail}"/>
+                <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox p-r-5" text="{lang.sendEmail}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
             </div>

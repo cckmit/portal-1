@@ -28,7 +28,7 @@
                     <ui:text from="{lang.projectRegion}"/>
                 </label>
                 <region:RegionButtonSelector ui:field="region" defaultValue="{lang.selectOfficialRegion}"
-                                             validation="true"/>
+                                             validation="true" hideNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
                 <label>
@@ -36,27 +36,27 @@
                 </label>
                 <productdirection:ProductDirectionButtonSelector ui:field="direction"
                                                                  defaultValue="{lang.contractSelectDirection}"
-                                                                 validation="true"/>
+                                                                 validation="true" hideNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
                 <label>
                     <ui:text from="{lang.projectCustomerType}"/>
                 </label>
                 <cutomertype:CustomerTypeSelector ui:field="customerType" defaultValue="{lang.selectCustomerType}"
-                                                  validation="true"/>
+                                                  validation="true" hideNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
                 <label>
                     <ui:text from="{lang.projectCustomerCompany}"/>
                 </label>
                 <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"
-                                         validation="true"/>
+                                         validation="true" hasNullValue="false"/>
             </div>
             <div class="form-group col-md-12">
                 <label>
                     <ui:text from="{lang.projectProducts}"/>
                 </label>
-                <productselector:devunit.DevUnitButtonSelector ui:field="product" hasNullValue="false"/>
+                <productselector:devunit.DevUnitButtonSelector ui:field="product" defaultValue="{lang.selectProduct}"/>
             </div>
         </div>
         <div class="text-right p-t-10">

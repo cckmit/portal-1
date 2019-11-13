@@ -36,7 +36,11 @@
       "customfield_12800":null,
       "customfield_12802":null,
       "customfield_12801":null,
-      "customfield_12405":null,
+      "customfield_12405": {
+        "self": "https://jira.billing.ru/rest/api/2/customFieldOption/18774",
+        "value": "40 - Trivial",
+        "id": "18774"
+      },
       "customfield_20705":null,
       "customfield_12409":null,
       "customfield_20701":null,
@@ -233,6 +237,7 @@
       "customfield_10001":null,
       "customfield_18005":null,
       "customfield_10002":null,
+      "customfield_22112":"CLM-367029",
       "customfield_18006":null,
       "customfield_10003":null,
       "customfield_18007":null,

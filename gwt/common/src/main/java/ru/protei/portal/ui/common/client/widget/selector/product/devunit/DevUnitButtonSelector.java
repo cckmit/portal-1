@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
+import java.util.List;
+
 /**
  * Button селектор с продуктами
  */
@@ -32,6 +34,15 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );
+    }
+
+    @Override
+    public void fillOptions(List<ProductShortView> options) {
+        if (defaultValue != null) {
+            addOption(null);
+        }
+
+        options.forEach(this::addOption);
     }
 
     public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {

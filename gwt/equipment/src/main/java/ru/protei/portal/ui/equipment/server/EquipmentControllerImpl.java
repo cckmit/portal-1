@@ -249,16 +249,16 @@ public class EquipmentControllerImpl implements EquipmentController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        String id = HelperFunc.nvlt(String.valueOf(document.getId()), "new");
+        String id4log = document.getId() == null ? "new" : String.valueOf(document.getId());
 
-        log.info("saveDocument: id={}", id);
+        log.info("saveDocument: id={}", id4log);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Document> response;
         if (document.getId() == null) {
             FileItem fileItem = sessionService.getFileItem(httpRequest);
             if (fileItem == null) {
-                log.error("saveDocument: id={} | file item in session was null", id);
+                log.error("saveDocument: id={} | file item in session was null", id4log);
                 throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
             }
             sessionService.setFileItem(httpRequest, null);
@@ -273,7 +273,7 @@ public class EquipmentControllerImpl implements EquipmentController {
             }
         }
 
-        log.info("saveDocument: id={} | result: {}", id, response.isOk() ? "ok" : response.getStatus());
+        log.info("saveDocument: id={} | result: {}", id4log, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
             return response.getData();

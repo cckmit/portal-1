@@ -240,7 +240,12 @@ public class CompanyServiceImpl implements CompanyService {
         return ok(checkGroupExists(name, excludeId));
     }
 
-    private boolean updateCompanySubscription( Long companyId, List<CompanySubscription> companySubscriptions ) {
+    @Override
+    public Result<List<Long>> getAllHomeCompanyIds(AuthToken token) {
+        return ok(companyDAO.getAllHomeCompanyIds());
+    }
+
+    private boolean updateCompanySubscription(Long companyId, List<CompanySubscription> companySubscriptions ) {
         log.info( "binding update to linked company subscription for companyId = {}", companyId );
 
         List<Long> toRemoveNumberIds = companySubscriptionDAO.listIdsByCompanyId( companyId );

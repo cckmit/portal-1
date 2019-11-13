@@ -573,4 +573,8 @@ public class DebugIds {
         String BUTTON = "color-picker-button";
         String INPUT = "color-picker-input";
     }
+
+    public interface COLLAPSIBLE_PANEL {
+        String COLLAPSE_BUTTON = "collapsible-panel-collapse-button";
+    }
 }

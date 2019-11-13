@@ -191,6 +191,9 @@ public abstract class DocumentFormActivity
     }
 
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
         if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }

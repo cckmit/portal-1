@@ -49,6 +49,11 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     }
 
     @Override
+    public void resetFilename() {
+        fileName.setText(null);
+    }
+
+    @Override
     public void setCreated(String date) {
         created.setInnerText(date);
     }

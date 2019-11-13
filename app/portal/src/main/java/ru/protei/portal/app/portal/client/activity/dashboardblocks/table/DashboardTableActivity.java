@@ -7,7 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -39,7 +39,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         view.setSectionName(event.sectionName);
         view.getSearch().setValue(model.query.getSearchCasenoString());
         view.toggleSearchIndicator(model.query.getSearchCasenoString() != null && !model.query.getSearchCasenoString().isEmpty());
-        view.toggleInitiatorsIndicator(model.query.getInitiatorIds() != null && model.query.getInitiatorIds().size() > 0);
+        view.toggleInitiatorsIndicator(model.query.getCompanyIds() != null && model.query.getCompanyIds().size() > 0);
 
         updateSection(model);
     }
@@ -100,15 +100,15 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     }
 
     @Override
-    public void onInitiatorSelected(AbstractDashboardTableView view, PersonShortView person) {
+    public void onCompanySelected(AbstractDashboardTableView view, EntityOption company) {
         DashboardTableModel model = viewToModel.get(view);
 
         if (model == null) {
             return;
         }
 
-        model.query.setInitiatorIds(person == null ? null : Collections.singletonList(person.getId()));
-        view.toggleInitiatorsIndicator(person != null);
+        model.query.setCompanyIds(company == null ? null : Collections.singletonList(company.getId()));
+        view.toggleInitiatorsIndicator(company != null);
 
         updateSection(model);
     }
@@ -133,9 +133,9 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             public void onSuccess( SearchResult<CaseShortView> searchResult ) {
                 model.view.setRecordsCount(searchResult.getTotalCount());
                 model.view.putRecords(searchResult.getResults());
-                model.view.putPersons(searchResult.getResults().stream()
-                        .filter(caseObject -> caseObject.getInitiatorId() != null && caseObject.getInitiatorShortName() != null)
-                        .map(caseObject -> new PersonShortView(caseObject.getInitiatorShortName(), caseObject.getInitiatorId(), false))
+                model.view.putCompanies(searchResult.getResults().stream()
+                        .filter(caseObject -> caseObject.getInitiatorCompanyId() != null && caseObject.getInitiatorCompanyName() != null)
+                        .map(caseObject -> new EntityOption(caseObject.getInitiatorCompanyName(), caseObject.getInitiatorCompanyId()))
                         .distinct()
                         .collect(Collectors.toList())
                 );
