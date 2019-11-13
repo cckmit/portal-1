@@ -1,9 +1,6 @@
 package ru.protei.portal.test.event;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,6 +40,7 @@ public class TestCaseEvents extends BaseServiceTest {
     private static final En_CaseType caseType = En_CaseType.CRM_SUPPORT;
 
     @Test
+//    @Ignore
     public void test001 () throws Exception {
 
         Company company = makeCustomerCompany();

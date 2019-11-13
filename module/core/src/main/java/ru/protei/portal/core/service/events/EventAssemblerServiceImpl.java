@@ -9,7 +9,7 @@ import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.AsseblerService;
+import ru.protei.portal.core.service.AssemblerService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -110,7 +110,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Autowired
     private PortalConfig config;
     @Autowired
-    AsseblerService assemblerService;
+    AssemblerService assemblerService;
 
     private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);

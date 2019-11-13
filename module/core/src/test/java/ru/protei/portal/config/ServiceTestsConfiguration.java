@@ -186,7 +186,7 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public AsseblerService getAssemblerService() {
+    public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
 

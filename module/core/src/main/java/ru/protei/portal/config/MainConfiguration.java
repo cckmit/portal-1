@@ -73,7 +73,6 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.concurrent.*;
 
 
@@ -675,7 +674,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public AsseblerService getAssemblerService() {
+    public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
 

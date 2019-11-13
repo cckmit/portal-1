@@ -10,21 +10,17 @@ import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.service.auth.AuthService;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 
-public class AssemblerServiceImpl implements AsseblerService {
+public class AssemblerServiceImpl implements AssemblerService {
 
     @Async(BACKGROUND_TASKS)
     @Override
