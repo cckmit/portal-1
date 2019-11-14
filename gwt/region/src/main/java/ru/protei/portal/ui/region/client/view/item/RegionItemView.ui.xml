@@ -10,6 +10,5 @@
                 <span ui:field="number" class="pull-right"></span>
             </h2>
         </g:HTMLPanel>
-        <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
     </g:HTMLPanel>
 </ui:UiBinder>

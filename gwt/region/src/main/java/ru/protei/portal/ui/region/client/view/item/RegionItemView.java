@@ -35,8 +35,6 @@ public class RegionItemView extends Composite implements AbstractRegionItemView 
     @UiField
     SpanElement name;
     @UiField
-    HTMLPanel previewContainer;
-    @UiField
     SpanElement number;
 
     AbstractRegionItemActivity activity;
