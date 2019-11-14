@@ -12,12 +12,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
 
@@ -31,8 +29,6 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-/*        direction.setDefaultValue(lang.contractSelectDirection());*/
-/*        sortField.setType( ModuleType.REGION );*/
     }
 
     @Override
@@ -40,24 +36,9 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         this.activity = activity;
     }
 
-/*    @Override
-    public HasValue<En_SortField> sortField() {
-        return sortField;
-    }
-
-    @Override
-    public HasValue<Boolean> sortDir() {
-        return sortDir;
-    }*/
-
     @Override
     public HasValue<String> searchPattern() {
         return search;
-    }
-
-    @Override
-    public HasValue<Set<En_RegionState>> states() {
-        return states;
     }
 
     @Override
@@ -65,19 +46,10 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         return districts;
     }
 
-/*    @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
-    }*/
-
     @Override
     public void resetFilter() {
-/*        sortField.setValue( En_SortField.name );
-        sortDir.setValue( true );*/
         search.setValue( "" );
-/*        direction.setValue( null );*/
         districts.setValue( new HashSet<>() );
-        states.setValue( new HashSet<>() );
     }
 
     @UiHandler( "resetBtn" )
@@ -88,40 +60,12 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     }
 
-/*    @UiHandler( "sortField" )
-    public void onSortFieldSelected( ValueChangeEvent<En_SortField> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }*/
-
-    @UiHandler( "states" )
-    public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
     @UiHandler( "districts" )
     public void onDistrictSelected( ValueChangeEvent<Set<DistrictInfo>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
-
-/*    @UiHandler( "direction" )
-    public void onDirectionSelected( ValueChangeEvent<ProductDirectionInfo> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }*/
-
-/*    @UiHandler("sortDir")
-    public void onSortDirClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }*/
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent<String> event ) {
@@ -138,13 +82,6 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     };
 
-/*    @Inject
-    @UiField( provided = true )
-    SortFieldSelector sortField;
-
-    @UiField
-    ToggleButton sortDir;*/
-
     @UiField
     CleanableSearchBox search;
 
@@ -157,15 +94,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 
     @Inject
     @UiField( provided = true )
-    RegionStateBtnGroupMulti states;
-
-    @Inject
-    @UiField( provided = true )
     DistrictBtnGroupMulti districts;
-
-/*    @Inject
-    @UiField( provided = true )
-    ProductDirectionButtonSelector direction;*/
 
     AbstractRegionFilterActivity activity;
 

@@ -17,8 +17,7 @@ import ru.protei.winter.web.common.client.events.SectionEvents;
 /**
  * Активность по работе с вкладкой "Регионы"
  */
-public abstract class RegionPage
-        implements Activity {
+public abstract class RegionPage implements Activity {
 
     @PostConstruct
     public void onInit() {
@@ -34,11 +33,6 @@ public abstract class RegionPage
 
     @Event
     public void onShowTable( RegionEvents.Show event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowDetail( RegionEvents.Edit event ) {
         fireSelectTab();
     }
 

@@ -12,31 +12,12 @@
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
-                <!--<div class="form-group col-md-12">
-                    <label><ui:text from="{lang.productDirection}"/></label>
-                    <div class="control-group">
-                        <productdirection:ProductDirectionButtonSelector ui:field="direction" />
-                    </div>
-                </div>-->
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regionDistrict}"/></label>
                     <div class="control-group">
                         <district2:DistrictBtnGroupMulti ui:field="districts" />
                     </div>
                 </div>
-                <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.regionState}"/></label>
-                    <div class="control-group">
-                        <state:RegionStateBtnGroupMulti ui:field="states" />
-                    </div>
-                </div>
-                <!--<div class="form-group col-md-12">
-                    <label><ui:text from="{lang.sortBy}"/></label>
-                    <div class="control-group">
-                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>
-                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
-                    </div>
-                </div>-->
             </div>
         </div>
         <div class="card-footer text-right">
