@@ -75,42 +75,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
-
         List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
-        /*  здесь на выходе получается мапа с сортировкой по id по возрастанию */
-        Map< Long, RegionInfo > regionInfos = regions.stream().collect(
-                Collectors.toMap( Location::getId, Location::toRegionInfo )
-        );
-
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType( En_CaseType.PROJECT );
-
-        Set<Long> productIds = null;
-        if (query.getDirectionId() != null){
-            productIds = new HashSet<>();
-            productIds.add( query.getDirectionId() );
-        }
-        caseQuery.setProductIds( productIds );
-
-        List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
-        projects.forEach( ( project ) -> {
-            iterateAllLocations( project, ( location ) -> {
-                applyCaseToRegionInfo( project, location, regionInfos );
-            } );
-        } );
-
-
-        List< RegionInfo > result = regionInfos.values().stream()
-                .filter( ( regionInfo ) -> {
-                    if (CollectionUtils.isEmpty(query.getStates())) {
-                        return true;
-                    }
-
-                    return query.getStates().contains( regionInfo.state );
-                } )
-                .collect( toList() );
-
-        return ok(result );
+        return ok(regions.stream().map(Location::toRegionInfo).collect(toList()));
     }
 
     @Override
@@ -433,18 +399,6 @@ public class ProjectServiceImpl implements ProjectService {
         } );
     }
 
-    private void applyCaseToRegionInfo( CaseObject project, Location location, Map< Long, RegionInfo > regions ) {
-        RegionInfo region = findRegionByLocation( regions, location );
-        if ( region == null ) {
-            return;
-        }
-
-        if ( region.state == En_RegionState.UNKNOWN ) {
-            region.state = En_RegionState.forId( project.getStateId() );
-            return;
-        }
-    }
-
     private RegionInfo findRegionByLocation( Map< Long, RegionInfo > regions, Location location ) {
         if ( location == null ) {
             return null;
@@ -529,8 +483,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (isSortByFilter) {
             locationQuery.setSortField(query.getSortField());
             locationQuery.setSortDir(query.getSortDir());
-        }
-        else {
+        } else {
             locationQuery.setSortField(En_SortField.name);
             locationQuery.setSortDir(En_SortDir.ASC);
         }

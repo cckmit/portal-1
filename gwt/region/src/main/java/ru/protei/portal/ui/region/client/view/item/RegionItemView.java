@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -26,32 +27,6 @@ public class RegionItemView extends Composite implements AbstractRegionItemView 
         this.activity = activity;
     }
 
-    @UiHandler( "favorite" )
-    public void onFavoriteClicked( ClickEvent event ) {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onFavoriteClicked( this );
-        }
-    }
-
-    @UiHandler( "edit" )
-    public void onEditClicked ( ClickEvent event )
-    {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onEditClicked( this );
-        }
-    }
-
-    @UiHandler( "preview" )
-    public void onPreviewClicked ( ClickEvent event )
-    {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onPreviewClicked( this );
-        }
-    }
-
     @Override
     public void setName(String name) {
         this.name.setInnerText( name );
@@ -62,46 +37,12 @@ public class RegionItemView extends Composite implements AbstractRegionItemView 
         this.number.setInnerText( number == null ? "" : number.toString() );
     }
 
-    @Override
-    public void setDetails( String details ) {
-        this.details.setInnerText( details == null ? "" : details.toString() );
-    }
-
-    @Override
-    public void setState( String value ) {
-        state.setClassName( value );
-    }
-
-    @Override
-    public void setEditEnabled( boolean isEnabled ) {
-        if (isEnabled) {
-            edit.removeStyleName( "link-disabled" );
-        } else {
-            edit.addStyleName( "link-disabled" );
-        }
-    }
-
-    @Override
-    public HasWidgets getPreviewContainer() {
-        return previewContainer;
-    }
-
     @UiField
     SpanElement name;
     @UiField
-    Anchor edit;
-    @UiField
-    Anchor favorite;
-    @UiField
     HTMLPanel previewContainer;
     @UiField
-    Anchor preview;
-    @UiField
     SpanElement number;
-    @UiField
-    DivElement details;
-    @UiField
-    Element state;
 
     AbstractRegionItemActivity activity;
 
