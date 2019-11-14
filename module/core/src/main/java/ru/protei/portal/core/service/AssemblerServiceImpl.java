@@ -10,14 +10,15 @@ import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 
 public class AssemblerServiceImpl implements AssemblerService {
@@ -82,16 +83,24 @@ public class AssemblerServiceImpl implements AssemblerService {
         log.info( "fillComments(): CaseObjectID={} Try to fill comments.", e.getCaseObjectId() );
         Date upperBoundDate = makeCommentUpperBoundDate( e );
 
-        e.setInitialCaseComments( caseCommentDAO.getCaseComments( new CaseCommentQuery( e.getCaseObjectId(), upperBoundDate ) ) );
+        e.setExistingCaseComments( caseCommentDAO.getCaseComments( new CaseCommentQuery( e.getCaseObjectId(), upperBoundDate ) ) );
 
         log.info( "fillComments(): CaseObjectID={} Comments are successfully filled.", e.getCaseObjectId() );
         return ok( e );
     }
 
     private Date makeCommentUpperBoundDate( AssembledCaseEvent event ) {
-        Date upperBoundDate = event.getCaseComment() == null || event.getRemovedComment() != null ?
-                new Date( event.getLastUpdated() ) :
-                event.getCaseComment().getCreated();
+        List<CaseComment> allComments = event.getAllComments();
+
+        Date upperBoundDate;
+        if (isEmpty( allComments )) {
+            upperBoundDate = new Date( event.getLastUpdated() );
+        } else {
+            Optional<CaseComment> first = allComments.stream()
+                    .sorted( Comparator.comparing( CaseComment::getCreated, Date::compareTo ).reversed() ).findFirst();
+            upperBoundDate = first.get().getCreated();
+        }
+
         return addSeconds( upperBoundDate, 1 );
     }
 

@@ -1,16 +1,17 @@
 package ru.protei.portal.core.event;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static ru.protei.portal.core.event.AssembledEventFactory.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class AssembledCaseEventTest {
@@ -23,9 +24,9 @@ public class AssembledCaseEventTest {
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null ) );
         assembled.setExistingAttachments( old );
 
-        Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
     }
 
     @Test
@@ -34,9 +35,9 @@ public class AssembledCaseEventTest {
 
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
 
-        Assert.assertTrue( isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
     }
 
     @Test
@@ -45,9 +46,9 @@ public class AssembledCaseEventTest {
 
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
 
-        Assert.assertTrue( isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
     }
 
 
@@ -59,9 +60,9 @@ public class AssembledCaseEventTest {
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
         assembled.setExistingAttachments( old );
 
-        Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
     }
 
     @Test
@@ -72,9 +73,9 @@ public class AssembledCaseEventTest {
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
         assembled.setExistingAttachments( old );
 
-        Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
     }
 
     @Test
@@ -86,9 +87,9 @@ public class AssembledCaseEventTest {
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, del ) );
         assembled.setExistingAttachments( old );
 
-        Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
     }
 
 
@@ -103,9 +104,9 @@ public class AssembledCaseEventTest {
         assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
         assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
 
-        Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
     }
 
     @Test
@@ -126,15 +127,15 @@ public class AssembledCaseEventTest {
 
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, null, null ) );
         assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, add, null ) );
-        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );//TODO
+        assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, null, del ) );
         assembled.attachAttachmentEvent( new CaseAttachmentEvent( this, null, null, null, listOf( addAdded2 ), null ) );
         assembled.setExistingAttachments( oldAndAdded );
 
-        Assert.assertEquals( "Expected only intacted attachments. If Add and then Remove = not old.",
+        assertEquals( "Expected only intacted attachments. If Add and then Remove = not old.",
                 listOf( oldExists ), listOf( assembled.getExistingAttachments() ) );
-        Assert.assertEquals( "Expected only added attachments. If Add and then Remove = not added.",
+        assertEquals( "Expected only added attachments. If Add and then Remove = not added.",
                 listOf( addAdded, addAdded2 ), assembled.getAddedAttachments() );
-        Assert.assertEquals( "Expected only removed attachments. If Add and then Remove = not removed.",
+        assertEquals( "Expected only removed attachments. If Add and then Remove = not removed.",
                 listOf( oldDel ), assembled.getRemovedAttachments() );
     }
 
@@ -148,9 +149,9 @@ public class AssembledCaseEventTest {
         //  CaseCommentEvent не должен затирать существующие вложения
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, null, null ) );
 
-        Assert.assertTrue( "Expected existing attachments. CaseCommentEvent erase existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments. CaseCommentEvent erase existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( isEmpty( assembled.getRemovedAttachments() ) );
     }
 
     @Test
@@ -162,37 +163,128 @@ public class AssembledCaseEventTest {
         AssembledCaseEvent assembled = makeAssembledEvent( new CaseAttachmentEvent( this, null, null, null, add, del ) );
         assembled.setExistingAttachments( old );
         //  CaseCommentEvent не должен затирать
-        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false,  null, null, null ) );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, null, null ) );
 
-        Assert.assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
-        Assert.assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
-        Assert.assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
+        assertTrue( "Expected existing attachments", !isEmpty( assembled.getExistingAttachments() ) );
+        assertTrue( "Expected added attachments", !isEmpty( assembled.getAddedAttachments() ) );
+        assertTrue( "Expected removed attachments", !isEmpty( assembled.getRemovedAttachments() ) );
+    }
+
+    @Test
+    public void caseCommentEvent_old_comments() {
+        List<CaseComment> old = listOf( makeComment(), makeComment() );
+
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseCommentEvent( this, null, null, null, false, null, null, null ) );
+        assembled.setExistingCaseComments( old );
+
+        assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
+        assertEquals( old, assembled.getAllComments() );
+        assertTrue( isEmpty( assembled.getChangedComments() ) );
+        assertTrue( isEmpty( assembled.getRemovedComments() ) );
+        assertTrue( isEmpty( assembled.getAddedCaseComments() ) );
+    }
+
+    @Test
+    public void caseCommentEvent_added_comments() {
+        List<CaseComment> old = listOf( makeComment(), makeComment() );
+        CaseComment add1 = makeComment();
+        CaseComment add2 = makeComment();
+        List<CaseComment> all = new ArrayList<>( old );
+        all.add( add1 );
+        all.add( add2 );
+
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseCommentEvent( this, null, null, null, false, null, add1, null ) );
+        assembled.setExistingCaseComments( old );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, add2, null ) );
+
+
+        assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
+        assertEquals( "Expected existing all", all, assembled.getAllComments() );
+        assertEquals( "Expected existing added", listOf( add1, add2 ), assembled.getAddedCaseComments() );
+        assertTrue( isEmpty( assembled.getChangedComments() ) );
+        assertTrue( isEmpty( assembled.getRemovedComments() ) );
+    }
+
+    @Test
+    public void caseCommentEvent_removed_comments() {
+        List<CaseComment> old = listOf( makeComment(), makeComment() );
+        CaseComment rem1 = makeComment();
+        CaseComment rem2 = makeComment();
+        List<CaseComment> all = new ArrayList<>( old );
+        all.add( rem1 );
+        all.add( rem2 );
+
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseCommentEvent( this, null, null, null, false, null, null, rem1 ) );
+        assembled.setExistingCaseComments( old );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, null, rem2 ) );
+
+
+        assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
+        assertEquals( "Expected existing old and removed", all, assembled.getAllComments() );
+        assertTrue( isEmpty( assembled.getAddedCaseComments() ) );
+        assertTrue( isEmpty( assembled.getChangedComments() ) );
+        assertEquals( "Expected existing removed", listOf( rem1, rem2 ), assembled.getRemovedComments() );
     }
 
 
-    private AssembledCaseEvent makeAssembledEvent( CaseAttachmentEvent caseAttachmentEvent ) {
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseAttachmentEvent );
-        assembledCaseEvent.attachAttachmentEvent( caseAttachmentEvent );
-        return assembledCaseEvent;
+    @Test
+    public void caseCommentEvent_changed_comments() {
+        List<CaseComment> old = listOf( makeComment(), makeComment() );
+        CaseComment chang1 = makeComment();
+        CaseComment chang2 = makeComment();
+        CaseComment chang1new = makeComment();
+        chang1new.setId( chang1.getId() );
+        chang1new.setText( "new chang1" );
+        CaseComment chang2new = makeComment();
+        chang2new.setId( chang2.getId() );
+        chang2new.setText( "new chang2" );
+
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseCommentEvent( this, null, null, null, false, chang1, chang1new, null ) );
+        assembled.setExistingCaseComments( old );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, chang2, chang2new, null ) );
+
+        assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
+        assertEquals( "Expected existing only initial comments", old, assembled.getAllComments() );
+        assertTrue( isEmpty( assembled.getAddedCaseComments() ) );
+        assertEquals( "Expected existing changed", listOf( chang1, chang2 ), assembled.getChangedComments() );
+        assertTrue( isEmpty( assembled.getRemovedComments() ) );
+    }
+
+    @Test
+    public void caseCommentEvent_added_removed_changed_comments() {
+        List<CaseComment> old = listOf( makeComment(), makeComment() );
+        CaseComment chang1 = makeComment();
+        CaseComment chang2 = makeComment();
+        CaseComment rem1 = makeComment();
+        CaseComment rem2 = makeComment();
+        CaseComment add1 = makeComment();
+        CaseComment add2 = makeComment();
+
+        CaseComment chang1new = makeComment();
+        chang1new.setId( chang1.getId() );
+        chang1new.setText( "new chang1" );
+        CaseComment chang2new = makeComment();
+        chang2new.setId( chang2.getId() );
+        chang2new.setText( "new chang2" );
+
+        List<CaseComment> all = new ArrayList<>( old );
+        all.add( rem1 );
+        all.add( rem2 );
+        all.add( add1 );
+        all.add( add2 );
+
+        AssembledCaseEvent assembled = makeAssembledEvent( new CaseCommentEvent( this, null, null, null, false, chang1, chang1new, rem1 ) );
+        assembled.setExistingCaseComments( old );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, chang2, chang2new, rem2 ) );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, add1, null ) );
+        assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, add2, null ) );
+
+        assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
+        assertEquals( "Expected existing old and removed", all, assembled.getAllComments() );
+        assertEquals( "Expected existing added", listOf( add1, add2 ), assembled.getAddedCaseComments() );
+        assertEquals( "Expected existing changed", listOf( chang1, chang2 ), assembled.getChangedComments() );
+        assertEquals( "Expected existing removed", listOf( rem1, rem2 ), assembled.getRemovedComments() );
     }
 
 
-    private Attachment makeAttachment() {
-        long id = attachmetnIdgenerator.incrementAndGet();
-        return makeAttachment( id, "Test-" + id );
-    }
-
-    private Attachment makeAttachment( String name ) {
-        long id = attachmetnIdgenerator.incrementAndGet();
-        return makeAttachment( id, name );
-    }
-
-    private Attachment makeAttachment( Long id, String name ) {
-        Attachment attachment = new Attachment();
-        attachment.setId( id );
-        attachment.setFileName( name );
-        return attachment;
-    }
-
-    AtomicLong attachmetnIdgenerator = new AtomicLong( 0L );
 }

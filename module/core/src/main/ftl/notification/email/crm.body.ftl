@@ -297,9 +297,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 </#if>
             </tbody>
         </table>
-        <div style="font-size:14px;margin-top:15px">
+        <div id="test-case-comments" style="font-size:14px;margin-top:15px">
             <#list caseComments?reverse as caseComment>
-                <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.changed>#dff7e2<#else>#f0f0f0</#if></#if>;">
+                <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
                     <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
                     <#if showPrivacy>
                         <#if caseComment.isPrivateComment>
