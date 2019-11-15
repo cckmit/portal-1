@@ -82,6 +82,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
     public CaseShortViewDAO getCaseShortDAO() {
         return new CaseShortViewDAO_Impl();
     }

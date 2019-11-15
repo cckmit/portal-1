@@ -38,6 +38,10 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person initiator );
 
+    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    Result<CaseObjectMeta> updateCaseObjectMeta( AuthToken token, CaseObjectMeta caseMeta, Person initiator );
+
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 
     Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
