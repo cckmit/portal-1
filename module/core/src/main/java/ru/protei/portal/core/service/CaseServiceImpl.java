@@ -6,13 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseLinksEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectInfoEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -219,6 +218,32 @@ public class CaseServiceImpl implements CaseService {
         }
 
         return ok(objectResultData.getCaseObject());
+    }
+
+    @Override
+    public Result<Long> updateCaseObjectInfo(AuthToken token, CaseObjectInfo caseObjectInfo, Person initiator) {
+
+        CaseObject oldCaseObject = caseObjectDAO.get(caseObjectInfo.getId());
+        CaseObjectInfo oldCaseObjectInfo = new CaseObjectInfo(oldCaseObject.getId(), oldCaseObject.getName(), oldCaseObject.getInfo());
+
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(caseObjectInfo.getId());
+        caseObject.setName(caseObjectInfo.getName());
+        caseObject.setInfo(caseObjectInfo.getInfo());
+
+        boolean isUpdated = caseObjectDAO.partialMerge(caseObject);
+
+        if (isUpdated) {
+            publisherService.publishEvent(new CaseObjectInfoEvent(
+                    this,
+                    oldCaseObjectInfo,
+                    caseObjectInfo,
+                    initiator,
+                    ServiceModule.GENERAL,
+                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
+        }
+
+        return ok(caseObject.getId());
     }
 
     private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {

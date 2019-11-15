@@ -424,6 +424,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return timeElapsedHeader;
     }
 
+    @Override
+    public HasVisibility editNameAndDescriptionButtonVisibility() {
+        return editNameAndDescriptionButton;
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
@@ -467,6 +472,20 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void onCopyClick(ClickEvent event) {
         if (activity != null) {
             activity.onCopyClicked();
+        }
+    }
+
+    @UiHandler("editNameAndDescriptionButton")
+    public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked();
+        }
+    }
+
+    @UiHandler("saveNameAndDescriptionButton")
+    public void onSaveNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveNameAndDescriptionClicked();
         }
     }
 
@@ -660,6 +679,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     DivElement descriptionRO;
     @UiField
     HTMLPanel descriptionContainer;
+    @UiField
+    Button editNameAndDescriptionButton;
+    @UiField
+    Button saveNameAndDescriptionButton;
 
     private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
         @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }

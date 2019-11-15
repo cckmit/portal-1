@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectInfo;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
@@ -20,9 +21,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
@@ -90,6 +89,15 @@ public class IssueControllerImpl implements IssueController {
         Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
         log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response).getId();
+    }
+
+    @Override
+    public Long saveIssueNameAndDescription(CaseObjectInfo caseObjectInfo) throws RequestFailedException {
+        log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", caseObjectInfo.getId(), caseObjectInfo.getName(), caseObjectInfo.getInfo());
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<Long> response = caseService.updateCaseObjectInfo(token, caseObjectInfo, getCurrentPerson());
+        log.info( "saveIssueNameAndDescription(): response.isOk()={}", response.isOk() );
+        return null;
     }
 
     @Override

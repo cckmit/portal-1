@@ -17,10 +17,9 @@ public interface AbstractIssueEditActivity {
     void onCreateContactClicked();
     void onLocalClicked();
     void renderMarkupText(String text, Consumer<String> consumer);
-
     void onDisplayPreviewChanged( String description, boolean isDisplay );
-
     void onCopyClicked();
-
     void onCaseMetaChanged( CaseMeta value );
+    void onEditNameAndDescriptionClicked();
+    void onSaveNameAndDescriptionClicked();
 }

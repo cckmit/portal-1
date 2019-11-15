@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -37,6 +38,10 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person initiator );
+
+    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    Result<Long> updateCaseObjectInfo(AuthToken token, CaseObjectInfo caseObjectInfo, Person initiator);
 
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 

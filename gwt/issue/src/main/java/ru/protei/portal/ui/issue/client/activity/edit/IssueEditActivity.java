@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.CaseObjectInfo;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -139,7 +140,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return;
         }
         lockSave();
-        issueService.saveIssue( issue, new FluentCallback<Long>()
+        issueService.saveIssue(issue, new FluentCallback<Long>()
                 .withError(throwable -> {
                     unlockSave();
                     defaultErrorHandler.accept(throwable);
@@ -281,7 +282,40 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     }
 
-    private void initialView(CaseObject issue){
+    @Override
+    public void onEditNameAndDescriptionClicked() {
+        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
+        if (isAllowedEditNameAndDescription) {
+            view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
+            view.switchToRONameDescriptionView(false);
+            view.name().setValue(issue.getName());
+            view.description().setValue(issue.getInfo());
+            view.setNameRO(null, false);
+            view.setDescriptionRO(null);
+        }
+    }
+
+    @Override
+    public void onSaveNameAndDescriptionClicked() {
+        if (!view.nameValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+        CaseObjectInfo caseObjectInfo = fillIssueNameAndDescription();
+        issueService.saveIssueNameAndDescription(caseObjectInfo, new FluentCallback<Long>()
+                .withSuccess(caseId -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                }));
+    }
+
+    private CaseObjectInfo fillIssueNameAndDescription() {
+        return new CaseObjectInfo(
+                issue.getId(),
+                view.name().getValue().trim(),
+                view.description().getValue().trim());
+    }
+
+    private void initialView( CaseObject issue) {
         this.issue = issue;
         fillView(this.issue, false);
     }
@@ -377,8 +411,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isPrivate().setValue(issue.isPrivateCase());
 
-        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
-        if (isAllowedEditNameAndDescription) {
+        if (isNew(issue)) {
             view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
             view.switchToRONameDescriptionView(false);
             view.name().setValue(issue.getName());
@@ -392,6 +425,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.setNameRO(issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()));
             renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
         }
+        view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));

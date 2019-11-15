@@ -127,4 +127,6 @@ public interface AbstractIssueEditView extends IsWidget {
     void setNameRO(String name, boolean isJira);
 
     String DESCRIPTION = "description";
+
+    HasVisibility editNameAndDescriptionButtonVisibility();
 }
