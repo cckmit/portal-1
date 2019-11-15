@@ -64,12 +64,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
-//    @JdbcColumn(name="address")
-//    private String address;
-//
-//    @JdbcColumn(name="address_home")
-//    private String addressHome;
-
     @JdbcColumn(name="passportinfo")
     private String passportInfo;
 
@@ -90,11 +84,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     @JdbcColumn(name = "old_id")
     private Long oldId;
-
-/*
-    @JdbcColumn(name = "updated")
-    private Date updated;
-*/
 
     @JdbcColumn(name = "relations")
     private String relations;
@@ -238,24 +227,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.contactInfo = contactInfo;
     }
 
-
-
-//    public String getAddress() {
-//        return address;
-//    }
-//
-//    public void setAddress(String address) {
-//        this.address = address;
-//    }
-//
-//    public String getAddressHome() {
-//        return addressHome;
-//    }
-//
-//    public void setAddressHome(String addressHome) {
-//        this.addressHome = addressHome;
-//    }
-
     public String getPassportInfo() {
         return passportInfo;
     }
@@ -335,16 +306,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         return "Person";
     }
 
-/*
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-*/
-
     @Override
     public PersonShortView toShortNameShortView() {
         return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
@@ -356,8 +317,16 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Person && Objects.equals(id, ((Person)obj).getId());
+    public int hashCode() {
+        return Objects.hash( id );
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals( id, person.id );
     }
 
     public String getRelations() {

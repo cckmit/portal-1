@@ -10,20 +10,22 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
  * Реализация сервиса по работе с обращениями
@@ -48,7 +50,7 @@ public class IssueControllerImpl implements IssueController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        Result<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
+        Result<CaseObject> response = caseService.getCaseObjectByNumber( descriptor.makeAuthToken(), number );
         log.info("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -78,16 +80,16 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
-        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
+    public Long saveIssue( CaseObject caseObject ) throws RequestFailedException {
+        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
             CaseObject saved = createIssue(caseObject);
-            return new CaseObjectWithCaseComment(saved, null);
+            return saved.getId();
         }
-        Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
-        log.info("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
-        return checkResultAndGetData(response);
+        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
+        log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
+        return checkResultAndGetData(response).getId();
     }
 
     @Override
@@ -103,12 +105,6 @@ public class IssueControllerImpl implements IssueController {
         }
 
         return response.getData();
-    }
-
-    @Override
-    public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
     }
 
     @Override
@@ -131,7 +127,7 @@ public class IssueControllerImpl implements IssueController {
     }
 
     private Person getCurrentPerson(){
-        return sessionService.getUserSessionDescriptor(request).getPerson();
+        return ServiceUtils.getCurrentPerson( sessionService, httpServletRequest );
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
@@ -146,6 +142,9 @@ public class IssueControllerImpl implements IssueController {
 
     @Autowired
     CaseService caseService;
+
+    @Autowired
+    CaseLinkService linkService;
 
     @Autowired
     SessionService sessionService;

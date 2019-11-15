@@ -30,7 +30,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления проектами
@@ -113,17 +113,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("addedLinks", mergeLinks == null ? null : mergeLinks.getAddedEntries());
         templateModel.put("removedLinks", mergeLinks == null ? null : mergeLinks.getRemovedEntries());
 
-        Collection<Attachment> existingAttachments = new ArrayList<>((oldState == null? newState.getAttachments(): oldState.getAttachments()));
-        existingAttachments.removeIf(a -> event.getRemovedAttachments().contains(a) || event.getAddedAttachments().contains(a));
-
         templateModel.putAll(
                 buildAttachmentModelKeys(
-                        existingAttachments,
+                        event.getExistingAttachments(),
                         event.getAddedAttachments(),
                         event.getRemovedAttachments())
         );
 
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment(), event.getRemovedComment(), textMarkup));
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedComments(), event.getRemovedComments(), textMarkup));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -288,31 +285,28 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, CaseComment removedCaseComment, En_TextMarkup textMarkup){
+    private List<Map<String, Object>> getCommentsModelKeys( List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map( comment -> {
 
-                    boolean isNew = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
-                    boolean isChanged = isNew && oldCaseComment != null;
+                    boolean isNew = contains( added, comment );
+                    boolean isChanged = contains( changed, comment );
 
                     Map< String, Object > mailComment = new HashMap<>();
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
-                    if (isNew) {
-                        mailComment.put("text", escapeTextAndRenderHTML(newCaseComment.getText(), textMarkup));
-                    } else {
-                        mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    }
+                    mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
                     mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
                     mailComment.put( "caseManager", comment.getCaseManagerShortName() );
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
-                    mailComment.put( "changed", isNew);
+                    mailComment.put( "added", isNew);
                     if (isChanged) {
-                        mailComment.put( "oldText", escapeTextAndRenderHTML( oldCaseComment.getText(), textMarkup ) );
+                        CaseComment oldComment = changed.get( changed.indexOf( comment ) );
+                        mailComment.put( "oldText", escapeTextAndRenderHTML( oldComment.getText(), textMarkup ) );
                     }
-                    mailComment.put( "removed", removedCaseComment != null && HelperFunc.equals( removedCaseComment.getId(), comment.getId()));
+                    mailComment.put( "removed", contains( removed, comment ));
                     return mailComment;
                 } )
                 .collect( toList() );
@@ -343,13 +337,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
-        if(existing.isEmpty() && added.isEmpty() && removed.isEmpty())
+        if(isEmpty(existing) && isEmpty(added) && isEmpty(removed))
             return Collections.emptyMap();
 
         Map<String, Object> model = new HashMap<>(3);
-        model.put( "attachments", existing);
-        model.put( "removedAttachments", removed);
-        model.put( "addedAttachments", added);
+        model.put( "attachments", emptyIfNull( existing ));
+        model.put( "removedAttachments", emptyIfNull(removed));
+        model.put( "addedAttachments", emptyIfNull(added));
 
         return model;
     }

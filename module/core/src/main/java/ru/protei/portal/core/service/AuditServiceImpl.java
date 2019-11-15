@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 /**
  * Реализация сервиса управления аудитом
@@ -46,6 +48,7 @@ public class AuditServiceImpl implements AuditService {
         return ok( list );
     }
 
+    @Async(BACKGROUND_TASKS)
     @Override
     public Result< AuditObject > saveAuditObject( AuditObject auditObject ) {
 

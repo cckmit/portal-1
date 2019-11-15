@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.server;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -48,4 +49,9 @@ public class ServiceUtils {
         }
         return authToken;
     }
+
+    public static Person getCurrentPerson(SessionService sessionService, HttpServletRequest httpRequest){
+        return sessionService.getUserSessionDescriptor(httpRequest).getPerson();
+    }
+
 }

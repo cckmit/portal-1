@@ -3,17 +3,17 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис управления контактами
@@ -25,7 +25,7 @@ public interface IssueController extends RemoteService {
 
     CaseObject getIssue( long id ) throws RequestFailedException;
 
-    CaseObjectWithCaseComment saveIssueAndComment(CaseObject p, CaseComment c ) throws RequestFailedException;
+    Long saveIssue( CaseObject p ) throws RequestFailedException;
 
     /**
      * Получение списка статусов
@@ -35,5 +35,4 @@ public interface IssueController extends RemoteService {
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
-    List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException;
 }

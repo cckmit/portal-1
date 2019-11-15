@@ -34,7 +34,7 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
-                <module>module/hpsm</module>
+<!--                <module>module/hpsm</module>-->
                 <module>module/ws-api</module>
                 <module>module/redmine</module>
                 <module>module/jira</module>
@@ -72,7 +72,7 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
-                <module>module/hpsm</module>
+<!--                <module>module/hpsm</module>-->
                 <module>module/ws-api</module>
                 <module>module/jira</module>
                 <module>module/redmine</module>

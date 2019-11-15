@@ -10,6 +10,7 @@ import ru.protei.portal.core.service.EventPublisherService;
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -21,9 +22,17 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
 
     ExecutorService executorService;
     ApplicationEventPublisher eventPublisher;
+    int maxQueueSize=0;
 
     public AsyncEventPublisherService () {
-        executorService = Executors.newFixedThreadPool(3);
+        executorService = Executors.newFixedThreadPool(3, new ThreadFactory() {
+            @Override
+            public Thread newThread( Runnable r ) {
+                Thread thread = new Thread( r );
+                thread.setName( "T-" + thread.getId() + " event-publisher" );
+                return thread;
+            }
+        });
     }
 
     @Override
@@ -31,8 +40,15 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
         final long start = System.currentTimeMillis();
         // размер очереди на момент добавления задачи в очередь
         final int size = ((ThreadPoolExecutor) executorService).getQueue().size();
+        if (maxQueueSize < size) {
+            maxQueueSize = size;
+        }
         executorService.submit( () -> {
-            logger.info( "publishEvent(): Queue_size={} timeSpentInQueue={}ms {} ", size, System.currentTimeMillis() - start, event );
+            if(size > 50) {
+                logger.warn( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
+            }else{
+                logger.info( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
+            }
             eventPublisher.publishEvent( event );
         } );
     }

@@ -6,110 +6,70 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.Collection;
 import java.util.Collections;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
 public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private final ServiceModule serviceModule;
-    private CaseObject caseObject;
-    private Collection<Attachment> addedAttachments;
-    private Collection<Attachment> removedAttachments;
+    private DiffCollectionResult<Attachment> attachments = new DiffCollectionResult<>();
     private Person person;
+    private Long caseObjectId;
 
-    private CaseAttachmentEvent(
+    public CaseAttachmentEvent(
             Object source, ServiceModule serviceModule,
-            Person person, CaseObject caseObject,
-            Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments
+            Person person,
+            Long caseObjectId,
+            Collection<Attachment> addedAttachments,
+            Collection<Attachment> removedAttachments
     ) {
         super(source);
         this.serviceModule = serviceModule;
         this.person = person;
-        this.caseObject = caseObject;
-        this.addedAttachments = addedAttachments;
-        this.removedAttachments = removedAttachments;
+        this.caseObjectId = caseObjectId;
+
+        attachments.putAddedEntries( addedAttachments );
+        attachments.putRemovedEntries( removedAttachments  );
     }
 
-    public CaseObject getCaseObject() {
-        return caseObject;
-    }
-
-    public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments == null? Collections.emptyList(): addedAttachments;
-    }
-
-    public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments == null? Collections.emptyList(): removedAttachments;
+    public DiffCollectionResult<Attachment> getAttachments() {
+        return attachments;
     }
 
     public Person getPerson() {
         return person;
     }
 
+    @Override
+    public Long getCaseObjectId() {
+        return caseObjectId;
+    }
+
+    @Override
+    public boolean isEagerEvent() {
+        return false;
+    }
+
     public ServiceModule getServiceModule() {
         return serviceModule;
     }
 
-    public CaseObject getNewState() { return caseObject; }
-
-    public CaseObject getOldState() { return caseObject; }
-
     public CaseComment getCaseComment() { return null; }
 
-    public CaseComment getOldCaseComment() { return null; }
-
-    public CaseComment getRemovedCaseComment() { return null; }
-
-
-    public static class Builder {
-
-        private Object source;
-        private ServiceModule serviceModule;
-        private CaseObject caseObject;
-        private Collection<Attachment> addedAttachments;
-        private Collection<Attachment> removedAttachments;
-        private Person person;
-
-        public Builder(Object source) {
-            this.source = source;
-            this.serviceModule = ServiceModule.GENERAL;
-        }
-
-        public Builder(Object source, ServiceModule serviceModule) {
-            this.source = source;
-            this.serviceModule = serviceModule;
-        }
-
-        public Builder withCaseObject(CaseObject caseObject) {
-            this.caseObject = caseObject;
-            return this;
-        }
-
-        public Builder withAddedAttachments(Collection<Attachment> addedAttachments) {
-            this.addedAttachments = addedAttachments;
-            return this;
-        }
-
-        public Builder withRemovedAttachments(Collection<Attachment> removedAttachments) {
-            this.removedAttachments = removedAttachments;
-            return this;
-        }
-
-        public Builder withPerson(Person person) {
-            this.person = person;
-            return this;
-        }
-
-        public CaseAttachmentEvent build() {
-            return new CaseAttachmentEvent(
-                    source,
-                    serviceModule,
-                    person,
-                    caseObject,
-                    addedAttachments,
-                    removedAttachments
-            );
-        }
+    @Override
+    public String toString() {
+        return "CaseAttachmentEvent{" +
+                "caseObjectId=" + caseObjectId +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", person=" + (person==null?null:person.getId()) +
+//                ", oldAttachments=" + toList(oldAttachments, Attachment::getId) +
+                ", addedAttachments=" + toList(attachments.getAddedEntries(), Attachment::getId) +
+                ", removedAttachments=" + toList(attachments.getRemovedEntries(), Attachment::getId )+
+                '}';
     }
 }

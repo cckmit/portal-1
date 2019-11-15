@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -33,6 +35,7 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
 
@@ -48,6 +51,8 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
 import java.util.*;
 
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
@@ -70,6 +75,9 @@ public class FileController {
 
     @Autowired
     PortalConfig config;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
@@ -114,6 +122,10 @@ public class FileController {
             return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
         }
 
+        AuthToken authToken = ud.makeAuthToken();
+        Person creator = ud.getPerson();
+        List<Attachment> bindAttachments = new ArrayList(  );
+
         try {
             logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
 
@@ -129,18 +141,17 @@ public class FileController {
 
                 logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
-                Person creator = ud.getPerson();
                 Attachment attachment = saveAttachment(item, creator.getId());
 
                 if (caseNumber != null) {
                     En_CaseType caseType = En_CaseType.find(caseTypeId);
-                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(authToken, caseType, attachment, caseNumber);
                     if (caseAttachId.isError()) {
                         logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                         result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
                         break;
                     }
-                    shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
+                    bindAttachments.add( attachment );
                 }
                 result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
                 break;
@@ -149,8 +160,13 @@ public class FileController {
 
         }
         catch (FileUploadException | SQLException | IOException e) {
-                logger.error("uploadFileToCase", e);
-                result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
+            logger.error("uploadFileToCase", e);
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
+        }
+
+        if (!isEmpty( bindAttachments )) {
+            caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
+                shareNotification(caseId, creator, bindAttachments )  );
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
@@ -275,12 +291,6 @@ public class FileController {
         if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
-//        try {
-//            shareNotification(attachment, caseId, null, person);
-//        }catch (NullPointerException e){
-//            logger.error("Notification error! "+ e.getMessage());
-//        }
-
         return caseAttachId.getData();
     }
 
@@ -290,18 +300,9 @@ public class FileController {
         }
     }
 
-    private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
-        Result<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
-        if (issue.isError()) {
-            logger.error("Notification error! Database exception: " + issue.getStatus().name());
-            return;
-        }
-
-        publisherService.publishEvent(new CaseAttachmentEvent.Builder(this)
-                .withCaseObject(issue.getData())
-                .withAddedAttachments(Collections.singletonList(attachment))
-                .withPerson(initiator)
-                .build());
+    private void shareNotification( Long caseId, Person initiator, List<Attachment> addedAttachments) {
+        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, caseId,
+                addedAttachments, null ));
     }
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {

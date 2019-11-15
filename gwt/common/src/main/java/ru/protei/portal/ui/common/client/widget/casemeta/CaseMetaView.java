@@ -12,6 +12,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseLink;
@@ -244,6 +248,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         }
 
         toggleLinksVisibility(links, linksPanel);
+
+        ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(links, null));
     }
 
     private void removeCaseTag(CaseTag item) {

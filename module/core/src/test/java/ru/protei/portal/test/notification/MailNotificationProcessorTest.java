@@ -61,6 +61,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
     CompanySubscriptionDAO subscriptionDAO;
 
     @Test
+//    @Ignore
     public void test001() throws Exception {
         VirtualMailSendChannel mockChannel = (VirtualMailSendChannel) sendChannel;
 

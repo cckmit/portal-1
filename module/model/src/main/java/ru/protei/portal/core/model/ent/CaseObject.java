@@ -112,7 +112,7 @@ public class CaseObject extends AuditableObject {
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
-    @JdbcColumn(name = "EXT_APP")
+    @JdbcColumn(name = Columns.EXT_APP)
     private String extAppType;
 
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
@@ -138,9 +138,6 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private String contractNumber;
-
-    // not db column
-    private List<CaseLink> links;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -461,14 +458,6 @@ public class CaseObject extends AuditableObject {
         this.timeElapsed = timeElapsed;
     }
 
-    public List<CaseLink> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<CaseLink> links) {
-        this.links = links;
-    }
-
     public Set<DevUnit> getProducts() {
         return products;
     }
@@ -538,6 +527,10 @@ public class CaseObject extends AuditableObject {
         return "CaseObject";
     }
 
+    public interface Columns {
+        String EXT_APP = "EXT_APP";
+    }
+
     @Override
     public String toString() {
         return "CaseObject{" +
@@ -577,12 +570,10 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
                 ", tags=" + tags +
-                ", links=" + links +
                 ", timeElapsedType=" + timeElapsedType +
                 ", jiraMetaData=" + jiraMetaData +
                 ", platformId=" + platformId +
                 ", platformName=" + platformName +
-                ", links=" + links +
                 ", timeElapsedType=" + timeElapsedType +
                 '}';
     }

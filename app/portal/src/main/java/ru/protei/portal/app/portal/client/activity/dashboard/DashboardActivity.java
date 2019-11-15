@@ -57,16 +57,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     }
 
-    @Event
-    public void onChangeIssues( IssueEvents.ChangeModel event ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW ) ) {
-            return;
-        }
-
-        initWidgets();
-    }
-
     private void initWidgets(){
         fireEvent(
                 new DashboardEvents.ShowTableBlock(

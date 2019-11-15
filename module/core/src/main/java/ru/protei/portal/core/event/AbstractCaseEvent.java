@@ -14,19 +14,9 @@ public interface AbstractCaseEvent {
 
     Person getPerson();
 
-    CaseObject getCaseObject();
+    Long getCaseObjectId();
 
-    CaseObject getNewState();
+    Object getSource();
 
-    CaseObject getOldState();
-
-    CaseComment getCaseComment();
-
-    CaseComment getOldCaseComment();
-
-    CaseComment getRemovedCaseComment();
-
-    Collection<Attachment> getAddedAttachments();
-
-    Collection<Attachment> getRemovedAttachments();
+    boolean isEagerEvent();//TODO нужен для Redmine
 }

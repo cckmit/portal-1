@@ -2,12 +2,16 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
  * Created by michael on 04.05.17.
@@ -18,62 +22,18 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private CaseObject oldState;
     private Person person;
     private ServiceModule serviceModule;
-    private DiffCollectionResult<CaseLink> mergeLinks;
 
-    private CaseObjectEvent(Object source) {
+
+    public CaseObjectEvent(  Object source, ServiceModule serviceModule, Person person, CaseObject oldState,  CaseObject newState ) {
         super(source);
-    }
-
-    public boolean isCreateEvent () {
-        return this.oldState == null;
-    }
-
-    public boolean isUpdateEvent () {
-        return this.oldState != null;
-    }
-
-    public boolean isCaseStateChanged () {
-        return isUpdateEvent() && newState.getState() != oldState.getState();
-    }
-
-    public boolean isCaseImportanceChanged () {
-        return isUpdateEvent() && !newState.getImpLevel().equals(oldState.getImpLevel());
-    }
-
-    public boolean isManagerChanged () {
-        return isUpdateEvent() && !HelperFunc.equals(newState.getManagerId(),oldState.getManagerId());
-    }
-
-    public boolean isProductChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getProductId(), oldState.getProductId() );
-    }
-
-    public boolean isInitiatorChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorId(), oldState.getInitiatorId() );
-    }
-
-    public boolean isInitiatorCompanyChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getInitiatorCompanyId(), oldState.getInitiatorCompanyId() );
-    }
-
-    public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getInfo(), oldState.getInfo() );
-    }
-
-    public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals( newState.getName(), oldState.getName() );
-    }
-
-    public boolean isPrivacyChanged(){
-        return isUpdateEvent() && newState.isPrivateCase() != oldState.isPrivateCase();
+        this.serviceModule = serviceModule;
+        this.person = person;
+        this.oldState = oldState;
+        this.newState = newState;
     }
 
     public ServiceModule getServiceModule() {
         return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
-    }
-
-    public Date getEventDate () {
-        return new Date(getTimestamp());
     }
 
     public CaseObject getCaseObject () {
@@ -90,48 +50,45 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
 
     public CaseComment getCaseComment() { return null; }
 
-    public CaseComment getOldCaseComment() { return null; }
-
-    public CaseComment getRemovedCaseComment() { return null; }
-
-    public Collection<Attachment> getAddedAttachments() { return null; }
-
-    public Collection<Attachment> getRemovedAttachments() { return null; }
-
     public Person getPerson() {
         return person;
     }
 
-    public DiffCollectionResult<CaseLink> getMergeLinks() {
-        return mergeLinks;
+    @Override
+    public Long getCaseObjectId() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return null;
+        return caseObject.getId();
     }
 
-    public static CaseObjectEvent create( Object source) {
-        return create(source, ServiceModule.GENERAL);
+    @Override
+    public boolean isEagerEvent() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return false;
+        return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType() );
     }
 
-    public static CaseObjectEvent create( Object source, ServiceModule serviceModule) {
-        CaseObjectEvent event = new CaseObjectEvent(source);
-        event.serviceModule = serviceModule;
-        return event;
+    @Override
+    public String toString() {
+        return "CaseObjectEvent{" +
+                "caseObjectId=" + getCaseObjectId() +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", oldState=" + asString( oldState ) +
+                ", newState=" + asString( newState ) +
+                ", person=" + (person == null ? null : person.getId()) +
+
+                '}';
     }
 
-    public CaseObjectEvent withNewState(CaseObject newState) {
-        this.newState = newState;
-        return this;
+    private String asString( CaseObject caseObject ) {
+        if(caseObject==null) return null;
+        return "CaseObject{" +
+                "id=" + caseObject.getId() +
+                ", caseNumber=" + caseObject.getCaseNumber() +
+                ", typeId=" + caseObject.getTypeId() +
+                ", extId='" + caseObject.getExtId() + '\'' +
+                '}';
     }
 
-    public CaseObjectEvent withOldState(CaseObject oldState) {
-        this.oldState = oldState;
-        return this;
-    }
 
-    public CaseObjectEvent withPerson(Person person) {
-        this.person = person;
-        return this;
-    }
-    public ApplicationEvent withLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
-        this.mergeLinks = mergeLinks;
-        return this;
-    }
 }

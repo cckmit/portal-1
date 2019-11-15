@@ -35,7 +35,7 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
-import ru.protei.portal.core.utils.EventExpirationControl;
+//import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
@@ -186,8 +186,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public EventExpirationControl getEventExpirationControl() {
-        return new EventExpirationControl();
+    public AssemblerService getAssemblerService() {
+        return new AssemblerServiceImpl();
     }
 
     @Bean

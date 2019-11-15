@@ -1,10 +1,10 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
@@ -78,19 +78,15 @@ public class AttachmentServiceImpl implements AttachmentService {
                 }
             } );
 
-            CaseObject issue = caseObjectDAO.get(ca.getCaseId());
             Attachment attachment = attachmentDAO.get(id);
             UserSessionDescriptor ud = authService.findSession( token );
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
-            if(result.isOk() && issue != null && ud != null ) {
-                jdbcManyRelationsHelper.fill(issue, "attachments");
-                publisherService.publishEvent(new CaseAttachmentEvent.Builder(this)
-                        .withCaseObject(issue)
-                        .withRemovedAttachments(Collections.singletonList(attachment))
-                        .withPerson(ud.getPerson())
-                        .build());
+            if(result.isOk()
+                    && ud != null ) {
+                publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
+                        ud.getPerson(), ca.getCaseId(), null, Collections.singletonList(attachment)));
             }
 
             return result;

@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -26,8 +25,10 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query);
 
+    Result<CaseObject> getCaseObjectById( AuthToken token, Long caseID );
+
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<CaseObject> getCaseObject( AuthToken token, long number );
+    Result<CaseObject> getCaseObjectByNumber( AuthToken token, long number );
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
@@ -36,10 +37,6 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person initiator );
-
-    @Privileged({ En_Privilege.ISSUE_EDIT })
-    @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject p, CaseComment c, Person initiator );
 
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 
@@ -62,13 +59,13 @@ public interface CaseService {
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId);
 
-    Result<Long> getEmailLastId( Long caseId);
-    Result<Boolean> updateEmailLastId( Long caseId, Long emailLastId);
+    Result<Long> getAndIncrementEmailLastId( Long caseId );
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 
-    Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff );
+    Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
+    Result<Long> getCaseNumberById( AuthToken token, Long caseId );
 }

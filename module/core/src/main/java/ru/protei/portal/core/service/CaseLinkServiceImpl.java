@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseLinksEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -14,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -21,9 +25,12 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
@@ -51,6 +58,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     private CaseService caseService;
 
+    @Autowired
+    EventPublisherService publisherService;
+
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
@@ -72,13 +82,30 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
+    public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks ) {
+        return mergeLinks( token, caseId, caseLinks ).ifOk( mergedLinks -> {
+            if (mergedLinks.hasDifferences()) {
+                caseService.getCaseNumberById( token, caseId ).ifOk( caseNumber ->
+                        youtrackService.mergeYouTrackLinks( caseNumber,
+                                selectYouTrackLinkRemoteIds( mergedLinks.getAddedEntries() ),
+                                selectYouTrackLinkRemoteIds( mergedLinks.getRemovedEntries() )
+                        )
+                );
+                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
+            }
+        } ).flatMap( mergedLinks -> {
+            if (!mergedLinks.hasDifferences()) return ok( listOf( caseLinks ) );
+            return getLinks( token, caseId ); //TODO оптимизировать из mergedLinks (same + added)
+        } );
+    }
+
+    private Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Collection<CaseLink> caseLinks) {
         if (caseLinks == null) {
-            return ok();
+            return ok(new DiffCollectionResult());
         }
 
         caseLinks.forEach(link -> link.setCaseId(caseId));
-        if ( caseId == null || caseNumber == null || !checkLinksIsValid(caseLinks)) {
+        if ( caseId == null || !checkLinksIsValid(caseLinks)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -92,10 +119,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
         List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseId.toString()));
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
-        DiffCollectionResult<CaseLink> caseLinksDiffResult = diffCollection(oldCaseLinks, caseLinks);
-        if ( isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
+        DiffCollectionResult<CaseLink> mergeLinks = diffCollection(oldCaseLinks, caseLinks);
+        if ( isNotEmpty(mergeLinks.getRemovedEntries())) {
             Set<Long> toRemoveIds = new HashSet<>();
-            caseLinksDiffResult.getRemovedEntries().forEach( link -> {
+            mergeLinks.getRemovedEntries().forEach( link -> {
                 toRemoveIds.add(link.getId());
                 if ( isNotCrmLink(link) ) {
                     return;
@@ -110,9 +137,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.removeByKeys(toRemoveIds);
         }
 
-        if ( isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
+        if ( isNotEmpty(mergeLinks.getAddedEntries())) {
             List<CaseLink> toAddLinks = new ArrayList<>();
-            emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
+            emptyIfNull(mergeLinks.getAddedEntries()).forEach( link -> {
                 if ( isNotCrmLink(link) ) {
                     return;
                 }
@@ -122,11 +149,19 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 }
                 toAddLinks.add(createCrossCRMLink(cId, caseId));
             });
-            toAddLinks.addAll(caseLinksDiffResult.getAddedEntries());
+            toAddLinks.addAll(mergeLinks.getAddedEntries());
             caseLinkDAO.persistBatch(toAddLinks);
         }
 
-        return ok(caseLinksDiffResult);
+        return ok(mergeLinks);
+    }
+
+    public Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
+        if (caseId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId( caseId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
     }
 
     @Override
@@ -135,22 +170,17 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setCaseId( caseId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
-    }
-
-    @Override
     @Transactional
     public Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
-        Long caseId = getCaseIdByCaseNumber( caseNumber );
-        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+        Result<Long> caseIdResult = getCaseIdByCaseNumber( authToken, caseNumber );
+        Long caseId = caseIdResult.getData();
+
+        return caseIdResult.flatMap(
+                this::getYoutrackLinks ).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
                 CaseLink::getCaseId ).orElseGet( ignore ->
-                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( caseLInk ->
-                        sendMailNotificationLinkAdded( caseNumber, caseLInk )
+                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( addedLink ->
+                        sendNotificationLinkAdded( authToken, caseId, addedLink )
                 )
         );
     }
@@ -158,17 +188,20 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
-        Long caseId = getCaseIdByCaseNumber( caseNumber );
-        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+        Result<Long> caseIdResult = getCaseIdByCaseNumber( authToken, caseNumber );
+        Long caseId = caseIdResult.getData();
+
+        return caseIdResult.flatMap(
+                this::getYoutrackLinks).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
                 removeCaseLinkOnToYoutrack( caseLink ).flatMap( removedLink ->
-                        sendMailNotificationLinkRemoved( caseNumber, removedLink )
+                        sendNotificationLinkRemoved( authToken, caseId, removedLink )
                 )
         );
     }
 
-    private Long getCaseIdByCaseNumber( Long caseNumber ) {
-        return caseObjectDAO.getCaseIdByNumber( caseNumber );
+    private Result<Long> getCaseIdByCaseNumber( AuthToken authToken, Long caseNumber ) {
+        return caseService.getCaseIdByNumber( authToken, caseNumber );
     }
 
     private Result<CaseLink> findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
@@ -177,9 +210,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
     }
 
-    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseId, String youtrackId ) {
         CaseLink newLink = new CaseLink();
-        newLink.setCaseId( caseNumber );
+        newLink.setCaseId( caseId );
         newLink.setType( En_CaseLink.YT );
         newLink.setRemoteId( youtrackId );
         Long id = caseLinkDAO.persist( newLink );
@@ -200,18 +233,24 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLink);
     }
 
-    private Result<Long> sendMailNotificationLinkAdded( Long caseNumber, CaseLink caseLInk ) {
+    private Result<Long> sendNotificationLinkAdded( AuthToken token, Long caseId, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
         diff.putAddedEntry( caseLInk );
-        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+        return sendNotificationLinkChanged( token, caseId, diff ).map( ignore ->
                 caseLInk.getId() );
     }
 
-    private Result<Long> sendMailNotificationLinkRemoved( Long caseNumber, CaseLink caseLInk ) {
+    private Result<Long> sendNotificationLinkRemoved( AuthToken token, Long caseId, CaseLink caseLInk ) {
         DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
         diff.putRemovedEntry( caseLInk );
-        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+        return sendNotificationLinkChanged(token, caseId, diff ).map( ignore ->
                 caseLInk.getId() );
+    }
+
+    public Result<Void> sendNotificationLinkChanged(AuthToken token, Long caseId, DiffCollectionResult<CaseLink> linksDiff ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, linksDiff ));
+        return ok();
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){
@@ -222,7 +261,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return !En_CaseLink.CRM.equals(link.getType());
     }
 
-    private boolean checkLinksIsValid(List<CaseLink> caseLinks) {
+    private boolean checkLinksIsValid(Collection<CaseLink> caseLinks) {
         for (CaseLink link : caseLinks) {
             if ( link.getCaseId() == null || link.getType() == null || StringUtils.isBlank(link.getRemoteId())) {
                 return false;
@@ -258,5 +297,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set<UserRole> roles = descriptor.getLogin().getRoles();
         return !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+    }
+
+    private List<String> selectYouTrackLinkRemoteIds( Collection<CaseLink> links ) {
+        return stream(links).filter(  caseLink -> YT.equals( caseLink.getType() )).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
     }
 }

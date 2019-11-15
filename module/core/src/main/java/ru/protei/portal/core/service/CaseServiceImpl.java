@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.CaseObjectCommentEvent;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseLinksEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
@@ -53,10 +54,21 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<CaseObject> getCaseObject( AuthToken token, long number ) {
+    public Result<CaseObject> getCaseObjectById( AuthToken token, Long caseID ) {
+        CaseObject caseObject = caseObjectDAO.get( caseID );
+
+        return fillCaseObject( token, caseObject );
+    }
+
+    @Override
+    public Result<CaseObject> getCaseObjectByNumber( AuthToken token, long number ) {
 
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
+        return fillCaseObject( token, caseObject );
+    }
+
+    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -86,7 +98,7 @@ public class CaseServiceImpl implements CaseService {
             caseObject.getManager().resetPrivacyInfo();
         }
         if ( isNotEmpty(caseObject.getNotifiers())) {
-            caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
+            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
         }
 
         return ok(caseObject);
@@ -169,18 +181,6 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        DiffCollectionResult<CaseLink> mergeLinks = null;
-        if (isNotEmpty(caseObject.getLinks())) {
-            mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() ).getData();
-        }
-
-        if (isNotEmpty(caseObject.getLinks())) {
-            List<String> youtrackIds = selectYouTrackLinkRemoteIds( caseObject.getLinks() );
-            for (String youtrackId : youtrackIds) {
-                youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseObject.getCaseNumber());
-            }
-        }
-
         if (isNotEmpty(caseObject.getTags())) {
             caseObjectTagDAO.persistBatch(
                     caseObject.getTags()
@@ -195,11 +195,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent( CaseObjectEvent.create(this)
-                .withNewState(newState)
-                .withPerson(initiator)
-                .withLinks(mergeLinks)
-        );
+        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState ));
 
         return ok(newState);
     }
@@ -218,47 +214,11 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getCaseObject().getAttachments());
             newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( CaseObjectEvent.create(this)
-                    .withNewState(newState)
-                    .withOldState(oldState)
-                    .withPerson(initiator)
+            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
             );
         }
 
         return ok(objectResultData.getCaseObject());
-    }
-
-    @Override
-    @Transactional
-    public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
-
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
-
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
-        CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
-
-        if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
-            // From GWT-side we get partially filled object, that's why we need to refresh state from db
-            CaseObject newState = caseObjectDAO.get(caseObject.getId());
-            newState.setAttachments(caseObject.getAttachments());
-            newState.setNotifiers(caseObject.getNotifiers());
-            jdbcManyRelationsHelper.fill(oldState, "attachments");
-
-            publisherService.publishEvent( CaseObjectCommentEvent.create(this)
-                    .withPerson(initiator)
-                    .withOldState(oldState)
-                    .withNewState(newState)
-                    .withCaseComment(commentResultData.getCaseComment())
-                    .withOldCaseComment(commentResultData.getOldCaseComment())
-                    .withAddedAttachments(commentResultData.getAddedAttachments())
-                    .withRemovedAttachments(commentResultData.getRemovedAttachments())
-                    .withLinks( objectResultData.getMergeLinks() )
-            );
-        }
-
-        return Result.ok(
-                new CaseObjectWithCaseComment(objectResultData.getCaseObject(), commentResultData.getCaseComment())
-        );
     }
 
     private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
@@ -278,16 +238,6 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        caseLinkService.getYoutrackLinks( caseObject.getId() ).ifOk( oldLinks ->
-                mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
-        );
-
-        DiffCollectionResult<CaseLink> mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() )
-                .orElseThrow( result -> {
-                    log.info( "Failed to merge links for the issue {}", caseObject.getId() );
-                    return new ResultStatusException( result.getStatus() );
-                } ).getData();
-
         synchronizeTags(caseObject, authService.findSession(token));
         jdbcManyRelationsHelper.persist(caseObject, "tags");
 
@@ -298,7 +248,7 @@ public class CaseServiceImpl implements CaseService {
         persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
-            return new CaseObjectUpdateResult(caseObject, mergeLinks, isLinksChanged(mergeLinks));
+            return new CaseObjectUpdateResult(caseObject, false);
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
@@ -360,41 +310,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        return new CaseObjectUpdateResult(caseObject, mergeLinks, true);
-    }
-
-    private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {
-        DiffCollectionResult<String> youTrackLinkIdsDiff = CollectionUtils.
-                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
-
-        for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
-            youtrackService.removeIssueCrmNumberIfSame( youtrackId, caseNumber);
-        }
-
-        for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getAddedEntries())) {
-            youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
-        }
-    }
-
-    private List<String> selectYouTrackLinkRemoteIds( List<CaseLink> links ) {
-        return stream(links).filter(  caseLink -> YT.equals( caseLink.getType() )).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
-    }
-
-    private CaseCommentSaveOrUpdateResult performSaveOrUpdateCaseComment(AuthToken token, CaseComment caseComment, Person initiator) {
-        if (caseComment == null) {
-            return new CaseCommentSaveOrUpdateResult();
-        }
-        Result<CaseCommentSaveOrUpdateResult> response;
-        if (caseComment.getId() == null) {
-            response = caseCommentService.addCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment);
-        } else {
-            response = caseCommentService.updateCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment, initiator);
-        }
-        if (response.isError()) {
-            log.info("Failed to add/update comment with status {} : {}", response.getStatus(), caseComment);
-            throw new ResultStatusException(response.getStatus());
-        }
-        return response.getData();
+        return new CaseObjectUpdateResult(caseObject, true);
     }
 
     @Override
@@ -451,28 +367,15 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<Long> getEmailLastId( Long caseId) {
+    public Result<Long> getAndIncrementEmailLastId( Long caseId ) {
         if (caseId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Long lastMessageId = caseObjectDAO.getEmailLastId(caseId);
-        if (lastMessageId == null) {
-            lastMessageId = 0L;
-        }
+        Long previousId = caseObjectDAO.getAndIncrementEmailLastId(caseId);
+        if(previousId==null) previousId = 0L;
 
-        return ok(lastMessageId);
-    }
-
-    @Override
-    public Result<Boolean> updateEmailLastId( Long caseId, Long emailLastId) {
-        if (caseId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        boolean result = caseObjectDAO.updateEmailLastId(caseId, emailLastId);
-
-        return ok(result);
+        return ok(previousId);
     }
 
     @Override
@@ -539,19 +442,19 @@ public class CaseServiceImpl implements CaseService {
                 .map( this::fillYouTrackInfo );
     }
 
-    @Override
-    public Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff ) {
-        CaseObject caseObject = caseObjectDAO.getCaseByCaseno( caseNumber );
-        if (!isEmpty( caseObject.getLinks() )) {
-            linksDiff.putSameEntries( caseObject.getLinks() );
-        }
 
-        publisherService.publishEvent( CaseObjectEvent.create(this)
-                .withOldState(caseObject)
-                .withNewState(caseObject)
-                .withLinks( linksDiff )
-        );
-        return ok(caseObject.getId());
+    @Override
+    public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {
+        Long caseId = caseObjectDAO.getCaseIdByNumber( caseNumber );
+        if(caseId==null) error( En_ResultStatus.NOT_FOUND );
+        return ok(caseId);
+    }
+
+    @Override
+    public Result<Long> getCaseNumberById( AuthToken token, Long caseId ) {
+        Long caseNumber = caseObjectDAO.getCaseNumberById( caseId );
+        if(caseNumber==null) error( En_ResultStatus.NOT_FOUND );
+        return ok(caseNumber);
     }
 
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {

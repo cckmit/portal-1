@@ -76,6 +76,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
 
         copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
+        caseMetaView.addValueChangeHandler(event ->  activity.onCaseMetaChanged(event.getValue()) );
     }
 
     @Override

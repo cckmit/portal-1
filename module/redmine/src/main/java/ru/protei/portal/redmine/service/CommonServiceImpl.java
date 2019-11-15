@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
-import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
@@ -82,11 +81,8 @@ public final class CommonServiceImpl implements CommonService {
             caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
         }
 
-        eventPublisherService.publishEvent(new CaseAttachmentEvent.Builder(this, ServiceModule.REDMINE)
-                .withCaseObject(obj)
-                .withAddedAttachments(addedAttachments)
-                .withPerson(contactPerson)
-                .build());
+        eventPublisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.REDMINE, contactPerson, obj.getId(),
+                        addedAttachments, null));
     }
 
     @Override
@@ -108,11 +104,8 @@ public final class CommonServiceImpl implements CommonService {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent(new CaseCommentEvent.Builder(caseService, ServiceModule.REDMINE)
-                .withState(obj)
-                .withCaseComment(comment)
-                .withPerson(contactPerson)
-                .build());
+        eventPublisherService.publishEvent( new CaseCommentEvent( caseService, ServiceModule.REDMINE, contactPerson,
+                caseObjId, false, null, comment, null ) );
 
         return comment;
     }

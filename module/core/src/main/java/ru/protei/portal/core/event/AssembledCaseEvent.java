@@ -1,119 +1,103 @@
 package ru.protei.portal.core.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 
+import javax.sql.DataSource;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.System.currentTimeMillis;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class AssembledCaseEvent extends ApplicationEvent {
 
+    private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
-    private CaseComment comment;
-    private CaseComment oldComment;
-    private CaseComment removedComment;
-    private Collection<Attachment> addedAttachments;
-    private Collection<Attachment> removedAttachments;
-    private DiffCollectionResult <CaseLink> mergeLinks;
-
-
+    private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
+    private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
+    private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
 
     private Person initiator;
     private ServiceModule serviceModule;
+    private List<CaseComment> existingComments;
+    private boolean isEagerEvent;
     // Measured in ms
     private final long timeCreated;
-    private long lastUpdated;
+    protected long lastUpdated;
 
-    public AssembledCaseEvent(Object source, CaseObject lastState, Person initiator) {
-        this(ServiceModule.GENERAL, source, lastState, lastState, initiator);
+    public AssembledCaseEvent(AbstractCaseEvent ace) {
+        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPerson(), ace.isEagerEvent());
     }
 
-    public AssembledCaseEvent(Object source, CaseObject initState, CaseObject lastState,
-                              Person currentPerson) {
-        this(ServiceModule.GENERAL, source, initState, lastState, currentPerson);
-    }
-
-    public AssembledCaseEvent(CaseObjectEvent objectEvent) {
-        this(objectEvent.getServiceModule(), objectEvent.getSource(), objectEvent.getOldState(),
-                objectEvent.getNewState(), objectEvent.getPerson());
-        mergeLinks = objectEvent.getMergeLinks();
-    }
-
-    public AssembledCaseEvent(CaseCommentEvent commentEvent) {
-        this(commentEvent.getServiceModule(), commentEvent.getSource(), commentEvent.getOldState(), commentEvent.getNewState(),
-                commentEvent.getPerson());
-        oldComment = commentEvent.getOldCaseComment();
-        comment = commentEvent.getCaseComment();
-        addedAttachments.addAll(commentEvent.getAddedAttachments());
-        removedAttachments.addAll(commentEvent.getRemovedAttachments());
-        removedComment = commentEvent.getRemovedCaseComment();
-    }
-
-    public AssembledCaseEvent(CaseObjectCommentEvent objectCommentEvent) {
-        this(objectCommentEvent.getServiceModule(), objectCommentEvent.getSource(),
-                objectCommentEvent.getOldState(), objectCommentEvent.getNewState(),
-                objectCommentEvent.getPerson());
-        oldComment = objectCommentEvent.getOldCaseComment();
-        comment = objectCommentEvent.getCaseComment();
-        addedAttachments.addAll(objectCommentEvent.getAddedAttachments());
-        removedAttachments.addAll(objectCommentEvent.getRemovedAttachments());
-        removedComment = objectCommentEvent.getRemovedCaseComment();
-        mergeLinks = objectCommentEvent.getMergeLinks();
-    }
-
-    public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
-        this(attachmentEvent.getSource(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
-        addedAttachments.addAll(attachmentEvent.getAddedAttachments());
-        removedAttachments.addAll(attachmentEvent.getRemovedAttachments());
-        serviceModule = attachmentEvent.getServiceModule();
-    }
-
-    public AssembledCaseEvent(ServiceModule module, Object source,
-                              CaseObject state, CaseObject lastState, Person currentPerson) {
-        super(source);
-        this.initState = state;
-        this.lastState = lastState;
-        this.initiator = currentPerson;
-        this.serviceModule = module;
+    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator, boolean isEagerEvent ) {
+        super( source );
+        this.caseObjectId = caseObjectId;
+        this.initiator = initiator;
+        this.serviceModule = serviceModule;
         this.timeCreated = currentTimeMillis();
-        this.lastUpdated = timeCreated;
-        this.addedAttachments = new ArrayList<>();
-        this.removedAttachments = new ArrayList<>();
+        lastUpdated = timeCreated;
+        this.isEagerEvent = isEagerEvent;
+    }
+
+    public void attachCaseObjectEvent( CaseObjectEvent objectEvent ) {
+        this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
+        this.initState = objectEvent.getOldState();
+        this.lastState = objectEvent.getNewState();
+        this.initiator = objectEvent.getPerson();
+        this.serviceModule = objectEvent.getServiceModule();
 
     }
 
-    public CaseComment getCaseComment() {
-        return comment;
+    public void attachLinkEvent( CaseLinksEvent event ) {
+        this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||event.isEagerEvent();
+        mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId );
     }
 
-    public void setComment(CaseComment comment) {
-        this.comment = comment;
+    public void attachCommentEvent( CaseCommentEvent commentEvent ) {
+        this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent || commentEvent.isEagerEvent();
+        if (commentEvent.getOldCaseComment() != null) {
+            comments.putChangedEntry( commentEvent.getOldCaseComment(), commentEvent.getNewCaseComment() );
+        } else if (commentEvent.getNewCaseComment() != null) {
+            comments.putAddedEntry( commentEvent.getNewCaseComment() );
+        }
+        if (commentEvent.getRemovedCaseComment() != null) {
+            comments.putRemovedEntry( commentEvent.getRemovedCaseComment() );
+        }
     }
 
-    public boolean isLastStateSet() {
-        return lastState != null;
+    public void attachAttachmentEvent( CaseAttachmentEvent event ) {
+        this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||event.isEagerEvent();
+        attachments = synchronizeDiffs( attachments, event.getAttachments(), Attachment::getId );
     }
 
     public boolean isCreateEvent() {
         return this.initState == null;
     }
 
-    public boolean isUpdateEvent() {
-        return this.initState != null;
+    private boolean isUpdateEvent() {
+        return this.initState != null ;//&& lastState!=null;
     }
 
     public boolean isCommentAttached() {
-        return this.comment != null;
+        return comments.hasAdded();
     }
 
     public boolean isCommentRemoved() {
-        return removedComment != null;
+        return comments.hasRemovedEntries();
     }
 
     public boolean isCaseStateChanged() {
@@ -160,80 +144,64 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEvent() && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
     }
 
-    public void attachCaseObject(CaseObject caseObject) {
-        lastState = caseObject;
-        lastUpdated = currentTimeMillis();
+    public boolean isEagerEvent() {
+        return isEagerEvent;
     }
 
-    public void attachCaseComment(CaseComment caseComment) {
-        comment = caseComment;
-        lastUpdated = currentTimeMillis();
+    public boolean isLinksFilled() {
+        synchronized (mergeLinks){
+            return mergeLinks.hasSameEntries();
+        }
     }
 
+    public boolean isAttachmentsFilled() {
+        synchronized (attachments){
+            return attachments.hasSameEntries();
+        }
+    }
+
+    @Deprecated
     public void includeCaseComments (List<CaseComment> commentList) {
-        comment = CollectionUtils.lastOrDefault(commentList, comment);
+        comments.putAddedEntries( commentList );
         lastUpdated = currentTimeMillis();
     }
 
-    public void includeCaseAttachments (List<Attachment> attachments) {
-        this.addedAttachments.addAll(attachments);
+    @Deprecated
+    public void includeCaseAttachments (List<Attachment> attachments1) {
         this.lastUpdated = currentTimeMillis();
+        DiffCollectionResult<Attachment> diff = new DiffCollectionResult<>();
+        diff.putAddedEntries( attachments1 );
+        attachments = synchronizeDiffs( attachments, diff, Attachment::getId );
     }
 
-    public CaseComment getOldComment() {
-        return oldComment;
+    public List<CaseComment> getAddedCaseComments() {
+        return comments.getAddedEntries();
     }
 
-    public CaseComment getRemovedComment() {
-        return removedComment;
+    public List<CaseComment> getChangedComments() {
+        if(!comments.hasChanged()) return Collections.EMPTY_LIST;
+        return comments.getChangedEntries().stream().map( dr->dr.getInitialState() ).collect( Collectors.toList());
+    }
+
+    public List<CaseComment> getRemovedComments() {
+        return comments.getRemovedEntries();
     }
 
     public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments;
+        return attachments.getAddedEntries();
+    }
+
+    public Collection<Attachment> getExistingAttachments() {
+        attachments = synchronizeExists( attachments, Attachment::getId );
+        return attachments.getSameEntries();
     }
 
     public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments;
-    }
-
-    public void synchronizeAttachments(Collection<Attachment> added, Collection<Attachment> removed){
-        if(added == null)
-            added = Collections.emptyList();
-        if(removed == null)
-            removed = Collections.emptyList();
-
-        addedAttachments.addAll(added);
-        removedAttachments.addAll(removed);
-
-        Iterator<Attachment> it = removedAttachments.iterator();
-        while (it.hasNext()){
-            Attachment removedAttachment = it.next();
-            boolean itRemove = false;
-            if(addedAttachments.contains(removedAttachment)){ //if you add and remove an attachment in a row
-                addedAttachments.remove(removedAttachment);
-                itRemove = true;
-            }
-            if(lastState.getAttachments().contains(removedAttachment)){ //remove not mailed attachment in comment
-                lastState.getAttachments().remove(removedAttachment);
-                itRemove = true;
-            }
-            if (itRemove) {
-                it.remove();
-            }
-        }
-        lastUpdated = currentTimeMillis();
-    }
-
-    public long getTimeCreated() {
-        return timeCreated;
+        return attachments.getRemovedEntries();
     }
 
     public long getLastUpdated() {
         return lastUpdated;
-    }
-
-    public ServiceModule getServiceModule() {
-        return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
     }
 
     public Date getEventDate() {
@@ -257,6 +225,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public DiffCollectionResult<CaseLink> getMergeLinks() {
+        mergeLinks = synchronizeExists( mergeLinks, CaseLink::getId );
         return mergeLinks;
     }
 
@@ -272,12 +241,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isPublicChangedWithOutComments();
     }
 
-    private boolean isAttachedCommentNotPrivate() {
-        return comment != null && !comment.isPrivateComment();
+    public boolean isAttachedCommentNotPrivate() {
+        for (CaseComment addedComment : emptyIfNull( comments.getAddedEntries())) {
+            if(addedComment.isPrivateComment()) return false;
+        }
+        return true;
     }
 
     private boolean isRemovedCommentNotPrivate() {
-        return removedComment != null && !removedComment.isPrivateComment();
+        for (CaseComment removedComment : emptyIfNull( comments.getRemovedEntries())) {
+            if(removedComment.isPrivateComment()) return false;
+        }
+        return true;
     }
 
     private boolean isPublicChangedWithOutComments() {
@@ -290,5 +265,117 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isNameChanged()
                 || isPrivacyChanged()
                 || isProductChanged();
+    }
+
+
+    public boolean isCaseObjectFilled() {
+        return initState!=null;
+    }
+
+    public boolean isCaseCommentsFilled() {
+        return existingComments !=null;
+    }
+
+    public void setLastCaseObject( CaseObject caseObject ) {
+        lastState = caseObject;
+    }
+
+    public void setExistingCaseComments( List<CaseComment> caseComments ) {
+        this.existingComments = caseComments;
+    }
+
+    public void setExistingLinks( List<CaseLink> existingLinks ) {
+        mergeLinks.putSameEntries( existingLinks );
+    }
+
+    public void setExistingAttachments( List<Attachment> existingAttachments ) {
+        attachments.putSameEntries( existingAttachments );
+    }
+
+    public Long getCaseNumber() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return null;
+        return caseObject.getCaseNumber();
+    }
+
+    public List<CaseComment> getAllComments() {
+        Set<CaseComment> allComments = setOf( existingComments );
+        if (comments.hasRemovedEntries()) {
+            allComments.addAll(comments.getRemovedEntries());
+        }
+
+        if (comments.hasAdded()) {
+            allComments.addAll( comments.getAddedEntries() );
+        }
+
+        return listOf( allComments ).stream()
+                .sorted( Comparator.comparing( CaseComment::getId ) ).collect( Collectors.toList());
+    }
+
+    public Person getCreator() {
+        return getCaseObject().getCreator();
+    }
+
+    public Person getManager() {
+        return getCaseObject().getManager();
+    }
+
+    public Long getCaseObjectId() {
+        CaseObject caseObject = getCaseObject();
+        if(caseObject==null) return caseObjectId;
+        return caseObject.getId();
+    }
+
+    //Только добавленные и удаленные
+    private <T> DiffCollectionResult<T> synchronizeDiffs( DiffCollectionResult<T> source, DiffCollectionResult<T> other, Function<T, Object> getId ) {
+        if(!other.hasDifferences()) return source;
+        synchronized (source){
+            log.info( "synchronizeDiffs(): before +{} -{} {} ", toList( source.getAddedEntries(), getId ), toList( source.getRemovedEntries(), getId ), toList( source.getSameEntries(), getId ) );
+            log.info( "synchronizeDiffs(): -> +{} -{} {}", toList( other.getAddedEntries(), getId ), toList( other.getRemovedEntries(), getId ) , toList( other.getSameEntries(), getId ) );
+
+            source.putAddedEntries( other.getAddedEntries() );
+            source.putRemovedEntries( other.getRemovedEntries() );
+
+            Set<T> addedAttachments = setOf(source.getAddedEntries());
+            Set<T> removedAttachments = setOf( source.getRemovedEntries() );
+
+            Iterator<T> it = removedAttachments.iterator();
+            while (it.hasNext()) {
+                T removedAttachment = it.next();
+                if (addedAttachments.contains( removedAttachment )) { //if you add and remove an attachment in a row
+                    addedAttachments.remove( removedAttachment );
+                    it.remove();
+                    continue;
+                }
+            }
+
+            log.info( "synchronizeDiffs(): after +{} -{} {} ", toList( source.getAddedEntries(), getId ), toList( source.getRemovedEntries(), getId ), toList( source.getSameEntries(), getId ) );
+
+            DiffCollectionResult<T> result = new DiffCollectionResult<>();
+            result.putAddedEntries( addedAttachments );
+            result.putRemovedEntries( removedAttachments );
+            result.putSameEntries( source.getSameEntries() );
+            return result;
+        }
+    }
+
+    // Убрать из существующих элементов добавленные и удаленные
+    private <T> DiffCollectionResult<T> synchronizeExists( DiffCollectionResult<T> diff,Function<T, Object> getId) {
+        log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
+        if (diff.hasSameEntries()){
+            synchronized (diff) {
+                diff.getSameEntries().removeAll( emptyIfNull( diff.getAddedEntries() ) );
+                diff.getSameEntries().removeAll( emptyIfNull( diff.getRemovedEntries() ) );
+            }
+        }
+        log.info( "synchronizeExists(): after +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
+        return diff;
+    }
+
+    private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
     }
 }
