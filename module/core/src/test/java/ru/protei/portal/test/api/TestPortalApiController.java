@@ -95,9 +95,9 @@ public class TestPortalApiController extends BaseServiceTest {
         person = createAndPersistPerson( company );
         mainRole = createAndPersistUserRoles();
         userLogin = createAndPersistUserLogin();
-        createAndPersistSomeIssues();
-        createAndPersistSomeIssuesWithManager(person);
-        createAndPersistSomePrivateIssues();
+        createAndPersistSomeIssues(company.getId());
+        createAndPersistSomeIssuesWithManager(person, company.getId());
+        createAndPersistSomePrivateIssues(company.getId());
 
         log.debug("issues={} | issues_with_manager={} | issues_without_manager={} | private_issues={}",
                 COUNT_OF_ISSUES,
@@ -167,6 +167,7 @@ public class TestPortalApiController extends BaseServiceTest {
         String issueName = ISSUES_PREFIX + "test_create";
         caseObject.setName(issueName);
         caseObject.setInitiator(person);
+        caseObject.setInitiatorCompany( company );
 
         authService.makeThreadDescriptor( userLogin, person, company );
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
@@ -269,30 +270,33 @@ public class TestPortalApiController extends BaseServiceTest {
         return userLogin;
     }
 
-    private static void createAndPersistSomeIssues() {
+    private static void createAndPersistSomeIssues(Long companyId) {
         for (int i = 0; i < COUNT_OF_ISSUES_WITHOUT_MANAGER; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
+            caseObject.setInitiatorCompanyId(companyId);
             issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
-    private static void createAndPersistSomeIssuesWithManager(Person manager) {
+    private static void createAndPersistSomeIssuesWithManager( Person manager, Long companyId ) {
         for (int i = 0; i < COUNT_OF_ISSUES_WITH_MANAGER; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setManager(manager);
+            caseObject.setInitiatorCompanyId(companyId);
             issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
-    private static void createAndPersistSomePrivateIssues() {
+    private static void createAndPersistSomePrivateIssues(Long companyId) {
         for (int i = 0; i < COUNT_OF_PRIVATE_ISSUES; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
+            caseObject.setInitiatorCompanyId(companyId);
             issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
