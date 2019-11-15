@@ -139,8 +139,11 @@ public class BaseServiceTest {
     }
 
     protected CaseObject makeCaseObject( En_CaseType caseType, Person person) {
+        Company company = makeCompany( createNewCustomerCompany() );
+        CaseObject newCaseObject = createNewCaseObject( caseType, person );
+        newCaseObject.setInitiatorCompany( company );
         return checkResultAndGetData(
-                caseService.createCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
+                caseService.createCaseObject( getAuthToken(), newCaseObject, person )
         );
     }
 
