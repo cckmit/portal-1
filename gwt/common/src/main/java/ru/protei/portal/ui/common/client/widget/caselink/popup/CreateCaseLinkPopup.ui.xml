@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:enterabletextbox='urn:import:ru.protei.portal.ui.common.client.widget.enterabletextbox'
-             xmlns:popup='urn:import:ru.protei.portal.ui.common.client.widget.casemeta.link.popup'>
+             xmlns:popup='urn:import:ru.protei.portal.ui.common.client.widget.caselink.popup'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 

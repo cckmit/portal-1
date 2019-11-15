@@ -8,4 +8,8 @@ import java.util.List;
 public interface CaseLinkDAO extends PortalBaseDAO<CaseLink> {
 
     List<CaseLink> getListByQuery(CaseLinkQuery query);
+
+    boolean checkExistCrmLink(Long cId);
+
+    CaseLink getCrmLink(Long cId);
 }

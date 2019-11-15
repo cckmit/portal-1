@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -29,6 +30,16 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query))
         );
+    }
+
+    @Override
+    public boolean checkExistCrmLink(Long cId) {
+        return checkExistsByCondition("link_type = ? and remote_id = ?", En_CaseLink.CRM, cId);
+    }
+
+    @Override
+    public CaseLink getCrmLink(Long cId) {
+        return getByCondition("link_type = ? and case_id = ?", En_CaseLink.CRM, cId);
     }
 
     @SqlConditionBuilder

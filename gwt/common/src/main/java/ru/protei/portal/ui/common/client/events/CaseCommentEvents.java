@@ -67,18 +67,4 @@ public class CaseCommentEvents {
         public boolean isPrivateCase = false;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
-
-    public static class GetCurrentComment {
-
-        public GetCurrentComment(Consumer<CaseComment> consumer) {
-            this.consumer = consumer;
-        }
-
-        public void provide(CaseComment caseComment) {
-            consumer.accept(caseComment);
-        }
-
-        private Consumer<CaseComment> consumer;
-    }
-
 }

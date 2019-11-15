@@ -271,7 +271,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Override
-    public void onCaseMetaChanged( CaseMeta value ) {//TODO rework CaseMetaView handlers, separate links and tags
+    public void onCaseMetaChanged( CaseMeta value ) {//TODO rework CaseLinkList handlers, separate links and tags
 
         caseLinkController.updateCaseLinks( issue.getId(), view.links().getValue(), new FluentCallback<List<CaseLink>>()
                 .withError( t -> view.links().setValue( null ) )

@@ -112,14 +112,6 @@ public abstract class CaseCommentListActivity
         );
     }
 
-    @Event
-    public void onGetCurrentComment(CaseCommentEvents.GetCurrentComment event) {
-        if (StringUtils.isEmpty(view.message().getValue())) {
-            event.provide(null);
-        } else {
-            event.provide(buildCaseComment());
-        }
-    }
 
 
     @Override

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.caselinkprovider;
+package ru.protei.portal.ui.common.client.activity.caselink;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;

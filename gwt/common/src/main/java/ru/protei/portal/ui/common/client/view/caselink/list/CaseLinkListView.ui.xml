@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="collapsiblePanel" styleName="m-l-15 m-r-15 m-t-5 card card-default">
+        <div class="card-header">
+            <g:Anchor ui:field="collapse" styleName="p-t-0 fas fa-chevron-up" href="#"/
+            <label ui:field="headerLabel" class="card-title collapsible-label"/>
+            <div class="card-controls">
+                <ul>
+                    <li>
+                        <g:Button ui:field="addLinkButton" styleName="btn btn-default case-meta-button">
+                            <i class="fas fa-sm fa-link"/>
+                            <i class="fas fa-chevron-down"/>
+                        </g:Button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <g:HTMLPanel ui:field="linksPanel" styleName="card-body collapsible-panel-body"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

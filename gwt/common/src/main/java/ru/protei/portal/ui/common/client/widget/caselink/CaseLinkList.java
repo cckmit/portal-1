@@ -1,47 +1,36 @@
-package ru.protei.portal.ui.common.client.widget.casemeta;
+package ru.protei.portal.ui.common.client.widget.caselink;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.events.CaseTagEvents;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.caselink.item.CaseLinkItem;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
-import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
-import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagView;
-import ru.protei.portal.ui.common.client.widget.casemeta.tag.popup.CaseTagSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.collapse.CollapsiblePanel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
 
-public class CaseMetaView extends Composite implements HasValueChangeHandlers<CaseMeta>, HasEnabled {
+public class CaseLinkList extends Composite implements HasValue<Set<CaseLink>>, HasEnabled {
 
     @Inject
     public void init() {
@@ -52,7 +41,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        controlsSection.setVisible(enabled);
     }
 
     @Override
@@ -61,7 +49,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseMeta> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
@@ -77,35 +65,18 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         linksPopupHandlerRegistration = createCaseLinkPopup.addValueChangeHandler(event -> addCaseLink(event.getValue()));
     }
 
-    @UiHandler("addTagButton")
-    public void addTagButtonClick(ClickEvent e) {
-        if (!enabled || !tagsEnabled) {
-            return;
-        }
-        caseTagSelectorPopup.showNear(addTagButton);
-        caseTagSelectorPopup.init(tagCaseType);
-        if (tagsPopupHandlerRegistration != null) {
-            tagsPopupHandlerRegistration.removeHandler();
-        }
-        tagsPopupHandlerRegistration = caseTagSelectorPopup.addValueChangeHandler(event -> addCaseTag(event.getValue()));
-        if (tagsCreateHandlerRegistration != null) {
-            tagsCreateHandlerRegistration.removeHandler();
-        }
-        tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
-            CaseTag caseTag = new CaseTag();
-            caseTag.setCaseType(tagCaseType);
-            activity.fireEvent(new CaseTagEvents.Update(caseTag, true));
-        });
-        tagsCreateHandlerRegistration = caseTagSelectorPopup.addEditHandler(event -> {
-            activity.fireEvent(event.isReadOnly ? new CaseTagEvents.Readonly(event.caseTag) : new CaseTagEvents.Update(event.caseTag, true));
-        });
-    }
-
-    public Set<CaseLink> getLinks() {
+    @Override
+    public Set<CaseLink> getValue() {
         return links;
     }
 
-    public void setLinks(Set<CaseLink> value) {
+    @Override
+    public void setValue(Set<CaseLink> value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(Set<CaseLink> value, boolean fireEvents) {
         links = value;
 
         linkToViewModel.clear();
@@ -118,51 +89,19 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             return;
         }
         links.forEach(this::makeCaseLinkViewAndAddToParent);
-    }
 
-    public Set<CaseTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<CaseTag> value) {
-        tags = value;
-
-        tagToViewModel.clear();
-        tagsContainer.clear();
-
-        toggleTagsVisibility(tags, tagsSection, tagsLabel);
-
-        if (CollectionUtils.isEmpty(tags)) {
-            return;
+        if ( fireEvents ) {
+            ValueChangeEvent.fire(this, links);
         }
-
-        tags.forEach(this::makeCaseTagViewAndAddToParent);
     }
 
     public void setShowLabel(boolean showLabel) {
         this.showLabel = showLabel;
     }
 
-    public void setTagCaseType(En_CaseType tagCaseType) {
-        this.tagCaseType = tagCaseType;
-    }
-
     public void setLinksEnabled(boolean enabled) {
         this.linksEnabled = enabled;
         addLinkButton.setVisible(enabled);
-    }
-
-    public void setTagsEnabled(boolean enabled) {
-        this.tagsEnabled = enabled;
-        addTagButton.setVisible(enabled);
-    }
-
-    public void setTagsAddButtonEnabled(boolean enabled) {
-        caseTagSelectorPopup.setAddTagsEnabled(enabled);
-    }
-
-    public void setTagsEditButtonEnabled(boolean enabled) {
-        caseTagSelectorPopup.setEditTagsEnabled(enabled);
     }
 
     public void showError(String error) {
@@ -174,10 +113,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         addLinkButton.ensureDebugId(debugId);
     }
 
-    public void setEnsureDebugTagId(String debugId) {
-        addTagButton.ensureDebugId(debugId);
-    }
-
     public void setEnsureDebugIdLinkLabel(String debugId) {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -185,19 +120,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         linksPanel.setLabelDebugId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
-    public void setEnsureDebugIdTagLabel(String debugId) {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
-        }
-        tagsLabel.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
-    }
-
     public void setEnsureDebugIdLinkContainer(String debugId) {
         linksPanel.ensureDebugId(debugId);
-    }
-
-    public void setEnsureDebugIdTagContainer(String debugId) {
-        tagsContainer.ensureDebugId(debugId);
     }
 
     public void setEnsureDebugIdLinkSelector(String debugId) {
@@ -212,27 +136,17 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         createCaseLinkPopup.setEnsureDebugIdApply(debugId);
     }
 
-    private void makeCaseLinkViewAndAddToParent(CaseLink item) {
-        String linkId = isCrmLink(item) ? item.getCaseInfo().getCaseNumber().toString() : item.getRemoteId();
-        item.setLink(caseLinkProvider.getLink(item.getType(), linkId));
+    private void makeCaseLinkViewAndAddToParent(CaseLink value) {
+        String linkId = isCrmLink(value) ? value.getCaseInfo().getCaseNumber().toString() : value.getRemoteId();
+        value.setLink(caseLinkProvider.getLink(value.getType(), linkId));
 
-        CaseLinkItem caseLinkItem = caseLinkViewProvider.get();
-        caseLinkItem.setEnabled(enabled);
-        caseLinkItem.setValue(item);
-        caseLinkItem.addCloseHandler(event -> removeCaseLink(event.getTarget()));
+        CaseLinkItem itemWidget = new CaseLinkItem();
+        itemWidget.setEnabled(enabled);
+        itemWidget.setValue(value);
+        itemWidget.addCloseHandler(event -> removeCaseLink(event.getTarget()));
 
-        linkToViewModel.put(item, caseLinkItem);
-        linksPanel.add(caseLinkItem);
-    }
-
-    private void makeCaseTagViewAndAddToParent(CaseTag item) {
-        CaseTagView caseTagView = caseTagViewProvider.get();
-        caseTagView.setEnabled(enabled);
-        caseTagView.setValue(item);
-        caseTagView.addCloseHandler(event -> removeCaseTag(event.getTarget()));
-
-        tagToViewModel.put(item, caseTagView);
-        tagsContainer.add(caseTagView);
+        linkToViewModel.put(value, itemWidget);
+        linksPanel.add(itemWidget);
     }
 
     private void removeCaseLink(CaseLink item) {
@@ -248,21 +162,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
         toggleLinksVisibility(links, linksPanel);
 
-        ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(links, null));
-    }
-
-    private void removeCaseTag(CaseTag item) {
-        if (item == null) {
-            return;
-        }
-
-        tags.remove(item);
-        CaseTagView itemView = tagToViewModel.get(item);
-        if (itemView != null) {
-            tagsContainer.remove(itemView);
-        }
-
-        toggleTagsVisibility(tags, tagsSection, tagsLabel);
+        ValueChangeEvent.fire(CaseLinkList.this, links);
     }
 
     private boolean isCrmLink(CaseLink item) {
@@ -271,28 +171,13 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
     private void toggleLinksVisibility(Set set, CollapsiblePanel linksPanel) {
         if (CollectionUtils.isEmpty(set)) {
-            linksPanel.addStyleName( HIDE );
+            linksPanel.addStyleName( UiConstants.Styles.HIDE );
         } else {
-            linksPanel.removeStyleName( HIDE );
-        }
-    }
-
-    private void toggleTagsVisibility(Set set, HTMLPanel tagsSection, LabelElement tagsLabel) {
-        if (CollectionUtils.isEmpty(set)) {
-            tagsSection.addStyleName( HIDE );
-        } else {
-            tagsSection.removeStyleName( HIDE );
-
-            if (showLabel) {
-                tagsLabel.removeClassName( HIDE );
-            } else {
-                tagsLabel.addClassName( HIDE );
-            }
+            linksPanel.removeStyleName( UiConstants.Styles.HIDE );
         }
     }
 
     private void addCaseLink(CaseLink caseLink) {
-
         if (caseLink == null) {
             return;
         }
@@ -305,7 +190,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
                 addYtLink( caseLink );
                 break;
         }
-
     }
 
     private void addYtLink( CaseLink caseLink ) {
@@ -372,34 +256,13 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         makeCaseLinkViewAndAddToParent(item);
         toggleLinksVisibility(links, linksPanel);
 
-        ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(links, null));
+        ValueChangeEvent.fire(CaseLinkList.this, links);
     }
 
-    private void addCaseTag(CaseTag item) {
-        if (tags == null) {
-            tags = new HashSet<>();
-        }
-
-        if (tags.stream().anyMatch(cl -> Objects.equals(cl, item))) {
-            return;
-        }
-
-        tags.add(item);
-        makeCaseTagViewAndAddToParent(item);
-        toggleTagsVisibility(tags, tagsSection, tagsLabel);
-
-        ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(null, tags));
-    }
     @Inject
     CaseLinkProvider caseLinkProvider;
     @Inject
-    Provider<CaseLinkItem> caseLinkViewProvider;
-    @Inject
-    Provider<CaseTagView> caseTagViewProvider;
-    @Inject
     CreateCaseLinkPopup createCaseLinkPopup;
-    @Inject
-    CaseTagSelectorPopup caseTagSelectorPopup;
     @Inject
     LocalStorageService localStorageService;
 
@@ -409,36 +272,19 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     @UiField
     Lang lang;
     @UiField
-    HTMLPanel tagsSection;
-    @UiField
-    LabelElement tagsLabel;
-    @UiField
-    HTMLPanel tagsContainer;
-    @UiField
-    HTMLPanel controlsSection;
-    @UiField
-    Button addTagButton;
-    @UiField
     Button addLinkButton;
     @UiField
     CollapsiblePanel linksPanel;
 
     private boolean enabled = true;
     private boolean linksEnabled = true;
-    private boolean tagsEnabled = true;
     private boolean showLabel = true;
     private Set<CaseLink> links = null;
-    private Set<CaseTag> tags = null;
     private Map<CaseLink, CaseLinkItem> linkToViewModel = new HashMap<>();
-    private Map<CaseTag, CaseTagView> tagToViewModel = new HashMap<>();
-    private En_CaseType tagCaseType;
     private HandlerRegistration linksPopupHandlerRegistration;
-    private HandlerRegistration tagsPopupHandlerRegistration;
-    private HandlerRegistration tagsCreateHandlerRegistration;
 
-    public static final String HIDE = "hide";
     private static final String LINKS_PANEL_BODY = "case-link-panel-body";
 
-    interface CaseMetaViewUiBinder extends UiBinder<HTMLPanel, CaseMetaView> {}
+    interface CaseMetaViewUiBinder extends UiBinder<HTMLPanel, CaseLinkList> {}
     private static CaseMetaViewUiBinder ourUiBinder = GWT.create(CaseMetaViewUiBinder.class);
 }

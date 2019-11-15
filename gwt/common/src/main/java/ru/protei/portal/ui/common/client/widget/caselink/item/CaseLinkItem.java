@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.casemeta.link.item;
+package ru.protei.portal.ui.common.client.widget.caselink.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
@@ -30,9 +30,9 @@ import static ru.protei.portal.core.model.dict.En_CaseState.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
+public class CaseLinkItem extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled {
 
-    public CaseLinkView() {
+    public CaseLinkItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
         setTestAttributes();
     }
@@ -51,10 +51,6 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
                     text.setInnerText(caseLink.getCaseInfo().getCaseNumber().toString());
                     fillCaseInfo(value.getCaseInfo());
                 }
-                break;
-            }
-            case CRM_OLD: {
-                text.setInnerText(caseLink.getRemoteId());
                 break;
             }
             case YT: {
@@ -154,8 +150,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     }
 
     @Inject
-    En_CaseStateLang caseStateLang;
-    @Inject
+    static En_CaseStateLang caseStateLang;
     @UiField
     Lang lang;
 
@@ -178,6 +173,6 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     private CaseLink caseLink = null;
 
-    interface CaseLinkViewUiBinder extends UiBinder<FocusPanel, CaseLinkView> {}
+    interface CaseLinkViewUiBinder extends UiBinder<FocusPanel, CaseLinkItem> {}
     private static CaseLinkViewUiBinder ourUiBinder = GWT.create(CaseLinkViewUiBinder.class);
 }
