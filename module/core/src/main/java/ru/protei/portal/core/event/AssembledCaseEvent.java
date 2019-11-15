@@ -59,6 +59,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     }
 
+    public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
+        lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent || event.isEagerEvent();
+        if (initState == null) {
+            initState = event.getOldState().collectToCaseObject(new CaseObject());
+        }
+        lastState = event.getNewState().collectToCaseObject(lastState == null ? new CaseObject() : lastState);
+        initiator = event.getPerson();
+        serviceModule = event.getServiceModule();
+    }
+
     public void attachLinkEvent( CaseLinksEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();

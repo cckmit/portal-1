@@ -8,6 +8,8 @@ public interface EventAssemblerService {
 
     void onCaseObjectEvent( CaseObjectEvent event);
 
+    void onCaseObjectMetaEvent( CaseObjectMetaEvent event);
+
     void onCaseCommentEvent( CaseCommentEvent event);
 
     void onCaseAttachmentEvent( CaseAttachmentEvent event);

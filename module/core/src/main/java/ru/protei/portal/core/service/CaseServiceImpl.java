@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -203,6 +204,9 @@ public class CaseServiceImpl implements CaseService {
     public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
         UpdateResult<CaseObject> objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
 
@@ -212,26 +216,37 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getObject().getAttachments());
             newState.setNotifiers(objectResultData.getObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
-            );
+            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState));
         }
 
         return ok(objectResultData.getObject());
     }
 
     @Override
+    @Transactional
     public Result<CaseObjectMeta> updateCaseObjectMeta(AuthToken token, CaseObjectMeta caseMeta, Person initiator) {
 
         CaseObject oldState = caseObjectDAO.get(caseMeta.getId());
         if (oldState == null) {
-            throw new ResultStatusException(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
         CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldState);
 
         UpdateResult<CaseObjectMeta> objectResultData = performUpdateCaseObjectMeta(token, caseMeta, oldCaseMeta, oldState, initiator);
 
         if (objectResultData.isUpdated()) {
-            // TODO publish event
+            // From GWT-side we get partially filled object, that's why we need to refresh state from db
+            CaseObject newState = caseObjectDAO.get(objectResultData.getObject().getId());
+            newState.setNotifiers(objectResultData.getObject().getNotifiers());
+            CaseObjectMeta newCaseMeta = new CaseObjectMeta(newState);
+            publisherService.publishEvent(new CaseObjectMetaEvent(
+                    this,
+                    ServiceModule.GENERAL,
+                    initiator,
+                    En_ExtAppType.forCode(oldState.getExtAppType()),
+                    oldCaseMeta,
+                    newCaseMeta
+            ));
         }
 
         return ok(objectResultData.getObject());
@@ -651,11 +666,10 @@ public class CaseServiceImpl implements CaseService {
         return Objects.equals(En_CompanyCategory.HOME.getId(), descriptor.getCompany().getCategory().getId());
     }
 
-    @Deprecated
     private void applyStateBasedOnManager(CaseObject caseObject) {
-        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
-            caseObject.setState(En_CaseState.OPENED);
-        }
+        CaseObjectMeta caseMeta = new CaseObjectMeta(caseObject);
+        applyStateBasedOnManager(caseMeta);
+        caseObject.setState(caseMeta.getState());
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {

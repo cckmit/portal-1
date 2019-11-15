@@ -72,7 +72,7 @@ public class CaseObjectMeta implements Serializable {
         fillFromCaseObject(caseObject);
     }
 
-    public void fillFromCaseObject(CaseObject co) {
+    public CaseObjectMeta fillFromCaseObject(CaseObject co) {
         setId(co.getId());
         setModified(co.getModified());
         setStateId(co.getStateId());
@@ -90,9 +90,10 @@ public class CaseObjectMeta implements Serializable {
         setTimeElapsed(co.getTimeElapsed());
         setTimeElapsedType(co.getTimeElapsedType());
         setJiraMetaData(co.getJiraMetaData());
+        return this;
     }
 
-    public void collectToCaseObject(CaseObject co) {
+    public CaseObject collectToCaseObject(CaseObject co) {
         co.setId(getId());
         co.setModified(getModified());
         co.setStateId(getStateId());
@@ -110,6 +111,7 @@ public class CaseObjectMeta implements Serializable {
         co.setTimeElapsed(getTimeElapsed());
         co.setTimeElapsedType(getTimeElapsedType());
         co.setJiraMetaData(getJiraMetaData());
+        return co;
     }
 
     public Long getId() {
