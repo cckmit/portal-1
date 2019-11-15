@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -203,11 +204,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     private void ensureDebugIds() {
+        labelFilters.setId(DebugIds.FILTER.FILTERS_LABEL);
         filterCollapseBtn.ensureDebugId(DebugIds.FILTER.COLLAPSE_BUTTON);
         filterRestoreBtn.ensureDebugId(DebugIds.FILTER.RESTORE_BUTTON);
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
         okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
+        createBtn.ensureDebugId(DebugIds.FILTER.CREATE_BUTTON);
         saveBtn.ensureDebugId(DebugIds.FILTER.SAVE_BUTTON);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
         removeBtn.ensureDebugId(DebugIds.FILTER.REMOVE_BUTTON);
@@ -249,6 +252,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Anchor filterRestoreBtn;
     @UiField
     Anchor filterCollapseBtn;
+    @UiField
+    LabelElement labelFilters;
 
     private AbstractIssueFilterActivity activity;
 

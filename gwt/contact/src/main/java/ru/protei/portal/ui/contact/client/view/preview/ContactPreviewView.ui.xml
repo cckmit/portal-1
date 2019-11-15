@@ -3,58 +3,69 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card card-default no-border card-fixed no-border">
-        <div class="card-body">
-            <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete" ui:field="contactFired">
-                <i class="fa fa-info-circle"/>
-                <label><ui:text from="{lang.contactFired}"/></label>
-            </g:HTMLPanel>
-            <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete" ui:field="contactDeleted">
-                <i class="fa fa-info-circle"/>
-                <label><ui:text from="{lang.contactDeleted}"/></label>
-            </g:HTMLPanel>
-            <h4 class="m-r-50">
-                <g:Anchor ui:field="displayName" styleName="full-screen-link" href="#"/>
-            </h4>
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
+        <div class="preview card-body no-padding">
+            <div class="card no-border">
+                <div class="card-body">
+                    <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete text-danger" ui:field="contactFired">
+                        <i class="fa fa-ban"/>
+                        <label><ui:text from="{lang.contactFired}"/></label>
+                    </g:HTMLPanel>
+                    <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete text-danger" ui:field="contactDeleted">
+                        <i class="fa fa-ban"/>
+                        <label><ui:text from="{lang.contactDeleted}"/></label>
+                    </g:HTMLPanel>
+                    <h4 class="m-r-50">
+                        <g:Anchor ui:field="displayName" styleName="full-screen-link" href="#"/>
+                    </h4>
 
-            <img ui:field="genderImage" src="" class="preview-title-image_right"/>
+                    <img ui:field="genderImage" src="" class="preview-title-image_right"/>
 
-            <p>
-                <g:InlineLabel>
-                    <ui:text from="{lang.company} "/>
-                </g:InlineLabel>
-                <g:InlineLabel styleName="bold" ui:field="company"/>
-                <g:InlineLabel styleName="small" ui:field="position"/>
-            </p>
-            <div class="small hint-text pre-formatted-info">
-                <span ui:field="info"/>
-            </div>
+                    <p>
+                        <g:InlineLabel>
+                            <ui:text from="{lang.company} "/>
+                        </g:InlineLabel>
+                        <g:InlineLabel styleName="bold" ui:field="company"/>
+                        <g:InlineLabel styleName="small" ui:field="position"/>
+                    </p>
+                    <div class="small hint-text pre-formatted-info">
+                        <span ui:field="info"/>
+                    </div>
 
-            <h5><ui:text from="{lang.contactInfo}"/></h5>
+                    <h5><ui:text from="{lang.contactInfo}"/></h5>
 
-            <div class="small">
-                <b><ui:text from="{lang.phone}: "/></b>
-                <span ui:field="phone"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.email}: "/></b>
-                <span ui:field="emailAnchor"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.address}: "/></b>
-                <span ui:field="address"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.homeAddress}: "/></b>
-                <span ui:field="homeAddress"/>
-            </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.phone}: "/></b>
+                        <span ui:field="phone"/>
+                    </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.email}: "/></b>
+                        <span ui:field="emailAnchor"/>
+                    </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.address}: "/></b>
+                        <span ui:field="address"/>
+                    </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.homeAddress}: "/></b>
+                        <span ui:field="homeAddress"/>
+                    </div>
 
-            <h5><ui:text from="{lang.advPersonalData}"/></h5>
+                    <h5><ui:text from="{lang.advPersonalData}"/></h5>
 
-            <div class="small">
-                <b><ui:text from="{lang.birthday}: "/></b>
-                <span ui:field="birthday"/>
+                    <div class="small">
+                        <b><ui:text from="{lang.birthday}: "/></b>
+                        <span ui:field="birthday"/>
+                    </div>
+                </div>
             </div>
         </div>
+        <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToContacts}"/>
+                </div>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

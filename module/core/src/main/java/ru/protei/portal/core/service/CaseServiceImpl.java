@@ -11,6 +11,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -22,7 +23,8 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 
@@ -92,7 +94,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         if (!validateFields(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -167,8 +169,9 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        DiffCollectionResult<CaseLink> mergeLinks = null;
         if (isNotEmpty(caseObject.getLinks())) {
-            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+            mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() ).getData();
         }
 
         if (isNotEmpty(caseObject.getLinks())) {
@@ -192,10 +195,11 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+        publisherService.publishEvent( CaseObjectEvent.create(this)
                 .withNewState(newState)
                 .withPerson(initiator)
-                .build());
+                .withLinks(mergeLinks)
+        );
 
         return ok(newState);
     }
@@ -214,11 +218,11 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getCaseObject().getAttachments());
             newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+            publisherService.publishEvent( CaseObjectEvent.create(this)
                     .withNewState(newState)
                     .withOldState(oldState)
                     .withPerson(initiator)
-                    .build());
+            );
         }
 
         return ok(objectResultData.getCaseObject());
@@ -240,7 +244,7 @@ public class CaseServiceImpl implements CaseService {
             newState.setNotifiers(caseObject.getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
 
-            publisherService.publishEvent(new CaseObjectCommentEvent.Builder(this)
+            publisherService.publishEvent( CaseObjectCommentEvent.create(this)
                     .withPerson(initiator)
                     .withOldState(oldState)
                     .withNewState(newState)
@@ -248,7 +252,8 @@ public class CaseServiceImpl implements CaseService {
                     .withOldCaseComment(commentResultData.getOldCaseComment())
                     .withAddedAttachments(commentResultData.getAddedAttachments())
                     .withRemovedAttachments(commentResultData.getRemovedAttachments())
-                    .build());
+                    .withLinks( objectResultData.getMergeLinks() )
+            );
         }
 
         return Result.ok(
@@ -277,11 +282,11 @@ public class CaseServiceImpl implements CaseService {
                 mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
         );
 
-        Result mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
-        if (mergeLinksResponse.isError()) {
-            log.info("Failed to merge links for the issue {}", caseObject.getId());
-            throw new ResultStatusException(mergeLinksResponse.getStatus());
-        }
+        DiffCollectionResult<CaseLink> mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() )
+                .orElseThrow( result -> {
+                    log.info( "Failed to merge links for the issue {}", caseObject.getId() );
+                    return new ResultStatusException( result.getStatus() );
+                } ).getData();
 
         synchronizeTags(caseObject, authService.findSession(token));
         jdbcManyRelationsHelper.persist(caseObject, "tags");
@@ -293,7 +298,7 @@ public class CaseServiceImpl implements CaseService {
         persistJiraSLAInformation(caseObject);
 
         if (!isCaseChanged(caseObject, oldState)) {
-            return new CaseObjectUpdateResult(caseObject, false);
+            return new CaseObjectUpdateResult(caseObject, mergeLinks, isLinksChanged(mergeLinks));
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
@@ -355,11 +360,11 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        return new CaseObjectUpdateResult(caseObject, true);
+        return new CaseObjectUpdateResult(caseObject, mergeLinks, true);
     }
 
     private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {
-        DiffCollectionResult<String> youTrackLinkIdsDiff = ru.protei.winter.core.utils.collections.CollectionUtils.
+        DiffCollectionResult<String> youTrackLinkIdsDiff = CollectionUtils.
                 diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
 
         for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
@@ -534,6 +539,21 @@ public class CaseServiceImpl implements CaseService {
                 .map( this::fillYouTrackInfo );
     }
 
+    @Override
+    public Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff ) {
+        CaseObject caseObject = caseObjectDAO.getCaseByCaseno( caseNumber );
+        if (!isEmpty( caseObject.getLinks() )) {
+            linksDiff.putSameEntries( caseObject.getLinks() );
+        }
+
+        publisherService.publishEvent( CaseObjectEvent.create(this)
+                .withOldState(caseObject)
+                .withNewState(caseObject)
+                .withLinks( linksDiff )
+        );
+        return ok(caseObject.getId());
+    }
+
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
         if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
             return;
@@ -622,6 +642,13 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
+    }
+
+    private boolean isLinksChanged( DiffCollectionResult<CaseLink> mergeLinks ){
+        if(mergeLinks == null) return false;
+        if(!isEmpty(mergeLinks.getAddedEntries())) return true;
+        if(!isEmpty(mergeLinks.getRemovedEntries())) return true;
+        return false;
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {

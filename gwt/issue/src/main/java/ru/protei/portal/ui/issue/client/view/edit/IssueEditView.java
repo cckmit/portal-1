@@ -195,6 +195,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasEnabled platformState() {
+        return platform;
+    }
+
+    @Override
     public HasVisibility numberVisibility(){
         return numberLabel;
     }
@@ -399,7 +404,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return timeElapsedHeader;
     }
 
-
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
@@ -484,6 +488,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
         notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
+        notifiers.setItemContainerEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ITEM_CONTAINER);
+        notifiers.setLabelEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_LABEL);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
@@ -500,6 +506,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         product.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PRODUCT);
         manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
         timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.TIME_ELAPSED);
+        newIssueTimeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NEW_ISSUE_TIME_ELAPSED);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
         subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.SUBSCRIPTIONS);
         notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
@@ -603,6 +610,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiField
     LabelElement timeElapsedLabel;
+    @UiField
+    LabelElement newIssueTimeElapsedLabel;
     @UiField
     LabelElement descriptionLabel;
     @UiField

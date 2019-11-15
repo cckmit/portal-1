@@ -32,6 +32,8 @@ public class DebugIds {
         String USER_NAME_LABEL = "app-user-name-label";
         String SIDEBAR = "app-sidebar";
         String DASHBOARD_BUTTON = "app-dashboard-button";
+        String FIX_CLOSED_SIDEBAR_BUTTON = "app-fix-closed-sidebar-button";
+        String FIX_OPENED_SIDEBAR_BUTTON = "app-fix-opened-sidebar-button";
     }
 
     public interface PROFILE {
@@ -103,29 +105,54 @@ public class DebugIds {
     }
 
     public interface FILTER {
+        String FILTERS_LABEL = "filter-filters-label";
         String COLLAPSE_BUTTON = "filter-collapse-button";
         String RESTORE_BUTTON = "filter-restore-button";
 
         String SEARCH_INPUT = "filter-search-input";
         String SEARCH_CLEAR_BUTTON = "filter-search-clear-button";
         String SEARCH_BY_COMMENTS_TOGGLE = "filter-search-by-comments-toggle";
+        String SEARCH_BY_WARNING_COMMENTS_LABEL = "filter-search-by-comments-warning-label";
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
+        String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
         @Deprecated String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
         String DATE_RANGE_SELECTOR = "filter-date-range-selector";
+        String DATE_CREATED_RANGE_INPUT = "filter-date-created-range-input";
+        String DATE_CREATED_RANGE_LABEL = "filter-date-created-range-label";
+        String DATE_MODIFIED_RANGE_INPUT = "filter-date-modified-range-input";
+        String DATE_MODIFIED_RANGE_LABEL = "filter-date-range-label";
+        String DATE_CREATED_RANGE_BUTTON = "filter-date-created-range-button";
+        String DATE_MODIFIED_RANGE_BUTTON = "filter-date-modified-range-button";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
+        String COMPANY_SELECTOR_ITEM_CONTAINER = "filter-company-selector-item-container";
+        String COMPANY_SELECTOR_LABEL = "filter-company-selector-label";
         String PRODUCT_SELECTOR_ADD_BUTTON = "filter-product-selector-add-button";
         String PRODUCT_SELECTOR_CLEAR_BUTTON = "filter-product-selector-clear-button";
+        String PRODUCT_SELECTOR_ITEM_CONTAINER = "filter-product-selector-item-container";
+        String PRODUCT_SELECTOR_LABEL = "filter-product-selector-label";
         String MANAGER_SELECTOR_ADD_BUTTON = "filter-manager-selector-add-button";
         String MANAGER_SELECTOR_CLEAR_BUTTON = "filter-manager-selector-clear-button";
+        String MANAGER_SELECTOR_ITEM_CONTAINER = "filter-manager-selector-item-container";
+        String MANAGER_SELECTOR_LABEL = "filter-manager-selector-label";
         String INITIATORS_SELECTOR_ADD_BUTTON = "filter-initiators-selector-add-button";
         String INITIATORS_SELECTOR_CLEAR_BUTTON = "filter-initiators-selector-clear-button";
+        String INITIATORS_SELECTOR_ITEM_CONTAINER = "filter-manager-selector-item-container";
+        String INITIATORS_SELECTOR_LABEL = "filter-initiators-selector-label";
+        String TAG_SELECTOR_ADD_BUTTON = "filter-tag-selector-add-button";
+        String TAG_SELECTOR_CLEAR_BUTTON = "filter-tag-selector-clear-button";
+        String TAG_SELECTOR_ITEM_CONTAINER = "filter-tag-selector-item-container";
+        String TAG_SELECTOR_LABEL = "filter-tag-selector-label";
         String PRIVACY_YES_BUTTON = "filter-privacy-yes-button";
         String PRIVACY_NO_BUTTON = "filter-privacy-no-button";
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
+        String PRIVACY_LABEL = "filter-privacy-label";
+        String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
+        String ISSUE_STATE_LABEL = "filter-issue-state-label";
 
         @Deprecated String REPORT_BUTTON = "filter-report-button";
+        String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
         String RESET_BUTTON = "filter-reset-button";
         String REMOVE_BUTTON = "filter-remove-button";
@@ -210,6 +237,7 @@ public class DebugIds {
         String LINK_INFO_CONTAINER = "issue-link-info-container";
         String LINK_REMOVE_BUTTON = "issue-link-remove-button";
         String TAGS_BUTTON = "issue-tags-button";
+        String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
@@ -224,6 +252,8 @@ public class DebugIds {
         String DESCRIPTION_FIELD = "issue-description-field";
         String NOTIFIERS_SELECTOR_ADD_BUTTON = "issue-notifiers-selector-add-button";
         String NOTIFIERS_SELECTOR_CLEAR_BUTTON = "issue-notifiers-selector-clear-button";
+        String NOTIFIERS_SELECTOR_ITEM_CONTAINER = "issue-notifiers-selector-item-container";
+        String NOTIFIERS_SELECTOR_LABEL = "issue-notifiers-selector-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
         String SAVE_BUTTON = "issue-save-button";
@@ -242,6 +272,7 @@ public class DebugIds {
             String PRODUCT = "issue-label-product";
             String MANAGER = "issue-label-manager";
             String TIME_ELAPSED = "issue-label-time-elapsed";
+            String NEW_ISSUE_TIME_ELAPSED = "issue-label-new-issue-time-elapsed";
             String INFO = "issue-label-info";
             String SUBSCRIPTIONS = "issue-label-subscriptions";
             String NOTIFIERS = "issue-label-notifiers";
@@ -461,5 +492,85 @@ public class DebugIds {
     public interface TAG_SELECTOR_POPUP {
         String ITEM = "tag-selector-popup-item";
         String EDIT_BUTTON = "tag-selector-popup-edit-button";
+        String NAME = "tag-selector-popup-name";
+        String COMPANY_NAME = "tab-selector-popup-company-name";
+    }
+
+    public interface CONTRACT {
+        String NUMBER_INPUT = "contract-number-input";
+        String TYPE_SELECTOR = "contract-type-selector";
+        String STATE_SELECTOR = "contract-state-selector";
+        String PARENT_SELECTOR = "contract-parent-selector";
+        String DESCRIPTION_INPUT = "contract-description-input";
+        String DATE_SIGNING_CONTAINER = "contract-date-signing-container";
+        String DATE_VALID_CONTAINER = "contract-date-valid-container";
+        String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
+        String PROJECT_SELECTOR = "contract-project-selector";
+        String DIRECTION_SELECTOR = "contract-direction-selector";
+        String ORGANIZATION_SELECTOR = "contract-organization-selector";
+        String CURATOR_SELECTOR = "contract-curator-selector";
+        String MANAGER_SELECTOR = "contract-manager-selector";
+        String CONTRAGENT_SELECTOR = "contract-contragent-selector";
+        String ADD_DATES_BUTTON = "contract-add-dates-button";
+        String SAVE_BUTTON = "contract-save-button";
+        String CANCEL_BUTTON = "contract-cancel-button";
+
+        interface LABEL {
+            String COMMON_HEADER = "contract-common-header";
+            String WORKGROUP_HEADER = "contract-workgroup-header";
+            String DELIVERY_AND_PAYMENTS_PERIOD_HEADER = "contract-delivery-and-payments-period-header";
+            String NUMBER = "contract-number-label";
+            String TYPE = "contract-type-label";
+            String STATE = "contract-state-label";
+            String PARENT = "contract-parent-label";
+            String DESCRIPTION = "contract-description-label";
+            String DATE_SIGNING = "contract-date-signing-label";
+            String DATE_VALID = "contract-date-valid-label";
+            String COST_WITH_CURRENCY = "contract-cost-with-currency-label";
+            String PROJECT = "contract-project-label";
+            String DIRECTION = "contract-direction-label";
+            String ORGANIZATION = "contract-organization-label";
+            String CURATOR = "contract-curator-label";
+            String MANAGER = "contract-manager-label";
+            String CONTRAGENT = "contract-contragent-label";
+        }
+
+        interface DATE_ITEM {
+            String ITEM = "contract-date-item";
+            String TYPE_BUTTON = "contract-date-item-type-button";
+            String DATE_CONTAINER = "contract-date-item-date-container";
+            String COMMENT_INPUT = "contract-date-item-comment-input";
+            String NOTIFY_LABEL = "contract-date-item-notify-label";
+            String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
+            String REMOVE_BUTTON = "contract-date-item-remove-button";
+        }
+    }
+
+    public interface CLEANABLE_SEARCH_BOX {
+        String SEARCH_INPUT = "cleanable-search-box-search-input";
+    }
+
+    public interface DIALOG_DETAILS {
+        String MODAL_DIALOG = "dialog-details-modal-dialog";
+        String NAME = "dialog-details-name";
+        String CLOSE_BUTTON = "dialog-details-close-button";
+        String REMOVE_BUTTON = "dialog-details-remove-button";
+        String SAVE_BUTTON = "dialog-details-save-button";
+        String CANCEL_BUTTON = "dialog-details-cancel-button";
+
+        interface TAG {
+            String NAME_LABEL = "dialog-details-tag-name-label";
+            String COMPANY_LABEL = "dialog-details-tag-company-label";
+            String COLOR_LABEL = "dialog-details-tag-color-label";
+            String AUTHOR_LABEL = "dialog-details-author-label";
+            String NAME_INPUT = "dialog-details-tag-name-input";
+            String COMPANY_SELECTOR = "dialog-details-tag-company-selector";
+            String COMPANY = "dialog-details-tag-company";
+        }
+    }
+
+    public interface COLOR_PICKER {
+        String BUTTON = "color-picker-button";
+        String INPUT = "color-picker-input";
     }
 }

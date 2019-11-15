@@ -213,6 +213,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactSocialNet();
 
+    String goToContacts();
+
     String workAddress();
 
     String homeAddress();
@@ -841,6 +843,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String keywordInputPlaceholder();
 
+    String aliasInputPlaceholder();
+
     String inventoryNumber();
 
     String customer();
@@ -1300,6 +1304,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeCompany();
 
     String employeeMainPosition();
+
+    String employeeFired();
+
+    String employeeShowFired();
 
     String initiatorSelectACompany();
     String serverAccessParamsColumn();
@@ -1891,4 +1899,12 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotAllowedChangeIssueNameOrDescription();
 
     String timeElapsedInfo();
+
+    String phoneOfficeTypeOffice();
+
+    String productAliases();
+
+    String productSearchNameOrAlias();
+
+    String sendEmailWarning();
 }

@@ -103,7 +103,7 @@ public class Project extends AuditableObject implements Removable {
     }
 
     public En_RegionState getState() {
-        return En_RegionState.forId( stateId );
+        return stateId == null ? En_RegionState.UNKNOWN : En_RegionState.forId( stateId );
     }
 
     public void setState( En_RegionState state ) {
@@ -216,7 +216,7 @@ public class Project extends AuditableObject implements Removable {
     }
 
     public ProductShortView getSingleProduct() {
-        return products.stream().findAny().orElse(null);
+        return products == null ? null : products.stream().findAny().orElse(null);
     }
 
     @Override

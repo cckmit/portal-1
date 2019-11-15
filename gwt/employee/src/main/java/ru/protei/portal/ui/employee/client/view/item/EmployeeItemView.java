@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,6 +83,14 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setFireDate(String value) {
+        employeeContainer.addClassName("fired");
+        name.setInnerHTML("<i class='fa fa-ban text-danger'></i> " + this.name.getInnerText());
+        fireDateContainer.setVisible(true);
+        fireDate.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setPhoto( String url ) {
         photo.setUrl( url );
     }
@@ -97,6 +106,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     HTMLPanel birthdayContainer;
+
+    @UiField
+    HTMLPanel fireDateContainer;
 
     @UiField
     HTMLPanel phoneContainer;
@@ -120,6 +132,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     SpanElement birthday;
 
     @UiField
+    SpanElement fireDate;
+
+    @UiField
     SpanElement phone;
 
     @UiField
@@ -139,6 +154,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     HTMLPanel previewContainer;
+
+    @UiField
+    DivElement employeeContainer;
 
     @UiField
     Anchor preview;

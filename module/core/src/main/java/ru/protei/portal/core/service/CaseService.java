@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -30,7 +31,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    Result<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
+    Result<CaseObject> createCaseObject( AuthToken token, CaseObject p, Person initiator );
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
@@ -68,4 +69,6 @@ public interface CaseService {
     Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
+
+    Result<Long> sendMailNotificationLinkChanged( Long caseNumber, DiffCollectionResult<CaseLink> linksDiff );
 }

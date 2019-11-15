@@ -6,6 +6,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
@@ -16,6 +17,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +29,7 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Реализация сервиса управления проектами
@@ -55,7 +58,7 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent event, List<CaseComment> caseComments, String urlTemplate, Collection< String > recipients
+            AssembledCaseEvent event, List<CaseComment> caseComments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
     ) {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
@@ -103,6 +106,10 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("platformChanged", event.isPlatformChanged());
         templateModel.put("oldPlatform", oldState == null ? null : oldState.getPlatformName());
+        templateModel.put("hasLinks", hasLinks( mergeLinks) );
+        templateModel.put("existingLinks", mergeLinks == null ? null : mergeLinks.getSameEntries());
+        templateModel.put("addedLinks", mergeLinks == null ? null : mergeLinks.getAddedEntries());
+        templateModel.put("removedLinks", mergeLinks == null ? null : mergeLinks.getRemovedEntries());
 
         Collection<Attachment> existingAttachments = new ArrayList<>((oldState == null? newState.getAttachments(): oldState.getAttachments()));
         existingAttachments.removeIf(a -> event.getRemovedAttachments().contains(a) || event.getAddedAttachments().contains(a));
@@ -362,4 +369,14 @@ public class TemplateServiceImpl implements TemplateService {
         return writer.toString();
 
     }
+
+    private boolean hasLinks( DiffCollectionResult<LinkData> mergeLinks ) {
+        if (mergeLinks == null) return false;
+        if (!isEmpty( mergeLinks.getSameEntries() )) return true;
+        if (!isEmpty( mergeLinks.getAddedEntries() )) return true;
+        if (!isEmpty( mergeLinks.getRemovedEntries() )) return true;
+        return false;
+    }
+
+
 }

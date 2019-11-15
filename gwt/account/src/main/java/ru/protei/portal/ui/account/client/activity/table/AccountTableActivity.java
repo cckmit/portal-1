@@ -217,7 +217,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     private void clearScroll(AccountEvents.Show event) {
-        if (event.clearScroll ) {
+        if (event.clearScroll) {
             event.clearScroll = false;
             this.scrollTop = null;
             this.page = 0;

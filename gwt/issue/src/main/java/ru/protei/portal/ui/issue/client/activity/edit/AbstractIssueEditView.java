@@ -57,6 +57,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable companyValidator();
 
     HasEnabled initiatorState();
+    HasEnabled platformState();
 
     HasVisibility numberVisibility();
     HasVisibility jiraSlaSelectorVisibility();

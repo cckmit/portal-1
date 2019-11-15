@@ -20,6 +20,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_manager" value="${manager}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
 <@set name="_attachments" value="${attachments}"/>
+<@set name="_linkedTasks" value="${linkedTasks}"/>
 <@set name="_updated" value="${updated_just_now}"/>
 <@set name="_description" value="${description}"/>
 <@set name="_timeElapsed" value="${timeElapsed}"/>
@@ -217,6 +218,36 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
                 </tr>
+                <#if hasLinks>
+                <tr id="test-linkedTasks">
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                        ${_linkedTasks}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                        <#if existingLinks??>
+                            <#list existingLinks as link>
+                                <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">
+                                    <a href="${link.url}">${link.linkName}</a>
+                                </span>
+                            </#list>
+                        </#if>
+                        <#if addedLinks??>
+                            <#list addedLinks as link>
+                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
+                                    <a href="${link.url}" >${link.linkName}</a>
+                                </span>
+                            </#list>
+                        </#if>
+                        <#if removedLinks??>
+                            <#list removedLinks as link>
+                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through">
+                                    <a href="${link.url}" style="color:#bd1313;">${link.linkName}</a>
+                                </span>
+                            </#list>
+                        </#if>
+                    </td>
+                </tr>
+                </#if>
                 <#if attachments??>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">

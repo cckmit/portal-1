@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.animation.DialogAnimation;
@@ -26,6 +27,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         add( ourUiBinder.createAndBindUi( this ) );
         setGlassEnabled( true );
         setAutoHideEnabled( false );
+        ensureDebugIds();
 
         animation.setDialog( modalDialog, this );
     }
@@ -105,6 +107,15 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
                 fireSaveClicked();
             }
         }
+    }
+
+    private void ensureDebugIds() {
+        modalDialog.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.MODAL_DIALOG);
+        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.NAME);
+        save.ensureDebugId(DebugIds.DIALOG_DETAILS.SAVE_BUTTON);
+        cancel.ensureDebugId(DebugIds.DIALOG_DETAILS.CANCEL_BUTTON);
+        remove.ensureDebugId(DebugIds.DIALOG_DETAILS.REMOVE_BUTTON);
+        close.ensureDebugId(DebugIds.DIALOG_DETAILS.CLOSE_BUTTON);
     }
 
     private void fireCancelClicked() {

@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -35,7 +35,7 @@ import java.util.Date;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        MainTestsConfiguration.class, TestEventConfiguration.class
+        IntegrationTestsConfiguration.class, TestEventConfiguration.class
 })
 public class TestCaseEvents extends BaseServiceTest {
 
@@ -62,7 +62,7 @@ public class TestCaseEvents extends BaseServiceTest {
         object.setImpLevel(En_ImportanceLevel.BASIC.getId());
 //        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
 
-        Result<CaseObject> response = service.saveCaseObject(getAuthToken(), object, person);
+        Result<CaseObject> response = service.createCaseObject(getAuthToken(), object, person);
         Assert.assertTrue(response.isOk());
 
         // wait for async event

@@ -169,6 +169,14 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         clearButton.ensureDebugId(debugId);
     }
 
+    public void setItemContainerEnsureDebugId(String debugId) {
+        itemContainer.ensureDebugId(debugId);
+    }
+
+    public void setLabelEnsureDebugId(String debugId) {
+        label.ensureDebugId(debugId);
+    }
+
     @UiField
     Button caretButton;
     @UiField

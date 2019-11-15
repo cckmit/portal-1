@@ -113,6 +113,12 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         return footerContainer;
     }
 
+    @Override
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+
     @UiHandler("header")
     public void onFullScreenClicked(ClickEvent event) {
         event.preventDefault();
@@ -167,6 +173,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     Anchor project;
     @UiField
     HTMLPanel footerContainer;
+    @UiField
+    HTMLPanel previewWrapperContainer;
 
     private AbstractContractPreviewActivity activity;
 

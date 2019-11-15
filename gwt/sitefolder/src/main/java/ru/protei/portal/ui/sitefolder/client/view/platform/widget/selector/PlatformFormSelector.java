@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -17,7 +19,12 @@ public class PlatformFormSelector extends FormSelector<PlatformOption> implement
         setSearchEnabled(true);
         setHasNullValue(true);
 
-        setDisplayOptionCreator(value -> new DisplayOption(value == null ? defaultValue : value.getDisplayText()));
+        setDisplayOptionCreator(value -> {
+            DisplayOption displayOption = new DisplayOption(value == null ? defaultValue : value.getDisplayText());
+            displayOption.setExternalLink(value == null ? null : LinkUtils.makeLink(Platform.class, value.getId()));
+
+            return displayOption;
+        });
     }
 
     @Override

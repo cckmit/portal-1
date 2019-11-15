@@ -41,7 +41,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        view.setFooterFixed(false);
         Long equipmentId = event.equipment.getId();
         if( equipmentId == null ) {
             fillView( equipmentId );
@@ -49,6 +48,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         }
 
         fillView( event.equipment );
+        view.isFullScreen(false);
     }
 
     @Event
@@ -56,8 +56,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        view.setFooterFixed(true);
         fillView( event.equipmentId );
+        view.isFullScreen(true);
     }
 
     @Event

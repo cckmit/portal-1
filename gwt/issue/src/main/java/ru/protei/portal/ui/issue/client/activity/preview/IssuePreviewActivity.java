@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
@@ -89,6 +90,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         fillView(issueCaseNumber);
         view.backBtnVisibility().setVisible(false);
+        view.isFullScreen(false);
     }
 
     @Event
@@ -102,6 +104,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         fillView(issueCaseNumber);
         view.backBtnVisibility().setVisible(true);
+        view.isFullScreen(true);
     }
 
     @Event

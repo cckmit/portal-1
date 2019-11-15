@@ -84,9 +84,9 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @Override
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
-            rootWrapper.addStyleName("preview-wrapper");
+            rootWrapper.addStyleName("preview-card");
         }else {
-            rootWrapper.removeStyleName("preview-wrapper");
+            rootWrapper.removeStyleName("preview-card");
         }
 
         return asWidget();

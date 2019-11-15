@@ -7,7 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.config.TestNotificationConfiguration;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
@@ -35,7 +35,7 @@ import java.util.Date;
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration(classes = {
         CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        MainTestsConfiguration.class, NotificationConfiguration.class, TestNotificationConfiguration.class
+        IntegrationTestsConfiguration.class, NotificationConfiguration.class, TestNotificationConfiguration.class
 })
 public class MailNotificationProcessorTest extends BaseServiceTest {
 
@@ -86,7 +86,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         object.setInfo( "some text is here" );
         object.setExtAppType( "junit-test" );
 
-        Result<CaseObject> response = caseService.saveCaseObject(getAuthToken(), object, initiator);
+        Result<CaseObject> response = caseService.createCaseObject(getAuthToken(), object, initiator);
         Assert.assertTrue(response.isOk());
         object = response.getData();
 

@@ -108,6 +108,8 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
     private void setTestAttributes() {
         panel.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.ITEM);
         editIcon.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.EDIT_BUTTON);
+        text.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.NAME);
+        companyName.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.COMPANY_NAME);
     }
 
     @UiField

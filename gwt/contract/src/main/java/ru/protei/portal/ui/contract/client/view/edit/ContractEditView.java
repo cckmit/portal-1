@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.contract.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,6 +19,7 @@ import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
@@ -40,6 +44,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
         project.setRequestByOnLoad(false);
     }
 
@@ -178,6 +183,63 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        commonHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COMMON_HEADER);
+        workGroupHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.WORKGROUP_HEADER);
+        deliveryAndPaymentsPeriodHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DELIVERY_AND_PAYMENTS_PERIOD_HEADER);
+
+        numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NUMBER);
+        number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
+
+        typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.TYPE);
+        type.setEnsureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
+
+        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.STATE);
+        state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
+
+        contractParentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.PARENT);
+        contractParent.setEnsureDebugId(DebugIds.CONTRACT.PARENT_SELECTOR);
+
+        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
+        description.ensureDebugId(DebugIds.CONTRACT.DESCRIPTION_INPUT);
+
+        dateSigningLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_SIGNING);
+        dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_CONTAINER);
+
+        dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
+        dateValid.setEnsureDebugId(DebugIds.CONTRACT.DATE_VALID_CONTAINER);
+
+        costWithCurrencyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COST_WITH_CURRENCY);
+        costWithCurrency.setEnsureDebugId(DebugIds.CONTRACT.COST_WITH_CURRENCY_CONTAINER);
+
+        projectLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.PROJECT);
+        project.setEnsureDebugId(DebugIds.CONTRACT.PROJECT_SELECTOR);
+
+        directionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DIRECTION);
+        direction.setEnsureDebugId(DebugIds.CONTRACT.DIRECTION_SELECTOR);
+
+        organizationLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.ORGANIZATION);
+        organization.setEnsureDebugId(DebugIds.CONTRACT.ORGANIZATION_SELECTOR);
+
+        curatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CURATOR);
+        curator.setEnsureDebugId(DebugIds.CONTRACT.CURATOR_SELECTOR);
+
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.MANAGER);
+        manager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
+
+        contragentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRAGENT);
+        contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
+
+        dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
+
+        saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
+    }
+
     @UiField
     Button saveButton;
 
@@ -226,6 +288,42 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     CompanySelector contragent;
+    @UiField
+    LabelElement numberLabel;
+    @UiField
+    LabelElement typeLabel;
+    @UiField
+    LabelElement stateLabel;
+    @UiField
+    LabelElement contractParentLabel;
+    @UiField
+    LabelElement descriptionLabel;
+    @UiField
+    LabelElement dateSigningLabel;
+    @UiField
+    LabelElement dateValidLabel;
+    @UiField
+    LabelElement costWithCurrencyLabel;
+    @UiField
+    LabelElement projectLabel;
+    @UiField
+    LabelElement directionLabel;
+    @UiField
+    LabelElement organizationLabel;
+    @UiField
+    LabelElement curatorLabel;
+    @UiField
+    LabelElement managerLabel;
+    @UiField
+    LabelElement contragentLabel;
+    @UiField
+    DivElement commonHeader;
+    @UiField
+    DivElement workGroupHeader;
+    @UiField
+    DivElement deliveryAndPaymentsPeriodHeader;
+    @UiField
+    Button cancelButton;
 
     private AbstractContractEditActivity activity;
 

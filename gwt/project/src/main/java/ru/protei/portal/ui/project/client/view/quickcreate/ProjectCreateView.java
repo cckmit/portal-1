@@ -8,12 +8,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
@@ -32,6 +35,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Override
@@ -66,8 +70,8 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public HasValue<Set<ProductShortView>> products() {
-        return products;
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
@@ -97,7 +101,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Override
     public void refreshProducts() {
-        products.refreshOptions();
+        product.refreshOptions();
     }
 
     @UiHandler("saveBtn")
@@ -140,7 +144,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Inject
     @UiField(provided = true)
-    DevUnitMultiSelector products;
+    DevUnitButtonSelector product;
 
     @UiField
     Button saveBtn;

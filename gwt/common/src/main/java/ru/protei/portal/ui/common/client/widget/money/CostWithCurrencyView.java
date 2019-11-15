@@ -59,11 +59,17 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
         currency.setValue(value);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        root.ensureDebugId(debugId);
+    }
+
     @UiField
     LongBox cost;
     @Inject
     @UiField(provided = true)
     CurrencyButtonSelector currency;
+    @UiField
+    HTMLPanel root;
 
     private En_Currency defaultCurrency;
 

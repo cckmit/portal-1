@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
@@ -17,6 +18,8 @@ import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableView;
+
+import java.util.stream.Collectors;
 
 public class ProductTableView extends Composite implements AbstractProductTableView {
 
@@ -115,6 +118,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
             StringBuilder builder = new StringBuilder();
             builder.append(devUnit.isActiveUnit() ? "<div>" : "<div class='deprecated-entity'><i class='fa fa-lock m-r-5'></i> ")
                     .append(devUnit.getName())
+                    .append(CollectionUtils.isEmpty(devUnit.getAliases()) ? "" :
+                            " (" + devUnit.getAliases().stream().collect(Collectors.joining(", ")) + ")")
                     .append("</div>");
             if (StringUtils.isNotEmpty(devUnit.getInfo())) {
                 builder.append("<small><i>")

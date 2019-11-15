@@ -44,6 +44,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         event.parent.add( view.asWidget() );
 
         loadDetails(event.id);
+        view.isFullScreen(false);
     }
 
     @Event
@@ -54,6 +55,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         initDetails.parent.add(view.asWidget());
 
         loadDetails(event.contractId);
+        view.isFullScreen(true);
     }
 
     @Override

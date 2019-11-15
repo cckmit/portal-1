@@ -10,14 +10,14 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
@@ -106,17 +106,19 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        if(!isConfirmValidate()) {
+        if (passwordNotDefined()) {
+            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        if(!passwordConfirmed()) {
             fireEvent(new NotifyEvents.Show(lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         UserLogin userLogin = applyChangesLogin();
-        if(!HelperFunc.isEmpty(userLogin.getUlogin()) && HelperFunc.isEmpty(userLogin.getUpass()) && userLogin.getId() == null) {
-            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
 
+        Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
         Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
 
         contactService.saveContact(applyChangesContact(), new AsyncCallback<Person>() {
@@ -132,7 +134,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     userLogin.setPerson(person);
                     userLogin.setInfo(person.getDisplayName());
                 }
-                contactService.saveAccount(userLogin, sendWelcomeEmail, new RequestCallback<Boolean>() {
+                contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireErrorMessage(lang.errEditContactLogin());
@@ -151,7 +153,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onChangeContactLogin() {
-        view.sendWelcomeEmailVisibility().setVisible(true);
+        view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
+        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
         String value = view.login().getText().trim();
 
@@ -195,7 +198,12 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
     }
 
-    private boolean isNew(Person person) {
+    @Override
+    public void onChangeSendWelcomeEmail() {
+        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
+    }
+
+    private boolean isNew( Person person) {
         return person.getId() == null;
     }
 
@@ -250,7 +258,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return view.companyValidator().isValid() &&
                 view.firstNameValidator().isValid() &&
                 view.lastNameValidator().isValid() &&
-                view.isValidLogin();
+                view.isValidLogin() &&
+                (view.workEmail().getText().isEmpty() || view.workEmailValidator().isValid()) &&
+                (view.personalEmail().getText().isEmpty() || view.personalEmailValidator().isValid());
     }
 
     private void initialView(Person person, UserLogin userLogin){
@@ -299,16 +309,36 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.firedMsgVisibility().setVisible(person.isFired());
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
         view.sendWelcomeEmailVisibility().setVisible(false);
-        view.sendWelcomeEmail().setValue(false);
+        view.sendWelcomeEmail().setValue(true);
+        view.sendEmailWarningVisibility().setVisible(false);
 
         view.showInfo(userLogin.getId() != null);
     }
 
-    private boolean isConfirmValidate() {
+    private boolean passwordNotDefined() {
+        return HelperFunc.isNotEmpty(view.login().getText()) &&
+                !Objects.equals(view.login().getText().trim(), account.getUlogin()) &&
+                HelperFunc.isEmpty(view.password().getText());
+    }
+
+    private boolean passwordConfirmed() {
         return HelperFunc.isEmpty(view.login().getText()) ||
                 HelperFunc.isEmpty(view.password().getText()) ||
                 (!HelperFunc.isEmpty(view.confirmPassword().getText()) &&
                         view.password().getText().equals(view.confirmPassword().getText()));
+    }
+
+    private boolean isVisibleSendEmail() {
+        return HelperFunc.isNotEmpty(view.login().getText()) &&
+                (!Objects.equals(view.login().getText().trim(), account.getUlogin()) ||
+                HelperFunc.isNotEmpty(view.password().getText()));
+    }
+
+    private boolean isVisibleSendEmailWarning() {
+        return view.sendWelcomeEmailVisibility().isVisible() &&
+                view.sendWelcomeEmail().getValue() &&
+                view.workEmail().getText().isEmpty() &&
+                view.personalEmail().getText().isEmpty();
     }
 
     @Inject
@@ -318,12 +348,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Inject
     ContactControllerAsync contactService;
     @Inject
-    PolicyService policyService;
-
-    @Inject
     AccountControllerAsync accountService;
-    @Inject
-    CompanyControllerAsync companyService;
 
     private Person contact;
     private UserLogin account;

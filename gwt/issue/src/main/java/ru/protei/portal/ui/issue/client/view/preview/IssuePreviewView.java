@@ -207,6 +207,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
+    @Override
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
     @UiHandler( "number" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -358,6 +363,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement timeElapsedLabel;
     @UiField
     AnchorElement platform;
+    @UiField
+    HTMLPanel previewWrapperContainer;
     @UiField
     DivElement productContainer;
     @UiField

@@ -25,6 +25,12 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
+    @JdbcColumn(name="isfired")
+    private boolean isFired;
+
+    @JdbcColumn(name="firedate")
+    private Date fireDate;
+
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
@@ -77,5 +83,21 @@ public class EmployeeShortView implements Serializable {
 
     public void setWorkerEntries(List<WorkerEntryShortView> workerEntries) {
         this.workerEntries = workerEntries;
+    }
+
+    public boolean isFired() {
+        return isFired;
+    }
+
+    public void setFired(boolean fired) {
+        isFired = fired;
+    }
+
+    public Date getFireDate() {
+        return fireDate;
+    }
+
+    public void setFireDate(Date fireDate) {
+        this.fireDate = fireDate;
     }
 }

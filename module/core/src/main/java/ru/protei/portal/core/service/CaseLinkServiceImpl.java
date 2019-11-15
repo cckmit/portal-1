@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
@@ -18,13 +18,13 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.winter.core.utils.collections.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.find;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -48,6 +48,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     YoutrackService youtrackService;
 
+    @Autowired
+    private CaseService caseService;
+
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
@@ -69,7 +72,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
+    public Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
         if (caseLinks == null) {
             return ok();
         }
@@ -89,8 +92,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
         List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseId.toString()));
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
-        DiffCollectionResult<CaseLink> caseLinksDiffResult = ru.protei.winter.core.utils.collections.CollectionUtils.diffCollection(oldCaseLinks, caseLinks);
-        if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
+        DiffCollectionResult<CaseLink> caseLinksDiffResult = diffCollection(oldCaseLinks, caseLinks);
+        if ( isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
             Set<Long> toRemoveIds = new HashSet<>();
             caseLinksDiffResult.getRemovedEntries().forEach( link -> {
                 toRemoveIds.add(link.getId());
@@ -107,9 +110,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.removeByKeys(toRemoveIds);
         }
 
-        if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
+        if ( isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
             List<CaseLink> toAddLinks = new ArrayList<>();
-            CollectionUtils.emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
+            emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
                 if ( isNotCrmLink(link) ) {
                     return;
                 }
@@ -123,7 +126,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.persistBatch(toAddLinks);
         }
 
-        return ok();
+        return ok(caseLinksDiffResult);
     }
 
     @Override
@@ -146,16 +149,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return getYoutrackLinks( caseId ).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
                 CaseLink::getCaseId ).orElseGet( ignore ->
-                addCaseLinkOnToYoutrack( caseId, youtrackId ) );
+                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( caseLInk ->
+                        sendMailNotificationLinkAdded( caseNumber, caseLInk )
+                )
+        );
     }
 
     @Override
-    public Result<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+    @Transactional
+    public Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Long caseId = getCaseIdByCaseNumber( caseNumber );
         return getYoutrackLinks( caseId ).flatMap( caseLinks ->
                 findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
-                removeCaseLinkOnToYoutrack( caseLink )).orElseGet( ignore ->
-                ok( true )
+                removeCaseLinkOnToYoutrack( caseLink ).flatMap( removedLink ->
+                        sendMailNotificationLinkRemoved( caseNumber, removedLink )
+                )
         );
     }
 
@@ -169,7 +177,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
     }
 
-    private Result<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
         CaseLink newLink = new CaseLink();
         newLink.setCaseId( caseNumber );
         newLink.setType( En_CaseLink.YT );
@@ -177,18 +185,33 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Long id = caseLinkDAO.persist( newLink );
         if (id == null) {
             log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
-            throw new RuntimeException( "addCaseLinkOnToYoutrack(): rollback transaction" );
+            throw new RollbackTransactionException( "addCaseLinkOnToYoutrack(): rollback transaction" );
         }
-        return ok( id );
+        newLink.setId( id );
+        return ok( newLink );
     }
 
-    private Result<Boolean> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+    private Result<CaseLink> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
         if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
-            throw new RuntimeException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+            throw new RollbackTransactionException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
         }
         log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
-        return ok(true);
+        return ok(caseLink);
+    }
+
+    private Result<Long> sendMailNotificationLinkAdded( Long caseNumber, CaseLink caseLInk ) {
+        DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
+        diff.putAddedEntry( caseLInk );
+        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+                caseLInk.getId() );
+    }
+
+    private Result<Long> sendMailNotificationLinkRemoved( Long caseNumber, CaseLink caseLInk ) {
+        DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
+        diff.putRemovedEntry( caseLInk );
+        return caseService.sendMailNotificationLinkChanged( caseNumber, diff ).map( caseId ->
+                caseLInk.getId() );
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

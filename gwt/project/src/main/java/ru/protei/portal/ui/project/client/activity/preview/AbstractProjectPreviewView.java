@@ -37,6 +37,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setPlatform(String value, String link);
 
+    void isFullScreen(boolean isFullScreen);
+
     HasVisibility backButtonVisibility();
 
     HasWidgets getCommentsContainer();

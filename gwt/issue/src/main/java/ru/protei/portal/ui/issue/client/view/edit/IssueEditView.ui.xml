@@ -35,7 +35,7 @@
                     </g:HTMLPanel>
 
                     <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
-                        <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn"/>
+                        <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn no-shadow no-outline"/>
 
                         <div class="form-input-group">
                             <label ui:field="nameLabel" class="fade">
@@ -180,7 +180,7 @@
                                     <div class="row clearfix">
                                         <div class="col-md-6">
                                             <div class="form-group form-group-default">
-                                                <label class="fade">
+                                                <label ui:field="newIssueTimeElapsedLabel" class="fade">
                                                     <ui:text from="{lang.timeElapsed}"/>
                                                 </label>
                                                 <timefield:TimeTextBox ui:field="timeElapsedInput"

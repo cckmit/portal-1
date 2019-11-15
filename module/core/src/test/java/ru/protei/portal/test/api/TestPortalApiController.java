@@ -3,7 +3,6 @@ package ru.protei.portal.test.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -26,6 +25,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class, PortalApiController.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class, PortalApiController.class})
 @WebAppConfiguration
 public class TestPortalApiController extends BaseServiceTest {
     private static final Logger log = LoggerFactory.getLogger(TestPortalApiController.class);
@@ -57,11 +57,13 @@ public class TestPortalApiController extends BaseServiceTest {
     private static PersonDAO personDAO;
     private static UserLoginDAO userLoginDAO;
     private static CaseService caseService;
-    private static AuthService authService;
+    private static AuthServiceMock authService;
     private static CaseObjectDAO caseObjectDAO;
     private static UserRoleDAO userRoleDAO;
     private static CaseCommentDAO caseCommentDAO;
     private static Person person;
+    private static UserLogin userLogin;
+    private static Company company;
     private static UserRole mainRole;
     private MockMvc mockMvc;
 
@@ -74,13 +76,13 @@ public class TestPortalApiController extends BaseServiceTest {
                 CoreConfigurationContext.class,
                 JdbcConfigurationContext.class,
                 DatabaseConfiguration.class,
-                MainTestsConfiguration.class
+                IntegrationTestsConfiguration.class
         );
 
         objectMapper = applicationContext.getBean(ObjectMapper.class);
         personDAO = applicationContext.getBean(PersonDAO.class);
         caseService = applicationContext.getBean(CaseService.class);
-        authService = applicationContext.getBean(AuthService.class);
+        authService = (AuthServiceMock) applicationContext.getBean(AuthService.class);
         userLoginDAO = applicationContext.getBean(UserLoginDAO.class);
         userRoleDAO = applicationContext.getBean(UserRoleDAO.class);
         caseObjectDAO = applicationContext.getBean(CaseObjectDAO.class);
@@ -89,9 +91,10 @@ public class TestPortalApiController extends BaseServiceTest {
         caseCommentDAO.removeAll();
         caseObjectDAO.removeAll();
 
-        createAndPersistPerson();
-        createAndPersistUserRoles();
-        createAndPersistUserLogin();
+        company = new Company( 1L );
+        person = createAndPersistPerson( company );
+        mainRole = createAndPersistUserRoles();
+        userLogin = createAndPersistUserLogin();
         createAndPersistSomeIssues();
         createAndPersistSomeIssuesWithManager(person);
         createAndPersistSomePrivateIssues();
@@ -165,6 +168,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseObject.setName(issueName);
         caseObject.setInitiator(person);
 
+        authService.makeThreadDescriptor( userLogin, person, company );
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
@@ -176,6 +180,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseCommentDAO.removeByCaseIds(Collections.singletonList(caseObjectFromDb.getId()));
         caseObjectDAO.removeByKey(caseObjectFromDb.getId());
+        authService.resetThreadDescriptor();
     }
 
     @Test
@@ -187,6 +192,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         startCaseObject.setName(ISSUES_PREFIX + "new");
 
+        authService.makeThreadDescriptor( userLogin, person, company );
         ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
         resultActions
                 .andExpect(status().isOk())
@@ -198,6 +204,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
         Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
         Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
+        authService.resetThreadDescriptor();
     }
 
     @AfterClass
@@ -209,12 +216,10 @@ public class TestPortalApiController extends BaseServiceTest {
         personDAO.removeByKey(person.getId());
     }
 
-    private static void createAndPersistPerson() {
-        Person p = new Person();
+    private static Person createAndPersistPerson(Company company) {
+        Person p = createNewPerson( company );
         String personFirstName = "Test" + new Date().getTime();
 
-        p.setCompany(new Company(1L));
-        p.setCompanyId(1L);
         p.setFirstName(personFirstName);
         p.setLastName("API");
         p.setDisplayName("Test API");
@@ -232,26 +237,26 @@ public class TestPortalApiController extends BaseServiceTest {
 
         personDAO.persist(p);
 
-        person = personDAO
+       return personDAO
                 .getAll()
                 .stream()
                 .filter(currPerson -> currPerson.getFirstName() != null && currPerson.getFirstName().equals(personFirstName))
                 .findFirst().get();
     }
 
-    private static void createAndPersistUserRoles() {
+    private static UserRole createAndPersistUserRoles() {
         UserRole role = new UserRole();
         role.setCode(PORTAL_API_TEST_ROLE_CODE);
         role.setInfo(PORTAL_API_TEST_ROLE_CODE);
         role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
         role.setScope(En_Scope.SYSTEM);
 
-        userRoleDAO.persist(role);
+        role.setId(  userRoleDAO.persist(role)  );
 
-        mainRole = userRoleDAO.getByRoleCodeLike(PORTAL_API_TEST_ROLE_CODE);
+        return role;
     }
 
-    private static void createAndPersistUserLogin() throws Exception {
+    private static UserLogin createAndPersistUserLogin() throws Exception {
         UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
         userLogin.setUlogin(person.getFirstName());
         userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
@@ -260,7 +265,8 @@ public class TestPortalApiController extends BaseServiceTest {
         userLogin.setAdminStateId(2);
         userLogin.setRoles(Collections.singleton(mainRole));
 
-        userLoginDAO.persist(userLogin);
+        userLogin.setId( userLoginDAO.persist( userLogin ) );
+        return userLogin;
     }
 
     private static void createAndPersistSomeIssues() {
@@ -268,7 +274,7 @@ public class TestPortalApiController extends BaseServiceTest {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
-            issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -277,7 +283,7 @@ public class TestPortalApiController extends BaseServiceTest {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setManager(manager);
-            issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -287,7 +293,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
-            issuesIds.add(caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
         }
     }
 

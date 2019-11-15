@@ -43,7 +43,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         event.parent.add( view.asWidget() );
 
         fillView( event.projectId );
-
+        view.isFullScreen(false);
         view.backButtonVisibility().setVisible( false );
     }
 
@@ -53,7 +53,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         initDetails.parent.add( view.asWidget() );
 
         fillView( event.projectId );
-
+        view.isFullScreen(true);
         view.backButtonVisibility().setVisible( true );
     }
 
@@ -123,12 +123,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.setTeam(teamBuilder.toString());
         }
 
-        if (value.getProducts() != null && !value.getProducts().isEmpty()) {
-            view.setProduct(value.getSingleProduct().getName());
-        } else {
-            view.setProduct("");
-        }
-
+        view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())

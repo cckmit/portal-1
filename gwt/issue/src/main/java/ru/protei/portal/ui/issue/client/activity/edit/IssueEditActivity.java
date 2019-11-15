@@ -211,6 +211,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             Long selectedCompanyId = companyOption.getId();
 
+            view.platform().setValue(null);
+            view.platformState().setEnabled(true);
             view.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
             companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
@@ -405,6 +407,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if (isNew(issue) && !isRestoredIssue) {
             view.applyCompanyValueIfOneOption();
+            view.platformState().setEnabled( false );
         } else {
             Company initiatorCompany = issue.getInitiatorCompany();
             if ( initiatorCompany == null ) {
@@ -511,12 +514,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
-        view.attachmentsContainer().add(attachments);
-        if(issue.getAttachments() == null || issue.getAttachments().isEmpty())
+        if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
             issue.setAttachments(new ArrayList<>());
 
-        issue.getAttachments().addAll(attachments);
-        issue.setAttachmentExists(true);
+        if (attachments != null && !attachments.isEmpty()) {
+            view.attachmentsContainer().add(attachments);
+            issue.getAttachments().addAll(attachments);
+            issue.setAttachmentExists(true);
+        }
     }
 
     private boolean isNew(CaseObject issue) {
