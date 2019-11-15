@@ -70,8 +70,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     @Override
-    public Set<NotificationEntry> subscribers( AssembledCaseEvent event ) {
-        CaseObject caseObject = event.getCaseObject();
+    public Set<NotificationEntry> subscribers( CaseObject caseObject ) {
         Set<NotificationEntry> result = new HashSet<>();
         appendCompanySubscriptions(caseObject.getInitiatorCompanyId(), result);
         appendProductSubscriptions(caseObject.getProductId(), result);

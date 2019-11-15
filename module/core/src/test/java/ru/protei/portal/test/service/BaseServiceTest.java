@@ -61,7 +61,6 @@ public class BaseServiceTest {
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setInitiatorCompanyId(1L);
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
         return caseObject;
     }

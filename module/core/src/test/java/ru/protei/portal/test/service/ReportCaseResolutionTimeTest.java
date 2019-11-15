@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.*;
-import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.DAY;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})

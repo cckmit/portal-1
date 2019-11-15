@@ -6,13 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseLinksEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -108,7 +107,7 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
-        if (!validateFields(caseObject)) {
+        if (!isValid(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -230,7 +229,7 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setCreated(oldState.getCreated());
         caseObject.setCaseNumber(oldState.getCaseNumber());
 
-        if (!validateFields(caseObject)) {
+        if (!isValid(caseObject)) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -618,19 +617,19 @@ public class CaseServiceImpl implements CaseService {
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
     }
 
-    private boolean validateFields(CaseObject caseObject) {
-        return caseObject != null
-                && caseObject.getName() != null
-                && !caseObject.getName().isEmpty()
-                && En_CaseType.find(caseObject.getTypeId()) != null
-                && caseObject.getImpLevel() != null
-                && En_ImportanceLevel.find(caseObject.getImpLevel()) != null
-                && En_CaseState.getById(caseObject.getStateId()) != null
-                && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
-                || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
-                || caseObject.getManagerId() != null)
-                && (caseObject.getInitiatorCompanyId() != null)
-                && (caseObject.getInitiatorId() == null || personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId()));
+    private boolean isValid( CaseObject caseObject) {
+        if (caseObject == null) return false;
+        if (StringUtils.isEmpty( caseObject.getName() )) return false;
+        if (caseObject.getImpLevel() == null) return false;
+        if (caseObject.getInitiatorCompanyId() == null) return false;
+        if (En_CaseType.find( caseObject.getTypeId() ) == null) return false;
+        if (En_ImportanceLevel.find( caseObject.getImpLevel() ) == null) return false;
+        if (En_CaseState.getById( caseObject.getStateId() ) == null) return false;
+        if (!listOf( En_CaseState.CREATED, En_CaseState.CANCELED ).contains( caseObject.getState() ) && caseObject.getManagerId() == null)
+            return false;
+        if (caseObject.getInitiatorId() != null && !personBelongsToCompany( caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId() ))
+            return false;
+        return true;
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {

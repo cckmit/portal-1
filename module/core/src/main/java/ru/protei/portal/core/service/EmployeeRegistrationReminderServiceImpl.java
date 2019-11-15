@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.util.*;
 
