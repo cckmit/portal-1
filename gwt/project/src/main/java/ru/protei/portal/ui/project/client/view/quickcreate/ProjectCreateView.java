@@ -96,10 +96,10 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         return company;
     }
 
-    @Override
-    public void refreshProducts() {
-        product.refreshOptions();
-    }
+//    @Override
+//    public void refreshProducts() {
+//        product.refreshOptions();
+//    }
 
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)

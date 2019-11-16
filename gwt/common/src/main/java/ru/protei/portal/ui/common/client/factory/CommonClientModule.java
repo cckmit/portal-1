@@ -110,7 +110,7 @@ public class CommonClientModule extends AbstractGinModule {
         // Models
 //        bind( InitiatorModel.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
-        bind( ProductModel.class ).asEagerSingleton();
+//        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
         bind( CaseTagModel.class ).asEagerSingleton();
 

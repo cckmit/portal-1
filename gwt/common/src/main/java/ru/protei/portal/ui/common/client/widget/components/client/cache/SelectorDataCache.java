@@ -37,7 +37,6 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T> {
             loadingHandler.onLoadingStart();
         }
         return option;
-
     }
 
     public void setTotal( int total ) {
@@ -46,6 +45,7 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T> {
 
     public void clearCache(){
         cache.clearCache();
+        total = Integer.MAX_VALUE;
     }
 
     private LoadingHandler loadingHandler;

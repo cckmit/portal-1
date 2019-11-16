@@ -45,6 +45,10 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         this.hasNullValue = hasNullValue;
     }
 
+    public boolean hasNullValue() {
+        return hasNullValue;
+    }
+
     public void setHideSelectedFromChose(boolean hideSelectedFromChose) {
         this.hideSelectedFromChose = hideSelectedFromChose;
     }

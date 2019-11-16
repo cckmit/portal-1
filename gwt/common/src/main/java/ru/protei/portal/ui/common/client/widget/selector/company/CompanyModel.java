@@ -43,27 +43,6 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
         cache.clearCache();
     }
-//
-//    @Override
-//    public void onSelectorLoad( SelectorWithModel<EntityOption> selector ) {
-//        if ( selector == null ) {
-//            return;
-//        }
-//        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-//            requestOptions(selector, selectorToQuery.get(selector));
-//        }
-//    }
-//
-//    @Override
-//    public void onSelectorUnload( SelectorWithModel<EntityOption> selector ) {
-//        if ( selector == null ) {
-//            return;
-//        }
-//        selector.clearOptions();
-//    }
-//    public void subscribe( CompanyMultiSelector selector) {
-//        subscribers.add( selector );
-//    }
 
 
     public CompanyModel() {
@@ -107,10 +86,10 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
                     }
 
                     @Override
-                    public void onSuccess( List<EntityOption> opt ) {
-                        transliteration(opt);
-                        handler.onSuccess(opt);
-                        if (opt.size() < limit) cache.setTotal( offset + opt.size() );
+                    public void onSuccess( List<EntityOption> options ) {
+                        transliteration(options);
+                        handler.onSuccess(options);
+                        if (options.size() < limit) cache.setTotal( offset + options.size() );
                     }
                 } );
             }
@@ -148,5 +127,4 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
 
     private CompanyQuery query;
     private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
-//    private static List<CompanyMultiSelector> subscribers = new ArrayList<>();
 }

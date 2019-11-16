@@ -34,10 +34,10 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         event.parent.add(view.asWidget());
     }
 
-    @Event
-    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-        view.refreshProducts();
-    }
+//    @Event
+//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
+//        view.refreshProducts();
+//    }
 
     @Override
     public void onSearchClicked() {

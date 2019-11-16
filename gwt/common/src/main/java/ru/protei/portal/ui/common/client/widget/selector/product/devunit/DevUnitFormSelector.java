@@ -2,58 +2,47 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
-
-import java.util.List;
 
 /**
  * Button селектор с продуктами
  */
-public class DevUnitFormSelector extends FormSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
+public class DevUnitFormSelector
+        extends FormSelector<ProductShortView>
+{
 
     @Inject
     public void init(ProductModel model) {
-        this.model = model;
-        model.subscribe(this, En_DevUnitState.ACTIVE, null);
-        setSelectorModel(model);
+        model.setUnitState(En_DevUnitState.ACTIVE);
+        setAsyncSelectorModel(model);
         setSearchEnabled(true);
         setSearchAutoFocus(true);
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
 
-        setDisplayOptionCreator( value -> {
-            if (value == null) {
-                return new DisplayOption(defaultValue);
-            }
-            return new DisplayOption(
-                    value.getName() + (HelperFunc.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")"),
-                    En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
-                    En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
-        } );
+        setSelectorItemRenderer( value -> value == null ? defaultValue :
+                value.getName() + (StringUtils.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")") );
+
     }
 
     @Override
-    public void fillOptions(List<ProductShortView> options) {
-        if (defaultValue != null) {
-            addOption(null);
+    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml ) {
+        PopupSelectorItem item = new PopupSelectorItem();
+        item.setName(elementHtml);
+        if(value!=null){
+            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" );
+            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "" );
         }
-
-        options.forEach(this::addOption);
-    }
-
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
-        if (model != null) {
-            model.updateQuery(this, enDevUnitState, enDevUnitTypes);
-        }
+        return item;
     }
 
     public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
     private String defaultValue = null;
-    protected ProductModel model;
 }

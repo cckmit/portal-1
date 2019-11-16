@@ -37,10 +37,10 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         initialView(new Project());
     }
 
-    @Event
-    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-        view.refreshProducts();
-    }
+//    @Event
+//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
+//        view.refreshProducts();
+//    }
 
     @Event
     public void onSetProduct(ProductEvents.Set event) {

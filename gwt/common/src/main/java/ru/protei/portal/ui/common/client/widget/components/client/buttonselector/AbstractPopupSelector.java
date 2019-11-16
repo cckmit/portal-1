@@ -122,6 +122,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
         getSelector().setHasNullValue(hasNullValue);
     }
 
+    public boolean hasNullValue() {
+        return getSelector().hasNullValue();
+    }
+
     public void setHideSelectedFromChose(boolean hideSelectedFromChose) {
         getSelector().setHideSelectedFromChose(hideSelectedFromChose);
     }
