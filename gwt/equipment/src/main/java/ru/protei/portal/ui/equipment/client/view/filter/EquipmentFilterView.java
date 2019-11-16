@@ -37,7 +37,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        equipment.setModel(equipmentModelProvider.get());
     }
 
     @Override
@@ -164,9 +163,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
             }
         }
     };
-
-    @Inject
-    Provider<EquipmentModel> equipmentModelProvider;
 
     @UiField
     Button resetBtn;

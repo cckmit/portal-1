@@ -48,7 +48,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
-        equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
     }
 
@@ -308,9 +307,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    Provider<EquipmentModel> equipmentModelProvider;
 
     private AbstractDocumentFormActivity activity;
 

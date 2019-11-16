@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.widget.selector.base;
 
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.widget.components.client.cache.SelectorDataCache;
 
 import java.util.ArrayList;
 import java.util.List;

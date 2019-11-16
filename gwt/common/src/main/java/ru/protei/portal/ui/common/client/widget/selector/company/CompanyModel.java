@@ -46,7 +46,7 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
 
     public CompanyModel() {
         query = makeQuery( categories, false );
-        cache.setLoadHandler(makeLoadHandler(query, cache));
+        cache.setLoadHandler(makeLoadHandler(query));
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
         query.setShowDeprecated(isShowDeprecated);
     }
 
-    private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query, final SelectorDataCache<EntityOption> cache) {
+    private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query) {
        return new SelectorDataCacheLoadHandler() {
             @Override
             public void loadData( int offset, int limit, AsyncCallback handler ) {
