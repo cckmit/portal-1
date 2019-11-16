@@ -78,6 +78,10 @@ public class CompanyServiceImpl implements CompanyService {
                 .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
                 .map(Company::toEntityOption).collect(Collectors.toList());
 
+        if(query.isReverseOrder()){
+            Collections.reverse(result);
+        }
+
         return ok(result);
     }
 

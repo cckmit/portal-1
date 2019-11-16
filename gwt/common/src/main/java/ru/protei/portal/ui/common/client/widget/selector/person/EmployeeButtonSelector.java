@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
@@ -19,6 +20,7 @@ public class EmployeeButtonSelector
         setSearchEnabled(true);
         setSearchAutoFocus(true);
         setFilter(personView -> !personView.isFired());
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
 
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getDisplayShortName() );
     }

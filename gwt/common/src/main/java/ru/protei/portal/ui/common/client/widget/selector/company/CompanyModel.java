@@ -88,7 +88,6 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
                     public void onSuccess( List<EntityOption> options ) {
                         transliteration(options);
                         handler.onSuccess(options);
-//                        if (options.size() < limit) cache.setTotal( offset + options.size() );
                     }
                 } );
             }

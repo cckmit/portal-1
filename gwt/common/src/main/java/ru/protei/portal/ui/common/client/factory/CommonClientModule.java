@@ -76,8 +76,6 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractContactItemListView.class ).to( ContactItemListView.class );
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
 
-//        bind( CompanyModel.class ).asEagerSingleton();
-        bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
 
