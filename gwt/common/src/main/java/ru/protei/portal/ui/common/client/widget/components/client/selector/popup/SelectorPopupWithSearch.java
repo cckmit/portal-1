@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
+
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.bases
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
 
+import java.util.logging.Logger;
 
 
 /**
@@ -41,14 +43,13 @@ public class SelectorPopupWithSearch extends BasePopupView
         search.setFocus( isSearchAutoFocus );
     }
 
-
     @Override
     protected void onLoad() {
 
-        scrolForPagingHandleRegistration = root.addDomHandler( new ScrollHandler() {
+        scrolForPagingHandleRegistration = dropdown.addDomHandler( new ScrollHandler() {
             @Override
             public void onScroll( ScrollEvent scrollEvent ) {
-                Element e = root.getElement();
+                Element e = dropdown.getElement();
                 if (e.getScrollTop() + e.getClientHeight() >= e.getScrollHeight()) {
                     if (popupHandler != null) {
                         popupHandler.onEndOfScroll();
@@ -186,6 +187,8 @@ public class SelectorPopupWithSearch extends BasePopupView
     Label message;
     @UiField
     HTMLPanel loading;
+    @UiField
+    HTMLPanel dropdown;
 
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = searchString -> { /*ignore*/ };
@@ -195,4 +198,5 @@ public class SelectorPopupWithSearch extends BasePopupView
     }
 
     private static SelectorPopupViewUiBinder ourUiBinder = GWT.create(SelectorPopupViewUiBinder.class);
+    private static final Logger log = Logger.getLogger( SelectorPopupWithSearch.class.getName() );
 }
