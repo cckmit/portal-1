@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.util;
 public class CrmConstants {
 
     public static final int DEFAULT_SELECTOR_PAGE_SIZE = 20;
+    public static final int DEFAULT_SELECTOR_CHUNK_SIZE = 100;
+    public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
 
     public interface Auth {
         String SESSION_DESC = "auth-session-data";

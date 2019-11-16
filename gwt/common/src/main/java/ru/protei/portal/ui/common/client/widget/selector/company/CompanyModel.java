@@ -7,7 +7,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.widget.table.client.InfiniteLoadHandler;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -16,8 +15,8 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.util.DataCache;
 import ru.protei.portal.ui.common.client.widget.components.client.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.widget.components.client.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
@@ -72,8 +71,8 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
         query.setShowDeprecated(isShowDeprecated);
     }
 
-    private InfiniteLoadHandler<EntityOption> makeLoadHandler(final CompanyQuery query, final SelectorDataCache<EntityOption> cache) {
-       return new InfiniteLoadHandler() {
+    private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query, final SelectorDataCache<EntityOption> cache) {
+       return new SelectorDataCacheLoadHandler() {
             @Override
             public void loadData( int offset, int limit, AsyncCallback handler ) {
                 query.setOffset(offset);
@@ -89,7 +88,7 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
                     public void onSuccess( List<EntityOption> options ) {
                         transliteration(options);
                         handler.onSuccess(options);
-                        if (options.size() < limit) cache.setTotal( offset + options.size() );
+//                        if (options.size() < limit) cache.setTotal( offset + options.size() );
                     }
                 } );
             }

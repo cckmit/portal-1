@@ -32,10 +32,10 @@ public class SimpleSelectorPopup extends BasePopupView
     @Override
     protected void onLoad() {
 
-        scrolForPagingHandleRegistration = root.addDomHandler( new ScrollHandler() {
+        scrolForPagingHandleRegistration = dropdown.addDomHandler( new ScrollHandler() {
             @Override
             public void onScroll(ScrollEvent scrollEvent) {
-                Element e = root.getElement();
+                Element e = dropdown.getElement();
                 if (e.getScrollTop() + e.getClientHeight() >= e.getScrollHeight()) {
                     if (popupHandler != null) {
                         popupHandler.onEndOfScroll();
@@ -95,6 +95,9 @@ public class SimpleSelectorPopup extends BasePopupView
     Label message;
     @UiField
     HTMLPanel loading;
+    @UiField
+    HTMLPanel dropdown;
+
 
     private PopupHandler popupHandler;
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SimpleSelectorPopup> {
