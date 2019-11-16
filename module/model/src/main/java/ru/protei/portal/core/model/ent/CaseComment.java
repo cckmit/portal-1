@@ -6,6 +6,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by michael on 19.05.16.
@@ -276,6 +277,19 @@ public class CaseComment extends AuditableObject {
     @Override
     public String getAuditType() {
         return "CaseComment";
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseComment that = (CaseComment) o;
+        return Objects.equals( id, that.id );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( id );
     }
 
     @Override

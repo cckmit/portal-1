@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
-import ru.protei.portal.core.model.helper.JiraUtils;
+import ru.protei.portal.core.utils.JiraUtils;
 
 import java.net.URI;
 import java.util.Collections;

@@ -32,7 +32,4 @@ public interface IssueControllerAsync {
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 
-    void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
-
-    void updateCaseLinks( Long caseId, Collection<CaseLink> links, AsyncCallback<List<CaseLink>> setFluentCallback );
 }

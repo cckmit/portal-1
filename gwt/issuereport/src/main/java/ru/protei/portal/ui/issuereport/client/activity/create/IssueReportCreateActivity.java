@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
@@ -150,7 +151,10 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
 
         filterService.saveIssueFilter(caseFilter, new FluentCallback<CaseFilter>()
-                .withErrorMessage(lang.errSaveIssueFilter())
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                    fireEvent(new NotifyEvents.Show(lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR));
+                })
                 .withSuccess(filter -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeUserFilterModel());
@@ -164,7 +168,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
     }
 
-    private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
+    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
         return validateQuery(En_ReportType.valueOf(filterType.name()), query);
     }
 
@@ -217,6 +221,8 @@ public abstract class IssueReportCreateActivity implements Activity,
     PolicyService policyService;
     @Inject
     IssueFilterControllerAsync filterService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Long filterIdToRemove;
     private boolean isSaving;

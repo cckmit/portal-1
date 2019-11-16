@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,19 +11,19 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.JiraMetaData;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
-import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -150,13 +151,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
-    public void onPlatformExtLinkClicked() {
-        if (caseObject != null && caseObject.getPlatformId() != null) {
-            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(caseObject.getPlatformId()));
-        }
-    }
-
-    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
@@ -176,21 +170,21 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
-        view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
+        view.setCreatedBy(lang.createBy(transliteration(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
 
         view.setState( value.getStateId() );
         view.setImportance( value.getImpLevel() );
         view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
 
-        String contact = value.getInitiator() == null ? "" : value.getInitiator().getDisplayName();
+        String contact = value.getInitiator() == null ? "" : transliteration(value.getInitiator().getDisplayName());
         Company initiatorCompany = value.getInitiatorCompany();
         if ( initiatorCompany != null ) {
-            contact += " (" + initiatorCompany.getCname() + ")";
+            contact += " (" + transliteration(initiatorCompany.getCname()) + ")";
         }
         view.setContact( contact );
-        String manager = value.getManager() == null ? "" : value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")";
+        String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
         view.setManager( manager );
-        view.setName( value.getName() == null ? "" : value.getName() );
+        view.setName( value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()));
 
         view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
@@ -203,7 +197,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         Long timeElapsed = value.getTimeElapsed();
         view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
-//        view.setLinks(value.getLinks() == null ? null : new HashSet<>(value.getLinks()));
         view.setTags(value.getTags() == null ? new HashSet<>() : value.getTags());
 
         view.attachmentsContainer().clear();
@@ -264,12 +257,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private void fillSubscriptions( CaseObject value ) {
         List<CompanySubscription> companySubscriptions = value.getInitiatorCompany() == null ? null : value.getInitiatorCompany().getSubscriptions();
         String subscribers = formSubscribers( value.getNotifiers(), companySubscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
-        view.setSubscriptionEmails( subscribers );
+        view.setSubscriptionEmails( transliteration(subscribers) );
 
         companyService.getCompanyWithParentCompanySubscriptions( value.getInitiatorCompanyId(), new ShortRequestCallback<List<CompanySubscription>>()
                 .setOnSuccess( subscriptions -> {
                     String subscribers2 = formSubscribers( value.getNotifiers(), subscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
-                    view.setSubscriptionEmails( subscribers2 );
+                    view.setSubscriptionEmails( transliteration(subscribers2) );
                 } ) );
     }
 
@@ -299,7 +292,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void requestCaseLinks( Long issueId ) {
-        issueService.getCaseLinks(issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
+        caseLinkController.getCaseLinks(issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
                 view.setLinks(caseLinks == null ? null : new HashSet<>(caseLinks))
         ));
     }
@@ -343,12 +336,18 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().add(attachs);
     }
 
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
     @Inject
     Lang lang;
     @Inject
     AbstractIssuePreviewView view;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    CaseLinkControllerAsync caseLinkController;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject

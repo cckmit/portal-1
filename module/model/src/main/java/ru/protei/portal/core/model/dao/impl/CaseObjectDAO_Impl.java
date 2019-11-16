@@ -113,13 +113,10 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers) {
-        return partialGetListByCondition("case_object.CASENO in (" + caseNumbers.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(", ")) + ")", Collections.emptyList(), "id", "CASENO"
-        );
+    public List<Long> getCaseNumbersByPlatformId(Long id) {
+        String sql = "SELECT case_object.CASENO FROM " + getTableName() + " WHERE case_object.platform_id = " + id;
+        return jdbcTemplate.queryForList(sql, Long.class);
     }
-
     @Override
     @Transactional
     public Long getAndIncrementEmailLastId( Long caseId ) {

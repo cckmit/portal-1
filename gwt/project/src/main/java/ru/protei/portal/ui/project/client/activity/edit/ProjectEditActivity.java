@@ -68,7 +68,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             @Override
             public void onError( Throwable throwable ) {
                 view.saveEnabled().setEnabled(true);
-                fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
@@ -112,6 +111,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.direction().setValue(null);
         view.customerType().setValue(null);
         view.company().setValue(null);
+        view.companyEnabled().setEnabled(true);
         view.team().setValue(null);
         view.product().setValue(null);
         view.setHideNullValue(true);
@@ -136,6 +136,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
+        view.companyEnabled().setEnabled(project.getId() == null);
         view.description().setText(project.getDescription());
         view.product().setValue(project.getSingleProduct());
         view.customerType().setValue(project.getCustomerType());
@@ -160,7 +161,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setState(view.state().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
-        project.setProducts(view.product().getValue() == null ? null : new HashSet<>(Collections.singleton(view.product().getValue())));
+        project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));

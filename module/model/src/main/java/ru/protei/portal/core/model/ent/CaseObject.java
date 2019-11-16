@@ -140,9 +140,6 @@ public class CaseObject extends AuditableObject {
     private String contractNumber;
 
     // not db column
-//    private List<CaseLink> links;
-
-    // not db column
     private En_TimeElapsedType timeElapsedType;
 
     // not db column
@@ -461,14 +458,6 @@ public class CaseObject extends AuditableObject {
         this.timeElapsed = timeElapsed;
     }
 
-//    public List<CaseLink> getLinks() {
-//        return links;
-//    }
-//
-//    public void setLinks(List<CaseLink> links) {
-//        this.links = links;
-//    }
-
     public Set<DevUnit> getProducts() {
         return products;
     }
@@ -581,12 +570,10 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
                 ", tags=" + tags +
-//                ", links=" + links +
                 ", timeElapsedType=" + timeElapsedType +
                 ", jiraMetaData=" + jiraMetaData +
                 ", platformId=" + platformId +
                 ", platformName=" + platformName +
-//                ", links=" + links +
                 ", timeElapsedType=" + timeElapsedType +
                 '}';
     }

@@ -101,11 +101,6 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public CaseControlService getCaseControlService () {
-        return new CaseControlServiceImpl();
-    }
-
-    @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
 
     @Bean
@@ -147,11 +142,6 @@ public class ServiceTestsConfiguration {
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
     @Bean
-    public EventPublisherService getEventPublisherService () {
-        return new AsyncEventPublisherService();
-    }
-
-    @Bean
     public CaseSubscriptionService getCaseSubscriptionService () {
         return new CaseSubscriptionServiceImpl();
     }
@@ -186,7 +176,7 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public AsseblerService getAssemblerService() {
+    public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
 

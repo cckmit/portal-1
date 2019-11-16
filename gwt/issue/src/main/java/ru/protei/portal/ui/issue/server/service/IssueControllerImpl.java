@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
  * Реализация сервиса по работе с обращениями
@@ -108,18 +108,6 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
-    }
-
-    @Override
-    public List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.updateLinks( authToken, caseId, getCurrentPerson(), links ) );
-    }
-
-    @Override
     public List<En_CaseState> getStateList() throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -139,7 +127,7 @@ public class IssueControllerImpl implements IssueController {
     }
 
     private Person getCurrentPerson(){
-        return sessionService.getUserSessionDescriptor(request).getPerson();
+        return ServiceUtils.getCurrentPerson( sessionService, httpServletRequest );
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

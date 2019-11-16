@@ -35,6 +35,7 @@ public class CompanyMultiSelector
 
         setSearchEnabled( true );
         setPageSize( 10 );
+
     }
 
 }

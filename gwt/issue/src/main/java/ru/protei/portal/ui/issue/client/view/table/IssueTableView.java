@@ -26,7 +26,6 @@ import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.logging.Logger;
 

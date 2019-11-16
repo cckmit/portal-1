@@ -2,7 +2,9 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.JiraSLAMapEntryDAO;
 import ru.protei.portal.core.model.ent.JiraSLAMapEntry;
+import ru.protei.portal.core.model.helper.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JiraSLAMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraSLAMapEntry> implements JiraSLAMapEntryDAO {
@@ -19,6 +21,17 @@ public class JiraSLAMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraSLAMapEntry> 
 
     @Override
     public JiraSLAMapEntry getByIssueTypeAndSeverity(long mapId, String issueType, String severity) {
-        return getByCondition("MAP_ID=? and issue_type=? and severity=?", mapId, issueType, severity);
+        StringBuilder condition = new StringBuilder("MAP_ID=? and issue_type=?");
+        List<Object> args = new ArrayList<>();
+        args.add(mapId);
+        args.add(issueType);
+
+        if (StringUtils.isEmpty(severity)) {
+            condition.append(" and severity is null");
+        } else {
+            condition.append(" and severity=?");
+            args.add(severity);
+        }
+        return getByCondition(condition.toString(), args);
     }
 }

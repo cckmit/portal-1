@@ -10,9 +10,13 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
+
+import java.util.List;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
 
@@ -77,7 +81,9 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
 
         logger.debug("Updating comments");
-        updateComments(issue, event.getInitiator(), event.getCaseComment(), endpoint);
+        if (event.isCommentAttached() && event.isAttachedCommentNotPrivate() ) {
+            updateComments( issue, event.getInitiator(), event.getAddedCaseComments() );
+        }
         logger.debug("Finished updating of comments");
 
         logger.debug("Copying case object changes to redmine issue");
@@ -123,9 +129,10 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         issue.setSubject(newObj.getName());
     }
 
-    private void updateComments(Issue issue, Person initiator, CaseComment comment, RedmineEndpoint endpoint) {
-        if (comment != null && !comment.isPrivateComment() && !comment.getText().isEmpty()) {
-            issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText());
+    private void updateComments( Issue issue, Person initiator, List<CaseComment> addedCaseComments ) {
+        CaseComment comment = CollectionUtils.last( addedCaseComments );
+        if (!comment.getText().isEmpty()) {
+            issue.setNotes( RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText() );
         }
     }
 

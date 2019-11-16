@@ -8,10 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.AsseblerService;
-//import ru.protei.portal.core.utils.EventExpirationControl;
+import ru.protei.portal.core.service.AssemblerService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
 public class EventAssemblerServiceImpl implements EventAssemblerService {
 
@@ -97,8 +96,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         return new Tuple<>(event.getPerson(), event.getCaseObjectId());
     }
 
-    private static final long SEC = 1000;
-
     public boolean isExpired(AssembledCaseEvent event) {
         if (event.isEagerEvent()) {
             return (currentTimeMillis() - event.getLastUpdated()) >= 2 * SEC;
@@ -112,7 +109,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Autowired
     private PortalConfig config;
     @Autowired
-    AsseblerService assemblerService;
+    AssemblerService assemblerService;
 
     private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);

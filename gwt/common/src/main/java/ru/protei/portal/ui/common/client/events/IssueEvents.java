@@ -102,12 +102,7 @@ public class IssueEvents {
      */
     public static class ChangeStateModel {}
 
-    /**
-     * Добавление / изменение / удаление обращений
-     */
-    public static class ChangeModel {}
-
-    /**
+   /**
      * Изменилась модель фильтров пользователя
      */
     public static class ChangeUserFilterModel{}

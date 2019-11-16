@@ -11,19 +11,19 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ContactColumn;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ManagerColumn;
 import ru.protei.portal.app.portal.client.widget.importance.btngroup.CustomImportanceBtnGroupMulti;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.searchbtn.SearchButton;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonViewerSelector;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyButtonViewerSelector;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
@@ -65,8 +65,8 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
-    public void putPersons(List<PersonShortView> persons) {
-        initiatorsBtn.fillOptions(persons);
+    public void putCompanies(List<EntityOption> companies) {
+        companiesBtn.fillOptions(companies);
     }
 
     @Override
@@ -118,20 +118,12 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
 
     @Override
     public void toggleSearchIndicator(boolean show) {
-        if (show) {
-            search.addStyleName("indicator");
-        } else {
-            search.removeStyleName("indicator");
-        }
+        search.setStyleName("indicator", show);
     }
 
     @Override
     public void toggleInitiatorsIndicator(boolean show) {
-        if (show) {
-            initiatorsBtn.addStyleName("indicator");
-        } else {
-            initiatorsBtn.removeStyleName("indicator");
-        }
+        companiesBtn.setStyleName("indicator", show);
     }
 
     @Override
@@ -159,10 +151,10 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         }
     }
 
-    @UiHandler( "initiatorsBtn" )
-    public void onInitiatorSelected(ValueChangeEvent<PersonShortView> event) {
+    @UiHandler( "companiesBtn" )
+    public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
-            activity.onInitiatorSelected(this, event.getValue());
+            activity.onCompanySelected(this, event.getValue());
         }
     }
 
@@ -212,7 +204,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     SearchButton search;
     @Inject
     @UiField( provided = true )
-    PersonButtonViewerSelector initiatorsBtn;
+    CompanyButtonViewerSelector companiesBtn;
 
     interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
     private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);

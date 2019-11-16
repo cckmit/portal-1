@@ -122,7 +122,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setDescriptionRO(String value);
 
-    void setNameRO(String name);
+    void setNameRO(String name, boolean isJira);
 
     String DESCRIPTION = "description";
 }

@@ -11,7 +11,6 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.bases
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 //import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.List;

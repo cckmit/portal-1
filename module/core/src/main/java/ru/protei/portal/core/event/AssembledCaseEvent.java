@@ -5,12 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 
+import javax.sql.DataSource;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -20,15 +23,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
-    protected CaseComment newComment;
-    private CaseComment oldComment;
-    private CaseComment removedComment;
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
+    private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
 
     private Person initiator;
     private ServiceModule serviceModule;
-    private List<CaseComment> caseComments;
+    private List<CaseComment> existingComments;
     private boolean isEagerEvent;
     // Measured in ms
     private final long timeCreated;
@@ -50,12 +51,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public void attachCaseObjectEvent( CaseObjectEvent objectEvent ) {
         this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
         this.initState = objectEvent.getOldState();
         this.lastState = objectEvent.getNewState();
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
 
-        isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
     }
 
     public void attachLinkEvent( CaseLinksEvent event ) {
@@ -66,10 +67,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
         this.lastUpdated = currentTimeMillis();
-        isEagerEvent = isEagerEvent||commentEvent.isEagerEvent();
-        oldComment = commentEvent.getOldCaseComment();//TODO
-        newComment = commentEvent.getNewCaseComment();
-        removedComment = commentEvent.getRemovedCaseComment();
+        isEagerEvent = isEagerEvent || commentEvent.isEagerEvent();
+        if (commentEvent.getOldCaseComment() != null) {
+            comments.putChangedEntry( commentEvent.getOldCaseComment(), commentEvent.getNewCaseComment() );
+        } else if (commentEvent.getNewCaseComment() != null) {
+            comments.putAddedEntry( commentEvent.getNewCaseComment() );
+        }
+        if (commentEvent.getRemovedCaseComment() != null) {
+            comments.putRemovedEntry( commentEvent.getRemovedCaseComment() );
+        }
     }
 
     public void attachAttachmentEvent( CaseAttachmentEvent event ) {
@@ -78,24 +84,20 @@ public class AssembledCaseEvent extends ApplicationEvent {
         attachments = synchronizeDiffs( attachments, event.getAttachments(), Attachment::getId );
     }
 
-    public CaseComment getCaseComment() {
-        return newComment;
-    }
-
     public boolean isCreateEvent() {
         return this.initState == null;
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null ;//&& lastState!=null;
+        return this.initState != null && lastState!=null;
     }
 
     public boolean isCommentAttached() {
-        return this.newComment != null;
+        return comments.hasAdded();
     }
 
     public boolean isCommentRemoved() {
-        return removedComment != null;
+        return comments.hasRemovedEntries();
     }
 
     public boolean isCaseStateChanged() {
@@ -160,7 +162,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     @Deprecated
     public void includeCaseComments (List<CaseComment> commentList) {
-        newComment = CollectionUtils.lastOrDefault(commentList, newComment );
+        comments.putAddedEntries( commentList );
         lastUpdated = currentTimeMillis();
     }
 
@@ -172,12 +174,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
         attachments = synchronizeDiffs( attachments, diff, Attachment::getId );
     }
 
-    public CaseComment getOldComment() {
-        return oldComment;
+    public List<CaseComment> getAddedCaseComments() {
+        return comments.getAddedEntries();
     }
 
-    public CaseComment getRemovedComment() {
-        return removedComment;
+    public List<CaseComment> getChangedComments() {
+        if(!comments.hasChanged()) return Collections.EMPTY_LIST;
+        return comments.getChangedEntries().stream().map( dr->dr.getInitialState() ).collect( Collectors.toList());
+    }
+
+    public List<CaseComment> getRemovedComments() {
+        return comments.getRemovedEntries();
     }
 
     public Collection<Attachment> getAddedAttachments() {
@@ -234,12 +241,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isPublicChangedWithOutComments();
     }
 
-    private boolean isAttachedCommentNotPrivate() {
-        return newComment != null && !newComment.isPrivateComment();
+    public boolean isAttachedCommentNotPrivate() {
+        for (CaseComment addedComment : emptyIfNull( comments.getAddedEntries())) {
+            if(addedComment.isPrivateComment()) return false;
+        }
+        return true;
     }
 
     private boolean isRemovedCommentNotPrivate() {
-        return removedComment != null && !removedComment.isPrivateComment();
+        for (CaseComment removedComment : emptyIfNull( comments.getRemovedEntries())) {
+            if(removedComment.isPrivateComment()) return false;
+        }
+        return true;
     }
 
     private boolean isPublicChangedWithOutComments() {
@@ -260,15 +273,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseCommentsFilled() {
-        return caseComments!=null;
+        return existingComments !=null;
     }
 
     public void setLastCaseObject( CaseObject caseObject ) {
         lastState = caseObject;
     }
 
-    public void setInitialCaseComments( List<CaseComment> caseComments ) {
-        this.caseComments = caseComments;
+    public void setExistingCaseComments( List<CaseComment> caseComments ) {
+        this.existingComments = caseComments;
     }
 
     public void setExistingLinks( List<CaseLink> existingLinks ) {
@@ -286,22 +299,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public List<CaseComment> getAllComments() {
-        List<CaseComment> comments = new ArrayList<>(  caseComments );
-        if (getRemovedComment() != null) {
-            comments.add(getRemovedComment());
+        Set<CaseComment> allComments = setOf( existingComments );
+        if (comments.hasRemovedEntries()) {
+            allComments.addAll(comments.getRemovedEntries());
         }
 
-        if (getCaseComment() != null) {
-            boolean isNewCommentPresents = comments.stream()
-                    .anyMatch(comment ->
-                            Objects.equals(comment.getId(), getCaseComment().getId())
-                    );
-
-            if (!isNewCommentPresents) {
-                comments.add(getCaseComment());
-            }
+        if (comments.hasAdded()) {
+            allComments.addAll( comments.getAddedEntries() );
         }
-        return comments;
+
+        return listOf( allComments ).stream()
+                .sorted( Comparator.comparing( CaseComment::getId ) ).collect( Collectors.toList());
     }
 
     public Person getCreator() {

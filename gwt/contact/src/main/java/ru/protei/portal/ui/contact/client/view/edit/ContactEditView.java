@@ -13,9 +13,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -41,6 +41,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
                 En_CompanyCategory.PARTNER,
                 En_CompanyCategory.SUBCONTRACTOR ) );
         company.setAsyncSelectorModel( companyModel );
+        workEmail.setRegexp( CrmConstants.Masks.EMAIL );
+        personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
     }
 
     @Override
@@ -195,6 +197,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasValidable workEmailValidator(){
+        return workEmail;
+    }
+
+    @Override
+    public HasValidable personalEmailValidator(){
+        return personalEmail;
+    }
+
+    @Override
     public boolean isValidLogin() {
         return status != null && status.equals(NameStatus.ERROR) ? false : true;
     }
@@ -234,6 +246,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return fireBtn;
     }
 
+    @Override
+    public HasVisibility sendEmailWarningVisibility() {
+        return sendWelcomeEmailWarning;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -266,6 +283,19 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     public void onChangeContactPassword( KeyUpEvent keyUpEvent ) {
         changeContactLoginTimer.cancel();
         changeContactLoginTimer.schedule( 300 );
+    }
+
+    @UiHandler({"workEmail", "personalEmail"})
+    public void onChangeEmail( KeyUpEvent keyUpEvent ) {
+        changeContactEmailTimer.cancel();
+        changeContactEmailTimer.schedule( 300 );
+    }
+
+    @UiHandler("sendWelcomeEmail")
+    public void onClickSendWelcomeEmail( ClickEvent event ) {
+        if (activity != null) {
+            activity.onChangeSendWelcomeEmail();
+        }
     }
 
     @UiField
@@ -306,10 +336,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     TextBox mobilePhone;
 
     @UiField
-    TextBox workEmail;
+    ValidableTextBox workEmail;
 
     @UiField
-    TextBox personalEmail;
+    ValidableTextBox personalEmail;
 
     @UiField
     TextBox workFax;
@@ -367,6 +397,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     CheckBox sendWelcomeEmail;
+    @UiField
+    Label sendWelcomeEmailWarning;
 
     @Inject
     CompanyModel companyModel;
@@ -380,11 +412,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     };
 
-    Timer changeContactPasswordTimer = new Timer() {
+    Timer changeContactEmailTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
-                activity.onChangeContactPassword();
+                activity.onChangeSendWelcomeEmail();
             }
         }
     };

@@ -123,12 +123,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.setTeam(teamBuilder.toString());
         }
 
-        if (value.getProducts() != null && !value.getProducts().isEmpty()) {
-            view.setProduct(value.getSingleProduct().getName());
-        } else {
-            view.setProduct("");
-        }
-
+        view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())

@@ -147,22 +147,22 @@ public class CollectionUtils {
     }
 
     public static <T> List<T> listOf(T... elements){
-        if(elements == null) return Collections.EMPTY_LIST;
+        if(elements == null) return new ArrayList<>();
         return new ArrayList<>( Arrays.asList( elements ));
     }
 
     public static <T> List<T> listOf(Collection<T> elements){
-        if(elements == null) return Collections.EMPTY_LIST;
+        if(elements == null) return new ArrayList<>();
         return new ArrayList<>( elements );
     }
 
     public static <T> Set<T> setOf(T... elements){
-        if(elements == null) return Collections.EMPTY_SET;
+        if(elements == null) return new HashSet<>();
         return new HashSet<>( Arrays.asList( elements ));
     }
 
     public static <T> Set<T> setOf(Collection<T> elements){
-        if(elements == null) return Collections.EMPTY_SET;
+        if(elements == null) return new HashSet<>();
         return new HashSet<>( elements );
     }
 
@@ -199,6 +199,19 @@ public class CollectionUtils {
      * @return результат сравнения двух коллекций
      */
     public static <T> DiffCollectionResult<T> diffCollection(Collection<T> first, Collection<T> second) {
+        return diffCollection( first, second, null );
+    }
+
+    /**
+     * Сравнение двух коллекций
+     *
+     * @param <T>    тип элементов, хранящихся в сравниваемых коллекциях
+     * @param first  первая коллекция ("старая")
+     * @param second вторая коллекция ("новая")
+     * @param comparator сравнение елементов на измененность
+     * @return результат сравнения двух коллекций
+     */
+    public static <T> DiffCollectionResult<T> diffCollection(Collection<T> first, Collection<T> second, Comparator<T> comparator) {
         DiffCollectionResult<T> result = new DiffCollectionResult<T>();
         if (first == null) {
             if (second != null) {
@@ -214,10 +227,15 @@ public class CollectionUtils {
             return result;
         }
         for (T entry : first) {
-            if (!second.contains(entry)) {
-                result.putRemovedEntry(entry);
-            }else{
+            T s = getSame( second, entry );
+            if (s == null) {
+                result.putRemovedEntry( entry );
+                continue;
+            }
+            if (comparator == null || comparator.compare( entry, s ) == 0) {
                 result.putSameEntry( entry );
+            } else {
+                result.putChangedEntry( entry, s );
             }
         }
         for (T entry : second) {
@@ -226,5 +244,13 @@ public class CollectionUtils {
             }
         }
         return result;
+    }
+
+    private static <T> T getSame( Collection<T> second, T entry ) {
+        for (T t : second) {
+            if(Objects.equals( entry, t )) return t;
+        }
+
+        return null;
     }
 }

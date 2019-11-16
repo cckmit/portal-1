@@ -3,7 +3,7 @@
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client"
              xmlns:importance='urn:import:ru.protei.portal.app.portal.client.widget.importance.btngroup'
              xmlns:searchbtn='urn:import:ru.protei.portal.ui.common.client.widget.searchbtn'
-             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
+             xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -16,7 +16,7 @@
             </g:Button>
             <div class="rightSide">
                 <searchbtn:SearchButton ui:field="search" styleName="dashboard-search-btn" placeholder="{lang.issueNumber}"/>
-                <person:PersonButtonViewerSelector ui:field="initiatorsBtn" styleName="dashboard-btn" defaultValue="{lang.withoutContact}"/>
+                <company:CompanyButtonViewerSelector ui:field="companiesBtn" styleName="dashboard-btn" defaultValue="{lang.dashboardSelectCompany}"/>
                 <importance:CustomImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-sm"/>
             </div>
         </div>

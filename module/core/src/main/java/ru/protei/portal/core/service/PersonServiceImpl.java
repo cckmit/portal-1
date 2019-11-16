@@ -38,7 +38,7 @@ public class PersonServiceImpl implements PersonService {
         if ( list == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List< PersonShortView > result = list.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
+        List< PersonShortView > result = list.stream().map( Person::toShortNameShortView ).collect( Collectors.toList() );
 
         return ok(result);
     }

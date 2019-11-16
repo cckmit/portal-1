@@ -4,22 +4,11 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li">
-        <div class="header-block">
+        <g:HTMLPanel styleName="header-block no-hover">
             <h2>
                 <span ui:field="name" class="pull-left"></span>
                 <span ui:field="number" class="pull-right"></span>
             </h2>
-            <p>
-                <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
-                <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil" href="#"/>
-                <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
-            </p>
-            <div ui:field="details" class="region-info">
-            </div>
-            <div class="region-picture">
-                <i ui:field="state" class="fa fa-question-circle-o"></i>
-            </div>
-        </div>
-        <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

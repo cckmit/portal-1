@@ -135,5 +135,15 @@ public enum En_ResultStatus {
     /**
      * Редактирование названия или описания чужих обращений запрещено
      */
-    NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION
+    NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION,
+
+    /**
+     * Изменение компании у площадки запрещено
+     */
+    NOT_ALLOWED_CHANGE_PLATFORM_COMPANY,
+
+    /**
+     * Изменение компании у проекта запрещено
+     */
+    NOT_ALLOWED_CHANGE_PROJECT_COMPANY
 }

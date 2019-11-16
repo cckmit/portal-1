@@ -49,4 +49,7 @@ public interface CompanyService {
 
     Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
     Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
+
+    @Privileged({En_Privilege.COMPANY_VIEW})
+    Result<List<Long>> getAllHomeCompanyIds(AuthToken token);
 }

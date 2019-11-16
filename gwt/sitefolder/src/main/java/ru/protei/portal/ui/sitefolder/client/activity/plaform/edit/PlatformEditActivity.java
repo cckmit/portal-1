@@ -26,9 +26,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
@@ -89,27 +87,21 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onSaveClicked() {
-
         if (!isValid()) {
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
+
         fillPlatform(platform);
 
-        siteFolderController.savePlatform(platform, new RequestCallback<Platform>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Platform result) {
-                fireEvent(new SiteFolderPlatformEvents.ChangeModel());
-                fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
-            }
-        });
+        siteFolderController.savePlatform(platform, new FluentCallback<Platform>()
+                .withSuccess(result -> {
+                    fireEvent(new SiteFolderPlatformEvents.ChangeModel());
+                    fireEvent(new SiteFolderPlatformEvents.Changed(result));
+                    fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Override
@@ -160,10 +152,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 }));
     }
 
-    private boolean isNew(Platform platform) {
-        return platform.getId() == null;
-    }
-
     @Override
     public void refreshProjectSpecificFields() {
         if (view.project().getValue() == null) {
@@ -171,6 +159,10 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             return;
         }
         projectRequest(view.project().getValue().getId(), this::fillProjectSpecificFieldsOnRefresh);
+    }
+
+    private boolean isNew(Platform platform) {
+        return platform.getId() == null;
     }
 
     private void fillProjectSpecificFieldsOnRefresh(Project project) {

@@ -231,6 +231,13 @@ public class CompanyControllerImpl implements CompanyController {
         return ServiceUtils.checkResultAndGetData( caseTagService.getTagsByCompanyId( authToken, companyId ));
     }
 
+    @Override
+    public List<Long> getAllHomeCompanyIds() throws RequestFailedException {
+        log.info("getAllHomeCompanyIds()");
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

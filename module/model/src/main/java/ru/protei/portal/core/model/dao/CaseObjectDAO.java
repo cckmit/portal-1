@@ -17,8 +17,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     List<CaseObject> getCases( CaseQuery query );
 
-    //public Long getNextCaseNumber (En_CaseType caseType);
-
     Long insertCase (CaseObject object);
 
     CaseObject getCase(En_CaseType caseType, long number);
@@ -27,14 +25,14 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     Long getCaseIdByNumber( long number );
 
     Long getCaseNumberById( long caseId);
+
     CaseObject getCaseByCaseno(long caseno);
 
     CaseObject getByExternalAppCaseId (String externalApplicationCaseId);
 
-    List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers);
-
     Long getAndIncrementEmailLastId( Long caseId );
-//    Long getEmailLastId(Long caseId);
+
+    List<Long> getCaseNumbersByPlatformId(Long id);
 
     boolean updateNullCreatorByExtAppType(String extAppType);
 

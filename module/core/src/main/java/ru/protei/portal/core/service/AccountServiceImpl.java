@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -137,11 +138,12 @@ public class AccountServiceImpl implements AccountService {
                 userLogin.setPerson(person);
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
-                String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
-                NotificationEntry notificationEntry = NotificationEntry.email(address, person.getLocale());
-                UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry);
-
-                publisherService.publishEvent(userLoginUpdateEvent);
+                String address = HelperFunc.isNotEmpty(infoFacade.getEmail()) ? infoFacade.getEmail() : HelperFunc.isNotEmpty(infoFacade.getEmail_own()) ? infoFacade.getEmail_own() : null;
+                if (address != null) {
+                    NotificationEntry notificationEntry = NotificationEntry.email( address, person.getLocale() );
+                    UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent( userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry );
+                    publisherService.publishEvent( userLoginUpdateEvent );
+                }
             }
 
             return ok( userLogin );

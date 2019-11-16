@@ -9,7 +9,6 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinksEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -17,9 +16,9 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -91,8 +90,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                                 selectYouTrackLinkRemoteIds( mergedLinks.getRemovedEntries() )
                         )
                 );
+                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
             }
-            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
         } ).flatMap( mergedLinks -> {
             if (!mergedLinks.hasDifferences()) return ok( listOf( caseLinks ) );
             return getLinks( token, caseId ); //TODO оптимизировать из mergedLinks (same + added)
@@ -101,7 +100,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private Result<DiffCollectionResult<CaseLink>> mergeLinks( AuthToken token, Long caseId, Collection<CaseLink> caseLinks) {
         if (caseLinks == null) {
-            return ok();
+            return ok(new DiffCollectionResult());
         }
 
         caseLinks.forEach(link -> link.setCaseId(caseId));

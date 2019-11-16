@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.JiraUtils;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
@@ -92,9 +92,9 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 generalUpdate(endpoint, event, issue, issueClient);
             }
 
-            if (event.getCaseComment() != null && !event.getCaseComment().isPrivateComment()) {
-                logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
-                issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment(), event.getInitiator()))
+            if (event.getAddedCaseComments() != null && event.isAttachedCommentNotPrivate()) {
+                logger.debug("add comment {} to issue {}", event.getAddedCaseComments(), issue.getKey());
+                issueClient.addComment(issue.getCommentsUri(), convertComment( CollectionUtils.last( event.getAddedCaseComments() ), event.getInitiator()))
                         .claim();
             }
 

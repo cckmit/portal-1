@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +18,7 @@ public interface AbstractDashboardTableView extends IsWidget {
     void putRecords(List<CaseShortView> cases);
     void clearRecords();
 
-    void putPersons(List<PersonShortView> persons);
+    void putCompanies(List<EntityOption> companies);
 
     void setSectionName(String name);
     void setRecordsCount(int count);

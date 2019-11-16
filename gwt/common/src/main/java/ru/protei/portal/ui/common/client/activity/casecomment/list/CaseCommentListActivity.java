@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -155,7 +157,6 @@ public abstract class CaseCommentListActivity
                     }
                     view.removeComment(itemView);
                     itemViewToModel.remove(itemView);
-                    fireEvent(new IssueEvents.ChangeModel());
                     updateTimeElapsedInIssue(itemViewToModel.values());
                 })
         );
@@ -376,7 +377,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(value.getCaseManagerShortName());
+            itemView.setManager(transliteration(value.getCaseManagerShortName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -587,9 +588,9 @@ public abstract class CaseCommentListActivity
 
     private String getOwnerName(CaseComment caseComment) {
         if (!StringUtils.isEmpty(caseComment.getOriginalAuthorName()))
-            return caseComment.getOriginalAuthorName();
+            return transliteration(caseComment.getOriginalAuthorName());
         if (caseComment.getAuthor() != null)
-            return caseComment.getAuthor().getDisplayName();
+            return transliteration(caseComment.getAuthor().getDisplayName());
         return "Unknown";
     }
 
@@ -636,6 +637,10 @@ public abstract class CaseCommentListActivity
         textRenderController.render(text, textMarkup, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
+    }
+
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private final Timer changedPreviewTimer = new Timer() {

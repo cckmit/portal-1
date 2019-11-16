@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
-import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -25,7 +24,10 @@ import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
@@ -63,7 +65,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         try {
             checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -81,7 +83,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         try {
             checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -121,7 +123,7 @@ public class DocumentServiceImpl implements DocumentService {
         InputStream fileInputStream;
         try {
             fileInputStream = fileItem.getInputStream();
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("createDocument(" + document.getId() + "): failed to get input stream from file item", e);
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -137,34 +139,45 @@ public class DocumentServiceImpl implements DocumentService {
 
             try {
                 if (!documentDAO.saveOrUpdate(document)) {
+                    log.error("createDocument(): failed to save/update document to the db");
                     return error(En_ResultStatus.INTERNAL_ERROR);
                 }
             } catch (DuplicateKeyException ex) {
                 return error(En_ResultStatus.ALREADY_EXIST);
+            } catch (Exception e) {
+                log.error("createDocument(): failed to save/update document to the db", e);
+                return error(En_ResultStatus.INTERNAL_ERROR);
             }
 
-            Long documentId = document.getId(), projectId = document.getProjectId();
+            Long documentId = document.getId();
+            Long projectId = document.getProjectId();
 
             try {
                 documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
-            } catch (IOException e) {
-                log.error("createDocument(" + document.getId() + "): failed to add file to the index", e);
-                documentDAO.removeByKey(documentId);
+            } catch (Exception e) {
+                log.error("createDocument(" + documentId + "): failed to add file to the index", e);
+                if (!documentDAO.removeByKey(documentId)) {
+                    log.error("createDocument(" + documentId + "): failed to rollback document from the db");
+                }
                 return error(En_ResultStatus.INTERNAL_ERROR);
             }
+
             try {
                 documentSvnService.saveDocument(projectId, documentId, fileInputStream);
-                return ok(document);
-            } catch (SVNException e) {
-                log.error("createDocument(" + document.getId() + "): failed to save in the repository", e);
+            } catch (Exception e) {
+                log.error("createDocument(" + documentId + "): failed to save file to the svn", e);
                 try {
                     documentStorageIndex.removeDocument(documentId);
-                } catch (IOException e1) {
-                    log.error("createDocument(" + document.getId() + "): failed to delete document from the index");
+                } catch (Exception e1) {
+                    log.error("createDocument(" + documentId + "): failed to rollback document from the index", e1);
                 }
-                documentDAO.removeByKey(documentId);
+                if (!documentDAO.removeByKey(documentId)) {
+                    log.error("createDocument(" + documentId + "): failed to rollback document from the db");
+                }
                 return error(En_ResultStatus.INTERNAL_ERROR);
             }
+
+            return ok(document);
         });
     }
 
@@ -233,8 +246,8 @@ public class DocumentServiceImpl implements DocumentService {
         final InputStream fileInputStream;
         try {
             fileInputStream = fileItem.getInputStream();
-        } catch (IOException e) {
-            log.error("updateDocumentAndContent(" + document.getId() + "): Failed to get input stream from file item", e);
+        } catch (Exception e) {
+            log.error("updateDocumentAndContent(" + document.getId() + "): failed to get input stream from file item", e);
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -256,24 +269,40 @@ public class DocumentServiceImpl implements DocumentService {
             out.close();
 
             try {
-                try {
-                    documentDAO.merge(document);
-                } catch (DuplicateKeyException ex) {
-                    return error(En_ResultStatus.ALREADY_EXIST);
-                }
+                documentDAO.merge(document);
+            } catch (DuplicateKeyException e) {
+                return error(En_ResultStatus.ALREADY_EXIST);
+            } catch (Exception e) {
+                log.error("updateDocumentAndContent(" + document.getId() + "): failed to merge document to the db", e);
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+
+            try {
                 documentStorageIndex.updatePdfDocument(fileData, projectId, documentId);
+            } catch (Exception e) {
+                log.error("updateDocumentAndContent(" + document.getId() + "): failed to update file to the index", e);
+                if (!documentDAO.merge(oldDocument)) {
+                    log.error("updateDocumentAndContent(" + document.getId() + "): failed to rollback document from the db");
+                }
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+
+            try {
                 documentSvnService.updateDocument(projectId, documentId, fileInputStream);
-                return ok(document);
-            } catch (SVNException | IOException e) {
-                log.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back", e);
-                documentDAO.merge(oldDocument);
+            } catch (Exception e) {
+                log.error("updateDocumentAndContent(" + document.getId() + "): failed to update file to the svn", e);
+                if (!documentDAO.merge(oldDocument)) {
+                    log.error("updateDocumentAndContent(" + document.getId() + "): failed to rollback document from the db");
+                }
                 try {
                     documentStorageIndex.updatePdfDocument(oldFileData, documentId, projectId);
-                } catch (IOException e1) {
-                    log.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
+                } catch (Exception e1) {
+                    log.error("updateDocumentAndContent(" + document.getId() + "): failed to rollback document from the index", e1);
                 }
+                return error(En_ResultStatus.INTERNAL_ERROR);
             }
-            return error(En_ResultStatus.INTERNAL_ERROR);
+
+            return ok(document);
         });
     }
 
@@ -289,7 +318,8 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            Long projectId = document.getProjectId(), documentId = document.getId();
+            Long documentId = document.getId();
+            Long projectId = document.getProjectId();
             documentDAO.removeByKey(documentId);
             documentSvnService.removeDocument(projectId, documentId);
             documentStorageIndex.removeDocument(documentId);
@@ -356,13 +386,17 @@ public class DocumentServiceImpl implements DocumentService {
     private boolean isValidDocument(Document document){
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
+
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
         Project project = Project.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
-        if (project == null) return false;
-        else {
-            if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
-                return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-            }
+        if (project == null) {
+            return false;
+        }
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
     }

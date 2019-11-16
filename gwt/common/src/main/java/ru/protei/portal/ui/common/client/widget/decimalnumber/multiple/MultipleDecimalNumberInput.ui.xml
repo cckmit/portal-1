@@ -4,9 +4,10 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
+
         <div class="col-md-6">
-            <div class="dn-add-button">
-                <g:Button ui:field="addPamr" styleName="btn btn-xs btn-info">
+            <div class="col-md-12 m-b-15 clearfix">
+                <g:Button ui:field="addPamr" styleName="btn btn-xs btn-info pull-right">
                     <ui:text from="{lang.buttonAddPamr}"/>
                 </g:Button>
             </div>
@@ -14,8 +15,8 @@
         </div>
 
         <div class="col-md-6">
-            <div class="dn-add-button">
-                <g:Button ui:field="addPdra" styleName="btn btn-xs btn-info">
+            <div class="col-md-12 m-b-15 clearfix">
+                <g:Button ui:field="addPdra" styleName="btn btn-xs btn-info pull-right">
                     <ui:text from="{lang.buttonAddPdra}"/>
                 </g:Button>
             </div>

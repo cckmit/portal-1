@@ -1,109 +1,97 @@
 package ru.protei.portal.test.event;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.config.TestEventConfiguration;
-import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.config.*;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.test.service.BaseServiceTest;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.util.Collections;
-import java.util.Date;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 /**
  * Created by michael on 04.05.17.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        IntegrationTestsConfiguration.class, TestEventConfiguration.class
+        PortalConfigTestConfiguration.class,
+        DaoMockTestConfiguration.class,
+        ServiceTestsConfiguration.class,
+        TestEventConfiguration.class
 })
 public class TestCaseEvents extends BaseServiceTest {
 
-    private static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-01";
-    private static final En_CaseType caseType = En_CaseType.CRM_SUPPORT;
-
-    @Test
-    public void test001 () throws Exception {
-
-        Company company = makeCustomerCompany();
-        Person person = makePerson(company);
-
-        CaseObject object = new CaseObject();
-        object.setPrivateCase(false);
-        object.setCaseNumber(1L);
-        object.setCaseType(caseType);
-        object.setInitiatorCompany(company);
-        object.setInitiator(person);
-        object.setState(En_CaseState.CREATED);
-        object.setCreated(new Date());
-        object.setCreatorInfo("junit-test-events");
-        object.setName("Event-publisher test");
-        object.setExtAppType("junit-test");
-        object.setImpLevel(En_ImportanceLevel.BASIC.getId());
-//        object.setExtAppCaseId(JUNIT_EVENT_PUB_01);
-
-        Result<CaseObject> response = service.createCaseObject(getAuthToken(), object, person);
-        Assert.assertTrue(response.isOk());
-
-        // wait for async event
-        Thread.sleep(2000);
-
-        CaseComment comment = new CaseComment();
-        comment.setCaseId(response.getData().getId());
-        comment.setCreated(new Date());
-        comment.setClientIp("-");
-        comment.setCaseStateId(response.getData().getStateId());
-        comment.setAuthorId(response.getData().getInitiatorId());
-        comment.setText("A new comment, publishing test");
-        comment.setCaseAttachments(Collections.emptyList());
-
-        Result<CaseComment> r2 = caseCommentService.addCaseComment(getAuthToken(), caseType, comment, person);
-
-        Assert.assertTrue(r2.isOk());
-
-        // wait for async event
-        Thread.sleep(2000);
-
-        Assert.assertEquals(2, evRegistry.assembledCaseEvents.size());
-        Assert.assertEquals(1, evRegistry.commentEvents.size());
-
-        Assert.assertTrue(removeCaseObjectAndComments(object));
-        Assert.assertTrue(personDAO.remove(person));
-        Assert.assertTrue(companyDAO.remove(company));
-    }
-
     @Before
-    @After
-    public void cleanup () {
-        caseControlService.deleteByExtAppId(JUNIT_EVENT_PUB_01);
+    public void setUp() {
+        MockitoAnnotations.initMocks( this );
     }
 
     @Autowired
-    CaseControlService caseControlService;
+    EventPublisherService publisherService;
+
     @Autowired
-    EventHandlerRegistry evRegistry;
+    CaseObjectDAO caseObjectDAO;
     @Autowired
-    CaseService service;
+    CaseService caseService;
     @Autowired
     CaseCommentService caseCommentService;
+
+    private static final Long CASE_ID = 222L;
+    private static final long COMPANY_ID = 1L;
+    private static final long PERSON_ID = 2L;
+    private static final long COMMENT_ID = 4L;
+
+    @Test
+    public void caseObjectEvent_on_createCaseObject() throws Exception {
+        Company company = createNewCustomerCompany();
+        company.setId( COMPANY_ID );
+        Person person = createNewPerson( company );
+        person.setId( PERSON_ID );
+        CaseObject object = createNewCaseObject( person );
+        object.setId( CASE_ID );
+        object.setInitiatorCompany( company );
+
+        when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
+        when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
+        when( personDAO.getPersons( any() ) ).thenReturn( listOf( person ) );
+
+        Assert.assertTrue( "CaseObject must be created",
+                caseService.createCaseObject( getAuthToken(), object, person ).isOk() );
+
+        verify( publisherService, atLeastOnce() ).publishEvent( any() );
+    }
+
+    @Test
+    public void caseCommentEvent_on_addCaseComment() throws Exception {
+        Company company = createNewCustomerCompany();
+        company.setId( COMPANY_ID );
+        Person person = createNewPerson( company );
+        person.setId( PERSON_ID );
+
+        CaseComment comment = createNewComment( person, CASE_ID, "A new comment, publishing test" );
+
+        when( caseObjectDAO.checkExistsByKey( CASE_ID ) ).thenReturn( true );
+        when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
+        when( caseCommentDAO.get( COMMENT_ID ) ).thenReturn( comment );
+        when( caseCommentDAO.persist( any() ) ).thenReturn( COMMENT_ID );
+
+        Assert.assertTrue( "CaseComment must be created",
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, person ).isOk() );
+
+        verify( publisherService, atLeastOnce() ).publishEvent( any() );
+    }
+
 }

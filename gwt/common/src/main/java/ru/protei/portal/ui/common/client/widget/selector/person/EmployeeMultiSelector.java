@@ -24,7 +24,6 @@ public class EmployeeMultiSelector
     public void init(EmployeeModel model, Lang lang) {
         this.model = model;
         this.lang = lang;
-
         setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());

@@ -3,6 +3,9 @@ package ru.protei.portal.core.service.bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tmatesoft.svn.core.SVNException;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -11,11 +14,14 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.DocumentSvnService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -43,9 +49,10 @@ public class BootstrapService {
 //        autoPatchDefaultRoles();
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
-        patchNormalizeWorkersPhoneNumbers(); // remove once executed
+        //patchNormalizeWorkersPhoneNumbers(); // remove once executed
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
+        documentBuildFullIndex();
     }
 
     private void autoPatchDefaultRoles () {
@@ -257,6 +264,48 @@ public class BootstrapService {
                 });
     }
 
+    private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
+
+        try {
+            if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
+                // disable index at non internal stand
+                return;
+            }
+            if (documentStorageIndex.isIndexExists()) {
+                log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.");
+                return;
+            }
+        } catch (IOException e) {
+            log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.", e);
+            return;
+        }
+
+        log.info("Document index full build has started");
+
+        List<Document> partialDocuments = documentDAO.partialGetAll("id", "project_id");
+        int size = partialDocuments.size();
+        for (int i = 0; i < size; i++) {
+            Long documentId = partialDocuments.get(i).getId();
+            Long projectId = partialDocuments.get(i).getProjectId();
+            try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                documentSvnService.getDocument(projectId, documentId, out);
+                final byte[] fileData = out.toByteArray();
+                if (fileData.length == 0) {
+                    log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
+                    continue;
+                }
+                documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
+                log.info("Index created for document({}), {}/{}", documentId, i + 1, size);
+            } catch (SVNException e) {
+                log.warn("Content for document(" + documentId + ") not found, " + (i + 1) + "/" + size, e);
+            } catch (Exception e) {
+                log.warn("Failed to create index for document(" + documentId + "), " + (i + 1) + "/" + size, e);
+            }
+        }
+
+        log.info("Document index full build has ended");
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -288,4 +337,12 @@ public class BootstrapService {
     CaseTypeDAO caseTypeDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    DocumentDAO documentDAO;
+    @Autowired
+    DocumentSvnService documentSvnService;
+    @Autowired
+    DocumentStorageIndex documentStorageIndex;
+    @Autowired
+    PortalConfig config;
 }

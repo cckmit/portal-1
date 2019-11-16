@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.region.client.activity.item;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -12,13 +11,5 @@ public interface AbstractRegionItemView extends IsWidget {
 
     void setName( String name );
 
-    HasWidgets getPreviewContainer();
-
     void setNumber( Integer number );
-
-    void setDetails( String details );
-
-    void setState( String value );
-
-    void setEditEnabled( boolean isEnabled );
 }

@@ -2,10 +2,7 @@ package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -14,6 +11,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
@@ -367,9 +365,29 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         descriptionRO.setInnerHTML(value);
     }
 
+
     @Override
-    public void setNameRO(String name) {
-        nameRO.setInnerText(name);
+    public void setNameRO( String value, boolean isJira ) {
+        if (!isJira || !value.startsWith("CLM")) {
+            this.nameRO.setInnerHTML(value);
+        }
+        else {
+            String idCLM = value.split(" ")[0];
+            String remainingName = "&nbsp;" + value.substring(idCLM.length());
+
+            AnchorElement jiraLink = DOM.createAnchor().cast();
+
+            jiraLink.setHref(JIRA_LINK + idCLM);
+            jiraLink.setTarget("_blank");
+            jiraLink.setInnerText(idCLM);
+
+            LabelElement nameWithoutLink = DOM.createLabel().cast();
+            nameWithoutLink.setInnerHTML(remainingName);
+
+            this.nameRO.setInnerHTML("");
+            this.nameRO.appendChild(jiraLink);
+            this.nameRO.appendChild(nameWithoutLink);
+        }
     }
 
     @Override
@@ -674,6 +692,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     InitiatorModel initiatorModel;
     private AbstractIssueEditActivity activity;
+
+    private final String JIRA_LINK ="https://jira.billing.ru/browse/";
 
     interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}
     private static IssueEditViewUiBinder ourUiBinder = GWT.create(IssueEditViewUiBinder.class);

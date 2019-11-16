@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -7,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,9 +20,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-
 /**
  * Модель заявителей по обращению
  */
@@ -48,6 +48,7 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
+                transliteration(options);
                 if(selector!=null){
                     selector.fillOptions( options );
                     selector.refreshValue();
@@ -70,6 +71,10 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
         Set<Long> companyIds = new HashSet<>();
         companyIds.add(companyId);
         return companyIds;
+    }
+
+    private void transliteration(List<PersonShortView> options) {
+        options.forEach(option -> option.setDisplayShortName(TransliterationUtils.transliterate(option.getDisplayShortName(), LocaleInfo.getCurrentLocale().getLocaleName())));
     }
 
     @Override

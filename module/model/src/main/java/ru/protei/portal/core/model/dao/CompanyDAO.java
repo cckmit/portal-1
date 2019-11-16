@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,6 +15,7 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     Company getCompanyByName( String name );
 
+    List<Long> getAllHomeCompanyIds();
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CompanyQuery query);
