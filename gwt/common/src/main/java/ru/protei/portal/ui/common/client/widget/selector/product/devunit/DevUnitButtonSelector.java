@@ -36,8 +36,10 @@ public class DevUnitButtonSelector
     protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml ) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
-        item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" );
-        item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "" );
+        if(value!=null){
+            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" );
+            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "" );
+        }
         return item;
     }
 

@@ -24,4 +24,6 @@ public interface EmployeeControllerAsync {
      * @param callback
      */
     void getEmployeeViewList( EmployeeQuery query, AsyncCallback< List< PersonShortView > > callback );
+
+    void getEmployeeById( Long emploeeId, AsyncCallback<PersonShortView> async );
 }

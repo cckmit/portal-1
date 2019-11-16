@@ -1,46 +1,39 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-
-import java.util.List;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 
 /**
  * Селектор сотрудников домашней компании
  */
-public class EmployeeFormSelector extends FormSelector<PersonShortView> implements SelectorWithModel<PersonShortView> {
+public class EmployeeFormSelector
+            extends FormSelector<PersonShortView>
+{
 
     @Inject
     public void init(EmployeeModel employeeModel) {
-        setSelectorModel(employeeModel);
+        setAsyncSelectorModel(employeeModel);
         setSearchEnabled(true);
         setSearchAutoFocus(true);
         setFilter(personView -> !personView.isFired());
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
 
-        setDisplayOptionCreator(value -> {
-            if (value == null) {
-                return new DisplayOption(defaultValue);
-            }
-
-            return new DisplayOption(
-                    value.getDisplayShortName(),
-                    value.isFired() ? "not-active" : "",
-                    value.isFired() ? "fa fa-ban ban" : "");
-        } );
+        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getDisplayShortName() );
     }
 
     @Override
-    public void fillOptions(List<PersonShortView> persons){
-        clearOptions();
-
-        if(defaultValue != null) {
-            addOption(null);
+    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
+        PopupSelectorItem item = new PopupSelectorItem();
+        item.setName(elementHtml);
+        if(value!=null){
+            item.setIcon( value.isFired() ? "not-active" : "" );
+            item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );
         }
-
-        persons.forEach(this::addOption);
+        return item;
     }
 
     public void setDefaultValue(String value) {

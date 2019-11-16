@@ -28,6 +28,12 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
+    public PersonShortView getEmployeeById(Long emploeeId ) throws RequestFailedException {
+        log.info( "getEmployee(): emploeeId={}", emploeeId );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeById(token, emploeeId));
+    }
+    @Override
     public SearchResult< EmployeeShortView > getEmployees(EmployeeQuery query ) throws RequestFailedException {
         log.info( "getEmployees(): query={}", query );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
