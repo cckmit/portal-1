@@ -83,7 +83,8 @@ public class CompanyQuery extends BaseQuery {
     public boolean isOnlyVisibleFields() {
         return onlyVisibleFields;
     }
-    public boolean isReverseOrder() {
+
+    public Boolean isReverseOrder() {
         return isReverseOrder;
     }
 
