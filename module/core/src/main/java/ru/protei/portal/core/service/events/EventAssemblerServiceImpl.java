@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
 public class EventAssemblerServiceImpl implements EventAssemblerService {
 
@@ -94,8 +95,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     private Tuple<Person, Long> makeEventKey(AbstractCaseEvent event) {
         return new Tuple<>(event.getPerson(), event.getCaseObjectId());
     }
-
-    private static final long SEC = 1000;
 
     public boolean isExpired(AssembledCaseEvent event) {
         if (event.isEagerEvent()) {

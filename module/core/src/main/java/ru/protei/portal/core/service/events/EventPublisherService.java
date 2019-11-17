@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.events;
 
 import org.springframework.context.ApplicationEvent;
 

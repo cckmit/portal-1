@@ -256,15 +256,7 @@ public class PortalConfigData {
 
         public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
             long v = properties.getProperty("core.waiting_period", Long.class, 30L);
-
-            if (v > java.util.concurrent.TimeUnit.MINUTES.toSeconds(2)) {
-                v = java.util.concurrent.TimeUnit.MINUTES.toSeconds(2);
-            }
-            else if (v < 10 ){
-                v = 10;
-            }
-
-            logger.debug("Use event assembly period = {}", v);
+           logger.debug("Use event assembly period = {}", v);
             waitingPeriod = v;
         }
 

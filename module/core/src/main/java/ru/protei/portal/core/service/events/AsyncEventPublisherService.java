@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import ru.protei.portal.core.service.EventPublisherService;
 
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +43,7 @@ public class AsyncEventPublisherService implements EventPublisherService,Applica
             maxQueueSize = size;
         }
         executorService.submit( () -> {
-            if(size > 50) {
+            if(size > 5) {
                 logger.warn( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );
             }else{
                 logger.info( "publishEvent(): Queue_size={} mqs={} timeSpentInQueue={}ms {} ", size, maxQueueSize, System.currentTimeMillis() - start, event );

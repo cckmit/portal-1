@@ -38,4 +38,11 @@ public class CrmConstants {
     public interface Masks {
         String EMAIL = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+$";
     }
+
+    public interface Time {
+        long SEC = 1000L;
+        long MINUTE = 60 * SEC;
+        long HOUR = 60 * MINUTE;
+        long DAY = 24 * HOUR;
+    }
 }
