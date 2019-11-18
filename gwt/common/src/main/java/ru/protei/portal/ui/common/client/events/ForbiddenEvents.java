@@ -5,10 +5,7 @@ public class ForbiddenEvents {
      * Показать страницу "Доступ запрещен"
      */
     public static class Show {
-        public Show(String errorMsg) {
-            this.errorMsg = errorMsg;
+        public Show() {
         }
-
-        public String errorMsg;
     }
 }

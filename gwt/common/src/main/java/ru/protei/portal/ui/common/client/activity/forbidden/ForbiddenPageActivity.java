@@ -16,8 +16,6 @@ public abstract class ForbiddenPageActivity implements Activity, AbstractForbidd
     public void onShow(ForbiddenEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-
-        view.setErrorMsg(event.errorMsg);
     }
 
     @Inject

@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -19,18 +18,15 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.*;
 
 import java.util.*;
@@ -76,20 +72,22 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Event
     public void onShow( IssueEvents.Edit event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show(lang.errAccessDenied()));
+            fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
+        initDetails.parent.clear();
         if (event.id == null) {
             if (issue != null) {
-                initialRestoredView(issue);
+                initDetails.parent.add(view.asWidget());
+                fillView(issue, true);
             } else {
-                CaseObject caseObject = new CaseObject();
-                initNewIssue(caseObject);
-                initialView(caseObject);
+                initDetails.parent.add(view.asWidget());
+                issue = createNewIssue();
+                fillView(issue, false);
             }
         } else {
-            requestIssue(event.id, this::initialView);
+            requestIssue(event.id, false);
         }
     }
 
@@ -153,7 +151,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 .withSuccess(caseId -> {
                     unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    fireEvent(new IssueEvents.ChangeModel());//TODO скорее всего избыточно, удалить
                     fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
                 }));
 
@@ -287,49 +284,35 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     }
 
-    private void initialView(CaseObject issue){
-        this.issue = issue;
-        fillView(this.issue, false);
-    }
-
     private void requestCaseLinks( Long issueId ) {
         caseLinkController.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
                 view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
         ) );
     }
 
-    private void initialRestoredView(CaseObject issue){
-        this.issue = issue;
-        fillView(this.issue, true);
-    }
-
-    private void requestIssue(Long number, Consumer<CaseObject> successAction){
-        issueService.getIssue(number, new AsyncCallback<CaseObject>() {
+    private void requestIssue(Long number, final boolean isRestoredIssue ){
+        issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
-            public void onFailure(Throwable throwable) {
-                if (throwable instanceof RequestFailedException) {
-                    if (Objects.equals(((RequestFailedException) throwable).status, En_ResultStatus.PERMISSION_DENIED)) {
-                        fireEvent(new ForbiddenEvents.Show(lang.errAccessDenied()));
-                    }
-                }
-            }
+            public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(CaseObject issue) {
-                successAction.accept(issue);
+                IssueEditActivity.this.issue = issue;
+                initDetails.parent.add(view.asWidget());
+                fillView(issue, isRestoredIssue);
                 requestCaseLinks(issue.getId());
             }
         });
     }
 
-    private void initNewIssue(CaseObject caseObject) {
+    private CaseObject createNewIssue() {
+        CaseObject caseObject = new CaseObject();
         boolean isPrivacyVisible = policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW);
         caseObject.setPrivateCase(isPrivacyVisible ? true : false);
+        return caseObject;
     }
 
     private void fillView(CaseObject issue, boolean isRestoredIssue) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
         view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
@@ -364,16 +347,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
-            view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
-                    issue.getNotifiers()
-                            .stream()
-                            .map(notifier -> {
-                                PersonShortView personShortView = PersonShortView.fromPerson(notifier);
-                                personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
-
-                                return personShortView;
-                            })
-                            .collect(Collectors.toSet()));
+            view.notifiers().setValue(transliterateNotifiers(issue.getNotifiers()));
             view.caseSubscriptionContainer().setVisible(true);
         } else {
             view.caseSubscriptionContainer().setVisible(false);
@@ -463,6 +437,19 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         fillViewForJira(issue);
 
         unlockSave();
+    }
+
+    private Set<PersonShortView> transliterateNotifiers(Set<Person> notifiers) {
+        return notifiers == null ? new HashSet<>() :
+                notifiers
+                        .stream()
+                        .map(notifier -> {
+                            PersonShortView personShortView = PersonShortView.fromPerson(notifier);
+                            personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
+
+                            return personShortView;
+                        })
+                        .collect(Collectors.toSet());
     }
 
     private void fillViewForJira(CaseObject issue) {
