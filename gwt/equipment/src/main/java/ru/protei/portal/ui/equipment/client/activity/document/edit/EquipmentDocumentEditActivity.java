@@ -228,6 +228,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     view.cancelButtonEnabled().setEnabled(true);
                 })
                 .withError(throwable -> {
+                    view.resetFilename();
                     if (throwable instanceof RequestFailedException) {
                         RequestFailedException rf = (RequestFailedException) throwable;
                         if (En_ResultStatus.ALREADY_EXIST.equals(rf.status)) {
