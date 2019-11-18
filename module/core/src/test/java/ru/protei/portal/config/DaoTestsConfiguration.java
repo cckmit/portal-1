@@ -119,6 +119,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
+    }
+
+    @Bean
     public CaseShortViewDAO getCaseShortDAO() {
         return new CaseShortViewDAO_Impl();
     }

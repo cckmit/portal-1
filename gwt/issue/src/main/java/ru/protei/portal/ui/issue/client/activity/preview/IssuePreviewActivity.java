@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.JiraMetaData;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -230,7 +230,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             return;
         }
 
-        JiraMetaData meta = value.getJiraMetaData();
+        CaseObjectMetaJira meta = value.getCaseObjectMetaJira();
         boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
 
         view.jiraContainerVisibility().setVisible(true);

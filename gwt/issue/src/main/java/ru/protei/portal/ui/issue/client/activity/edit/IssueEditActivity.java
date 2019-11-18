@@ -460,7 +460,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.jiraSlaSelectorVisibility().setVisible(true);
-        view.jiraSlaSelector().setValue(issue.getJiraMetaData());
+        view.jiraSlaSelector().setValue(issue.getCaseObjectMetaJira());
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -501,7 +501,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return;
         }
 
-        issue.setJiraMetaData(view.jiraSlaSelector().getValue());
+        issue.setCaseObjectMetaJira(view.jiraSlaSelector().getValue());
     }
 
     private boolean validateView(CaseObject issue) {

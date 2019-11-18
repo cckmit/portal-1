@@ -1,13 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.struct.JiraMetaData;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 @JdbcEntity(table = "case_object")
 public class CaseObjectMeta implements Serializable {
@@ -17,6 +15,8 @@ public class CaseObjectMeta implements Serializable {
 
     @JdbcColumn(name = "MODIFIED")
     private Date modified;
+
+    // --------------------
 
     @JdbcColumn(name = "STATE")
     private long stateId;
@@ -48,9 +48,6 @@ public class CaseObjectMeta implements Serializable {
     @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
     private Person manager;
 
-    @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
-    private Set<Person> notifiers; //may contain partially filled objects!
-
     @JdbcColumn(name = "platform_id")
     private Long platformId;
 
@@ -60,11 +57,7 @@ public class CaseObjectMeta implements Serializable {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    // not db column
-    private En_TimeElapsedType timeElapsedType;
-
-    // not db column
-    private JiraMetaData jiraMetaData;
+    // --------------------
 
     public CaseObjectMeta() {}
 
@@ -85,11 +78,8 @@ public class CaseObjectMeta implements Serializable {
         setProductId(co.getProductId());
         setManager(co.getManager());
         setManagerId(co.getManagerId());
-        setNotifiers(co.getNotifiers());
         setPlatformId(co.getPlatformId());
         setTimeElapsed(co.getTimeElapsed());
-        setTimeElapsedType(co.getTimeElapsedType());
-        setJiraMetaData(co.getJiraMetaData());
         return this;
     }
 
@@ -106,11 +96,8 @@ public class CaseObjectMeta implements Serializable {
         co.setProductId(getProductId());
         co.setManager(getManager());
         co.setManagerId(getManagerId());
-        co.setNotifiers(getNotifiers());
         co.setPlatformId(getPlatformId());
         co.setTimeElapsed(getTimeElapsed());
-        co.setTimeElapsedType(getTimeElapsedType());
-        co.setJiraMetaData(getJiraMetaData());
         return co;
     }
 
@@ -222,14 +209,6 @@ public class CaseObjectMeta implements Serializable {
         this.managerId = manager == null ? null : manager.getId();
     }
 
-    public Set<Person> getNotifiers() {
-        return notifiers;
-    }
-
-    public void setNotifiers(Set<Person> notifiers) {
-        this.notifiers = notifiers;
-    }
-
     public Long getPlatformId() {
         return platformId;
     }
@@ -248,21 +227,5 @@ public class CaseObjectMeta implements Serializable {
 
     public void setTimeElapsed(Long timeElapsed) {
         this.timeElapsed = timeElapsed;
-    }
-
-    public En_TimeElapsedType getTimeElapsedType() {
-        return timeElapsedType;
-    }
-
-    public void setTimeElapsedType(En_TimeElapsedType timeElapsedType) {
-        this.timeElapsedType = timeElapsedType;
-    }
-
-    public JiraMetaData getJiraMetaData() {
-        return jiraMetaData;
-    }
-
-    public void setJiraMetaData(JiraMetaData jiraMetaData) {
-        this.jiraMetaData = jiraMetaData;
     }
 }

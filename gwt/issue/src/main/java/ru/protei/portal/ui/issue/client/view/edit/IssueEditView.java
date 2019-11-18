@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.JiraMetaData;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -160,7 +160,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<JiraMetaData> jiraSlaSelector() {
+    public HasValue<CaseObjectMetaJira> jiraSlaSelector() {
         return jiraSlaSelector;
     }
 

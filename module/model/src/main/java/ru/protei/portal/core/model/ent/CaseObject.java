@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.JiraMetaData;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -143,7 +143,7 @@ public class CaseObject extends AuditableObject {
     private En_TimeElapsedType timeElapsedType;
 
     // not db column
-    private JiraMetaData jiraMetaData;
+    private CaseObjectMetaJira caseObjectMetaJira;
 
     public CaseObject() {
 
@@ -482,12 +482,12 @@ public class CaseObject extends AuditableObject {
         this.tags = tags;
     }
 
-    public JiraMetaData getJiraMetaData() {
-        return jiraMetaData;
+    public CaseObjectMetaJira getCaseObjectMetaJira() {
+        return caseObjectMetaJira;
     }
 
-    public void setJiraMetaData(JiraMetaData jiraMetaData) {
-        this.jiraMetaData = jiraMetaData;
+    public void setCaseObjectMetaJira(CaseObjectMetaJira caseObjectMetaJira) {
+        this.caseObjectMetaJira = caseObjectMetaJira;
     }
 
     public Long getPlatformId() {
@@ -571,7 +571,7 @@ public class CaseObject extends AuditableObject {
                 ", products=" + products +
                 ", tags=" + tags +
                 ", timeElapsedType=" + timeElapsedType +
-                ", jiraMetaData=" + jiraMetaData +
+                ", jiraMetaData=" + caseObjectMetaJira +
                 ", platformId=" + platformId +
                 ", platformName=" + platformName +
                 ", timeElapsedType=" + timeElapsedType +
