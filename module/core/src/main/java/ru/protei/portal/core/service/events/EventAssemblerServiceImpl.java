@@ -30,6 +30,14 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     @Override
     @EventListener
+    public void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
+        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent(event);
+        log.info( "onCaseNameAndDescriptionEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator());
+        assembledPrevEvent.attachCaseNameAndDescriptionEvent(event);
+    }
+
+    @Override
+    @EventListener
     public void onCaseCommentEvent( CaseCommentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
         log.info( "onCaseCommentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );

@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectInfo;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -22,7 +22,7 @@ public interface IssueControllerAsync {
 
     void saveIssue( CaseObject p, AsyncCallback<Long> callback );
 
-    void saveIssueNameAndDescription( CaseObjectInfo changeRequest, AsyncCallback<Long> callback);
+    void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Long> callback);
     /**
      * Получение списка статусов
      * @return список статусов

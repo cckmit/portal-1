@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
@@ -89,7 +90,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         logger.debug("Copying case object changes to redmine issue");
         final CaseObject oldObj = event.getInitState();
         final CaseObject newObj = event.getLastState();
-        updateIssueProps(issue, oldObj, newObj, endpoint);
+        final CaseNameAndDescriptionChangeRequest newNameAndDescription = event.getLastNameAndDescription();
+        updateIssueProps(issue, oldObj, newObj, newNameAndDescription, endpoint);
 
 
         try {
@@ -100,7 +102,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
     }
 
-    private void updateIssueProps(Issue issue,  CaseObject oldObj, CaseObject newObj, RedmineEndpoint endpoint) {
+    private void updateIssueProps(Issue issue,  CaseObject oldObj, CaseObject newObj, CaseNameAndDescriptionChangeRequest newNameAndDescription, RedmineEndpoint endpoint) {
         final long priorityMapId = endpoint.getPriorityMapId();
         final long statusMapId = endpoint.getStatusMapId();
 
@@ -125,8 +127,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         } else
             logger.debug("Redmine status not found");
 
-        issue.setDescription(newObj.getInfo());
-        issue.setSubject(newObj.getName());
+        issue.setDescription(newNameAndDescription.getInfo());
+        issue.setSubject(newNameAndDescription.getName());
     }
 
     private void updateComments( Issue issue, Person initiator, List<CaseComment> addedCaseComments ) {

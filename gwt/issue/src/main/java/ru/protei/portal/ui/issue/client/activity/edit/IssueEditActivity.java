@@ -10,7 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.CaseObjectInfo;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -301,15 +301,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
             return;
         }
-        CaseObjectInfo caseObjectInfo = fillIssueNameAndDescription();
-        issueService.saveIssueNameAndDescription(caseObjectInfo, new FluentCallback<Long>()
+        CaseNameAndDescriptionChangeRequest changeRequest = fillIssueNameAndDescription();
+        issueService.saveIssueNameAndDescription(changeRequest, new FluentCallback<Long>()
                 .withSuccess(caseId -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
 
-    private CaseObjectInfo fillIssueNameAndDescription() {
-        return new CaseObjectInfo(
+    private CaseNameAndDescriptionChangeRequest fillIssueNameAndDescription() {
+        return new CaseNameAndDescriptionChangeRequest(
                 issue.getId(),
                 view.name().getValue().trim(),
                 view.description().getValue().trim());

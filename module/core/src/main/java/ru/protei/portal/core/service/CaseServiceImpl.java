@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectEvent;
-import ru.protei.portal.core.event.CaseObjectInfoEvent;
+import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -221,23 +221,22 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<Long> updateCaseObjectInfo(AuthToken token, CaseObjectInfo caseObjectInfo, Person initiator) {
+    public Result<Long> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator) {
 
-        CaseObject oldCaseObject = caseObjectDAO.get(caseObjectInfo.getId());
-        CaseObjectInfo oldCaseObjectInfo = new CaseObjectInfo(oldCaseObject.getId(), oldCaseObject.getName(), oldCaseObject.getInfo());
+        CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
+        CaseNameAndDescriptionChangeRequest oldChangeRequest = new CaseNameAndDescriptionChangeRequest(oldCaseObject);
 
         CaseObject caseObject = new CaseObject();
-        caseObject.setId(caseObjectInfo.getId());
-        caseObject.setName(caseObjectInfo.getName());
-        caseObject.setInfo(caseObjectInfo.getInfo());
-
+        caseObject.setId(changeRequest.getId());
+        caseObject.setName(changeRequest.getName());
+        caseObject.setInfo(changeRequest.getInfo());
         boolean isUpdated = caseObjectDAO.partialMerge(caseObject);
 
         if (isUpdated) {
-            publisherService.publishEvent(new CaseObjectInfoEvent(
+            publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
-                    oldCaseObjectInfo,
-                    caseObjectInfo,
+                    oldChangeRequest,
+                    changeRequest,
                     initiator,
                     ServiceModule.GENERAL,
                     En_ExtAppType.forCode(oldCaseObject.getExtAppType())));

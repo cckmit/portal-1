@@ -5,6 +5,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -63,13 +64,18 @@ public class TemplateServiceImpl implements TemplateService {
     ) {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
+
+        CaseNameAndDescriptionChangeRequest newNameAndDescription = event.getNameAndDescription();
+        CaseNameAndDescriptionChangeRequest oldNameAndDescription = event.getInitNameAndDescription() == null ? null :
+                newNameAndDescription.equals(event.getInitNameAndDescription()) ? null: event.getInitNameAndDescription();
+
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
         templateModel.put( "TimeElapsedFormatter", new WorkTimeFormatter() );
-        templateModel.put("TranslitUtils", new TransliterationUtils());
+        templateModel.put( "TranslitUtils", new TransliterationUtils() );
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );
@@ -79,10 +85,12 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "manager", newState.getManager() );
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
-        templateModel.put("platform", newState.getPlatformName());
+        templateModel.put( "platform", newState.getPlatformName() );
 
-        templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup) );
-        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup) );
+        templateModel.put( "caseName", newNameAndDescription.getName() );
+        templateModel.put( "oldCaseName", oldNameAndDescription.getName() );
+        templateModel.put( "caseInfo", newNameAndDescription == null ? null : escapeTextAndRenderHTML( newNameAndDescription.getInfo(), textMarkup ) );
+        templateModel.put( "oldCaseInfo", oldNameAndDescription == null ? null : escapeTextAndRenderHTML( oldNameAndDescription.getInfo(), textMarkup ) );
 
         templateModel.put( "productChanged", event.isProductChanged() );
         templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );

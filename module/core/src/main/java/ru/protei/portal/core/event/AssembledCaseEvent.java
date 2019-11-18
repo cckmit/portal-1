@@ -6,14 +6,12 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.util.DiffResult;
 
-import javax.sql.DataSource;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -23,6 +21,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
+    private CaseNameAndDescriptionChangeRequest lastNameAndDescription;
+    private CaseNameAndDescriptionChangeRequest initNameAndDescription;
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
@@ -56,13 +56,21 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.lastState = objectEvent.getNewState();
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
+    }
 
+    public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
+        this.lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent||event.isEagerEvent();
+        this.lastNameAndDescription = event.getOldState();
+        this.initNameAndDescription = event.getNewState();
+        this.initiator = event.getPerson();
+        this.serviceModule = event.getServiceModule();
     }
 
     public void attachLinkEvent( CaseLinksEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
-        mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId );
+        mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId);
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
@@ -89,7 +97,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null ;//&& lastState!=null;
+        return this.initState != null || this.initNameAndDescription != null;//&& lastState!=null;
     }
 
     public boolean isCommentAttached() {
@@ -129,11 +137,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInfo(), initState.getInfo());
+        return isUpdateEvent() && !HelperFunc.equals(lastNameAndDescription.getInfo(), initNameAndDescription.getInfo());
     }
 
     public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getName(), initState.getName());
+        return isUpdateEvent() && !HelperFunc.equals(lastNameAndDescription.getName(), initNameAndDescription.getName());
     }
 
     public boolean isPrivacyChanged() {
@@ -220,6 +228,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initState;
     }
 
+    public CaseNameAndDescriptionChangeRequest getNameAndDescription() {
+        return lastNameAndDescription != null ? lastNameAndDescription : initNameAndDescription;
+    }
+
+    public CaseNameAndDescriptionChangeRequest getLastNameAndDescription() {
+        return lastNameAndDescription;
+    }
+
+    public CaseNameAndDescriptionChangeRequest getInitNameAndDescription() {
+        return initNameAndDescription;
+    }
+
     public Person getInitiator() {
         return initiator;
     }
@@ -276,8 +296,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return existingComments !=null;
     }
 
+    public boolean isCaseNameAndDescriptionFilled() {
+        return initNameAndDescription != null;
+    }
+
     public void setLastCaseObject( CaseObject caseObject ) {
         lastState = caseObject;
+    }
+
+    public void setLastCaseNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) {
+        lastNameAndDescription = changeRequest;
     }
 
     public void setExistingCaseComments( List<CaseComment> caseComments ) {
