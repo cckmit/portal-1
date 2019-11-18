@@ -9,13 +9,12 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
@@ -152,14 +151,15 @@ public class PortalApiController {
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            Result<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
-                    authToken,
-                    (CaseObject) auditableObject,
-                    userSessionDescriptorAPIResult.getData().getPerson()
-            );
+            Person person = userSessionDescriptorAPIResult.getData().getPerson();
+            CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseObjectCoreResponse.orElseGet( result ->
-                    error( result.getStatus(),  "Service Error" ));
+            return caseService.updateCaseObject(authToken, caseObject, person)
+                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject), person))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject), person))
+                .flatMap(o -> caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject), person))
+                .map(o -> caseObject)
+                .orElseGet(result -> error(result.getStatus(), "Service Error"));
 
         } catch (IllegalArgumentException  ex) {
             log.error(ex.getMessage());
