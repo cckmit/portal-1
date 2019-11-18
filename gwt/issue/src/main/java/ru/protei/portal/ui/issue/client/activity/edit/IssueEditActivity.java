@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -71,8 +72,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onShow( IssueEvents.Edit event ) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         if (event.id == null) {
             if (issue != null) {
@@ -82,8 +85,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initNewIssue(caseObject);
                 initialView(caseObject);
             }
+
+            initDetails.parent.clear();
+            initDetails.parent.add(view.asWidget());
         } else {
-            requestIssue(event.id, this::initialView);
+            requestIssue(event.id, issue1 -> {
+                initDetails.parent.clear();
+                initDetails.parent.add(view.asWidget());
+                initialView(issue1);
+            });
         }
     }
 
@@ -300,7 +310,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void requestIssue(Long number, Consumer<CaseObject> successAction){
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
-            public void onError(Throwable throwable) {}
+            public void onError(Throwable throwable) {
+                fireEvent(new ForbiddenEvents.Show());
+            }
 
             @Override
             public void onSuccess(CaseObject issue) {
@@ -621,6 +633,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Inject
     AbstractIssueEditView view;
+    @Inject
+    AbstractForbiddenPageView forbiddenView;
     @Inject
     IssueControllerAsync issueService;
     @Inject

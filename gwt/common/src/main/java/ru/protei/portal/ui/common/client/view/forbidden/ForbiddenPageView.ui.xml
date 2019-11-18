@@ -1,0 +1,6 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel styleName="text-center m-t-20" ui:field="panel">
+        <h1>Доступ запрещен</h1>
+    </g:HTMLPanel>
+</ui:UiBinder>
