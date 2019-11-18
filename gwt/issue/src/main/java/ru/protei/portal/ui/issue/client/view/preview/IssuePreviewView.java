@@ -107,8 +107,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setName( String value, boolean isJira ) {
-        if (!isJira || !value.startsWith("CLM")) {
+    public void setName( String value, String jiraUrl ) {
+        if (jiraUrl.isEmpty() || !value.startsWith("CLM")) {
             this.name.setInnerHTML(value);
         }
         else {
@@ -117,7 +117,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
             AnchorElement jiraLink = DOM.createAnchor().cast();
 
-            jiraLink.setHref(JIRA_LINK + idCLM);
+            jiraLink.setHref(jiraUrl + idCLM);
             jiraLink.setTarget("_blank");
             jiraLink.setInnerText(idCLM);
 
@@ -388,8 +388,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     LabelElement platformLabel;
 
     AbstractIssuePreviewActivity activity;
-
-    private final String JIRA_LINK ="https://jira.billing.ru/browse/";
 
     interface IssuePreviewViewUiBinder extends UiBinder<HTMLPanel, IssuePreviewView> {}
     private static IssuePreviewViewUiBinder ourUiBinder = GWT.create( IssuePreviewViewUiBinder.class );

@@ -3,25 +3,21 @@ package ru.protei.portal.core.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import ru.protei.portal.config.DaoMockTestConfiguration;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.ServiceTestsConfiguration;
+import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventAssemblerService;
-import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.util.Collections;
 
@@ -33,7 +29,8 @@ import static ru.protei.portal.mock.AuthServiceMock.TEST_AUTH_TOKEN;
 @ContextConfiguration(classes = {
         PortalConfigTestConfiguration.class,
         DaoMockTestConfiguration.class,
-        ServiceTestsConfiguration.class
+        ServiceTestsConfiguration.class,
+        TestEventConfiguration.class
 })
 public class CaseLinkServiceImplTest {
 
@@ -46,7 +43,7 @@ public class CaseLinkServiceImplTest {
     @Autowired
     CaseService caseService;
 
-    @Mock
+    @Autowired
     EventPublisherService publisherService;
     @Autowired
     EventAssemblerService assemblerService;
@@ -54,7 +51,6 @@ public class CaseLinkServiceImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks( this );
-        ReflectionTestUtils.setField(caseLinkService, "publisherService", publisherService);
     }
 
     @Test

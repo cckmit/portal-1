@@ -61,7 +61,6 @@ public class BaseServiceTest {
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setInitiatorCompanyId(1L);
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
         return caseObject;
     }
@@ -140,8 +139,11 @@ public class BaseServiceTest {
     }
 
     protected CaseObject makeCaseObject( En_CaseType caseType, Person person) {
+        Company company = makeCompany( createNewCustomerCompany() );
+        CaseObject newCaseObject = createNewCaseObject( caseType, person );
+        newCaseObject.setInitiatorCompany( company );
         return checkResultAndGetData(
-                caseService.createCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
+                caseService.createCaseObject( getAuthToken(), newCaseObject, person )
         );
     }
 

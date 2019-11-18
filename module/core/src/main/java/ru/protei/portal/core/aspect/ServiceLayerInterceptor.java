@@ -26,7 +26,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;

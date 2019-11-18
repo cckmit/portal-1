@@ -239,7 +239,7 @@ public class MailNotificationProcessor {
 
 
     private Collection<NotificationEntry> collectNotifiers(AssembledCaseEvent event) {
-        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
+        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers(  event.getCaseObject() );
         return formNotifiers(defaultNotifiers,
                 event.getInitiator(),
                 event.getCreator(),
