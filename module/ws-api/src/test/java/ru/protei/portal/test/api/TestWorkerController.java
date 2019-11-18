@@ -415,22 +415,27 @@ public class TestWorkerController {
     }
 
     @Test
-    @Ignore
+    /*@Ignore*/
     public void testGetPhotos() throws Exception {
         IdList list = new IdList();
         list.getIds().add(new Long(148));
         list.getIds().add(new Long(149));
 
+        String listXml = toXml(list);
+
         String uri = BASE_URI + "get.photos";
         ResultActions result = mockMvc.perform(
-                get(uri)
+                post(uri)
                         .header("Accept", "application/xml")
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
+                        .content(listXml)
         );
 
 
-        PhotoList pl = (PhotoList) fromXml(result.andReturn().getResponse().getContentAsString());
+        Result<PhotoList> resultPhotoList = (Result<PhotoList>) fromXml(result.andReturn().getResponse().getContentAsString());
+
+        PhotoList pl = resultPhotoList.getData();
 
         Assert.assertNotNull("Result getPhotos() is null!", pl);
         for (Photo p : pl.getPhotos()) {

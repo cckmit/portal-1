@@ -1,7 +1,9 @@
 package ru.protei.portal.api.controller;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -537,7 +539,7 @@ public class WorkerController {
 
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        Base64InputStream in = null;
+//        Base64InputStream in = null;
         PhotoList photos = new PhotoList();
 
         try {
@@ -547,18 +549,24 @@ public class WorkerController {
                 File file = new File(makeFileName(id));
                 if (file.exists()) {
 
-                    in = new Base64InputStream(new FileInputStream(file), true);
+                   /* in = new Base64InputStream(new FileInputStream(file), true);
                     StringWriter sw = new StringWriter();
                     IOUtils.copy(in, sw);
 
+
+*/
+//                   java.util.Base64.getEncoder().encode()
+                    byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+                     String sw = new String(encoded);
+
                     Photo photo = new Photo();
                     photo.setId(id);
-                    photo.setContent(sw.toString());
+                    photo.setContent(sw);
                     photos.getPhotos().add(photo);
 
                     logger.debug("file exists, photo={}", photo);
 
-                    IOUtils.closeQuietly(in);
+//                    IOUtils.closeQuietly(in);
                 } else {
                     logger.debug("file doesn't exist");
                 }
@@ -567,7 +575,7 @@ public class WorkerController {
         } catch (Exception e) {
             logger.error("error while get photos", e);
         } finally {
-            IOUtils.closeQuietly(in);
+//            IOUtils.closeQuietly(in);
         }
 
         logger.debug("result, size of photo's list {}", photos.getPhotos().size());
