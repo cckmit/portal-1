@@ -220,8 +220,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withPrivateCase(isPrivateCase)
                 .withTextMarkup(textMarkup)
                 .build());
-
-        fireEvent(new IssueEvents.ChangeIssue(issueId));
     }
 
     private void fillViewForJira(CaseObject value) {
