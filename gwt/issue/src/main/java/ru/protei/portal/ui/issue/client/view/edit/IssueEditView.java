@@ -370,8 +370,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
 
     @Override
-    public void setNameRO( String value, boolean isJira ) {
-        if (!isJira || !value.startsWith("CLM")) {
+    public void setNameRO( String value, String jiraUrl ) {
+        if (jiraUrl.isEmpty() || !value.startsWith("CLM")) {
             this.nameRO.setInnerHTML(value);
         }
         else {
@@ -380,7 +380,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
             AnchorElement jiraLink = DOM.createAnchor().cast();
 
-            jiraLink.setHref(JIRA_LINK + idCLM);
+            jiraLink.setHref(jiraUrl + idCLM);
             jiraLink.setTarget("_blank");
             jiraLink.setInnerText(idCLM);
 
@@ -693,8 +693,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     };
 
     private AbstractIssueEditActivity activity;
-
-    private final String JIRA_LINK ="https://jira.billing.ru/browse/";
 
     interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}
     private static IssueEditViewUiBinder ourUiBinder = GWT.create(IssueEditViewUiBinder.class);

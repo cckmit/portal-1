@@ -7,13 +7,15 @@ public class JiraMetaData implements Serializable {
     private String issueType;
     private String severity;
     private Long slaMapId;
+    private String url;
 
     public JiraMetaData() {}
 
-    public JiraMetaData(String issueType, String severity, Long slaMapId) {
+    public JiraMetaData(String issueType, String severity, Long slaMapId, String url) {
         this.issueType = issueType;
         this.severity = severity;
         this.slaMapId = slaMapId;
+        this.url = url;
     }
 
     public String getIssueType() {
@@ -40,11 +42,20 @@ public class JiraMetaData implements Serializable {
         this.slaMapId = slaMapId;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public String toString() {
         return "JiraMetaData{" +
                 "issueType='" + issueType + '\'' +
                 ", severity='" + severity + '\'' +
+                ", url='" + url + '\'' +
                 ", slaMapId=" + slaMapId +
                 '}';
     }
