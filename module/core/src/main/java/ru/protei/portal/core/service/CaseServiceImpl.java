@@ -320,6 +320,10 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        if (!isPersonHasGrantAccess(token, En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         jdbcManyRelationsHelper.persist(caseMetaNotifiers, "notifiers");
         if (isNotEmpty(caseMetaNotifiers.getNotifiers())) {
             // update partially filled objects

@@ -10,14 +10,12 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -28,6 +26,8 @@ import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
+import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
+import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -37,11 +37,12 @@ import java.util.stream.Collectors;
 /**
  * Активность создания и редактирования обращения
  */
-public abstract class IssueEditActivity implements AbstractIssueEditActivity, Activity {
+public abstract class IssueEditActivity implements AbstractIssueEditActivity, AbstractIssueMetaActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.setMetaActivity( this );
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
@@ -96,8 +97,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
-        view.timeElapsedLabel().setTime(event.timeElapsed);
-        view.timeElapsedInput().setTime(event.timeElapsed);
+        final AbstractIssueMetaView metaView = view.getMetaView();
+        metaView.changeTimeElapsed(event.timeElapsed);
     }
 
     @Event
@@ -111,12 +112,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onFillPerson(PersonEvents.PersonCreated event) {
-        if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && issue != null && event.person != null) {
-            issue.setInitiator(event.person);
-            issue.setInitiatorId(event.person.getId());
-            if (issue.getInitiator() != null) {
-                view.initiator().setValue(issue.getInitiator().toFullNameShortView());
-            }
+        if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && event.person != null) {
+            final AbstractIssueMetaView metaView = view.getMetaView();
+            metaView.changeInitiator(event.person);
         }
     }
 
@@ -124,6 +122,49 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     public void onRemoveTag(CaseTagEvents.Remove event) {
         issue.getTags().remove(event.getCaseTag());
         view.tags().setValue(issue.getTags());
+    }
+
+    @Override
+    public void onCaseMetaChanged(CaseObjectMeta caseMeta) {
+
+        if (!validateCaseMeta(caseMeta)) {
+            return;
+        }
+
+        issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
+                .withSuccess(caseMetaUpdated -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    view.getMetaView().setCaseMeta(caseMetaUpdated);
+                    onCompanyChanged();
+                }));
+    }
+
+    @Override
+    public void onCaseMetaNotifiersChanged(CaseObjectMetaNotifiers caseMetaNotifiers) {
+
+        if (!validateCaseMetaNotifiers(caseMetaNotifiers)) {
+            return;
+        }
+
+        issueService.updateIssueMetaNotifiers(caseMetaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
+                .withSuccess(caseMetaNotifiersUpdated -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    view.getMetaView().setCaseMetaNotifiers(caseMetaNotifiersUpdated);
+                }));
+    }
+
+    @Override
+    public void onCaseMetaJiraChanged(CaseObjectMetaJira caseMetaJira) {
+
+        if (!validateCaseMetaJira(caseMetaJira)) {
+            return;
+        }
+
+        issueService.updateIssueMetaJira(caseMetaJira, new FluentCallback<CaseObjectMetaJira>()
+                .withSuccess(caseMetaJiraUpdated -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    view.getMetaView().setCaseMetaJira(caseMetaJiraUpdated);
+                }));
     }
 
     @Override
@@ -192,42 +233,54 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCompanyChanged() {
-        Company companyOption = Company.fromEntityOption(view.company().getValue());
 
-        view.initiatorState().setEnabled(companyOption != null);
-        view.initiatorUpdateCompany(companyOption);
+        final AbstractIssueMetaView metaView = view.getMetaView();
 
-        if ( companyOption == null ) {
+        Company company = metaView.getCaseMeta().getInitiatorCompany();
+
+        metaView.initiatorEnabled().setEnabled(company != null);
+        metaView.initiatorUpdateCompany(company);
+
+        if (company == null) {
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
-            view.initiator().setValue(null);
+            metaView.changeInitiator(null);
         } else {
-            initiatorSelectorAllowAddNew(companyOption.getId());
-            Long selectedCompanyId = companyOption.getId();
+            initiatorSelectorAllowAddNew(company.getId());
+            Long selectedCompanyId = company.getId();
 
-            view.platform().setValue(null);
-            view.platformState().setEnabled(true);
-            view.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+            metaView.changePlatform(null);
+            metaView.platformEnabled().setEnabled(true);
+            metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
-            companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
-                    .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions,
-                            CollectionUtils.isEmpty(subscriptions) ? lang.issueCompanySubscriptionNotDefined() : lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()))));
+            companyService.getCompanyWithParentCompanySubscriptions(
+                    selectedCompanyId,
+                    new ShortRequestCallback<List<CompanySubscription>>()
+                            .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            ))
+            );
 
-            companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
-                    .setOnSuccess(caseStates -> {
-                        view.setStateFilter(caseStateFilter.makeFilter(caseStates));
-                        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-                    }));
+            companyService.getCompanyCaseStates(
+                    selectedCompanyId,
+                    new ShortRequestCallback<List<CaseState>>()
+                            .setOnSuccess(caseStates -> {
+                                metaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
+                                fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                            })
+            );
 
+            Person initiator = issue.getInitiator();
             Profile profile = policyService.getProfile();
-            PersonShortView initiator = null;
-            if ( issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
-                initiator = PersonShortView.fromPerson(issue.getInitiator());
-                initiator.setDisplayShortName(transliteration(initiator.getDisplayShortName()));
-            } else if ( profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = new PersonShortView(transliteration(profile.getShortName()), profile.getId(), profile.isFired());
+            if ((initiator == null || !Objects.equals(initiator.getCompanyId(), selectedCompanyId)) &&
+                profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)
+            ) {
+                initiator = Person.fromPersonShortView(new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired()));
             }
-
-            view.initiator().setValue(initiator);
+            metaView.changeInitiator(initiator);
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
@@ -235,9 +288,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCreateContactClicked() {
-        if (view.company().getValue() != null) {
+        final AbstractIssueMetaView metaView = view.getMetaView();
+        if (metaView.getCaseMeta().getInitiatorCompany() != null) {
             fillIssueObject(issue);
-            fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+            fireEvent(new ContactEvents.Edit(null, metaView.getCaseMeta().getInitiatorCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
     }
 
@@ -316,9 +370,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue, boolean isRestoredIssue) {
-        view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
-        view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
-        view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
 
         view.attachmentsContainer().clear();
 
@@ -328,9 +379,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.showComments(false);
             view.getCommentsContainer().clear();
             view.privacyVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-            view.timeElapsedHeader().addClassName("hide");
         } else {
-            view.timeElapsedHeader().removeClassName("hide");
             view.setCaseNumber(issue.getCaseNumber());
             view.privacyVisibility().setVisible(false);
             view.setPrivacyIcon(issue.isPrivateCase());
@@ -347,22 +396,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .withPrivateCase(issue.isPrivateCase())
                     .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
                     .build());
-        }
-
-        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
-            view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
-                    issue.getNotifiers()
-                            .stream()
-                            .map(notifier -> {
-                                PersonShortView personShortView = PersonShortView.fromPerson(notifier);
-                                personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
-
-                                return personShortView;
-                            })
-                            .collect(Collectors.toSet()));
-            view.caseSubscriptionContainer().setVisible(true);
-        } else {
-            view.caseSubscriptionContainer().setVisible(false);
         }
 
 //        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
@@ -393,74 +426,88 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
         }
 
-        view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
-        view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
-        view.stateEnabled().setEnabled(!isNew(issue) || policyService.personBelongsToHomeCompany());
-        view.importance().setValue(isNew(issue) && !isRestoredIssue ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
-
-        boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
-        view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
-        if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue)) {
-                boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
-                view.timeElapsedLabel().setTime(null);
-                if ( !isRestoredIssue ) {
-                    view.timeElapsedInput().setTime(0L);
-                }
-                view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
-                view.timeElapsedEditContainerVisibility().setVisible(timeElapsedEditAllowed);
-                view.timeElapsedType().setValue( En_TimeElapsedType.NONE );
-            } else {
-                Long timeElapsed = issue.getTimeElapsed();
-                view.timeElapsedLabel().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
-                view.timeElapsedInput().setTime(timeElapsed);
-                view.timeElapsedLabelVisibility().setVisible(true);
-                view.timeElapsedEditContainerVisibility().setVisible(false);
-            }
-        }
-
-        if (isNew(issue) && !isRestoredIssue) {
-            view.applyCompanyValueIfOneOption();
-            view.platformState().setEnabled( false );
-        } else {
-            Company initiatorCompany = issue.getInitiatorCompany();
-            if ( initiatorCompany == null ) {
-                initiatorCompany = policyService.getUserCompany();
-            }
-            EntityOption company = EntityOption.fromCompany(initiatorCompany);
-            if (company != null) {
-                company.setDisplayText(transliteration(company.getDisplayText()));
-            }
-            view.company().setValue(company, true);
-        }
-
-        view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
-        PersonShortView value = PersonShortView.fromPerson(issue.getManager());
-        if (value != null) {
-            value.setDisplayShortName(transliteration(value.getDisplayShortName()));
-        }
-        view.manager().setValue(value);
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         initiatorSelectorAllowAddNew(issue.getInitiatorCompanyId());
-        view.platform().setValue(issue.getPlatformId() == null ? null : new PlatformOption(issue.getPlatformName(), issue.getPlatformId()));
-        view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.copyVisibility().setVisible(!isNew(issue));
 
-        fillViewForJira(issue);
+        fillMetaView(issue, isRestoredIssue);
 
         unlockSave();
     }
 
-    private void fillViewForJira(CaseObject issue) {
+    private void fillMetaView(CaseObject issue, boolean isRestoredIssue) {
 
-        view.jiraSlaSelectorVisibility().setVisible(false);
+        final AbstractIssueMetaView metaView = view.getMetaView();
+        final boolean isNew = isNew(issue);
+        final boolean isNewNotRestored = isNew && !isRestoredIssue;
+        CaseObjectMeta caseMeta = new CaseObjectMeta(issue);
+        CaseObjectMetaNotifiers caseMetaNotifiers = new CaseObjectMetaNotifiers(issue);
+        CaseObjectMetaJira caseMetaJira = new CaseObjectMetaJira(issue);
 
-        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
-            return;
+        metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
+        metaView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        metaView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+
+        if (isNew) {
+            metaView.timeElapsedHeader().addClassName("hide");
+        } else {
+            metaView.timeElapsedHeader().removeClassName("hide");
         }
 
-        view.jiraSlaSelectorVisibility().setVisible(true);
-        view.jiraSlaSelector().setValue(issue.getCaseObjectMetaJira());
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
+            metaView.caseSubscriptionContainer().setVisible(true);
+        } else {
+            caseMetaNotifiers.setNotifiers(null);
+            metaView.caseSubscriptionContainer().setVisible(false);
+        }
+
+        caseMeta.setImportance(isNewNotRestored ? En_ImportanceLevel.BASIC : caseMeta.getImportance());
+        caseMeta.setState(isNewNotRestored ? En_CaseState.CREATED : caseMeta.getState());
+        metaView.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
+        metaView.stateEnabled().setEnabled(!isNew || policyService.personBelongsToHomeCompany());
+
+        boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
+        metaView.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
+        if (hasPrivilegeForTimeElapsed) {
+            if (isNew) {
+                boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
+                caseMeta.setTimeElapsed(null);
+                // caseMeta.setTimeElapsedType(null);
+                // view.timeElapsedType().setValue( En_TimeElapsedType.NONE );
+                metaView.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
+                metaView.timeElapsedEditContainerVisibility().setVisible(timeElapsedEditAllowed);
+            } else {
+                metaView.timeElapsedLabelVisibility().setVisible(true);
+                metaView.timeElapsedEditContainerVisibility().setVisible(false);
+            }
+        }
+
+        if (isNewNotRestored) {
+            metaView.platformEnabled().setEnabled(false);
+        } else {
+            Company company = issue.getInitiatorCompany();
+            if (company == null) company = policyService.getUserCompany();
+            caseMeta.setInitiatorCompany(company);
+        }
+
+        metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+
+        if (En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
+            metaView.jiraSlaSelectorVisibility().setVisible(true);
+        } else {
+            metaView.jiraSlaSelectorVisibility().setVisible(false);
+            caseMetaJira = null;
+        }
+
+        metaView.setCaseMeta(caseMeta);
+        metaView.setCaseMetaNotifiers(caseMetaNotifiers);
+        metaView.setCaseMetaJira(caseMetaJira);
+
+        if (isNewNotRestored) {
+            metaView.applyCompanyValueIfOneOption();
+        }
+
+        onCompanyChanged();
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -474,60 +521,60 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             issue.setInfo(view.description().getValue());
         }
         issue.setPrivateCase( view.isPrivate().getValue() );
-        issue.setStateId(view.state().getValue().getId());
-        issue.setImpLevel(view.importance().getValue().getId());
 
-        issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
-        issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));
-        issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
-        issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
-        issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
 //        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
         issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
-        issue.setPlatformId(view.platform().getValue() == null ? null : view.platform().getValue().getId());
 
-        if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
-            issue.setTimeElapsed(view.timeElapsedInput().getTime());
-            En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
-            issue.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
-        }
-
-        fillIssueObjectWithJira(issue);
+        final AbstractIssueMetaView metaView = view.getMetaView();
+        metaView.getCaseMeta().collectToCaseObject(issue);
+        metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
+        metaView.getCaseMetaJira().collectToCaseObject(issue);
     }
 
-    private void fillIssueObjectWithJira(CaseObject issue) {
+    private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
 
-        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
-            return;
-        }
-
-        issue.setCaseObjectMetaJira(view.jiraSlaSelector().getValue());
-    }
-
-    private boolean validateView(CaseObject issue) {
-        if(view.company().getValue() == null){
+        if (caseMeta.getInitiatorCompany() == null) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (isStateWithRestrictions(view.state().getValue())) {
-            if (view.manager().getValue() == null) {
-                fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
-                return false;
-            }
-            if (view.product().getValue() == null) {
-                fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
-                return false;
-            }
+        if (caseMeta.getManager() == null && isStateWithRestrictions(caseMeta.getState())) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
+            return false;
         }
 
-        boolean isRO = !(isNew(issue) || isSelfIssue(issue));
-        boolean isFieldsValid = (isRO || view.nameValidator().isValid()) &&
-                view.stateValidator().isValid() &&
-                view.importanceValidator().isValid() &&
-                view.companyValidator().isValid();
+        if (caseMeta.getProduct() == null && isStateWithRestrictions(caseMeta.getState())) {
+            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
 
-        if(!isFieldsValid) {
+        boolean isFieldsValid =
+                view.getMetaView().stateValidator().isValid() &&
+                view.getMetaView().importanceValidator().isValid() &&
+                view.getMetaView().companyValidator().isValid();
+
+        if (!isFieldsValid) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateCaseMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) {
+        return true;
+    }
+
+    private boolean validateCaseMetaJira(CaseObjectMetaJira caseMetaJira) {
+        return true;
+    }
+
+    private boolean validateView(CaseObject issue) {
+
+        boolean isRO = !(isNew(issue) || isSelfIssue(issue));
+        boolean isFieldsValid = (isRO || view.nameValidator().isValid());
+
+        if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -584,8 +631,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void setSubscriptionEmails(String value) {
-        view.setSubscriptionEmails(value);
-        view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
+        final AbstractIssueMetaView metaView = view.getMetaView();
+        metaView.setSubscriptionEmails(value);
+        metaView.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
@@ -615,8 +663,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         if (companyId == null) {
             return;
         }
-
-        view.initiatorSelectorAllowAddNew(policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
+        final AbstractIssueMetaView metaView = view.getMetaView();
+        boolean allowCreateContact = policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId);
+        metaView.initiatorSelectorAllowAddNew(allowCreateContact);
     }
 
     @Inject

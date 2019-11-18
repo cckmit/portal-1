@@ -50,7 +50,7 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         this.value = value;
         renderView();
         if (fireEvents) {
-            ValueChangeEvent.fire(this, value);
+            fireChanged();
         }
     }
 
@@ -63,6 +63,11 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
     public void severityChanged(ValueChangeEvent<String> event) {
         fillValueFromView();
         renderView();
+        fireChanged();
+    }
+
+    private void fireChanged() {
+        ValueChangeEvent.fire(this, value);
     }
 
     private void renderView() {

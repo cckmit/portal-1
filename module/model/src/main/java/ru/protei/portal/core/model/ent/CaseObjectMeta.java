@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -79,6 +80,7 @@ public class CaseObjectMeta implements Serializable {
         setManager(co.getManager());
         setManagerId(co.getManagerId());
         setPlatformId(co.getPlatformId());
+        setPlatformName(co.getPlatformName());
         setTimeElapsed(co.getTimeElapsed());
         return this;
     }
@@ -97,6 +99,7 @@ public class CaseObjectMeta implements Serializable {
         co.setManager(getManager());
         co.setManagerId(getManagerId());
         co.setPlatformId(getPlatformId());
+        co.setPlatformName(getPlatformName());
         co.setTimeElapsed(getTimeElapsed());
         return co;
     }
@@ -139,6 +142,14 @@ public class CaseObjectMeta implements Serializable {
 
     public void setImpLevel(Integer impLevel) {
         this.impLevel = impLevel;
+    }
+
+    public En_ImportanceLevel getImportance() {
+        return En_ImportanceLevel.getById(getImpLevel());
+    }
+
+    public void setImportance(En_ImportanceLevel importance) {
+        setImpLevel(importance.getId());
     }
 
     public Long getInitiatorId() {
@@ -219,6 +230,10 @@ public class CaseObjectMeta implements Serializable {
 
     public String getPlatformName() {
         return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
     }
 
     public Long getTimeElapsed() {

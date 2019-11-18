@@ -13,8 +13,6 @@ public interface AbstractIssueEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void removeAttachment(Attachment attachment);
-    void onCompanyChanged();
-    void onCreateContactClicked();
     void onLocalClicked();
     void renderMarkupText(String text, Consumer<String> consumer);
 
