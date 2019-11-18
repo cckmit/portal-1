@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -23,11 +24,13 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.*;
 
 import java.util.*;
@@ -73,7 +76,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Event
     public void onShow( IssueEvents.Edit event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(lang.errAccessDenied()));
             return;
         }
 
@@ -85,15 +88,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initNewIssue(caseObject);
                 initialView(caseObject);
             }
-
-            initDetails.parent.clear();
-            initDetails.parent.add(view.asWidget());
         } else {
-            requestIssue(event.id, issue1 -> {
-                initDetails.parent.clear();
-                initDetails.parent.add(view.asWidget());
-                initialView(issue1);
-            });
+            requestIssue(event.id, this::initialView);
         }
     }
 
@@ -308,10 +304,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void requestIssue(Long number, Consumer<CaseObject> successAction){
-        issueService.getIssue(number, new RequestCallback<CaseObject>() {
+        issueService.getIssue(number, new AsyncCallback<CaseObject>() {
             @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new ForbiddenEvents.Show());
+            public void onFailure(Throwable throwable) {
+                if (throwable instanceof RequestFailedException) {
+                    if (Objects.equals(((RequestFailedException) throwable).status, En_ResultStatus.PERMISSION_DENIED)) {
+                        fireEvent(new ForbiddenEvents.Show(lang.errAccessDenied()));
+                    }
+                }
             }
 
             @Override
@@ -328,6 +328,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue, boolean isRestoredIssue) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
         view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
@@ -633,8 +635,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Inject
     AbstractIssueEditView view;
-    @Inject
-    AbstractForbiddenPageView forbiddenView;
     @Inject
     IssueControllerAsync issueService;
     @Inject
