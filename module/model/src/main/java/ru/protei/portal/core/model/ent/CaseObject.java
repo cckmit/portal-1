@@ -145,6 +145,9 @@ public class CaseObject extends AuditableObject {
     // not db column
     private CaseObjectMetaJira caseObjectMetaJira;
 
+    // not db column
+    private String jiraUrl;
+
     public CaseObject() {
 
     }
@@ -520,6 +523,14 @@ public class CaseObject extends AuditableObject {
 
     public void setContractNumber(String contractNumber) {
         this.contractNumber = contractNumber;
+    }
+
+    public String getJiraUrl() {
+        return jiraUrl;
+    }
+
+    public void setJiraUrl(String jiraUrl) {
+        this.jiraUrl = jiraUrl;
     }
 
     @Override

@@ -67,7 +67,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setDescriptionRO(String value);
 
-    void setNameRO(String name, boolean isJira);
+    void setNameRO(String name, String jiraUrl);
 
     String DESCRIPTION = "description";
 }

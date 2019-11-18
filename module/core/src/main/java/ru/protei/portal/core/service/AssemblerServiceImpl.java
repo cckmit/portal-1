@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.util.*;
 

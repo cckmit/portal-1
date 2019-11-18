@@ -100,7 +100,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null ;//&& lastState!=null;
+        return this.initState != null && lastState!=null;
     }
 
     public boolean isCommentAttached() {
