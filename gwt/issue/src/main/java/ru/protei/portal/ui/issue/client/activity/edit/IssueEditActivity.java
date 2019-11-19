@@ -134,7 +134,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    issue = caseMetaUpdated.collectToCaseObject(issue);
                     view.getMetaView().setCaseMeta(caseMetaUpdated);
+                    showComments(issue);
                     onCompanyChanged();
                 }));
     }
@@ -149,7 +151,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         issueService.updateIssueMetaNotifiers(caseMetaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
                 .withSuccess(caseMetaNotifiersUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    issue = caseMetaNotifiersUpdated.collectToCaseObject(issue);
                     view.getMetaView().setCaseMetaNotifiers(caseMetaNotifiersUpdated);
+                    showComments(issue);
                 }));
     }
 
@@ -163,7 +167,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         issueService.updateIssueMetaJira(caseMetaJira, new FluentCallback<CaseObjectMetaJira>()
                 .withSuccess(caseMetaJiraUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    issue = caseMetaJiraUpdated.collectToCaseObject(issue);
                     view.getMetaView().setCaseMetaJira(caseMetaJiraUpdated);
+                    showComments(issue);
                 }));
     }
 
@@ -387,16 +393,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
-            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
-                    .withCaseType(En_CaseType.CRM_SUPPORT)
-                    .withCaseId(issue.getId())
-                    .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                    .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                    .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                    .withPrivateCase(issue.isPrivateCase())
-                    .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                    .build());
         }
+
+        showComments(issue);
 
 //        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
 
@@ -529,6 +528,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         metaView.getCaseMeta().collectToCaseObject(issue);
         metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
         metaView.getCaseMetaJira().collectToCaseObject(issue);
+    }
+
+    private void showComments(CaseObject issue) {
+        if (isNew(issue)) {
+            return;
+        }
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withCaseId(issue.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                .withPrivateCase(issue.isPrivateCase())
+                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
+                .build());
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
