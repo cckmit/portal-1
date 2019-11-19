@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.caselink.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -20,7 +21,8 @@ public class CaseLinkListView
         extends Composite
         implements AbstractCaseLinkListView {
 
-    public CaseLinkListView() {
+    @Inject
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         createCaseLinkPopup.addValueChangeHandler(event -> activity.onAddLinkClicked(event.getValue()));
     }
@@ -46,16 +48,20 @@ public class CaseLinkListView
         return linksPanel;
     }
 
+    @Override
+    public void setHeader(String value) {
+        headerLabel.setInnerText(value);
+    }
+
     @UiHandler("addLinkButton")
     public void addLinkButtonClick(ClickEvent e) {
         createCaseLinkPopup.showNear(addLinkButton);
     }
 
     @UiHandler("collapse")
-    public void onChangeFormStateClicked(ClickEvent e) {
-        boolean isVisible = linksPanel.isVisible();
-        setLinksContainerVisible(isVisible);
-        localStorageService.set(LINKS_PANEL_BODY, String.valueOf(isVisible));
+    public void onChangeFormStateClicked(ClickEvent event) {
+        event.preventDefault();
+        activity.onLinksContainerStateChanged(!linksPanel.isVisible());
     }
 
     @UiField
@@ -64,16 +70,12 @@ public class CaseLinkListView
     HTMLPanel linksPanel;
     @UiField
     Anchor collapse;
+    @UiField
+    LabelElement headerLabel;
     @Inject
     CreateCaseLinkPopup createCaseLinkPopup;
 
-    @Inject
-    private LocalStorageService localStorageService;
-
     private AbstractCaseLinkListActivity activity;
-    private HandlerRegistration linksPopupHandlerRegistration;
-
-    private static final String LINKS_PANEL_BODY = "case-link-panel-body";
 
     private static CaseLinkListUiBinder ourUiBinder = GWT.create(CaseLinkListUiBinder.class);
     interface CaseLinkListUiBinder extends UiBinder<HTMLPanel, CaseLinkListView> {}

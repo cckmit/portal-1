@@ -76,7 +76,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
 
         copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
-        caseMetaView.addValueChangeHandler(event ->  activity.onCaseMetaChanged(event.getValue()) );
     }
 
     @Override
@@ -150,8 +149,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<Set<CaseLink>> links() {
-        return linksHasValue;
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
@@ -660,6 +659,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     DivElement descriptionRO;
     @UiField
     HTMLPanel descriptionContainer;
+    @UiField
+    HTMLPanel linksContainer;
 
     private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
         @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }

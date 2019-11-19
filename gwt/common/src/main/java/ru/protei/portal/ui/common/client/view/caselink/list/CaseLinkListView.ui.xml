@@ -5,7 +5,7 @@
 
     <g:HTMLPanel ui:field="collapsiblePanel" styleName="m-l-15 m-r-15 m-t-5 card card-default">
         <div class="card-header">
-            <g:Anchor ui:field="collapse" styleName="p-t-0 fas fa-chevron-up" href="#"/
+            <g:Anchor ui:field="collapse" styleName="p-t-0 fas fa-chevron-up" href="#"/>
             <label ui:field="headerLabel" class="card-title collapsible-label"/>
             <div class="card-controls">
                 <ul>

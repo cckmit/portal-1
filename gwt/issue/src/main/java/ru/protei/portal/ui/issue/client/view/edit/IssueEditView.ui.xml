@@ -60,6 +60,8 @@
                         </div>
                     </g:HTMLPanel>
 
+                    <g:HTMLPanel ui:field="linksContainer" styleName="row form-group"/>
+
                     <div class="row form-group">
                         <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"
                                                tagCaseType="CRM_SUPPORT"/>

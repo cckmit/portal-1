@@ -44,7 +44,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<ProductShortView> product();
     HasValue<Boolean> isPrivate();
     HasValue<Set<PersonShortView>> notifiers();
-    HasValue<Set<CaseLink>> links();
+    HasWidgets getLinksContainer();
     HasValue<Set<CaseTag>> tags();
     HasValue<JiraMetaData> jiraSlaSelector();
 

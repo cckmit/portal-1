@@ -8,6 +8,7 @@ import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseC
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.CaseLinkListActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditView;
@@ -33,6 +34,7 @@ import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
+import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
 import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
 import ru.protei.portal.ui.common.client.view.casetag.CaseTagEditView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
@@ -109,6 +111,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
 
         bind( CaseLinkListActivity.class ).asEagerSingleton();
+        bind( AbstractCaseLinkItemView.class ).to( CaseLinkItemView.class );
         bind( AbstractCaseLinkListView.class ).to( CaseLinkListView.class ).in( Singleton.class );
 
         bind( CaseTagEditActivity.class ).asEagerSingleton();

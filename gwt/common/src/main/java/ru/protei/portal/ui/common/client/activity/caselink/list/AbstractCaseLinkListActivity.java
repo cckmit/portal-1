@@ -8,4 +8,6 @@ import ru.protei.portal.core.model.ent.CaseLink;
 public interface AbstractCaseLinkListActivity {
 
     void onAddLinkClicked(CaseLink value);
+
+    void onLinksContainerStateChanged(boolean isVisible);
 }

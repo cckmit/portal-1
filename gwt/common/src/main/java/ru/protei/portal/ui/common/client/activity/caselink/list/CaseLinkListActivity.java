@@ -31,9 +31,6 @@ public abstract class CaseLinkListActivity
     @Inject
     public void onInit() {
         view.setActivity( this );
-
-        controller.getLinkMap(new FluentCallback<Map<En_CaseLink, String>>()
-                .withSuccess(map -> linkUrlMap = map));
     }
 
     @Event
@@ -41,8 +38,10 @@ public abstract class CaseLinkListActivity
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        view.getLinksContainer().clear();
+
         controller.getCaseLinks(event.caseId, new FluentCallback<List<CaseLink>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                .withError(throwable -> showError(lang.errNotFound()))
                 .withSuccess(this::fillView)
         );
     }
@@ -73,6 +72,12 @@ public abstract class CaseLinkListActivity
         }
     }
 
+    @Override
+    public void onLinksContainerStateChanged(boolean isVisible) {
+        storage.set(UiConstants.LINKS_PANEL_VISIBILITY, String.valueOf(isVisible));
+        view.setLinksContainerVisible(isVisible);
+    }
+
     private void fillView(List<CaseLink> links) {
         view.getLinksContainer().clear();
         view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
@@ -82,11 +87,12 @@ public abstract class CaseLinkListActivity
             return;
         }
 
+        view.setHeader(lang.linkedWith() + " (" + links.size() + ")");
         links.forEach(this::makeCaseLinkViewAndAddToParent);
     }
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value) {
-        String linkId = isCrmLink(value) ? value.getCaseInfo().getCaseNumber().toString() : value.getRemoteId();
+        String linkId = isCrmLink(value) ? (value.getCaseInfo() == null ? "" : value.getCaseInfo().getCaseNumber().toString()) : value.getRemoteId();
         value.setLink(caseLinkProvider.getLink(value.getType(), linkId));
 
         AbstractCaseLinkItemView itemWidget = itemViewProvider.get();
@@ -103,7 +109,7 @@ public abstract class CaseLinkListActivity
                 .withError( throwable -> fireEvent(new NotifyEvents.Show(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess( youTrackIssueInfo -> {
                     if (youTrackIssueInfo == null) {
-                        fireEvent(new NotifyEvents.Show(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()), NotifyEvents.NotifyType.ERROR))
+                        showError(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()));
                         return;
                     }
 
@@ -125,9 +131,7 @@ public abstract class CaseLinkListActivity
         }
 
         caseLinkProvider.checkExistCrmLink(crmRemoteId, new FluentCallback<CaseInfo>()
-                .withError(throwable -> {
-                    showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
-                })
+                .withError(throwable -> showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId)))
                 .withSuccess(caseInfo -> {
                     if (caseInfo == null) {
                         showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
@@ -144,14 +148,19 @@ public abstract class CaseLinkListActivity
     }
 
     private void addCaseLinkToList(CaseLink item) {
-        makeCaseLinkViewAndAddToParent(item);
-
         controller.createLink(item, new FluentCallback<Long>()
-                .withSuccess(item::setCaseId));
+                .withSuccess(id -> {
+                    item.setCaseId(id);
+                    makeCaseLinkViewAndAddToParent(item);
+                }));
     }
 
     private boolean isCrmLink(CaseLink item) {
         return En_CaseLink.CRM.equals(item.getType());
+    }
+
+    private void showError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     @Inject
@@ -166,7 +175,4 @@ public abstract class CaseLinkListActivity
     private Provider<AbstractCaseLinkItemView> itemViewProvider;
     @Inject
     private CaseLinkProvider caseLinkProvider;
-
-
-    private Map<En_CaseLink, String> linkUrlMap = null;
 }

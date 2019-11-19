@@ -96,7 +96,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
+    public Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId ) {
         return youtrackService.getIssueInfo( ytId );
     }
 

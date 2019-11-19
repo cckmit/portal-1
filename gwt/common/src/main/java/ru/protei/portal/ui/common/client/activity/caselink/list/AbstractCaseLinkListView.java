@@ -13,4 +13,6 @@ public interface AbstractCaseLinkListView extends IsWidget {
     void setLinksContainerVisible(boolean isVisible);
 
     HasWidgets getLinksContainer();
+
+    void setHeader(String value);
 }

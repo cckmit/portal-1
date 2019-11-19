@@ -270,26 +270,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Override
-    public void onCaseMetaChanged( CaseMeta value ) {//TODO rework CaseLinkList handlers, separate links and tags
-
-        caseLinkController.updateCaseLinks( issue.getId(), view.links().getValue(), new FluentCallback<List<CaseLink>>()
-                .withError( t -> view.links().setValue( null ) )
-                .withSuccess( caseLinks ->
-                        view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
-                ) );
-
-    }
-
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
-    }
-
-    private void requestCaseLinks( Long issueId ) {
-        caseLinkController.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
-                view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
-        ) );
     }
 
     private void initialRestoredView(CaseObject issue){
@@ -305,7 +288,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             @Override
             public void onSuccess(CaseObject issue) {
                 successAction.accept(issue);
-                requestCaseLinks(issue.getId());
             }
         });
     }
@@ -366,6 +348,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
 //        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer(), issue.getId(), En_CaseType.CRM_SUPPORT));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
         view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
