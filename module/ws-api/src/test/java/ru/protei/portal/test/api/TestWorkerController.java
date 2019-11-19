@@ -1,6 +1,5 @@
 package ru.protei.portal.test.api;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -37,6 +36,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -397,14 +397,11 @@ public class TestWorkerController {
         createPhotosByIds(Collections.singletonList(id));
 
         String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
-        File photoById = new File(photoByIdName);
-
         String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
-        File photoToUpdate = new File(photoToUpdateName);
 
-        Assert.assertFalse("Оld and new photo should be different", FileUtils.contentEquals(photoById, photoToUpdate));
+        Assert.assertFalse("Оld and new photo should be different", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
 
-        String base64Photo = Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(photoToUpdate));
+        String base64Photo = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(photoToUpdateName)));
         Photo photo = new Photo();
         photo.setId(id);
         photo.setContent(base64Photo);
@@ -420,6 +417,8 @@ public class TestWorkerController {
         result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
         Assert.assertEquals("updatePhoto() is not success! " + result.getMessage(), true, result.isOk());
+
+        Assert.assertTrue("Updated and new photo should be equals", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
 
         Files.deleteIfExists(Paths.get(photoByIdName));
     }
@@ -452,19 +451,19 @@ public class TestWorkerController {
             logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
             logger.debug("Photo's content in Base64 = " + p.getContent());
 
-            String photoByIdName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
-            File photoById = new File(photoByIdName);
+            String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
+            Path sourcePhotoPath = Paths.get(sourcePhotoName);
 
             String receivedPhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + "test.jpg";
+            Path receivedPhotoPath = Paths.get(receivedPhotoName);
             byte[] receivedPhotoByte = Base64.getDecoder().decode(p.getContent());
-            Files.deleteIfExists(Paths.get(receivedPhotoName));
-            File receivedPhoto = Files.createFile(Paths.get(receivedPhotoName)).toFile();
-            FileUtils.writeByteArrayToFile(receivedPhoto, receivedPhotoByte);
+            Files.deleteIfExists(receivedPhotoPath);
+            Files.write(receivedPhotoPath, receivedPhotoByte);
 
-            Assert.assertTrue("Sent photo and received photo are not equals!", FileUtils.contentEquals(photoById, receivedPhoto));
+            Assert.assertTrue("Sent photo and received photo are not equals!", Arrays.equals(Files.readAllBytes(receivedPhotoPath), Files.readAllBytes(sourcePhotoPath)));
 
-            Files.deleteIfExists(Paths.get(receivedPhotoName));
-            Files.deleteIfExists(Paths.get(photoByIdName));
+            Files.deleteIfExists(receivedPhotoPath);
+            Files.deleteIfExists(sourcePhotoPath);
         }
     }
 
@@ -472,11 +471,13 @@ public class TestWorkerController {
         int i = 1;
         for (Long id : ids) {
             String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+            Path photoByIdPath = Paths.get(photoByIdName);
+
             String existPhotoName = WSConfig.getInstance().getDirPhotos() + "test" + i + ".jpg";
-            Files.deleteIfExists(Paths.get(photoByIdName));
-            File photoById = Files.createFile(Paths.get(photoByIdName)).toFile();
-            File existPhoto = new File (existPhotoName);
-            FileUtils.copyFile(existPhoto, photoById);
+            Path existPhotoPath = Paths.get(existPhotoName);
+
+            Files.deleteIfExists(photoByIdPath);
+            Files.copy(existPhotoPath, photoByIdPath);
             i++;
         }
     }

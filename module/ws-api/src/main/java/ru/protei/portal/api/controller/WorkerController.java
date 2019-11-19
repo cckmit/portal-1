@@ -1,6 +1,5 @@
 package ru.protei.portal.api.controller;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,10 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
@@ -506,7 +506,7 @@ public class WorkerController {
                 return operationData.failResult();
 
                 byte[] receivedPhotoByte = Base64.getDecoder().decode(photo.getContent());
-                FileUtils.writeByteArrayToFile(new File(makeFileName(photo.getId())), receivedPhotoByte);
+                Files.write(Paths.get(makeFileName(photo.getId())), receivedPhotoByte);
 
                 makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
 
@@ -540,9 +540,9 @@ public class WorkerController {
 
             for (Long id : list.getIds()) {
 
-                File file = new File(makeFileName(id));
-                if (file.exists()) {
-                    String sw = Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file));
+                if (Files.exists(Paths.get(makeFileName(id)))) {
+
+                    String sw = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(makeFileName(id))));
 
                     Photo photo = new Photo();
                     photo.setId(id);
