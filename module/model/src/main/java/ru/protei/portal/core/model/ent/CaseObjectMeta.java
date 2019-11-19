@@ -67,6 +67,7 @@ public class CaseObjectMeta implements Serializable {
     }
 
     public CaseObjectMeta fillFromCaseObject(CaseObject co) {
+        if (co == null) return this;
         if (co.getId() != null) setId(co.getId());
         if (co.getModified() != null) setModified(co.getModified());
         if (co.getStateId() != 0) setStateId(co.getStateId());
@@ -86,6 +87,7 @@ public class CaseObjectMeta implements Serializable {
     }
 
     public CaseObject collectToCaseObject(CaseObject co) {
+        if (co == null) return null;
         if (getId() != null) co.setId(getId());
         if (getModified() != null) co.setModified(getModified());
         if (getStateId() != 0) co.setStateId(getStateId());

@@ -279,11 +279,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                             })
             );
 
-            Person initiator = issue.getInitiator();
+            Person initiator = null;
             Profile profile = policyService.getProfile();
-            if ((initiator == null || !Objects.equals(initiator.getCompanyId(), selectedCompanyId)) &&
-                profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)
-            ) {
+            if (issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
+                initiator = issue.getInitiator();
+            } else if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
                 initiator = Person.fromPersonShortView(new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired()));
             }
             metaView.changeInitiator(initiator);
@@ -525,9 +525,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
 
         final AbstractIssueMetaView metaView = view.getMetaView();
-        metaView.getCaseMeta().collectToCaseObject(issue);
-        metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
-        metaView.getCaseMetaJira().collectToCaseObject(issue);
+        if (metaView.getCaseMeta() != null) metaView.getCaseMeta().collectToCaseObject(issue);
+        if (metaView.getCaseMetaNotifiers() != null) metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
+        if (metaView.getCaseMetaJira() != null) metaView.getCaseMetaJira().collectToCaseObject(issue);
     }
 
     private void showComments(CaseObject issue) {
