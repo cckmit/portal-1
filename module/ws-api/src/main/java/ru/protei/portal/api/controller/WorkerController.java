@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Base64;
@@ -539,10 +540,10 @@ public class WorkerController {
         try {
 
             for (Long id : list.getIds()) {
+                Path idPath = Paths.get(makeFileName(id));
 
-                if (Files.exists(Paths.get(makeFileName(id)))) {
-
-                    String sw = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(makeFileName(id))));
+                if (Files.exists(idPath)) {
+                    String sw = Base64.getEncoder().encodeToString(Files.readAllBytes(idPath));
 
                     Photo photo = new Photo();
                     photo.setId(id);
