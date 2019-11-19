@@ -67,40 +67,40 @@ public class CaseObjectMeta implements Serializable {
     }
 
     public CaseObjectMeta fillFromCaseObject(CaseObject co) {
-        setId(co.getId());
-        setModified(co.getModified());
-        setStateId(co.getStateId());
-        setImpLevel(co.getImpLevel());
-        setInitiator(co.getInitiator());
-        setInitiatorId(co.getInitiatorId());
-        setInitiatorCompany(co.getInitiatorCompany());
-        setInitiatorCompanyId(co.getInitiatorCompanyId());
-        setProduct(co.getProduct());
-        setProductId(co.getProductId());
-        setManager(co.getManager());
-        setManagerId(co.getManagerId());
-        setPlatformId(co.getPlatformId());
-        setPlatformName(co.getPlatformName());
-        setTimeElapsed(co.getTimeElapsed());
+        if (co.getId() != null) setId(co.getId());
+        if (co.getModified() != null) setModified(co.getModified());
+        if (co.getStateId() != 0) setStateId(co.getStateId());
+        if (co.getImpLevel() != null) setImpLevel(co.getImpLevel());
+        if (co.getInitiator() != null) setInitiator(co.getInitiator());
+        if (co.getInitiatorId() != null) setInitiatorId(co.getInitiatorId());
+        if (co.getInitiatorCompany() != null) setInitiatorCompany(co.getInitiatorCompany());
+        if (co.getInitiatorCompanyId() != null) setInitiatorCompanyId(co.getInitiatorCompanyId());
+        if (co.getProduct() != null) setProduct(co.getProduct());
+        if (co.getProductId() != null) setProductId(co.getProductId());
+        if (co.getManager() != null) setManager(co.getManager());
+        if (co.getManagerId() != null) setManagerId(co.getManagerId());
+        if (co.getPlatformId() != null) setPlatformId(co.getPlatformId());
+        if (co.getPlatformName() != null) setPlatformName(co.getPlatformName());
+        if (co.getTimeElapsed() != null) setTimeElapsed(co.getTimeElapsed());
         return this;
     }
 
     public CaseObject collectToCaseObject(CaseObject co) {
-        co.setId(getId());
-        co.setModified(getModified());
-        co.setStateId(getStateId());
-        co.setImpLevel(getImpLevel());
-        co.setInitiator(getInitiator());
-        co.setInitiatorId(getInitiatorId());
-        co.setInitiatorCompany(getInitiatorCompany());
-        co.setInitiatorCompanyId(getInitiatorCompanyId());
-        co.setProduct(getProduct());
-        co.setProductId(getProductId());
-        co.setManager(getManager());
-        co.setManagerId(getManagerId());
-        co.setPlatformId(getPlatformId());
-        co.setPlatformName(getPlatformName());
-        co.setTimeElapsed(getTimeElapsed());
+        if (getId() != null) co.setId(getId());
+        if (getModified() != null) co.setModified(getModified());
+        if (getStateId() != 0) co.setStateId(getStateId());
+        if (getImpLevel() != null) co.setImpLevel(getImpLevel());
+        if (getInitiator() != null) co.setInitiator(getInitiator());
+        if (getInitiatorId() != null) co.setInitiatorId(getInitiatorId());
+        if (getInitiatorCompany() != null) co.setInitiatorCompany(getInitiatorCompany());
+        if (getInitiatorCompanyId() != null) co.setInitiatorCompanyId(getInitiatorCompanyId());
+        if (getProduct() != null) co.setProduct(getProduct());
+        if (getProductId() != null) co.setProductId(getProductId());
+        if (getManager() != null) co.setManager(getManager());
+        if (getManagerId() != null) co.setManagerId(getManagerId());
+        if (getPlatformId() != null) co.setPlatformId(getPlatformId());
+        if (getPlatformName() != null) co.setPlatformName(getPlatformName());
+        if (getTimeElapsed() != null) co.setTimeElapsed(getTimeElapsed());
         return co;
     }
 
