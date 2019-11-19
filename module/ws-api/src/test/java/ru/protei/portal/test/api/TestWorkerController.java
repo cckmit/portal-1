@@ -1,6 +1,6 @@
 package ru.protei.portal.test.api;
 
-import org.apache.commons.codec.binary.Base64OutputStream;
+import org.apache.commons.io.FileUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -415,11 +415,10 @@ public class TestWorkerController {
     }
 
     @Test
-    /*@Ignore*/
     public void testGetPhotos() throws Exception {
         IdList list = new IdList();
-        list.getIds().add(new Long(148));
-        list.getIds().add(new Long(149));
+        list.getIds().add(new Long(1));
+        list.getIds().add(new Long(2));
 
         String listXml = toXml(list);
 
@@ -432,7 +431,6 @@ public class TestWorkerController {
                         .content(listXml)
         );
 
-
         Result<PhotoList> resultPhotoList = (Result<PhotoList>) fromXml(result.andReturn().getResponse().getContentAsString());
 
         PhotoList pl = resultPhotoList.getData();
@@ -441,21 +439,19 @@ public class TestWorkerController {
         for (Photo p : pl.getPhotos()) {
             logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
             logger.debug("Photo's content in Base64 = " + p.getContent());
-            String newFileName = WSConfig.getInstance().getDirPhotos() + "new/" + p.getId() + ".jpg";
-            Base64OutputStream out = null;
-            try {
-                out = new Base64OutputStream(new FileOutputStream(newFileName), false);
-                out.write(p.getContent().getBytes());
-                //out.write (p.getContent());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                try {
-                    if (out != null)
-                        out.close();
-                } catch (Exception e) {
-                }
-            }
+
+            String examplePhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
+            File examplePhoto = new File(examplePhotoName);
+
+            String receivedPhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + "test.jpg";
+            byte[] receivedPhotoByte = Base64.getDecoder().decode(p.getContent());
+            Files.deleteIfExists(Paths.get(receivedPhotoName));
+            File receivedPhoto = Files.createFile(Paths.get(receivedPhotoName)).toFile();
+            FileUtils.writeByteArrayToFile(receivedPhoto, receivedPhotoByte);
+
+            Assert.assertTrue(FileUtils.contentEquals(examplePhoto, receivedPhoto));
+
+            Files.deleteIfExists(Paths.get(receivedPhotoName));
         }
     }
 

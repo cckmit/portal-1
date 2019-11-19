@@ -539,7 +539,6 @@ public class WorkerController {
 
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-//        Base64InputStream in = null;
         PhotoList photos = new PhotoList();
 
         try {
@@ -548,16 +547,8 @@ public class WorkerController {
 
                 File file = new File(makeFileName(id));
                 if (file.exists()) {
-
-                   /* in = new Base64InputStream(new FileInputStream(file), true);
-                    StringWriter sw = new StringWriter();
-                    IOUtils.copy(in, sw);
-
-
-*/
-//                   java.util.Base64.getEncoder().encode()
-                    byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
-                     String sw = new String(encoded);
+                    byte[] encoded = java.util.Base64.getEncoder().encode(FileUtils.readFileToByteArray(file));
+                    String sw = new String(encoded);
 
                     Photo photo = new Photo();
                     photo.setId(id);
@@ -566,7 +557,6 @@ public class WorkerController {
 
                     logger.debug("file exists, photo={}", photo);
 
-//                    IOUtils.closeQuietly(in);
                 } else {
                     logger.debug("file doesn't exist");
                 }
@@ -574,8 +564,6 @@ public class WorkerController {
 
         } catch (Exception e) {
             logger.error("error while get photos", e);
-        } finally {
-//            IOUtils.closeQuietly(in);
         }
 
         logger.debug("result, size of photo's list {}", photos.getPhotos().size());
