@@ -1,10 +1,6 @@
 package ru.protei.portal.api.controller;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Base64InputStream;
-import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +26,11 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -507,16 +505,13 @@ public class WorkerController {
             if (!operationData.isValid())
                 return operationData.failResult();
 
-            try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())), false)) {
-
-                out.write(photo.getContent().getBytes());
-                out.flush();
+                byte[] receivedPhotoByte = Base64.getDecoder().decode(photo.getContent());
+                FileUtils.writeByteArrayToFile(new File(makeFileName(photo.getId())), receivedPhotoByte);
 
                 makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
 
                 logger.debug("success result, personId={}", photo.getId());
                 return ok(photo.getId());
-            }
 
         } catch (Exception e) {
             logger.error("error while update photo", e);
@@ -547,8 +542,7 @@ public class WorkerController {
 
                 File file = new File(makeFileName(id));
                 if (file.exists()) {
-                    byte[] encoded = java.util.Base64.getEncoder().encode(FileUtils.readFileToByteArray(file));
-                    String sw = new String(encoded);
+                    String sw = Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file));
 
                     Photo photo = new Photo();
                     photo.setId(id);

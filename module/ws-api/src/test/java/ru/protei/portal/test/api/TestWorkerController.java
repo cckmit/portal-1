@@ -385,21 +385,29 @@ public class TestWorkerController {
 
 
     @Test
-    @Ignore
     public void testUpdatePhoto() throws Exception {
+        String uri = BASE_URI + "update.photo";
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
         WorkerRecord worker = createWorkerRecord();
         Result<Long> result = addWorker(worker);
 
         Long id = result.getData();
-        byte[] buf = read(id);
 
-        String uri = BASE_URI + "update.photo";
+        createPhotosByIds(Collections.singletonList(id));
 
+        String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+        File photoById = new File(photoByIdName);
+
+        String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
+        File photoToUpdate = new File(photoToUpdateName);
+
+        Assert.assertFalse("Оld and new photo should be different", FileUtils.contentEquals(photoById, photoToUpdate));
+
+        String base64Photo = Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(photoToUpdate));
         Photo photo = new Photo();
-        photo.setId(result.getData());
-        photo.setContent(Base64.getEncoder().encodeToString(buf));
+        photo.setId(id);
+        photo.setContent(base64Photo);
         String photoXml = toXml(photo);
 
         ResultActions resultActions = mockMvc.perform(
@@ -412,6 +420,8 @@ public class TestWorkerController {
         result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
         Assert.assertEquals("updatePhoto() is not success! " + result.getMessage(), true, result.isOk());
+
+        Files.deleteIfExists(Paths.get(photoByIdName));
     }
 
     @Test
@@ -419,6 +429,8 @@ public class TestWorkerController {
         IdList list = new IdList();
         list.getIds().add(new Long(1));
         list.getIds().add(new Long(2));
+
+        createPhotosByIds(list.getIds());
 
         String listXml = toXml(list);
 
@@ -440,8 +452,8 @@ public class TestWorkerController {
             logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
             logger.debug("Photo's content in Base64 = " + p.getContent());
 
-            String examplePhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
-            File examplePhoto = new File(examplePhotoName);
+            String photoByIdName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
+            File photoById = new File(photoByIdName);
 
             String receivedPhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + "test.jpg";
             byte[] receivedPhotoByte = Base64.getDecoder().decode(p.getContent());
@@ -449,9 +461,23 @@ public class TestWorkerController {
             File receivedPhoto = Files.createFile(Paths.get(receivedPhotoName)).toFile();
             FileUtils.writeByteArrayToFile(receivedPhoto, receivedPhotoByte);
 
-            Assert.assertTrue(FileUtils.contentEquals(examplePhoto, receivedPhoto));
+            Assert.assertTrue("Sent photo and received photo are not equals!", FileUtils.contentEquals(photoById, receivedPhoto));
 
             Files.deleteIfExists(Paths.get(receivedPhotoName));
+            Files.deleteIfExists(Paths.get(photoByIdName));
+        }
+    }
+
+    private void createPhotosByIds(List<Long> ids) throws Exception{
+        int i = 1;
+        for (Long id : ids) {
+            String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+            String existPhotoName = WSConfig.getInstance().getDirPhotos() + "test" + i + ".jpg";
+            Files.deleteIfExists(Paths.get(photoByIdName));
+            File photoById = Files.createFile(Paths.get(photoByIdName)).toFile();
+            File existPhoto = new File (existPhotoName);
+            FileUtils.copyFile(existPhoto, photoById);
+            i++;
         }
     }
 
