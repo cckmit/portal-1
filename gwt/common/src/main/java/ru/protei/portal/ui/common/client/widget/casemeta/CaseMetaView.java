@@ -70,7 +70,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         if (!enabled || !linksEnabled) {
             return;
         }
-        createCaseLinkPopup.showNear(addLinkButton);
+        createCaseLinkPopup.resetValueAndShow(addLinkButton);
         if (linksPopupHandlerRegistration != null) {
             linksPopupHandlerRegistration.removeHandler();
         }
@@ -309,7 +309,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     }
 
     private void addYtLink( CaseLink caseLink ) {
-        caseLinkProvider.checkExistYtLink( caseLink.getRemoteId(), new FluentCallback<YouTrackIssueInfo>()
+        caseLinkProvider.getYTLinkInfo( caseLink.getRemoteId(), new FluentCallback<YouTrackIssueInfo>()
                 .withError( throwable -> {
                     showError( lang.issueLinkIncorrectYouTrackCaseNotFound( caseLink.getRemoteId() ) );
                 } )
@@ -337,7 +337,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             return;
         }
 
-        caseLinkProvider.checkExistCrmLink(crmRemoteId, new FluentCallback<CaseInfo>()
+        caseLinkProvider.getCrmLinkInfo(crmRemoteId, new FluentCallback<CaseInfo>()
                 .withError(throwable -> {
                     showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
                 })

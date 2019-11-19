@@ -3,15 +3,12 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:FocusPanel ui:field="root" styleName="case-link-root">
-        <g:HTMLPanel ui:field="panel" styleName="case-link">
-            <span ui:field="importance"/>
-            <span ui:field="text"/>
-            <span ui:field="header" class="m-l-5"/>
-            <div class="pull-right">
-                <span ui:field="state"/>
-                <g:Anchor ui:field="remove" href="#" styleName="case-link-close fas fa-times case-link-close-hide"/>
-            </div>
-        </g:HTMLPanel>
-    </g:FocusPanel>
+    <g:HTMLPanel ui:field="root" styleName="case-link" tag="li">
+        <i ui:field="state" class="fas fa-circle m-l-5"/>
+        <g:Anchor ui:field="number" href="#" target="_blank" styleName="case-link-number"/>
+        <g:Anchor ui:field="header" href="#" styleName="m-l-5" target="_blank"/>
+        <div class="pull-right">
+            <g:Anchor ui:field="remove" href="#" styleName="case-link-close fas fa-times"/>
+        </div>
+    </g:HTMLPanel>
 </ui:UiBinder>

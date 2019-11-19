@@ -24,12 +24,5 @@ public interface IssueControllerAsync {
 
     void saveIssue( CaseObject p, AsyncCallback<Long> callback );
 
-    /**
-     * Получение списка статусов
-     * @return список статусов
-     */
-    void getStateList(AsyncCallback<List<En_CaseState>> async);
-
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
-
 }

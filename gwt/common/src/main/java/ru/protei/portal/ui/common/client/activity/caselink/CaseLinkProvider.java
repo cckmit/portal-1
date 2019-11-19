@@ -32,11 +32,11 @@ public class CaseLinkProvider {
         return linkMap.get(caseLink).replace("%id%", id);
     }
 
-    public void checkExistCrmLink(Long caseNumber, AsyncCallback<CaseInfo> async) {
+    public void getCrmLinkInfo(Long caseNumber, AsyncCallback<CaseInfo> async) {
         caseService.getIssueShortInfo(caseNumber, async);
     }
 
-    public void checkExistYtLink( String ytId, AsyncCallback<YouTrackIssueInfo> async ) {
+    public void getYTLinkInfo(String ytId, AsyncCallback<YouTrackIssueInfo> async ) {
         caseLinkService.getYtLinkInfo( ytId, async );
     }
 

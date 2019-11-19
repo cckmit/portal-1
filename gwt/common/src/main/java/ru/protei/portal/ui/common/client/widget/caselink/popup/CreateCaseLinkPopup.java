@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.caselink.popup;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -30,13 +29,13 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
         resizeHandler = resizeEvent -> {
             if (isAttached()) {
-                showNear(relative, false);
+                showRelativeTo(relative);
             }
         };
 
         windowScrollHandler = event -> {
             if (isAttached()) {
-                showNear(relative, false);
+                showRelativeTo(relative);
             }
         };
     }
@@ -45,6 +44,9 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     protected void onLoad() {
         resizeHandlerReg = Window.addResizeHandler(resizeHandler);
         scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
+
+        typeSelector.fillOptions();
+        typeSelector.setValue(En_CaseLink.CRM);
     }
 
     @Override
@@ -57,36 +59,20 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         }
     }
 
+    public void resetValueAndShow(UIObject target) {
+        this.relative = target;
+
+        showRelativeTo(target);
+
+        remoteIdInput.setValue("");
+        remoteIdInput.setFocus(true);
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseLink> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    public void showNear(IsWidget nearWidget) {
-        showNear(nearWidget, true);
-    }
-
-    public void showNear(IsWidget nearWidget, boolean reset) {
-        this.relative = nearWidget;
-
-        root.getElement().getStyle().setPosition(Style.Position.RELATIVE);
-        root.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        setPopupPositionAndShow((popupWidth, popupHeight) -> {
-            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
-            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
-            int popupLeft = relativeLeft - widthDiff;
-            int relativeTop = nearWidget.asWidget().getAbsoluteTop();
-            int popupTop = relativeTop + nearWidget.asWidget().getOffsetHeight();
-            setPopupPosition(popupLeft, popupTop);
-        });
-
-        if (reset) {
-            typeSelector.fillOptions();
-            typeSelector.setValue(En_CaseLink.CRM);
-            remoteIdInput.setValue("");
-            remoteIdInput.setFocus(true);
-        }
-    }
 
     @UiHandler( "remoteIdInput" )
     public void onRemoteIdInputChanged( ValueChangeEvent<String> event ) {
@@ -145,7 +131,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     @UiField
     Lang lang;
 
-    private IsWidget relative;
+    private UIObject relative;
     private ResizeHandler resizeHandler;
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;

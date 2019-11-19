@@ -106,13 +106,13 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setIssues(Set<CaseLink> issues) {
-        this.caseMetaView.setLinks(issues);
+    public HasWidgets getCommentsContainer() {
+        return commentContainer;
     }
 
     @Override
-    public HasWidgets getCommentsContainer() {
-        return commentContainer;
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
@@ -135,9 +135,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         this.additionalSoft.setInnerText( additionalSoft );
     }
 
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
     @UiField
     InlineLabel fullName;
     @UiField
@@ -178,6 +175,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     Lang lang;
     @UiField
     Element createdBy;
+    @UiField
+    HTMLPanel linksContainer;
 
     @Inject
     En_CaseStateLang caseStateLang;

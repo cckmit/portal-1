@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
@@ -39,9 +40,10 @@ public abstract class CaseLinkListActivity
         event.parent.add(view.asWidget());
 
         view.getLinksContainer().clear();
+        view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
 
         controller.getCaseLinks(event.caseId, new FluentCallback<List<CaseLink>>()
-                .withError(throwable -> showError(lang.errNotFound()))
+                .withError(throwable -> showError(lang.errGetList()))
                 .withSuccess(this::fillView)
         );
     }
@@ -52,6 +54,7 @@ public abstract class CaseLinkListActivity
             return;
         }
 
+        // TODO: удалять по id
         controller.removeLink(itemView.getValue(), new FluentCallback<Void>()
                 .withSuccess(res -> itemView.asWidget().removeFromParent()));
 //        toggleLinksVisibility(links, linksPanel);
@@ -80,7 +83,6 @@ public abstract class CaseLinkListActivity
 
     private void fillView(List<CaseLink> links) {
         view.getLinksContainer().clear();
-        view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
 
 //        toggleLinksVisibility(links, linksPanel);
         if (CollectionUtils.isEmpty(links)) {
@@ -89,6 +91,56 @@ public abstract class CaseLinkListActivity
 
         view.setHeader(lang.linkedWith() + " (" + links.size() + ")");
         links.forEach(this::makeCaseLinkViewAndAddToParent);
+    }
+
+
+    private void addYtLink( CaseLink caseLink ) {
+        caseLinkProvider.getYTLinkInfo( caseLink.getRemoteId(), new FluentCallback<YouTrackIssueInfo>()
+                .withError( throwable -> fireEvent(new NotifyEvents.Show(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess( youTrackIssueInfo -> {
+                    if (youTrackIssueInfo == null) {
+                        showError(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()));
+                        return;
+                    }
+
+                    caseLink.setYouTrackIssueInfo(youTrackIssueInfo);
+                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), caseLink.getRemoteId()));
+
+                    createLinkAndAddToParent(caseLink);
+                })
+        );
+    }
+
+    private void addCrmLink( CaseLink caseLink ) {
+        Long crmRemoteId = NumberUtils.parseLong(caseLink.getRemoteId());
+        if (crmRemoteId == null) {
+            showError(lang.issueLinkIncorrectCrmNumberFormat());
+            return;
+        }
+
+        caseLinkProvider.getCrmLinkInfo(crmRemoteId, new FluentCallback<CaseInfo>()
+                .withError(throwable -> showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId)))
+                .withSuccess(caseInfo -> {
+                    if (caseInfo == null) {
+                        showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
+                        return;
+                    }
+
+                    caseLink.setCaseInfo(caseInfo);
+                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), crmRemoteId.toString()));
+
+                    createLinkAndAddToParent(caseLink);
+                })
+        );
+    }
+
+    private void createLinkAndAddToParent(CaseLink value) {
+        controller.createLink(value, new FluentCallback<Long>()
+                .withError(throwable -> showError(lang.errInternalError()))
+                .withSuccess(id -> {
+                    value.setCaseId(id);
+                    makeCaseLinkViewAndAddToParent(value);
+                }));
     }
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value) {
@@ -104,56 +156,6 @@ public abstract class CaseLinkListActivity
         view.getLinksContainer().add(itemWidget.asWidget());
     }
 
-    private void addYtLink( CaseLink caseLink ) {
-        caseLinkProvider.checkExistYtLink( caseLink.getRemoteId(), new FluentCallback<YouTrackIssueInfo>()
-                .withError( throwable -> fireEvent(new NotifyEvents.Show(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess( youTrackIssueInfo -> {
-                    if (youTrackIssueInfo == null) {
-                        showError(lang.issueLinkIncorrectYouTrackCaseNotFound(caseLink.getRemoteId()));
-                        return;
-                    }
-
-                    caseLink.setYouTrackIssueInfo(youTrackIssueInfo);
-                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), caseLink.getRemoteId()));
-
-                    addCaseLinkToList(caseLink);
-                } )
-        );
-    }
-
-    private void addCrmLink( CaseLink caseLink ) {
-        Long crmRemoteId;
-        try {
-            crmRemoteId = Long.parseLong(caseLink.getRemoteId());
-        } catch (NumberFormatException ex) {
-            showError(lang.issueLinkIncorrectCrmNumberFormat());
-            return;
-        }
-
-        caseLinkProvider.checkExistCrmLink(crmRemoteId, new FluentCallback<CaseInfo>()
-                .withError(throwable -> showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId)))
-                .withSuccess(caseInfo -> {
-                    if (caseInfo == null) {
-                        showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
-                        return;
-                    }
-
-                    caseLink.setRemoteId(caseInfo.getId().toString());
-                    caseLink.setCaseInfo(caseInfo);
-                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), crmRemoteId.toString()));
-
-                    addCaseLinkToList(caseLink);
-                })
-        );
-    }
-
-    private void addCaseLinkToList(CaseLink item) {
-        controller.createLink(item, new FluentCallback<Long>()
-                .withSuccess(id -> {
-                    item.setCaseId(id);
-                    makeCaseLinkViewAndAddToParent(item);
-                }));
-    }
 
     private boolean isCrmLink(CaseLink item) {
         return En_CaseLink.CRM.equals(item.getType());

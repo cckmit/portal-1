@@ -347,8 +347,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-//        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
-        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer(), issue.getId(), En_CaseType.CRM_SUPPORT));
+        fireEvent(new CaseLinkEvents.Show.Builder(view.getLinksContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
         view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));

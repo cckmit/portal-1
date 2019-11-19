@@ -27,12 +27,5 @@ public interface IssueController extends RemoteService {
 
     Long saveIssue( CaseObject p ) throws RequestFailedException;
 
-    /**
-     * Получение списка статусов
-     * @return список статусов
-     */
-    List<En_CaseState> getStateList() throws RequestFailedException;
-
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
-
 }

@@ -17,7 +17,8 @@ public interface CaseLinkService {
 
     Result<Map<En_CaseLink, String>> getLinkMap();
 
-    @Privileged({ En_Privilege.ISSUE_VIEW })
+    // TODO: линки используются на уровне Анкет и обращений. Для проверки привилегий нужна более гибкая проверка
+//    @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<List<CaseLink>> getLinks( AuthToken token, Long caseId);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })

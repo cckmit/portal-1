@@ -74,7 +74,6 @@ public class CaseLinkControllerImpl implements CaseLinkController {
 
     @Autowired
     CaseService caseService;
-
     @Autowired
     CaseLinkService linkService;
     @Autowired

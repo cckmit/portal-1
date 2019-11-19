@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.view.caselink.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -11,10 +10,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
 
-import java.util.Collection;
 
 
 public class CaseLinkListView
@@ -34,12 +31,10 @@ public class CaseLinkListView
 
     @Override
     public void setLinksContainerVisible(boolean isVisible) {
-        linksPanel.setVisible(isVisible);
-
         if (isVisible) {
-            collapse.getElement().replaceClassName("fas fa-chevron-down", "fas fa-chevron-up");
+            getElement().replaceClassName("collapsed", "expanded");
         } else {
-            collapse.getElement().replaceClassName("fas fa-chevron-up", "fas fa-chevron-down");
+            getElement().replaceClassName( "expanded", "collapsed");
         }
     }
 
@@ -54,18 +49,19 @@ public class CaseLinkListView
     }
 
     @UiHandler("addLinkButton")
-    public void addLinkButtonClick(ClickEvent e) {
-        createCaseLinkPopup.showNear(addLinkButton);
+    public void addLinkButtonClick(ClickEvent event) {
+        event.preventDefault();
+        createCaseLinkPopup.resetValueAndShow(addLinkButton);
     }
 
     @UiHandler("collapse")
     public void onChangeFormStateClicked(ClickEvent event) {
         event.preventDefault();
-        activity.onLinksContainerStateChanged(!linksPanel.isVisible());
+        activity.onLinksContainerStateChanged(!getStyleName().contains("expanded"));
     }
 
     @UiField
-    Button addLinkButton;
+    Anchor addLinkButton;
     @UiField
     HTMLPanel linksPanel;
     @UiField

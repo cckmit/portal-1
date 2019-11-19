@@ -120,11 +120,6 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
     private En_CaseState state;
 
-    @JdbcOneToMany(localColumn = "id", table = "case_link", remoteColumn = "case_id", additionalConditions = {
-            @JdbcManyJoinData(remoteColumn = "link_type", value = "YT", valueClass = String.class)
-    })
-    private Set<CaseLink> youtrackIssues;
-
     /**
      *  испытательный срок
      */
@@ -318,14 +313,6 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
         this.headOfDepartmentShortName = headOfDepartmentShortName;
     }
 
-    public Set<CaseLink> getYoutrackIssues() {
-        return youtrackIssues;
-    }
-
-    public void setYoutrackIssues(Set<CaseLink> youtrackIssues) {
-        this.youtrackIssues = youtrackIssues;
-    }
-
     public Integer getProbationPeriodMonth() {
         return probationPeriodMonth;
     }
@@ -405,7 +392,6 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
                 ", state=" + state +
-                ", youtrackIssues=" + youtrackIssues +
                 ", probationPeriodMonth=" + probationPeriodMonth +
                 ", resourceComment='" + resourceComment + '\'' +
                 ", operatingSystem='" + operatingSystem + '\'' +

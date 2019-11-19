@@ -60,7 +60,7 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel ui:field="linksContainer" styleName="row form-group"/>
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <div class="row form-group">
                         <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"

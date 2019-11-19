@@ -107,25 +107,6 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    @Override
-    public List<En_CaseState> getStateList() throws RequestFailedException {
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        En_CaseType type = En_CaseType.CRM_SUPPORT;
-
-        log.info( "getStatesByCaseType: caseType={} ", type );
-
-        Result< List<En_CaseState> > result = caseService.stateList( type );
-
-        log.info("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
-
-        if (result.isError())
-            throw new RequestFailedException(result.getStatus());
-
-        return result.getData();
-    }
-
     private Person getCurrentPerson(){
         return ServiceUtils.getCurrentPerson( sessionService, httpServletRequest );
     }
