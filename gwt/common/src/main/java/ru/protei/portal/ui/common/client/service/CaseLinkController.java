@@ -25,5 +25,5 @@ public interface CaseLinkController extends RemoteService {
 
     Long createLink(CaseLink value) throws RequestFailedException;
 
-    void removeLink(CaseLink value) throws RequestFailedException;
+    void removeLink(Long id) throws RequestFailedException;
 }

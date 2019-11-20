@@ -25,7 +25,6 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setImportance(int value);
     void setProduct(String value);
 
-    void setLinks(Set<CaseLink> value);
     void setTags(Set<CaseTag> value);
 
     void setContact(String value);
@@ -51,6 +50,9 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setJiraTimeOfDecision(String value);
 
     HasWidgets getCommentsContainer();
+
+    HasWidgets getLinksContainer();
+
     HasAttachments attachmentsContainer();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);

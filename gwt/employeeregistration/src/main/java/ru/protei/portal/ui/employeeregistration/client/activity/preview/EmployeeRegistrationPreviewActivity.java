@@ -103,7 +103,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         fireEvent(new CaseLinkEvents.Show.Builder(view.getLinksContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
                 .withCaseId(value.getId())
-                .withEnabled(false));
+                .readOnly());
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)

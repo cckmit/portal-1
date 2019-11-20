@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
@@ -21,6 +22,8 @@ public class CaseLinkListView
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initDebugIds();
+
         createCaseLinkPopup.addValueChangeHandler(event -> activity.onAddLinkClicked(event.getValue()));
     }
 
@@ -48,6 +51,11 @@ public class CaseLinkListView
         headerLabel.setInnerText(value);
     }
 
+    @Override
+    public HasEnabled addButtonEnabled() {
+        return addLinkButton;
+    }
+
     @UiHandler("addLinkButton")
     public void addLinkButtonClick(ClickEvent event) {
         event.preventDefault();
@@ -58,6 +66,17 @@ public class CaseLinkListView
     public void onChangeFormStateClicked(ClickEvent event) {
         event.preventDefault();
         activity.onLinksContainerStateChanged(!getStyleName().contains("expanded"));
+    }
+
+    private void initDebugIds() {
+        headerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
+        addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
+        linksPanel.ensureDebugId(DebugIds.ISSUE.LINKS_CONTAINER);
+        collapse.ensureDebugId(DebugIds.ISSUE.LINKS_COLLAPSE_BUTTON);
+
+        createCaseLinkPopup.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
+        createCaseLinkPopup.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
+        createCaseLinkPopup.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
     }
 
     @UiField

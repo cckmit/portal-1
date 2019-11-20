@@ -30,6 +30,8 @@
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
                                            enabled="false" showLabel="false"/>
 
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+
                     <div class="form-group-attached">
                         <div class="row clearfix">
                             <div class="col-md-3">

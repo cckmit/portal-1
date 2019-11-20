@@ -486,11 +486,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
-        caseMetaView.setEnsureDebugLinkId(DebugIds.ISSUE.LINKS_BUTTON);
-        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE.LINKS_CONTAINER);
-        caseMetaView.setEnsureDebugIdLinkSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
-        caseMetaView.setEnsureDebugIdLinkTextBox(DebugIds.ISSUE.LINKS_INPUT);
-        caseMetaView.setEnsureDebugIdLinkApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
         caseMetaView.setEnsureDebugTagId(DebugIds.ISSUE.TAGS_BUTTON);
         caseMetaView.setEnsureDebugIdTagLabel(DebugIds.ISSUE.LABEL.TAGS);
         caseMetaView.setEnsureDebugIdTagContainer(DebugIds.ISSUE.TAGS_CONTAINER);
@@ -516,7 +511,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
-        caseMetaView.setEnsureDebugIdLinkLabel(DebugIds.ISSUE.LABEL.LINKS);
         state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
         importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
         platform.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PLATFORM);
@@ -667,14 +661,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
         @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
         @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
-        @Override public void fireEvent(GwtEvent<?> event) {}
-    };
-
-    private HasValue<Set<CaseLink>> linksHasValue = new HasValue<Set<CaseLink>>() {
-        @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
-        @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
-        @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
-        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
         @Override public void fireEvent(GwtEvent<?> event) {}
     };
 

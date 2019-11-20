@@ -66,10 +66,10 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public void removeLink(CaseLink value) throws RequestFailedException {
+    public void removeLink(Long id) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
         Person person = getCurrentPerson( sessionService, httpServletRequest );
-        checkResult( linkService.removeLink( authToken, person, value) );
+        checkResult( linkService.removeLink( authToken, person, id) );
     }
 
     @Autowired

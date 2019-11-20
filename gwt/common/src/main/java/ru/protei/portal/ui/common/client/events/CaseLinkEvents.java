@@ -28,9 +28,13 @@ public class CaseLinkEvents {
                 return this;
             }
 
-            public Show.Builder withEnabled(boolean isEnabled) {
-                event.isEnabled = isEnabled;
+            public Show.Builder readOnly() {
+                event.isEnabled = false;
                 return this;
+            }
+
+            public Show build() {
+                return event;
             }
         }
 
@@ -38,6 +42,6 @@ public class CaseLinkEvents {
         public HasWidgets parent;
         public Long caseId;
         public En_CaseType caseType;
-        public boolean isEnabled;
+        public boolean isEnabled = true;
     }
 }

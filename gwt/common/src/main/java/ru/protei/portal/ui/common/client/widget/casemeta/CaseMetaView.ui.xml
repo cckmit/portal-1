@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:cp='urn:import:ru.protei.portal.ui.common.client.widget.collapse'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -19,13 +18,8 @@
                         <i class="fas fa-sm fa-tag"/>
                         <i class="fas fa-chevron-down"/>
                     </g:Button>
-                    <g:Button ui:field="addLinkButton" styleName="btn btn-default case-meta-button">
-                        <i class="fas fa-sm fa-link"/>
-                        <i class="fas fa-chevron-down"/>
-                    </g:Button>
                 </g:HTMLPanel>
             </div>
-            <cp:CollapsiblePanel ui:field="linksPanel" label="{lang.linkedWith}:"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

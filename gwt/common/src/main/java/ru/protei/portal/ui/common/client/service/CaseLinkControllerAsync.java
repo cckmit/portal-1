@@ -21,5 +21,5 @@ public interface CaseLinkControllerAsync {
 
     void createLink(CaseLink value, AsyncCallback<Long> async);
 
-    void removeLink(CaseLink value, AsyncCallback<Void> async);
+    void removeLink(Long id, AsyncCallback<Void> async);
 }

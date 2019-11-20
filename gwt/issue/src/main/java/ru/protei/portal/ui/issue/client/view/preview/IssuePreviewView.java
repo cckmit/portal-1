@@ -87,11 +87,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setLinks( Set<CaseLink> value ) {
-        this.caseMetaView.setLinks( value );
-    }
-
-    @Override
     public void setTags(Set<CaseTag> value) {
         this.caseMetaView.setTags(value);
     }
@@ -146,13 +141,18 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
+    }
+
+    @Override
     public HasAttachments attachmentsContainer(){
         return attachmentContainer;
     }
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        number.setText("CRM-" + caseNumber);
+        number.setText(lang.crmPrefix() + caseNumber);
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
@@ -260,9 +260,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
         criticalityLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.IMPORTANCE);
         criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE);
@@ -386,6 +386,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     DivElement platformContainer;
     @UiField
     LabelElement platformLabel;
+    @UiField
+    HTMLPanel linksContainer;
 
     AbstractIssuePreviewActivity activity;
 

@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static java.lang.Enum.valueOf;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -169,16 +170,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     // TODO: убрать person!!!
     @Override
-    public Result removeLink(AuthToken authToken, Person initiator, CaseLink value) {
-        if (value == null || value.getId() == null || isValidLink(value)) {
+    public Result removeLink(AuthToken authToken, Person initiator, Long id) {
+        if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Set<Long> toRemoveIds = new HashSet<>();
-        toRemoveIds.add(value.getId());
+        CaseLink existedLink = caseLinkDAO.get(id);
+        if ( existedLink == null ) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        if ( isCrmLink(value) ) {
-            Long cId = parseRemoteIdAsLongValue(value.getRemoteId());
+        Set<Long> toRemoveIds = new HashSet<>();
+        toRemoveIds.add(id);
+
+        if ( isCrmLink(existedLink) ) {
+            Long cId = parseRemoteIdAsLongValue(existedLink.getRemoteId());
             CaseLink mirrorCrmLink = caseLinkDAO.getCrmLink(cId);
             if ( mirrorCrmLink != null ) {
                 toRemoveIds.add(mirrorCrmLink.getId());

@@ -349,7 +349,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         fireEvent(new CaseLinkEvents.Show.Builder(view.getLinksContainer())
                 .withCaseId(issue.getId())
-                .withCaseType(En_CaseType.CRM_SUPPORT));
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .build());
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
         view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
@@ -466,7 +467,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
-//        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
         issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
         issue.setPlatformId(view.platform().getValue() == null ? null : view.platform().getValue().getId());
 

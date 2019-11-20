@@ -233,8 +233,9 @@ public class DebugIds {
         String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
         String LINKS_INPUT = "issue-links-input";
         String LINKS_APPLY_BUTTON = "issue-links-apply-button";
+        String LINKS_COLLAPSE_BUTTON = "issue-links-collapse-button";
         @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
-        String LINK_INFO_CONTAINER = "issue-link-info-container";
+        @Deprecated String LINK_INFO_CONTAINER = "issue-link-info-container";
         String LINK_REMOVE_BUTTON = "issue-link-remove-button";
         String TAGS_BUTTON = "issue-tags-button";
         String ADD_TAG_BUTTON = "issue-add-tag-button";
@@ -286,7 +287,7 @@ public class DebugIds {
         String PRIVACY_ICON = "issue-preview-privacy-icon";
         String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
         @Deprecated String TITLE_LABEL = "issue-preview-title-label";
-        String LINKS_CONTAINER = "issue-preview-links-container";
+        @Deprecated String LINKS_CONTAINER = "issue-preview-links-container";
         String DATE_CREATED = "issue-preview-date-created-item";
         String IMPORTANCE = "issue-preview-importance-item";
         String PRODUCT = "issue-preview-product-item";

@@ -8,22 +8,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-import java.util.Set;
-
-import static ru.protei.portal.core.model.dict.En_CaseState.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemView {
+
 
     public CaseLinkItemView() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -36,40 +30,48 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     }
 
     @Override
-    public void setValue(CaseLink value) {
-        this.caseLink = value;
-        switch (value.getType()) {
-            case CRM: {
-                if (value.getCaseInfo() != null) {
-                    number.setText(lang.crmPrefix() + value.getCaseInfo().getCaseNumber().toString());
-                    fillCaseInfo(value.getCaseInfo());
-                }
-                break;
-            }
-            case YT: {
-                number.setText(value.getRemoteId());
-                processYouTrackInfo(value.getYouTrackInfo());
-                break;
-            }
-        }
+    public void setEnabled(boolean enabled) {
+        remove.setVisible(!enabled);
+    }
 
-        if (HelperFunc.isEmpty(value.getLink())) {
+    @Override
+    public void setNumber(String value) {
+        number.setText(value);
+    }
+
+    @Override
+    public void setName(String value) {
+        header.setText(value);
+    }
+
+    @Override
+    public void setState(En_CaseState value) {
+        if (value == null) return;
+        state.addClassName("state-" + value.name().toLowerCase());
+        if ( value.isTerminalState() ) {
+            addStyleName("case-link-completed");
+        }
+    }
+
+    @Override
+    public void setHref(String link) {
+        if (HelperFunc.isEmpty(link)) {
             number.addStyleName("without-link");
             header.addStyleName("without-link");
         } else {
-            number.setHref(value.getLink());
-            header.setHref(value.getLink());
+            number.setHref(link);
+            header.setHref(link);
         }
     }
 
     @Override
-    public CaseLink getValue() {
-        return caseLink;
+    public void setModelId(Long id) {
+        this.modelId = id;
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        remove.setVisible(!enabled);
+    public Long getModelId() {
+        return modelId;
     }
 
     @UiHandler("remove")
@@ -80,31 +82,6 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
             return;
         }
         activity.onRemoveClicked(this);
-    }
-
-    private void fillCaseInfo( CaseInfo value ) {
-        En_CaseState state = En_CaseState.getById(value.getStateId());
-        fillData( value.getName(), state);
-        fillCompletionState(state);
-    }
-
-    private void processYouTrackInfo( YouTrackIssueInfo youTrackInfo ) {
-        if (youTrackInfo == null) {
-            return;
-        }
-        fillData( youTrackInfo.getSummary(), youTrackInfo.getCaseState());
-        fillCompletionState(youTrackInfo.getCaseState());
-    }
-
-    private void fillCompletionState( En_CaseState caseState ) {
-        if(doneStates.contains( caseState )) {
-            addStyleName("case-link-completed");
-        }
-    }
-
-    private void fillData(String name, En_CaseState caseState ) {
-        header.setText( name );
-        state.addClassName("state-" + caseState.toString().toLowerCase());
     }
 
     private void setTestAttributes() {
@@ -125,9 +102,7 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     @UiField
     HTMLPanel root;
 
-    private Set<En_CaseState> doneStates = setOf( DONE, VERIFIED, CANCELED, CLOSED, SOLVED_DUP, SOLVED_FIX, SOLVED_NOAP, IGNORED );
-
-    private CaseLink caseLink;
+    private Long modelId;
     private AbstractCaseLinkItemActivity activity;
 
     interface CaseLinkViewUiBinder extends UiBinder<HTMLPanel, CaseLinkItemView> {}

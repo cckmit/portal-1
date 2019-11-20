@@ -32,5 +32,5 @@ public interface CaseLinkService {
 
     Result<Long> createLink(AuthToken authToken, Person initiator, CaseLink value);
 
-    Result removeLink(AuthToken authToken, Person initiator, CaseLink value);
+    Result removeLink(AuthToken authToken, Person initiator, Long id);
 }
