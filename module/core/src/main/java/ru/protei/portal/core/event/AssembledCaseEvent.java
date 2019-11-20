@@ -7,13 +7,10 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.util.DiffResult;
 
-import javax.sql.DataSource;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -23,6 +20,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
+    private CaseObjectMeta lastMetaState;
+    private CaseObjectMeta initMetaState;
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
@@ -62,10 +61,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
         lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent || event.isEagerEvent();
-        if (initState == null) {
-            initState = event.getOldState().collectToCaseObject(new CaseObject());
-        }
-        lastState = event.getNewState().collectToCaseObject(lastState == null ? new CaseObject() : lastState);
+        initMetaState = event.getOldState();
+        lastMetaState = event.getNewState();
         initiator = event.getPerson();
         serviceModule = event.getServiceModule();
     }
@@ -100,7 +97,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null && lastState!=null;
+        return initState != null && lastState != null;
+    }
+
+    private boolean isUpdateEventMeta() {
+        return initMetaState != null && lastMetaState != null;
     }
 
     public boolean isCommentAttached() {
@@ -112,31 +113,31 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseStateChanged() {
-        return isUpdateEvent() && lastState.getState() != initState.getState();
+        return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
     }
 
     public boolean isTimeElapsedChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getTimeElapsed(), initState.getTimeElapsed());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getTimeElapsed(), initMetaState.getTimeElapsed());
     }
 
     public boolean isCaseImportanceChanged() {
-        return isUpdateEvent() && !lastState.getImpLevel().equals(initState.getImpLevel());
+        return isUpdateEventMeta() && !lastMetaState.getImpLevel().equals(initMetaState.getImpLevel());
     }
 
     public boolean isManagerChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getManagerId(), initState.getManagerId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getManagerId(), initMetaState.getManagerId());
     }
 
     public boolean isProductChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getProductId(), initState.getProductId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getProductId(), initMetaState.getProductId());
     }
 
     public boolean isInitiatorChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInitiatorId(), initState.getInitiatorId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getInitiatorId(), initMetaState.getInitiatorId());
     }
 
     public boolean isInitiatorCompanyChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getInitiatorCompanyId(), initMetaState.getInitiatorCompanyId());
     }
 
     public boolean isInfoChanged() {
@@ -152,7 +153,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isPlatformChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getPlatformId(), initMetaState.getPlatformId());
     }
 
     public boolean isEagerEvent() {
@@ -231,6 +232,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initState;
     }
 
+    public CaseObjectMeta getCaseMeta() {
+        return lastMetaState != null ? lastMetaState : initMetaState;
+    }
+
+    public CaseObjectMeta getLastCaseMeta() {
+        return lastMetaState;
+    }
+
+    public CaseObjectMeta getInitCaseMeta() {
+        return initMetaState;
+    }
+
     public Person getInitiator() {
         return initiator;
     }
@@ -283,12 +296,20 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initState!=null;
     }
 
+    public boolean isCaseMetaFilled() {
+        return initMetaState != null;
+    }
+
     public boolean isCaseCommentsFilled() {
         return existingComments !=null;
     }
 
     public void setLastCaseObject( CaseObject caseObject ) {
         lastState = caseObject;
+    }
+
+    public void setLastCaseMeta( CaseObjectMeta caseMeta ) {
+        lastMetaState = caseMeta;
     }
 
     public void setExistingCaseComments( List<CaseComment> caseComments ) {
@@ -328,7 +349,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public Person getManager() {
-        return getCaseObject().getManager();
+        return getCaseMeta().getManager();
     }
 
     public Long getCaseObjectId() {
