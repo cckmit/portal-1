@@ -167,6 +167,10 @@
                     <groupId>ch.qos.logback</groupId>
                     <artifactId>logback-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
