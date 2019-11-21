@@ -18,7 +18,9 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
@@ -77,8 +79,10 @@ public class TemplateServiceImplTest {
 
         Object dummyCaseService = new Object();
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person, En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
+        assembledCaseEvent.attachCaseObjectMetaEvent( caseObjectMetaEvent );
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
@@ -106,8 +110,10 @@ public class TemplateServiceImplTest {
 
         Object dummyCaseService = new Object();
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person, En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
+        assembledCaseEvent.attachCaseObjectMetaEvent( caseObjectMetaEvent );
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
@@ -180,8 +186,10 @@ public class TemplateServiceImplTest {
         old.add( chang2 );
 
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( new Object(), ServiceModule.GENERAL, person, null, lastState );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( new Object(), ServiceModule.GENERAL, person, En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembled = new AssembledCaseEvent( caseObjectEvent );
         assembled.attachCaseObjectEvent( caseObjectEvent );
+        assembled.attachCaseObjectMetaEvent( caseObjectMetaEvent );
 
         assembled.setExistingCaseComments( existing );
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, chang1, chang1new, rem1 ) );

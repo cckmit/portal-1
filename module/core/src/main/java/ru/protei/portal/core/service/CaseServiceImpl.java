@@ -238,11 +238,11 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        applyStateBasedOnManager(caseMeta);
+
         if (!validateMetaFields(caseMeta)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-
-        applyStateBasedOnManager(caseMeta);
 
         if (!isCaseMetaChanged(caseMeta, oldCaseMeta)) {
             return ok(caseMeta);
