@@ -54,7 +54,6 @@ public abstract class EquipmentModel implements Activity, AsyncSelectorModel<Equ
             public void loadData( int offset, int limit, AsyncCallback handler ) {
                 query.setOffset( offset );
                 query.setLimit( limit );
-                EquipmentQuery query = makeQuery();
                 equipmentService.equipmentOptionList( query, new FluentCallback<List<EquipmentShortView>>()
                         .withErrorMessage( lang.errGetList() )
                         .withSuccess( options -> handler.onSuccess( options ) ) );
