@@ -93,7 +93,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         final CaseNameAndDescriptionChangeRequest newNameAndDescription = event.getLastNameAndDescription();
         updateIssueProps(issue, oldObj, newObj, newNameAndDescription, endpoint);
 
-
         try {
             service.updateIssue(issue, endpoint);
         } catch (RedmineException e) {

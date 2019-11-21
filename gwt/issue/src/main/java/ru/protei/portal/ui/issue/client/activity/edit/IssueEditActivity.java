@@ -371,6 +371,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.getCommentsContainer().clear();
             view.privacyVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
             view.timeElapsedHeader().addClassName("hide");
+
+            switchToEditingNameAndDescriptionView(issue);
+            view.editNameAndDescriptionButtonVisibility().setVisible(false);
+            view.setNameAndDescriptionButtonsPanelVisibility(false);
         } else {
             view.timeElapsedHeader().removeClassName("hide");
             view.setCaseNumber(issue.getCaseNumber());
@@ -380,6 +384,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
+
+            switchToRONameAndDescriptionView(issue);
+            view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
+            view.setNameAndDescriptionButtonsPanelVisibility(false);
+
             fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                     .withCaseType(En_CaseType.CRM_SUPPORT)
                     .withCaseId(issue.getId())
@@ -418,16 +427,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.setNumber(isNew(issue) ? null : issue.getCaseNumber().intValue() );
 
         view.isPrivate().setValue(issue.isPrivateCase());
-
-        if (isNew(issue)) {
-            switchToEditingNameAndDescriptionView(issue);
-            view.editNameAndDescriptionButtonVisibility().setVisible(false);
-            view.setNameAndDescriptionButtonsPanelVisibility(false);
-        } else {
-            switchToRONameAndDescriptionView(issue);
-            view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
-            view.setNameAndDescriptionButtonsPanelVisibility(false);
-        }
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));

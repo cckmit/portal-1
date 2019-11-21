@@ -88,7 +88,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "platform", newState.getPlatformName() );
 
         templateModel.put( "caseName", newNameAndDescription.getName() );
-        templateModel.put( "oldCaseName", oldNameAndDescription.getName() );
+        templateModel.put( "oldCaseName", oldNameAndDescription == null ? null : oldNameAndDescription.getName() );
         templateModel.put( "caseInfo", newNameAndDescription == null ? null : escapeTextAndRenderHTML( newNameAndDescription.getInfo(), textMarkup ) );
         templateModel.put( "oldCaseInfo", oldNameAndDescription == null ? null : escapeTextAndRenderHTML( oldNameAndDescription.getInfo(), textMarkup ) );
 
