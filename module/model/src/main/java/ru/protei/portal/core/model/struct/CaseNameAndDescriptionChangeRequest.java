@@ -8,7 +8,6 @@ public class CaseNameAndDescriptionChangeRequest implements Serializable {
     private Long id;
     private String name;
     private String info;
-    private String extAppType;
 
     public CaseNameAndDescriptionChangeRequest() {
     }
@@ -20,7 +19,6 @@ public class CaseNameAndDescriptionChangeRequest implements Serializable {
     }
 
     public CaseNameAndDescriptionChangeRequest(CaseObject caseObject) {
-        if (caseObject == null) return;
         this.id = caseObject.getId();
         this.name = caseObject.getName();
         this.info = caseObject.getInfo();

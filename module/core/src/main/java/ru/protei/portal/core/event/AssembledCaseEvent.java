@@ -56,6 +56,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.lastState = objectEvent.getNewState();
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
+        //temporary solution
+        this.initNameAndDescription = initState == null ? null : new CaseNameAndDescriptionChangeRequest(this.initState);
+        this.lastNameAndDescription = lastState == null ? null : new CaseNameAndDescriptionChangeRequest(this.lastState);
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
