@@ -93,7 +93,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null;
+        return this.initState == null && this.initNameAndDescription == null;
     }
 
     private boolean isUpdateEvent() {
@@ -109,47 +109,47 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseStateChanged() {
-        return isUpdateEvent() && lastState.getState() != initState.getState();
+        return initState != null && lastState.getState() != initState.getState();
     }
 
     public boolean isTimeElapsedChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getTimeElapsed(), initState.getTimeElapsed());
+        return initState != null && !HelperFunc.equals(lastState.getTimeElapsed(), initState.getTimeElapsed());
     }
 
     public boolean isCaseImportanceChanged() {
-        return isUpdateEvent() && !lastState.getImpLevel().equals(initState.getImpLevel());
+        return initState != null && !lastState.getImpLevel().equals(initState.getImpLevel());
     }
 
     public boolean isManagerChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getManagerId(), initState.getManagerId());
+        return initState != null && !HelperFunc.equals(lastState.getManagerId(), initState.getManagerId());
     }
 
     public boolean isProductChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getProductId(), initState.getProductId());
+        return initState != null && !HelperFunc.equals(lastState.getProductId(), initState.getProductId());
     }
 
     public boolean isInitiatorChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInitiatorId(), initState.getInitiatorId());
+        return initState != null && !HelperFunc.equals(lastState.getInitiatorId(), initState.getInitiatorId());
     }
 
     public boolean isInitiatorCompanyChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId());
+        return initState != null && !HelperFunc.equals(lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId());
     }
 
     public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastNameAndDescription.getInfo(), initNameAndDescription.getInfo());
+        return initNameAndDescription != null && !HelperFunc.equals(lastNameAndDescription.getInfo(), initNameAndDescription.getInfo());
     }
 
     public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastNameAndDescription.getName(), initNameAndDescription.getName());
+        return initNameAndDescription != null && !HelperFunc.equals(lastNameAndDescription.getName(), initNameAndDescription.getName());
     }
 
     public boolean isPrivacyChanged() {
-        return isUpdateEvent() && lastState.isPrivateCase() != initState.isPrivateCase();
+        return initState != null && lastState.isPrivateCase() != initState.isPrivateCase();
     }
 
     public boolean isPlatformChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
+        return initState != null && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
     }
 
     public boolean isEagerEvent() {

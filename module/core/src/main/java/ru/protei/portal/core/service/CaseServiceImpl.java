@@ -230,17 +230,20 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setId(changeRequest.getId());
         caseObject.setName(changeRequest.getName());
         caseObject.setInfo(changeRequest.getInfo());
-        boolean isUpdated = caseObjectDAO.partialMerge(caseObject);
+        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
 
-        if (isUpdated) {
-            publisherService.publishEvent(new CaseNameAndDescriptionEvent(
-                    this,
-                    oldChangeRequest,
-                    changeRequest,
-                    initiator,
-                    ServiceModule.GENERAL,
-                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
+        if (!isUpdated) {
+            log.info("Failed to update issue {} at db", caseObject.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
+
+        publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+                this,
+                oldChangeRequest,
+                changeRequest,
+                initiator,
+                ServiceModule.GENERAL,
+                En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
 
         return ok(caseObject.getId());
     }

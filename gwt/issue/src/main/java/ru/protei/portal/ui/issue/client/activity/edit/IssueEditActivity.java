@@ -284,14 +284,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onEditNameAndDescriptionClicked() {
-        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
-        if (isAllowedEditNameAndDescription) {
-            view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
-            view.switchToRONameDescriptionView(false);
-            view.name().setValue(issue.getName());
-            view.description().setValue(issue.getInfo());
-            view.setNameRO(null, false);
-            view.setDescriptionRO(null);
+        if (isEditingNameAndDescriptionView) {
+            switchToRONameAndDescriptionView(issue);
+            view.setNameAndDescriptionButtonsPanelVisibility(false);
+        } else {
+            boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
+            if (isAllowedEditNameAndDescription) {
+                switchToEditingNameAndDescriptionView(issue);
+                view.setNameAndDescriptionButtonsPanelVisibility(true);
+            }
         }
     }
 
@@ -305,14 +306,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issueService.saveIssueNameAndDescription(changeRequest, new FluentCallback<Long>()
                 .withSuccess(caseId -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    switchToRONameAndDescriptionView(issue);
+                    view.setNameAndDescriptionButtonsPanelVisibility(false);
                 }));
     }
 
     private CaseNameAndDescriptionChangeRequest fillIssueNameAndDescription() {
+        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
+        if (isAllowedEditNameAndDescription) {
+            issue.setName(view.name().getValue());
+            issue.setInfo(view.description().getValue());
+        }
         return new CaseNameAndDescriptionChangeRequest(
                 issue.getId(),
-                view.name().getValue().trim(),
-                view.description().getValue().trim());
+                issue.getName(),
+                issue.getInfo());
     }
 
     private void initialView( CaseObject issue) {
@@ -412,20 +420,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isPrivate().setValue(issue.isPrivateCase());
 
         if (isNew(issue)) {
-            view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
-            view.switchToRONameDescriptionView(false);
-            view.name().setValue(issue.getName());
-            view.description().setValue(issue.getInfo());
-            view.setNameRO(null, false);
-            view.setDescriptionRO(null);
+            switchToEditingNameAndDescriptionView(issue);
+            view.editNameAndDescriptionButtonVisibility().setVisible(false);
+            view.setNameAndDescriptionButtonsPanelVisibility(false);
         } else {
-            view.switchToRONameDescriptionView(true);
-            view.name().setValue(null);
-            view.description().setValue(null);
-            view.setNameRO(issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()));
-            renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
+            switchToRONameAndDescriptionView(issue);
+            view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
+            view.setNameAndDescriptionButtonsPanelVisibility(false);
         }
-        view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
@@ -653,6 +655,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.initiatorSelectorAllowAddNew(policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
     }
 
+    private void switchToRONameAndDescriptionView(CaseObject issue) {
+        isEditingNameAndDescriptionView = false;
+        view.switchToRONameAndDescriptionView(true);
+        view.name().setValue(null);
+        view.description().setValue(null);
+        view.setNameRO(issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()));
+        renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
+    }
+
+    private void switchToEditingNameAndDescriptionView(CaseObject issue) {
+        isEditingNameAndDescriptionView = true;
+        view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
+        view.switchToRONameAndDescriptionView(false);
+        view.name().setValue(issue.getName());
+        view.description().setValue(issue.getInfo());
+        view.setNameRO(null, false);
+        view.setDescriptionRO(null);
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -685,6 +706,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private Profile authProfile;
+    private boolean isEditingNameAndDescriptionView = false;
 
     private AppEvents.InitDetails initDetails;
 

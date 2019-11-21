@@ -17,7 +17,13 @@ public class CaseNameAndDescriptionEvent extends ApplicationEvent implements Abs
     private ServiceModule serviceModule;
     private En_ExtAppType extAppType;
 
-    public CaseNameAndDescriptionEvent(Object source, CaseNameAndDescriptionChangeRequest newState, CaseNameAndDescriptionChangeRequest oldState, Person person, ServiceModule serviceModule, En_ExtAppType extAppType) {
+    public CaseNameAndDescriptionEvent(
+            Object source,
+            CaseNameAndDescriptionChangeRequest newState,
+            CaseNameAndDescriptionChangeRequest oldState,
+            Person person,
+            ServiceModule serviceModule,
+            En_ExtAppType extAppType) {
         super(source);
         this.newState = newState;
         this.oldState = oldState;

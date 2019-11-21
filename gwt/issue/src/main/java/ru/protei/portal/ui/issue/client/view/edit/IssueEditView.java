@@ -351,7 +351,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void switchToRONameDescriptionView(boolean isRO) {
+    public void switchToRONameAndDescriptionView(boolean isRO) {
         descriptionContainer.setVisible(!isRO);
         nameContainer.setVisible(!isRO);
 
@@ -429,6 +429,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return editNameAndDescriptionButton;
     }
 
+    @Override
+    public void setNameAndDescriptionButtonsPanelVisibility(boolean visible) {
+        if (visible) {
+            nameAndDescriptionButtonsPanel.removeClassName("hide");
+        } else {
+            nameAndDescriptionButtonsPanel.addClassName("hide");
+        }
+    }
+
     @UiHandler("company")
     public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
@@ -486,6 +495,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void onSaveNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onSaveNameAndDescriptionClicked();
+        }
+    }
+
+    @UiHandler("cancelNameAndDescriptionButton")
+    public void onCancelNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked();
         }
     }
 
@@ -683,6 +699,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Button editNameAndDescriptionButton;
     @UiField
     Button saveNameAndDescriptionButton;
+    @UiField
+    Button cancelNameAndDescriptionButton;
+    @UiField
+    DivElement nameAndDescriptionButtonsPanel;
 
     private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
         @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }

@@ -20,10 +20,12 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first">
-                    <div class="btn-group form-group">
-                        <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-toolbar">
-                            <i class="fa fa-pencil-alt"/>
-                        </g:Button>
+                    <div class="btn-toolbar flex-wrap">
+                        <div class="btn-group form-group">
+                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                                <i class="fa fa-pencil-alt"/>
+                            </g:Button>
+                        </div>
                     </div>
                     <g:HTMLPanel ui:field="numberContainer">
                         <h5 class="number-copy-panel no-margin p-b-10">
@@ -65,8 +67,9 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <div class="form-group text-right">
-                        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-sm btn-complete" text="{lang.buttonSave}"/>
+                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
+                        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
+                        <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
                     </div>
 
                     <div class="row form-group">
