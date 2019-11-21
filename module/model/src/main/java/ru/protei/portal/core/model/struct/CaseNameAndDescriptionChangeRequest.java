@@ -6,7 +6,6 @@ public class CaseNameAndDescriptionChangeRequest {
     private Long id;
     private String name;
     private String info;
-    private String extAppType;
 
     public CaseNameAndDescriptionChangeRequest(Long id, String name, String info) {
         this.id = id;
@@ -15,7 +14,6 @@ public class CaseNameAndDescriptionChangeRequest {
     }
 
     public CaseNameAndDescriptionChangeRequest(CaseObject caseObject) {
-        if (caseObject == null) return;
         this.id = caseObject.getId();
         this.name = caseObject.getName();
         this.info = caseObject.getInfo();
