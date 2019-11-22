@@ -30,9 +30,9 @@ public interface AbstractIssueMetaView extends IsWidget {
     void initiatorUpdateCompany(Company company);
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
-    void changeTimeElapsed(Long timeElapsed);
-    void changeInitiator(Person initiator);
-    void changePlatform(Platform platform);
+    void setTimeElapsed(Long timeElapsed);
+    void setInitiator(Person initiator);
+    void setPlatform(Platform platform);
 
     Element timeElapsedHeader();
 

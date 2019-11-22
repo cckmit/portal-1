@@ -98,9 +98,6 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMeta updateIssueMeta(CaseObjectMeta caseMeta) throws RequestFailedException {
         log.info("updateIssueMeta(): caseId={} | caseMeta={}", caseMeta.getId(), caseMeta);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (caseMeta.getId() == null) {
-           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
-        }
         Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta, getCurrentPerson());
         log.info("updateIssueMeta(): caseId={} | status={}", caseMeta.getId(), result.getStatus());
         return checkResultAndGetData(result);
@@ -110,9 +107,6 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
         log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (caseMetaNotifiers.getId() == null) {
-           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
-        }
         Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers, getCurrentPerson());
         log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
         return checkResultAndGetData(result);
@@ -122,9 +116,6 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMetaJira updateIssueMetaJira(CaseObjectMetaJira caseMetaJira) throws RequestFailedException {
         log.info("updateIssueMetaJira(): caseId={} | caseMetaJira={}", caseMetaJira.getId(), caseMetaJira);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (caseMetaJira.getId() == null) {
-           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
-        }
         Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira, getCurrentPerson());
         log.info("updateIssueMetaJira(): caseId={} | status={}", caseMetaJira.getId(), result.getStatus());
         return checkResultAndGetData(result);

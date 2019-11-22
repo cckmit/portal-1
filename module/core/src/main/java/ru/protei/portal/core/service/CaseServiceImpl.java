@@ -228,6 +228,10 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public Result<CaseObjectMeta> updateCaseObjectMeta(AuthToken token, CaseObjectMeta caseMeta, Person initiator) {
 
+        if (caseMeta.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         CaseObject oldState = caseObjectDAO.get(caseMeta.getId());
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -295,13 +299,12 @@ public class CaseServiceImpl implements CaseService {
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseMeta.getId());
-        CaseObjectMeta newCaseMeta = new CaseObjectMeta(newState);
+        CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
         publisherService.publishEvent(new CaseObjectMetaEvent(
                 this,
                 ServiceModule.GENERAL,
                 initiator,
-                En_ExtAppType.forCode(newState.getExtAppType()),
+                En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
                 newCaseMeta
         ));
@@ -312,6 +315,10 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers, Person initiator) {
+
+        if (caseMetaNotifiers.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         CaseObject oldState = caseObjectDAO.get(caseMetaNotifiers.getId());
         if (oldState == null) {
@@ -353,6 +360,10 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public Result<CaseObjectMetaJira> updateCaseObjectMetaJira(AuthToken token, CaseObjectMetaJira caseMetaJira, Person initiator) {
+
+        if (caseMetaJira.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         CaseObject oldState = caseObjectDAO.get(caseMetaJira.getId());
         if (oldState == null) {

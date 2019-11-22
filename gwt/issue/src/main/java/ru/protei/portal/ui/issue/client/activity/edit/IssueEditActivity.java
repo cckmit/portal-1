@@ -98,7 +98,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
         final AbstractIssueMetaView metaView = view.getMetaView();
-        metaView.changeTimeElapsed(event.timeElapsed);
+        metaView.setTimeElapsed(event.timeElapsed);
     }
 
     @Event
@@ -114,7 +114,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     public void onFillPerson(PersonEvents.PersonCreated event) {
         if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && event.person != null) {
             final AbstractIssueMetaView metaView = view.getMetaView();
-            metaView.changeInitiator(event.person);
+            metaView.setInitiator(event.person);
         }
     }
 
@@ -249,12 +249,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
         if (company == null) {
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
-            metaView.changeInitiator(null);
+            metaView.setInitiator(null);
         } else {
             initiatorSelectorAllowAddNew(company.getId());
             Long selectedCompanyId = company.getId();
 
-            metaView.changePlatform(null);
+            metaView.setPlatform(null);
             metaView.platformEnabled().setEnabled(true);
             metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
@@ -286,7 +286,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             } else if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
                 initiator = Person.fromPersonShortView(new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired()));
             }
-            metaView.changeInitiator(initiator);
+            metaView.setInitiator(initiator);
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());

@@ -184,21 +184,21 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void changeTimeElapsed(Long timeElapsed) {
+    public void setTimeElapsed(Long timeElapsed) {
         CaseObjectMeta caseMeta = getCaseMeta();
         caseMeta.setTimeElapsed(timeElapsed);
         setCaseMeta(caseMeta);
     }
 
     @Override
-    public void changeInitiator(Person initiator) {
+    public void setInitiator(Person initiator) {
         CaseObjectMeta caseMeta = getCaseMeta();
         caseMeta.setInitiator(initiator);
         setCaseMeta(caseMeta);
     }
 
     @Override
-    public void changePlatform(Platform platform) {
+    public void setPlatform(Platform platform) {
         CaseObjectMeta caseMeta = getCaseMeta();
         caseMeta.setPlatformId(platform == null ? null : platform.getId());
         setCaseMeta(caseMeta);
