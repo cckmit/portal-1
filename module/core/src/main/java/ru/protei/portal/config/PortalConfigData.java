@@ -475,7 +475,7 @@ public class PortalConfigData {
         private final String linkYouTrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
-            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }

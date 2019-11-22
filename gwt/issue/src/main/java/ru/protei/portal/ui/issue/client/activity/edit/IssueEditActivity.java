@@ -72,19 +72,23 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Event
     public void onShow( IssueEvents.Edit event ) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
+        initDetails.parent.clear();
         if (event.id == null) {
             if (issue != null) {
-                initialRestoredView(issue);
+                initDetails.parent.add(view.asWidget());
+                fillView(issue, true);
             } else {
-                CaseObject caseObject = new CaseObject();
-                initNewIssue(caseObject);
-                initialView(caseObject);
+                initDetails.parent.add(view.asWidget());
+                issue = createNewIssue();
+                fillView(issue, false);
             }
         } else {
-            requestIssue(event.id, this::initialView);
+            requestIssue(event.id, false);
         }
     }
 
@@ -194,7 +198,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseId -> {
                     unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    fireEvent(new IssueEvents.ChangeModel());//TODO скорее всего избыточно, удалить
                     fireEvent(isNew(issue) ? new IssueEvents.Show(true) : new Back());
                 }));
 
@@ -341,38 +344,32 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     }
 
-    private void initialView(CaseObject issue){
-        this.issue = issue;
-        fillView(this.issue, false);
-    }
-
     private void requestCaseLinks( Long issueId ) {
         caseLinkController.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
                 view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
         ) );
     }
 
-    private void initialRestoredView(CaseObject issue){
-        this.issue = issue;
-        fillView(this.issue, true);
-    }
-
-    private void requestIssue(Long number, Consumer<CaseObject> successAction){
+    private void requestIssue(Long number, final boolean isRestoredIssue ){
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(CaseObject issue) {
-                successAction.accept(issue);
+                IssueEditActivity.this.issue = issue;
+                initDetails.parent.add(view.asWidget());
+                fillView(issue, isRestoredIssue);
                 requestCaseLinks(issue.getId());
             }
         });
     }
 
-    private void initNewIssue(CaseObject caseObject) {
+    private CaseObject createNewIssue() {
+        CaseObject caseObject = new CaseObject();
         boolean isPrivacyVisible = policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW);
         caseObject.setPrivateCase(isPrivacyVisible ? true : false);
+        return caseObject;
     }
 
     private void fillView(CaseObject issue, boolean isRestoredIssue) {

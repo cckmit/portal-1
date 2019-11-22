@@ -112,18 +112,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     public void setCaseMetaNotifiers(CaseObjectMetaNotifiers caseObjectMetaNotifiers) {
         caseMetaNotifiers = caseObjectMetaNotifiers;
 
-        notifiers.setValue(caseMetaNotifiers.getNotifiers() == null ?
-                new HashSet<>() :
-                caseMetaNotifiers.getNotifiers()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(person -> {
-                        PersonShortView psv = PersonShortView.fromPerson(person);
-                        psv.setDisplayShortName(transliteration(psv.getDisplayShortName()));
-                        return psv;
-                    })
-                    .collect(Collectors.toSet()));
-
+        notifiers.setValue(transliterateNotifiers(caseMetaNotifiers.getNotifiers()));
     }
 
     @Override
@@ -345,6 +334,18 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private Set<PersonShortView> transliterateNotifiers(Set<Person> notifiers) {
+        return notifiers == null ? new HashSet<>() :
+                notifiers
+                        .stream()
+                        .map(notifier -> {
+                            PersonShortView personShortView = PersonShortView.fromPerson(notifier);
+                            personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
+                            return personShortView;
+                        })
+                        .collect(Collectors.toSet());
     }
 
     @UiHandler("state")
