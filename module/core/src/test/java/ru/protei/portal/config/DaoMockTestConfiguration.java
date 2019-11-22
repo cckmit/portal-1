@@ -21,6 +21,16 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return mock( CaseObjectMetaDAO.class );
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return mock( CaseObjectMetaNotifiersDAO.class );
+    }
+
+    @Bean
     public JdbcManyRelationsHelper getJdbcManyRelationsHelper(){
         return mock( JdbcManyRelationsHelper.class);
     }
