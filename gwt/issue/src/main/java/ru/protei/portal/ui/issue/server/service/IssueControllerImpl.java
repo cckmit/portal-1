@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
@@ -79,9 +80,10 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
+    @Deprecated
     @Override
     public Long saveIssue( CaseObject caseObject ) throws RequestFailedException {
-        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject);
+        log.info("saveIssue(): caseNo={} | case={}", caseObject.getCaseNumber(), caseObject);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
             CaseObject saved = createIssue(caseObject);
@@ -90,6 +92,33 @@ public class IssueControllerImpl implements IssueController {
         Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
         log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response).getId();
+    }
+
+    @Override
+    public CaseObjectMeta updateIssueMeta(CaseObjectMeta caseMeta) throws RequestFailedException {
+        log.info("updateIssueMeta(): caseId={} | caseMeta={}", caseMeta.getId(), caseMeta);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta, getCurrentPerson());
+        log.info("updateIssueMeta(): caseId={} | status={}", caseMeta.getId(), result.getStatus());
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
+        log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers, getCurrentPerson());
+        log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public CaseObjectMetaJira updateIssueMetaJira(CaseObjectMetaJira caseMetaJira) throws RequestFailedException {
+        log.info("updateIssueMetaJira(): caseId={} | caseMetaJira={}", caseMetaJira.getId(), caseMetaJira);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira, getCurrentPerson());
+        log.info("updateIssueMetaJira(): caseId={} | status={}", caseMetaJira.getId(), result.getStatus());
+        return checkResultAndGetData(result);
     }
 
     @Override

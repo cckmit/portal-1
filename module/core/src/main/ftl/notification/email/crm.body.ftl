@@ -64,11 +64,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         <#if createdByMe == true>
             ${_yourself}
         <#else>
-            ${(TranslitUtils.transliterate(case.creator.displayShortName, lang))!'?'}
+            ${(TranslitUtils.transliterate(creator, lang))!'?'}
         </#if>
         <span style="padding-left: 4px">
-            <#if case.created??>
-                ${case.created?datetime}
+            <#if created??>
+                ${created?datetime}
             <#else>
                 ?
             </#if>
@@ -81,8 +81,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_issue_id}
                     </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${case.caseNumber?c}</a></b></td>
-                    <#--<td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${case.caseNumber?c}</td>-->
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${caseNumber?c}</a></b></td>
+                    <#--<td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${caseNumber?c}</td>-->
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
@@ -90,9 +90,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if nameChanged>
-                            <@diff new="${(case.name)!''}" old="${(oldCase.name)!''}"/>
+                            <@diff new="${(name)!''}" old="${(oldName)!''}"/>
                         <#else>
-                            ${(case.name)!''}
+                            ${(name)!''}
                         </#if>
                     </td>
                 </tr>
@@ -103,9 +103,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                             <#if privacyChanged>
-                                <@changeTo old="${oldCase.privateCase?string(_yes,_no)}" new="${case.privateCase?string(_yes,_no)}"/>
+                                <@changeTo old="${oldPrivacy?string(_yes,_no)}" new="${privacy?string(_yes,_no)}"/>
                             <#else>
-                                ${case.privateCase?string(_yes,_no)}
+                                ${privacy?string(_yes,_no)}
                             </#if>
                         </td>
                     </tr>
@@ -115,15 +115,15 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_customer}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#assign newCustomer = (case.initiator.displayName)???then(
-                                    case.initiator.displayName +' ('+ (case.initiatorCompany.cname!'?') +')',
-                                    (case.initiatorCompany.cname)!'?'
+                        <#assign newCustomer = (initiator)???then(
+                                    initiator +' ('+ (initiatorCompany!'?') +')',
+                                    (initiatorCompany)!'?'
                                 )>
                         <#if customerChanged>
                             <@changeTo
-                                old="${(oldInitiator.displayName)???then(
-                                    TranslitUtils.transliterate(oldInitiator.displayName, lang) +' ('+ (TranslitUtils.transliterate(oldInitiatorCompany.cname, lang)!'?') +')',
-                                    (TranslitUtils.transliterate(oldInitiatorCompany.cname))!'?'
+                                old="${(oldInitiator)???then(
+                                    TranslitUtils.transliterate(oldInitiator, lang) +' ('+ (TranslitUtils.transliterate(oldInitiatorCompany, lang)!'?') +')',
+                                    (TranslitUtils.transliterate(oldInitiatorCompany))!'?'
                                 )}"
                                 new="${TranslitUtils.transliterate(newCustomer, lang)}"
                             />
@@ -138,9 +138,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if productChanged>
-                            <@changeTo old="${(oldCase.product.name)!'?'}" new="${(case.product.name)!'?'}"/>
-                            <#else>
-                                ${(case.product.name)!'?'}
+                            <@changeTo old="${(oldProduct)!'?'}" new="${(product)!'?'}"/>
+                        <#else>
+                            ${(product)!'?'}
                         </#if>
                     </td>
                 </tr>
@@ -151,12 +151,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if managerChanged>
                                 <@changeTo
-                                    old="${(oldManager??)?then(((TranslitUtils.transliterate(oldManager.displayName, lang))!'') +' ('+ TranslitUtils.transliterate(oldManager.company.cname, lang) +')', '?')}"
-                                    new="${(manager??)?then(((TranslitUtils.transliterate(manager.displayName, lang))!'') +' ('+ TranslitUtils.transliterate(manager.company.cname, lang) +')', '?')}"
+                                    old="${(oldManager??)?then(((TranslitUtils.transliterate(oldManager, lang))!'') +' ('+ TranslitUtils.transliterate(oldManagerCompany, lang) +')', '?')}"
+                                    new="${(manager??)?then(((TranslitUtils.transliterate(manager, lang))!'') +' ('+ TranslitUtils.transliterate(managerCompany, lang) +')', '?')}"
                                 />
                         <#else>
                             <#if manager??>
-                                ${TranslitUtils.transliterate(manager.displayName, lang)!''} (${TranslitUtils.transliterate(manager.company.cname, lang)})
+                                ${TranslitUtils.transliterate(manager, lang)!''} (${TranslitUtils.transliterate(managerCompany, lang)})
                             <#else>
                                 ?
                             </#if>
@@ -170,8 +170,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if caseChanged>
                             <@changeTo old="${oldCaseState}" new="${caseState}"/>
-                            <#else>
-                                ${caseState}
+                        <#else>
+                            ${caseState}
                         </#if>
                     </td>
                 </tr>

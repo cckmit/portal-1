@@ -12,12 +12,11 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_JiraSLAIssueType;
 import ru.protei.portal.core.model.ent.JiraSLAMapEntry;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.JiraMetaData;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
-import ru.protei.portal.ui.common.client.widget.selector.text.RawTextButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.text.RawTextFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>, HasVisibility {
+public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility {
 
     @Inject
     public void init() {
@@ -36,27 +35,27 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     }
 
     @Override
-    public JiraMetaData getValue() {
+    public CaseObjectMetaJira getValue() {
         return value;
     }
 
     @Override
-    public void setValue(JiraMetaData value) {
+    public void setValue(CaseObjectMetaJira value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(JiraMetaData value, boolean fireEvents) {
+    public void setValue(CaseObjectMetaJira value, boolean fireEvents) {
         clearCache();
         this.value = value;
         renderView();
         if (fireEvents) {
-            ValueChangeEvent.fire(this, value);
+            fireChanged();
         }
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<JiraMetaData> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseObjectMetaJira> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
@@ -64,6 +63,11 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     public void severityChanged(ValueChangeEvent<String> event) {
         fillValueFromView();
         renderView();
+        fireChanged();
+    }
+
+    private void fireChanged() {
+        ValueChangeEvent.fire(this, value);
     }
 
     private void renderView() {
@@ -207,7 +211,7 @@ public class JiraSLASelector extends Composite implements HasValue<JiraMetaData>
     @UiField
     TextBox timeOfDecision;
 
-    private JiraMetaData value;
+    private CaseObjectMetaJira value;
     private List<JiraSLAMapEntry> cache;
 
     private WorkTimeFormatter workTimeFormatter;
