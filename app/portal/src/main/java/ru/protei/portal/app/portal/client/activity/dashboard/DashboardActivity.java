@@ -40,7 +40,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             return;
         }
 
-        fireEvent(new IssueEvents.Edit());
+        fireEvent(new IssueEvents.Create());
     }
 
     @Event

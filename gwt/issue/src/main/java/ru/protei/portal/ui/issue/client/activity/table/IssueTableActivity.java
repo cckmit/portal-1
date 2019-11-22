@@ -125,7 +125,7 @@ public abstract class IssueTableActivity
             return;
         }
 
-        fireEvent(new IssueEvents.Edit());
+        fireEvent(new IssueEvents.Create());
     }
 
     @Event
@@ -176,7 +176,7 @@ public abstract class IssueTableActivity
     @Override
     public void onEditClicked( CaseShortView value ) {
         persistScrollTopPosition();
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
     }
 
     @Override

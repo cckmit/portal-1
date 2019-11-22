@@ -3,6 +3,9 @@ package ru.protei.portal.ui.issue.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
+import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateView;
+import ru.protei.portal.ui.issue.client.activity.create.IssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.*;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
@@ -12,6 +15,7 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewVie
 import ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
+import ru.protei.portal.ui.issue.client.view.create.IssueCreateView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
 import ru.protei.portal.ui.issue.client.view.filter.IssueFilterView;
 import ru.protei.portal.ui.issue.client.view.preview.IssuePreviewView;
@@ -37,6 +41,9 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind( AbstractIssueEditActivity.class ).to( IssueEditActivity.class ).asEagerSingleton();
         bind( AbstractIssueEditView.class ).to( IssueEditView.class ).in( Singleton.class );
+
+        bind( AbstractIssueCreateActivity.class ).to( IssueCreateActivity.class ).asEagerSingleton();
+        bind( AbstractIssueCreateView.class ).to( IssueCreateView.class ).in( Singleton.class );
 
         bind( AbstractIssueFilterView.class ).to(IssueFilterView.class).in(Singleton.class);
     }

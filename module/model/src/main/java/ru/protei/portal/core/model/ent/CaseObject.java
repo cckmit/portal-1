@@ -140,6 +140,9 @@ public class CaseObject extends AuditableObject {
     private String contractNumber;
 
     // not db column
+    private List<CaseLink> links;
+
+    // not db column
     private En_TimeElapsedType timeElapsedType;
 
     // not db column
@@ -520,6 +523,14 @@ public class CaseObject extends AuditableObject {
 
     public void setContractNumber(String contractNumber) {
         this.contractNumber = contractNumber;
+    }
+
+    public List<CaseLink> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<CaseLink> links) {
+        this.links = links;
     }
 
     @Override
