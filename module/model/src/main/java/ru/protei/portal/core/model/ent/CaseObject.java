@@ -124,9 +124,6 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> products;
 
-    @JdbcManyToMany(linkTable = "case_object_tag", localLinkColumn = "case_id", remoteLinkColumn = "tag_id")
-    private Set<CaseTag> tags;
-
     @JdbcColumn(name = "platform_id")
     private Long platformId;
 
@@ -474,14 +471,6 @@ public class CaseObject extends AuditableObject {
         this.timeElapsedType = timeElapsedType;
     }
 
-    public Set<CaseTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<CaseTag> tags) {
-        this.tags = tags;
-    }
-
     public JiraMetaData getJiraMetaData() {
         return jiraMetaData;
     }
@@ -569,7 +558,6 @@ public class CaseObject extends AuditableObject {
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
-                ", tags=" + tags +
                 ", timeElapsedType=" + timeElapsedType +
                 ", jiraMetaData=" + jiraMetaData +
                 ", platformId=" + platformId +

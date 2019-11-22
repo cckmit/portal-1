@@ -25,7 +25,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
-import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 
@@ -120,12 +119,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Event
-    public void onRemoveTag(CaseTagEvents.Remove event) {
-        issue.getTags().remove(event.getCaseTag());
-        view.tags().setValue(issue.getTags());
-    }
-
     @Override
     public void onSaveClicked() {
 
@@ -176,15 +169,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
                 if (!isNew(issue)) {
-                    fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                    fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                             .withCaseType(En_CaseType.CRM_SUPPORT)
                             .withCaseId(issue.getId())
                             .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                             .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                             .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                             .withPrivateCase(issue.isPrivateCase())
-                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                            .build());
+                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
                 }
             }
         });
@@ -320,15 +312,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
-            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+            fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                     .withCaseType(En_CaseType.CRM_SUPPORT)
                     .withCaseId(issue.getId())
                     .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                     .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                     .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                     .withPrivateCase(issue.isPrivateCase())
-                    .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                    .build());
+                    .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -347,15 +338,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        fireEvent(new CaseLinkEvents.Show.Builder(view.getLinksContainer())
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT));
+
+        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .build());
-
-        view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
-        view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
-
-        view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
+                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ))
+                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )));
 
         view.numberVisibility().setVisible( !isNew(issue) );
         view.setNumber(isNew(issue) ? null : issue.getCaseNumber().intValue() );
@@ -467,7 +458,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
-        issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
         issue.setPlatformId(view.platform().getValue() == null ? null : view.platform().getValue().getId());
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
@@ -607,8 +597,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     AbstractIssueEditView view;
     @Inject
     IssueControllerAsync issueService;
-    @Inject
-    CaseLinkControllerAsync caseLinkController;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject

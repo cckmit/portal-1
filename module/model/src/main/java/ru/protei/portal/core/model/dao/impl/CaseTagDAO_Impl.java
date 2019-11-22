@@ -34,9 +34,9 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
                 args.add(HelperFunc.makeLikeArg(query.getName(), true));
             }
 
-            if (CollectionUtils.isNotEmpty(query.getCaseTypes())) {
-                condition.append(" and case_tag.case_type in ");
-                condition.append(HelperFunc.makeInArg(query.getCaseTypes(), caseType -> String.valueOf(caseType.getId())));
+            if (query.getCaseType() != null) {
+                condition.append(" and case_tag.case_type = ?");
+                args.add(query.getCaseType().getId());
             }
 
             if (query.getCompanyId() != null) {
@@ -46,7 +46,7 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
 
             if (CollectionUtils.isNotEmpty(query.getIds())) {
                 condition.append(" and case_tag.id in ");
-                condition.append(HelperFunc.makeInArg(query.getIds()));
+                args.add(HelperFunc.makeInArg(query.getIds()));
             }
 
             if (query.getCaseId() != null ) {

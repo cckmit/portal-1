@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 
 import java.util.function.Consumer;
 

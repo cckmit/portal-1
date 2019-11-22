@@ -1759,37 +1759,37 @@ a {
 }
 
 /**** case tag ****/
-.case-tag {
-  position: relative;
-  display: inline-block;
-  margin: 2px;
-  text-align: left;
-  height: 22px;
-  line-height: 22px;
-  cursor: default;
-  border-radius: 2px;
+.case-tags-container {
+  padding-left: 0;
+}
 
-  > * {
-    float: left;
-  }
+.case-tag {
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 4px;
+  white-space: nowrap;
+  padding: 3px 8px;
+  border: 1px solid;
+  border-radius: 4px;
+  line-height: 1em;
 
   .case-tag-close {
-    height: 12px;
-    width: 12px;
-    font-size: 0.8em;
     color: inherit;
+    margin-left: 5px;
+    margin-right: -2px;
     cursor: pointer;
-    padding: 5px 0 5px 6px;
+    font-size: 12px;
   }
 
   .case-tag-text {
-    padding: 0 6px 0 6px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-font-smoothing: initial;
+    line-height: 1em;
   }
 }
 
@@ -1797,10 +1797,6 @@ a {
 .case-tag-popup {
   z-index: 1000;
   float: left;
-  /*
-  min-width: 160px;
-  max-width: 360px;
-  */
   width: 300px;
   box-sizing: border-box;
   background: #fff;
@@ -1889,7 +1885,6 @@ a {
 }
 
 /**** Importance level icons ****/
-
 .importance-btn {
   padding: 5px 10px 5px 5px !important;
 }

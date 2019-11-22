@@ -13,8 +13,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
@@ -24,14 +22,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
-
-import java.util.Set;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -84,11 +79,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setProduct( String value ) {
         this.product.setInnerText( value );
-    }
-
-    @Override
-    public void setTags(Set<CaseTag> value) {
-        this.caseMetaView.setTags(value);
     }
 
     @Override
@@ -164,6 +154,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public HasVisibility backBtnVisibility() {
         return backButtonContainer;
+    }
+
+    @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
@@ -345,9 +340,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField(provided = true)
     TimeLabel timeElapsed;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
     @UiField
     Button backButton;
     @UiField
@@ -388,6 +380,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     LabelElement platformLabel;
     @UiField
     HTMLPanel linksContainer;
+    @UiField
+    HTMLPanel tagsContainer;
 
     AbstractIssuePreviewActivity activity;
 

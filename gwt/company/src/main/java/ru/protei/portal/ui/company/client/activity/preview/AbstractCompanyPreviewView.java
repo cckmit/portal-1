@@ -44,6 +44,4 @@ public interface AbstractCompanyPreviewView extends IsWidget {
     HasVisibility getSiteFolderContainerVisibility();
 
     void setSubscriptionEmails(String value);
-
-    void setTags(Set<CaseTag> value);
 }

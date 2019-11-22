@@ -79,11 +79,6 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
 
-        Result<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
-        if (caseTags.isOk()) {
-            caseObject.setTags(new HashSet<>(caseTags.getData()));
-        }
-
         withJiraSLAInformation(caseObject);
 
         // RESET PRIVACY INFO
@@ -180,20 +175,10 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if (isNotEmpty(caseObject.getTags())) {
-            caseObjectTagDAO.persistBatch(
-                    caseObject.getTags()
-                            .stream()
-                            .map(tag -> new CaseObjectTag(caseId, tag.getId()))
-                            .collect(Collectors.toList())
-            );
-        }
-
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        newState.setTags(caseObject.getTags());
         publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState ));
 
         return ok(newState);
@@ -236,9 +221,6 @@ public class CaseServiceImpl implements CaseService {
         if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
-
-        synchronizeTags(caseObject, authService.findSession(token));
-        jdbcManyRelationsHelper.persist(caseObject, "tags");
 
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
 
@@ -454,29 +436,6 @@ public class CaseServiceImpl implements CaseService {
         Long caseNumber = caseObjectDAO.getCaseNumberById( caseId );
         if(caseNumber==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseNumber);
-    }
-
-    private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
-        if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
-            return;
-        }
-
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
-        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            return;
-        }
-
-        Set<CaseTag> tags = caseObject.getTags();
-        List<CaseTag> allTags = caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId()));
-        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(descriptor.getCompany().getId())).collect(Collectors.toList());
-
-        List<CaseTag> deletedTags = existingTags.stream().filter(tag -> !tags.contains(tag)).collect(Collectors.toList());
-        List<CaseTag> addedTags = tags.stream().filter(tag -> !existingTags.contains(tag)).collect(Collectors.toList());
-
-        allTags.removeAll(deletedTags);
-        allTags.addAll(addedTags);
-
-        caseObject.setTags(allTags.stream().collect(Collectors.toSet()));
     }
 
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
@@ -745,9 +704,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseNotifierDAO caseNotifierDAO;
-
-    @Autowired
-    CaseObjectTagDAO caseObjectTagDAO;
 
     @Autowired
     ExternalCaseAppDAO externalCaseAppDAO;

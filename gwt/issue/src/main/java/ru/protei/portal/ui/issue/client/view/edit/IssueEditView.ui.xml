@@ -7,7 +7,7 @@
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
+             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casetag"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector"
@@ -20,6 +20,8 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first">
+                    <g:HTMLPanel ui:field="tagsContainer" styleName="form-group"/>
+
                     <g:HTMLPanel ui:field="numberContainer">
                         <h5 class="number-copy-panel no-margin p-b-10">
                             <i ui:field="privacyIcon"/>
@@ -62,10 +64,6 @@
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
-                    <div class="row form-group">
-                        <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"
-                                               tagCaseType="CRM_SUPPORT"/>
-                    </div>
 
                     <div class="row form-group">
                         <div class="col-md-12">

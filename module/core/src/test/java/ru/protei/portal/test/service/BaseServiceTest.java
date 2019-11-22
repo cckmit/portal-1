@@ -40,7 +40,6 @@ public class BaseServiceTest {
 
     public static CaseObject createNewCaseObject( Person person, CaseTag caseTag ) {
         CaseObject caseObject = createNewCaseObject( En_CaseType.CRM_SUPPORT, person );
-        caseObject.setTags( setOf( caseTag ) );
         return caseObject;
     }
 
@@ -165,12 +164,6 @@ public class BaseServiceTest {
     protected CaseObject makeCaseObject( CaseObject caseObject ) {
         Long caseId = caseObjectDAO.insertCase( caseObject );
         caseObject.setId( caseId );
-        caseObjectTagDAO.persistBatch(
-                caseObject.getTags()
-                        .stream()
-                        .map(tag -> new CaseObjectTag(caseId, tag.getId()))
-                        .collect( Collectors.toList())
-        );
         return caseObject;
     }
 
@@ -244,8 +237,6 @@ public class BaseServiceTest {
     protected CompanyDAO companyDAO;
     @Autowired
     protected CaseTagDAO caseTagDAO;
-    @Autowired
-    protected CaseObjectTagDAO caseObjectTagDAO;
     @Autowired
     protected CaseTypeDAO caseTypeDAO;
     @Autowired

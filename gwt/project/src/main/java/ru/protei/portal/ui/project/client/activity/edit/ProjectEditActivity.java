@@ -146,11 +146,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(true);
         view.showDocuments(true);
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(project.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
-                .build());
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT)));
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
     }

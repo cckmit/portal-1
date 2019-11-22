@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.casetag;
+package ru.protei.portal.ui.common.client.activity.casetag.edit;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;

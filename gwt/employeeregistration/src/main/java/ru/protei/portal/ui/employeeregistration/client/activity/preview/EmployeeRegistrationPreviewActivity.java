@@ -100,16 +100,15 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
         view.setState(value.getState());
 
-        fireEvent(new CaseLinkEvents.Show.Builder(view.getLinksContainer())
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
                 .withCaseId(value.getId())
                 .readOnly());
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
                 .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW))
-                .build());
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)));
     }
 
     private HasWidgets fullScreenContainer;

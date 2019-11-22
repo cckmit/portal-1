@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -58,33 +55,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public Result<List<CaseTag>> getTagsByCaseId( AuthToken token, long caseId) {
-        CaseTagQuery query = new CaseTagQuery();
-
-        query.setCaseId(caseId);
-
-        return getTagsByPermission(token, query);
-    }
-
-    @Override
-    public Result<List<CaseTag>> getTagsByCaseType( AuthToken token, En_CaseType caseType) {
-        CaseTagQuery query = new CaseTagQuery();
-
-        query.setCaseTypes(Collections.singletonList(caseType));
-
-        return getTagsByPermission(token, query);
-    }
-
-    @Override
-    public Result<List<CaseTag>> getTagsByCompanyId( AuthToken token, long companyId) {
-        CaseTagQuery query = new CaseTagQuery();
-
-        query.setCompanyId(companyId);
-
-        return getTagsByPermission(token, query);
-    }
-
-    private Result<List<CaseTag>> getTagsByPermission( AuthToken token, CaseTagQuery query){
+    public Result<List<CaseTag>> getTags(AuthToken token, CaseTagQuery query) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
@@ -94,6 +65,39 @@ public class CaseTagServiceImpl implements CaseTagService {
         List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
 
         return ok(caseTags);
+    }
+
+    @Override
+    public Result attachTag(AuthToken authToken, Long caseId, Long tagId) {
+        if ( caseId == null || tagId == null ) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseTag caseTag = caseTagDAO.get(tagId);
+        if ( caseTag == null ) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        // TODO: check already exist bundle
+        CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
+        caseObjectTagDAO.persist(cot);
+
+        return ok();
+    }
+
+    @Override
+    public Result detachTag(AuthToken authToken, Long caseId, Long tagId) {
+        if ( caseId == null || tagId == null ) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseTag caseTag = caseTagDAO.get(tagId);
+        if ( caseTag == null ) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
+        return ok();
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {

@@ -110,11 +110,10 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makeLink(Project.class, value.getProjectId()));
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
                 .withCaseId(value.getId())
-                .withModifyEnabled(true)
-                .build());
+                .withModifyEnabled(true));
     }
 
     private String getAllDatesAsString(List<ContractDate> dates) {

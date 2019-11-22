@@ -67,7 +67,6 @@ public abstract class CompanyPreviewActivity
         view.setInfo( value.getInfo() );
 
         requestSubscriptionEmails(value.getId());
-        requestTags(value.getId());
         requestParentAndChildCompanies(value.getId());
 
         view.getContactsContainer().clear();
@@ -113,13 +112,6 @@ public abstract class CompanyPreviewActivity
                                 .collect(Collectors.joining(", "));
                     }
                     view.setSubscriptionEmails(subscriptionsStr);
-                }));
-    }
-
-    private void requestTags(Long companyId) {
-        companyController.getCompanyTags(companyId, new ShortRequestCallback<List<CaseTag>>()
-                .setOnSuccess(tags -> {
-                    view.setTags(new HashSet<>(tags));
                 }));
     }
 

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.casetag;
+package ru.protei.portal.ui.common.client.activity.casetag.edit;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;

@@ -278,7 +278,7 @@ public class DebugIds {
             String SUBSCRIPTIONS = "issue-label-subscriptions";
             String NOTIFIERS = "issue-label-notifiers";
             String ATTACHMENTS = "issue-label-attachments";
-            String TAGS = "issue-label-tags";
+            @Deprecated String TAGS = "issue-label-tags";
             String TIME_ELAPSED_TYPE = "issue-label-time-elapsed-type";
         }
     }
@@ -436,7 +436,7 @@ public class DebugIds {
         String SUBSCRIPTION = "company-preview-subscription-item";
 
         interface LABEL {
-            String TAGS = "company-preview-tags-label";
+            @Deprecated String TAGS = "company-preview-tags-label";
             String SUBSCRIPTION = "company-preview-label-subscription-label";
             String CONTACT_INFO = "company-preview-contact-info-label";
         }

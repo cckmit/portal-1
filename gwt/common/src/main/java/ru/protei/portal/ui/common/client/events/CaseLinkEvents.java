@@ -13,31 +13,20 @@ public class CaseLinkEvents {
             this.parent = parent;
         }
 
-        public static class Builder {
-            private Show event;
-            public Builder(HasWidgets parent) {
-                event = new Show(parent);
-            }
-            public Show.Builder withCaseType(En_CaseType caseType) {
-                event.caseType = caseType;
-                return this;
-            }
-
-            public Show.Builder withCaseId(Long caseId) {
-                event.caseId = caseId;
-                return this;
-            }
-
-            public Show.Builder readOnly() {
-                event.isEnabled = false;
-                return this;
-            }
-
-            public Show build() {
-                return event;
-            }
+        public Show withCaseType(En_CaseType caseType) {
+            this.caseType = caseType;
+            return this;
         }
 
+        public Show withCaseId(Long caseId) {
+            this.caseId = caseId;
+            return this;
+        }
+
+        public Show readOnly() {
+            this.isEnabled = false;
+            return this;
+        }
 
         public HasWidgets parent;
         public Long caseId;

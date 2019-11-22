@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.ui.common.client.service.CaseTagController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -29,9 +30,21 @@ public class CaseTagControllerImpl implements CaseTagController {
     }
 
     @Override
-    public List<CaseTag> getCaseTagsForCaseType(En_CaseType caseType) throws RequestFailedException {
+    public List<CaseTag> getTags(CaseTagQuery query) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(caseTagService.getTagsByCaseType(authToken, caseType));
+        return ServiceUtils.checkResultAndGetData(caseTagService.getTags(authToken, query));
+    }
+
+    @Override
+    public void attachTag(Long caseId, Long tagId) throws RequestFailedException {
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        ServiceUtils.checkResult(caseTagService.attachTag(authToken, caseId, tagId));
+    }
+
+    @Override
+    public void detachTag(Long caseId, Long tagId) throws RequestFailedException {
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        ServiceUtils.checkResult(caseTagService.detachTag(authToken, caseId, tagId));
     }
 
     @Autowired

@@ -45,7 +45,6 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<Boolean> isPrivate();
     HasValue<Set<PersonShortView>> notifiers();
     HasWidgets getLinksContainer();
-    HasValue<Set<CaseTag>> tags();
     HasValue<JiraMetaData> jiraSlaSelector();
 
     HasValidable nameValidator();
@@ -112,10 +111,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void applyCompanyValueIfOneOption();
 
-    void setTagsAddButtonEnabled(boolean enabled);
-
-    void setTagsEditButtonEnabled(boolean enabled);
-
     void setStateWorkflow(En_CaseStateWorkflow workflow);
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
@@ -127,4 +122,6 @@ public interface AbstractIssueEditView extends IsWidget {
     void setNameRO(String name, boolean isJira);
 
     String DESCRIPTION = "description";
+
+    HasWidgets getTagsContainer();
 }

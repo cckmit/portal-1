@@ -88,11 +88,6 @@ public interface CompanyControllerAsync {
      */
     void getCompanyCaseStates(Long id, AsyncCallback<List<CaseState>> async);
 
-    /**
-     * Получить список тэгов компании
-     */
-    void getCompanyTags( Long companyId, AsyncCallback<List<CaseTag>> async );
-
     void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 
     void getAllHomeCompanyIds(AsyncCallback<List<Long>> async);

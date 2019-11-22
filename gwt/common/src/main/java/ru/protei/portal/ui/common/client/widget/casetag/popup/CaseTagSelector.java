@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.casemeta.tag.popup;
+package ru.protei.portal.ui.common.client.widget.casetag.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,12 +18,13 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagPopupView;
+import ru.protei.portal.ui.common.client.widget.casetag.item.CaseTagSelectorItem;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -31,7 +32,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.List;
 import java.util.Objects;
 
-public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
+public class CaseTagSelector extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
     @Inject
     public void onInit() {
@@ -62,7 +63,10 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
 
     public void init(En_CaseType caseType) {
         resetSearchFilter();
-        caseTagController.getCaseTagsForCaseType(caseType, new FluentCallback<List<CaseTag>>()
+        CaseTagQuery query = new CaseTagQuery();
+        query.setCaseType(caseType);
+        // TODO: убрать запрос из вью!
+        caseTagController.getTags(query, new FluentCallback<List<CaseTag>>()
                 .withSuccess(tags -> {
                     caseTags = tags;
                     displayTags();
@@ -117,17 +121,17 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     }
 
     private void addTagToListView(CaseTag caseTag) {
-        CaseTagPopupView caseTagPopupView = caseTagViewProvider.get();
-        caseTagPopupView.setValue(caseTag);
-        caseTagPopupView.editIconVisibility().setVisible(enabled);
-        caseTagPopupView.tagEditable(Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
-        caseTagPopupView.addAddHandler(event -> {
+        CaseTagSelectorItem caseTagSelectorItem = caseTagViewProvider.get();
+        caseTagSelectorItem.setValue(caseTag);
+        caseTagSelectorItem.editIconVisibility().setVisible(enabled);
+        caseTagSelectorItem.tagEditable(Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
+        caseTagSelectorItem.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
-        caseTagPopupView.addClickHandler(event -> {
+        caseTagSelectorItem.addClickHandler(event -> {
             onTagEdit(caseTag, !Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
         });
-        childContainer.add(caseTagPopupView);
+        childContainer.add(caseTagSelectorItem);
     }
 
     private void onTagSelected(CaseTag caseTag) {
@@ -150,7 +154,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     @Inject
     CaseTagControllerAsync caseTagController;
     @Inject
-    Provider<CaseTagPopupView> caseTagViewProvider;
+    Provider<CaseTagSelectorItem> caseTagViewProvider;
 
     @Inject
     @UiField
@@ -171,6 +175,6 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     private List<CaseTag> caseTags;
     private boolean enabled;
 
-    interface CaseTagSelectorPopupUiBinder extends UiBinder<HTMLPanel, CaseTagSelectorPopup> {}
+    interface CaseTagSelectorPopupUiBinder extends UiBinder<HTMLPanel, CaseTagSelector> {}
     private static CaseTagSelectorPopupUiBinder ourUiBinder = GWT.create(CaseTagSelectorPopupUiBinder.class);
 }

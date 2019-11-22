@@ -25,8 +25,6 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setImportance(int value);
     void setProduct(String value);
 
-    void setTags(Set<CaseTag> value);
-
     void setContact(String value);
     void setManager(String value);
     void setName(String value, boolean isJira);
@@ -59,4 +57,6 @@ public interface AbstractIssuePreviewView extends IsWidget {
     boolean isAttached();
 
     HasVisibility backBtnVisibility();
+
+    HasWidgets getTagsContainer();
 }

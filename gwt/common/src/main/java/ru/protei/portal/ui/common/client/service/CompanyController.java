@@ -94,10 +94,5 @@ public interface CompanyController extends RemoteService {
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
-    /**
-     * Получить список тэгов компании
-     */
-    List<CaseTag> getCompanyTags( Long companyId )  throws RequestFailedException;
-
     List<Long> getAllHomeCompanyIds() throws RequestFailedException;
 }

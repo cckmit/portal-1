@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.casemeta.tag.item;
+package ru.protei.portal.ui.common.client.widget.casetag.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -21,11 +21,11 @@ import ru.protei.portal.ui.common.client.util.ColorUtils;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers, HasClickHandlers {
+public class CaseTagSelectorItem extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers, HasClickHandlers {
 
-    public CaseTagPopupView() {
+    public CaseTagSelectorItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        setTestAttributes();
+        initDebugIds();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
     }
 
-    private void setTestAttributes() {
+    private void initDebugIds() {
         panel.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.ITEM);
         editIcon.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.EDIT_BUTTON);
         text.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TAG_SELECTOR_POPUP.NAME);
@@ -132,6 +132,6 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
 
     private CaseTag caseTag = null;
 
-    interface CaseTagViewUiBinder extends UiBinder<FocusPanel, CaseTagPopupView> {}
+    interface CaseTagViewUiBinder extends UiBinder<FocusPanel, CaseTagSelectorItem> {}
     private static CaseTagViewUiBinder ourUiBinder = GWT.create(CaseTagViewUiBinder.class);
 }

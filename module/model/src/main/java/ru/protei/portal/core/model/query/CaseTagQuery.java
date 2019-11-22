@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CaseTagQuery extends BaseQuery {
 
-    private List<En_CaseType> caseTypes;
+    private En_CaseType caseType;
     private Long companyId;
     private List<Long> ids;
     private Long caseId;
@@ -39,14 +39,6 @@ public class CaseTagQuery extends BaseQuery {
         this.searchString = name;
     }
 
-    public List<En_CaseType> getCaseTypes() {
-        return caseTypes;
-    }
-
-    public void setCaseTypes(List<En_CaseType> caseTypes) {
-        this.caseTypes = caseTypes;
-    }
-
     public Long getCompanyId() {
         return companyId;
     }
@@ -61,5 +53,13 @@ public class CaseTagQuery extends BaseQuery {
 
     public void setIds(List<Long> ids) {
         this.ids = ids;
+    }
+
+    public En_CaseType getCaseType() {
+        return caseType;
+    }
+
+    public void setCaseType(En_CaseType caseType) {
+        this.caseType = caseType;
     }
 }

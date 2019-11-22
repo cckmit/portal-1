@@ -5,9 +5,6 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -15,8 +12,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.JiraMetaData;
@@ -32,7 +27,6 @@ import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelect
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
@@ -151,11 +145,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasWidgets getLinksContainer() {
         return linksContainer;
-    }
-
-    @Override
-    public HasValue<Set<CaseTag>> tags() {
-        return tagsHasValue;
     }
 
     @Override
@@ -330,16 +319,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setTagsAddButtonEnabled(boolean enabled) {
-        caseMetaView.setTagsAddButtonEnabled(enabled);
-    }
-
-    @Override
-    public void setTagsEditButtonEnabled(boolean enabled) {
-        caseMetaView.setTagsEditButtonEnabled(enabled);
-    }
-
-    @Override
     public void setStateWorkflow(En_CaseStateWorkflow workflow) {
         state.setWorkflow(workflow);
     }
@@ -391,6 +370,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             this.nameRO.appendChild(jiraLink);
             this.nameRO.appendChild(nameWithoutLink);
         }
+    }
+
+    @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
@@ -486,9 +470,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
-        caseMetaView.setEnsureDebugTagId(DebugIds.ISSUE.TAGS_BUTTON);
-        caseMetaView.setEnsureDebugIdTagLabel(DebugIds.ISSUE.LABEL.TAGS);
-        caseMetaView.setEnsureDebugIdTagContainer(DebugIds.ISSUE.TAGS_CONTAINER);
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
@@ -612,9 +593,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Element subscriptions;
     @UiField
     HTMLPanel caseSubscriptionContainers;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
     @UiField
     HTMLPanel timeElapsedContainer;
     @Inject
@@ -655,14 +633,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel descriptionContainer;
     @UiField
     HTMLPanel linksContainer;
-
-    private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
-        @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
-        @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
-        @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
-        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
-        @Override public void fireEvent(GwtEvent<?> event) {}
-    };
+    @UiField
+    HTMLPanel tagsContainer;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

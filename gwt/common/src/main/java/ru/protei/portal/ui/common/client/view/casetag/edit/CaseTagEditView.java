@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.view.casetag;
+package ru.protei.portal.ui.common.client.view.casetag.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
@@ -8,8 +8,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditActivity;
-import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditView;
+import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditActivity;
+import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;

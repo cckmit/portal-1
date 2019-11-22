@@ -58,9 +58,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
 
-    @JdbcOneToMany(table = "case_tag", localColumn = "id", remoteColumn = "company_id" )
-    private Set<CaseTag> tags;
-
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
     private List<CaseState> caseStates;
 
@@ -179,14 +176,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.subscriptions = subscriptions;
     }
 
-    public Set<CaseTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<CaseTag> tags) {
-        this.tags = tags;
-    }
-
     public List<CaseState> getCaseStates() {
         return caseStates;
     }
@@ -265,7 +254,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", oldId=" + oldId +
                 ", isHidden=" + isHidden +
                 ", subscriptions=" + subscriptions +
-                ", tags=" + tags +
                 ", caseStates=" + caseStates +
                 ", isArchived=" + isArchived +
                 '}';
