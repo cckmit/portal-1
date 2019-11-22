@@ -66,8 +66,7 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
     }
 
     private void refreshOptionsForCaseType(En_CaseType caseType) {
-        CaseTagQuery query = new CaseTagQuery();
-        query.setCaseType(caseType);
+        CaseTagQuery query = new CaseTagQuery(caseType);
         caseTagController.getTags(query, new FluentCallback<List<CaseTag>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(caseTags -> {

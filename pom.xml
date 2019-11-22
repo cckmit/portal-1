@@ -105,7 +105,6 @@
         </dependency>
     </dependencies>
 
-
     <repositories>
         <repository>
             <id>protei-repo</id>
@@ -127,5 +126,4 @@
             <url>https://repo.protei.ru/repository/ext-snapshot-local</url>
         </repository>
     </distributionManagement>
-
 </project>

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 
@@ -9,7 +10,7 @@ public interface CaseLinkDAO extends PortalBaseDAO<CaseLink> {
 
     List<CaseLink> getListByQuery(CaseLinkQuery query);
 
-    boolean checkExistCrmLink(Long cId);
+    boolean checkExistLink(En_CaseLink link, String remoteId);
 
-    CaseLink getCrmLink(Long cId);
+    Long getCrmLinkId(String remoteId);
 }

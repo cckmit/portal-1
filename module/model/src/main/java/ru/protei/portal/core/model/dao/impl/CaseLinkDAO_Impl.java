@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -12,13 +13,13 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements CaseLinkDAO {
 
     @Override
     public List<CaseLink> getListByQuery(CaseLinkQuery query) {
-
         if (query.getSortDir() == null) {
             query.setSortField(En_SortField.id);
             query.setSortDir(En_SortDir.ASC);
@@ -33,13 +34,14 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
     }
 
     @Override
-    public boolean checkExistCrmLink(Long cId) {
-        return checkExistsByCondition("link_type = ? and remote_id = ?", En_CaseLink.CRM, cId);
+    public boolean checkExistLink(En_CaseLink type, String remoteId) {
+        return checkExistsByCondition("link_type = ? and remote_id = ?", type.name(), remoteId);
     }
 
     @Override
-    public CaseLink getCrmLink(Long cId) {
-        return getByCondition("link_type = ? and case_id = ?", En_CaseLink.CRM, cId);
+    public Long getCrmLinkId(String remoteId) {
+        CaseLink link = partialGetByCondition("link_type = ? and remote_id = ?", Arrays.asList(En_CaseLink.CRM.name(), remoteId), getIdColumnName());
+        return link == null ? null : link.getId();
     }
 
     @SqlConditionBuilder

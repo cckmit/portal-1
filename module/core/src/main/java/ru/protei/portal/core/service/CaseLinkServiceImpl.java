@@ -12,7 +12,10 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinksEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.impl.CaseObjectDAO_Impl;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -42,6 +45,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Autowired
     private CaseLinkDAO caseLinkDAO;
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
     @Autowired
     private PolicyService policyService;
     @Autowired
@@ -134,38 +139,46 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     // TODO: убрать person!!!
     @Override
-    public Result<Long> createLink(AuthToken authToken, Person initiator, CaseLink value) {
-        if (value == null || !isValidLink(value)) {
+    public Result<Long> createLink(AuthToken authToken, Person initiator, CaseLink link) {
+        if (link == null || !isValidLink(link)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         boolean isShowOnlyPrivate = isShowOnlyPrivateLinks(authToken);
         // запрещено изменение ссылок вне зоны видимости
-        if ( isShowOnlyPrivate && value.isPrivate() ) {
+        if ( isShowOnlyPrivate && link.isPrivate() ) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        // TODO: ключ должен формироваться исходя из прямого и обратного линка
-        return lockService.doWithLockAndTransaction(CaseLink.class, 0, TimeUnit.SECONDS, 5, transactionTemplate, () -> {
-            //check alreadyExist
-            Long createdCaseId = caseLinkDAO.persist(value);
+        return lockService.doWithLockAndTransaction(CaseLink.class, link.getCaseId(), TimeUnit.SECONDS, 5, transactionTemplate, () -> {
+            Long createdLinkId = caseLinkDAO.persist(link);
+            switch (link.getType()) {
+                case CRM:
+                    // для crm-линков создаем зеркальные
+                    if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, link.getCaseId().toString())) {
+                        CaseLink crossCrmLink = new CaseLink();
+                        crossCrmLink.setCaseId(parseRemoteIdAsLongValue(link.getRemoteId()));
+                        crossCrmLink.setRemoteId(link.getCaseId().toString());
+                        crossCrmLink.setType(En_CaseLink.CRM);
 
-            if ( isCrmLink(value) ) {
-                // для crm-линков создаем зеркальные
-                Long cId = parseRemoteIdAsLongValue(value.getRemoteId());
-                if (!caseLinkDAO.checkExistCrmLink(cId)) {
-                    CaseLink crossCRMLink = createCrossCRMLink(cId, value.getCaseId());
-                    caseLinkDAO.persist(crossCRMLink);
-                }
+                        caseLinkDAO.persist(crossCrmLink);
+                    }
+                    break;
+                case YT:
+                    Long caseNumber = caseObjectDAO.getCaseNumberById(link.getCaseId());
+                    if (caseNumber == null) {
+                        return error(En_ResultStatus.NOT_FOUND);
+                    }
+
+                    // для YT-линков создаем зеркальные на YT
+                    youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
             }
 
             // TODO: push single CaseLinkEvent
-//            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
+//            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, link.getCaseId(), mergedLinks ) );
 
-            return ok(createdCaseId);
+            return ok(createdLinkId);
         });
-
-        // TODO : управление YT линками
     }
 
     // TODO: убрать person!!!
@@ -183,19 +196,27 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Set<Long> toRemoveIds = new HashSet<>();
         toRemoveIds.add(id);
 
-        if ( isCrmLink(existedLink) ) {
-            Long cId = parseRemoteIdAsLongValue(existedLink.getRemoteId());
-            CaseLink mirrorCrmLink = caseLinkDAO.getCrmLink(cId);
-            if ( mirrorCrmLink != null ) {
-                toRemoveIds.add(mirrorCrmLink.getId());
-            }
+        switch (existedLink.getType()) {
+            case CRM:
+                // удаляем зеркальные CRM-линки
+                if ( caseLinkDAO.checkExistLink(En_CaseLink.CRM, existedLink.getCaseId().toString())) {
+                    toRemoveIds.add(existedLink.getCaseId());
+                }
+                break;
+            case YT:
+                // получаем номер кейса для поиска зеркального линка
+                Long caseNumber = caseObjectDAO.getCaseNumberById(existedLink.getCaseId());
+                if (caseNumber == null) {
+                    return error(En_ResultStatus.NOT_FOUND);
+                }
+
+                // для YT-линков удаляем зеркальные на YT
+                youtrackService.removeIssueCrmNumberIfSame(existedLink.getRemoteId(), caseNumber);
         }
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
         // TODO: push single CaseLinkEvent
 //            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
-
-        // TODO : управление YT линками
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -330,7 +351,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private boolean isCrmLink(CaseLink link) {
         return En_CaseLink.CRM.equals(link.getType());
     }
-
 
     private boolean checkLinksIsValid(Collection<CaseLink> caseLinks) {
         for (CaseLink link : caseLinks) {

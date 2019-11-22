@@ -189,15 +189,23 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setRemoteLink(CaseLink link) {
-        if ( link == null ) {
+    public void setRemoteLinkNumber(String number) {
+        if ( number == null ) {
             remoteLink.setVisible(false);
             return;
         }
 
         remoteLink.setVisible(true);
-        remoteLink.setHref(link.getLink());
-        remoteLink.setText(link.getRemoteId());
+        remoteLink.setText(number);
+    }
+
+    @Override
+    public void setRemoteLinkHref(String link) {
+        if ( link == null ) {
+            return;
+        }
+
+        remoteLink.setHref(link);
     }
 
     @Override

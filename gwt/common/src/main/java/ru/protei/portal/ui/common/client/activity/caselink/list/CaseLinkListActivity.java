@@ -39,7 +39,7 @@ public abstract class CaseLinkListActivity
 
     @Event
     public void onShow(CaseLinkEvents.Show event) {
-        isEnabled = event.isEnabled;
+        this.show = event;
 
         event.parent.clear();
         event.parent.add(view.asWidget());
@@ -47,6 +47,10 @@ public abstract class CaseLinkListActivity
         view.getLinksContainer().clear();
         view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
         view.addButtonEnabled().setEnabled(event.isEnabled);
+
+        view.setHeader(lang.linkedWith());
+        linksCount = 0;
+        toggleLinksVisibility();
 
         controller.getCaseLinks(event.caseId, new FluentCallback<List<CaseLink>>()
                 .withError(throwable -> showError(lang.errGetList()))
@@ -56,21 +60,25 @@ public abstract class CaseLinkListActivity
 
     @Override
     public void onRemoveClicked(AbstractCaseLinkItemView itemView) {
-        if (itemView == null || !isEnabled) {
+        if (itemView == null || !show.isEnabled) {
             return;
         }
 
         controller.removeLink(itemView.getModelId(), new FluentCallback<Void>()
-                .withSuccess(res -> itemView.asWidget().removeFromParent()));
-        toggleLinksVisibility();
+                .withSuccess(res -> {
+                    itemView.asWidget().removeFromParent();
+                    linksCount--;
+                    toggleLinksVisibility();
+                }));
     }
 
     @Override
     public void onAddLinkClicked(CaseLink value) {
-        if (value == null || !isEnabled) {
+        if (value == null || !show.isEnabled) {
             return;
         }
 
+        value.setCaseId(show.caseId);
         switch (value.getType()) {
             case CRM:
                 addCrmLink( value );
@@ -87,14 +95,14 @@ public abstract class CaseLinkListActivity
     }
 
     private void fillView(List<CaseLink> links) {
-        this.linksCount = links == null ? 0 : links.size();
-        view.setHeader(lang.linkedWith() + " (" + linksCount + ")");
         view.getLinksContainer().clear();
 
-        toggleLinksVisibility();
         if (CollectionUtils.isEmpty(links)) {
             return;
         }
+        linksCount = links.size();
+        toggleLinksVisibility();
+        view.setHeader(lang.linkedWith() + " (" + linksCount + ")");
         links.forEach(this::makeCaseLinkViewAndAddToParent);
     }
 
@@ -108,8 +116,6 @@ public abstract class CaseLinkListActivity
                     }
 
                     caseLink.setYouTrackIssueInfo(youTrackIssueInfo);
-                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), caseLink.getRemoteId()));
-
                     createLinkAndAddToParent(caseLink);
                 })
         );
@@ -130,9 +136,9 @@ public abstract class CaseLinkListActivity
                         return;
                     }
 
+                    // для CRM-линков remoteId заполняется идентификатором кейса
+                    caseLink.setRemoteId(caseInfo.getId().toString());
                     caseLink.setCaseInfo(caseInfo);
-                    caseLink.setLink(caseLinkProvider.getLink(caseLink.getType(), crmRemoteId.toString()));
-
                     createLinkAndAddToParent(caseLink);
                 })
         );
@@ -142,7 +148,7 @@ public abstract class CaseLinkListActivity
         controller.createLink(value, new FluentCallback<Long>()
                 .withError(throwable -> showError(lang.errInternalError()))
                 .withSuccess(id -> {
-                    value.setCaseId(id);
+                    value.setId(id);
                     linksCount++;
                     makeCaseLinkViewAndAddToParent(value);
                     toggleLinksVisibility();
@@ -152,9 +158,8 @@ public abstract class CaseLinkListActivity
     private void makeCaseLinkViewAndAddToParent(CaseLink value) {
         AbstractCaseLinkItemView itemWidget = itemViewProvider.get();
         itemWidget.setActivity(this);
-        itemWidget.setEnabled(isEnabled);
+        itemWidget.setEnabled(show.isEnabled);
         itemWidget.setModelId(value.getId());
-        itemWidget.setHref(value.getLink());
 
         String linkId = null;
         if ( Objects.equals(value.getType(), CRM) && value.getCaseInfo() != null) {
@@ -162,16 +167,14 @@ public abstract class CaseLinkListActivity
             itemWidget.setNumber(lang.crmPrefix() + linkId);
             itemWidget.setName(value.getCaseInfo().getName());
             itemWidget.setState(En_CaseState.getById(value.getCaseInfo().getStateId()));
-        }
-
-        if ( Objects.equals(value.getType(), YT) && value.getYouTrackInfo() != null) {
+        } else if ( Objects.equals(value.getType(), YT) && value.getYouTrackInfo() != null) {
             linkId = value.getRemoteId();
             itemWidget.setNumber(linkId);
             itemWidget.setName(value.getYouTrackInfo().getSummary());
             itemWidget.setState(value.getYouTrackInfo().getCaseState());
         }
 
-        value.setLink(caseLinkProvider.getLink(value.getType(), linkId));
+        itemWidget.setHref(caseLinkProvider.getLink(value.getType(), linkId));
         view.getLinksContainer().add(itemWidget.asWidget());
     }
 
@@ -196,7 +199,6 @@ public abstract class CaseLinkListActivity
     @Inject
     private CaseLinkProvider caseLinkProvider;
 
-    private boolean isEnabled = true;
     private int linksCount = 0;
-
+    private CaseLinkEvents.Show show;
 }

@@ -31,7 +31,7 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
 
     @Override
     public void setEnabled(boolean enabled) {
-        remove.setVisible(!enabled);
+        remove.setVisible(enabled);
     }
 
     @Override

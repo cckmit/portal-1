@@ -27,6 +27,10 @@ public class CaseTagQuery extends BaseQuery {
         this.caseId = caseId;
     }
 
+    public CaseTagQuery(En_CaseType type) {
+        this.caseType = type;
+    }
+
     public CaseTagQuery(String name, En_SortField sortField, En_SortDir sortDir) {
         super(name, sortField, sortDir);
     }

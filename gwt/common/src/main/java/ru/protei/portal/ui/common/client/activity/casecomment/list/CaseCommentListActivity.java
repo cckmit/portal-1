@@ -10,12 +10,14 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -67,7 +69,6 @@ public abstract class CaseCommentListActivity
         });
         workTimeFormatter = new WorkTimeFormatter(lang);
     }
-
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
@@ -336,7 +337,12 @@ public abstract class CaseCommentListActivity
 
         itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));
         itemView.setOwner(getOwnerName(value));
-        itemView.setRemoteLink(value.getRemoteLink());
+
+        CaseLink remoteLink = value.getRemoteLink();
+        if ( remoteLink != null ) {
+            itemView.setRemoteLinkNumber(remoteLink.getRemoteId());
+            itemView.setRemoteLinkHref(caseLinkProvider.getLink(remoteLink.getType(), remoteLink.getRemoteId()));
+        }
 
         if (StringUtils.isNotEmpty(value.getText())) {
             itemView.setMessage(value.getText());
@@ -656,6 +662,10 @@ public abstract class CaseCommentListActivity
     AttachmentServiceAsync attachmentService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    CaseLinkProvider caseLinkProvider;
+    @Inject
+    private LocalStorageService storage;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
@@ -677,8 +687,6 @@ public abstract class CaseCommentListActivity
 
     private final static int PREVIEW_CHANGE_DELAY_MS = 200;
 
-    @Inject
-    private LocalStorageService storage;
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
 }
