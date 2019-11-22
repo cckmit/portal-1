@@ -1911,4 +1911,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveProjectCannotChangeCompany();
 
     String sendEmailWarning();
+
+    String errAccessDenied();
 }

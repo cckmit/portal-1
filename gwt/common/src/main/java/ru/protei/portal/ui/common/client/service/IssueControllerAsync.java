@@ -3,15 +3,15 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Асинхронный сервис управления обращениями
@@ -23,6 +23,18 @@ public interface IssueControllerAsync {
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
     void saveIssue( CaseObject p, AsyncCallback<Long> callback );
+
+    void updateIssueMeta(CaseObjectMeta caseMeta, AsyncCallback<CaseObjectMeta> async);
+
+    void updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers, AsyncCallback<CaseObjectMetaNotifiers> async);
+
+    void updateIssueMetaJira(CaseObjectMetaJira caseMetaJira, AsyncCallback<CaseObjectMetaJira> async);
+
+    /**
+     * Получение списка статусов
+     * @return список статусов
+     */
+    void getStateList(AsyncCallback<List<En_CaseState>> async);
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 }

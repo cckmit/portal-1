@@ -22,6 +22,9 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageActivity;
+import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
+import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
@@ -46,6 +49,7 @@ import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
+import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
@@ -78,6 +82,9 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractSectionItemView.class ).to( SectionItemView.class );
 
         bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class );
+
+        bind( AbstractForbiddenPageView.class ).to(ForbiddenPageView.class).in( Singleton.class );
+        bind( AbstractForbiddenPageActivity.class ).to(ForbiddenPageActivity.class).asEagerSingleton();
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );

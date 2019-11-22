@@ -37,6 +37,8 @@ public class PortalConfigData {
 
     private final Long maxFileSize;
 
+    private final String jiraUrl;
+
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
         smtpConfig = new SmtpConfig(wrapper);
@@ -56,6 +58,7 @@ public class PortalConfigData {
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
         maxFileSize = wrapper.getProperty("max.file.size", Long.class, DEFAULT_FILE_SIZE_MEGABYTES);
+        jiraUrl = wrapper.getProperty("jira.url",  "");
     }
 
     public CommonConfig getCommonConfig() {
@@ -123,6 +126,8 @@ public class PortalConfigData {
     }
 
     public Long getMaxFileSize() {return maxFileSize;}
+
+    public String getJiraUrl() {return jiraUrl;}
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
@@ -463,7 +468,7 @@ public class PortalConfigData {
         private final String linkYouTrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
-            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 

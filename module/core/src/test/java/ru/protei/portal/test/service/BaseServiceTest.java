@@ -246,6 +246,10 @@ public class BaseServiceTest {
     @Autowired
     protected CaseObjectDAO caseObjectDAO;
     @Autowired
+    protected CaseObjectMetaDAO caseObjectMetaDAO;
+    @Autowired
+    protected CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
+    @Autowired
     protected CaseCommentDAO caseCommentDAO;
     @Autowired
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;

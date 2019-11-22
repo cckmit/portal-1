@@ -37,7 +37,12 @@ public class CaseStateWorkflowUtil {
             return En_CaseStateWorkflow.NO_WORKFLOW;
         }
 
-        if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+        return recognizeWorkflow(caseObject.getExtAppType());
+    }
+
+    public static En_CaseStateWorkflow recognizeWorkflow(String extAppType) {
+
+        if (En_ExtAppType.JIRA.getCode().equals(extAppType)) {
             return En_CaseStateWorkflow.NX_JIRA;
         }
 
