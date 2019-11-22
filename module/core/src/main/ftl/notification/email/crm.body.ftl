@@ -89,7 +89,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_issue_name}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if nameChanged>
+                        <#if infoChanged>
                             <@diff new="${(caseName)!''}" old="${(oldCaseName)!''}"/>
                         <#else>
                             ${(caseName)!''}

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
@@ -65,9 +66,7 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
 
-        CaseNameAndDescriptionChangeRequest newNameAndDescription = event.getNameAndDescription();
-        CaseNameAndDescriptionChangeRequest oldNameAndDescription = event.getInitNameAndDescription() == null ? null :
-                newNameAndDescription.equals(event.getInitNameAndDescription()) ? null: event.getInitNameAndDescription();
+        DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = event.getNameAndDescription();
 
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
@@ -87,10 +86,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "recipients", recipients );
         templateModel.put( "platform", newState.getPlatformName() );
 
-        templateModel.put( "caseName", newNameAndDescription.getName() );
-        templateModel.put( "oldCaseName", oldNameAndDescription == null ? null : oldNameAndDescription.getName() );
-        templateModel.put( "caseInfo", newNameAndDescription == null ? null : escapeTextAndRenderHTML( newNameAndDescription.getInfo(), textMarkup ) );
-        templateModel.put( "oldCaseInfo", oldNameAndDescription == null ? null : escapeTextAndRenderHTML( oldNameAndDescription.getInfo(), textMarkup ) );
+        templateModel.put( "infoChanged", nameAndDescription.hasChanged() );
+        templateModel.put( "caseName", nameAndDescription.getNewState().getName() );
+        templateModel.put( "oldCaseName", nameAndDescription.getInitialState() == null ? null : nameAndDescription.getInitialState().getName() );
+        templateModel.put( "caseInfo", escapeTextAndRenderHTML( nameAndDescription.getNewState().getInfo(), textMarkup ) );
+        templateModel.put( "oldCaseInfo", nameAndDescription.getInitialState() == null ? null : escapeTextAndRenderHTML( nameAndDescription.getInitialState().getInfo(), textMarkup ) );
 
         templateModel.put( "productChanged", event.isProductChanged() );
         templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );
@@ -110,8 +110,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "managerChanged", event.isManagerChanged() );
         templateModel.put( "oldManager", oldState == null? null: oldState.getManager() );
 
-        templateModel.put( "infoChanged", event.isInfoChanged() );
-        templateModel.put( "nameChanged", event.isNameChanged() );
         templateModel.put( "privacyChanged", event.isPrivacyChanged() );
 
         templateModel.put("platformChanged", event.isPlatformChanged());

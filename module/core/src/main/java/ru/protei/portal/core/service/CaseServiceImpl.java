@@ -25,10 +25,13 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
@@ -221,31 +224,36 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<Long> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator) {
+    public Result<Boolean> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator) {
 
         CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
-        CaseNameAndDescriptionChangeRequest oldChangeRequest = new CaseNameAndDescriptionChangeRequest(oldCaseObject);
+        if(oldCaseObject == null)
+            return error(En_ResultStatus.NOT_FOUND);
 
         CaseObject caseObject = new CaseObject();
         caseObject.setId(changeRequest.getId());
         caseObject.setName(changeRequest.getName());
         caseObject.setInfo(changeRequest.getInfo());
-        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
 
-        if (!isUpdated) {
-            log.info("Failed to update issue {} at db", caseObject.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-        }
+        return lockService.doWithLock( CaseObject.class, caseObject.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
 
-        publisherService.publishEvent(new CaseNameAndDescriptionEvent(
-                this,
-                oldChangeRequest,
-                changeRequest,
-                initiator,
-                ServiceModule.GENERAL,
-                En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
+            boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
 
-        return ok(caseObject.getId());
+            if (!isUpdated) {
+                log.info("Failed to update issue {} at db", caseObject.getId());
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+                    this,
+                    new CaseNameAndDescriptionChangeRequest(oldCaseObject),
+                    changeRequest,
+                    initiator,
+                    ServiceModule.GENERAL,
+                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
+
+            return ok(true);
+        });
     }
 
     private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
@@ -809,6 +817,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    LockService lockService;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

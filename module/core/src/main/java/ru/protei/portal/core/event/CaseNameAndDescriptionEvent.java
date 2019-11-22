@@ -6,27 +6,27 @@ import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.util.DiffResult;
 
 import java.util.Objects;
 
 public class CaseNameAndDescriptionEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-    private CaseNameAndDescriptionChangeRequest newState;
-    private CaseNameAndDescriptionChangeRequest oldState;
+    private DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = new DiffResult<>();
     private Person person;
     private ServiceModule serviceModule;
     private En_ExtAppType extAppType;
 
     public CaseNameAndDescriptionEvent(
             Object source,
-            CaseNameAndDescriptionChangeRequest newState,
             CaseNameAndDescriptionChangeRequest oldState,
+            CaseNameAndDescriptionChangeRequest newState,
             Person person,
             ServiceModule serviceModule,
             En_ExtAppType extAppType) {
         super(source);
-        this.newState = newState;
-        this.oldState = oldState;
+        this.nameAndDescription.setInitialState(oldState);
+        this.nameAndDescription.setNewState(newState);
         this.person = person;
         this.serviceModule = serviceModule;
         this.extAppType = extAppType;
@@ -44,21 +44,15 @@ public class CaseNameAndDescriptionEvent extends ApplicationEvent implements Abs
 
     @Override
     public Long getCaseObjectId() {
-        CaseNameAndDescriptionChangeRequest changeRequest = getCaseNameAndDescriptionChangeRequest();
+        CaseNameAndDescriptionChangeRequest changeRequest = nameAndDescription.getNewState() == null ?
+                nameAndDescription.getInitialState() :
+                nameAndDescription.getNewState();
         if(changeRequest == null) return null;
         return changeRequest.getId();
     }
 
-    public CaseNameAndDescriptionChangeRequest getNewState() {
-        return newState;
-    }
-
-    public CaseNameAndDescriptionChangeRequest getOldState() {
-        return oldState;
-    }
-
-    public CaseNameAndDescriptionChangeRequest getCaseNameAndDescriptionChangeRequest() {
-        return newState != null ? newState : oldState;
+    public DiffResult<CaseNameAndDescriptionChangeRequest> getNameAndDescription() {
+        return nameAndDescription;
     }
 
     @Override

@@ -303,8 +303,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return;
         }
         CaseNameAndDescriptionChangeRequest changeRequest = fillIssueNameAndDescription();
-        issueService.saveIssueNameAndDescription(changeRequest, new FluentCallback<Long>()
-                .withSuccess(caseId -> {
+        issueService.saveIssueNameAndDescription(changeRequest, new FluentCallback<Boolean>()
+                .withSuccess(isUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     switchToRONameAndDescriptionView(issue);
                     view.setNameAndDescriptionButtonsPanelVisibility(false);

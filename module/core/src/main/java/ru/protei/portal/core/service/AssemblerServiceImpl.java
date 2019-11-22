@@ -59,7 +59,7 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info("fillCaseNameAndDescription(): CaseObjectID={} Try to fill case's Name and Description.", e.getCaseObjectId());
 
-        e.setLastCaseNameAndDescription(new CaseNameAndDescriptionChangeRequest(caseObjectDAO.get(e.getCaseObjectId())));
+        e.getNameAndDescription().setNewState(new CaseNameAndDescriptionChangeRequest(caseObjectDAO.get(e.getCaseObjectId())));
 
         log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is successfully filled.", e.getCaseObjectId());
         return ok(e);

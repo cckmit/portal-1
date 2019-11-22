@@ -40,7 +40,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<Long> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator);
+    Result<Boolean> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator);
 
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 
@@ -59,7 +59,7 @@ public interface CaseService {
 
     Result<Long> attachToCaseId( Attachment attachment, long caseId);
 
-    Result<Boolean>  isExistsAttachments(Long caseId);
+    Result<Boolean> isExistsAttachments(Long caseId);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId);
 

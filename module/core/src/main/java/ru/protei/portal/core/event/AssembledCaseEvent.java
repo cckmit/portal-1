@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 
 import java.util.*;
 import java.util.function.Function;
@@ -21,8 +22,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
-    private CaseNameAndDescriptionChangeRequest lastNameAndDescription;
-    private CaseNameAndDescriptionChangeRequest initNameAndDescription;
+    private DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = new DiffResult<>();
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
@@ -57,15 +57,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
         //temporary solution
-        this.initNameAndDescription = initState == null ? null : new CaseNameAndDescriptionChangeRequest(this.initState);
-        this.lastNameAndDescription = lastState == null ? null : new CaseNameAndDescriptionChangeRequest(this.lastState);
+        DiffResult<CaseNameAndDescriptionChangeRequest> newNameAndDescription = new DiffResult<>();
+        newNameAndDescription.setInitialState(new CaseNameAndDescriptionChangeRequest(this.initState));
+        newNameAndDescription.setNewState(new CaseNameAndDescriptionChangeRequest(this.lastState));
+        this.nameAndDescription = synchronizeDiffs(this.nameAndDescription, newNameAndDescription);
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
         this.lastUpdated = currentTimeMillis();
-        isEagerEvent = isEagerEvent||event.isEagerEvent();
-        this.lastNameAndDescription = event.getOldState();
-        this.initNameAndDescription = event.getNewState();
+        this.isEagerEvent = isEagerEvent||event.isEagerEvent();
+        this.nameAndDescription = synchronizeDiffs(this.nameAndDescription, event.getNameAndDescription());
         this.initiator = event.getPerson();
         this.serviceModule = event.getServiceModule();
     }
@@ -96,11 +97,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null && this.initNameAndDescription == null;
+        return this.initState == null && !this.nameAndDescription.hasInitialState();
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null || this.initNameAndDescription != null;//&& lastState!=null;
+        return this.initState != null || this.nameAndDescription.hasInitialState();
     }
 
     public boolean isCommentAttached() {
@@ -137,14 +138,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isInitiatorCompanyChanged() {
         return initState != null && !HelperFunc.equals(lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId());
-    }
-
-    public boolean isInfoChanged() {
-        return initNameAndDescription != null && !HelperFunc.equals(lastNameAndDescription.getInfo(), initNameAndDescription.getInfo());
-    }
-
-    public boolean isNameChanged() {
-        return initNameAndDescription != null && !HelperFunc.equals(lastNameAndDescription.getName(), initNameAndDescription.getName());
     }
 
     public boolean isPrivacyChanged() {
@@ -231,16 +224,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initState;
     }
 
-    public CaseNameAndDescriptionChangeRequest getNameAndDescription() {
-        return lastNameAndDescription != null ? lastNameAndDescription : initNameAndDescription;
-    }
-
-    public CaseNameAndDescriptionChangeRequest getLastNameAndDescription() {
-        return lastNameAndDescription;
-    }
-
-    public CaseNameAndDescriptionChangeRequest getInitNameAndDescription() {
-        return initNameAndDescription;
+    public DiffResult<CaseNameAndDescriptionChangeRequest> getNameAndDescription() {
+        return nameAndDescription;
     }
 
     public Person getInitiator() {
@@ -281,13 +266,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private boolean isPublicChangedWithOutComments() {
         return  isCaseImportanceChanged()
                 || isCaseStateChanged()
-                || isInfoChanged()
                 || isInitiatorChanged()
                 || isInitiatorCompanyChanged()
                 || isManagerChanged()
-                || isNameChanged()
                 || isPrivacyChanged()
-                || isProductChanged();
+                || isProductChanged()
+                || nameAndDescription.hasChanged();
     }
 
 
@@ -300,15 +284,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseNameAndDescriptionFilled() {
-        return initNameAndDescription != null;
+        return nameAndDescription.hasNewState();
     }
 
     public void setLastCaseObject( CaseObject caseObject ) {
         lastState = caseObject;
-    }
-
-    public void setLastCaseNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) {
-        lastNameAndDescription = changeRequest;
     }
 
     public void setExistingCaseComments( List<CaseComment> caseComments ) {
@@ -391,7 +371,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     // Убрать из существующих элементов добавленные и удаленные
-    private <T> DiffCollectionResult<T> synchronizeExists( DiffCollectionResult<T> diff,Function<T, Object> getId) {
+    private <T> DiffCollectionResult<T> synchronizeExists( DiffCollectionResult<T> diff, Function<T, Object> getId) {
         log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
         if (diff.hasSameEntries()){
             synchronized (diff) {
@@ -401,6 +381,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
         log.info( "synchronizeExists(): after +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
         return diff;
+    }
+
+    private <T> DiffResult<T> synchronizeDiffs(DiffResult<T> source, DiffResult<T> other) {
+        if(!other.hasChanged()) return source;
+        synchronized (source) {
+            DiffResult<T> result = new DiffResult<>();
+            result.setInitialState(source.hasInitialState() ? source.getInitialState() : other.getInitialState());
+            result.setNewState(other.getNewState());
+            return result;
+        }
     }
 
     private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );
