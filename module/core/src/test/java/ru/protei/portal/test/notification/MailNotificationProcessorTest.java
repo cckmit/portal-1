@@ -105,8 +105,15 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         object.setInitiatorCompany( company );
         object.setInitiator( initiator );
 
+        CaseObjectMeta meta = new CaseObjectMeta(object);
+        meta.setId( CASE_ID );
+        CaseObjectMetaNotifiers metaNotifiers = new CaseObjectMetaNotifiers(object);
+        metaNotifiers.setId( CASE_ID );
+
         when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
+        when( caseObjectMetaDAO.get( CASE_ID ) ).thenReturn( meta );
+        when( caseObjectMetaNotifiersDAO.get( CASE_ID ) ).thenReturn( metaNotifiers );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
         Assert.assertTrue("CaseObject must be created",
@@ -149,6 +156,8 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( caseObjectDAO.checkExistsByKey( CASE_ID ) ).thenReturn( true );
         when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
         when( caseObjectDAO.get( any() ) ).thenReturn( object );
+        when( caseObjectMetaDAO.get( any() ) ).thenReturn( new CaseObjectMeta(object) );
+        when( caseObjectMetaNotifiersDAO.get( any() ) ).thenReturn( new CaseObjectMetaNotifiers(object) );
 
         when( caseCommentDAO.get( commentId ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
