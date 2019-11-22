@@ -160,6 +160,22 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEvent() && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
     }
 
+    private boolean isPublicLinksChanged() {
+        return isUpdateEvent() && publicLinksChanged();
+    }
+
+    private boolean publicLinksChanged() {
+        if (!CollectionUtils.isEmpty(mergeLinks.getAddedEntries()) && mergeLinks.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        if (!CollectionUtils.isEmpty(mergeLinks.getRemovedEntries()) && mergeLinks.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        return false;
+    }
+
     public void attachCaseObject(CaseObject caseObject) {
         lastState = caseObject;
         lastUpdated = currentTimeMillis();
@@ -264,12 +280,24 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isSendToCustomers() {
-        return isCreateEvent()
-                || (
-                        (!isCommentAttached() || isAttachedCommentNotPrivate())
-                                && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
-                || isPublicChangedWithOutComments();
+    public boolean isPrivateSend() {
+        if (isCreateEvent()) {
+            return false;
+        }
+
+        if (isAttachedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isRemovedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isPublicChangedWithOutComments()) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isAttachedCommentNotPrivate() {
@@ -289,6 +317,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isManagerChanged()
                 || isNameChanged()
                 || isPrivacyChanged()
-                || isProductChanged();
+                || isProductChanged()
+                || isPublicLinksChanged();
     }
 }

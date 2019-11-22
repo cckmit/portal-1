@@ -134,7 +134,7 @@ public class MailNotificationProcessor {
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
 
-            if ( isPrivateCase(event) ) {
+            if ( isPrivateNotification(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
 
                 performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
@@ -206,9 +206,9 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
-    private boolean isPrivateCase(AssembledCaseEvent event) {
+    private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
-                || !event.isSendToCustomers()
+                || event.isPrivateSend()
                 || config.data().smtp().isBlockExternalRecipients();
     }
 
