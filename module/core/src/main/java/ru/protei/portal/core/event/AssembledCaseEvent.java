@@ -280,11 +280,24 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isSendToCustomers() {
-        return isCreateEvent()
-                || isAttachedCommentNotPrivate()
-                || isRemovedCommentNotPrivate()
-                || isPublicChangedWithOutComments();
+    public boolean isPrivateSend() {
+        if (isCreateEvent()) {
+            return false;
+        }
+
+        if (isAttachedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isRemovedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isPublicChangedWithOutComments()) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isAttachedCommentNotPrivate() {
