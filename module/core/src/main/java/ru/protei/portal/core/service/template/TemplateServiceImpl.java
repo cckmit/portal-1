@@ -66,48 +66,33 @@ public class TemplateServiceImpl implements TemplateService {
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.putAll(makeTemplateModelUtils());
+        templateModel.putAll(makeTemplateModelMeta(event));
 
-        templateModel.put( "TextUtils", new TextUtils() );
-        templateModel.put( "TimeElapsedFormatter", new WorkTimeFormatter() );
-        templateModel.put("TranslitUtils", new TransliterationUtils());
+//        templateModel.put( "case", newState );
+//        templateModel.put( "oldCase", oldState );
+
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
-        templateModel.put( "createdByMe", false );
-        templateModel.put( "case", newState );
-        templateModel.put( "oldCase", oldState );
-        templateModel.put( "importanceLevel", En_ImportanceLevel.getById( newState.getImpLevel() ).getCode() );
-        templateModel.put( "manager", newState.getManager() );
-        templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
-        templateModel.put("platform", newState.getPlatformName());
 
+        templateModel.put( "createdByMe", false );
+        templateModel.put( "creator", newState.getCreator().getDisplayShortName() );
+        templateModel.put( "created", newState.getCreated() );
+        templateModel.put( "caseNumber", newState.getCaseNumber() );
+
+        templateModel.put( "nameChanged", event.isNameChanged() );
+        templateModel.put( "name", newState.getName() );
+        templateModel.put( "oldName", oldState == null ? null : oldState.getName() );
+
+        templateModel.put( "privacyChanged", event.isPrivacyChanged() );
+        templateModel.put( "privacy", newState.isPrivateCase() );
+        templateModel.put( "oldPrivacy", oldState == null ? null : oldState.isPrivateCase() );
+
+        templateModel.put( "infoChanged", event.isInfoChanged() );
         templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup) );
         templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup) );
 
-        templateModel.put( "productChanged", event.isProductChanged() );
-        templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );
-        templateModel.put( "oldImportanceLevel", oldState == null ? null : En_ImportanceLevel.getById( oldState.getImpLevel() ).getCode() );
-
-        templateModel.put( "caseChanged", event.isCaseStateChanged() );
-        templateModel.put( "oldCaseState", oldState == null ? null : En_CaseState.getById( oldState.getStateId() ).getName() );
-
-        templateModel.put("timeElapsedChanged", event.isTimeElapsedChanged());
-        templateModel.put("elapsed", newState.getTimeElapsed());
-        templateModel.put("oldElapsed", oldState == null ? null : oldState.getTimeElapsed());
-
-        templateModel.put( "customerChanged", event.isInitiatorChanged() || event.isInitiatorCompanyChanged() );
-        templateModel.put( "oldInitiator", oldState == null ? null : oldState.getInitiator() );
-        templateModel.put( "oldInitiatorCompany", oldState == null ? null : oldState.getInitiatorCompany() );
-
-        templateModel.put( "managerChanged", event.isManagerChanged() );
-        templateModel.put( "oldManager", oldState == null? null: oldState.getManager() );
-
-        templateModel.put( "infoChanged", event.isInfoChanged() );
-        templateModel.put( "nameChanged", event.isNameChanged() );
-        templateModel.put( "privacyChanged", event.isPrivacyChanged() );
-
-        templateModel.put("platformChanged", event.isPlatformChanged());
-        templateModel.put("oldPlatform", oldState == null ? null : oldState.getPlatformName());
         templateModel.put("hasLinks", hasLinks( mergeLinks) );
         templateModel.put("existingLinks", mergeLinks == null ? null : mergeLinks.getSameEntries());
         templateModel.put("addedLinks", mergeLinks == null ? null : mergeLinks.getAddedEntries());
@@ -128,14 +113,65 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    @Override
-    public PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson ) {
+    private Map<String, Object> makeTemplateModelUtils() {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "case", caseObject );
-        templateModel.put( "author", currentPerson );
-        templateModel.put( "caseState", En_CaseState.getById( caseObject.getStateId() ).getName() );
-        templateModel.put( "importanceLevel", En_ImportanceLevel.getById( caseObject.getImpLevel() ).getCode() );
+        templateModel.put("TextUtils", new TextUtils());
+        templateModel.put("TimeElapsedFormatter", new WorkTimeFormatter());
         templateModel.put("TranslitUtils", new TransliterationUtils());
+        return templateModel;
+    }
+
+    private Map<String, Object> makeTemplateModelMeta(AssembledCaseEvent event) {
+        Map<String, Object> templateModel = new HashMap<>();
+        CaseObjectMeta newMetaState = event.getCaseMeta();
+        CaseObjectMeta oldMetaState = event.getInitCaseMeta() == null ? null : newMetaState.equals(event.getInitCaseMeta()) ? null : event.getInitCaseMeta();
+
+        templateModel.put("importanceChanged", event.isCaseImportanceChanged());
+        templateModel.put("importanceLevel", newMetaState.getImportance() == null ? null : newMetaState.getImportance().getCode());
+        templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
+
+        templateModel.put("caseChanged", event.isCaseStateChanged());
+        templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getName());
+        templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getName());
+
+        templateModel.put("timeElapsedChanged", event.isTimeElapsedChanged());
+        templateModel.put("elapsed", newMetaState.getTimeElapsed());
+        templateModel.put("oldElapsed", oldMetaState == null ? null : oldMetaState.getTimeElapsed());
+
+        templateModel.put("customerChanged", event.isInitiatorChanged() || event.isInitiatorCompanyChanged());
+        templateModel.put("initiator", newMetaState.getInitiator() == null ? null : newMetaState.getInitiator().getDisplayName());
+        templateModel.put("initiatorCompany", newMetaState.getInitiatorCompany() == null ? null : newMetaState.getInitiatorCompany().getCname());
+        templateModel.put("oldInitiator", oldMetaState == null || oldMetaState.getInitiator() == null ? null : oldMetaState.getInitiator().getDisplayName());
+        templateModel.put("oldInitiatorCompany", oldMetaState == null || oldMetaState.getInitiatorCompany() == null ? null : oldMetaState.getInitiatorCompany().getCname());
+
+        templateModel.put("managerChanged", event.isManagerChanged());
+        templateModel.put("manager", newMetaState.getManager() == null ? null : newMetaState.getManager().getDisplayName());
+        templateModel.put("managerCompany", newMetaState.getManager() == null || newMetaState.getManager().getCompany() == null ? null : newMetaState.getManager().getCompany().getCname());
+        templateModel.put("oldManager", oldMetaState == null || oldMetaState.getManager() == null ? null : oldMetaState.getManager().getDisplayName());
+        templateModel.put("oldManagerCompany", oldMetaState == null || oldMetaState.getManager() == null || oldMetaState.getManager().getCompany() == null ? null : oldMetaState.getManager().getCompany().getCname());
+
+        templateModel.put("platformChanged", event.isPlatformChanged());
+        templateModel.put("platform", newMetaState.getPlatformName());
+        templateModel.put("oldPlatform", oldMetaState == null ? null : oldMetaState.getPlatformName());
+
+        templateModel.put("productChanged", event.isProductChanged());
+        templateModel.put("product", newMetaState.getProduct() == null ? null : newMetaState.getProduct().getName());
+        templateModel.put("oldProduct", oldMetaState == null || oldMetaState.getProduct() == null ? null : oldMetaState.getProduct().getName());
+
+        return templateModel;
+    }
+
+    @Override
+    public PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson ) {
+        CaseObject caseObject = event.getCaseObject();
+        CaseObjectMeta caseMeta = event.getCaseMeta();
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "TranslitUtils", new TransliterationUtils() );
+        templateModel.put( "author", currentPerson );
+        templateModel.put( "caseNumber", caseObject.getCaseNumber() );
+        templateModel.put( "caseState", caseMeta.getState() == null ? null : caseMeta.getState().getName() );
+        templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
+        templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
         template.setModel( templateModel );

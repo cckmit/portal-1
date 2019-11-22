@@ -210,7 +210,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(caseObject, event.getInitiator());
+        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(event, event.getInitiator());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for caseId={}", caseObject.getId());
             return;
@@ -239,7 +239,7 @@ public class MailNotificationProcessor {
 
 
     private Collection<NotificationEntry> collectNotifiers(AssembledCaseEvent event) {
-        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers(  event.getCaseObject() );
+        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers(event.getCaseMeta());
         return formNotifiers(defaultNotifiers,
                 event.getInitiator(),
                 event.getCreator(),

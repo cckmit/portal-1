@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -30,6 +27,7 @@ public class AssemblerServiceImpl implements AssemblerService {
         if (sourceEvent == null) return;
 
         fillCaseObject( sourceEvent ).flatMap(
+                this::fillCaseMeta ).flatMap(
                 this::fillComments ).flatMap(
                 this::fillAttachments ).flatMap(
                 this::fillLinks ).ifOk( filledEvent ->
@@ -48,6 +46,19 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
         return ok( e );
+    }
+
+    private Result<AssembledCaseEvent> fillCaseMeta( AssembledCaseEvent e ) {
+        if (e.isCaseMetaFilled()) {
+            log.info("fillCaseMeta(): CaseObjectID={} caseMeta is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillCaseMeta(): CaseObjectID={} Try to fill caseMeta.", e.getCaseObjectId());
+        e.setLastCaseMeta(caseObjectMetaDAO.get(e.getCaseObjectId()));
+        log.info("fillCaseMeta(): CaseObjectID={} caseMeta is successfully filled.", e.getCaseObjectId());
+
+        return ok(e);
     }
 
     private Result<AssembledCaseEvent> fillAttachments( AssembledCaseEvent e ) {//TODO
@@ -114,16 +125,14 @@ public class AssemblerServiceImpl implements AssemblerService {
 
     @Autowired
     EventPublisherService publisherService;
-
     @Autowired
     CaseCommentDAO caseCommentDAO;
-
     @Autowired
     CaseObjectDAO caseObjectDAO;
-
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
     CaseLinkDAO caseLinkDAO;
-
     @Autowired
     AttachmentDAO attachmentDAO;
 

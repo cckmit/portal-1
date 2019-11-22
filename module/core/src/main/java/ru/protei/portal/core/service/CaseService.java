@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -34,9 +35,22 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_CREATE )
     Result<CaseObject> createCaseObject( AuthToken token, CaseObject p, Person initiator );
 
+    @Deprecated
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person initiator );
+
+    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    Result<CaseObjectMeta> updateCaseObjectMeta( AuthToken token, CaseObjectMeta caseMeta, Person initiator );
+
+    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers, Person initiator );
+
+    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Auditable( En_AuditType.ISSUE_MODIFY )
+    Result<CaseObjectMetaJira> updateCaseObjectMetaJira( AuthToken token, CaseObjectMetaJira caseMetaJira, Person initiator );
 
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 
