@@ -447,7 +447,9 @@ public class TestWorkerController {
         PhotoList pl = resultPhotoList.getData();
 
         Assert.assertNotNull("Result getPhotos() is null!", pl);
-        for (Photo p : pl.getPhotos()) {
+        Assert.assertEquals("The number of photos received differs from the number of photos sent", list.getIds().size(), pl.getPhotos().size());
+        for (int i = 0; i < list.getIds().size(); i++) {
+            Photo p = pl.getPhotos().get(i);
             logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
             logger.debug("Photo's content in Base64 = " + p.getContent());
 
