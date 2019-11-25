@@ -34,7 +34,7 @@ public class EmployeeMultiSelector
             addOption(lang.employeeWithoutManager(), new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
         for (PersonShortView personView : options) {
-            addOption(personView.getDisplayShortName(), personView);
+            addOption(personView.getName(), personView);
         }
     }
 

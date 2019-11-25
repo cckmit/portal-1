@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -19,7 +17,7 @@ public class ContactButtonSelector extends ButtonSelector<PersonShortView> {
     public void init() {
         setSearchEnabled( true );
         setSearchAutoFocus( true );
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayShortName() ) );
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
     }
 
     @Override

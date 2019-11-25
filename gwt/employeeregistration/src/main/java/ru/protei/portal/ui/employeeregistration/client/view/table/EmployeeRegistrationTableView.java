@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -122,7 +121,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
                     cell.setInnerText("");
                     return;
                 }
-                cell.setInnerText(value.getHeadOfDepartment().getDisplayShortName());
+                cell.setInnerText(value.getHeadOfDepartment().getName());
             }
         };
 

@@ -103,7 +103,7 @@ public class ProjectList
                     .findFirst()
                     .orElse(null);
             if (leader != null) {
-                content.append(leader.getDisplayShortName());
+                content.append(leader.getName());
                 if (team.size() - 1 > 0) {
                     content.append(" +")
                             .append(team.size() - 1)

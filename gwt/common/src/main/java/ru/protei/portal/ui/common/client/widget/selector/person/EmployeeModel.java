@@ -91,7 +91,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     }
 
     private void transliteration(List<PersonShortView> options) {
-        options.forEach(option -> option.setDisplayShortName(TransliterationUtils.transliterate(option.getDisplayShortName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
     }
 
     @Inject
