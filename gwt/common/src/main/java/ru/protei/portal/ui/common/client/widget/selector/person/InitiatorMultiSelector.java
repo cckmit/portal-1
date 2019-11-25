@@ -36,7 +36,7 @@ public class InitiatorMultiSelector
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
         for ( PersonShortView option : emptyIfNull( options) ) {
-            addOption( option.getDisplayShortName(), option );
+            addOption( option.getName(), option );
         }
     }
 

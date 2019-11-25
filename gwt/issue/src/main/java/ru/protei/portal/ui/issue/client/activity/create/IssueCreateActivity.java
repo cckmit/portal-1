@@ -76,9 +76,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        fillView(pageState != null);
-
-        pageState = null;
+        fillView();
     }
 
     @Event
@@ -166,7 +164,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
             Profile profile = policyService.getProfile();
             if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                view.initiator().setValue(new PersonShortView(transliteration(profile.getShortName()), profile.getId(), profile.isFired()));
+                view.initiator().setValue(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             } else {
                 view.initiator().setValue(null);
             }
@@ -178,7 +176,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onCreateContactClicked() {
         if (view.company().getValue() != null) {
-            pageState = fillIssueObject(new CaseObject());
             fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
     }
@@ -199,7 +196,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         localStorageService.set( ISSUE_CREATE + "_" + key, String.valueOf( isDisplay ) );
     }
 
-    private void fillView(boolean isRestoredIssue) {
+    private void fillView() {
         view.productEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT));
         view.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
 
@@ -211,33 +208,33 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW));
         view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW));
 
-        view.links().setValue(isRestoredIssue ? new HashSet<>(pageState.getLinks()) : null);
-        view.isPrivate().setValue(isRestoredIssue ? pageState.isPrivateCase() : false);
+        view.links().setValue(null);
+        view.isPrivate().setValue(false);
 
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
-        view.name().setValue(isRestoredIssue ? pageState.getName() : null);
-        view.description().setValue(isRestoredIssue ? pageState.getInfo() : null);
+        view.name().setValue(null);
+        view.description().setValue(null);
 
         view.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);
-        view.state().setValue(isRestoredIssue ? pageState.getState() : En_CaseState.CREATED);
+        view.state().setValue(En_CaseState.CREATED);
         view.stateEnabled().setEnabled(policyService.personBelongsToHomeCompany());
-        view.importance().setValue(isRestoredIssue ? pageState.importanceLevel() : En_ImportanceLevel.BASIC);
+        view.importance().setValue(En_ImportanceLevel.BASIC);
 
         boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
         view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
 
         if (hasPrivilegeForTimeElapsed) {
             boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
-            view.timeElapsedInput().setTime(isRestoredIssue ? pageState.getTimeElapsed() : 0L);
+            view.timeElapsedInput().setTime(0L);
             view.timeElapsedEditContainerVisibility().setVisible(timeElapsedEditAllowed);
-            view.timeElapsedType().setValue(isRestoredIssue ? pageState.getTimeElapsedType() : En_TimeElapsedType.NONE);
+            view.timeElapsedType().setValue(En_TimeElapsedType.NONE);
         }
 
         view.applyCompanyValueIfOneOption();
-        view.product().setValue(isRestoredIssue && pageState.getProduct() != null ? pageState.getProduct().toProductShortView() : null);
-        view.manager().setValue(isRestoredIssue && pageState.getManager() != null ? pageState.getManager().toShortNameShortView() : null);
+        view.product().setValue(null);
+        view.manager().setValue(null);
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
-        initiatorSelectorAllowAddNew(isRestoredIssue ? pageState.getInitiatorCompanyId() : null);
+        initiatorSelectorAllowAddNew(null);
         view.platform().setValue(null);
         view.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
@@ -387,8 +384,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Inject
     AbstractIssueCreateView view;
-
-    private CaseObject pageState;
 
     private Set<Attachment> attachments;
     private boolean saving;

@@ -90,8 +90,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "oldPrivacy", oldState == null ? null : oldState.isPrivateCase() );
 
         templateModel.put( "infoChanged", event.isInfoChanged() );
-        templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup) );
-        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup) );
+        templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup).replace("<p>", "").replace("</p>", "") );
+        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup).replace("<p>", "").replace("</p>", "") );
 
         templateModel.put("hasLinks", hasLinks( mergeLinks) );
         templateModel.put("existingLinks", mergeLinks == null ? null : mergeLinks.getSameEntries());

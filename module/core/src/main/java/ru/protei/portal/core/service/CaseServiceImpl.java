@@ -181,18 +181,6 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        DiffCollectionResult<CaseLink> mergeLinks = null;
-        if (isNotEmpty(caseObject.getLinks())) {
-            mergeLinks = caseLinkService.mergeLinks( token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks() ).getData();
-        }
-
-        if (isNotEmpty(caseObject.getLinks())) {
-            List<String> youtrackIds = selectYouTrackLinkRemoteIds( caseObject.getLinks() );
-            for (String youtrackId : youtrackIds) {
-                youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseObject.getCaseNumber());
-            }
-        }
-
         if (isNotEmpty(caseObject.getTags())) {
             caseObjectTagDAO.persistBatch(
                     caseObject.getTags()
@@ -200,6 +188,10 @@ public class CaseServiceImpl implements CaseService {
                             .map(tag -> new CaseObjectTag(caseId, tag.getId()))
                             .collect(Collectors.toList())
             );
+        }
+
+        if (isNotEmpty(caseObject.getLinks())) {
+            caseLinkService.updateLinks(token, caseId, initiator, caseObject.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
