@@ -23,27 +23,19 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasValue<String> name();
     HasValue<String> description();
-    HasValue<Boolean> isPrivate();
     HasValue<Set<CaseLink>> links();
     HasValue<Set<CaseTag>> tags();
 
     HasValidable nameValidator();
 
-    HasVisibility numberVisibility();
-
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
-
-    HasVisibility numberContainerVisibility();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
     void setCreatedBy(String value);
 
-    HasVisibility copyVisibility();
-
-    void showComments(boolean isShow);
     boolean isAttached();
 
     void setPrivacyIcon(Boolean isPrivate);
@@ -52,8 +44,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
 
     void setNumber(Integer num);
-
-    HasVisibility privacyVisibility();
 
     HasEnabled saveEnabled();
 

@@ -317,14 +317,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return true;
     }
 
-    private void addAttachmentsToCollection(Attachment attachment) {
-        if (attachments == null) {
-            attachments = new HashSet<>();
-        }
-
-        attachments.add(attachment);
-    }
-
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;

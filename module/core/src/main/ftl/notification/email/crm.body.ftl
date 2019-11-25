@@ -123,7 +123,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <@changeTo
                                 old="${(oldInitiator)???then(
                                     TranslitUtils.transliterate(oldInitiator, lang) +' ('+ (TranslitUtils.transliterate(oldInitiatorCompany, lang)!'?') +')',
-                                    (TranslitUtils.transliterate(oldInitiatorCompany))!'?'
+                                    (TranslitUtils.transliterate(oldInitiatorCompany, lang))!'?'
                                 )}"
                                 new="${TranslitUtils.transliterate(newCustomer, lang)}"
                             />
