@@ -168,8 +168,8 @@
                     <artifactId>logback-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
+                    <groupId>ru.yandex.clickhouse</groupId>
+                    <artifactId>clickhouse-jdbc</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
@@ -160,6 +161,22 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isEagerEvent;
     }
 
+    private boolean isPublicLinksChanged() {
+        return isUpdateEvent() && publicLinksChanged();
+    }
+
+    private boolean publicLinksChanged() {
+        if (!CollectionUtils.isEmpty(mergeLinks.getAddedEntries()) && mergeLinks.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        if (!CollectionUtils.isEmpty(mergeLinks.getRemovedEntries()) && mergeLinks.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean isLinksFilled() {
         synchronized (mergeLinks){
             return mergeLinks.hasSameEntries();
@@ -257,12 +274,24 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isSendToCustomers() {
-        return isCreateEvent()
-                || (
-                        (!isCommentAttached() || isAttachedCommentNotPrivate())
-                                && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
-                || isPublicChangedWithOutComments();
+    public boolean isPrivateSend() {
+        if (isCreateEvent()) {
+            return false;
+        }
+
+        if (isAttachedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isRemovedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isPublicChangedWithOutComments()) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean isAttachedCommentNotPrivate() {
@@ -288,7 +317,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isManagerChanged()
                 || isNameChanged()
                 || isPrivacyChanged()
-                || isProductChanged();
+                || isProductChanged()
+                || isPublicLinksChanged();
     }
 
 
