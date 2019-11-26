@@ -35,7 +35,7 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result<Document> updateDocument( AuthToken token, Document document);
 
-    @Privileged(requireAny = {En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result<Document> updateDocumentAndContent( AuthToken token, Document document, FileItem fileItem);
 

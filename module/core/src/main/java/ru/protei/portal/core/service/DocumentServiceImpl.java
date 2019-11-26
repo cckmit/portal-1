@@ -263,10 +263,11 @@ public class DocumentServiceImpl implements DocumentService {
             if (validationStatus != En_ResultStatus.OK) {
                 return error(validationStatus);
             }
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            documentSvnService.getDocument(projectId, documentId, out);
-            final byte[] oldFileData = out.toByteArray();
-            out.close();
+            final byte[] oldFileData;
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                documentSvnService.getDocument(projectId, documentId, out);
+                oldFileData = out.toByteArray();
+            }
 
             try {
                 documentDAO.merge(document);

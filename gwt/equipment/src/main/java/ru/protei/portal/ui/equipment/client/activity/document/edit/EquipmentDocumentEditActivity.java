@@ -212,7 +212,10 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     private void saveDocument() {
         view.saveButtonEnabled().setEnabled(false);
         view.cancelButtonEnabled().setEnabled(false);
-        if ((document.getId() == null || !document.getApproved()) && StringUtils.isNotBlank(view.documentUploader().getFilename())) {
+        boolean isNew = document.getId() == null;
+        boolean isApproved = document.getApproved();
+        boolean isFileSet = view.documentUploader().isFileSet();
+        if ((isNew || !isApproved) && isFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
             view.documentUploader().uploadBindToDocument(document);
         } else {
