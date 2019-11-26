@@ -26,7 +26,7 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    value.getName(),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "");
         } );

@@ -183,7 +183,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        linksPanel.setLabelDebugId(DebugIds.DEBUG_ID_PREFIX + debugId);
+        linksPanel.setLabelDebugId(debugId);
     }
 
     public void setEnsureDebugIdTagLabel(String debugId) {

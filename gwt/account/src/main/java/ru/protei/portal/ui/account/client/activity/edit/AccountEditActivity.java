@@ -133,7 +133,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     private UserLogin applyChangesLogin() {
         account.setUlogin( view.login().getValue() );
         account.setPersonId( view.person().getValue().getId() );
-        account.setInfo( view.person().getValue().getDisplayShortName() );
+        account.setInfo( view.person().getValue().getName() );
         if ( !HelperFunc.isEmpty( view.password().getText() ) ) {
             account.setUpass( view.password().getText() );
         }

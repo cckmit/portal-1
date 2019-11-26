@@ -140,7 +140,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     int teamSize = value.getTeam().size() - (leader.isPresent() ? 1 : 0);
 
                     StringBuilder content = new StringBuilder();
-                    leader.ifPresent(lead -> content.append(lead.getDisplayShortName()));
+                    leader.ifPresent(lead -> content.append(lead.getName()));
 
                     if (teamSize > 0) {
                         leader.ifPresent(lead -> content.append(" + "));

@@ -287,7 +287,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             if (issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
                 initiator = issue.getInitiator();
             } else if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = Person.fromPersonShortView(new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired()));
+                initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             }
             metaView.setInitiator(initiator);
         }
