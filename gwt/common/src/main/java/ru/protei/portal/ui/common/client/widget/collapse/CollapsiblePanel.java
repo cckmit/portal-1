@@ -61,7 +61,7 @@ public class CollapsiblePanel extends Composite implements HasWidgets, HasClickH
         setPanelVisible(isVisible);
     }
 
-    public void addLabelDebugId(String debugId) {
+    public void setLabelDebugId(String debugId) {
         headerLabel.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
