@@ -12,6 +12,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
+import java.util.function.Function;
+
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class RemoveClickColumn< T > extends ClickColumn< T > {
@@ -32,8 +34,9 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
+        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
         cell.addClassName("remove");
-        if ( ((Removable) value).isAllowedRemove() ) {
+        if (!(value instanceof Removable) || ((Removable) value).isAllowedRemove()) {
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref( "#" );
             a.addClassName( "far fa-trash-alt fa-lg" );
@@ -52,13 +55,17 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
         setActionHandler(removeHandler::onRemoveClicked);
     }
 
+    public void setArchivedCheckFunction( Function<T, Boolean> archivedCheckFunction ) {
+        this.archivedCheckFunction = archivedCheckFunction;
+    }
+
     private void setRemoveEnabled( AnchorElement a ) {
 
         if ( privilege == null ) {
             return;
         }
 
-        if ( policyService.hasPrivilegeFor( privilege ) ) {
+        if ( policyService.hasPrivilegeFor( privilege ) && !isArchived ) {
             a.removeClassName( "link-disabled" );
         } else {
             a.addClassName( "link-disabled" );
@@ -70,4 +77,6 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
 
     Lang lang;
     En_Privilege privilege;
+    private boolean isArchived;
+    private Function<T, Boolean> archivedCheckFunction;
 }

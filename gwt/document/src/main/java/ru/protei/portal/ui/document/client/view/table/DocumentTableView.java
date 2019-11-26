@@ -25,15 +25,20 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn, ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn) {
+    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn,
+                       ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn,
+                       RemoveClickColumn<Document> removeClickColumn
+    ) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.downloadClickColumn = downloadClickColumn;
         this.archiveClickColumn = archiveClickColumn;
+        this.removeClickColumn = removeClickColumn;
         this.documentNameColumn = documentNameColumn;
 
         editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
+        removeClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         downloadClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         initTable();
     }
@@ -50,6 +55,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         archiveClickColumn.setArchiveHandler(activity);
         archiveClickColumn.setColumnProvider(columnProvider);
+
+        removeClickColumn.setRemoveHandler(activity);
+        removeClickColumn.setColumnProvider(columnProvider);
 
         documentNameColumn.setColumnProvider(columnProvider);
 
@@ -119,6 +127,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
         downloadClickColumn.setDownloadCustomImage("./images/pdficon.png");
         archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        removeClickColumn.setPrivilege(En_Privilege.DOCUMENT_REMOVE);
         downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 
         columns.add(id);
@@ -132,6 +141,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
+        table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
     private final ClickColumn<Document> id = new ClickColumn<Document>() {
@@ -217,6 +227,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     EditClickColumn<Document> editClickColumn;
     DownloadClickColumn<Document> downloadClickColumn;
     ArchiveClickColumn<Document> archiveClickColumn;
+    RemoveClickColumn<Document> removeClickColumn;
     DocumentNameColumn<Document> documentNameColumn;
     List<ClickColumn<Document>> columns = new LinkedList<>();
 

@@ -81,6 +81,16 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
+    public Document removeDocument(Document document) throws RequestFailedException {
+        Long documentId = document == null ? null : document.getId();
+        log.info("removeDocument(): id = {}", documentId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        Result<Document> result = documentService.removeDocument(token, document);
+        log.info("removeDocument(): id = {}, status = {}", documentId, result.getStatus());
+        return ServiceUtils.checkResultAndGetData(result);
+    }
+
+    @Override
     public Boolean updateState(Long documentId, En_DocumentState state) throws RequestFailedException {
         log.info("change state document, id: {} | state: {}", documentId, state);
 

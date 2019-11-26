@@ -39,7 +39,7 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result<Document> updateDocumentAndContent( AuthToken token, Document document, FileItem fileItem);
 
-    @Privileged(requireAny = {En_Privilege.EQUIPMENT_REMOVE})
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_REMOVE, En_Privilege.EQUIPMENT_REMOVE})
     @Auditable(En_AuditType.DOCUMENT_REMOVE)
     Result<Document> removeDocument( AuthToken token, Document document);
 

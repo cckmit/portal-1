@@ -17,6 +17,8 @@ public interface DocumentController extends RemoteService {
 
     Document saveDocument(Document document) throws RequestFailedException;
 
+    Document removeDocument(Document document) throws RequestFailedException;
+
     SearchResult<Document> getProjectDocuments(Long projectId) throws RequestFailedException;
 
     Boolean updateState(Long documentId, En_DocumentState state) throws RequestFailedException;

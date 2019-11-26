@@ -313,16 +313,33 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (document.getApproved()) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+
             Long documentId = document.getId();
             Long projectId = document.getProjectId();
-            documentDAO.removeByKey(documentId);
-            documentSvnService.removeDocument(projectId, documentId);
-            documentStorageIndex.removeDocument(documentId);
+
+            try {
+                if (!documentDAO.removeByKey(documentId)) {
+                    log.error("removeDocument(" + documentId + "): failed to remove document from the db");
+                    return error(En_ResultStatus.NOT_REMOVED);
+                }
+            } catch (Exception e) {
+                log.error("removeDocument(" + documentId + "): failed to remove document from the db", e);
+                return error(En_ResultStatus.NOT_REMOVED);
+            }
+
+            try {
+                documentSvnService.removeDocument(projectId, documentId);
+            } catch (Exception e) {
+                log.warn("removeDocument(" + documentId + "): failed to remove document from the svn", e);
+            }
+
+            try {
+                documentStorageIndex.removeDocument(documentId);
+            } catch (Exception e) {
+                log.warn("removeDocument(" + documentId + "): failed to remove document from the index", e);
+            }
+
             return ok(document);
         });
     }
