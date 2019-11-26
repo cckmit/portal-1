@@ -108,7 +108,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
         Person person = new Person();
         person.setId( personShortView.getId());
-        person.setDisplayShortName( personShortView.getDisplayShortName());
+        person.setDisplayShortName( personShortView.getName());
         person.setFired( personShortView.isFired());
         return person;
     }

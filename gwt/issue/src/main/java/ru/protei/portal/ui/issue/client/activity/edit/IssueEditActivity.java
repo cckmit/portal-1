@@ -235,10 +235,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             Profile profile = policyService.getProfile();
             PersonShortView initiator = null;
             if ( issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
-                initiator = PersonShortView.fromPerson(issue.getInitiator());
-                initiator.setDisplayShortName(transliteration(initiator.getDisplayShortName()));
+                initiator = issue.getInitiator().toFullNameShortView();
+                initiator.setName(transliteration(initiator.getName()));
             } else if ( profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = new PersonShortView(transliteration(profile.getShortName()), profile.getId(), profile.isFired());
+                initiator = new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired());
             }
 
             view.initiator().setValue(initiator);
@@ -425,7 +425,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         PersonShortView value = PersonShortView.fromPerson(issue.getManager());
         if (value != null) {
-            value.setDisplayShortName(transliteration(value.getDisplayShortName()));
+            value.setName(transliteration(value.getName()));
         }
         view.manager().setValue(value);
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
@@ -445,7 +445,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         .stream()
                         .map(notifier -> {
                             PersonShortView personShortView = PersonShortView.fromPerson(notifier);
-                            personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
+                            personShortView.setName(transliteration(personShortView.getName()));
 
                             return personShortView;
                         })

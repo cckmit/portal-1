@@ -67,7 +67,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
             regionService.getProject(document.getProjectId(), new ShortRequestCallback<Project>()
                     .setOnSuccess(project -> {
                         view.setProject(project.getName());
-                        view.setManager(project.getLeader() == null ? "" : project.getLeader().getDisplayShortName());
+                        view.setManager(project.getLeader() == null ? "" : project.getLeader().getName());
                     } ));
         }
     }

@@ -150,6 +150,11 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     }
 
     private void setTestAttributes() {
+        panel.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_ELEMENT);
+        importance.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_IMPORTANCE_ICON);
+        text.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_NUMBER);
+        header.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_DESCRIPTION);
+        state.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_STATE);
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_REMOVE_BUTTON);
     }
 
