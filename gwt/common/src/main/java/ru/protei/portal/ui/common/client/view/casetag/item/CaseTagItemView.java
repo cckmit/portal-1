@@ -28,7 +28,7 @@ public class CaseTagItemView extends Composite implements AbstractCaseTagItemVie
 
     @Override
     public void setEnabled(boolean enabled) {
-        remove.setVisible(!enabled);
+        remove.setVisible(enabled);
     }
 
     @Override

@@ -26,6 +26,9 @@ import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPag
 import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.loading.AbstractLoadingActivity;
+import ru.protei.portal.ui.common.client.activity.loading.AbstractLoadingView;
+import ru.protei.portal.ui.common.client.activity.loading.LoadingActivity;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -50,6 +53,7 @@ import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
+import ru.protei.portal.ui.common.client.view.loading.LoadingView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
@@ -76,6 +80,7 @@ import ru.protei.winter.web.common.client.view.section.SectionItemView;
  * Описание классов фабрики
  */
 public class CommonClientModule extends AbstractGinModule {
+
     @Override
     protected void configure() {
         bind( ActionBarActivity.class ).asEagerSingleton();
@@ -131,6 +136,12 @@ public class CommonClientModule extends AbstractGinModule {
         bind( CaseTagEditActivity.class ).asEagerSingleton();
         bind( AbstractCaseTagEditView.class ).to( CaseTagEditView.class ).in( Singleton.class );
 
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( CustomerTypeModel.class ).asEagerSingleton();
+
+        bind( LoadingActivity.class ).asEagerSingleton();
+        bind( AbstractLoadingView.class ).to( LoadingView.class );
+
         // Models
         bind( InitiatorModel.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
@@ -144,8 +155,6 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
-        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
-        bind( CustomerTypeModel.class ).asEagerSingleton();
     }
 }
 

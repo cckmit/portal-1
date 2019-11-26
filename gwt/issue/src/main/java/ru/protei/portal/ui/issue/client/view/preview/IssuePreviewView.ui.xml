@@ -3,7 +3,6 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casetag"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -28,8 +27,6 @@
                     <h5  class="no-margin semi-bold">
                         <span ui:field="name"/>
                     </h5>
-
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <div class="form-group-attached">
                         <div class="row clearfix">
@@ -107,6 +104,8 @@
                     </g:HTMLPanel>
 
                     <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
+
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>

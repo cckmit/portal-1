@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Активность списка тегов
  */
-public abstract class CaseTagListActivity
+public abstract class   CaseTagListActivity
         implements Activity,
         AbstractCaseTagListActivity, AbstractCaseTagItemActivity {
 

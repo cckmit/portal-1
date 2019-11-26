@@ -30,11 +30,5 @@ public interface IssueControllerAsync {
 
     void updateIssueMetaJira(CaseObjectMetaJira caseMetaJira, AsyncCallback<CaseObjectMetaJira> async);
 
-    /**
-     * Получение списка статусов
-     * @return список статусов
-     */
-    void getStateList(AsyncCallback<List<En_CaseState>> async);
-
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 }

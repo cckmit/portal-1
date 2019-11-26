@@ -52,13 +52,6 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        Person person = getCurrentPerson( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.updateLinks( authToken, caseId, person, links ) );
-    }
-
-    @Override
     public Long createLink(CaseLink value) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
         Person person = getCurrentPerson( sessionService, httpServletRequest );

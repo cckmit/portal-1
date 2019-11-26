@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +19,6 @@ public interface CaseLinkService {
     // TODO: линки используются на уровне Анкет и обращений. Для проверки привилегий нужна более гибкая проверка
 //    @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<List<CaseLink>> getLinks( AuthToken token, Long caseId);
-
-    @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks );
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 

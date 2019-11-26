@@ -7,6 +7,6 @@ public class CaseObjectTagDAO_Impl extends PortalBaseJdbcDAO<CaseObjectTag> impl
 
     @Override
     public int removeByCaseIdAndTagId(Long caseId, Long tagId) {
-        return removeByCondition("where case_id = ? and tag_id = ?", caseId, tagId);
+        return removeByCondition("case_id = ? and tag_id = ?", caseId, tagId);
     }
 }

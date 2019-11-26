@@ -38,12 +38,6 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
         return checkExistsByCondition("link_type = ? and remote_id = ?", type.name(), remoteId);
     }
 
-    @Override
-    public Long getCrmLinkId(String remoteId) {
-        CaseLink link = partialGetByCondition("link_type = ? and remote_id = ?", Arrays.asList(En_CaseLink.CRM.name(), remoteId), getIdColumnName());
-        return link == null ? null : link.getId();
-    }
-
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseLinkQuery query) {
         return new SqlCondition().build(((condition, args) -> {
