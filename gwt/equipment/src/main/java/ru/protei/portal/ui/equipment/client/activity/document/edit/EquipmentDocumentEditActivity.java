@@ -164,7 +164,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.setApprovedMode(approveMode);
         view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
-        view.resetFilename();
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();
         view.setDocumentUploaderLabel(isNew ? lang.uploadDocuments() : lang.reUploadDocuments());
@@ -228,7 +227,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     view.cancelButtonEnabled().setEnabled(true);
                 })
                 .withError(throwable -> {
-                    view.resetFilename();
+                    view.documentUploader().resetForm();
                     if (throwable instanceof RequestFailedException) {
                         RequestFailedException rf = (RequestFailedException) throwable;
                         if (En_ResultStatus.ALREADY_EXIST.equals(rf.status)) {

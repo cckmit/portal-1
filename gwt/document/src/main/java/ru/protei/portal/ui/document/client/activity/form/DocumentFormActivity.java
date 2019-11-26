@@ -292,8 +292,7 @@ public abstract class DocumentFormActivity
 
         view.nameValidator().setValid(true);
 
-        view.resetFilename();
-        view.documentUploader().resetAction();
+        view.documentUploader().resetForm();
     }
 
     @Inject
