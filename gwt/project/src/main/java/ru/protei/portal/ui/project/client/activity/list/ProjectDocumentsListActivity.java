@@ -90,7 +90,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         AbstractProjectDocumentsListItemView itemView = itemFactory.get();
         itemView.setActivity(this);
         itemView.setApproved(document.getApproved());
-        itemView.setDecimalNumber(document.getDecimalNumber());
+        itemView.setDecimalNumber(document.getDecimalNumber() != null ? document.getDecimalNumber().trim() : "");
         StringBuilder infoBuilder = new StringBuilder();
         if ( document.getInventoryNumber() != null ) {
             infoBuilder.append(document.getInventoryNumber()).append(" ");
