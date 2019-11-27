@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -324,7 +325,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCopyClicked() {
-        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + view.name().getValue());
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + (StringUtils.isBlank(view.name().getValue()) ? view.getNameRO() : view.name().getValue()));
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));

@@ -224,6 +224,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public String getNameRO() {
+        return nameRO.getInnerText();
+    }
+
+    @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
     }
@@ -262,6 +267,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiHandler("copy")
     public void onCopyClick(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onCopyClicked();
         }
