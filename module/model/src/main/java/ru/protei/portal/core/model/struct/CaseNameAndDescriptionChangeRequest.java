@@ -41,7 +41,9 @@ public class CaseNameAndDescriptionChangeRequest implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CaseNameAndDescriptionChangeRequest that = (CaseNameAndDescriptionChangeRequest) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(info, that.info);
     }
 
     @Override

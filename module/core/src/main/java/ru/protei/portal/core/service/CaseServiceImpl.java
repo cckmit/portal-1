@@ -12,6 +12,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -230,6 +231,12 @@ public class CaseServiceImpl implements CaseService {
         if(oldCaseObject == null)
             return error(En_ResultStatus.NOT_FOUND);
 
+        DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = new DiffResult<>();
+        nameAndDescription.setInitialState(new CaseNameAndDescriptionChangeRequest(oldCaseObject));
+        nameAndDescription.setNewState(changeRequest);
+
+        if(!nameAndDescription.hasDifferences()) return ok(true);
+
         CaseObject caseObject = new CaseObject();
         caseObject.setId(changeRequest.getId());
         caseObject.setName(changeRequest.getName());
@@ -246,8 +253,7 @@ public class CaseServiceImpl implements CaseService {
 
             publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
-                    new CaseNameAndDescriptionChangeRequest(oldCaseObject),
-                    changeRequest,
+                    nameAndDescription,
                     initiator,
                     ServiceModule.GENERAL,
                     En_ExtAppType.forCode(oldCaseObject.getExtAppType())));

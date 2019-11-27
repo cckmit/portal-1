@@ -12,21 +12,19 @@ import java.util.Objects;
 
 public class CaseNameAndDescriptionEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-    private DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = new DiffResult<>();
+    private DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription;
     private Person person;
     private ServiceModule serviceModule;
     private En_ExtAppType extAppType;
 
     public CaseNameAndDescriptionEvent(
             Object source,
-            CaseNameAndDescriptionChangeRequest oldState,
-            CaseNameAndDescriptionChangeRequest newState,
+            DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription,
             Person person,
             ServiceModule serviceModule,
             En_ExtAppType extAppType) {
         super(source);
-        this.nameAndDescription.setInitialState(oldState);
-        this.nameAndDescription.setNewState(newState);
+        this.nameAndDescription = nameAndDescription;
         this.person = person;
         this.serviceModule = serviceModule;
         this.extAppType = extAppType;

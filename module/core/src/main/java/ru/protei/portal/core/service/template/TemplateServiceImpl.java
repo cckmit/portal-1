@@ -86,7 +86,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "recipients", recipients );
         templateModel.put( "platform", newState.getPlatformName() );
 
-        templateModel.put( "infoChanged", nameAndDescription.hasChanged() );
+        templateModel.put( "nameAndInfoChanged", nameAndDescription.hasDifferences() );
         templateModel.put( "caseName", nameAndDescription.getNewState().getName() );
         templateModel.put( "oldCaseName", nameAndDescription.getInitialState() == null ? null : nameAndDescription.getInitialState().getName() );
         templateModel.put( "caseInfo", escapeTextAndRenderHTML( nameAndDescription.getNewState().getInfo(), textMarkup ) );

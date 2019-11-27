@@ -503,11 +503,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillIssueObject(CaseObject issue) {
-        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
-        if (isAllowedEditNameAndDescription) {
-            issue.setName(view.name().getValue());
-            issue.setInfo(view.description().getValue());
-        }
         issue.setPrivateCase( view.isPrivate().getValue() );
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
@@ -556,8 +551,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             }
         }
 
-        boolean isRO = !(isNew(issue) || isSelfIssue(issue));
-        boolean isFieldsValid = (isRO || view.nameValidator().isValid()) &&
+        boolean isFieldsValid = (!isEditingNameAndDescriptionView || view.nameValidator().isValid()) &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid();

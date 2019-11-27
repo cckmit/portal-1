@@ -271,9 +271,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isManagerChanged()
                 || isPrivacyChanged()
                 || isProductChanged()
-                || nameAndDescription.hasChanged();
+                || nameAndDescription.hasDifferences();
     }
-
 
     public boolean isCaseObjectFilled() {
         return initState!=null;
@@ -384,7 +383,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private <T> DiffResult<T> synchronizeDiffs(DiffResult<T> source, DiffResult<T> other) {
-        if(!other.hasChanged()) return source;
+        if(!other.hasDifferences()) return source;
         synchronized (source) {
             DiffResult<T> result = new DiffResult<>();
             result.setInitialState(source.hasInitialState() ? source.getInitialState() : other.getInitialState());

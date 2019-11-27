@@ -2,9 +2,6 @@ package ru.protei.portal.core.model.util;
 
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -36,11 +33,11 @@ public class DiffResult<T> implements Serializable {
     }
 
     public boolean hasNewState() {
-        return initialState != null;
+        return newState != null;
     }
 
-    public boolean hasChanged() {
-        return !Objects.equals(initialState, newState);
+    public boolean hasDifferences() {
+        return initialState != null && !Objects.equals(initialState, newState);
     }
 
     private T initialState;
@@ -58,13 +55,5 @@ public class DiffResult<T> implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash( initialState, newState );
-    }
-
-    @Override
-    public String toString() {
-        return "DiffResult{" +
-                "initialState=" + initialState +
-                ", newState=" + newState +
-                '}';
     }
 }

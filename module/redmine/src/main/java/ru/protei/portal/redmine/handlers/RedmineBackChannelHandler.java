@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.redmine.service.RedmineService;
@@ -127,7 +126,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         } else
             logger.debug("Redmine status not found");
 
-        if (nameAndDescription.hasChanged()) {
+        if (nameAndDescription.hasDifferences()) {
             issue.setDescription(nameAndDescription.getNewState().getInfo());
             issue.setSubject(nameAndDescription.getNewState().getName());
         }
