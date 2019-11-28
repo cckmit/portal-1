@@ -16,7 +16,7 @@ public interface DocumentControllerAsync {
 
     void saveDocument(Document document, AsyncCallback<Document> callback);
 
-    void removeDocument(Document document, AsyncCallback<Document> async);
+    void removeDocument(Document document, AsyncCallback<Long> async);
 
     void getProjectDocuments(Long projectId, AsyncCallback<SearchResult<Document>> callback);
 }

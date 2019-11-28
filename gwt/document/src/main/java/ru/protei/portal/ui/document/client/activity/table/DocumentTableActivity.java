@@ -137,9 +137,9 @@ public abstract class DocumentTableActivity
         if (documentToRemove == null) {
             return;
         }
-        documentService.removeDocument(documentToRemove, new FluentCallback<Document>()
+        documentService.removeDocument(documentToRemove, new FluentCallback<Long>()
                 .withResult(() -> documentToRemove = null)
-                .withSuccess(doc -> {
+                .withSuccess(id -> {
                     fireEvent(new DocumentEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 }));

@@ -41,7 +41,7 @@ public interface DocumentService {
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_REMOVE, En_Privilege.EQUIPMENT_REMOVE})
     @Auditable(En_AuditType.DOCUMENT_REMOVE)
-    Result<Document> removeDocument( AuthToken token, Document document);
+    Result<Long> removeDocument( AuthToken token, Long documentId, Long projectId);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.PROJECT_VIEW})
     Result<SearchResult<Document>> getProjectDocuments( AuthToken token, Long projectId);
