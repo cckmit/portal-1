@@ -325,7 +325,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCopyClicked() {
-        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + (isSelfIssue(issue) ? view.name().getValue() : issue.getName()));
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + (isAllowedEditNameAndDescription(issue) ? view.name().getValue() : issue.getName()));
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
@@ -407,8 +407,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
         view.isPrivate().setValue(issue.isPrivateCase());
 
-        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
-        if (isAllowedEditNameAndDescription) {
+        if (isAllowedEditNameAndDescription(issue)) {
             view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
             view.switchToRONameDescriptionView(false);
             view.name().setValue(issue.getName());
@@ -512,8 +511,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     private void fillIssueObject(CaseObject issue) {
-        boolean isAllowedEditNameAndDescription = isNew(issue) || isSelfIssue(issue);
-        if (isAllowedEditNameAndDescription) {
+        if (isAllowedEditNameAndDescription(issue)) {
             issue.setName(view.name().getValue());
             issue.setInfo(view.description().getValue());
         }
@@ -611,6 +609,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     private boolean isSelfIssue(CaseObject issue) {
         return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
+    }
+
+    private boolean isAllowedEditNameAndDescription(CaseObject issue) {
+        return isNew(issue) || isSelfIssue(issue);
     }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
