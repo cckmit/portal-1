@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -100,10 +101,10 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.PROJECT_EDIT );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT) );
         columns.add(editClickColumn);
 
-        removeClickColumn.setPrivilege( En_Privilege.PROJECT_REMOVE );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE) && !v.isDeleted() );
         columns.add(removeClickColumn);
 
         DynamicColumn<Project> statusColumn = new DynamicColumn<>(null, "status",
@@ -174,6 +175,8 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     En_RegionStateLang regionStateLang;
     @Inject
     En_CustomerTypeLang customerTypeLang;
+    @Inject
+    PolicyService policyService;
 
     @Inject
     EditClickColumn<Project> editClickColumn;

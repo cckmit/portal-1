@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -77,9 +78,8 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.ROLE_EDIT );
-        removeClickColumn.setPrivilege( En_Privilege.ROLE_REMOVE );
-
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ROLE_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ROLE_REMOVE) );
 
         ClickColumn< UserRole > advanceInfo = new ClickColumn< UserRole >() {
             @Override
@@ -151,6 +151,8 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
     @Inject
     private En_ScopeLang scopeLang;
+    @Inject
+    private PolicyService policyService;
 
     private AbstractRoleTableActivity activity;
 

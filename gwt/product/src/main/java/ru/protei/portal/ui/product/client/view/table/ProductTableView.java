@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
@@ -28,9 +29,6 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.archiveClickColumn = archiveClickColumn;
-
-        editClickColumn.setArchivedCheckFunction(DevUnit::isDeprecatedUnit);
-        archiveClickColumn.setArchivedCheckFunction(DevUnit::isDeprecatedUnit);
         initTable();
     }
 
@@ -111,8 +109,10 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
-        archiveClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
+
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) && !v.isDeprecatedUnit() );
+        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) );
+        archiveClickColumn.setArchiveFilter(DevUnit::isDeprecatedUnit);
 
         name = new DynamicColumn<>(lang.name(), "product-name", devUnit -> {
             StringBuilder builder = new StringBuilder();
@@ -154,6 +154,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     Lang lang;
     @Inject
     En_DevUnitTypeLang typeLang;
+    @Inject
+    PolicyService policyService;
 
     ClickColumnProvider< DevUnit > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< DevUnit > editClickColumn;

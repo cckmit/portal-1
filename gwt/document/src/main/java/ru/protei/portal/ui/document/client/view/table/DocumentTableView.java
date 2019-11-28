@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -35,11 +36,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         this.archiveClickColumn = archiveClickColumn;
         this.removeClickColumn = removeClickColumn;
         this.documentNameColumn = documentNameColumn;
-
-        editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
-        archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
-        removeClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
-        downloadClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         initTable();
     }
 
@@ -124,11 +120,12 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     }
 
     private void initTable() {
-        editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
         downloadClickColumn.setDownloadCustomImage("./images/pdficon.png");
-        archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
-        removeClickColumn.setPrivilege(En_Privilege.DOCUMENT_REMOVE);
-        downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        downloadClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
+        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) );
+        archiveClickColumn.setArchiveFilter(Document::isDeprecatedUnit);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_REMOVE) && !v.isDeprecatedUnit());
 
         columns.add(id);
         columns.add(documentNameColumn);
@@ -222,6 +219,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     ClickColumnProvider<Document> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Document> editClickColumn;

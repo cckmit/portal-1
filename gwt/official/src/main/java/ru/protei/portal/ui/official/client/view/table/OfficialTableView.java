@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Official;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -39,8 +40,8 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
 
     private void initTable() {
         attachColumn = new AttachClickColumn<Official>(lang) {};
-        editClickColumn.setPrivilege( En_Privilege.OFFICIAL_EDIT);
-        removeClickColumn.setPrivilege( En_Privilege.OFFICIAL_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_EDIT) );
 
         ClickColumn<Official> productColumn = new ClickColumn<Official>() {
             @Override
@@ -184,6 +185,8 @@ public class OfficialTableView extends Composite implements AbstractOfficialTabl
 
     @Inject
     Lang lang;
+    @Inject
+    PolicyService policyService;
 
     AttachClickColumn<Official> attachColumn;
 
