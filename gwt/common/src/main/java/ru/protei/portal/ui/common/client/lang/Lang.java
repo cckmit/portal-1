@@ -1917,4 +1917,8 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmailWarning();
 
     String errAccessDenied();
+
+    String documentConfirmRemove();
+
+    String documentRemoved();
 }

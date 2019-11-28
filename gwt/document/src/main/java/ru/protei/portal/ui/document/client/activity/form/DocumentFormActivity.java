@@ -202,10 +202,15 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document) {
         this.document = document;
-        if (document.getId() == null)
+        boolean isNew = document.getId() == null;
+        boolean isApproved = document.getApproved();
+        boolean isFileSet = view.documentUploader().isFileSet();
+        if ((isNew || !isApproved) && isFileSet) {
+            fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
             view.documentUploader().uploadBindToDocument(document);
-        else
+        } else {
             saveUploadedDocument();
+        }
     }
 
     private void fireErrorMessage(String msg) {
@@ -285,15 +290,14 @@ public abstract class DocumentFormActivity
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
         boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
 
-        view.uploaderVisible().setVisible(isNew);
+        view.uploaderVisible().setVisible(isNew || !document.getApproved());
         view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
         view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
 
         view.nameValidator().setValid(true);
 
-        view.resetFilename();
-        view.documentUploader().resetAction();
+        view.documentUploader().resetForm();
     }
 
     @Inject

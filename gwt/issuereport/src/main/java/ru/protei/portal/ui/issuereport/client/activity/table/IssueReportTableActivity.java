@@ -95,9 +95,6 @@ public abstract class IssueReportTableActivity implements
 
     @Override
     public void onRefreshClicked(Report value) {
-        if (!value.isAllowedRefresh()) {
-            return;
-        }
         reportService.recreateReport(value.getId(), new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {

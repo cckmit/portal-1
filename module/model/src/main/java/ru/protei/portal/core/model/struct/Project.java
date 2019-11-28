@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Информация о проекте в регионе
  */
-public class Project extends AuditableObject implements Removable {
+public class Project extends AuditableObject {
 
     /**
      * Идентификатор записи о проекте
@@ -217,11 +217,6 @@ public class Project extends AuditableObject implements Removable {
 
     public ProductShortView getSingleProduct() {
         return products == null ? null : products.stream().findAny().orElse(null);
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return id != null && !deleted;
     }
 
     public Long getContractId() {
