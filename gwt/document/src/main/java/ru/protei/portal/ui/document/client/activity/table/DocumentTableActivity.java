@@ -31,6 +31,7 @@ import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilte
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -101,6 +102,15 @@ public abstract class DocumentTableActivity
                         }));
     }
 
+    @Override
+    public void onRemoveClicked(Document value) {
+        if (value == null) {
+            return;
+        }
+        documentToRemove = value;
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentConfirmRemove()));
+    }
+
     @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.init = initDetails;
@@ -117,6 +127,30 @@ public abstract class DocumentTableActivity
             return;
         }
         fireEvent(new DocumentEvents.Create());
+    }
+
+    @Event
+    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+        if (documentToRemove == null) {
+            return;
+        }
+        documentService.removeDocument(documentToRemove, new FluentCallback<Long>()
+                .withResult(() -> documentToRemove = null)
+                .withSuccess(id -> {
+                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                }));
+    }
+
+    @Event
+    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+        documentToRemove = null;
     }
 
     @Override
@@ -245,6 +279,7 @@ public abstract class DocumentTableActivity
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;
+    private Document documentToRemove;
 
     private static final String DOWNLOAD_PATH = "springApi/document/";
 }

@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin extends AuditableObject implements Removable {
+public class UserLogin extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -194,11 +194,6 @@ public class UserLogin extends AuditableObject implements Removable {
     @Override
     public String getAuditType() {
         return "UserLogin";
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return !isLDAP_Auth();
     }
 
     @Override

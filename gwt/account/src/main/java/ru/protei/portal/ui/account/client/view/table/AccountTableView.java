@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.ui.account.client.activity.table.AbstractAccountTableActivity;
 import ru.protei.portal.ui.account.client.activity.table.AbstractAccountTableView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -95,15 +96,20 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     private void initTable () {
 
         ClickColumn< UserLogin > type = new ClickColumn< UserLogin >() {
+
+            @Override
+            protected String getColumnClassName() {
+                return "type";
+            }
+
             @Override
             protected void fillColumnHeader( Element columnHeader ) {
-                columnHeader.addClassName( "type" );
                 columnHeader.setInnerText( lang.accountType() );
             }
 
             @Override
             public void fillColumnValue( Element cell, UserLogin value ) {
-                cell.addClassName( "type " + En_AdminState.find( value.getAdminStateId() ).toString().toLowerCase() );
+                cell.addClassName( En_AdminState.find( value.getAdminStateId() ).toString().toLowerCase() );
 
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
@@ -116,15 +122,20 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         };
 
         ClickColumn< UserLogin > login = new ClickColumn< UserLogin >() {
+
+            @Override
+            protected String getColumnClassName() {
+                return "login";
+            }
+
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.accountLogin() );
-                element.addClassName( "login" );
             }
 
             @Override
             public void fillColumnValue ( Element cell, UserLogin value ) {
-                cell.addClassName( "login " + En_AdminState.find( value.getAdminStateId() ).toString().toLowerCase() );
+                cell.addClassName( En_AdminState.find( value.getAdminStateId() ).toString().toLowerCase() );
 
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
@@ -136,15 +147,20 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         };
 
         ClickColumn< UserLogin > person = new ClickColumn< UserLogin >() {
+
+            @Override
+            protected String getColumnClassName() {
+                return "person";
+            }
+
             @Override
             protected void fillColumnHeader( Element element ) {
                 element.setInnerText( lang.accountPerson() );
-                element.addClassName( "person" );
             }
 
             @Override
             public void fillColumnValue ( Element cell, UserLogin value ) {
-                cell.addClassName( "person " + En_AdminState.find( value.getAdminStateId() ).toString().toLowerCase() );
+                cell.addClassName( En_AdminState.find( value.getAdminStateId() ).toString().toLowerCase() );
 
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
@@ -163,8 +179,8 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
             }
         };
 
-        editClickColumn.setPrivilege( En_Privilege.ACCOUNT_EDIT );
-        removeClickColumn.setPrivilege( En_Privilege.ACCOUNT_REMOVE );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_REMOVE) && !v.isLDAP_Auth() );
 
         columns.add( type );
         columns.add( login );
@@ -197,6 +213,9 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     ClickColumnProvider< UserLogin > columnProvider = new ClickColumnProvider<>();
     SelectionColumn< UserLogin > selectionColumn = new SelectionColumn<>();
