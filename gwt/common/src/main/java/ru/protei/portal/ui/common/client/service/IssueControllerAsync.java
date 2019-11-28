@@ -22,7 +22,7 @@ public interface IssueControllerAsync {
 
     void saveIssue( CaseObject p, AsyncCallback<Long> callback );
 
-    void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Boolean> callback);
+    void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> callback);
     /**
      * Получение списка статусов
      * @return список статусов

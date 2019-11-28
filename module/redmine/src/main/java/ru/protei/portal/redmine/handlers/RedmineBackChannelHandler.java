@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.DiffResult;
+import ru.protei.portal.core.model.yt.fields.issue.DateIssueField;
 import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
@@ -90,8 +91,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         logger.debug("Copying case object changes to redmine issue");
         final CaseObject oldObj = event.getInitState();
         final CaseObject newObj = event.getLastState();
-        final DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = event.getNameAndDescription();
-        updateIssueProps(issue, oldObj, newObj, nameAndDescription, endpoint);
+        updateIssueProps(issue, oldObj, newObj, event.getName(), event.getInfo(), endpoint);
 
         try {
             service.updateIssue(issue, endpoint);
@@ -101,7 +101,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
     }
 
-    private void updateIssueProps(Issue issue,  CaseObject oldObj, CaseObject newObj, DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription, RedmineEndpoint endpoint) {
+    private void updateIssueProps(Issue issue, CaseObject oldObj, CaseObject newObj, DiffResult<String> name, DiffResult<String> info, RedmineEndpoint endpoint) {
         final long priorityMapId = endpoint.getPriorityMapId();
         final long statusMapId = endpoint.getStatusMapId();
 
@@ -117,18 +117,16 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
         logger.debug("Trying to get redmine status id matching with portal: {} -> {}", oldObj.getStateId(), newObj.getStateId());
         RedmineStatusMapEntry redmineStatusMapEntry = null;
-        if(oldObj!=null) {
-            redmineStatusMapEntry = statusMapEntryDAO.getRedmineStatus(oldObj.getState(), newObj.getState(), statusMapId);
-        }
+        redmineStatusMapEntry = statusMapEntryDAO.getRedmineStatus(oldObj.getState(), newObj.getState(), statusMapId);
         if (redmineStatusMapEntry != null && newObj.getState() != En_CaseState.VERIFIED) {
             logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
             issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
         } else
             logger.debug("Redmine status not found");
 
-        if (nameAndDescription.hasDifferences()) {
-            issue.setDescription(nameAndDescription.getNewState().getInfo());
-            issue.setSubject(nameAndDescription.getNewState().getName());
+        if (name.hasDifferences() || info.hasDifferences()) {
+            issue.setDescription(info.getNewState());
+            issue.setSubject(name.getNewState());
         }
     }
 

@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
+import static java.lang.System.in;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class AssembledCaseEvent extends ApplicationEvent {
@@ -22,7 +23,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
-    private DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = new DiffResult<>();
+    private DiffResult<String> name = new DiffResult<>();
+    private DiffResult<String> info = new DiffResult<>();
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
@@ -57,16 +59,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
         //temporary solution
-        DiffResult<CaseNameAndDescriptionChangeRequest> newNameAndDescription = new DiffResult<>();
-        newNameAndDescription.setInitialState(new CaseNameAndDescriptionChangeRequest(this.initState));
-        newNameAndDescription.setNewState(new CaseNameAndDescriptionChangeRequest(this.lastState));
-        this.nameAndDescription = synchronizeDiffs(this.nameAndDescription, newNameAndDescription);
+        DiffResult<String> name = new DiffResult<>(initState.getName(), lastState.getName());
+        this.name = synchronizeDiffs(this.name, name);
+        DiffResult<String> info = new DiffResult<>(initState.getInfo(), lastState.getInfo());
+        this.info = synchronizeDiffs(this.name, info);
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
         this.lastUpdated = currentTimeMillis();
         this.isEagerEvent = isEagerEvent||event.isEagerEvent();
-        this.nameAndDescription = synchronizeDiffs(this.nameAndDescription, event.getNameAndDescription());
+        this.name = synchronizeDiffs(this.name, event.getName());
+        this.info = synchronizeDiffs(this.info, event.getInfo());
         this.initiator = event.getPerson();
         this.serviceModule = event.getServiceModule();
     }
@@ -97,11 +100,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null && !this.nameAndDescription.hasInitialState();
+        return this.initState == null && !this.name.hasInitialState();
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null || this.nameAndDescription.hasInitialState();
+        return this.initState != null || this.name.hasInitialState();
     }
 
     public boolean isCommentAttached() {
@@ -224,12 +227,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initState;
     }
 
-    public DiffResult<CaseNameAndDescriptionChangeRequest> getNameAndDescription() {
-        return nameAndDescription;
-    }
-
     public Person getInitiator() {
         return initiator;
+    }
+
+    public DiffResult<String> getName() {
+        return name;
+    }
+
+    public DiffResult<String> getInfo() {
+        return info;
     }
 
     public DiffCollectionResult<CaseLink> getMergeLinks() {
@@ -271,7 +278,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isManagerChanged()
                 || isPrivacyChanged()
                 || isProductChanged()
-                || nameAndDescription.hasDifferences();
+                || name.hasDifferences()
+                || info.hasDifferences();
     }
 
     public boolean isCaseObjectFilled() {
@@ -282,8 +290,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return existingComments !=null;
     }
 
-    public boolean isCaseNameAndDescriptionFilled() {
-        return nameAndDescription.hasNewState();
+    public boolean isCaseNameFilled() {
+        return name.hasNewState();
+    }
+
+    public boolean isCaseInfoFilled() {
+        return info.hasNewState();
     }
 
     public void setLastCaseObject( CaseObject caseObject ) {

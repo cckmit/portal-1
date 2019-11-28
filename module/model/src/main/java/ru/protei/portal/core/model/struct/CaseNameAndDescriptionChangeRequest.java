@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.struct;
 
-import ru.protei.portal.core.model.ent.CaseObject;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,12 +14,6 @@ public class CaseNameAndDescriptionChangeRequest implements Serializable {
         this.id = id;
         this.name = name;
         this.info = info;
-    }
-
-    public CaseNameAndDescriptionChangeRequest(CaseObject caseObject) {
-        this.id = caseObject.getId();
-        this.name = caseObject.getName();
-        this.info = caseObject.getInfo();
     }
 
     public Long getId() {

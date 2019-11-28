@@ -66,8 +66,6 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
 
-        DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = event.getNameAndDescription();
-
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
@@ -86,11 +84,12 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "recipients", recipients );
         templateModel.put( "platform", newState.getPlatformName() );
 
-        templateModel.put( "nameAndInfoChanged", nameAndDescription.hasDifferences() );
-        templateModel.put( "caseName", nameAndDescription.getNewState().getName() );
-        templateModel.put( "oldCaseName", nameAndDescription.getInitialState() == null ? null : nameAndDescription.getInitialState().getName() );
-        templateModel.put( "caseInfo", escapeTextAndRenderHTML( nameAndDescription.getNewState().getInfo(), textMarkup ) );
-        templateModel.put( "oldCaseInfo", nameAndDescription.getInitialState() == null ? null : escapeTextAndRenderHTML( nameAndDescription.getInitialState().getInfo(), textMarkup ) );
+        templateModel.put( "nameChanged", event.getName().hasDifferences() );
+        templateModel.put( "infoChanged", event.getInfo().hasDifferences() );
+        templateModel.put( "caseName", event.getName().getNewState() );
+        templateModel.put( "oldCaseName", event.getName().getInitialState());
+        templateModel.put( "caseInfo", escapeTextAndRenderHTML( event.getInfo().getNewState(), textMarkup ) );
+        templateModel.put( "oldCaseInfo", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), textMarkup ) );
 
         templateModel.put( "productChanged", event.isProductChanged() );
         templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );

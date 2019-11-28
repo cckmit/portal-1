@@ -92,12 +92,13 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public Boolean saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
+    public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
         log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = caseService.updateCaseObject(token, changeRequest, getCurrentPerson());
+        Result response = caseService.updateCaseObject(token, changeRequest, getCurrentPerson());
         log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
-        return checkResultAndGetData(response);
+
+        checkResult(response);
     }
 
     @Override

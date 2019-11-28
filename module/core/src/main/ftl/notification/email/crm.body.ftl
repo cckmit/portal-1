@@ -89,7 +89,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_issue_name}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if nameAndInfoChanged>
+                        <#if nameChanged>
                             <@diff new="${(caseName)!''}" old="${(oldCaseName)!''}"/>
                         <#else>
                             ${(caseName)!''}
@@ -235,7 +235,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_description}
                     </td>
-                    <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;"><#if nameAndInfoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
+                    <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
                 </tr>
                 <#if hasLinks>
                 <tr id="test-linkedTasks">

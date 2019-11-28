@@ -25,7 +25,7 @@ public interface IssueController extends RemoteService {
 
     Long saveIssue( CaseObject p ) throws RequestFailedException;
 
-    Boolean saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
+    void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
     /**
      * Получение списка статусов

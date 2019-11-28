@@ -11,8 +11,18 @@ import java.util.Objects;
  */
 public class DiffResult<T> implements Serializable {
 
+    private T initialState;
+    private T newState;
 
-    public void setInitialState( T initialState ) {
+    public DiffResult() {
+    }
+
+    public DiffResult(T initialState, T newState) {
+        this.initialState = initialState;
+        this.newState = newState;
+    }
+
+    public void setInitialState(T initialState ) {
         this.initialState = initialState;
     }
 
@@ -39,9 +49,6 @@ public class DiffResult<T> implements Serializable {
     public boolean hasDifferences() {
         return initialState != null && !Objects.equals(initialState, newState);
     }
-
-    private T initialState;
-    private T newState;
 
     @Override
     public boolean equals( Object o ) {

@@ -206,7 +206,6 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
-
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
         CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
@@ -225,24 +224,23 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<Boolean> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator) {
+    public Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator) {
+        return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
+            if(oldCaseObject == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
 
-        CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
-        if(oldCaseObject == null)
-            return error(En_ResultStatus.NOT_FOUND);
+            DiffResult<String> nameDiff = new DiffResult<>(oldCaseObject.getName(), changeRequest.getName());
+            DiffResult<String> infoDiff = new DiffResult<>(oldCaseObject.getInfo(), changeRequest.getInfo());
 
-        DiffResult<CaseNameAndDescriptionChangeRequest> nameAndDescription = new DiffResult<>();
-        nameAndDescription.setInitialState(new CaseNameAndDescriptionChangeRequest(oldCaseObject));
-        nameAndDescription.setNewState(changeRequest);
+            if(!nameDiff.hasDifferences() && !infoDiff.hasDifferences()) {
+                return ok();
+            }
 
-        if(!nameAndDescription.hasDifferences()) return ok(true);
-
-        CaseObject caseObject = new CaseObject();
-        caseObject.setId(changeRequest.getId());
-        caseObject.setName(changeRequest.getName());
-        caseObject.setInfo(changeRequest.getInfo());
-
-        return lockService.doWithLock( CaseObject.class, caseObject.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            CaseObject caseObject = new CaseObject(changeRequest.getId());
+            caseObject.setName(changeRequest.getName());
+            caseObject.setInfo(changeRequest.getInfo());
 
             boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
 
@@ -253,12 +251,14 @@ public class CaseServiceImpl implements CaseService {
 
             publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
-                    nameAndDescription,
+                    changeRequest.getId(),
+                    nameDiff,
+                    infoDiff,
                     initiator,
                     ServiceModule.GENERAL,
                     En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
 
-            return ok(true);
+            return ok();
         });
     }
 

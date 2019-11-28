@@ -40,7 +40,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<Boolean> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator);
+    Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator);
 
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 

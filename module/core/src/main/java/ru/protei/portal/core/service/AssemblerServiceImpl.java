@@ -11,9 +11,9 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 
 import java.util.*;
 
@@ -52,14 +52,17 @@ public class AssemblerServiceImpl implements AssemblerService {
     }
 
     private Result<AssembledCaseEvent> fillCaseNameAndDescription(AssembledCaseEvent e) {
-        if (e.isCaseNameAndDescriptionFilled()) {
+        if (e.isCaseNameFilled() && e.isCaseInfoFilled()) {
             log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is already filled.", e.getCaseObjectId());
             return ok(e);
         }
 
         log.info("fillCaseNameAndDescription(): CaseObjectID={} Try to fill case's Name and Description.", e.getCaseObjectId());
 
-        e.getNameAndDescription().setNewState(new CaseNameAndDescriptionChangeRequest(caseObjectDAO.get(e.getCaseObjectId())));
+        CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
+
+        e.getName().setNewState(caseObject.getName());
+        e.getInfo().setNewState(caseObject.getInfo());
 
         log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is successfully filled.", e.getCaseObjectId());
         return ok(e);
