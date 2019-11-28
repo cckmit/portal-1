@@ -224,11 +224,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public String getNameRO() {
-        return nameRO.getInnerText();
-    }
-
-    @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
     }
