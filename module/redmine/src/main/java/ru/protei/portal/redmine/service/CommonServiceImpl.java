@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public final class CommonServiceImpl implements CommonService {
 
     @Override
-    public CaseComment parseJournal(Journal journal, long companyId) {
+    public CaseComment parseJournalToCaseComment(Journal journal, long companyId) {
         final Person author = getAssignedPerson(companyId, journal.getUser());
         if (journal.getNotes().startsWith(RedmineUtils.COMMENT_PROTEI_USER_PREFIX)) {
             return null;

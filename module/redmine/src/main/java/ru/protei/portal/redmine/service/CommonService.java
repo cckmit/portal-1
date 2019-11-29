@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 
 public interface CommonService {
-    CaseComment parseJournal(Journal journal, long companyId);
+    CaseComment parseJournalToCaseComment(Journal journal, long companyId);
 
     void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint);
 

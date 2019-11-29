@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.RedmineToCrmStatusMapEntryDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.core.model.ent.RedmineToCrmEntry;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
@@ -112,9 +114,24 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("found {} comments", nonEmptyJournals.size());
         nonEmptyJournals.forEach(x -> logger.debug("Comment with id {} has following text: {}", x.getId(), x.getNotes()));
 
-        final List<CaseComment> comments = nonEmptyJournals
+        List<CaseComment> comments = nonEmptyJournals
                 .stream()
-                .map(x -> commonService.parseJournal(x, companyId))
+                .map(x -> commonService.parseJournalToCaseComment(x, companyId))
+                .collect(Collectors.toList());
+
+        List<CaseComment> stateChangeComments = nonEmptyJournals
+                .stream()
+                .filter(journal -> {
+                    List<JournalDetail> details = journal.getDetails();
+                    return details.stream().anyMatch(detail -> Objects.equals(detail.getName(), "status_id"));
+                })
+                .map(journal -> createCommentWithChangedStatus(journal, endpoint.getStatusMapId(), companyId))
+                .collect(Collectors.toList());
+
+        comments.addAll(stateChangeComments);
+
+        comments = comments
+                .stream()
                 .filter(Objects::nonNull)
                 .map(x -> commonService.processStoreComment(issue, x.getAuthor(), object, object.getId(), x))
                 .collect(Collectors.toList());
@@ -124,6 +141,27 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
 
         commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
+    }
+
+    private CaseComment createCommentWithChangedStatus(Journal journal, Long mapId, Long companyId) {
+        JournalDetail detail = journal.getDetails()
+                .stream()
+                .filter(journalDetail -> "status_id".equals(journalDetail.getName()))
+                .findFirst()
+                .orElse(null);
+
+        if (detail == null) {
+            return null;
+        }
+
+        final RedmineToCrmEntry statusEntry = statusMapEntryDAO.getLocalStatus(mapId, Integer.parseInt(detail.getNewValue()));
+
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthor(commonService.getAssignedPerson(companyId, journal.getUser()));
+        stateChangeMessage.setCreated(journal.getCreatedOn());
+        stateChangeMessage.setCaseStateId((long) statusEntry.getLocalStatusId());
+
+        return stateChangeMessage;
     }
 
     @Autowired
@@ -140,6 +178,9 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private RedmineNewIssueHandler newIssueHandler;
+
+    @Autowired
+    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }
