@@ -121,10 +121,6 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         List<CaseComment> stateChangeComments = nonEmptyJournals
                 .stream()
-                .filter(journal -> {
-                    List<JournalDetail> details = journal.getDetails();
-                    return details.stream().anyMatch(detail -> Objects.equals(detail.getName(), "status_id"));
-                })
                 .map(journal -> createCommentWithChangedStatus(journal, endpoint.getStatusMapId(), companyId))
                 .collect(Collectors.toList());
 
