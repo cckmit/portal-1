@@ -124,9 +124,11 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         } else
             logger.debug("Redmine status not found");
 
-        if (name.hasDifferences() || info.hasDifferences()) {
-            issue.setDescription(info.getNewState());
+        if (name.hasDifferences()) {
             issue.setSubject(name.getNewState());
+        }
+        if (info.hasDifferences()) {
+            issue.setDescription(info.getNewState());
         }
     }
 

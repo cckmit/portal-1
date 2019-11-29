@@ -70,8 +70,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.isEagerEvent = isEagerEvent||event.isEagerEvent();
         this.name = synchronizeDiffs(this.name, event.getName());
         this.info = synchronizeDiffs(this.info, event.getInfo());
-        this.initiator = event.getPerson();
-        this.serviceModule = event.getServiceModule();
     }
 
     public void attachLinkEvent( CaseLinksEvent event ) {
@@ -100,11 +98,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null && !this.name.hasInitialState();
+        return this.initState == null && !this.name.hasInitialState() && !this.info.hasInitialState();
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null || this.name.hasInitialState();
+        return this.initState != null || this.name.hasInitialState() || this.info.hasInitialState();
     }
 
     public boolean isCommentAttached() {
@@ -291,11 +289,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseNameFilled() {
-        return name.hasNewState();
+        synchronized (name) {
+            return name.hasNewState();
+        }
     }
 
     public boolean isCaseInfoFilled() {
-        return info.hasNewState();
+        synchronized (info) {
+            return info.hasNewState();
+        }
     }
 
     public void setLastCaseObject( CaseObject caseObject ) {
