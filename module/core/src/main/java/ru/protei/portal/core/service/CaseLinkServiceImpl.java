@@ -81,6 +81,24 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
+    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks) {
+        caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
+        List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);
+        List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
+        notYoutrackLinks.forEach(caseLink -> caseLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
+        caseLinkDAO.persistBatch(caseLinks);
+        caseService.getCaseNumberById( token, caseId ).ifOk(caseNumber ->
+                youtrackService.mergeYouTrackLinks(caseNumber,
+                        youtrackLinksRemoteIds,
+                        Collections.emptyList()
+                )
+        );
+
+        return getLinks(token, caseId);
+    }
+
+    @Override
+    @Transactional
     public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks ) {
         return mergeLinks( token, caseId, caseLinks ).ifOk( mergedLinks -> {
             if (mergedLinks.hasDifferences()) {

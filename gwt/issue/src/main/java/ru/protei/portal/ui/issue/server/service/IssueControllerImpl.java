@@ -21,9 +21,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
@@ -61,18 +59,18 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    private CaseObject createIssue( CaseObject caseObject ) throws RequestFailedException{
-        log.info( "saveIssue(): case={}", caseObject );
-        if(caseObject == null || caseObject.getId() != null){
+    private CaseObject createIssue( IssueCreateRequest issueCreateRequest ) throws RequestFailedException{
+        log.info( "saveIssue(): case={}", issueCreateRequest );
+        if(issueCreateRequest == null || issueCreateRequest.getCaseId() != null){
            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
-        caseObject.setCreatorId( getCurrentPerson().getId() );
+        issueCreateRequest.getCaseObject().setTypeId( En_CaseType.CRM_SUPPORT.getId() );
+        issueCreateRequest.getCaseObject().setCreatorId( getCurrentPerson().getId() );
 
-        Result< CaseObject >  response = caseService.createCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
+        Result< CaseObject >  response = caseService.createCaseObject( descriptor.makeAuthToken(), issueCreateRequest, getCurrentPerson() );
 
         log.info( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
@@ -82,15 +80,15 @@ public class IssueControllerImpl implements IssueController {
 
     @Deprecated
     @Override
-    public Long saveIssue( CaseObject caseObject ) throws RequestFailedException {
-        log.info("saveIssue(): caseNo={} | case={}", caseObject.getCaseNumber(), caseObject);
+    public Long saveIssue( IssueCreateRequest issueCreateRequest ) throws RequestFailedException {
+        log.info("saveIssue(): caseNo={} | case={}", issueCreateRequest.getCaseNumber(), issueCreateRequest);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (caseObject.getId() == null) {
-            CaseObject saved = createIssue(caseObject);
+        if (issueCreateRequest.getCaseId() == null) {
+            CaseObject saved = createIssue(issueCreateRequest);
             return saved.getId();
         }
-        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
-        log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
+        Result<CaseObject> response = caseService.updateCaseObject(token, issueCreateRequest.getCaseObject(), getCurrentPerson());
+        log.info("saveIssue(): caseNo={}", issueCreateRequest.getCaseNumber());
         return checkResultAndGetData(response).getId();
     }
 

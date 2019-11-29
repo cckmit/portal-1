@@ -276,7 +276,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), new IssueCreateRequest(caseObject), person).getData().getId());
         }
     }
 
@@ -286,7 +286,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setManager(manager);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), new IssueCreateRequest(caseObject), person).getData().getId());
         }
     }
 
@@ -297,7 +297,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), new IssueCreateRequest(caseObject), person).getData().getId());
         }
     }
 

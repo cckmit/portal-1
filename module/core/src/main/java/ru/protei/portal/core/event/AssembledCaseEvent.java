@@ -56,7 +56,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.lastState = objectEvent.getNewState();
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
-
+        this.mergeLinks.putAddedEntries(objectEvent.getIssueCreateRequest().getLinks());
     }
 
     public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {

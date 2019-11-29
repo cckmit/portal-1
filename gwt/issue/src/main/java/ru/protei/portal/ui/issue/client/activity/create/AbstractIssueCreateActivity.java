@@ -12,10 +12,6 @@ public interface AbstractIssueCreateActivity {
 
     void removeAttachment(Attachment attachment);
 
-    void onCompanyChanged();
-
-    void onCreateContactClicked();
-
     void onLocalClicked();
 
     void renderMarkupText(String text, Consumer<String> consumer);

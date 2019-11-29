@@ -11,7 +11,7 @@
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector"
-             xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla"
+             xmlns:meta="urn:import:ru.protei.portal.ui.issue.client.view.meta"
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -70,113 +70,7 @@
 
                 <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
-                        <div class="card-body">
-                            <div class="form-group-attached">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <issuestate:IssueStateFormSelector ui:field="state"
-                                                                           validation="true"
-                                                                           header="{lang.issueState}"
-                                                                           mandatory="true"/>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <issueimportance:ImportanceFormSelector ui:field="importance"
-                                                                                validation="true"
-                                                                                header="{lang.issueImportance}"
-                                                                                mandatory="true"/>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <devunit:DevUnitFormSelector ui:field="product"
-                                                                     validation="false"
-                                                                     header="{lang.issueProduct}"
-                                                                     mandatory="false"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <person:EmployeeFormSelector ui:field="manager"
-                                                                     validation="false"
-                                                                     header="{lang.issueManager}"
-                                                                     mandatory="false"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group m-t-10 m-b-0">
-                                <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
-                            </div>
-                            <div class="form-group-attached form-group">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <company:CompanyFormSelector ui:field="company"
-                                                                     validation="false"
-                                                                     header="{lang.issueCompany}"
-                                                                     hasNullValue="false"
-                                                                     mandatory="false"/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <person:PersonFormSelector ui:field="initiator"
-                                                                   validation="false"
-                                                                   header="{lang.issueInitiator}"
-                                                                   mandatory="false"
-                                                                   fired="false"/>
-                                    </div>
-                                </div>
-                                <g:HTMLPanel ui:field="platformContainer" styleName="row">
-                                    <div class="col-md-12">
-                                        <selector:PlatformFormSelector ui:field="platform"
-                                                                       validation="false"
-                                                                       header="{lang.siteFolderPlatform}"
-                                                                       mandatory="false"/>
-                                    </div>
-                                </g:HTMLPanel>
-                            </div>
-
-                            <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
-                                <g:HTMLPanel ui:field="timeElapsedEditContainer" styleName="col-md-12 form-group-attached">
-                                    <div class="row clearfix">
-                                        <div class="col-md-6">
-                                            <div class="form-group form-group-default">
-                                                <label ui:field="newIssueTimeElapsedLabel" class="fade">
-                                                    <ui:text from="{lang.timeElapsed}"/>
-                                                </label>
-                                                <timefield:TimeTextBox ui:field="timeElapsedInput"
-                                                                       styleName="form-control time-elapsed"
-                                                                       notNull="false"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <timeElapsed:ElapsedTimeTypeFormSelector ui:field="timeElapsedType"
-                                                                                     header="{lang.timeElapsedType}"/>
-                                        </div>
-                                    </div>
-                                </g:HTMLPanel>
-                            </g:HTMLPanel>
-
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    <label ui:field="subscriptionsLabel">
-                                        <ui:text from="{lang.companySubscription}"/>
-                                    </label>
-                                    <small class="hint-text block" ui:field="subscriptions"/>
-                                </div>
-                            </div>
-
-                            <div class="row form-group">
-                                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="col-md-12">
-                                    <label ui:field="notifiersLabel">
-                                        <ui:text from="{lang.caseSubscription}"/>
-                                    </label>
-                                    <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
-                                                                  buttonStyle="btn-info btn-xs"/>
-                                </g:HTMLPanel>
-                            </div>
-                        </div>
+                        <g:HTMLPanel ui:field="issueMetaViewContainer"/>
                     </div>
                 </div>
             </div>

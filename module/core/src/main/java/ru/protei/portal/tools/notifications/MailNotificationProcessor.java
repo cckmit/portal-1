@@ -156,8 +156,12 @@ public class MailNotificationProcessor {
     }
 
     private boolean isPublic( CaseLink caseLink){
-        if(caseLink.isPrivate()) return false;
-        if(!CRM.equals( caseLink.getType() )) return false;
+        if(caseLink.isPrivate()) {
+            return false;
+        }
+        if(!CRM.equals( caseLink.getType() )) {
+            return false;
+        }
         return true;
     }
 

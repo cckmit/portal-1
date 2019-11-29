@@ -10,10 +10,7 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
@@ -273,6 +270,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return jiraSlaSelector;
     }
 
+    @Override
+    public HasValue<En_TimeElapsedType> timeElapsedType() {
+        return timeElapsedType;
+    }
+
     private void triggerCaseMeta() {
         if (activity == null) return;
         CaseObjectMeta caseMeta = getCaseMeta();
@@ -392,11 +394,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @UiHandler("timeElapsedInput")
     public void onTimeElapsedChanged(ValueChangeEvent<String> event) {
-        triggerCaseMeta();
-    }
-
-    @UiHandler("timeElapsedType")
-    public void onTimeElapsedTypeChanged(ValueChangeEvent<En_TimeElapsedType> event) {
         triggerCaseMeta();
     }
 

@@ -13,31 +13,32 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
+import ru.protei.portal.core.model.struct.UpdateResult;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
-import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-
+import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.utils.JiraUtils;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * Реализация сервиса управления обращениями
@@ -106,7 +107,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > createCaseObject( AuthToken token, IssueCreateRequest issueCreateRequest, Person initiator ) {
+
+        CaseObject caseObject = issueCreateRequest.getCaseObject();
 
         if (!validateFieldsOfNew(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -190,8 +193,8 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if (isNotEmpty(caseObject.getLinks())) {
-            caseLinkService.updateLinks(token, caseId, initiator, caseObject.getLinks());
+        if (isNotEmpty(issueCreateRequest.getLinks())) {
+            caseLinkService.createLinks(token, caseId, initiator, issueCreateRequest.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -199,7 +202,9 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState ));
+        CaseObjectEvent event = new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState);
+        event.setIssueCreateRequest(issueCreateRequest);
+        publisherService.publishEvent(event);
 
         return ok(newState);
     }

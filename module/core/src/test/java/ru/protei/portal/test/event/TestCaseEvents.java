@@ -9,10 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.*;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -69,7 +66,7 @@ public class TestCaseEvents extends BaseServiceTest {
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( person ) );
 
         Assert.assertTrue( "CaseObject must be created",
-                caseService.createCaseObject( getAuthToken(), object, person ).isOk() );
+                caseService.createCaseObject( getAuthToken(), new IssueCreateRequest(object), person ).isOk() );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }

@@ -104,14 +104,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     @Event
-    public void onFillPerson(PersonEvents.PersonCreated event) {
-        if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && event.person != null) {
-            final AbstractIssueMetaView metaView = view.getMetaView();
-            metaView.setInitiator(event.person);
-        }
-    }
-
-    @Event
     public void onRemoveTag(CaseTagEvents.Remove event) {
         issue.getTags().remove(event.getCaseTag());
         view.tags().setValue(issue.getTags());
@@ -179,7 +171,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             return;
         }
         lockSave();
-        issueService.saveIssue( issue, new FluentCallback<Long>()
+        issueService.saveIssue( new IssueCreateRequest(issue), new FluentCallback<Long>()
                 .withError(throwable -> {
                     unlockSave();
                     defaultErrorHandler.accept(throwable);
@@ -241,7 +233,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
             metaView.setInitiator(null);
         } else {
-            initiatorSelectorAllowAddNew(company.getId());
             Long selectedCompanyId = company.getId();
 
             metaView.setPlatform(null);
@@ -381,7 +372,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         }
 
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-        initiatorSelectorAllowAddNew(issue.getInitiatorCompanyId());
 
         fillMetaView(issue);
 
@@ -413,12 +403,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         metaView.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         metaView.stateEnabled().setEnabled(true);
 
-        boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
-        metaView.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
-        if (hasPrivilegeForTimeElapsed) {
-            metaView.timeElapsedLabelVisibility().setVisible(true);
-            metaView.timeElapsedEditContainerVisibility().setVisible(false);
-        }
+        metaView.timeElapsedContainerVisibility().setVisible(false);
 
         Company company = issue.getInitiatorCompany();
         if (company == null) company = policyService.getUserCompany();
@@ -593,15 +578,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
-    private void initiatorSelectorAllowAddNew(Long companyId) {
-        if (companyId == null) {
-            return;
-        }
-        final AbstractIssueMetaView metaView = view.getMetaView();
-        boolean allowCreateContact = policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId);
-        metaView.initiatorSelectorAllowAddNew(allowCreateContact);
-    }
-
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -624,8 +600,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     LocalStorageService localStorageService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    HomeCompanyService homeCompanyService;
 
     @ContextAware
     CaseObject issue;
