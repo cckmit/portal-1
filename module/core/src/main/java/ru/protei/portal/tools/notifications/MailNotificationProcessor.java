@@ -97,8 +97,8 @@ public class MailNotificationProcessor {
             String privateCaseUrl = getCrmCaseUrl( IS_PRIVATE_RECIPIENT );
             String publicCaseUrl = getCrmCaseUrl( !IS_PRIVATE_RECIPIENT );
 
-            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
-            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
+            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
+            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
             List<CaseComment> comments =  event.getAllComments();
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();

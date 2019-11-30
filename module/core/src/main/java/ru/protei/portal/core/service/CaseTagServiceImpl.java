@@ -3,10 +3,10 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -14,14 +14,28 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 public class CaseTagServiceImpl implements CaseTagService {
+
+    @Autowired
+    private CaseTagDAO caseTagDAO;
+    @Autowired
+    private CaseObjectTagDAO caseObjectTagDAO;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private PolicyService policyService;
+    @Autowired
+    private LockService lockService;
 
     @Override
     @Transactional
@@ -73,16 +87,19 @@ public class CaseTagServiceImpl implements CaseTagService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        CaseTag caseTag = caseTagDAO.get(tagId);
-        if ( caseTag == null ) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
+        return lockService.doWithLock(CaseTag.class, caseId, LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            CaseTag caseTag = caseTagDAO.get(tagId);
+            if ( caseTag == null ) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
+            if (caseObjectTagDAO.checkExists(caseId, tagId)) {
+                return error(En_ResultStatus.ALREADY_EXIST);
+            }
+            CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
+            caseObjectTagDAO.persist(cot);
 
-        // TODO: check already exist bundle
-        CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
-        caseObjectTagDAO.persist(cot);
-
-        return ok();
+            return ok();
+        });
     }
 
     @Override
@@ -115,13 +132,4 @@ public class CaseTagServiceImpl implements CaseTagService {
         }
         return true;
     }
-
-    @Autowired
-    CaseTagDAO caseTagDAO;
-    @Autowired
-    CaseObjectTagDAO caseObjectTagDAO;
-    @Autowired
-    AuthService authService;
-    @Autowired
-    PolicyService policyService;
 }

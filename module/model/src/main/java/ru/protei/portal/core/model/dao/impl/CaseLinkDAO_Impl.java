@@ -34,8 +34,13 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
     }
 
     @Override
-    public boolean checkExistLink(En_CaseLink type, String remoteId) {
-        return checkExistsByCondition("link_type = ? and remote_id = ?", type.name(), remoteId);
+    public boolean checkExistLink(En_CaseLink type, Long caseId, String remoteId) {
+        return checkExistsByCondition("link_type = ? and remote_id = ? and case_id = ?", type.name(), remoteId, caseId);
+    }
+
+    @Override
+    public CaseLink getCrmLink(En_CaseLink type, Long caseId, String remoteId) {
+        return getByCondition("link_type = ? and remote_id = ? and case_id = ?", type.name(), remoteId, caseId);
     }
 
     @SqlConditionBuilder

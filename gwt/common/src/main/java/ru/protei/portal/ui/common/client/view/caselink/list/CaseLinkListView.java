@@ -52,7 +52,7 @@ public class CaseLinkListView
     }
 
     @Override
-    public HasEnabled addButtonEnabled() {
+    public HasVisibility addButtonVisibility() {
         return addLinkButton;
     }
 

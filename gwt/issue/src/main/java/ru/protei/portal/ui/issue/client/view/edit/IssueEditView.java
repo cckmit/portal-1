@@ -53,13 +53,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setMetaActivity(AbstractIssueMetaActivity activity) {
-        issueMeta.setMetaActivity(activity);
-    }
-
-    @Override
-    public AbstractIssueMetaView getMetaView() {
-        return issueMeta;
+    public HasWidgets getMetaContainer() {
+        return issueMetaContainer;
     }
 
     @Override
@@ -329,13 +324,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     DivElement descriptionRO;
     @UiField
     HTMLPanel descriptionContainer;
-    @Inject
-    @UiField(provided = true)
-    IssueMetaView issueMeta;
     @UiField
     HTMLPanel linksContainer;
     @UiField
     HTMLPanel tagsContainer;
+    @UiField
+    HTMLPanel issueMetaContainer;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

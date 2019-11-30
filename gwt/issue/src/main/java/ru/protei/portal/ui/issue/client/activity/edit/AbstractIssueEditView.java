@@ -13,9 +13,8 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 public interface AbstractIssueEditView extends IsWidget {
 
     void setActivity( AbstractIssueEditActivity activity );
-    void setMetaActivity( AbstractIssueMetaActivity activity );
 
-    AbstractIssueMetaView getMetaView();
+    HasWidgets getMetaContainer();
 
     HasValue<String> name();
     HasValue<String> description();

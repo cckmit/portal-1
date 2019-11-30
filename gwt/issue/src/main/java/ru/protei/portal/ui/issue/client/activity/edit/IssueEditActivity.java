@@ -41,7 +41,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-        view.setMetaActivity( this );
+        metaView.setActivity( this );
+
+        view.getMetaContainer().add(metaView.asWidget());
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
@@ -100,7 +102,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
-        final AbstractIssueMetaView metaView = view.getMetaView();
         metaView.setTimeElapsed(event.timeElapsed);
     }
 
@@ -116,7 +117,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @Event
     public void onFillPerson(PersonEvents.PersonCreated event) {
         if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && event.person != null) {
-            final AbstractIssueMetaView metaView = view.getMetaView();
             metaView.setInitiator(event.person);
         }
     }
@@ -132,7 +132,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     issue = caseMetaUpdated.collectToCaseObject(issue);
-                    view.getMetaView().setCaseMeta(caseMetaUpdated);
+                    metaView.setCaseMeta(caseMetaUpdated);
                     showComments(issue);
                     onCompanyChanged();
                 }));
@@ -149,7 +149,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseMetaNotifiersUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     issue = caseMetaNotifiersUpdated.collectToCaseObject(issue);
-                    view.getMetaView().setCaseMetaNotifiers(caseMetaNotifiersUpdated);
+                    metaView.setCaseMetaNotifiers(caseMetaNotifiersUpdated);
                     showComments(issue);
                 }));
     }
@@ -165,7 +165,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseMetaJiraUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     issue = caseMetaJiraUpdated.collectToCaseObject(issue);
-                    view.getMetaView().setCaseMetaJira(caseMetaJiraUpdated);
+                    metaView.setCaseMetaJira(caseMetaJiraUpdated);
                     showComments(issue);
                 }));
     }
@@ -234,8 +234,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCompanyChanged() {
-        final AbstractIssueMetaView metaView = view.getMetaView();
-
         Company company = metaView.getCaseMeta().getInitiatorCompany();
 
         metaView.initiatorEnabled().setEnabled(company != null);
@@ -288,7 +286,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCreateContactClicked() {
-        final AbstractIssueMetaView metaView = view.getMetaView();
         if (metaView.getCaseMeta().getInitiatorCompany() != null) {
             fillIssueObject(issue);
             fireEvent(new ContactEvents.Edit(null, metaView.getCaseMeta().getInitiatorCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
@@ -416,8 +413,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     private void fillMetaView(CaseObject issue, boolean isRestoredIssue) {
-
-        final AbstractIssueMetaView metaView = view.getMetaView();
         final boolean isNew = isNew(issue);
         final boolean isNewNotRestored = isNew && !isRestoredIssue;
         CaseObjectMeta caseMeta = new CaseObjectMeta(issue);
@@ -502,7 +497,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         }
         issue.setPrivateCase( view.isPrivate().getValue() );
 
-        final AbstractIssueMetaView metaView = view.getMetaView();
         if (metaView.getCaseMeta() != null) metaView.getCaseMeta().collectToCaseObject(issue);
         if (metaView.getCaseMetaNotifiers() != null) metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
         if (metaView.getCaseMetaJira() != null) metaView.getCaseMetaJira().collectToCaseObject(issue);
@@ -540,9 +534,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         }
 
         boolean isFieldsValid =
-                view.getMetaView().stateValidator().isValid() &&
-                view.getMetaView().importanceValidator().isValid() &&
-                view.getMetaView().companyValidator().isValid();
+                metaView.stateValidator().isValid() &&
+                metaView.importanceValidator().isValid() &&
+                metaView.companyValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -622,7 +616,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     private void setSubscriptionEmails(String value) {
-        final AbstractIssueMetaView metaView = view.getMetaView();
         metaView.setSubscriptionEmails(value);
         metaView.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
     }
@@ -654,7 +647,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         if (companyId == null) {
             return;
         }
-        final AbstractIssueMetaView metaView = view.getMetaView();
         boolean allowCreateContact = policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId);
         metaView.initiatorSelectorAllowAddNew(allowCreateContact);
     }
@@ -662,9 +654,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @Inject
     AbstractIssueEditView view;
     @Inject
+    AbstractIssueMetaView metaView;
+    
+    @Inject
     IssueControllerAsync issueService;
     @Inject
     AttachmentServiceAsync attachmentService;
+    
     @Inject
     Lang lang;
     @Inject

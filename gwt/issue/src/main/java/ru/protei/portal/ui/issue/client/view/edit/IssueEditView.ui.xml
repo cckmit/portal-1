@@ -2,8 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
-             xmlns:meta="urn:import:ru.protei.portal.ui.issue.client.view.meta">
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -11,7 +10,9 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first">
-                    <g:HTMLPanel ui:field="tagsContainer" styleName="form-group"/>
+                    <div class="row">
+                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
+                    </div>
 
                     <g:HTMLPanel ui:field="numberContainer">
                         <h5 class="number-copy-panel no-margin p-b-10">
@@ -87,7 +88,7 @@
 
                 <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
-                        <meta:IssueMetaView ui:field="issueMeta" styleName="card-body"/>
+                        <g:HTMLPanel ui:field="issueMetaContainer" styleName="card-body"/>
                     </div>
                 </div>
             </div>

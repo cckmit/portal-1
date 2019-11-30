@@ -10,5 +10,7 @@ public interface CaseLinkDAO extends PortalBaseDAO<CaseLink> {
 
     List<CaseLink> getListByQuery(CaseLinkQuery query);
 
-    boolean checkExistLink(En_CaseLink link, String remoteId);
+    boolean checkExistLink(En_CaseLink link, Long caseId, String remoteId);
+
+    CaseLink getCrmLink(En_CaseLink type, Long caseId, String remoteId);
 }

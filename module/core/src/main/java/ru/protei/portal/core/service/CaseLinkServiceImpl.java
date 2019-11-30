@@ -9,7 +9,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseLinksEvent;
+import ru.protei.portal.core.event.CaseLinkEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -22,7 +22,6 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import java.util.*;
@@ -107,7 +106,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         );
     }
 
-    // TODO: убрать person!!!
+    // TODO: убрать person!!! (после реализации задачи PORTAL-907)
     @Override
     public Result<Long> createLink(AuthToken authToken, Person initiator, CaseLink link) {
         if (link == null || !isValidLink(link)) {
@@ -120,19 +119,22 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        boolean isAlreadyExist = caseLinkDAO.checkExistLink(link.getType(), link.getRemoteId());
+        boolean isAlreadyExist = caseLinkDAO.checkExistLink(link.getType(), link.getCaseId(), link.getRemoteId());
         if (isAlreadyExist) {
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
         return lockService.doWithLockAndTransaction(CaseLink.class, link.getCaseId(), TimeUnit.SECONDS, 5, transactionTemplate, () -> {
             Long createdLinkId = caseLinkDAO.persist(link);
+            link.setId(createdLinkId);
+
             switch (link.getType()) {
                 case CRM:
+                    Long remoteId = NumberUtils.toLong(link.getRemoteId());
                     // для crm-линков создаем зеркальные
-                    if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, link.getCaseId().toString())) {
+                    if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, remoteId, link.getCaseId().toString())) {
                         CaseLink crossCrmLink = new CaseLink();
-                        crossCrmLink.setCaseId(NumberUtils.toLong(link.getRemoteId()));
+                        crossCrmLink.setCaseId(remoteId);
                         crossCrmLink.setRemoteId(link.getCaseId().toString());
                         crossCrmLink.setType(En_CaseLink.CRM);
 
@@ -149,14 +151,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
             }
 
-            // TODO: push single CaseLinkEvent
-//            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, link.getCaseId(), mergedLinks ) );
+            publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, initiator, link.getCaseId(), link, null ) );
 
             return ok(createdLinkId);
         });
     }
 
-    // TODO: убрать person!!!
+    // TODO: убрать person!!! (после реализации задачи PORTAL-907)
     @Override
     public Result removeLink(AuthToken authToken, Person initiator, Long id) {
         if (id == null) {
@@ -174,8 +175,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         switch (existedLink.getType()) {
             case CRM:
                 // удаляем зеркальные CRM-линки
-                if ( caseLinkDAO.checkExistLink(En_CaseLink.CRM, existedLink.getCaseId().toString())) {
-                    toRemoveIds.add(existedLink.getCaseId());
+                CaseLink mirrorCrmLink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(existedLink.getRemoteId()), existedLink.getCaseId().toString());
+                if ( mirrorCrmLink != null ) {
+                    toRemoveIds.add(mirrorCrmLink.getId());
                 }
                 break;
             case YT:
@@ -189,8 +191,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
-        // TODO: push single CaseLinkEvent
-//            publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
+
+        publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, initiator, existedLink.getCaseId(), null, existedLink ) );
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -232,24 +234,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLink);
     }
 
-    private Result<Long> sendNotificationLinkAdded( AuthToken token, Long caseId, CaseLink caseLInk ) {
-        DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
-        diff.putAddedEntry( caseLInk );
-        return sendNotificationLinkChanged( token, caseId, diff ).map( ignore ->
-                caseLInk.getId() );
-    }
-
-    private Result<Long> sendNotificationLinkRemoved( AuthToken token, Long caseId, CaseLink caseLInk ) {
-        DiffCollectionResult<CaseLink> diff = new DiffCollectionResult<>();
-        diff.putRemovedEntry( caseLInk );
-        return sendNotificationLinkChanged(token, caseId, diff ).map( ignore ->
-                caseLInk.getId() );
-    }
-
-    private Result<Void> sendNotificationLinkChanged(AuthToken token, Long caseId, DiffCollectionResult<CaseLink> linksDiff ) {
+    private Result<Long> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
-        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, linksDiff ));
-        return ok();
+        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, added, null ));
+        return ok(added.getId());
+    }
+
+    private Result<Long> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, null, removed ));
+        return ok(removed.getId());
     }
 
     private boolean isValidLink(CaseLink value) {

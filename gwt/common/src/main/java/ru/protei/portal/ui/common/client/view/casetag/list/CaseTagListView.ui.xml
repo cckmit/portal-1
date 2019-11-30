@@ -4,8 +4,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <g:HTMLPanel ui:field="tagsContainer" tag="ul" styleName="case-tags-container"/>
-        <g:Button ui:field="addTagButton" styleName="btn btn-default pull-right">
+        <g:HTMLPanel ui:field="tagsContainer" tag="ul" styleName="case-tags-container pull-left"/>
+        <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs pull-right">
             <i class="fas fa-sm fa-tag"/>
             <i class="fas fa-chevron-down"/>
         </g:Button>

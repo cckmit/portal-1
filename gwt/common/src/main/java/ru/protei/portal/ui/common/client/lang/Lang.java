@@ -1913,4 +1913,8 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmailWarning();
 
     String errAccessDenied();
+
+    String caseLinkSuccessfulCreated();
+
+    String caseLinkSuccessfulRemoved();
 }

@@ -5,4 +5,6 @@ import ru.protei.portal.core.model.ent.CaseObjectTag;
 public interface CaseObjectTagDAO extends PortalBaseDAO<CaseObjectTag> {
 
     int removeByCaseIdAndTagId(Long caseId, Long tagId);
+
+    boolean checkExists(Long caseId, Long tagId);
 }

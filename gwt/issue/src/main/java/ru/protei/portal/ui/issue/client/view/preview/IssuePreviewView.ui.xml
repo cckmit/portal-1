@@ -10,7 +10,9 @@
         <g:HTMLPanel ui:field="preview" styleName="preview card-body no-padding">
             <div class="card card-default no-border">
                 <div class="card-body">
-                    <g:HTMLPanel ui:field="tagsContainer" styleName="form-group"/>
+                    <div class="row">
+                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
+                    </div>
 
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">

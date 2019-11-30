@@ -46,7 +46,7 @@ public abstract class CaseLinkListActivity
 
         view.getLinksContainer().clear();
         view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
-        view.addButtonEnabled().setEnabled(event.isEnabled);
+        view.addButtonVisibility().setVisible(event.isEnabled);
 
         view.setHeader(lang.linkedWith());
         linksCount = 0;
@@ -68,7 +68,10 @@ public abstract class CaseLinkListActivity
                 .withSuccess(res -> {
                     itemView.asWidget().removeFromParent();
                     linksCount--;
+                    view.setHeader(lang.linkedWith() + (linksCount == 0 ? "" : " (" + linksCount + ")"));
                     toggleLinksVisibility();
+
+                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
 
@@ -152,6 +155,8 @@ public abstract class CaseLinkListActivity
                     linksCount++;
                     makeCaseLinkViewAndAddToParent(value);
                     toggleLinksVisibility();
+
+                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
 

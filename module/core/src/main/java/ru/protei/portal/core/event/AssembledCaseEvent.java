@@ -22,7 +22,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObject initState;
     private CaseObjectMeta lastMetaState;
     private CaseObjectMeta initMetaState;
-    private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
+    private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
 
@@ -67,10 +67,21 @@ public class AssembledCaseEvent extends ApplicationEvent {
         serviceModule = event.getServiceModule();
     }
 
-    public void attachLinkEvent( CaseLinksEvent event ) {
+    public void attachLinkEvent( CaseLinkEvent event ) {
         this.lastUpdated = currentTimeMillis();
-        isEagerEvent = isEagerEvent||event.isEagerEvent();
-        mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId );
+        isEagerEvent = isEagerEvent || event.isEagerEvent();
+        if (event.getAddedLink() != null) {
+            // check if link is removed and added once more
+            if (links.getRemovedEntries() == null || !links.getRemovedEntries().remove(event.getAddedLink())){
+                links.putAddedEntry(event.getAddedLink());
+            }
+        }
+        if (event.getRemovedLink() != null) {
+            // check if link is added and removed once more
+            if (links.getAddedEntries() == null || !links.getAddedEntries().remove(event.getRemovedLink())) {
+                links.putRemovedEntry(event.getRemovedLink());
+            }
+        }
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
@@ -161,8 +172,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isLinksFilled() {
-        synchronized (mergeLinks){
-            return mergeLinks.hasSameEntries();
+        synchronized (links){
+            return links.hasSameEntries();
         }
     }
 
@@ -248,9 +259,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initiator;
     }
 
-    public DiffCollectionResult<CaseLink> getMergeLinks() {
-        mergeLinks = synchronizeExists( mergeLinks, CaseLink::getId );
-        return mergeLinks;
+    public DiffCollectionResult<CaseLink> getLinks() {
+        links = synchronizeExists(links, CaseLink::getId );
+        return links;
     }
 
     public boolean isCoreModuleEvent () {
@@ -317,7 +328,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public void setExistingLinks( List<CaseLink> existingLinks ) {
-        mergeLinks.putSameEntries( existingLinks );
+        links.putSameEntries( existingLinks );
     }
 
     public void setExistingAttachments( List<Attachment> existingAttachments ) {
