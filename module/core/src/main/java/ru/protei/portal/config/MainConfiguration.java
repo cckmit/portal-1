@@ -48,7 +48,6 @@ import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
-//import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -262,6 +261,16 @@ public class MainConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO() {
         return new CaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
     }
 
     @Bean
@@ -561,11 +570,6 @@ public class MainConfiguration {
     @Bean
     public AuthInterceptor getAuthInterceptor() {
         return new AuthInterceptor();
-    }
-
-    @Bean
-    public CaseControlService getCaseControlService() {
-        return new CaseControlServiceImpl();
     }
 
     @Bean

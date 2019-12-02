@@ -21,6 +21,7 @@ import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.jira.factory.JiraClientFactory;
@@ -79,6 +80,16 @@ public class JiraTestConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO() {
         return new CaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
     }
 
     @Bean

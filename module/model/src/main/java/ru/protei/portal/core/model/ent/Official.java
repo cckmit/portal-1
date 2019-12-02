@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Матрица принятия решений
  */
-public class Official extends CaseShortView implements Removable {
+public class Official extends CaseShortView {
 
     private String info;
 
@@ -105,10 +105,5 @@ public class Official extends CaseShortView implements Removable {
         official.setMembers(officialMembers);
 
         return official;
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return true;
     }
 }

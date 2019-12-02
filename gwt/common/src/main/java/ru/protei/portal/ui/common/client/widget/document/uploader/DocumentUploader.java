@@ -30,8 +30,21 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
+    public void submitForm(String url) {
+        form.setAction(url);
+        form.addStyleName("attachment-uploading");
+        form.submit();
+        fileUpload.setEnabled(false);
+    }
+
+    @Override
     public void resetForm() {
+        form.removeStyleName("attachment-uploading");
         form.reset();
+        fileUpload.setEnabled(true);
+        if (resetHandler != null) {
+            resetHandler.onFormReset();
+        }
     }
 
     @Override
@@ -41,9 +54,7 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
 
     @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
-        form.removeStyleName("attachment-uploading");
-        form.reset();
-        fileUpload.setEnabled(true);
+        resetForm();
         if (uploadHandler == null)
             return;
         if ("error".equals(event.getResults())) {
@@ -62,11 +73,7 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
         if (HelperFunc.isEmpty(getFilename()) || form.getElement().hasClassName("attachment-uploading")) {
             return;
         }
-
-        form.addStyleName("attachment-uploading");
-        form.setAction(UPLOAD_DOCUMENT_URL);
-        form.submit();
-        fileUpload.setEnabled(false);
+        submitForm(UPLOAD_DOCUMENT_URL);
     }
 
     @Override
@@ -74,6 +81,12 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
         this.uploadHandler = uploadHandler;
     }
 
+    @Override
+    public void setResetHandler(ResetHandler resetHandler) {
+        this.resetHandler = resetHandler;
+    }
+
+    private ResetHandler resetHandler;
     private UploadHandler uploadHandler;
     private static final String UPLOAD_DOCUMENT_URL = GWT.getModuleBaseURL() + "springApi/uploadDocument/";
 }

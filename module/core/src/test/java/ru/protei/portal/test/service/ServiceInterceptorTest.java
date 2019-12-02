@@ -12,6 +12,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DaoMockTestConfiguration;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.ServiceTestsConfiguration;
+import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.service.SmokeyService;
 
@@ -23,7 +24,8 @@ import ru.protei.portal.core.service.SmokeyService;
         PortalConfigTestConfiguration.class,
         ServiceTestsConfiguration.class,
         DaoMockTestConfiguration.class,
-        ServiceInterceptorTest.ContextConfiguration.class
+        ServiceInterceptorTest.ContextConfiguration.class,
+        TestEventConfiguration.class
 })
 public class ServiceInterceptorTest {
 

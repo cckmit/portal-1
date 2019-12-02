@@ -2,10 +2,10 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -23,6 +23,13 @@ public interface IssueControllerAsync {
     void saveIssue( CaseObject p, AsyncCallback<Long> callback );
 
     void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> callback);
+
+    void updateIssueMeta( CaseObjectMeta caseMeta, AsyncCallback<CaseObjectMeta> async);
+
+    void updateIssueMetaNotifiers( CaseObjectMetaNotifiers caseMetaNotifiers, AsyncCallback<CaseObjectMetaNotifiers> async);
+
+    void updateIssueMetaJira( CaseObjectMetaJira caseMetaJira, AsyncCallback<CaseObjectMetaJira> async);
+
     /**
      * Получение списка статусов
      * @return список статусов
@@ -30,5 +37,4 @@ public interface IssueControllerAsync {
     void getStateList(AsyncCallback<List<En_CaseState>> async);
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
-
 }

@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 
@@ -15,7 +15,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.in;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class AssembledCaseEvent extends ApplicationEvent {
@@ -23,6 +22,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
+    private CaseObjectMeta lastMetaState;
+    private CaseObjectMeta initMetaState;
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
@@ -72,6 +73,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.info = synchronizeDiffs(this.info, event.getInfo());
     }
 
+    public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
+        lastUpdated = currentTimeMillis();
+        isEagerEvent = isEagerEvent || event.isEagerEvent();
+        initMetaState = event.getOldState();
+        lastMetaState = event.getNewState();
+        initiator = event.getPerson();
+        serviceModule = event.getServiceModule();
+    }
+
     public void attachLinkEvent( CaseLinksEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
@@ -102,7 +112,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean isUpdateEvent() {
-        return this.initState != null || this.name.hasInitialState() || this.info.hasInitialState();
+        return (this.initState != null && lastState != null) || this.name.hasInitialState() || this.info.hasInitialState();
+    }
+
+    private boolean isUpdateEventMeta() {
+        return initMetaState != null && lastMetaState != null;
     }
 
     public boolean isCommentAttached() {
@@ -114,43 +128,59 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseStateChanged() {
-        return initState != null && lastState.getState() != initState.getState();
+        return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
     }
 
     public boolean isTimeElapsedChanged() {
-        return initState != null && !HelperFunc.equals(lastState.getTimeElapsed(), initState.getTimeElapsed());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getTimeElapsed(), initMetaState.getTimeElapsed());
     }
 
     public boolean isCaseImportanceChanged() {
-        return initState != null && !lastState.getImpLevel().equals(initState.getImpLevel());
+        return isUpdateEventMeta() && !lastMetaState.getImpLevel().equals(initMetaState.getImpLevel());
     }
 
     public boolean isManagerChanged() {
-        return initState != null && !HelperFunc.equals(lastState.getManagerId(), initState.getManagerId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getManagerId(), initMetaState.getManagerId());
     }
 
     public boolean isProductChanged() {
-        return initState != null && !HelperFunc.equals(lastState.getProductId(), initState.getProductId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getProductId(), initMetaState.getProductId());
     }
 
     public boolean isInitiatorChanged() {
-        return initState != null && !HelperFunc.equals(lastState.getInitiatorId(), initState.getInitiatorId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getInitiatorId(), initMetaState.getInitiatorId());
     }
 
     public boolean isInitiatorCompanyChanged() {
-        return initState != null && !HelperFunc.equals(lastState.getInitiatorCompanyId(), initState.getInitiatorCompanyId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getInitiatorCompanyId(), initMetaState.getInitiatorCompanyId());
     }
 
     public boolean isPrivacyChanged() {
-        return initState != null && lastState.isPrivateCase() != initState.isPrivateCase();
+        return isUpdateEvent() && lastState.isPrivateCase() != initState.isPrivateCase();
     }
 
     public boolean isPlatformChanged() {
-        return initState != null && !HelperFunc.equals(lastState.getPlatformId(), initState.getPlatformId());
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getPlatformId(), initMetaState.getPlatformId());
     }
 
     public boolean isEagerEvent() {
         return isEagerEvent;
+    }
+
+    private boolean isPublicLinksChanged() {
+        return isUpdateEvent() && publicLinksChanged();
+    }
+
+    private boolean publicLinksChanged() {
+        if (!CollectionUtils.isEmpty(mergeLinks.getAddedEntries()) && mergeLinks.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        if (!CollectionUtils.isEmpty(mergeLinks.getRemovedEntries()) && mergeLinks.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        return false;
     }
 
     public boolean isLinksFilled() {
@@ -225,6 +255,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initState;
     }
 
+    public CaseObjectMeta getCaseMeta() {
+        return lastMetaState != null ? lastMetaState : initMetaState;
+    }
+
+    public CaseObjectMeta getLastCaseMeta() {
+        return lastMetaState;
+    }
+
+    public CaseObjectMeta getInitCaseMeta() {
+        return initMetaState;
+    }
+
     public Person getInitiator() {
         return initiator;
     }
@@ -246,12 +288,24 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isSendToCustomers() {
-        return isCreateEvent()
-                || (
-                        (!isCommentAttached() || isAttachedCommentNotPrivate())
-                                && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
-                || isPublicChangedWithOutComments();
+    public boolean isPrivateSend() {
+        if (isCreateEvent()) {
+            return false;
+        }
+
+        if (isAttachedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isRemovedCommentNotPrivate()) {
+            return false;
+        }
+
+        if (isPublicChangedWithOutComments()) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean isAttachedCommentNotPrivate() {
@@ -277,11 +331,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isPrivacyChanged()
                 || isProductChanged()
                 || name.hasDifferences()
-                || info.hasDifferences();
+                || info.hasDifferences()
+                || isPublicLinksChanged();
     }
+
 
     public boolean isCaseObjectFilled() {
         return initState!=null;
+    }
+
+    public boolean isCaseMetaFilled() {
+        return initMetaState != null;
     }
 
     public boolean isCaseCommentsFilled() {
@@ -302,6 +362,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public void setLastCaseObject( CaseObject caseObject ) {
         lastState = caseObject;
+    }
+
+    public void setLastCaseMeta( CaseObjectMeta caseMeta ) {
+        lastMetaState = caseMeta;
     }
 
     public void setExistingCaseComments( List<CaseComment> caseComments ) {
@@ -341,7 +405,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public Person getManager() {
-        return getCaseObject().getManager();
+        return getCaseMeta().getManager();
     }
 
     public Long getCaseObjectId() {
@@ -384,7 +448,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     // Убрать из существующих элементов добавленные и удаленные
-    private <T> DiffCollectionResult<T> synchronizeExists( DiffCollectionResult<T> diff, Function<T, Object> getId) {
+    private <T> DiffCollectionResult<T> synchronizeExists(DiffCollectionResult<T> diff, Function<T, Object> getId) {
         log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
         if (diff.hasSameEntries()){
             synchronized (diff) {

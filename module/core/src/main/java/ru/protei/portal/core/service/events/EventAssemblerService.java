@@ -10,15 +10,16 @@ public interface EventAssemblerService {
 
     void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event);
 
+    void onCaseObjectMetaEvent(CaseObjectMetaEvent event);
+
     void onCaseCommentEvent(CaseCommentEvent event);
 
     void onCaseAttachmentEvent(CaseAttachmentEvent event);
 
     @EventListener
-    void onCaseLinkEvent(CaseLinksEvent event);
+    void onCaseLinkEvent(CaseLinksEvent event );
 
     AssembledCaseEvent getEvent(Person person, Long caseId);
 
     int getEventsCount();
-
 }

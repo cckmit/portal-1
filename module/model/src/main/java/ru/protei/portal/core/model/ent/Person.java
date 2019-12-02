@@ -15,7 +15,7 @@ import java.util.Objects;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person extends AuditableObject implements PersonShortViewSupport, Removable {
+public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -97,7 +97,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
         Person person = new Person();
         person.setId( personShortView.getId());
-        person.setDisplayShortName( personShortView.getDisplayShortName());
+        person.setDisplayShortName( personShortView.getName());
         person.setFired( personShortView.isFired());
         return person;
     }
@@ -355,11 +355,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         if (contactInfo != null) {
             contactInfo.getItems().removeIf( (info)-> !info.isItemOf(En_ContactItemType.EMAIL) );
         };
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return !isDeleted;
     }
 
     @Override

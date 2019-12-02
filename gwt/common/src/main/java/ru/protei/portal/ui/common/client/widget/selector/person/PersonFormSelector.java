@@ -29,7 +29,7 @@ public class PersonFormSelector extends FormSelector< PersonShortView > implemen
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    value.getName(),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "" );
         } );

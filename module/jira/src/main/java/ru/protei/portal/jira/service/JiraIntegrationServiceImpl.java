@@ -12,6 +12,7 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -105,9 +106,31 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 return null;
             }
 
-            CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( event.getUser() ), caseObjectDAO.get( caseObj.getId() ), caseObj );
+            CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
+            CaseObject newCase = caseObj;
+            CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldCase);
+            CaseObjectMeta newCaseMeta = new CaseObjectMeta(newCase);
+            Person person = personMapper.toProteiPerson(event.getUser());
+
+            CaseObjectEvent caseObjectEvent = new CaseObjectEvent(
+                    this,
+                    ServiceModule.JIRA,
+                    person,
+                    oldCase,
+                    newCase
+            );
+            CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
+                    this,
+                    ServiceModule.JIRA,
+                    person,
+                    En_ExtAppType.forCode(oldCase.getExtAppType()),
+                    oldCaseMeta,
+                    newCaseMeta
+            );
+
             AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
             caseEvent.attachCaseObjectEvent(caseObjectEvent);
+            caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
             logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());

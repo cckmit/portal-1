@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @JdbcEntity(table = "platform")
-public class Platform implements Serializable, Removable {
+public class Platform implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -156,12 +156,6 @@ public class Platform implements Serializable, Removable {
         platformOption.setDisplayText(getName());
         platformOption.setCompanyId(getCompanyId());
         return platformOption;
-    }
-
-
-    @Override
-    public boolean isAllowedRemove() {
-        return id != null;
     }
 
     @Override

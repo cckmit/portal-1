@@ -71,8 +71,6 @@ public interface AbstractDocumentFormView extends IsWidget {
     AbstractDocumentUploader documentUploader();
 
 
-    void resetFilename();
-
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 
     void setEquipmentProjectId(Long id);

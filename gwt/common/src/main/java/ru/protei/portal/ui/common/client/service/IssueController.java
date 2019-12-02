@@ -5,8 +5,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -27,6 +30,12 @@ public interface IssueController extends RemoteService {
 
     void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
+    CaseObjectMeta updateIssueMeta( CaseObjectMeta caseMeta ) throws RequestFailedException;
+
+    CaseObjectMetaNotifiers updateIssueMetaNotifiers( CaseObjectMetaNotifiers caseMetaNotifiers ) throws RequestFailedException;
+
+    CaseObjectMetaJira updateIssueMetaJira( CaseObjectMetaJira caseMetaJira ) throws RequestFailedException;
+
     /**
      * Получение списка статусов
      * @return список статусов
@@ -34,5 +43,4 @@ public interface IssueController extends RemoteService {
     List<En_CaseState> getStateList() throws RequestFailedException;
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
-
 }

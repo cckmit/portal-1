@@ -1,5 +1,6 @@
 package ru.protei.portal.core.controller.api;
 
+import jdk.nashorn.internal.runtime.options.OptionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +9,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
@@ -30,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -152,14 +154,20 @@ public class PortalApiController {
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            Result<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
-                    authToken,
-                    (CaseObject) auditableObject,
-                    userSessionDescriptorAPIResult.getData().getPerson()
-            );
+            Person person = userSessionDescriptorAPIResult.getData().getPerson();
+            CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseObjectCoreResponse.orElseGet( result ->
-                    error( result.getStatus(),  "Service Error" ));
+            return caseService.updateCaseObject(authToken, caseObject, person)
+                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject), person))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject), person))
+                .flatMap(o -> {
+                    if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject), person);
+                    }
+                    return ok();
+                })
+                .map(ignore -> caseObject)
+                .orElseGet(result -> error(result.getStatus(), "Service Error"));
 
         } catch (IllegalArgumentException  ex) {
             log.error(ex.getMessage());

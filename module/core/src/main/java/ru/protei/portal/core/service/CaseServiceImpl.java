@@ -5,14 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
+import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.DiffResult;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -45,7 +48,6 @@ import static ru.protei.portal.api.struct.Result.ok;
  * Реализация сервиса управления обращениями
  */
 public class CaseServiceImpl implements CaseService {
-
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
@@ -111,7 +113,7 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
-        if (!validateFields(caseObject)) {
+        if (!validateFieldsOfNew(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -203,24 +205,27 @@ public class CaseServiceImpl implements CaseService {
         return ok(newState);
     }
 
+    @Deprecated
     @Override
     @Transactional
     public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
+        UpdateResult<CaseObject> objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
 
         if (objectResultData.isUpdated()) {
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
-            CaseObject newState = caseObjectDAO.get(objectResultData.getCaseObject().getId());
-            newState.setAttachments(objectResultData.getCaseObject().getAttachments());
-            newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
+            CaseObject newState = caseObjectDAO.get(objectResultData.getObject().getId());
+            newState.setAttachments(objectResultData.getObject().getAttachments());
+            newState.setNotifiers(objectResultData.getObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState)
-            );
+            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState));
         }
 
-        return ok(objectResultData.getCaseObject());
+        return ok(objectResultData.getObject());
     }
 
     @Override
@@ -262,7 +267,199 @@ public class CaseServiceImpl implements CaseService {
         });
     }
 
-    private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
+    @Override
+    @Transactional
+    public Result<CaseObjectMeta> updateCaseObjectMeta(AuthToken token, CaseObjectMeta caseMeta, Person initiator) {
+
+        if (caseMeta.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject oldState = caseObjectDAO.get(caseMeta.getId());
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldState);
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        applyStateBasedOnManager(caseMeta);
+
+        if (!validateMetaFields(caseMeta)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isCaseMetaChanged(caseMeta, oldCaseMeta)) {
+            return ok(caseMeta);
+        }
+
+        En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(oldState.getExtAppType());
+        boolean isStateTransitionValidByWorkflow = isCaseStateTransitionValid(workflow, oldCaseMeta.getState(), caseMeta.getState());
+        if (!isStateTransitionValidByWorkflow) {
+            log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
+                    caseMeta.getId(), oldCaseMeta.getState(), caseMeta.getState(), workflow);
+            throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(token, oldCaseMeta, caseMeta);
+        if (!isStateTransitionValidNoWorkflow) {
+            log.info("Wrong state transition for the issue {}: {} -> {}",
+                    caseMeta.getId(), oldCaseMeta.getState(), caseMeta.getState());
+            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
+        }
+
+        caseMeta.setModified(new Date());
+        caseMeta.setTimeElapsed(caseCommentService.getTimeElapsed(caseMeta.getId()).getData());
+
+        boolean isUpdated = caseObjectMetaDAO.merge(caseMeta);
+        if (!isUpdated) {
+            log.info("Failed to update issue meta data {} at db", caseMeta.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (!Objects.equals(oldCaseMeta.getState(), caseMeta.getState())) {
+            Long messageId = createAndPersistStateMessage(initiator, caseMeta.getId(), caseMeta.getState(), null, null);
+            if (messageId == null) {
+                log.error("State message for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
+        if (!Objects.equals(oldCaseMeta.getImpLevel(), caseMeta.getImpLevel())) {
+            Long messageId = createAndPersistImportanceMessage(initiator, caseMeta.getId(), caseMeta.getImpLevel());
+            if (messageId == null) {
+                log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
+        if (oldCaseMeta.getManager() != null && caseMeta.getManager() != null &&
+            !Objects.equals(oldCaseMeta.getManager().getId(), caseMeta.getManager().getId())) {
+            Long messageId = createAndPersistManagerMessage(initiator, caseMeta.getId(), caseMeta.getManager().getId());
+            if (messageId == null) {
+                log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
+        // From GWT-side we get partially filled object, that's why we need to refresh state from db
+        CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
+        publisherService.publishEvent(new CaseObjectMetaEvent(
+                this,
+                ServiceModule.GENERAL,
+                initiator,
+                En_ExtAppType.forCode(oldState.getExtAppType()),
+                oldCaseMeta,
+                newCaseMeta
+        ));
+
+        return ok(newCaseMeta);
+    }
+
+    @Override
+    @Transactional
+    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers, Person initiator) {
+
+        if (caseMetaNotifiers.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject oldState = caseObjectDAO.get(caseMetaNotifiers.getId());
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        jdbcManyRelationsHelper.persist(caseMetaNotifiers, "notifiers");
+        if (isNotEmpty(caseMetaNotifiers.getNotifiers())) {
+            // update partially filled objects
+            caseMetaNotifiers.setNotifiers(new HashSet<>(
+                personDAO.partialGetListByKeys(
+                    caseMetaNotifiers.getNotifiers().stream()
+                        .map(Person::getId)
+                        .collect(Collectors.toList()),
+                    "id", "contactInfo")
+            ));
+        }
+        caseMetaNotifiers.setModified(new Date());
+
+        boolean isUpdated = caseObjectMetaNotifiersDAO.merge(caseMetaNotifiers);
+        if (!isUpdated) {
+            log.info("Failed to update issue meta notifiers data {} at db", caseMetaNotifiers.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        // Event not needed
+
+        return ok(caseMetaNotifiers);
+    }
+
+    @Override
+    @Transactional
+    public Result<CaseObjectMetaJira> updateCaseObjectMetaJira(AuthToken token, CaseObjectMetaJira caseMetaJira, Person initiator) {
+
+        if (caseMetaJira.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject oldState = caseObjectDAO.get(caseMetaJira.getId());
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (!En_ExtAppType.JIRA.getCode().equals(oldState.getExtAppType())) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        if (caseMetaJira.getSlaMapId() == null || StringUtils.isEmpty(caseMetaJira.getIssueType())) {
+            log.warn("Got caseObjectMetaJira with 'jira' extAppType and empty jiraMetaData field(s): {}", caseMetaJira);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        En_JiraSLAIssueType jiraSLAIssueType = En_JiraSLAIssueType.forIssueType(caseMetaJira.getIssueType());
+        boolean isSeverityCanBeChanged = En_JiraSLAIssueType.byPortal().contains(jiraSLAIssueType);
+        if (!isSeverityCanBeChanged) {
+            log.info("Got caseObjectMetaJira with jiraSLAIssueType that cannot be changed by portal: {}", caseMetaJira);
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        try {
+            JiraSLAMapEntry slaMapEntry = jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(
+                caseMetaJira.getSlaMapId(),
+                caseMetaJira.getIssueType(),
+                caseMetaJira.getSeverity()
+            );
+            if (slaMapEntry == null) {
+                log.warn("Got caseObjectMetaJira with 'jira' extAppType and invalid issueType/severity: {}", caseMetaJira);
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+            }
+
+            ExternalCaseAppData appData = externalCaseAppDAO.get(caseMetaJira.getId());
+            JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
+            extAppData.setSlaSeverity(caseMetaJira.getSeverity());
+            appData.setExtAppData(JiraExtAppData.toJSON(extAppData));
+            if (!externalCaseAppDAO.saveExtAppData(appData)) {
+                log.warn("Failed to save extAppData with jira SLA information");
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to persist jira SLA information", e);
+            throw e;
+        }
+
+        // Event not needed
+
+        return ok(caseMetaJira);
+    }
+
+    @Deprecated
+    private UpdateResult<CaseObject> performUpdateCaseObject(AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -271,33 +468,19 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setCreated(oldState.getCreated());
         caseObject.setCaseNumber(oldState.getCaseNumber());
 
-        if (!validateFields(caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
         if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (!validateFields(caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         synchronizeTags(caseObject, authService.findSession(token));
         jdbcManyRelationsHelper.persist(caseObject, "tags");
 
-        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
-
-        applyStateBasedOnManager(caseObject);
-
-        persistJiraSLAInformation(caseObject);
-
         if (!isCaseChanged(caseObject, oldState)) {
-            return new CaseObjectUpdateResult(caseObject, false);
-        }
-
-        En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
-        boolean isStateTransitionValid = isCaseStateTransitionValid(workflow, oldState.getState(), caseObject.getState());
-        if (!isStateTransitionValid) {
-            log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
-                    caseObject.getId(), oldState.getState(), caseObject.getState(), workflow);
-            throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
+            return new UpdateResult<>(caseObject, false);
         }
 
         boolean isSelfCase = Objects.equals(initiator.getId(), oldState.getCreator().getId());
@@ -307,21 +490,8 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION);
         }
 
-        if (workflow == En_CaseStateWorkflow.NO_WORKFLOW && isStateReopenNotAllowed(token, oldState, caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
-        }
-
         caseObject.setModified(new Date());
         caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
-
-        if (isNotEmpty(caseObject.getNotifiers())) {
-            // update partially filled objects
-            caseObject.setNotifiers(new HashSet<>(
-                    personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()),
-                            "id", "contactInfo")
-            ));
-        }
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
@@ -329,29 +499,7 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        if(!Objects.equals(oldState.getState(),caseObject.getState())){
-            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
-            if (messageId == null) {
-                log.error("State message for the issue {} isn't saved!", caseObject.getId());
-            }
-        }
-
-        if (!oldState.getImpLevel().equals(caseObject.getImpLevel())) {
-            Long messageId = createAndPersistImportanceMessage(initiator, caseObject.getId(), caseObject.getImpLevel());
-            if (messageId == null) {
-                log.error("Importance level message for the issue {} isn't saved!", caseObject.getId());
-            }
-        }
-
-        if (oldState.getManager() != null && caseObject.getManager() != null &&
-            !Objects.equals(oldState.getManager().getId(), caseObject.getManager().getId())) {
-            Long messageId = createAndPersistManagerMessage(initiator, caseObject.getId(), caseObject.getManager().getId());
-            if (messageId == null) {
-                log.error("Manager message for the issue {} isn't saved!", caseObject.getId());
-            }
-        }
-
-        return new CaseObjectUpdateResult(caseObject, true);
+        return new UpdateResult<>(caseObject, true);
     }
 
     @Override
@@ -570,16 +718,17 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean isCaseChanged(CaseObject co1, CaseObject co2){
-        // without notifiers
-        // without links
-        // without state
-        // without imp level
-        // without manager
         // without links
         return     !Objects.equals(co1.getName(), co2.getName())
                 || !Objects.equals(co1.getInfo(), co2.getInfo())
-                || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
-                || !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
+                || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase());
+    }
+
+    private boolean isCaseMetaChanged(CaseObjectMeta co1, CaseObjectMeta co2){
+        // without state
+        // without imp level
+        // without manager
+        return     !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
                 || !Objects.equals(co1.getState(), co2.getState())
@@ -613,9 +762,9 @@ public class CaseServiceImpl implements CaseService {
     }
 
 
-    private boolean isStateReopenNotAllowed(AuthToken token, CaseObject oldState, CaseObject newState) {
-        return oldState.getState() == En_CaseState.VERIFIED &&
-                newState.getState() != En_CaseState.VERIFIED &&
+    private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
+        return oldMeta.getState() == En_CaseState.VERIFIED &&
+                newMeta.getState() != En_CaseState.VERIFIED &&
                 !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
     }
 
@@ -642,8 +791,14 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyStateBasedOnManager(CaseObject caseObject) {
-        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
-            caseObject.setState(En_CaseState.OPENED);
+        CaseObjectMeta caseMeta = new CaseObjectMeta(caseObject);
+        applyStateBasedOnManager(caseMeta);
+        caseObject.setState(caseMeta.getState());
+    }
+
+    private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
+        if (caseMeta.getState() == En_CaseState.CREATED && caseMeta.getManager() != null) {
+            caseMeta.setState(En_CaseState.OPENED);
         }
     }
 
@@ -659,19 +814,29 @@ public class CaseServiceImpl implements CaseService {
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
     }
 
+    private boolean validateFieldsOfNew(CaseObject caseObject) {
+        return validateFields(caseObject)
+            && validateMetaFields(new CaseObjectMeta(caseObject));
+    }
+
     private boolean validateFields(CaseObject caseObject) {
         return caseObject != null
                 && caseObject.getName() != null
                 && !caseObject.getName().isEmpty()
-                && En_CaseType.find(caseObject.getTypeId()) != null
-                && caseObject.getImpLevel() != null
-                && En_ImportanceLevel.find(caseObject.getImpLevel()) != null
-                && En_CaseState.getById(caseObject.getStateId()) != null
-                && (caseObject.getState().getId() == En_CaseState.CREATED.getId()
-                || caseObject.getState().getId() == En_CaseState.CANCELED.getId()
-                || caseObject.getManagerId() != null)
-                && (caseObject.getInitiatorCompanyId() != null)
-                && (caseObject.getInitiatorId() == null || personBelongsToCompany(caseObject.getInitiatorId(), caseObject.getInitiatorCompanyId()));
+                && En_CaseType.find(caseObject.getTypeId()) != null;
+    }
+
+    private boolean validateMetaFields(CaseObjectMeta caseMeta) {
+        return caseMeta != null
+                && caseMeta.getImpLevel() != null
+                && En_ImportanceLevel.find(caseMeta.getImpLevel()) != null
+                && En_CaseState.getById(caseMeta.getStateId()) != null
+                && (caseMeta.getState().getId() == En_CaseState.CREATED.getId()
+                    || caseMeta.getState().getId() == En_CaseState.CANCELED.getId()
+                    || caseMeta.getManagerId() != null
+                )
+                && (caseMeta.getInitiatorCompanyId() != null)
+                && (caseMeta.getInitiatorId() == null || personBelongsToCompany(caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId()));
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
@@ -700,61 +865,15 @@ public class CaseServiceImpl implements CaseService {
             JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
             JiraUtils.JiraIssueData issueData = JiraUtils.convert(appData);
             JiraEndpoint endpoint = jiraEndpointDAO.get(issueData.endpointId);
-            caseObject.setJiraMetaData(new JiraMetaData(
+            caseObject.setCaseObjectMetaJira(new CaseObjectMetaJira(
                 extAppData.issueType(),
                 extAppData.slaSeverity(),
                 endpoint.getSlaMapId()
             ));
+            caseObject.setJiraUrl(portalConfig.data().getJiraUrl());
         } catch (Exception e) {
             log.warn("Failed to fill jira SLA information", e);
-            caseObject.setJiraMetaData(new JiraMetaData());
-            return caseObject;
-        }
-
-        return caseObject;
-    }
-
-    private CaseObject persistJiraSLAInformation(CaseObject caseObject) {
-
-        if (!En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
-            return caseObject;
-        }
-
-        if (caseObject.getJiraMetaData() == null) {
-            log.warn("Got caseObject with 'jira' extAppType and null jiraMetaData");
-            return caseObject;
-        }
-
-        JiraMetaData metaData = caseObject.getJiraMetaData();
-
-        if (metaData.getSlaMapId() == null || StringUtils.isEmpty(metaData.getIssueType())) {
-            log.warn("Got caseObject with 'jira' extAppType and empty jiraMetaData field(s): {}", metaData);
-            return caseObject;
-        }
-
-        boolean isSeverityCanBeChanged = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(metaData.getIssueType()));
-
-        if (!isSeverityCanBeChanged) {
-            return caseObject;
-        }
-
-        try {
-            JiraSLAMapEntry slaMapEntry = jiraSLAMapEntryDAO.getByIssueTypeAndSeverity(metaData.getSlaMapId(), metaData.getIssueType(), metaData.getSeverity());
-            if (slaMapEntry == null) {
-                log.warn("Got caseObject with 'jira' extAppType and invalid issueType/severity: {}", metaData);
-                return caseObject;
-            }
-
-            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObject.getId());
-            JiraExtAppData extAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
-            extAppData.setSlaSeverity(metaData.getSeverity());
-            appData.setExtAppData(JiraExtAppData.toJSON(extAppData));
-            if (!externalCaseAppDAO.saveExtAppData(appData)) {
-                log.warn("Failed to save extAppData with jira SLA information");
-                return caseObject;
-            }
-        } catch (Exception e) {
-            log.warn("Failed to persist jira SLA information", e);
+            caseObject.setCaseObjectMetaJira(new CaseObjectMetaJira());
             return caseObject;
         }
 
@@ -769,6 +888,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseShortViewDAO caseShortViewDAO;
+
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
+
+    @Autowired
+    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
 
     @Autowired
     CaseStateMatrixDAO caseStateMatrixDAO;
@@ -823,6 +948,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    PortalConfig portalConfig;
 
     @Autowired
     LockService lockService;
