@@ -128,6 +128,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     newCaseMeta
             );
 
+            caseObjectEvent.setCreateEvent(false);
+
             AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
             caseEvent.attachCaseObjectEvent(caseObjectEvent);
             caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
@@ -169,6 +171,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
         final CaseObject caseObj = new CaseObject();
         CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ), null, caseObj );
+        caseObjectEvent.setCreateEvent(true);
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
         caseEvent.attachCaseObjectEvent(caseObjectEvent);
 

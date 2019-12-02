@@ -177,7 +177,7 @@ public class MailNotificationProcessor {
 
     private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
-                || event.isPrivateSend()
+                || isPrivateSend(event)
                 || config.data().smtp().isBlockExternalRecipients();
     }
 
@@ -579,7 +579,33 @@ public class MailNotificationProcessor {
         return calendar.getTime();
     }
 
+    public boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
 
+        if (assembledCaseEvent.isPublicCommentsChanged()) {
+            return false;
+        }
+
+        if (publicChangesExistWithoutComments(assembledCaseEvent)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isInfoChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.isNameChanged()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
+    }
 
     private class MimeMessageHeadersFacade {
 

@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 
 import java.util.*;
 import java.util.function.Function;
@@ -21,6 +22,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private Long caseObjectId;
     private CaseObject lastState;
     private CaseObject initState;
+    private ApplicationEvent fromEvent;
     private CaseObjectMeta lastMetaState;
     private CaseObjectMeta initMetaState;
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
@@ -47,6 +49,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.timeCreated = currentTimeMillis();
         lastUpdated = timeCreated;
         this.isEagerEvent = isEagerEvent;
+        this.fromEvent = this;
     }
 
     public void attachCaseObjectEvent( CaseObjectEvent objectEvent ) {
@@ -57,6 +60,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
         this.mergeLinks.putAddedEntries(objectEvent.getIssueCreateRequest().getLinks());
+        this.fromEvent = objectEvent;
     }
 
     public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
@@ -66,12 +70,14 @@ public class AssembledCaseEvent extends ApplicationEvent {
         lastMetaState = event.getNewState();
         initiator = event.getPerson();
         serviceModule = event.getServiceModule();
+        this.fromEvent = event;
     }
 
     public void attachLinkEvent( CaseLinksEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
         mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId );
+        this.fromEvent = event;
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
@@ -85,20 +91,30 @@ public class AssembledCaseEvent extends ApplicationEvent {
         if (commentEvent.getRemovedCaseComment() != null) {
             comments.putRemovedEntry( commentEvent.getRemovedCaseComment() );
         }
+        this.fromEvent = commentEvent;
     }
 
     public void attachAttachmentEvent( CaseAttachmentEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
         attachments = synchronizeDiffs( attachments, event.getAttachments(), Attachment::getId );
+        this.fromEvent = event;
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null;
+        if ( !(this.fromEvent instanceof CaseObjectEvent) ) {
+            return false;
+        }
+
+        if ( !( (CaseObjectEvent) this.fromEvent ).isCreateEvent() ) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isUpdateEvent() {
-        return initState != null && lastState != null;
+        return !isCreateEvent();
     }
 
     private boolean isUpdateEventMeta() {
@@ -142,26 +158,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInfo(), initState.getInfo());
+        return isUpdateEvent() && initState != null && !HelperFunc.equals(lastState.getInfo(), initState.getInfo());
     }
 
     public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getName(), initState.getName());
-    }
-
-    public boolean isPrivacyChanged() {
-        return isUpdateEvent() && lastState.isPrivateCase() != initState.isPrivateCase();
+        return isUpdateEvent() && initState != null && !HelperFunc.equals(lastState.getName(), initState.getName());
     }
 
     public boolean isPlatformChanged() {
         return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getPlatformId(), initMetaState.getPlatformId());
     }
 
-    public boolean isEagerEvent() {
-        return isEagerEvent;
-    }
-
-    private boolean isPublicLinksChanged() {
+    public boolean isPublicLinksChanged() {
         return isUpdateEvent() && publicLinksChanged();
     }
 
@@ -175,6 +183,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
 
         return false;
+    }
+
+    public boolean isEagerEvent() {
+        return isEagerEvent;
     }
 
     public boolean isLinksFilled() {
@@ -274,26 +286,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isPrivateSend() {
-        if (isCreateEvent()) {
-            return false;
-        }
-
-        if (isAttachedCommentNotPrivate()) {
-            return false;
-        }
-
-        if (isRemovedCommentNotPrivate()) {
-            return false;
-        }
-
-        if (isPublicChangedWithOutComments()) {
-            return false;
-        }
-
-        return true;
-    }
-
     public boolean isAttachedCommentNotPrivate() {
         for (CaseComment addedComment : emptyIfNull( comments.getAddedEntries())) {
             if(addedComment.isPrivateComment()) return false;
@@ -301,24 +293,26 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return true;
     }
 
-    private boolean isRemovedCommentNotPrivate() {
+    public boolean isRemovedCommentNotPrivate() {
         for (CaseComment removedComment : emptyIfNull( comments.getRemovedEntries())) {
             if(removedComment.isPrivateComment()) return false;
         }
         return true;
     }
 
-    private boolean isPublicChangedWithOutComments() {
-        return  isCaseImportanceChanged()
-                || isCaseStateChanged()
-                || isInfoChanged()
-                || isInitiatorChanged()
-                || isInitiatorCompanyChanged()
-                || isManagerChanged()
-                || isNameChanged()
-                || isPrivacyChanged()
-                || isProductChanged()
-                || isPublicLinksChanged();
+    public boolean isPublicCommentsChanged() {
+        List<CaseComment> allEntries = new ArrayList<>();
+        allEntries.addAll(emptyIfNull(comments.getAddedEntries()));
+        allEntries.addAll(emptyIfNull(comments.getRemovedEntries()));
+        allEntries.addAll(emptyIfNull(comments.getChangedEntries()).stream().map(DiffResult::getNewState).collect(Collectors.toList()));
+
+        for (CaseComment comment : allEntries) {
+            if (!comment.isPrivateComment()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

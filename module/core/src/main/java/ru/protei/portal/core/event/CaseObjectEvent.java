@@ -23,7 +23,7 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     private Person person;
     private ServiceModule serviceModule;
     private IssueCreateRequest issueCreateRequest;
-
+    private boolean isCreateEvent;
 
     public CaseObjectEvent(  Object source, ServiceModule serviceModule, Person person, CaseObject oldState,  CaseObject newState ) {
         super(source);
@@ -61,6 +61,14 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
 
     public void setIssueCreateRequest(IssueCreateRequest issueCreateRequest) {
         this.issueCreateRequest = issueCreateRequest;
+    }
+
+    public boolean isCreateEvent() {
+        return isCreateEvent;
+    }
+
+    public void setCreateEvent(boolean createEvent) {
+        isCreateEvent = createEvent;
     }
 
     @Override

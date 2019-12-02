@@ -26,7 +26,7 @@ public interface CaseLinkService {
     Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
-    Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks);
+    Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Person initiator, List<CaseLink> caseLinks);
 
     Result<YouTrackIssueInfo> getIssueInfo(AuthToken authToken, String ytId );
 

@@ -102,11 +102,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             ${_issue_private}
                         </td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                            <#if privacyChanged>
-                                <@changeTo old="${oldPrivacy?string(_yes,_no)}" new="${privacy?string(_yes,_no)}"/>
-                            <#else>
-                                ${privacy?string(_yes,_no)}
-                            </#if>
+                            ${privacy?string(_yes,_no)}
                         </td>
                     </tr>
                 </#if>

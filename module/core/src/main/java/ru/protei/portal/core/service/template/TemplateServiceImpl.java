@@ -85,7 +85,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "name", newState.getName() );
         templateModel.put( "oldName", oldState == null ? null : oldState.getName() );
 
-        templateModel.put( "privacyChanged", event.isPrivacyChanged() );
         templateModel.put( "privacy", newState.isPrivateCase() );
         templateModel.put( "oldPrivacy", oldState == null ? null : oldState.isPrivateCase() );
 

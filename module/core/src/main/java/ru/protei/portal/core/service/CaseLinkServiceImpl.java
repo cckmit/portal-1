@@ -81,12 +81,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks) {
+    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Person initiator, List<CaseLink> caseLinks) {
+        List<CaseLink> allLinks = new ArrayList<>(caseLinks);
         caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
         List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);
         List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
-        notYoutrackLinks.forEach(caseLink -> caseLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
-        caseLinkDAO.persistBatch(caseLinks);
+        notYoutrackLinks.forEach(caseLink -> allLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
+        caseLinkDAO.persistBatch(allLinks);
         caseService.getCaseNumberById( token, caseId ).ifOk(caseNumber ->
                 youtrackService.mergeYouTrackLinks(caseNumber,
                         youtrackLinksRemoteIds,
@@ -94,7 +95,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 )
         );
 
-        return getLinks(token, caseId);
+        return ok(caseLinks);
     }
 
     @Override

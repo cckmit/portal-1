@@ -204,6 +204,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setTags(caseObject.getTags());
         CaseObjectEvent event = new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, null, newState);
         event.setIssueCreateRequest(issueCreateRequest);
+        event.setCreateEvent(true);
         publisherService.publishEvent(event);
 
         return ok(newState);
@@ -227,7 +228,9 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getObject().getAttachments());
             newState.setNotifiers(objectResultData.getObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState));
+            CaseObjectEvent event = new CaseObjectEvent(this, ServiceModule.GENERAL, initiator, oldState, newState);
+            event.setCreateEvent(false);
+            publisherService.publishEvent(event);
         }
 
         return ok(objectResultData.getObject());
