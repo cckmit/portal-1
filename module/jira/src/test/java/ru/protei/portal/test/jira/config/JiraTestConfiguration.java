@@ -165,11 +165,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
-    }
-
-    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
     }

@@ -54,11 +54,6 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
-    }
-
-    @Bean
     public EmployeeSqlBuilder employeeSqlBuilder() {
         return new EmployeeSqlBuilder();
     }

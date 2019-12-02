@@ -34,8 +34,7 @@ public class AuthServiceMock implements AuthService {
         Person person =  BaseServiceTest.createNewPerson( company );
         person.setId( 0L );
         UserLogin userLogin = makeLogin( person );
-        UserSession userSession = makeUserSession(userLogin, person);
-        stubAuthToken = makeAuthToken( userSession );
+        stubAuthToken = makeAuthToken( userLogin );
     }
 
     @Override
@@ -43,18 +42,17 @@ public class AuthServiceMock implements AuthService {
         return ok( getAuthToken() );
     }
 
-    public void makeThreadDescriptor( UserLogin userLogin, Person person ) {
-        UserSession userSession = makeUserSession(userLogin, person);
-        setThreadAuthToken(makeAuthToken(userSession));
+    public void makeThreadAuthToken(UserLogin userLogin) {
+        setThreadAuthToken(makeAuthToken(userLogin));
     }
 
-    public void resetThreadDescriptor(  ) {
+    public void resetThreadAuthToken() {
         setThreadAuthToken(null);
     }
 
     @Override
-    public boolean logout(String appSessionId, String ip, String userAgent) {
-        return true;
+    public Result<AuthToken> logout(AuthToken token, String ip, String userAgent) {
+        return ok(token);
     }
 
     @Override
@@ -62,16 +60,9 @@ public class AuthServiceMock implements AuthService {
         return ok(token);
     }
 
-    private UserSession makeUserSession(UserLogin login, Person person) {
-        UserSession session = new UserSession();
-        session.setSessionId("test-session-id");
-        session.setClientIp("127.0.0.1");
-        session.setLoginId(login.getId());
-        session.setPersonId(login.getPersonId());
-        session.setCompanyId(person.getCompanyId());
-        session.setCreated(new Date());
-        session.setExpired(DateUtils.addHours(new Date(), 3));
-        return session;
+    @Override
+    public long makeExpiration() {
+        return DateUtils.addSeconds(new Date(), AuthService.DEF_APP_SESSION_LIVE_TIME).getTime();
     }
 
     private UserLogin makeLogin(Person person) {
@@ -89,18 +80,15 @@ public class AuthServiceMock implements AuthService {
         return new HashSet<>(Arrays.asList(role));
     }
 
-    private AuthToken makeAuthToken(UserSession userSession) {
-        if (userSession == null) {
-            return null;
-        }
-        return new AuthToken(
-            userSession.getSessionId(),
-            userSession.getClientIp(),
-            userSession.getLoginId(),
-            userSession.getPersonId(),
-            userSession.getCompanyId(),
-            makeRoles()
-        );
+    private AuthToken makeAuthToken(UserLogin userLogin) {
+        AuthToken token = new AuthToken("test-session-id");
+        token.setIp("127.0.0.1");
+        token.setUserLoginId(userLogin.getId());
+        token.setPersonId(userLogin.getPersonId());
+        token.setCompanyId(userLogin.getCompanyId());
+        token.setRoles(makeRoles());
+        token.setExpired(makeExpiration());
+        return token;
     }
 
     public AuthToken getAuthToken() {

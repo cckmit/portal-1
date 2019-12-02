@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.app.portal.client.service.AuthController;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -33,7 +34,8 @@ public class AuthControllerImpl implements AuthController {
 
         AuthToken token = sessionService.getAuthToken(httpRequest);
 
-        if (token != null) {
+        Result<AuthToken> validationResult = authService.validateAuthToken(token);
+        if (validationResult.isOk()) {
             log.info("authentificate: token={}", token);
             return makeProfileByAuthToken(token);
         }
@@ -45,8 +47,6 @@ public class AuthControllerImpl implements AuthController {
 
         log.info( "authentificate: login={}", login );
 
-        httpRequest.getSession().setMaxInactiveInterval(AuthService.DEF_APP_SESSION_LIVE_TIME);
-
         token = ServiceUtils.checkResultAndGetData(authService.login(
                 httpRequest.getSession().getId(),
                 login,
@@ -55,19 +55,20 @@ public class AuthControllerImpl implements AuthController {
                 httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
         ));
 
+        sessionService.setSessionLifetime(httpRequest, AuthService.DEF_APP_SESSION_LIVE_TIME);
         sessionService.setAuthToken(httpRequest, token);
         return makeProfileByAuthToken(token);
     }
 
     @Override
-    public void logout() {
+    public void logout() throws RequestFailedException {
         AuthToken token = sessionService.getAuthToken(httpRequest);
         if (token != null) {
-            authService.logout(
-                    httpRequest.getSession().getId(),
+            ServiceUtils.checkResult(authService.logout(
+                    token,
                     httpRequest.getRemoteAddr(),
                     httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
-            );
+            ));
             sessionService.setAuthToken(httpRequest, null);
         }
     }

@@ -11,6 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 public class SessionServiceImpl implements SessionService {
 
     @Override
+    public void setSessionLifetime(HttpServletRequest request, long lifetimeSec) {
+        request.getSession().setMaxInactiveInterval((int) lifetimeSec);
+    }
+
+    @Override
     public void setAuthToken(HttpServletRequest request, AuthToken authToken) {
         request.getSession().setAttribute(CrmConstants.Session.AUTH_TOKEN, authToken);
     }

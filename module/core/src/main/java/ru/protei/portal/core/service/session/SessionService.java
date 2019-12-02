@@ -10,9 +10,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface SessionService {
 
+    void setSessionLifetime(HttpServletRequest request, long lifetimeSec);
+
+
     void setAuthToken(HttpServletRequest request, AuthToken authToken);
 
     AuthToken getAuthToken(HttpServletRequest request);
+
 
     void setFileItem(HttpServletRequest request, FileItem fileItem);
 

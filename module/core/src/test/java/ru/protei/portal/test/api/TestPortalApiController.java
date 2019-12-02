@@ -169,7 +169,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseObject.setInitiator(person);
         caseObject.setInitiatorCompany( company );
 
-        authService.makeThreadDescriptor( userLogin, person );
+        authService.makeThreadAuthToken( userLogin );
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
@@ -181,7 +181,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseCommentDAO.removeByCaseIds(Collections.singletonList(caseObjectFromDb.getId()));
         caseObjectDAO.removeByKey(caseObjectFromDb.getId());
-        authService.resetThreadDescriptor();
+        authService.resetThreadAuthToken();
     }
 
     @Test
@@ -193,7 +193,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         startCaseObject.setName(ISSUES_PREFIX + "new");
 
-        authService.makeThreadDescriptor( userLogin, person );
+        authService.makeThreadAuthToken( userLogin );
         ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
         resultActions
                 .andExpect(status().isOk())
@@ -205,7 +205,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
         Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
         Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
-        authService.resetThreadDescriptor();
+        authService.resetThreadAuthToken();
     }
 
     @AfterClass
