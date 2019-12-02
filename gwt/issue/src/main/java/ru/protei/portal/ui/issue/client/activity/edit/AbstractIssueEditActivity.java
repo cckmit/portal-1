@@ -15,10 +15,9 @@ public interface AbstractIssueEditActivity {
     void removeAttachment(Attachment attachment);
     void onLocalClicked();
     void renderMarkupText(String text, Consumer<String> consumer);
-
     void onDisplayPreviewChanged( String description, boolean isDisplay );
-
     void onCopyClicked();
-
     void onCaseMetaChanged( CaseMeta value );
+    void onEditNameAndDescriptionClicked();
+    void onSaveNameAndDescriptionClicked();
 }

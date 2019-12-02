@@ -12,6 +12,13 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first">
+                    <div class="btn-toolbar flex-wrap">
+                        <div class="btn-group form-group">
+                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                                <i class="fa fa-pencil-alt"/>
+                            </g:Button>
+                        </div>
+                    </div>
                     <g:HTMLPanel ui:field="numberContainer">
                         <h5 class="number-copy-panel no-margin p-b-10">
                             <i ui:field="privacyIcon"/>
@@ -26,6 +33,10 @@
                         </div>
                     </g:HTMLPanel>
 
+                    <h5 ui:field="nameRO" class="no-margin semi-bold"/>
+
+                    <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
+
                     <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
                         <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn no-shadow no-outline"/>
 
@@ -37,10 +48,6 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <h5 ui:field="nameRO" class="no-margin semi-bold"/>
-
-                    <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
-
                     <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
                         <div class="col-md-12">
                             <div class="form-group-default">
@@ -51,6 +58,11 @@
                             </div>
                         </div>
                     </g:HTMLPanel>
+
+                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
+                        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
+                        <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
+                    </div>
 
                     <div class="row form-group">
                         <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"

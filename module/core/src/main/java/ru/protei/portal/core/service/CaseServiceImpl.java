@@ -7,12 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -27,10 +29,13 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
@@ -204,7 +209,6 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
-
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -222,6 +226,45 @@ public class CaseServiceImpl implements CaseService {
         }
 
         return ok(objectResultData.getObject());
+    }
+
+    @Override
+    public Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator) {
+        return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
+            if(oldCaseObject == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
+
+            DiffResult<String> nameDiff = new DiffResult<>(oldCaseObject.getName(), changeRequest.getName());
+            DiffResult<String> infoDiff = new DiffResult<>(oldCaseObject.getInfo(), changeRequest.getInfo());
+
+            if(!nameDiff.hasDifferences() && !infoDiff.hasDifferences()) {
+                return ok();
+            }
+
+            CaseObject caseObject = new CaseObject(changeRequest.getId());
+            caseObject.setName(changeRequest.getName());
+            caseObject.setInfo(changeRequest.getInfo());
+
+            boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
+
+            if (!isUpdated) {
+                log.info("Failed to update issue {} at db", caseObject.getId());
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+                    this,
+                    changeRequest.getId(),
+                    nameDiff,
+                    infoDiff,
+                    initiator,
+                    ServiceModule.GENERAL,
+                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
+
+            return ok();
+        });
     }
 
     @Override
@@ -908,6 +951,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PortalConfig portalConfig;
+
+    @Autowired
+    LockService lockService;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }
