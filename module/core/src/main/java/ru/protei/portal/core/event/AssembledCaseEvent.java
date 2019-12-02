@@ -60,9 +60,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.initiator = objectEvent.getPerson();
         this.serviceModule = objectEvent.getServiceModule();
         //temporary solution
-        DiffResult<String> name = new DiffResult<>(initState.getName(), lastState.getName());
+        DiffResult<String> name = new DiffResult<>(initState == null ? null : initState.getName(), lastState.getName());
         this.name = synchronizeDiffs(this.name, name);
-        DiffResult<String> info = new DiffResult<>(initState.getInfo(), lastState.getInfo());
+        DiffResult<String> info = new DiffResult<>(initState == null ? null : initState.getInfo(), lastState.getInfo());
         this.info = synchronizeDiffs(this.name, info);
     }
 
