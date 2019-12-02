@@ -18,8 +18,6 @@ public class AuthServiceMock implements AuthService {
 
     private static final ThreadLocal<AuthToken> authTokenThreadScoped = new ThreadLocal<>();
 
-    public static final AuthToken TEST_AUTH_TOKEN = null;
-
     private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
             En_Privilege.PRODUCT_VIEW, En_Privilege.PRODUCT_EDIT, En_Privilege.PRODUCT_CREATE,

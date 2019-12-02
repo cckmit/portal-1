@@ -29,6 +29,8 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.authtoken.AuthTokenServiceImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
@@ -92,6 +94,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public AuthService getAuthService() {
         return new AuthServiceMock();
+    }
+
+    @Bean
+    public AuthTokenService getAuthTokenService() {
+        return new AuthTokenServiceImpl();
     }
 
     @Bean

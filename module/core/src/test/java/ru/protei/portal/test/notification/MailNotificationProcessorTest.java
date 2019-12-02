@@ -99,6 +99,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         when(companyDAO.get( COMPANY_ID )).thenReturn( company );
         when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
+        when(personDAO.get( PERSON_ID )).thenReturn( initiator );
 
         En_CaseType caseType = En_CaseType.CRM_SUPPORT;
         CaseObject object = createNewCaseObject(initiator);
@@ -148,6 +149,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         when(companyDAO.get( COMPANY_ID )).thenReturn( company );
         when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
+        when(personDAO.get( PERSON_ID )).thenReturn( initiator );
 
         long commentId = COMMENT_ID;
         CaseComment comment = createNewComment( initiator, CASE_ID, "A new comment, publishing test" );

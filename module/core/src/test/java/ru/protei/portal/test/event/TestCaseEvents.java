@@ -67,6 +67,8 @@ public class TestCaseEvents extends BaseServiceTest {
         when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( person ) );
+        when( personDAO.get( PERSON_ID ) ).thenReturn( person );
+        when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseObject must be created",
                 caseService.createCaseObject( getAuthToken(), object, person ).isOk() );
@@ -87,6 +89,8 @@ public class TestCaseEvents extends BaseServiceTest {
         when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
         when( caseCommentDAO.get( COMMENT_ID ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( COMMENT_ID );
+        when( personDAO.get( PERSON_ID ) ).thenReturn( person );
+        when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseComment must be created",
                 caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, person ).isOk() );

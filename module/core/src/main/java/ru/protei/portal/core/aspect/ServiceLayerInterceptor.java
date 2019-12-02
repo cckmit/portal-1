@@ -155,12 +155,13 @@ public class ServiceLayerInterceptor {
 
     private void makeAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
         Person person = authTokenService.getPerson(token).getData();
+        String personDisplayShortName = person == null ? "" : person.getDisplayShortName();
         AuditObject auditObject = new AuditObject(
                 auditType.getId(),
                 auditableObject,
-                person.getId(),
+                token.getPersonId(),
                 token.getIp(),
-                person.getDisplayShortName()
+                personDisplayShortName
         );
         publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
