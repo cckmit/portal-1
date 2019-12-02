@@ -237,6 +237,11 @@ public class DebugIds {
         @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
         @Deprecated String LINK_INFO_CONTAINER = "issue-link-info-container";
         String LINK_REMOVE_BUTTON = "issue-link-remove-button";
+        String LINK_STATE = "issue-link-state";
+        String LINK_IMPORTANCE_ICON = "issue-link-importance-icon";
+        String LINK_NUMBER = "issue-link-number";
+        String LINK_DESCRIPTION = "issue-link-description";
+        String LINK_ELEMENT = "issue-link-element";
         String TAGS_BUTTON = "issue-tags-button";
         String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";

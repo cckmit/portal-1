@@ -164,7 +164,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.setApprovedMode(approveMode);
         view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
-        view.resetFilename();
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();
         view.setDocumentUploaderLabel(isNew ? lang.uploadDocuments() : lang.reUploadDocuments());
@@ -213,7 +212,10 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     private void saveDocument() {
         view.saveButtonEnabled().setEnabled(false);
         view.cancelButtonEnabled().setEnabled(false);
-        if ((document.getId() == null || !document.getApproved()) && StringUtils.isNotBlank(view.documentUploader().getFilename())) {
+        boolean isNew = document.getId() == null;
+        boolean isApproved = document.getApproved();
+        boolean isFileSet = view.documentUploader().isFileSet();
+        if ((isNew || !isApproved) && isFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
             view.documentUploader().uploadBindToDocument(document);
         } else {
@@ -226,7 +228,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                 .withError(throwable -> {
                     view.saveButtonEnabled().setEnabled(true);
                     view.cancelButtonEnabled().setEnabled(true);
-                    view.resetFilename();
+                    view.documentUploader().resetForm();
                     if (throwable instanceof RequestFailedException) {
                         RequestFailedException rf = (RequestFailedException) throwable;
                         if (En_ResultStatus.ALREADY_EXIST.equals(rf.status)) {

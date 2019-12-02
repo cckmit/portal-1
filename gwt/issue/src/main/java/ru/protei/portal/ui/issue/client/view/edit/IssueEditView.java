@@ -241,6 +241,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiHandler("copy")
     public void onCopyClick(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onCopyClicked();
         }

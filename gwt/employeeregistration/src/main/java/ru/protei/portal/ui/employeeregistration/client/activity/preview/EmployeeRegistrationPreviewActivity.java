@@ -86,7 +86,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setOperatingSystem(value.getOperatingSystem());
         view.setResourceComment(value.getResourceComment());
         view.setAdditionalSoft(value.getAdditionalSoft());
-        view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getDisplayShortName());
+        view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getName());
 
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");

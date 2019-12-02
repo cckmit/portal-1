@@ -76,15 +76,15 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         product.setValue(ProductShortView.fromProduct(caseMeta.getProduct()));
 
         PersonShortView managerValue = PersonShortView.fromPerson(caseMeta.getManager());
-        if (managerValue != null) managerValue.setDisplayShortName(transliteration(managerValue.getDisplayShortName()));
+        if (managerValue != null) managerValue.setName(transliteration(managerValue.getName()));
         manager.setValue(managerValue);
 
         EntityOption companyValue = EntityOption.fromCompany(caseMeta.getInitiatorCompany());
         if (companyValue != null) companyValue.setDisplayText(transliteration(companyValue.getDisplayText()));
         company.setValue(companyValue);
 
-        PersonShortView initiatorValue = PersonShortView.fromPerson(caseMeta.getInitiator());
-        if (initiatorValue != null) initiatorValue.setDisplayShortName(transliteration(initiatorValue.getDisplayShortName()));
+        PersonShortView initiatorValue = caseMeta.getInitiator() == null ? null : caseMeta.getInitiator().toFullNameShortView();
+        if (initiatorValue != null) initiatorValue.setName(transliteration(initiatorValue.getName()));
         initiator.setValue(initiatorValue);
 
         platform.setValue(caseMeta.getPlatformId() == null ? null : new PlatformOption(caseMeta.getPlatformName(), caseMeta.getPlatformId()));
@@ -342,7 +342,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
                         .stream()
                         .map(notifier -> {
                             PersonShortView personShortView = PersonShortView.fromPerson(notifier);
-                            personShortView.setDisplayShortName(transliteration(personShortView.getDisplayShortName()));
+                            personShortView.setName(transliteration(personShortView.getName()));
                             return personShortView;
                         })
                         .collect(Collectors.toSet());

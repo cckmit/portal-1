@@ -177,7 +177,7 @@ public abstract class EquipmentEditActivity
         if ( equipment.getManagerId() != null ) {
             manager = new PersonShortView();
             manager.setId( equipment.getManagerId() );
-            manager.setDisplayShortName( equipment.getManagerShortName() );
+            manager.setName( equipment.getManagerShortName() );
         }
         view.manager().setValue( manager );
 
@@ -213,7 +213,7 @@ public abstract class EquipmentEditActivity
             equipment.setManagerShortName(null);
         } else {
             equipment.setManagerId(view.manager().getValue().getId());
-            equipment.setManagerShortName(view.manager().getValue().getDisplayShortName());
+            equipment.setManagerShortName(view.manager().getValue().getName());
         }
         if (view.project().getValue() == null) {
             equipment.setProjectId(null);

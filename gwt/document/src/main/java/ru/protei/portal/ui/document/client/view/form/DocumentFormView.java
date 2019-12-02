@@ -50,16 +50,12 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
         equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
+        documentUploader.setResetHandler(() -> fileName.setText(null));
     }
 
     @Override
     public void setActivity(AbstractDocumentFormActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public void resetFilename() {
-        fileName.setText(null);
     }
 
     @Override

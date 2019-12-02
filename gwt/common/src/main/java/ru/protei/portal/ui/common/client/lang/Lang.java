@@ -1917,4 +1917,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseLinkSuccessfulCreated();
 
     String caseLinkSuccessfulRemoved();
+
+    String documentConfirmRemove();
+
+    String documentRemoved();
 }

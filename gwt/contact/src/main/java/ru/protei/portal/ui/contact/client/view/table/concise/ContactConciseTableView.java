@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -51,7 +52,6 @@ public class ContactConciseTableView extends Composite implements AbstractContac
         removeClickColumn.setHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
         removeClickColumn.setColumnProvider(columnProvider);
-        removeClickColumn.setPrivilege(En_Privilege.CONTACT_REMOVE);
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
@@ -79,7 +79,8 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
     private void initTable() {
 
-        editClickColumn.setPrivilege(En_Privilege.CONTACT_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !v.isDeleted() );
 
         columns.add(fio);
         columns.add(email);
@@ -101,6 +102,9 @@ public class ContactConciseTableView extends Composite implements AbstractContac
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     ClickColumn<Person> fio = new ClickColumn<Person>() {
         @Override

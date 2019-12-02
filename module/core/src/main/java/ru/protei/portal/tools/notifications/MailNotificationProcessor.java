@@ -103,7 +103,7 @@ public class MailNotificationProcessor {
             List<CaseComment> comments =  event.getAllComments();
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
-            if ( isPrivateCase(event) ) {
+            if ( isPrivateNotification(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
 
                 performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
@@ -171,9 +171,9 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
-    private boolean isPrivateCase(AssembledCaseEvent event) {
+    private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
-                || !event.isSendToCustomers()
+                || event.isPrivateSend()
                 || config.data().smtp().isBlockExternalRecipients();
     }
 

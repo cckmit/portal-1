@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JdbcEntity(table = "server")
-public class Server implements Serializable, Removable {
+public class Server implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -131,12 +131,6 @@ public class Server implements Serializable, Removable {
         entityOption.setId(getId());
         entityOption.setDisplayText(getName());
         return entityOption;
-    }
-
-
-    @Override
-    public boolean isAllowedRemove() {
-        return id != null;
     }
 
     @Override

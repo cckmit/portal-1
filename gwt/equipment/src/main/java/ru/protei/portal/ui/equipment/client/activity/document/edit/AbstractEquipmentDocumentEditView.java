@@ -15,8 +15,6 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     void setActivity(AbstractEquipmentDocumentEditActivity activity);
 
-    void resetFilename();
-
     void setCreated(String date);
 
     HasValue<String> name();

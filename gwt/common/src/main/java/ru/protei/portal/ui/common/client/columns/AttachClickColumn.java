@@ -29,13 +29,15 @@ abstract public class AttachClickColumn< T extends CaseShortView> extends ru.pro
     }
 
     @Override
-    protected void fillColumnHeader(Element element) {
-        element.addClassName( "attachment" );
+    protected String getColumnClassName() {
+        return "attachment";
     }
 
     @Override
+    protected void fillColumnHeader(Element element) {}
+
+    @Override
     public void fillColumnValue( Element cell, T value ) {
-        cell.addClassName( "attachment" );
         if( !value.isAttachmentExists() )
             return;
 

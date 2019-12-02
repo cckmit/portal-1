@@ -97,8 +97,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
         List<Person> list = personDAO.getEmployees(query);
 
-        if (list == null)
-            Result.error( En_ResultStatus.GET_DATA_ERROR);
+        if (list == null) {
+            return Result.error( En_ResultStatus.GET_DATA_ERROR);
+        }
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 

@@ -78,8 +78,15 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             }
 
             if (CollectionUtils.isNotEmpty(query.getKeywords())) {
-                condition.append(" and document.tags in ");
-                condition.append(HelperFunc.makeInArg(query.getKeywords()));
+                condition.append(" and (");
+                condition.append(query.getKeywords()
+                        .stream()
+                        .map(tag -> " document.tags like ? ")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(")");
+                query.getKeywords().forEach(tag -> {
+                    args.add(HelperFunc.makeLikeArg(tag, true));
+                });
             }
 
             if (query.getFrom() != null) {
