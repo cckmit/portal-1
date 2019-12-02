@@ -31,6 +31,7 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue( lang.selectOfficialCompany() );
         company.setCategories( Collections.singletonList( En_CompanyCategory.OFFICIAL ) );
+        company.showDeprecated(false);
     }
 
     @Override

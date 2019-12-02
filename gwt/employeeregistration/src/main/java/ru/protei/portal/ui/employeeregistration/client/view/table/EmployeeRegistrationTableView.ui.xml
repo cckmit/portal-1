@@ -13,8 +13,8 @@
                     </div>
                 </div>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
             <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
+            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
         </div>
     </g:HTMLPanel>
 

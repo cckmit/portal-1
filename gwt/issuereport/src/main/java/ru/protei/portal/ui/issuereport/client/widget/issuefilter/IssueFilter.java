@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -93,7 +94,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         tags.setValue(null);
         toggleMsgSearchThreshold();
         removeBtn.setVisible(false);
-        saveBtn.setVisible(false);
+        editBtn.setVisible(false);
         createBtn.setVisible(true);
         resetBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
@@ -254,14 +255,20 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         onIssueFilterChanged();
     }
 
+    @UiHandler("filterName")
+    public void onNameKeyUp(KeyUpEvent event) {
+        filterNameChangedTimer.cancel();
+        filterNameChangedTimer.schedule(300);
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked(ClickEvent event) {
         reset();
         onIssueFilterChanged();
     }
 
-    @UiHandler("saveBtn")
-    public void onSaveClicked(ClickEvent event) {
+    @UiHandler( "editBtn" )
+    public void onEditClicked(ClickEvent event) {
         isCreateFilterAction = false;
         showUserFilterName();
     }
@@ -302,7 +309,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         showUserFilterControls();
         if (userFilter.getValue() == null) {
             removeBtn.setVisible(false);
-            saveBtn.setVisible(false);
+            editBtn.setVisible(false);
         }
     }
 
@@ -366,7 +373,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
 
     private void setUserFilterControlsVisibility(boolean hasVisible) {
         createBtn.setVisible(hasVisible);
-        saveBtn.setVisible(hasVisible);
+        editBtn.setVisible(hasVisible);
         resetBtn.setVisible(hasVisible);
         removeBtn.setVisible(hasVisible);
     }
@@ -540,6 +547,13 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
     }
 
+    Timer filterNameChangedTimer = new Timer() {
+        @Override
+        public void run() {
+            setFilterNameContainerErrorStyle(filterName.getValue().isEmpty());
+        }
+    };
+
     @Inject
     @UiField
     Lang lang;
@@ -600,7 +614,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @UiField
     Button createBtn;
     @UiField
-    Button saveBtn;
+    Button editBtn;
     @UiField
     Button removeBtn;
     @UiField

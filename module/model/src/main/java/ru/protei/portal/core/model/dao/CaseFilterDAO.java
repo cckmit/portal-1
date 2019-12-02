@@ -6,5 +6,6 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import java.util.List;
 
 public interface CaseFilterDAO extends PortalBaseDAO<CaseFilter> {
-    List<CaseFilter > getListByLoginIdAndFilterType( Long loginId, En_CaseFilterType filterType );
+    List< CaseFilter > getListByLoginIdAndFilterType( Long loginId, En_CaseFilterType filterType );
+    CaseFilter checkExistsByParams( String name, Long loginId, En_CaseFilterType type );
 }

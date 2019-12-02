@@ -68,7 +68,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             @Override
             public void onError( Throwable throwable ) {
                 view.saveEnabled().setEnabled(true);
-                fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
@@ -112,6 +111,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.direction().setValue(null);
         view.customerType().setValue(null);
         view.company().setValue(null);
+        view.companyEnabled().setEnabled(true);
         view.team().setValue(null);
         view.product().setValue(null);
         view.setHideNullValue(true);
@@ -136,6 +136,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
+        view.companyEnabled().setEnabled(project.getId() == null);
         view.description().setText(project.getDescription());
         view.product().setValue(project.getSingleProduct());
         view.customerType().setValue(project.getCustomerType());

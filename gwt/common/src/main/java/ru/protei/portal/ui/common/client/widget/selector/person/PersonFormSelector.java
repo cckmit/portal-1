@@ -8,7 +8,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class PersonFormSelector extends FormSelector< PersonShortView > implemen
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    value.getName(),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "" );
         } );

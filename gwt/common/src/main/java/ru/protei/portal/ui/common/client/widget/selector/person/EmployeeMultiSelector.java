@@ -20,7 +20,6 @@ public class EmployeeMultiSelector
     @Inject
     public void init(EmployeeModel model, Lang lang) {
         this.lang = lang;
-
         setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
@@ -35,7 +34,7 @@ public class EmployeeMultiSelector
             addOption(lang.employeeWithoutManager(), new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
         for (PersonShortView personView : options) {
-            addOption(personView.getDisplayShortName(), personView);
+            addOption(personView.getName(), personView);
         }
     }
 

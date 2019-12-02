@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.RefreshClickColumn;
@@ -18,7 +19,6 @@ import ru.protei.portal.ui.issuereport.client.activity.table.AbstractIssueReport
 import ru.protei.portal.ui.issuereport.client.view.table.columns.FilterColumn;
 import ru.protei.portal.ui.issuereport.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issuereport.client.view.table.columns.NumberColumn;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 public class IssueReportTableView extends Composite implements AbstractIssueReportTableView {
 
@@ -80,6 +80,9 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         numberColumn = new NumberColumn(lang, reportStatusLang);
         infoColumn = new InfoColumn(lang, reportTypeLang);
         filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, caseStateLang);
+        refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR);
+        removeClickColumn.setDisplayPredicate(v -> v.getStatus() != En_ReportStatus.PROCESS);
+        downloadClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.READY);
 
         table.addColumn(numberColumn.header, numberColumn.values);
         table.addColumn(infoColumn.header, infoColumn.values);

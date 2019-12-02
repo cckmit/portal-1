@@ -4,7 +4,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
@@ -26,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -37,19 +37,18 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class DocumentServiceImpl implements DocumentService {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentServiceImpl.class);
+    private static final Long DOCUMENT_ID_FOR_CREATE = -1L;
+    private static final Long LOCK_TIMEOUT = 5L;
+    private static final TimeUnit LOCK_TIMEOUT_TIME_UNIT = TimeUnit.SECONDS;
 
     @Autowired
     DocumentDAO documentDAO;
-
     @Autowired
     CaseObjectDAO caseObjectDAO;
-
     @Autowired
     DocumentStorageIndex documentStorageIndex;
-
     @Autowired
     LockService lockService;
-
     @Autowired
     DocumentSvnService documentSvnService;
 
@@ -65,7 +64,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         try {
             checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -83,7 +82,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         try {
             checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -114,95 +113,80 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Result<Document> createDocument( AuthToken token, Document document, FileItem fileItem) {
 
-        if (document == null || !isValidDocument(document)) {
+        if (document == null || !isValidDocument(document) || fileItem == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        byte[] fileData = fileItem.get();
+        En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
+        if (validationStatus != En_ResultStatus.OK) {
+            return error(validationStatus);
+        }
 
-        InputStream fileInputStream;
-        try {
-            fileInputStream = fileItem.getInputStream();
-        } catch (IOException e) {
-            log.error("createDocument(" + document.getId() + "): failed to get input stream from file item", e);
+        InputStream fileInputStream = getInputStream(fileItem);
+        if (fileInputStream == null) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-
-            En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
-            if (validationStatus != En_ResultStatus.OK) {
-                return error(validationStatus);
-            }
+        return lockService.doWithLock(Document.class, DOCUMENT_ID_FOR_CREATE, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
 
             document.setState(En_DocumentState.ACTIVE);
 
-            try {
-                if (!documentDAO.saveOrUpdate(document)) {
-                    return error(En_ResultStatus.INTERNAL_ERROR);
-                }
-            } catch (DuplicateKeyException ex) {
-                return error(En_ResultStatus.ALREADY_EXIST);
+            if (!saveToDB(document)) {
+                log.error("createDocument(): failed to save/update document to the db");
+                return error(En_ResultStatus.NOT_CREATED);
             }
 
-            Long documentId = document.getId(), projectId = document.getProjectId();
+            Long documentId = document.getId();
+            Long projectId = document.getProjectId();
 
-            try {
-                documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
-            } catch (IOException e) {
-                log.error("createDocument(" + document.getId() + "): failed to add file to the index", e);
-                documentDAO.removeByKey(documentId);
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (!saveToIndex(fileItem.get(), documentId, projectId)) {
+                log.error("createDocument(" + documentId + "): failed to add file to the index");
+                if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_CREATED);
             }
-            try {
-                documentSvnService.saveDocument(projectId, documentId, fileInputStream);
-                return ok(document);
-            } catch (SVNException e) {
-                log.error("createDocument(" + document.getId() + "): failed to save in the repository", e);
-                try {
-                    documentStorageIndex.removeDocument(documentId);
-                } catch (IOException e1) {
-                    log.error("createDocument(" + document.getId() + "): failed to delete document from the index");
-                }
-                documentDAO.removeByKey(documentId);
-                return error(En_ResultStatus.INTERNAL_ERROR);
+
+            if (!saveToSVN(fileInputStream, documentId, projectId)) {
+                log.error("createDocument(" + documentId + "): failed to save file to the svn");
+                if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the index");
+                if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_CREATED);
             }
+
+            return ok(document);
         });
     }
 
     @Override
     @Transactional
     public Result updateState( AuthToken token, Long documentId, En_DocumentState state) {
-        if (documentId == null ) {
+
+        if (documentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Document document = documentDAO.get(documentId);
-
-        if (document == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
+        Document document = new Document();
+        document.setId(documentId);
         document.setState(state);
 
         if (documentDAO.updateState(document)) {
             return ok();
         } else {
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
     }
 
     @Override
+    @Transactional
     public Result<Document> updateDocument( AuthToken token, Document document) {
 
-        if (document == null || !isValidDocument(document)) {
+        if (document == null || document.getId() == null || !isValidDocument(document)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Document oldDocument = documentDAO.get(document.getId());
 
         if (oldDocument == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
@@ -210,99 +194,99 @@ public class DocumentServiceImpl implements DocumentService {
             return error(validationStatus);
         }
 
-        try {
-            if (!documentDAO.saveOrUpdate(document)) {
-                return error(En_ResultStatus.INTERNAL_ERROR);
-            }
-        } catch (DuplicateKeyException ex) {
-            return error(En_ResultStatus.ALREADY_EXIST);
+        if (!updateAtDB(document)) {
+            log.error("updateDocument(" + document.getId() + "): failed to update document at the db");
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         return ok(document);
     }
+
     @Override
     public Result<Document> updateDocumentAndContent( AuthToken token, Document document, FileItem fileItem) {
 
-        if (document == null || !isValidDocument(document) || document.getId() == null || fileItem == null) {
+        if (document == null || document.getId() == null || !isValidDocument(document) || fileItem == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        Long projectId = document.getProjectId();
+        Long documentId = document.getId();
 
         if (document.getApproved()) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        final byte[] fileData = fileItem.get();
-        final InputStream fileInputStream;
-        try {
-            fileInputStream = fileItem.getInputStream();
-        } catch (IOException e) {
-            log.error("updateDocumentAndContent(" + document.getId() + "): Failed to get input stream from file item", e);
+        InputStream fileInputStream = getInputStream(fileItem);
+        if (fileInputStream == null) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+        return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
 
-            final Long projectId = document.getProjectId(), documentId = document.getId();
-
-            final Document oldDocument = documentDAO.get(document.getId());
+            Document oldDocument = documentDAO.get(documentId);
             if (oldDocument == null) {
-                return error(En_ResultStatus.INCORRECT_PARAMS);
+                return error(En_ResultStatus.NOT_FOUND);
             }
+
             En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
             if (validationStatus != En_ResultStatus.OK) {
                 return error(validationStatus);
             }
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            documentSvnService.getDocument(projectId, documentId, out);
-            final byte[] oldFileData = out.toByteArray();
-            out.close();
 
-            try {
-                try {
-                    documentDAO.merge(document);
-                } catch (DuplicateKeyException ex) {
-                    return error(En_ResultStatus.ALREADY_EXIST);
-                }
-                documentStorageIndex.updatePdfDocument(fileData, projectId, documentId);
-                documentSvnService.updateDocument(projectId, documentId, fileInputStream);
-                return ok(document);
-            } catch (SVNException | IOException e) {
-                log.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back", e);
-                documentDAO.merge(oldDocument);
-                try {
-                    documentStorageIndex.updatePdfDocument(oldFileData, documentId, projectId);
-                } catch (IOException e1) {
-                    log.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
-                }
+            byte[] oldFileData = getFromSVN(documentId, projectId);
+
+            if (!updateAtDB(document)) {
+                log.error("updateDocumentAndContent(" + documentId + "): failed to update document at the db");
+                return error(En_ResultStatus.NOT_UPDATED);
             }
-            return error(En_ResultStatus.INTERNAL_ERROR);
+
+            if (!updateAtIndex(fileItem.get(), documentId, projectId)) {
+                log.error("updateDocumentAndContent(" + documentId + "): failed to update file at the index");
+                if (!updateAtDB(oldDocument)) log.error("updateDocumentAndContent(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            if (!updateAtSVN(fileInputStream, documentId, projectId)) {
+                log.error("updateDocumentAndContent(" + documentId + "): failed to update file at the svn");
+                if (!updateAtDB(oldDocument)) log.error("updateDocumentAndContent(" + documentId + "): failed to rollback document from the db");
+                if (!updateAtIndex(oldFileData, documentId, projectId)) log.error("updateDocumentAndContent(" + documentId + "): failed to rollback document from the index");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            return ok(document);
         });
     }
 
     @Override
-    public Result<Document> removeDocument( AuthToken token, Document document) {
+    public Result<Long> removeDocument( AuthToken token, Long documentId, Long projectId) {
 
-        if (document == null || document.getId() == null) {
+        if (documentId == null || projectId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (document.getApproved()) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
+        return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
 
-        return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            Long projectId = document.getProjectId(), documentId = document.getId();
-            documentDAO.removeByKey(documentId);
-            documentSvnService.removeDocument(projectId, documentId);
-            documentStorageIndex.removeDocument(documentId);
-            return ok(document);
+            if (!removeFromDB(documentId)) {
+                log.error("removeDocument(" + documentId + "): failed to remove document from the db");
+                return error(En_ResultStatus.NOT_REMOVED);
+            }
+
+            if (!removeFromSVN(documentId, projectId)) {
+                log.error("removeDocument(" + documentId + "): failed to remove document from the svn | data inconsistency");
+            }
+
+            if (!removeFromIndex(documentId)) {
+                log.error("removeDocument(" + documentId + "): failed to remove document from the index | data inconsistency");
+            }
+
+            return ok(documentId);
         });
     }
 
     @Override
     public Result<SearchResult<Document>> getProjectDocuments( AuthToken token, Long projectId) {
         DocumentQuery query = new DocumentQuery();
-        query.setProjectId(projectId);
+        query.setProjectIds(new LinkedList<>(Collections.singletonList(projectId)));
         return getDocuments(token, query);
     }
 
@@ -358,14 +342,133 @@ public class DocumentServiceImpl implements DocumentService {
     private boolean isValidDocument(Document document){
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
+
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
         Project project = Project.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
-        if (project == null) return false;
-        else {
-            if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
-                return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-            }
+        if (project == null) {
+            return false;
+        }
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
+    }
+
+    private boolean saveToDB(Document document) {
+        try {
+            if (documentDAO.persist(document) == null) {
+                log.error("saveToDB(): failed to save document to the db");
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("saveToDB(): failed to save document to the db", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean updateAtDB(Document document) {
+        try {
+            if (!documentDAO.merge(document)) {
+                log.error("updateAtDB(): failed to update document at the db");
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("updateAtDB(): failed to update document at the db", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean removeFromDB(Long documentId) {
+        try {
+            if (!documentDAO.removeByKey(documentId)) {
+                log.error("removeFromDB(" + documentId + "): failed to remove document from the db");
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("removeFromDB(" + documentId + "): failed to remove document from the db", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean saveToIndex(byte[] data, Long documentId, Long projectId) {
+        try {
+            documentStorageIndex.addPdfDocument(data, projectId, documentId);
+        } catch (Exception e) {
+            log.error("saveToIndex(" + documentId + ", " + projectId + "): failed to add file to the index", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean updateAtIndex(byte[] data, Long documentId, Long projectId) {
+        try {
+            documentStorageIndex.updatePdfDocument(data, projectId, documentId);
+        } catch (Exception e) {
+            log.error("updateAtIndex(" + documentId + ", " + projectId + "): failed to update file at the index", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean removeFromIndex(Long documentId) {
+        try {
+            documentStorageIndex.removeDocument(documentId);
+        } catch (Exception e) {
+            log.error("removeFromIndex(" + documentId + "): failed to remove file from the index", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId) {
+        try {
+            documentSvnService.saveDocument(projectId, documentId, inputStream);
+        } catch (Exception e) {
+            log.error("saveToSVN(" + documentId + ", " + projectId + "): failed to save file to the svn", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId) {
+        try {
+            documentSvnService.updateDocument(projectId, documentId, inputStream);
+        } catch (Exception e) {
+            log.error("updateAtSVN(" + documentId + ", " + projectId + "): failed to update file at the svn", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean removeFromSVN(Long documentId, Long projectId) {
+        try {
+            documentSvnService.removeDocument(projectId, documentId);
+        } catch (Exception e) {
+            log.error("removeFromSVN(" + documentId + ", " + projectId + "): failed to remove document from the svn", e);
+            return false;
+        }
+        return true;
+    }
+
+    private byte[] getFromSVN(Long documentId, Long projectId) throws SVNException, IOException {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            documentSvnService.getDocument(projectId, documentId, out);
+            return out.toByteArray();
+        }
+    }
+
+    private InputStream getInputStream(FileItem fileItem) {
+        try {
+            return fileItem.getInputStream();
+        } catch (Exception e) {
+            log.error("getInputStream(): failed to get input stream from file item", e);
+            return null;
+        }
     }
 }

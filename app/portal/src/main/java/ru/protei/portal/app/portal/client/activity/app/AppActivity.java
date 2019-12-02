@@ -12,6 +12,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -53,8 +54,8 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUser(event.profile.getShortName(),
-                event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(),
+        view.setUser(transliteration(event.profile.getShortName()),
+                event.profile.getCompany() == null ? "" : transliteration(event.profile.getCompany().getCname()),
                 AvatarUtils.getAvatarUrl(event.profile));
 
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
@@ -129,6 +130,10 @@ public abstract class AppActivity
 
     private void stopPingServerTimer() {
         pingTimer.cancel();
+    }
+
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

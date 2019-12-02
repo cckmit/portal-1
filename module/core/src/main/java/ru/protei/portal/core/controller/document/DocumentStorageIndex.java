@@ -16,4 +16,6 @@ public interface DocumentStorageIndex {
     void updateDocument(String body, Long documentId, Long projectId) throws IOException;
 
     void updatePdfDocument(byte[] fileData, Long documentId, Long projectId) throws IOException;
+
+    boolean isIndexExists() throws IOException;
 }

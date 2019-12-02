@@ -38,7 +38,6 @@ public interface SiteFolderController extends RemoteService {
 
     Application getApplication(long id) throws RequestFailedException;
 
-
     Platform savePlatform(Platform platform) throws RequestFailedException;
 
     Server saveServer(Server server, Long serverIdOfAppsToBeCloned) throws RequestFailedException;

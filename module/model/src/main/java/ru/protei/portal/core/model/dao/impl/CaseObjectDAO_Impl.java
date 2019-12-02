@@ -115,6 +115,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public List<Long> getCaseNumbersByPlatformId(Long id) {
+        String sql = "SELECT case_object.CASENO FROM " + getTableName() + " WHERE case_object.platform_id = " + id;
+        return jdbcTemplate.queryForList(sql, Long.class);
+    }
+
+    @Override
     public boolean updateEmailLastId(Long caseId, Long emailLastId) {
         String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + emailLastId + " WHERE " + getIdColumnName() + " = " + caseId;
         return jdbcTemplate.update(sql) > 0;

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.selector.person;
+package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -8,16 +8,16 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.List;
 
-public class PersonButtonViewerSelector extends Selector<PersonShortView> implements SelectorWithModel<PersonShortView> {
+public class CompanyButtonViewerSelector extends Selector<EntityOption> implements SelectorWithModel<EntityOption> {
 
-    public PersonButtonViewerSelector() {
+    public CompanyButtonViewerSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -29,11 +29,7 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
             if (value == null) {
                 return new DisplayOption(defaultValue);
             }
-            return new DisplayOption(
-                    value.getDisplayShortName(),
-                    value.isFired() ? "not-active" : "",
-                    value.isFired() ? "fa fa-ban ban" : ""
-            );
+            return new DisplayOption(value.getDisplayText());
         });
     }
 
@@ -41,11 +37,11 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
     public void fillSelectorView(DisplayOption selectedValue) {}
 
     @Override
-    public void fillOptions(List<PersonShortView> persons) {
+    public void fillOptions(List<EntityOption> companies) {
         clearOptions();
         addOption(null);
-        if (persons != null) {
-            persons.forEach(this::addOption);
+        if (companies != null) {
+            companies.forEach(this::addOption);
         }
     }
 
@@ -65,6 +61,6 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
 
     private String defaultValue = "";
 
-    interface PersonButtonViewerSelectorUiBinder extends UiBinder<HTMLPanel, PersonButtonViewerSelector> {}
-    private static PersonButtonViewerSelectorUiBinder ourUiBinder = GWT.create(PersonButtonViewerSelectorUiBinder.class);
+    interface CompanyButtonViewerSelectorUiBinder extends UiBinder<HTMLPanel, CompanyButtonViewerSelector> {}
+    private static CompanyButtonViewerSelectorUiBinder ourUiBinder = GWT.create(CompanyButtonViewerSelectorUiBinder.class);
 }

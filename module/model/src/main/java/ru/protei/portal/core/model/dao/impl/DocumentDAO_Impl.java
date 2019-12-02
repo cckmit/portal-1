@@ -71,15 +71,22 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
-                condition.append(" and (document.name like ? or CO.case_name like ?)");
+                condition.append(" and (document.name like ? or document.decimal_number like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);
             }
 
             if (CollectionUtils.isNotEmpty(query.getKeywords())) {
-                condition.append(" and document.tags in ");
-                condition.append(HelperFunc.makeInArg(query.getKeywords()));
+                condition.append(" and (");
+                condition.append(query.getKeywords()
+                        .stream()
+                        .map(tag -> " document.tags like ? ")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(")");
+                query.getKeywords().forEach(tag -> {
+                    args.add(HelperFunc.makeLikeArg(tag, true));
+                });
             }
 
             if (query.getFrom() != null) {
@@ -103,9 +110,9 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 args.add(query.getManagerId());
             }
 
-            if (query.getProjectId() != null) {
-                condition.append(" and document.project_id= ?");
-                args.add(query.getProjectId());
+            if (CollectionUtils.isNotEmpty(query.getProjectIds())) {
+                condition.append(" and document.project_id in ");
+                condition.append(HelperFunc.makeInArg(query.getProjectIds()));
             }
 
             if (CollectionUtils.isNotEmpty(query.getOrganizationCodes())) {

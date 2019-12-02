@@ -19,8 +19,9 @@ public class CaseObjectSqlBuilder {
             if ( query.getId() != null ) {
                 condition.append( " and case_object.id=?" );
                 args.add( query.getId() );
-            } else if (CollectionUtils.isNotEmpty(query.getMemberIds())) {
-                condition.append(" and case_object.id in (select case_id from case_member where member_id in " + HelperFunc.makeInArg(query.getMemberIds(), false) + ")");
+            } else if (query.getMemberId() != null) {
+                condition.append(" and (case_object.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
+                condition.append(" or case_object.creator = ").append(query.getMemberId()).append(")");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
                 if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
                     if (query.isCustomerSearch()) {

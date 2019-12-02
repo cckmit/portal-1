@@ -337,7 +337,10 @@ public class EquipmentServiceImpl implements EquipmentService {
                 documents2merge.add(document);
                 continue;
             }
-            documentService.removeDocument(token, document);
+            Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId());
+            if (result.isError()) {
+                log.error("removeLinkedDocuments(): failed to remove document | status={}", result.getStatus());
+            }
         }
 
         if (CollectionUtils.isNotEmpty(documents2merge)) {

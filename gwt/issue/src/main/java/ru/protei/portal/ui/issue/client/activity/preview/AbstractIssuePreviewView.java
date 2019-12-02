@@ -30,9 +30,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
 
     void setContact(String value);
     void setManager(String value);
-    void setName(String value);
-
-    String getName();
+    void setName(String value, String jiraUrl);
 
     void setInfo(String value);
 

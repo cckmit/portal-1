@@ -10,9 +10,18 @@ public interface AbstractDocumentUploader extends HasChangeHandlers {
 
     void resetForm();
 
+    void submitForm(String url);
+
     void resetAction();
 
     void uploadBindToDocument(Document document);
 
     void setUploadHandler(UploadHandler uploadHandler);
+
+    void setResetHandler(ResetHandler resetHandler);
+
+
+    interface ResetHandler {
+        void onFormReset();
+    }
 }

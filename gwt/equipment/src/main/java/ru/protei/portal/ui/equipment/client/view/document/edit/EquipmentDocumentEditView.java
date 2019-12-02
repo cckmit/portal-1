@@ -41,6 +41,7 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
         availableDocumentCategories.add(En_DocumentCategory.ED);
         availableDocumentCategories.add(En_DocumentCategory.KD);
         documentCategory.fillOptions(availableDocumentCategories);
+        documentUploader.setResetHandler(() -> fileName.setText(null));
     }
 
     @Override

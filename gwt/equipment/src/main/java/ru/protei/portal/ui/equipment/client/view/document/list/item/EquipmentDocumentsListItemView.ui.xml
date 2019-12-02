@@ -3,15 +3,15 @@
 
     <g:HTMLPanel ui:field="root" tag="li" styleName="eqdoc-list-item">
         <div class="approve">
-            <i ui:field="approve" class="fa fa-lg"/>
+            <i ui:field="approve" class="far fa-lg"/>
         </div>
-        <div class="content">
+        <div class="info">
             <span ui:field="decimalNumber" class="decimal-number"/>
             <span ui:field="information" class="information"/>
         </div>
         <div class="controls">
-            <g:Anchor ui:field="download" styleName="fa fa-lg fa-cloud-download" href="#"/>
-            <g:Anchor ui:field="edit" styleName="fa fa-lg fa-pencil" href="#"/>
+            <g:Anchor ui:field="download" styleName="fas fa-cloud-download-alt" href="#"/>
+            <g:Anchor ui:field="edit" styleName="fas fa-pencil-alt" href="#"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

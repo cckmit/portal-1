@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class EmployeeFormSelector extends FormSelector<PersonShortView> implemen
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    value.getName(),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "");
         } );
@@ -41,7 +40,7 @@ public class EmployeeFormSelector extends FormSelector<PersonShortView> implemen
             addOption(null);
         }
 
-        persons.forEach(this :: addOption);
+        persons.forEach(this::addOption);
     }
 
     public void setDefaultValue(String value) {

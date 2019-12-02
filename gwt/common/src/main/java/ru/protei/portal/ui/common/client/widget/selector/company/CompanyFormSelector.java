@@ -30,7 +30,7 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
+        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText()) );
     }
 
     @Override
@@ -127,6 +127,12 @@ public class CompanyFormSelector extends FormSelector< EntityOption > implements
     public void showOnlyParentCompanies( boolean isOnlyParentCompanies ) {
         if (model != null) {
             model.updateQuery( this, categories, isOnlyParentCompanies );
+        }
+    }
+
+    public void showDeprecated(Boolean isShowDeprecated) {
+        if (model != null) {
+            model.updateQuery(this, isShowDeprecated);
         }
     }
 

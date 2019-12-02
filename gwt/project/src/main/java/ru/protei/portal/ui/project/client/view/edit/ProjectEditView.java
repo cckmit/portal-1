@@ -46,6 +46,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         ensureDebugIds();
         product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
+        company.showDeprecated(false);
         product.setDefaultValue(lang.selectIssueProduct());
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
@@ -108,6 +109,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue<EntityOption> company() { return company; }
 
     @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
+
+    @Override
     public HasValue<En_CustomerType> customerType() { return customerType; }
 
     @Override
@@ -127,7 +133,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasEnabled saveEnabled() {
         return saveButton;
     }
-
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {

@@ -11,6 +11,7 @@ import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -39,12 +40,12 @@ public class PlatformConciseTableView extends Composite implements AbstractPlatf
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
         editClickColumn.setColumnProvider(columnProvider);
-        editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
 
         removeClickColumn.setHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
         removeClickColumn.setColumnProvider(columnProvider);
-        removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
@@ -86,6 +87,9 @@ public class PlatformConciseTableView extends Composite implements AbstractPlatf
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     ClickColumn<Platform> name = new ClickColumn<Platform>() {
         @Override

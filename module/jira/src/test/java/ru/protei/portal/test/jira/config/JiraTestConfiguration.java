@@ -6,6 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -229,5 +235,30 @@ public class JiraTestConfiguration {
     @Bean
     public EventExpirationControl getEventExpirationControl() {
         return new EventExpirationControl();
+    }
+
+    @Bean
+    public YoutrackService getYoutrackService() {
+        return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackRestClient getYoutrackRestDAO() {
+        return new YoutrackRestClientImpl();
+    }
+
+    @Bean
+    public YoutrackApiClient getYoutrackApiDAO() {
+        return new YoutrackApiClientImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
     }
 }

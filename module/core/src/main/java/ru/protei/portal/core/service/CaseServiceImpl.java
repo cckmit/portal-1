@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -12,7 +13,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.JiraUtils;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
@@ -759,7 +760,8 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setJiraMetaData(new JiraMetaData(
                 extAppData.issueType(),
                 extAppData.slaSeverity(),
-                endpoint.getSlaMapId()
+                endpoint.getSlaMapId(),
+                portalConfig.data().getJiraUrl()
             ));
         } catch (Exception e) {
             log.warn("Failed to fill jira SLA information", e);
@@ -879,6 +881,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    PortalConfig portalConfig;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

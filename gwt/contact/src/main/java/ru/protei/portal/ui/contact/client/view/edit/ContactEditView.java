@@ -39,6 +39,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
                 En_CompanyCategory.CUSTOMER,
                 En_CompanyCategory.PARTNER,
                 En_CompanyCategory.SUBCONTRACTOR ) );
+        company.showDeprecated(false);
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
     }

@@ -1,10 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.selector.company;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -69,6 +71,12 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         selectorToQuery.put(selector, query);
     }
 
+    public void updateQuery(SelectorWithModel<EntityOption> selector, Boolean isShowDeprecated) {
+        if (selectorToQuery.get(selector) != null) {
+            selectorToQuery.get(selector).setShowDeprecated(isShowDeprecated);
+        }
+    }
+
     private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
@@ -78,6 +86,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
             @Override
             public void onSuccess( List<EntityOption> options ) {
+                transliteration(options);
                 selector.fillOptions( options );
                 selector.refreshValue();
             }
@@ -95,6 +104,10 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         query.setOnlyParentCompanies( isParentIdIsNull );
         query.setSortHomeCompaniesAtBegin( true );
         return query;
+    }
+
+    private void transliteration(List<EntityOption> options) {
+        options.forEach(option -> option.setDisplayText(TransliterationUtils.transliterate(option.getDisplayText(), LocaleInfo.getCurrentLocale().getLocaleName())));
     }
 
     @Inject

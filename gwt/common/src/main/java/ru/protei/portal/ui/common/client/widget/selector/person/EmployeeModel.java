@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -7,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -62,8 +64,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
         }
     }
 
-    private boolean requested;
-
     private void refreshOptions() {
         if (requested) return;
         requested = true;
@@ -82,11 +82,16 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
                 if ( value > 0 ) {
                     options.add(0, options.remove( value ) );
                 }
+                transliteration(options);
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();
             }
         } );
+    }
+
+    private void transliteration(List<PersonShortView> options) {
+        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
     }
 
     @Inject
@@ -95,9 +100,9 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     @Inject
     Lang lang;
 
-    private List< PersonShortView > list = new ArrayList<>();
-
     Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
-
     Long myId;
+
+    private boolean requested;
+    private List< PersonShortView > list = new ArrayList<>();
 }

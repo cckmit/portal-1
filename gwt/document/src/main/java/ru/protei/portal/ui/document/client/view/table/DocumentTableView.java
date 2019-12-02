@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -25,16 +26,16 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn, ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn) {
+    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn,
+                       ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn,
+                       RemoveClickColumn<Document> removeClickColumn
+    ) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.downloadClickColumn = downloadClickColumn;
         this.archiveClickColumn = archiveClickColumn;
+        this.removeClickColumn = removeClickColumn;
         this.documentNameColumn = documentNameColumn;
-
-        editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
-        archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
-        downloadClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         initTable();
     }
 
@@ -50,6 +51,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         archiveClickColumn.setArchiveHandler(activity);
         archiveClickColumn.setColumnProvider(columnProvider);
+
+        removeClickColumn.setRemoveHandler(activity);
+        removeClickColumn.setColumnProvider(columnProvider);
 
         documentNameColumn.setColumnProvider(columnProvider);
 
@@ -116,10 +120,12 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     }
 
     private void initTable() {
-        editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
         downloadClickColumn.setDownloadCustomImage("./images/pdficon.png");
-        archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
-        downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        downloadClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
+        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) );
+        archiveClickColumn.setArchiveFilter(Document::isDeprecatedUnit);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_REMOVE) && !v.isDeprecatedUnit());
 
         columns.add(id);
         columns.add(documentNameColumn);
@@ -132,6 +138,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
+        table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
     private final ClickColumn<Document> id = new ClickColumn<Document>() {
@@ -213,10 +220,14 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     @UiField
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     ClickColumnProvider<Document> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Document> editClickColumn;
     DownloadClickColumn<Document> downloadClickColumn;
     ArchiveClickColumn<Document> archiveClickColumn;
+    RemoveClickColumn<Document> removeClickColumn;
     DocumentNameColumn<Document> documentNameColumn;
     List<ClickColumn<Document>> columns = new LinkedList<>();
 
