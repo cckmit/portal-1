@@ -10,21 +10,20 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ProductController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 /**
  * Реализация сервиса управления продуктами
@@ -48,9 +47,9 @@ public class ProductControllerImpl implements ProductController {
 
         log.info( "getProduct(): id={}", productId );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< DevUnit > response = productService.getProduct( descriptor.makeAuthToken(), productId );
+        Result< DevUnit > response = productService.getProduct( token, productId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -65,14 +64,14 @@ public class ProductControllerImpl implements ProductController {
 
         log.info( "saveProduct(): product={}", product );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         if ( product == null || !isNameUnique( product.getName(), product.getType(), product.getId() ) )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
         Result<DevUnit> response = product.getId() == null
-                ? productService.createProduct( descriptor.makeAuthToken(), product )
-                : productService.updateProduct( descriptor.makeAuthToken(), product );
+                ? productService.createProduct( token, product )
+                : productService.updateProduct( token, product );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -87,9 +86,9 @@ public class ProductControllerImpl implements ProductController {
 
         log.info( "updateState(): productId={} | state={}", productId, state);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<En_DevUnitState> response = productService.updateState(descriptor.makeAuthToken(), productId, state);
+        Result<En_DevUnitState> response = productService.updateState(token, productId, state);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -109,7 +108,8 @@ public class ProductControllerImpl implements ProductController {
         if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
 
-        Result< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, type, excludeId );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< Boolean > response = productService.checkUniqueProductByName( token, name, type, excludeId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
@@ -125,7 +125,8 @@ public class ProductControllerImpl implements ProductController {
         log.info( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
-        Result< List<ProductShortView> > result = productService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List<ProductShortView> > result = productService.shortViewList( token, query );
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -140,26 +141,13 @@ public class ProductControllerImpl implements ProductController {
 
         log.info( "getProductDirectionList(): query={}", query );
 
-        String[] names = new String[] {
-                "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
-        };
-
-        Result< List< ProductDirectionInfo > > result = productService.productDirectionList( getDescriptorAndCheckSession().makeAuthToken(), query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List< ProductDirectionInfo > > result = productService.productDirectionList( token, query );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

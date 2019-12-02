@@ -6,9 +6,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author michael
@@ -238,6 +237,15 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public void setArchived(Boolean deleted) {
         isArchived = deleted;
+    }
+
+    public Collection<Long> getCompanyAndChildIds() {
+        ArrayList<Long> ids = new ArrayList<>();
+        ids.add(getId());
+        if (getChildCompanies() != null) {
+            ids.addAll(getChildCompanies().stream().map(Company::getId).collect(Collectors.toList()));
+        }
+        return ids;
     }
 
     @Override

@@ -18,6 +18,8 @@ import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.authtoken.AuthTokenServiceImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -42,6 +44,9 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
     public AuthService getAuthService() { return new AuthServiceImpl(); }
+
+    @Bean
+    public AuthTokenService getAuthTokenService() { return new AuthTokenServiceImpl(); }
 
     @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {

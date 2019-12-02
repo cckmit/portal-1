@@ -11,6 +11,8 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseLinkController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -50,15 +52,15 @@ public class CaseLinkControllerImpl implements CaseLinkController {
 
     @Override
     public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
+        AuthToken token = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData( caseService.getCaseLinks(token, caseId ) );
     }
 
     @Override
     public List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        Person person = getCurrentPerson( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.updateLinks( authToken, caseId, person, links ) );
+        AuthToken token = getAuthToken( sessionService, httpServletRequest );
+        Person person = authTokenService.getPerson(token).getData();
+        return checkResultAndGetData( linkService.updateLinks( token, caseId, person, links ) );
     }
 
     @Autowired
@@ -74,6 +76,8 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     CaseLinkService caseLinkService;
     @Autowired
     HttpServletRequest request;
+    @Autowired
+    AuthTokenService authTokenService;
 
 
     private static final Logger log = LoggerFactory.getLogger(CaseLinkControllerImpl.class);

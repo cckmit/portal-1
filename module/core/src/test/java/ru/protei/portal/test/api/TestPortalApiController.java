@@ -169,7 +169,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseObject.setInitiator(person);
         caseObject.setInitiatorCompany( company );
 
-        authService.makeThreadDescriptor( userLogin, person, company );
+        authService.makeThreadDescriptor( userLogin, person );
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
@@ -193,7 +193,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         startCaseObject.setName(ISSUES_PREFIX + "new");
 
-        authService.makeThreadDescriptor( userLogin, person, company );
+        authService.makeThreadDescriptor( userLogin, person );
         ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
         resultActions
                 .andExpect(status().isOk())
@@ -276,7 +276,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -286,7 +286,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setManager(manager);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject, person).getData().getId());
         }
     }
 
@@ -297,7 +297,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject, person).getData().getId());
         }
     }
 

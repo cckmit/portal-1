@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -58,6 +59,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Autowired
+    AuthTokenService authTokenService;
+
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
      */
@@ -79,14 +83,14 @@ public class AttachmentServiceImpl implements AttachmentService {
             } );
 
             Attachment attachment = attachmentDAO.get(id);
-            UserSessionDescriptor ud = authService.findSession( token );
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
             if(result.isOk()
-                    && ud != null ) {
+                    && token != null ) {
+                Person person = authTokenService.getPerson(token).getData();
                 publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
-                        ud.getPerson(), ca.getCaseId(), null, Collections.singletonList(attachment)));
+                        person, ca.getCaseId(), null, Collections.singletonList(attachment)));
             }
 
             return result;

@@ -2,8 +2,9 @@ package ru.protei.portal.core.model.util;
 
 public class CrmConstants {
 
-    public interface Auth {
-        String SESSION_DESC = "auth-session-data";
+    public interface Session {
+        String AUTH_TOKEN = "session-auth-token";
+        String FILE_ITEM = "file-item";
     }
 
     public interface Header {
@@ -25,10 +26,6 @@ public class CrmConstants {
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
         int MIN_LENGTH_FOR_SEARCH_BY_COMMENTS = 3;
-    }
-
-    public interface FileUpload {
-        String FILE_ITEM_DESC = "file-item";
     }
 
     public interface CaseTag {

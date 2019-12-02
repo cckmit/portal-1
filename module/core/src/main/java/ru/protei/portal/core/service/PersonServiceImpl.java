@@ -8,11 +8,12 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Сервис управления person
  */
@@ -56,14 +58,14 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {
             return personQuery;
         }
 
         if (personQuery.getCompanyIds() != null) {
-            personQuery.getCompanyIds().retainAll( descriptor.getAllowedCompaniesIds() );
+            Company company = authTokenService.getCompany(token).getData();
+            personQuery.getCompanyIds().retainAll(company.getCompanyAndChildIds());
         }
 
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
@@ -72,7 +74,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     AuthService authService;
-
+    @Autowired
+    AuthTokenService authTokenService;
     @Autowired
     PolicyService policyService;
 

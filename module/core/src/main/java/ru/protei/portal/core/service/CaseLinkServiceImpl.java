@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -59,6 +60,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Autowired
     EventPublisherService publisherService;
+
+    @Autowired
+    AuthTokenService authTokenService;
 
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
@@ -247,8 +251,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     public Result<Void> sendNotificationLinkChanged(AuthToken token, Long caseId, DiffCollectionResult<CaseLink> linksDiff ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, linksDiff ));
+        Person person = authTokenService.getPerson(token).getData();
+        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, person, caseId, linksDiff ));
         return ok();
     }
 
@@ -293,8 +297,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private boolean isShowOnlyPrivateLinks(AuthToken token) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         return !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
     }
 

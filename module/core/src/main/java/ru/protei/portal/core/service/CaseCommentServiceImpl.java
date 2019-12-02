@@ -351,8 +351,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
         if (token != null) {
-            UserSessionDescriptor descriptor = authService.findSession(token);
-            Set<UserRole> roles = descriptor.getLogin().getRoles();
+            Set<UserRole> roles = token.getRoles();
             if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
                 query.setViewPrivate(false);
             }
@@ -360,8 +359,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
     private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
         if (token != null) {
-            UserSessionDescriptor descriptor = authService.findSession( token );
-            Set< UserRole > roles = descriptor.getLogin().getRoles();
+            Set< UserRole > roles = token.getRoles();
             return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
         } else {
             return false;
@@ -388,7 +386,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObject = caseObjectDAO.get(caseObjectId);
-            if (!policyService.hasAccessForCaseObject(authService.findSession( token ), En_Privilege.ISSUE_VIEW, caseObject)) {
+            if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
                 return En_ResultStatus.PERMISSION_DENIED;
             }
         }

@@ -35,6 +35,8 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
 
@@ -59,24 +61,22 @@ public class FileController {
 
     @Autowired
     CaseService caseService;
-
     @Autowired
     AttachmentService attachmentService;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     FileStorage fileStorage;
-
     @Autowired
     EventAssemblerService publisherService;
-
     @Autowired
     PortalConfig config;
-
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    SessionService sessionService;
+    @Autowired
+    AuthTokenService authTokenService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
@@ -114,16 +114,15 @@ public class FileController {
             HttpServletResponse response
     ) {
 
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-        UploadResult result = null;
-
-        if (ud == null) {
-            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
+        AuthToken authToken = sessionService.getAuthToken(request);
+        if (authToken == null) {
+            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "AuthToken is null"));
         }
 
-        AuthToken authToken = ud.makeAuthToken();
-        Person creator = ud.getPerson();
+        Person creator = authTokenService.getPerson(authToken).getData();
+
         List<Attachment> bindAttachments = new ArrayList(  );
+        UploadResult result = null;
 
         try {
             logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
@@ -176,15 +175,15 @@ public class FileController {
     @PostMapping(value = "/uploadBase64File", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
     @ResponseBody
     public String uploadBase64File(HttpServletRequest request, @RequestBody Base64Facade base64Facade) {
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
-        UploadResult result = checkInputParams (ud, base64Facade);
+        AuthToken authToken = sessionService.getAuthToken(request);
+        UploadResult result = checkInputParams (authToken, base64Facade);
 
         try {
             if (result == null) {
                 String[] parts = base64Facade.getBase64().split(",");
                 byte[] bytes = Base64.getDecoder().decode(parts[1]);
-                Person creator = ud.getPerson();
+                Person creator = authTokenService.getPerson(authToken).getData();
                 Attachment attachment = saveAttachment(bytes, base64Facade, creator.getId());
                 result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
             }
@@ -201,15 +200,15 @@ public class FileController {
         List<String> attachmentsJsons = new ArrayList<>();
         List<Attachment> attachments = new ArrayList<>();
 
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-        if (ud == null) {
+        AuthToken authToken = sessionService.getAuthToken(request);
+        if (authToken == null) {
             return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "auth error"));
         }
 
-        Person creator = ud.getPerson();
+        Person creator = authTokenService.getPerson(authToken).getData();
 
         for (Base64Facade currB64facade : base64Facades) {
-            UploadResult result = checkInputParams(ud, currB64facade);
+            UploadResult result = checkInputParams(authToken, currB64facade);
 
             if (result != null) {
                 removeFiles(attachments);
@@ -443,11 +442,11 @@ public class FileController {
         return fileSize > maxSize * BYTES_IN_MEGABYTE;
     }
 
-    private UploadResult checkInputParams (UserSessionDescriptor ud, Base64Facade base64Facade){
+    private UploadResult checkInputParams (AuthToken authToken, Base64Facade base64Facade){
         UploadResult result = null;
 
-        if (ud == null) {
-            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null");
+        if (authToken == null) {
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "AuthToken is null");
         }
 
         else if (isFileSizeExceed(base64Facade.getSize(), config.data().getMaxFileSize())){

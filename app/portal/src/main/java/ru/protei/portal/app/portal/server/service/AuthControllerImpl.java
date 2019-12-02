@@ -5,17 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.app.portal.client.service.AuthController;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
@@ -31,11 +31,11 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public Profile authenticate( String login, String password) throws RequestFailedException {
 
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
+        AuthToken token = sessionService.getAuthToken(httpRequest);
 
-        if (descriptor != null) {
-            log.info("authentificate: sessionDescriptior={}", descriptor);
-            return makeProfileByDescriptor(descriptor);
+        if (token != null) {
+            log.info("authentificate: token={}", token);
+            return makeProfileByAuthToken(token);
         }
 
         if (login == null && password == null) {
@@ -45,46 +45,51 @@ public class AuthControllerImpl implements AuthController {
 
         log.info( "authentificate: login={}", login );
 
-        Result< UserSessionDescriptor > result = authService.login(
+        httpRequest.getSession().setMaxInactiveInterval(AuthService.DEF_APP_SESSION_LIVE_TIME);
+
+        token = ServiceUtils.checkResultAndGetData(authService.login(
                 httpRequest.getSession().getId(),
                 login,
                 password,
                 httpRequest.getRemoteAddr(),
                 httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
-        );
-        if ( result.isError() ) {
-            throw new RequestFailedException( result.getStatus() );
-        }
+        ));
 
-        sessionService.setUserSessionDescriptor( httpRequest, result.getData() );
-        return makeProfileByDescriptor( result.getData() );
+        sessionService.setAuthToken(httpRequest, token);
+        return makeProfileByAuthToken(token);
     }
 
     @Override
     public void logout() {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-        if ( descriptor != null ) {
-            authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( CrmConstants.Header.USER_AGENT ) );
-            sessionService.setUserSessionDescriptor( httpRequest, null );
+        AuthToken token = sessionService.getAuthToken(httpRequest);
+        if (token != null) {
+            authService.logout(
+                    httpRequest.getSession().getId(),
+                    httpRequest.getRemoteAddr(),
+                    httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
+            );
+            sessionService.setAuthToken(httpRequest, null);
         }
     }
 
-    private Profile makeProfileByDescriptor( UserSessionDescriptor sessionDescriptor ) {
-        Profile profile = new Profile();
-        Set< UserRole > roles = sessionDescriptor.getLogin().getRoles();
-        profile.setRoles( roles );
-        profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
-        profile.setName( sessionDescriptor.getPerson().getFirstName() );
-        profile.setShortName( sessionDescriptor.getPerson().getDisplayShortName() );
-        profile.setFullName( sessionDescriptor.getPerson().getDisplayName() );
-        profile.setIsFired( sessionDescriptor.getPerson().isFired());
-        profile.setId( sessionDescriptor.getPerson().getId() );
-        profile.setPrivileges( collectPrivileges( roles ) );
-        profile.setGender( sessionDescriptor.getPerson().getGender() );
-        profile.setCompany( sessionDescriptor.getCompany() );
-        profile.setLoginId( sessionDescriptor.getSession().getLoginId() );
-        profile.setAuthType( En_AuthType.find(sessionDescriptor.getLogin().getAuthTypeId()) );
+    private Profile makeProfileByAuthToken(AuthToken token) throws RequestFailedException {
 
+        Person person = ServiceUtils.checkResultAndGetData(authTokenService.getPerson(token));
+        Company company = ServiceUtils.checkResultAndGetData(authTokenService.getCompany(token));
+        UserLogin userLogin = ServiceUtils.checkResultAndGetData(authTokenService.getUserLogin(token));
+
+        Profile profile = new Profile();
+        profile.setLoginId(token.getUserLoginId());
+        profile.setAuthType(En_AuthType.find(userLogin.getAuthTypeId()));
+        profile.setRoles(token.getRoles());
+        profile.setPrivileges(collectPrivileges(token.getRoles()));
+        profile.setName(person.getFirstName());
+        profile.setShortName(person.getDisplayShortName());
+        profile.setFullName(person.getDisplayName());
+        profile.setIsFired(person.isFired());
+        profile.setId(person.getId());
+        profile.setGender(person.getGender());
+        profile.setCompany(company);
         return profile;
     }
 
@@ -118,10 +123,10 @@ public class AuthControllerImpl implements AuthController {
 
     @Autowired
     HttpServletRequest httpRequest;
-
     @Autowired
     SessionService sessionService;
-
+    @Autowired
+    AuthTokenService authTokenService;
     @Autowired
     private AuthService authService;
 

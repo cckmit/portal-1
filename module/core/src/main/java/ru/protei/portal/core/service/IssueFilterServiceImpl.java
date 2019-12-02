@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
 
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
  */
@@ -31,10 +33,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Autowired
     CaseFilterDAO caseFilterDAO;
-
     @Autowired
     AuthService authService;
-
+    @Autowired
+    AuthTokenService authTokenService;
     @Autowired
     PolicyService policyService;
 
@@ -73,11 +75,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
         if (filter.getLoginId() == null) {
-            filter.setLoginId(descriptor.getLogin().getId());
+            filter.setLoginId(token.getUserLoginId());
         }
-        applyFilterByScope(descriptor, filter);
+        applyFilterByScope(token, filter);
 
         filter.setName(filter.getName().trim());
 
@@ -111,11 +112,12 @@ public class IssueFilterServiceImpl implements IssueFilterService {
                 filter.getParams() == null;
     }
 
-    private void applyFilterByScope(UserSessionDescriptor descriptor, CaseFilter filter) {
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+    private void applyFilterByScope(AuthToken token, CaseFilter filter) {
+        Set<UserRole> roles = token.getRoles();
         if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            Company company = authTokenService.getCompany(token).getData();
             CaseQuery query = filter.getParams();
-            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds()));
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), company.getCompanyAndChildIds()));
             query.setAllowViewPrivate(false);
         }
     }

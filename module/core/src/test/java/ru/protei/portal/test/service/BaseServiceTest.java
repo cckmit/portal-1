@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
@@ -123,12 +124,8 @@ public class BaseServiceTest {
         return result.getData();
     }
 
-    protected UserSessionDescriptor getDescriptor() {
-        return authService.findSession(null);
-    }
-
     protected AuthToken getAuthToken() {
-        return getDescriptor().makeAuthToken();
+        return (authService instanceof AuthServiceMock) ? ((AuthServiceMock) authService).getAuthToken() : null;
     }
 
 

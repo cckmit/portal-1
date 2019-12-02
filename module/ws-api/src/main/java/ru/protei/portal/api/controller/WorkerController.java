@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -49,6 +50,9 @@ public class WorkerController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AuthTokenService authTokenService;
 
     @Autowired
     private SessionIdGen sidGen;
@@ -1337,9 +1341,9 @@ public class WorkerController {
     }
 
     private boolean checkAuth (HttpServletRequest request, HttpServletResponse response){
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+        Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
 
-        if (userSessionDescriptorAPIResult.isError()){
+        if (authTokenAPIResult.isError()){
             try {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             } catch (IOException e) {
@@ -1348,7 +1352,17 @@ public class WorkerController {
             return false;
         }
 
-        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("ws_api")) {
+        Result<UserLogin> userLoginResult = authTokenService.getUserLogin(authTokenAPIResult.getData());
+        if (userLoginResult.isError()) {
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        if (!userLoginResult.getData().getUlogin().equals("ws_api")) {
             try {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
             } catch (IOException e) {

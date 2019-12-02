@@ -21,7 +21,6 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
-import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -35,6 +34,8 @@ import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.AccountServiceImpl;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.authtoken.AuthTokenServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
@@ -73,7 +74,6 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.concurrent.*;
-
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -568,8 +568,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
+    public AuthTokenService getAuthTokenService() {
+        return new AuthTokenServiceImpl();
     }
 
     @Bean

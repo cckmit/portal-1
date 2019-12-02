@@ -13,6 +13,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -433,7 +434,7 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        synchronizeTags(caseObject, authService.findSession(token));
+        synchronizeTags(caseObject, token);
         jdbcManyRelationsHelper.persist(caseObject, "tags");
 
         if (!isCaseChanged(caseObject, oldState)) {
@@ -603,19 +604,19 @@ public class CaseServiceImpl implements CaseService {
         return ok(caseNumber);
     }
 
-    private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
-        if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
+    private void synchronizeTags(CaseObject caseObject, AuthToken token) {
+        if (caseObject == null || token == null || caseObject.getTags() == null) {
             return;
         }
 
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
             return;
         }
 
         Set<CaseTag> tags = caseObject.getTags();
         List<CaseTag> allTags = caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId()));
-        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(descriptor.getCompany().getId())).collect(Collectors.toList());
+        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(token.getCompanyId())).collect(Collectors.toList());
 
         List<CaseTag> deletedTags = existingTags.stream().filter(tag -> !tags.contains(tag)).collect(Collectors.toList());
         List<CaseTag> addedTags = tags.stream().filter(tag -> !existingTags.contains(tag)).collect(Collectors.toList());
@@ -658,10 +659,10 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyFilterByScope( AuthToken token, CaseQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
+            Company company = authTokenService.getCompany(token).getData();
+            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), company.getCompanyAndChildIds() ) );
             query.setAllowViewPrivate( false );
             query.setCustomerSearch( true );
         }
@@ -702,20 +703,19 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
+            Company company = authTokenService.getCompany(token).getData();
             caseObject.setPrivateCase( false );
-            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                caseObject.setInitiatorCompany( descriptor.getCompany() );
+            if( !company.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
+                caseObject.setInitiatorCompany( company );
             }
             caseObject.setManagerId( null );
         }
     }
 
     private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        return policyService.hasAccessForCaseObject( descriptor, privilege, caseObject );
+        return policyService.hasAccessForCaseObject( token, privilege, caseObject );
     }
 
 
@@ -731,20 +731,28 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private Set<UserRole> getRoles(AuthToken token) {
-        return Optional.ofNullable(authService.findSession(token))
-                .map(d -> d.getLogin().getRoles())
+        return Optional.ofNullable(token)
+                .map(d -> token.getRoles())
                 .orElse(new HashSet<>());
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
-        if (descriptor == null || descriptor.getCompany() == null || descriptor.getCompany().getCategory() == null) {
+        if (token == null || token.getCompanyId() == null) {
             return false;
         }
 
-        return Objects.equals(En_CompanyCategory.HOME.getId(), descriptor.getCompany().getCategory().getId());
+        Result<Company> result = authTokenService.getCompany(token);
+        if (result.isError()) {
+            return false;
+        }
+
+        Company company = result.getData();
+        if (company == null || company.getCategory() == null) {
+            return false;
+        }
+
+        return Objects.equals(En_CompanyCategory.HOME.getId(), company.getCategory().getId());
     }
 
     private void applyStateBasedOnManager(CaseObject caseObject) {
@@ -908,6 +916,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PortalConfig portalConfig;
+
+    @Autowired
+    AuthTokenService authTokenService;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

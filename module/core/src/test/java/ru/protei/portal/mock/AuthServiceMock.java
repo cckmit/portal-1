@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.test.service.BaseServiceTest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,7 +16,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class AuthServiceMock implements AuthService {
 
-    private static final ThreadLocal<UserSessionDescriptor> descriptorThreadScoped = new ThreadLocal<UserSessionDescriptor>();
+    private static final ThreadLocal<AuthToken> authTokenThreadScoped = new ThreadLocal<>();
 
     public static final AuthToken TEST_AUTH_TOKEN = null;
 
@@ -28,37 +27,29 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.CONTACT_VIEW, En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE,
     };
 
-    private UserSessionDescriptor stubDescriptor;
+    private AuthToken stubAuthToken;
 
     public AuthServiceMock() {
         Company company = new Company( 0L );
         Person person =  BaseServiceTest.createNewPerson( company );
         person.setId( 0L );
         UserLogin userLogin = makeLogin( person );
-        stubDescriptor = makeDescriptor( userLogin, person, company );
+        UserSession userSession = makeUserSession(userLogin, person);
+        stubAuthToken = makeAuthToken( userSession );
     }
 
     @Override
-    public UserSessionDescriptor findSession(String appSessionId, String ip, String userAgent) {
-        return getDescriptor();
+    public Result<AuthToken> login( String appSessionID, String login, String pwd, String ip, String userAgent ) {
+        return ok( getAuthToken() );
     }
 
-    @Override
-    public UserSessionDescriptor findSession(AuthToken token) {
-        return findSession( null, null, null);
-    }
-
-    @Override
-    public Result<UserSessionDescriptor> login( String appSessionID, String login, String pwd, String ip, String userAgent) {
-        return ok( getDescriptor() );
-    }
-
-    public void makeThreadDescriptor( UserLogin userLogin, Person person, Company company ) {
-        setThreadDescriptor(makeDescriptor(userLogin, person, company));
+    public void makeThreadDescriptor( UserLogin userLogin, Person person ) {
+        UserSession userSession = makeUserSession(userLogin, person);
+        setThreadAuthToken(makeAuthToken(userSession));
     }
 
     public void resetThreadDescriptor(  ) {
-        setThreadDescriptor(null);
+        setThreadAuthToken(null);
     }
 
     @Override
@@ -67,8 +58,8 @@ public class AuthServiceMock implements AuthService {
     }
 
     @Override
-    public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request) {
-        return getDescriptor();
+    public Result<AuthToken> validateAuthToken(AuthToken token) {
+        return ok(token);
     }
 
     private UserSession makeUserSession(UserLogin login, Person person) {
@@ -98,24 +89,31 @@ public class AuthServiceMock implements AuthService {
         return new HashSet<>(Arrays.asList(role));
     }
 
-    private UserSessionDescriptor makeDescriptor( UserLogin userLogin, Person person, Company company ) {
-        UserSessionDescriptor descriptor = new UserSessionDescriptor();
-        descriptor.init( makeUserSession( userLogin, person ) );
-        descriptor.login( userLogin, person, company );
-        return descriptor;
+    private AuthToken makeAuthToken(UserSession userSession) {
+        if (userSession == null) {
+            return null;
+        }
+        return new AuthToken(
+            userSession.getSessionId(),
+            userSession.getClientIp(),
+            userSession.getLoginId(),
+            userSession.getPersonId(),
+            userSession.getCompanyId(),
+            makeRoles()
+        );
     }
 
-    private UserSessionDescriptor getDescriptor() {
-        UserSessionDescriptor descriptor = getThreadDescriptor();
-        if (descriptor == null) return stubDescriptor;
-        return descriptor;
+    public AuthToken getAuthToken() {
+        AuthToken authToken = getThreadAuthToken();
+        if (authToken == null) return stubAuthToken;
+        return authToken;
     }
 
-    private final static UserSessionDescriptor getThreadDescriptor() {
-        return descriptorThreadScoped.get();
+    private static AuthToken getThreadAuthToken() {
+        return authTokenThreadScoped.get();
     }
 
-    private final static void setThreadDescriptor( UserSessionDescriptor client ) {
-        descriptorThreadScoped.set( client );
+    private static void setThreadAuthToken( AuthToken client ) {
+        authTokenThreadScoped.set( client );
     }
 }

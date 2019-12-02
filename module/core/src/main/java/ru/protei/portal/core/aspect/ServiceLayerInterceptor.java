@@ -20,12 +20,10 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.SimpleAuditableObject;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -156,8 +154,14 @@ public class ServiceLayerInterceptor {
     }
 
     private void makeAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        AuditObject auditObject = new AuditObject(auditType.getId(), descriptor, auditableObject);
+        Person person = authTokenService.getPerson(token).getData();
+        AuditObject auditObject = new AuditObject(
+                auditType.getId(),
+                auditableObject,
+                person.getId(),
+                token.getIp(),
+                person.getDisplayShortName()
+        );
         publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
 
@@ -193,8 +197,7 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        if ( !policyService.hasEveryPrivilegeOf( descriptor.getLogin().getRoles(), privileges.value() ) ) {
+        if ( !policyService.hasEveryPrivilegeOf( token.getRoles(), privileges.value() ) ) {
             throw new InsufficientPrivilegesException();
         }
     }
@@ -210,8 +213,7 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        if ( !policyService.hasAnyPrivilegeOf( descriptor.getLogin().getRoles(), privileges.requireAny() ) ) {
+        if ( !policyService.hasAnyPrivilegeOf( token.getRoles(), privileges.requireAny() ) ) {
             throw new InsufficientPrivilegesException();
         }
     }
@@ -245,14 +247,11 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
-
-        if (casePrivileged.requireAll().length > 0 && !policyService.hasEveryPrivilegeOf(roles, casePrivileged.requireAll())) {
+        if (casePrivileged.requireAll().length > 0 && !policyService.hasEveryPrivilegeOf(token.getRoles(), casePrivileged.requireAll())) {
             throw new InsufficientPrivilegesException();
         }
 
-        if (casePrivileged.requireAny().length > 0 && !policyService.hasAnyPrivilegeOf(roles, casePrivileged.requireAny())) {
+        if (casePrivileged.requireAny().length > 0 && !policyService.hasAnyPrivilegeOf(token.getRoles(), casePrivileged.requireAny())) {
             throw new InsufficientPrivilegesException();
         }
     }
@@ -313,6 +312,8 @@ public class ServiceLayerInterceptor {
 
     @Autowired
     AuthService authService;
+    @Autowired
+    AuthTokenService authTokenService;
     @Autowired
     PolicyService policyService;
     @Autowired

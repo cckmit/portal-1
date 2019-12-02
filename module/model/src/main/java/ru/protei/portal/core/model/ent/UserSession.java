@@ -11,6 +11,7 @@ import java.util.Date;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_session")
+@Deprecated
 public class UserSession {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -38,6 +39,10 @@ public class UserSession {
     private Date expired;
 
     public UserSession() {
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getSessionId() {
