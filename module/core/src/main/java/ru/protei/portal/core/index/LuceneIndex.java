@@ -43,7 +43,7 @@ public class LuceneIndex implements Closeable {
 
     @Override
     public void close() throws IOException {
-        if (isClosed) throw new IllegalStateException("LuceneIndex already closed");
+        if (isClosed) return;
         isClosed = true;
         if (indexWriter != null) indexWriter.close();
         if (analyzer != null) analyzer.close();
@@ -54,25 +54,26 @@ public class LuceneIndex implements Closeable {
     }
 
     public void addDocument(IndexableField...fields) throws IOException {
-        if (isClosed) throw new IllegalStateException("LuceneIndex is closed");
+        if (isClosed) throw makeClosedException();
         Document document = makeDocument(fields);
         indexWriter.addDocument(document);
         indexWriter.commit();
     }
 
     public void updateDocument(Term term, IndexableField...fields) throws IOException {
-        if (isClosed) throw new IllegalStateException("LuceneIndex is closed");
+        if (isClosed) throw makeClosedException();
         Document document = makeDocument(fields);
         indexWriter.updateDocument(term, document);
         indexWriter.commit();
     }
 
     public void deleteDocuments(Term...terms) throws IOException {
-        if (isClosed) throw new IllegalStateException("LuceneIndex is closed");
+        if (isClosed) throw makeClosedException();
         indexWriter.deleteDocuments(terms);
     }
 
     public List<String> searchByField(String field2search, String search, String field2get, int maxHits) throws IOException {
+        if (isClosed) throw makeClosedException();
         try (
             Directory directory = openDirectory();
             IndexReader reader = DirectoryReader.open(directory)
@@ -124,5 +125,9 @@ public class LuceneIndex implements Closeable {
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
         return config;
+    }
+
+    private RuntimeException makeClosedException() {
+        return new IllegalStateException("LuceneIndex is closed");
     }
 }
