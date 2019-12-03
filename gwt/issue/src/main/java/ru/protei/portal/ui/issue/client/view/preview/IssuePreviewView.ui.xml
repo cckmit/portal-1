@@ -27,8 +27,7 @@
                         <span ui:field="name"/>
                     </h5>
 
-                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
-                                           enabled="false" showLabel="false"/>
+                    <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="true" styleName="form-group"/>
 
                     <div class="form-group-attached">
                         <div class="row clearfix">

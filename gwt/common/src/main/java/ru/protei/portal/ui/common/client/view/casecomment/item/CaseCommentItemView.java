@@ -26,10 +26,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casecomment.item.EditTimeElapsedTypePopup;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -192,12 +189,23 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setRemoteLink(CaseLink remoteLink) {
-        Set<CaseLink> set = new HashSet<>();
-        if (remoteLink != null)
-            set.add(remoteLink);
-        this.remoteLink.setLinks(set);
-        this.remoteLink.setVisible(remoteLink != null);
+    public void setRemoteLinkNumber(String number) {
+        if ( number == null ) {
+            remoteLink.setVisible(false);
+            return;
+        }
+
+        remoteLink.setVisible(true);
+        remoteLink.setText(number);
+    }
+
+    @Override
+    public void setRemoteLinkHref(String link) {
+        if ( link == null ) {
+            return;
+        }
+
+        remoteLink.setHref(link);
     }
 
     @Override
@@ -262,9 +270,8 @@ public class CaseCommentItemView
     }
 
 
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView remoteLink;
+    @UiField
+    Anchor remoteLink;
     @UiField
     HTMLPanel message;
     @UiField

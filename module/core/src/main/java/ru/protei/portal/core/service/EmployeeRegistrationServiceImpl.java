@@ -18,6 +18,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
@@ -69,8 +70,13 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
         jdbcManyRelationsHelper.fillAll(employeeRegistration);
-        if(!isEmpty(employeeRegistration.getCuratorsIds())){
+        if(isNotEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
+        }
+        if(isNotEmpty(employeeRegistration.getYoutrackIssues())) {
+            employeeRegistration.getYoutrackIssues()
+                    .forEach(caseLink -> youtrackService.getIssueInfo( caseLink.getRemoteId() )
+                            .ifOk(caseLink::setYouTrackIssueInfo));
         }
         return ok(employeeRegistration);
     }
