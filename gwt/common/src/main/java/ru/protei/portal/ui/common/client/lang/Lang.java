@@ -1921,4 +1921,12 @@ public interface Lang extends Messages, ContactItemLang {
     String documentConfirmRemove();
 
     String documentRemoved();
+
+    String employeeRegistrationCommentLengthExceed(int p0);
+
+    String employeeRegistrationOperatingSystemExceed(int p0);
+
+    String employeeRegistrationPositionExceed(int p0);
+
+    String employeeRegistrationWorkplaceExceed(int p0);
 }

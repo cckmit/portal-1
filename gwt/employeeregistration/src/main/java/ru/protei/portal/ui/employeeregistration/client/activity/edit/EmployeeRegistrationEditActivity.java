@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -22,7 +21,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Date;
 import java.util.HashSet;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 
 public abstract class EmployeeRegistrationEditActivity implements Activity, AbstractEmployeeRegistrationEditActivity {
@@ -91,6 +91,22 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
         if (registration.getResourceComment().length() > RESOURCE_COMMENT_MAX_LENGTH )
             return lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH);
+
+        if (registration.getOperatingSystem().length() > OPERATING_SYSTEM_MAX_LENGTH) {
+            return lang.employeeRegistrationOperatingSystemExceed(OPERATING_SYSTEM_MAX_LENGTH);
+        }
+
+        if (registration.getPosition().length() > POSITION_MAX_LENGTH) {
+            return lang.employeeRegistrationPositionExceed(POSITION_MAX_LENGTH);
+        }
+
+        if (registration.getWorkplace().length() > WORKPLACE_MAX_LENGTH) {
+            return lang.employeeRegistrationWorkplaceExceed(WORKPLACE_MAX_LENGTH);
+        }
+
+        if (registration.getComment().length() > COMMENT_MAX_LENGTH) {
+            return lang.employeeRegistrationCommentLengthExceed(COMMENT_MAX_LENGTH);
+        }
 
         return null;
     }
@@ -179,4 +195,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
     private static final int ADDITIONAL_SOFT_MAX_LENGTH = 512;
     private static final int RESOURCE_COMMENT_MAX_LENGTH = 512;
+    private static final int OPERATING_SYSTEM_MAX_LENGTH = 64;
+    private static final int POSITION_MAX_LENGTH = 128;
+    private static final int WORKPLACE_MAX_LENGTH = 128;
+    private static final int COMMENT_MAX_LENGTH = 128;
 }
