@@ -2,9 +2,12 @@ package ru.protei.portal.ui.employeeregistration.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -15,7 +18,6 @@ import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -146,6 +148,56 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         return curators;
     }
 
+    @Override
+    public HasVisibility workplaceErrorLabelVisibility() {
+        return workplaceErrorLabel;
+    }
+
+    @Override
+    public void setWorkplaceErrorLabel(String errorMsg) {
+        workplaceErrorLabel.setText(errorMsg);
+    }
+
+    @Override
+    public HasVisibility positionErrorLabelVisibility() {
+        return positionErrorLabel;
+    }
+
+    @Override
+    public void setPositionErrorLabel(String errorMsg) {
+        positionErrorLabel.setText(errorMsg);
+    }
+
+    @Override
+    public HasVisibility additionalSoftErrorLabelVisibility() {
+        return additionalSoftErrorLabel;
+    }
+
+    @Override
+    public void setAdditionalSoftErrorLabel(String errorMsg) {
+        additionalSoftErrorLabel.setText(errorMsg);
+    }
+
+    @Override
+    public HasVisibility resourceCommentErrorLabelVisibility() {
+        return resourceCommentErrorLabel;
+    }
+
+    @Override
+    public void setResourceCommentErrorLabel(String errorMsg) {
+        resourceCommentErrorLabel.setText(errorMsg);
+    }
+
+    @Override
+    public HasVisibility operatingSystemErrorLabelVisibility() {
+        return OSErrorLabel;
+    }
+
+    @Override
+    public void setOperatingSystemErrorLabel(String errorMsg) {
+        OSErrorLabel.setText(errorMsg);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -158,6 +210,12 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         if (activity != null) {
             activity.onCancelClicked();
         }
+    }
+
+    @UiHandler({"position", "workplace", "operatingSystem", "additionalSoft", "resourceComment"})
+    public void onLimitedFieldChanged(KeyUpEvent event) {
+        limitedFieldsValidationTimer.cancel();
+        limitedFieldsValidationTimer.schedule(200);
     }
 
     @UiField
@@ -185,10 +243,16 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     ValidableTextBox position;
 
     @UiField
+    Label positionErrorLabel;
+
+    @UiField
     AutoResizeTextArea comment;
 
     @UiField
     AutoResizeTextArea workplace;
+
+    @UiField
+    Label workplaceErrorLabel;
 
     @Inject
     @UiField(provided = true)
@@ -201,6 +265,8 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     IntegerBox probationPeriod;
     @UiField
     AutoResizeTextArea resourceComment;
+    @UiField
+    Label resourceCommentErrorLabel;
 
     @Inject
     @UiField(provided = true)
@@ -208,7 +274,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @UiField
     ValidableTextBox operatingSystem;
     @UiField
+    Label OSErrorLabel;
+    @UiField
     AutoResizeTextArea additionalSoft;
+    @UiField
+    Label additionalSoftErrorLabel;
 
     @UiField
     Lang lang;
@@ -218,6 +288,15 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     EmployeeMultiSelector curators;
 
     private AbstractEmployeeRegistrationEditActivity activity;
+
+    Timer limitedFieldsValidationTimer = new Timer() {
+        @Override
+        public void run() {
+            if (activity != null) {
+                activity.validateLimitedFields();
+            }
+        }
+    };
 
     private static EmployeeRegistrationViewUiBinder ourUiBinder = GWT.create(EmployeeRegistrationViewUiBinder.class);
     interface EmployeeRegistrationViewUiBinder extends UiBinder<HTMLPanel, EmployeeRegistrationEditView> {

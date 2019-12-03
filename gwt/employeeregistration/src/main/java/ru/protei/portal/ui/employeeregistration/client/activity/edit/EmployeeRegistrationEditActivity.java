@@ -60,6 +60,37 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         fireEvent(new Back());
     }
 
+    @Override
+    public void validateLimitedFields() {
+        if (view.position().getValue() != null) {
+            view.positionErrorLabelVisibility().setVisible(view.position().getValue().length() > POSITION_MAX_LENGTH);
+        }
+
+        if (view.workplace().getValue() != null) {
+            view.workplaceErrorLabelVisibility().setVisible(view.workplace().getValue().length() > WORKPLACE_MAX_LENGTH);
+        }
+
+        if (view.operatingSystem().getValue() != null) {
+            view.operatingSystemErrorLabelVisibility().setVisible(view.operatingSystem().getValue().length() > OPERATING_SYSTEM_MAX_LENGTH);
+        }
+
+        if (view.additionalSoft().getValue() != null) {
+            view.additionalSoftErrorLabelVisibility().setVisible(view.additionalSoft().getValue().length() > ADDITIONAL_SOFT_MAX_LENGTH);
+        }
+
+        if (view.resourceComment().getValue() != null) {
+            view.resourceCommentErrorLabelVisibility().setVisible(view.resourceComment().getValue().length() > RESOURCE_COMMENT_MAX_LENGTH);
+        }
+
+        view.saveEnabled().setEnabled(
+                view.position().getValue().length() <= POSITION_MAX_LENGTH
+                        && view.workplace().getValue().length() <= WORKPLACE_MAX_LENGTH
+                        && view.operatingSystem().getValue().length() <= OPERATING_SYSTEM_MAX_LENGTH
+                        && view.additionalSoft().getValue().length() <= ADDITIONAL_SOFT_MAX_LENGTH
+                        && view.resourceComment().getValue().length() <= RESOURCE_COMMENT_MAX_LENGTH
+        );
+    }
+
     private void showValidationError(EmployeeRegistration employeeRegistration) {
         fireEvent(new NotifyEvents.Show(getValidationError(employeeRegistration), NotifyEvents.NotifyType.ERROR));
     }
@@ -85,28 +116,6 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
         if ( registration.getCuratorsIds().contains(registration.getHeadOfDepartment().getId()))
             return lang.employeeRegistrationValidationHeadOfDepartmentAsCurator();
-
-        if (registration.getAdditionalSoft().length() > ADDITIONAL_SOFT_MAX_LENGTH)
-            return lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH);
-
-        if (registration.getResourceComment().length() > RESOURCE_COMMENT_MAX_LENGTH )
-            return lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH);
-
-        if (registration.getOperatingSystem().length() > OPERATING_SYSTEM_MAX_LENGTH) {
-            return lang.employeeRegistrationOperatingSystemExceed(OPERATING_SYSTEM_MAX_LENGTH);
-        }
-
-        if (registration.getPosition().length() > POSITION_MAX_LENGTH) {
-            return lang.employeeRegistrationPositionExceed(POSITION_MAX_LENGTH);
-        }
-
-        if (registration.getWorkplace().length() > WORKPLACE_MAX_LENGTH) {
-            return lang.employeeRegistrationWorkplaceExceed(WORKPLACE_MAX_LENGTH);
-        }
-
-        if (registration.getComment().length() > COMMENT_MAX_LENGTH) {
-            return lang.employeeRegistrationCommentLengthExceed(COMMENT_MAX_LENGTH);
-        }
 
         return null;
     }
@@ -181,6 +190,12 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.setEmploymentDateValid(true);
         view.curators().setValue( null );
 
+        view.setPositionErrorLabel(lang.employeeRegistrationPositionExceed(POSITION_MAX_LENGTH));
+        view.setWorkplaceErrorLabel(lang.employeeRegistrationWorkplaceExceed(WORKPLACE_MAX_LENGTH));
+        view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(OPERATING_SYSTEM_MAX_LENGTH));
+        view.setAdditionalSoftErrorLabel(lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH));
+        view.setResourceCommentErrorLabel(lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH));
+
         view.saveEnabled().setEnabled(true);
     }
 
@@ -198,5 +213,4 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private static final int OPERATING_SYSTEM_MAX_LENGTH = 64;
     private static final int POSITION_MAX_LENGTH = 128;
     private static final int WORKPLACE_MAX_LENGTH = 128;
-    private static final int COMMENT_MAX_LENGTH = 128;
 }
