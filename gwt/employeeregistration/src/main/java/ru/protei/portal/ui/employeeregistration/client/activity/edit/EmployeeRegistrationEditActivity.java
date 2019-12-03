@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
@@ -63,31 +64,31 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     @Override
     public void validateLimitedFields() {
         if (view.position().getValue() != null) {
-            view.positionErrorLabelVisibility().setVisible(view.position().getValue().length() > POSITION_MAX_LENGTH);
+            view.positionErrorLabelVisibility().setVisible(view.position().getValue().length() > CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH);
         }
 
         if (view.workplace().getValue() != null) {
-            view.workplaceErrorLabelVisibility().setVisible(view.workplace().getValue().length() > WORKPLACE_MAX_LENGTH);
+            view.workplaceErrorLabelVisibility().setVisible(view.workplace().getValue().length() > CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH);
         }
 
         if (view.operatingSystem().getValue() != null) {
-            view.operatingSystemErrorLabelVisibility().setVisible(view.operatingSystem().getValue().length() > OPERATING_SYSTEM_MAX_LENGTH);
+            view.operatingSystemErrorLabelVisibility().setVisible(view.operatingSystem().getValue().length() > CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH);
         }
 
         if (view.additionalSoft().getValue() != null) {
-            view.additionalSoftErrorLabelVisibility().setVisible(view.additionalSoft().getValue().length() > ADDITIONAL_SOFT_MAX_LENGTH);
+            view.additionalSoftErrorLabelVisibility().setVisible(view.additionalSoft().getValue().length() > CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH);
         }
 
         if (view.resourceComment().getValue() != null) {
-            view.resourceCommentErrorLabelVisibility().setVisible(view.resourceComment().getValue().length() > RESOURCE_COMMENT_MAX_LENGTH);
+            view.resourceCommentErrorLabelVisibility().setVisible(view.resourceComment().getValue().length() > CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH);
         }
 
         view.saveEnabled().setEnabled(
-                view.position().getValue().length() <= POSITION_MAX_LENGTH
-                        && view.workplace().getValue().length() <= WORKPLACE_MAX_LENGTH
-                        && view.operatingSystem().getValue().length() <= OPERATING_SYSTEM_MAX_LENGTH
-                        && view.additionalSoft().getValue().length() <= ADDITIONAL_SOFT_MAX_LENGTH
-                        && view.resourceComment().getValue().length() <= RESOURCE_COMMENT_MAX_LENGTH
+                view.position().getValue().length() <= CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH
+                        && view.workplace().getValue().length() <= CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH
+                        && view.operatingSystem().getValue().length() <= CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH
+                        && view.additionalSoft().getValue().length() <= CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH
+                        && view.resourceComment().getValue().length() <= CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH
         );
     }
 
@@ -117,24 +118,24 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         if ( registration.getCuratorsIds().contains(registration.getHeadOfDepartment().getId()))
             return lang.employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
-        if (registration.getPosition().length() > POSITION_MAX_LENGTH) {
-            return lang.employeeRegistrationPositionExceed(POSITION_MAX_LENGTH);
+        if (registration.getPosition().length() > CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH) {
+            return lang.employeeRegistrationPositionExceed(CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH);
         }
 
-        if (registration.getWorkplace().length() > WORKPLACE_MAX_LENGTH) {
-            return lang.employeeRegistrationWorkplaceExceed(WORKPLACE_MAX_LENGTH);
+        if (registration.getWorkplace().length() > CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH) {
+            return lang.employeeRegistrationWorkplaceExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH);
         }
 
-        if (registration.getOperatingSystem().length() > OPERATING_SYSTEM_MAX_LENGTH) {
-            return lang.employeeRegistrationOperatingSystemExceed(OPERATING_SYSTEM_MAX_LENGTH);
+        if (registration.getOperatingSystem().length() > CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH) {
+            return lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH);
         }
 
-        if (registration.getAdditionalSoft().length() > ADDITIONAL_SOFT_MAX_LENGTH) {
-            return lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH);
+        if (registration.getAdditionalSoft().length() > CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH) {
+            return lang.employeeRegistrationAdditionalSoftLengthExceed(CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH);
         }
 
-        if (registration.getResourceComment().length() > RESOURCE_COMMENT_MAX_LENGTH) {
-            return lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH);
+        if (registration.getResourceComment().length() > CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH) {
+            return lang.employeeRegistrationResourceCommentLengthExceed(CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH);
         }
 
         return null;
@@ -210,11 +211,11 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.setEmploymentDateValid(true);
         view.curators().setValue( null );
 
-        view.setPositionErrorLabel(lang.employeeRegistrationPositionExceed(POSITION_MAX_LENGTH));
-        view.setWorkplaceErrorLabel(lang.employeeRegistrationWorkplaceExceed(WORKPLACE_MAX_LENGTH));
-        view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(OPERATING_SYSTEM_MAX_LENGTH));
-        view.setAdditionalSoftErrorLabel(lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH));
-        view.setResourceCommentErrorLabel(lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH));
+        view.setPositionErrorLabel(lang.employeeRegistrationPositionExceed(CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH));
+        view.setWorkplaceErrorLabel(lang.employeeRegistrationWorkplaceExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH));
+        view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH));
+        view.setAdditionalSoftErrorLabel(lang.employeeRegistrationAdditionalSoftLengthExceed(CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH));
+        view.setResourceCommentErrorLabel(lang.employeeRegistrationResourceCommentLengthExceed(CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH));
 
         view.saveEnabled().setEnabled(true);
     }
@@ -227,10 +228,4 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
 
     private AppEvents.InitDetails initDetails;
-
-    private static final int ADDITIONAL_SOFT_MAX_LENGTH = 512;
-    private static final int RESOURCE_COMMENT_MAX_LENGTH = 512;
-    private static final int OPERATING_SYSTEM_MAX_LENGTH = 64;
-    private static final int POSITION_MAX_LENGTH = 128;
-    private static final int WORKPLACE_MAX_LENGTH = 256;
 }

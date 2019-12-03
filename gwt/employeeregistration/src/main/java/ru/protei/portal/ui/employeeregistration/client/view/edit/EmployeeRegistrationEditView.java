@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employeeregistration.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -39,6 +41,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         initWidget(ourUiBinder.createAndBindUi(this));
         resourcesList.setMandatoryOptions(En_InternalResource.EMAIL);
         probationPeriod.getElement().setAttribute("placeholder",  lang.employeeRegistrationProbationPeriodPlaceholder());
+        setFixedValueChangeListener(position.getElement(), this);
+        setFixedValueChangeListener(workplace.getElement(), this);
+        setFixedValueChangeListener(operatingSystem.getElement(), this);
+        setFixedValueChangeListener(additionalSoft.getElement(), this);
+        setFixedValueChangeListener(resourceComment.getElement(), this);
     }
     
     @Override
@@ -212,11 +219,16 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         }
     }
 
-    @UiHandler({"position", "workplace", "operatingSystem", "additionalSoft", "resourceComment"})
-    public void onLimitedFieldChanged(KeyUpEvent event) {
+    private void resetTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);
     }
+
+    private native void setFixedValueChangeListener(Element element, EmployeeRegistrationEditView view) /*-{
+        element.addEventListener("input", function (event) {
+            view.@ru.protei.portal.ui.employeeregistration.client.view.edit.EmployeeRegistrationEditView::resetTimer()();
+        });
+    }-*/;
 
     @UiField
     Button saveButton;
