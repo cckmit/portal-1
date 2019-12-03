@@ -232,5 +232,5 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private static final int RESOURCE_COMMENT_MAX_LENGTH = 512;
     private static final int OPERATING_SYSTEM_MAX_LENGTH = 64;
     private static final int POSITION_MAX_LENGTH = 128;
-    private static final int WORKPLACE_MAX_LENGTH = 128;
+    private static final int WORKPLACE_MAX_LENGTH = 256;
 }
