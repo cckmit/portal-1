@@ -58,13 +58,8 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @Override
-    public void setVisibleCompanyPanel(boolean isVisible) {
-        companyPanel.setVisible(isVisible);
-    }
-
-    @Override
-    public void setVisibleAuthorPanel(boolean isVisible) {
-        authorPanel.setVisible(isVisible);
+    public HasVisibility authorVisibility() {
+        return authorContainer;
     }
 
     @Override
@@ -92,7 +87,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     HTMLPanel companyPanel;
 
     @UiField
-    HTMLPanel authorPanel;
+    HTMLPanel authorContainer;
 
     @UiField
     Label label;

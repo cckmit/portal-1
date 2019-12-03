@@ -113,8 +113,6 @@ public class CaseTagSelectorItem extends Composite implements HasValue<CaseTag>,
     }
 
     @UiField
-    FocusPanel root;
-    @UiField
     HTMLPanel panel;
     @UiField
     InlineLabel text;
@@ -132,6 +130,6 @@ public class CaseTagSelectorItem extends Composite implements HasValue<CaseTag>,
 
     private CaseTag caseTag = null;
 
-    interface CaseTagViewUiBinder extends UiBinder<FocusPanel, CaseTagSelectorItem> {}
+    interface CaseTagViewUiBinder extends UiBinder<HTMLPanel, CaseTagSelectorItem> {}
     private static CaseTagViewUiBinder ourUiBinder = GWT.create(CaseTagViewUiBinder.class);
 }

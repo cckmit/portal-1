@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.activity.casetag.edit;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -21,9 +22,7 @@ public interface AbstractCaseTagEditView extends IsWidget {
 
     HasEnabled companyEnabled();
 
-    void setVisibleCompanyPanel(boolean isVisible);
-
-    void setVisibleAuthorPanel(boolean isVisible);
+    HasVisibility authorVisibility();
 
     void setAuthor(String author);
 }

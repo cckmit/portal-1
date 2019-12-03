@@ -42,18 +42,25 @@ public abstract class   CaseTagListActivity
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
         view.setType(show.caseType);
 
-        CaseTagQuery query = new CaseTagQuery();
-        query.setCaseType(En_CaseType.CRM_SUPPORT);
-        query.setCaseId(event.caseId);
-        controller.getTags(query, new FluentCallback<List<CaseTag>>()
-                .withSuccess(this::fillView)
-        );
+        if (isCaseCreationMode()) {
+            return;
+        }
+
+        refreshTagList();
     }
 
     @Event
     public void onRemoveTag(CaseTagEvents.Remove event) {
-//        issue.getTags().remove(event.getCaseTag());
-//        view.tags().setValue(issue.getTags());
+        if ( event.caseTag == null ) {
+            return;
+        }
+
+        if (isCaseCreationMode()) {
+            fireEvent(new CaseTagEvents.Detach(show.caseId, event.caseTag.getId()));
+            return;
+        }
+
+        refreshTagList();
     }
 
     @Override
@@ -61,12 +68,12 @@ public abstract class   CaseTagListActivity
         CaseTag caseTag = new CaseTag();
         caseTag.setCaseType(show.caseType);
 
-        fireEvent(new CaseTagEvents.Update(caseTag, true));
+        fireEvent(new CaseTagEvents.Edit(caseTag));
     }
 
     @Override
     public void onEditClicked(CaseTag caseTag, boolean isReadOnly) {
-        fireEvent(isReadOnly ? new CaseTagEvents.Readonly(caseTag) : new CaseTagEvents.Update(caseTag, true));
+        fireEvent(new CaseTagEvents.Edit(caseTag));
     }
 
     @Override
@@ -74,6 +81,12 @@ public abstract class   CaseTagListActivity
         if (itemView == null || !show.isEnabledAttachOptions) {
             return;
         }
+
+        if ( isCaseCreationMode() ) {
+            fireEvent(new CaseTagEvents.Detach(show.caseId, itemView.getModelId()));
+            return;
+        }
+
         controller.detachTag(show.caseId, itemView.getModelId(), new FluentCallback<Void>()
                 .withSuccess(res -> itemView.asWidget().removeFromParent()));
     }
@@ -83,6 +96,12 @@ public abstract class   CaseTagListActivity
         if (value == null || !show.isEnabledAttachOptions) {
             return;
         }
+
+        if ( isCaseCreationMode() ) {
+            fireEvent(new CaseTagEvents.Attach(show.caseId, value));
+            return;
+        }
+
         controller.attachTag(show.caseId, value.getId(), new FluentCallback<Void>()
                 .withSuccess(id -> makeCaseTagViewAndAddToParent(value)));
     }
@@ -104,6 +123,19 @@ public abstract class   CaseTagListActivity
         itemWidget.setModelId(value.getId());
 
         view.getTagsContainer().add(itemWidget.asWidget());
+    }
+
+    private void refreshTagList() {
+        CaseTagQuery query = new CaseTagQuery();
+        query.setCaseType(En_CaseType.CRM_SUPPORT);
+        query.setCaseId(show.caseId);
+        controller.getTags(query, new FluentCallback<List<CaseTag>>()
+                .withSuccess(this::fillView)
+        );
+    }
+
+    private boolean isCaseCreationMode() {
+        return show.caseId == null;
     }
 
     @Inject

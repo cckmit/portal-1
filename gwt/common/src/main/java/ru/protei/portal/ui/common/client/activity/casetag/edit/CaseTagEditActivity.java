@@ -4,17 +4,22 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
+
+import java.util.Objects;
 
 public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEditActivity, AbstractDialogDetailsActivity {
 
@@ -26,27 +31,42 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     @Event
-    public void onShow(CaseTagEvents.Readonly event) {
-        this.caseTag = event.getCaseTag();
-        this.isReadOnly = true;
-        fillView(caseTag);
+    public void onShow(CaseTagEvents.Edit event) {
+        if ( event.caseTag == null ) {
+            fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
 
-        dialogView.removeButtonVisibility().setVisible(false);
-        dialogView.saveButtonVisibility().setVisible(false);
-        dialogView.setHeader(lang.tagInfo());
-        dialogView.showPopup();
-    }
+        this.caseTag = event.caseTag;
 
-    @Event
-    public void onShow(CaseTagEvents.Update event) {
-        this.caseTag = event.getCaseTag();
-        this.isReadOnly = false;
-        this.isCompanyPanelVisible = event.isCompanyPanelVisible();
-        caseType = event.getCaseTag().getCaseType();
-        fillView(caseTag);
+        boolean isCreationMode = caseTag.getId() == null;
+        boolean isSameTag = Objects.equals(caseTag.getPersonId(), policyService.getProfile().getId());
+        boolean isAllowedChangeCompany = policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
 
-        dialogView.saveButtonVisibility().setVisible(true);
-        dialogView.removeButtonVisibility().setVisible(caseTag.getId() != null);
+        // создавать могут все с привилегией ISSUE_EDIT. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
+        // редактируем/удаляем только свои кейсы
+        boolean isAllowedEdit = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) && (isCreationMode || isSameTag);
+
+        view.name().setValue(caseTag.getName());
+        view.color().setValue(caseTag.getColor());
+        view.setAuthor(caseTag.getPersonName());
+        view.authorVisibility().setVisible(caseTag.getId() != null);
+
+        view.colorEnabled().setEnabled(isAllowedEdit);
+        view.nameEnabled().setEnabled(isAllowedEdit);
+
+        EntityOption company;
+        if (isCreationMode) {
+            company = EntityOption.fromCompany(policyService.getUserCompany());
+        } else {
+            company = new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId());
+        }
+        view.company().setValue(company);
+
+        view.companyEnabled().setEnabled(isAllowedChangeCompany);
+
+        dialogView.removeButtonVisibility().setVisible(!isCreationMode && isSameTag);
+        dialogView.saveButtonVisibility().setVisible(isAllowedEdit);
         dialogView.setHeader(caseTag.getId() == null ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
     }
@@ -64,18 +84,13 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
     @Override
     public void onSaveClicked() {
-
         if (!validate()) {
             return;
         }
 
-        CaseTag caseTag = this.caseTag == null ? new CaseTag() : this.caseTag;
-        caseTag.setCaseType(caseType);
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
-
-        caseTag.setPersonId(policyService.getProfile().getId());
 
         caseTagController.saveTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
@@ -90,21 +105,8 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         dialogView.hidePopup();
     }
 
-
-    private void fillView(CaseTag caseTag) {
-        view.name().setValue(caseTag.getName());
-        view.color().setValue(caseTag.getColor());
-        view.company().setValue(caseTag.getCompanyName() != null && caseTag.getCompanyId() != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(null));
-        view.setVisibleAuthorPanel(caseTag.getPersonName() != null);
-        view.setAuthor(caseTag.getPersonName());
-        view.setVisibleCompanyPanel(isReadOnly || isCompanyPanelVisible);
-        view.colorEnabled().setEnabled(!isReadOnly);
-        view.nameEnabled().setEnabled(!isReadOnly);
-        view.companyEnabled().setEnabled(!isReadOnly);
-    }
-
     private boolean validate() {
-        if (caseType == null) {
+        if (caseTag.getCaseType() == null) {
             return false;
         }
         if (StringUtils.isBlank(view.name().getValue())) {
@@ -116,11 +118,6 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         return true;
     }
 
-    private En_CaseType caseType;
-    private CaseTag caseTag;
-    private boolean isReadOnly;
-    private boolean isCompanyPanelVisible;
-
     @Inject
     Lang lang;
     @Inject
@@ -131,4 +128,6 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     CaseTagControllerAsync caseTagController;
     @Inject
     PolicyService policyService;
+
+    private CaseTag caseTag;
 }

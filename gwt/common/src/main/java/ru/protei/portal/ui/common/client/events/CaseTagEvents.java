@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 
 public class CaseTagEvents {
@@ -46,47 +47,41 @@ public class CaseTagEvents {
         public boolean isAddNewTagEnabled = false;
     }
 
-    public static class Update {
-        private CaseTag caseTag;
-        private boolean isCompanyPanelVisible;
-
-        public Update(CaseTag caseTag, boolean isCompanyPanelVisible) {
-            this.caseTag = caseTag;
-            this.isCompanyPanelVisible = isCompanyPanelVisible;
-        }
-
-        public CaseTag getCaseTag() {
-            return caseTag;
-        }
-
-        public boolean isCompanyPanelVisible() {
-            return isCompanyPanelVisible;
-        }
-    }
-
-    public static class Readonly {
-        private CaseTag caseTag;
-
-        public Readonly(CaseTag caseTag) {
+    public static class Edit {
+        public Edit(CaseTag caseTag) {
             this.caseTag = caseTag;
         }
 
-        public CaseTag getCaseTag() {
-            return caseTag;
-        }
+        public CaseTag caseTag;
     }
 
     public static class ChangeModel {}
 
     public static class Remove {
-        private CaseTag caseTag;
-
         public Remove(CaseTag caseTag) {
             this.caseTag = caseTag;
         }
 
-        public CaseTag getCaseTag() {
-            return caseTag;
+        public CaseTag caseTag;
+    }
+
+    public static class Detach {
+        public Detach(Long caseId, Long id) {
+            this.caseId = caseId;
+            this.id = id;
         }
+
+        public Long caseId;
+        public Long id;
+    }
+
+    public static class Attach {
+        public Attach(Long caseId, CaseTag tag) {
+            this.caseId = caseId;
+            this.tag = tag;
+        }
+
+        public Long caseId;
+        public CaseTag tag;
     }
 }

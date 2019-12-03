@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="form-group col-md-12">
-            <g:HTMLPanel ui:field="authorPanel" styleName="tag-author" visible="false">
+            <g:HTMLPanel ui:field="authorContainer" styleName="tag-author" visible="false">
                 <small>
                     <g:Label ui:field="label"/>
                 </small>

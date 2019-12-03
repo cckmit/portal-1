@@ -177,11 +177,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean publicLinksChanged() {
-        if (!CollectionUtils.isEmpty(mergeLinks.getAddedEntries()) && mergeLinks.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+        if (!CollectionUtils.isEmpty(links.getAddedEntries()) && links.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
             return true;
         }
 
-        if (!CollectionUtils.isEmpty(mergeLinks.getRemovedEntries()) && mergeLinks.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+        if (!CollectionUtils.isEmpty(links.getRemovedEntries()) && links.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
             return true;
         }
 
