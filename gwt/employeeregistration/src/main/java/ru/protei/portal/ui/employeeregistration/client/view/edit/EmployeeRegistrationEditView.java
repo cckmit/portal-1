@@ -41,11 +41,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         initWidget(ourUiBinder.createAndBindUi(this));
         resourcesList.setMandatoryOptions(En_InternalResource.EMAIL);
         probationPeriod.getElement().setAttribute("placeholder",  lang.employeeRegistrationProbationPeriodPlaceholder());
-        setFixedValueChangeListener(position.getElement(), this);
-        setFixedValueChangeListener(workplace.getElement(), this);
-        setFixedValueChangeListener(operatingSystem.getElement(), this);
-        setFixedValueChangeListener(additionalSoft.getElement(), this);
-        setFixedValueChangeListener(resourceComment.getElement(), this);
+        position.addInputHandler(event -> resetTimer());
+        workplace.addInputHandler(event -> resetTimer());
+        operatingSystem.addInputHandler(event -> resetTimer());
+        additionalSoft.addInputHandler(event -> resetTimer());
+        resourceComment.addInputHandler(event -> resetTimer());
     }
     
     @Override
@@ -224,12 +224,6 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         limitedFieldsValidationTimer.schedule(200);
     }
 
-    private native void setFixedValueChangeListener(Element element, EmployeeRegistrationEditView view) /*-{
-        element.addEventListener("input", function (event) {
-            view.@ru.protei.portal.ui.employeeregistration.client.view.edit.EmployeeRegistrationEditView::resetTimer()();
-        });
-    }-*/;
-
     @UiField
     Button saveButton;
 
@@ -301,7 +295,7 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
 
     private AbstractEmployeeRegistrationEditActivity activity;
 
-    Timer limitedFieldsValidationTimer = new Timer() {
+    private Timer limitedFieldsValidationTimer = new Timer() {
         @Override
         public void run() {
             if (activity != null) {

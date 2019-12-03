@@ -72,7 +72,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         }
 
         if (view.operatingSystem().getValue() != null) {
-            view.operatingSystemErrorLabelVisibility().setVisible(view.operatingSystem().getValue().length() > CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH);
+            view.operatingSystemErrorLabelVisibility().setVisible(view.operatingSystem().getValue().length() > CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH);
         }
 
         if (view.additionalSoft().getValue() != null) {
@@ -86,7 +86,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.saveEnabled().setEnabled(
                 view.position().getValue().length() <= CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH
                         && view.workplace().getValue().length() <= CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH
-                        && view.operatingSystem().getValue().length() <= CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH
+                        && view.operatingSystem().getValue().length() <= CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH
                         && view.additionalSoft().getValue().length() <= CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH
                         && view.resourceComment().getValue().length() <= CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH
         );
@@ -213,7 +213,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
         view.setPositionErrorLabel(lang.employeeRegistrationPositionExceed(CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH));
         view.setWorkplaceErrorLabel(lang.employeeRegistrationWorkplaceExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH));
-        view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH));
+        view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH));
         view.setAdditionalSoftErrorLabel(lang.employeeRegistrationAdditionalSoftLengthExceed(CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH));
         view.setResourceCommentErrorLabel(lang.employeeRegistrationResourceCommentLengthExceed(CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH));
 
