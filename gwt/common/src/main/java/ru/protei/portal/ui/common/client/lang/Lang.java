@@ -1668,6 +1668,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+    String employeeRegistrationPositionExceed(int num);
+
+    String employeeRegistrationWorkplaceExceed(int num);
+
+    String employeeRegistrationOperatingSystemExceed(int num);
+
     String employeeRegistrationAdditionalSoftLengthExceed(int num);
 
     String employeeRegistrationResourceCommentLengthExceed(int num);
@@ -1921,10 +1927,4 @@ public interface Lang extends Messages, ContactItemLang {
     String documentConfirmRemove();
 
     String documentRemoved();
-
-    String employeeRegistrationOperatingSystemExceed(int p0);
-
-    String employeeRegistrationPositionExceed(int p0);
-
-    String employeeRegistrationWorkplaceExceed(int p0);
 }
