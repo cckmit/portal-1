@@ -47,6 +47,8 @@
 
                     <h5 ui:field="nameRO" class="no-margin semi-bold"/>
 
+                    <casemeta:CaseMetaView ui:field="caseMetaView" tagCaseType="CRM_SUPPORT" styleName="form-group"/>
+
                     <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
 
                     <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
@@ -59,11 +61,6 @@
                             </div>
                         </div>
                     </g:HTMLPanel>
-
-                    <div class="row form-group">
-                        <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"
-                                               tagCaseType="CRM_SUPPORT"/>
-                    </div>
 
                     <div class="row form-group">
                         <div class="col-md-12">

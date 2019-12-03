@@ -19,9 +19,9 @@
                 <g:InlineLabel ui:field="companyLinksMessage"/>
             </p>
 
-            <p class="small">
+            <p class="small company-tags">
                 <span class="bold" ui:field="tagsLabel"><ui:text from="{lang.tags}"/></span>
-                <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false"/>
+                <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false" styleName="form-group"/>
             </p>
 
             <p class="small">
