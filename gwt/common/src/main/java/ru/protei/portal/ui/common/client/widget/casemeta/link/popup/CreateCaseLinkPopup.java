@@ -1,10 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.casemeta.link.popup;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
@@ -13,11 +15,15 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.InputHandler;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
 
@@ -40,6 +46,8 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
                 showNear(relative, false);
             }
         };
+
+        onInputText();
     }
 
     @Override
@@ -110,12 +118,18 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     }
 
     @UiHandler("remoteIdInput")
-    public void onChangeText(KeyPressEvent event){
-        if(unicodeCurrentChar != '\n') {
-            unicodeCurrentChar = event.getUnicodeCharCode();
+    public void onChangeText(KeyPressEvent event) {
+        if (event.getCharCode() == ENTER_CODE) {
+            keyTapTimer.run();
+        }
+    }
+
+    public void onInputText() {
+        remoteIdInput.addInputHandler(event -> {
             keyTapTimer.cancel();
             keyTapTimer.schedule(300);
-        }
+        });
+
     }
 
     @UiHandler("typeSelector")
@@ -151,14 +165,14 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
-    private int unicodeCurrentChar;
+    private static final int ENTER_CODE = 13;
+    private RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
+    private RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
     private Timer keyTapTimer = new Timer() {
         @Override
         public void run() {
-            RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-            RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
-            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
-            MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue());
+            MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue());
 
             if (youTrackMatcher != null) {
                 typeSelector.setValue(En_CaseLink.YT);
