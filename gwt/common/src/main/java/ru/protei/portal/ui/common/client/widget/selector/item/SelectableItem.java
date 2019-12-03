@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -19,20 +18,12 @@ public class SelectableItem
 {
     public SelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        checkbox.setFormValue( Boolean.FALSE.toString() );
     }
-
 
     public void setText( String text ) {
-        this.text.setText( text );
-        this.text.setTitle( text );
-    }
-
-    public void setInfo( String info ) {
-        if (info != null) {
-            this.info.setVisible( true );
-            this.info.setText( info );
-            this.info.setTitle( info );
-        }
+        checkbox.setText(text);
+        checkbox.setTitle(text);
     }
 
     @Override
@@ -47,17 +38,13 @@ public class SelectableItem
 
     @Override
     public void setValue( Boolean value, boolean fireEvents ) {
-        checkbox.setValue( value, fireEvents );
-        setSelectedStyle();
-
-        if ( fireEvents ) {
-            ValueChangeEvent.fire( this, value );
-        }
+        checkbox.setValue( value );
+        checkbox.setFormValue( value.toString());
     }
 
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< Boolean > handler ) {
-        return addHandler( handler, ValueChangeEvent.getType() );
+        return checkbox.addHandler( handler, ValueChangeEvent.getType() );
     }
 
     @Override
@@ -74,38 +61,13 @@ public class SelectableItem
         checkbox.ensureDebugId( debugId );
     }
 
-    @UiHandler( "checkbox" )
-    public void onCheckboxClicked(ClickEvent event) {
-        ValueChangeEvent.fire( SelectableItem.this, checkbox.getValue() );
-        setSelectedStyle();
+    @UiHandler("checkbox")
+    public void onValueChange(ValueChangeEvent<Boolean> event) {
+        checkbox.setFormValue(event.getValue().toString());
     }
 
-    @UiHandler( {"text", "info"} )
-    public void onTextClicked( ClickEvent event ) {
-        event.preventDefault();
-        checkbox.setValue( !checkbox.getValue() );
-        ValueChangeEvent.fire( SelectableItem.this, checkbox.getValue() );
-        setSelectedStyle();
-    }
-
-    private void setSelectedStyle() {
-        if ( checkbox.getValue() ) {
-            text.addStyleName( "selected" );
-            info.addStyleName( "selected" );
-        } else {
-            text.removeStyleName( "selected" );
-            info.removeStyleName( "selected" );
-        }
-    }
-
-    @UiField
-    HTMLPanel panel;
     @UiField
     CheckBox checkbox;
-    @UiField
-    InlineLabel text;
-    @UiField
-    InlineLabel info;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, SelectableItem > {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

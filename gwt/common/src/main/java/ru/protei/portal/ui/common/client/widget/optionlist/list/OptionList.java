@@ -127,14 +127,6 @@ public class OptionList<T>
         itemToNameModel.clear();
     }
 
-//    public void reset() {
-//        clearOptions();
-//        selected.clear();
-//        itemViewToModel.clear();
-//        itemToViewModel.clear();
-//        itemToNameModel.clear();
-//    }
-
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
