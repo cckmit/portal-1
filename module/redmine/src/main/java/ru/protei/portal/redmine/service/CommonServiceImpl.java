@@ -2,6 +2,7 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
+import com.taskadapter.redmineapi.bean.JournalDetail;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +11,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -21,6 +19,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
@@ -40,6 +39,33 @@ public final class CommonServiceImpl implements CommonService {
         comment.setAuthor(author);
         comment.setText(journal.getNotes());
         return comment;
+    }
+
+    @Override
+    public CaseComment parseJournalToStatusComment(Journal journal, long companyId, long statusMapId) {
+        final Person author = getAssignedPerson(companyId, journal.getUser());
+        JournalDetail detailWithStatusChange = journal.getDetails()
+                .stream()
+                .filter(detail -> RedmineChangeType.STATUS_CHANGE.getName().equals(detail.getName()))
+                .findFirst()
+                .orElse(null);
+
+        if (detailWithStatusChange == null) {
+            return null;
+        }
+
+        RedmineToCrmEntry entryWithStatus = statusMapEntryDAO.getLocalStatus(statusMapId, Integer.parseInt(detailWithStatusChange.getNewValue()));
+
+        if (entryWithStatus == null) {
+            return null;
+        }
+
+        final CaseComment statusComment = new CaseComment();
+        statusComment.setCreated(journal.getCreatedOn());
+        statusComment.setAuthor(author);
+        statusComment.setCaseStateId((long) entryWithStatus.getLocalStatusId());
+
+        return statusComment;
     }
 
     @Override
@@ -107,7 +133,7 @@ public final class CommonServiceImpl implements CommonService {
         eventPublisherService.publishEvent( new CaseCommentEvent( caseService, ServiceModule.REDMINE, contactPerson,
                 caseObjId, false, null, comment, null ) );
 
-        return comment;
+        return caseCommentDAO.getByCreationDate(comment.getCreated());
     }
 
     @Override
@@ -210,6 +236,9 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private EventPublisherService eventPublisherService;
+
+    @Autowired
+    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 

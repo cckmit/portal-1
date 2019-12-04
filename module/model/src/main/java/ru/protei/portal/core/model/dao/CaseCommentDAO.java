@@ -17,6 +17,8 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     List<CaseComment> getCaseComments( CaseCommentQuery query );
 
+    CaseComment getByCreationDate(Date date);
+
     /**
      * Возвращает список идентификаторов CaseObject.id
      * @param query

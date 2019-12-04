@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.core.model.ent.RedmineToCrmEntry;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
@@ -103,7 +104,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         logger.debug("finding comments (journals where notes are not empty)");
 
-        final List<Journal> nonEmptyJournals = issue.getJournals()
+        final List<Journal> nonEmptyJournalsWithComments = issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
                 .filter(x -> x.getNotes() != null && x.getCreatedOn() != null)
@@ -111,53 +112,42 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .filter(x -> !x.getNotes().isEmpty())
                 .collect(Collectors.toList());
 
-        logger.debug("found {} comments", nonEmptyJournals.size());
-        nonEmptyJournals.forEach(x -> logger.debug("Comment with id {} has following text: {}", x.getId(), x.getNotes()));
+        logger.debug("found {} comments", nonEmptyJournalsWithComments.size());
+        nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with id {} has following text: {}", journal.getId(), journal.getNotes()));
 
-        List<CaseComment> comments = nonEmptyJournals
+        final List<CaseComment> comments = nonEmptyJournalsWithComments
                 .stream()
-                .map(x -> commonService.parseJournalToCaseComment(x, companyId))
-                .collect(Collectors.toList());
-
-        List<CaseComment> stateChangeComments = nonEmptyJournals
-                .stream()
-                .map(journal -> createCommentWithChangedStatus(journal, endpoint.getStatusMapId(), companyId))
-                .collect(Collectors.toList());
-
-        comments.addAll(stateChangeComments);
-
-        comments = comments
-                .stream()
+                .map(journal -> commonService.parseJournalToCaseComment(journal, companyId))
                 .filter(Objects::nonNull)
-                .map(x -> commonService.processStoreComment(issue, x.getAuthor(), object, object.getId(), x))
+                .map(caseComment -> commonService.processStoreComment(issue, caseComment.getAuthor(), object, object.getId(), caseComment))
                 .collect(Collectors.toList());
 
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
+        logger.debug("finding status changes (journals with journal details where status changes exist)");
+
+        final List<Journal> nonEmptyJournalsWithStatusChange = latestJournals
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(journal -> CollectionUtils.isNotEmpty(journal.getDetails()))
+                .filter(journal -> journal.getDetails().stream().anyMatch(journalDetail -> RedmineChangeType.STATUS_CHANGE.getName().equals(journalDetail.getName())))
+                .collect(Collectors.toList());
+
+        logger.debug("found {} status changes", nonEmptyJournalsWithStatusChange.size());
+
+        final List<CaseComment> statusComments = nonEmptyJournalsWithStatusChange
+                .stream()
+                .map(journal -> commonService.parseJournalToStatusComment(journal, companyId, endpoint.getStatusMapId()))
+                .filter(Objects::nonNull)
+                .map(statusComment -> commonService.processStoreComment(issue, statusComment.getAuthor(), object, object.getId(), statusComment))
+                .collect(Collectors.toList());
+
+        statusComments.forEach(statusComment -> logger.debug("Status comment with id {} has following status: {}", statusComment.getId(), statusComment.getCaseStateId()));
+        logger.debug("Added {} new status comments to issue with id: {}", statusComments.size(), object.getId());
+
         parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
 
         commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
-    }
-
-    private CaseComment createCommentWithChangedStatus(Journal journal, Long mapId, Long companyId) {
-        JournalDetail detail = journal.getDetails()
-                .stream()
-                .filter(journalDetail -> "status_id".equals(journalDetail.getName()))
-                .findFirst()
-                .orElse(null);
-
-        if (detail == null) {
-            return null;
-        }
-
-        final RedmineToCrmEntry statusEntry = statusMapEntryDAO.getLocalStatus(mapId, Integer.parseInt(detail.getNewValue()));
-
-        CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setAuthor(commonService.getAssignedPerson(companyId, journal.getUser()));
-        stateChangeMessage.setCreated(journal.getCreatedOn());
-        stateChangeMessage.setCaseStateId((long) statusEntry.getLocalStatusId());
-
-        return stateChangeMessage;
     }
 
     @Autowired

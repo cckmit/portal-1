@@ -36,6 +36,11 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
+    public CaseComment getByCreationDate(Date date) {
+        return getByCondition(" case_comment.date=? ", date);
+    }
+
+    @Override
     public List<Long> getCaseCommentsCaseIds( CaseCommentQuery query ) {
         SqlCondition where = createSqlCondition( query );
         return listColumnValue( "case_id", Long.class, where.condition, where.args.toArray() );
