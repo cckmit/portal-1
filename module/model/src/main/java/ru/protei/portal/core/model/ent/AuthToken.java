@@ -9,7 +9,6 @@ public class AuthToken {
 
     private String sid;
     private String ip;
-    private Long expired;
     private Long userLoginId;
     private Long personId;
     private Long companyId;
@@ -29,14 +28,6 @@ public class AuthToken {
 
     public void setIp(String ip) {
         this.ip = ip;
-    }
-
-    public Long getExpired() {
-        return expired;
-    }
-
-    public void setExpired(Long expired) {
-        this.expired = expired;
     }
 
     public Long getUserLoginId() {
@@ -76,7 +67,6 @@ public class AuthToken {
         return "AuthToken{" +
                 "sid='" + sid + '\'' +
                 ", ip='" + ip + '\'' +
-                ", expired=" + expired +
                 ", userLoginId=" + userLoginId +
                 ", personId=" + personId +
                 ", companyId=" + companyId +

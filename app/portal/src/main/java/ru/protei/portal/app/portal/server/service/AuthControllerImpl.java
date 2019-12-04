@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.app.portal.client.service.AuthController;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -15,8 +14,8 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.core.service.session.SessionService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
@@ -34,8 +33,7 @@ public class AuthControllerImpl implements AuthController {
 
         AuthToken token = sessionService.getAuthToken(httpRequest);
 
-        Result<AuthToken> validationResult = authService.validateAuthToken(token);
-        if (validationResult.isOk()) {
+        if (token != null) {
             log.info("authentificate: token={}", token);
             return makeProfileByAuthToken(token);
         }

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service.auth;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +9,13 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -120,7 +121,6 @@ public class AuthServiceImpl implements AuthService {
         token.setPersonId(userLogin.getPersonId());
         token.setCompanyId(userLogin.getCompanyId());
         token.setRoles(getUserRoles(userLogin.getId()));
-        token.setExpired(makeExpiration());
 
         log.info("Auth success for {} / {} / {}",
                 login,
@@ -147,30 +147,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return ok(token);
-    }
-
-    @Override
-    public Result<AuthToken> validateAuthToken(AuthToken token) {
-
-        if (token == null) {
-            return error(En_ResultStatus.SESSION_NOT_FOUND);
-        }
-
-        if (checkIsExpired(token)) {
-            log.warn("Session with id {} is expired, block request", token.getSessionId());
-            return error(En_ResultStatus.INVALID_SESSION_ID);
-        }
-
-        return ok(token);
-    }
-
-    @Override
-    public long makeExpiration() {
-        return DateUtils.addSeconds(new Date(), AuthService.DEF_APP_SESSION_LIVE_TIME).getTime();
-    }
-
-    private boolean checkIsExpired(AuthToken token) {
-        return token.getExpired() != null && token.getExpired() < System.currentTimeMillis();
     }
 
     private Set<UserRole> getUserRoles(Long loginId) {

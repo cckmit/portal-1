@@ -1,6 +1,5 @@
 package ru.protei.portal.mock;
 
-import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
@@ -9,7 +8,6 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.test.service.BaseServiceTest;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 
 import static ru.protei.portal.api.struct.Result.ok;
@@ -53,16 +51,6 @@ public class AuthServiceMock implements AuthService {
         return ok(token);
     }
 
-    @Override
-    public Result<AuthToken> validateAuthToken(AuthToken token) {
-        return ok(token);
-    }
-
-    @Override
-    public long makeExpiration() {
-        return DateUtils.addSeconds(new Date(), AuthService.DEF_APP_SESSION_LIVE_TIME).getTime();
-    }
-
     private UserLogin makeLogin(Person person) {
         UserLogin userLogin = new UserLogin();
         userLogin.setId(1L);
@@ -85,7 +73,6 @@ public class AuthServiceMock implements AuthService {
         token.setPersonId(userLogin.getPersonId());
         token.setCompanyId(userLogin.getCompanyId());
         token.setRoles(makeRoles());
-        token.setExpired(makeExpiration());
         return token;
     }
 

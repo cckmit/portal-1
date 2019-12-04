@@ -17,8 +17,4 @@ public interface AuthService {
     Result<AuthToken> login(String appSessionID, String login, String pwd, String ip, String userAgent);
 
     Result<AuthToken> logout(AuthToken token, String ip, String userAgent);
-
-    Result<AuthToken> validateAuthToken(AuthToken token);
-
-    long makeExpiration();
 }
