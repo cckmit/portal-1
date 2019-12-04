@@ -12,7 +12,7 @@ public interface AbstractCaseEvent {
 
     ServiceModule getServiceModule();
 
-    Person getPerson();
+    Long getPersonId();
 
     Long getCaseObjectId();
 

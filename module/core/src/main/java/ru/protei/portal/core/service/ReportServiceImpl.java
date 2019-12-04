@@ -12,14 +12,13 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.text.DateFormat;
@@ -36,16 +35,12 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     ReportDAO reportDAO;
-
     @Autowired
     ReportControlService reportControlService;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     ReportStorageService reportStorageService;
-
     @Autowired
     PolicyService policyService;
 
@@ -61,10 +56,8 @@ public class ReportServiceImpl implements ReportService {
 
         applyFilterByScope(token, report);
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
         Date now = new Date();
-        report.setCreatorId(descriptor.getPerson().getId());
+        report.setCreatorId(token.getPersonId());
         report.setCreated(now);
         report.setModified(now);
         report.setStatus(En_ReportStatus.CREATED);
@@ -95,8 +88,7 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
+        Report report = reportDAO.getReport(token.getPersonId(), id);
 
         if (report == null || report.getStatus() != En_ReportStatus.ERROR) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -118,18 +110,13 @@ public class ReportServiceImpl implements ReportService {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
-
+        Report report = reportDAO.getReport(token.getPersonId(), id);
         return ok(report);
     }
 
     @Override
     public Result<SearchResult<Report>> getReports( AuthToken token, ReportQuery query) {
-
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, null);
+        SearchResult<Report> sr = reportDAO.getSearchResult(token.getPersonId(), query, null);
         return ok(sr);
     }
 
@@ -139,8 +126,7 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Report report = reportDAO.getReport(descriptor.getPerson().getId(), id);
+        Report report = reportDAO.getReport(token.getPersonId(), id);
 
         if (report == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -155,8 +141,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Result removeReports( AuthToken token, Set<Long> include, Set<Long> exclude) {
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        List<Report> reports = reportDAO.getReportsByIds(descriptor.getPerson().getId(), include, exclude);
+        List<Report> reports = reportDAO.getReportsByIds(token.getPersonId(), include, exclude);
         removeReports(reports);
 
         return ok();
@@ -165,8 +150,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Result removeReports( AuthToken token, ReportQuery query, Set<Long> exclude) {
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, exclude);
+        SearchResult<Report> sr = reportDAO.getSearchResult(token.getPersonId(), query, exclude);
         removeReports(sr.getResults());
 
         return ok();
@@ -193,12 +177,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void applyFilterByScope( AuthToken token, Report report) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_REPORT)) {
+        if (!hasGrantAccessForReport(token)) {
             report.setReportType( En_ReportType.CASE_OBJECTS);
             CaseQuery query = report.getCaseQuery();
-            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds()));
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
             query.setAllowViewPrivate(false);
         }
     }
@@ -211,8 +193,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private boolean hasGrantAccessForReport(AuthToken token) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        Set< UserRole > roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_REPORT);
     }
 }

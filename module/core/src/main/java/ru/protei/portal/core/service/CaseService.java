@@ -33,28 +33,28 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    Result<CaseObject> createCaseObject( AuthToken token, CaseObject p, Person initiator );
+    Result<CaseObject> createCaseObject( AuthToken token, CaseObject p );
 
     @Deprecated
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p, Person initiator );
+    Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Person initiator);
+    Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseObjectMeta> updateCaseObjectMeta( AuthToken token, CaseObjectMeta caseMeta, Person initiator );
+    Result<CaseObjectMeta> updateCaseObjectMeta( AuthToken token, CaseObjectMeta caseMeta );
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers, Person initiator );
+    Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers );
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result< CaseObjectMetaJira > updateCaseObjectMetaJira( AuthToken token, CaseObjectMetaJira caseMetaJira, Person initiator );
+    Result< CaseObjectMetaJira > updateCaseObjectMetaJira( AuthToken token, CaseObjectMetaJira caseMetaJira );
 
     Result<List<En_CaseState>> stateList(En_CaseType caseType);
 

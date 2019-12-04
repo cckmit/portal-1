@@ -4,7 +4,6 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
-import ru.protei.portal.core.model.ent.Person;
 
 import java.util.Objects;
 
@@ -12,14 +11,14 @@ public class CaseObjectMetaEvent extends ApplicationEvent implements AbstractCas
 
     private CaseObjectMeta newState;
     private CaseObjectMeta oldState;
-    private Person person;
+    private Long personId;
     private ServiceModule serviceModule;
     private En_ExtAppType extAppType;
 
-    public CaseObjectMetaEvent(Object source, ServiceModule serviceModule, Person person, En_ExtAppType extAppType, CaseObjectMeta oldState, CaseObjectMeta newState) {
+    public CaseObjectMetaEvent(Object source, ServiceModule serviceModule, Long personId, En_ExtAppType extAppType, CaseObjectMeta oldState, CaseObjectMeta newState) {
         super(source);
         this.serviceModule = serviceModule;
-        this.person = person;
+        this.personId = personId;
         this.extAppType = extAppType;
         this.oldState = oldState;
         this.newState = newState;
@@ -41,8 +40,9 @@ public class CaseObjectMetaEvent extends ApplicationEvent implements AbstractCas
         return oldState;
     }
 
-    public Person getPerson() {
-        return person;
+    @Override
+    public Long getPersonId() {
+        return personId;
     }
 
     @Override
