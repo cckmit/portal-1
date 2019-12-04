@@ -13,7 +13,7 @@ public class CaseObjectSqlBuilder {
 
     public SqlCondition caseCommonQuery (CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1 and deleted = 0");
+            condition.append("deleted = 0");
 
             // TODO merge ids to use queries simultaneously
             if ( query.getId() != null ) {
@@ -96,10 +96,6 @@ public class CaseObjectSqlBuilder {
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
                 condition.append(" and manager in " + HelperFunc.makeInArg(query.getManagerIds(), false));
-
-                if ( query.isOrWithoutManager() ) {
-                    condition.append(" or manager is null" );
-                }
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
@@ -187,6 +183,16 @@ public class CaseObjectSqlBuilder {
                         .append(" and product_id = ")
                         .append(query.getProductDirectionId());
             }
+
+            /* --OR CONDITIONS-- */
+
+//            if (query.isOrWithoutManager() != null && query.isOrWithoutManager()) {
+//                condition.append(" or deleted = 0");
+//                condition.append(" and case_type=?");
+//                condition.append(" and manager is null");
+//
+//                args.add(En_CaseType.CRM_SUPPORT);
+//            }
         });
     }
 }

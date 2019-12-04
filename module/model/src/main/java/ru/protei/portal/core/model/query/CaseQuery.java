@@ -38,7 +38,7 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> managerIds;
 
-    private boolean orWithoutManager;
+    private Boolean orWithoutManager;
 
     private En_CaseType type;
 
@@ -227,11 +227,11 @@ public class CaseQuery extends BaseQuery {
 
     public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
-    public boolean isOrWithoutManager() {
+    public Boolean isOrWithoutManager() {
         return orWithoutManager;
     }
 
-    public void setOrWithoutManager(boolean withoutManager) {
+    public void setOrWithoutManager(Boolean withoutManager) {
         this.orWithoutManager = withoutManager;
     }
 

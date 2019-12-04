@@ -230,9 +230,6 @@ public class PortalApiController {
         // optional
         query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
         query.setManagerIds(apiQuery.getManagerIds());
-        if (CollectionUtils.isEmpty(query.getManagerIds())) {
-            query.setOrWithoutManager(true);
-        }
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
         query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
         query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));
