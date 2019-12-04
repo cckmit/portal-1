@@ -86,6 +86,10 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Я', "Ja");
     }
 
+    public static String transliterate(String input) {
+        return transliterate(input, "en");
+    }
+
     public static String transliterate(String input, String locale) {
         if (StringUtils.isBlank(input)) {
             return "";
