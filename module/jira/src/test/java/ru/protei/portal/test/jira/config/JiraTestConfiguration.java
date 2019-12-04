@@ -18,8 +18,6 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.core.service.authtoken.AuthTokenServiceImpl;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
@@ -214,11 +212,6 @@ public class JiraTestConfiguration {
     @Bean
     public AuthService getAuthService() {
         return new AuthServiceImpl();
-    }
-
-    @Bean
-    public AuthTokenService getAuthTokenService() {
-        return new AuthTokenServiceImpl();
     }
 
     @Bean

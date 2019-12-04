@@ -30,6 +30,14 @@ public class PersonServiceImpl implements PersonService {
     PersonDAO personDAO;
 
     @Override
+    public Result<Person> getPerson(AuthToken token, Long personId) {
+        Person person = personDAO.get(personId);
+        // RESET PRIVACY INFO
+        person.resetPrivacyInfo();
+        return ok(person);
+    }
+
+    @Override
     public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
         query = processQueryByPolicyScope(authToken, query);
 

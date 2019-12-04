@@ -12,8 +12,9 @@ import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.CompanyService;
+import ru.protei.portal.core.service.PersonService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -73,9 +74,9 @@ public class AuthControllerImpl implements AuthController {
 
     private Profile makeProfileByAuthToken(AuthToken token) throws RequestFailedException {
 
-        Person person = ServiceUtils.checkResultAndGetData(authTokenService.getPerson(token));
-        Company company = ServiceUtils.checkResultAndGetData(authTokenService.getCompany(token));
-        UserLogin userLogin = ServiceUtils.checkResultAndGetData(authTokenService.getUserLogin(token));
+        Person person = ServiceUtils.checkResultAndGetData(personService.getPerson(token, token.getPersonId()));
+        Company company = ServiceUtils.checkResultAndGetData(companyService.getCompanyUnsafe(token, token.getCompanyId()));
+        UserLogin userLogin = ServiceUtils.checkResultAndGetData(authService.getUserLogin(token, token.getUserLoginId()));
 
         Profile profile = new Profile();
         profile.setLoginId(token.getUserLoginId());
@@ -125,9 +126,11 @@ public class AuthControllerImpl implements AuthController {
     @Autowired
     SessionService sessionService;
     @Autowired
-    AuthTokenService authTokenService;
-    @Autowired
     private AuthService authService;
+    @Autowired
+    PersonService personService;
+    @Autowired
+    CompanyService companyService;
 
     private static final Logger log = LoggerFactory.getLogger(AuthControllerImpl.class);
 }

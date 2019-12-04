@@ -14,36 +14,37 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.core.model.util.DiffResult;
-import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
+import ru.protei.portal.core.model.struct.UpdateResult;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
-import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-
+import ru.protei.portal.core.model.util.DiffResult;
+import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.utils.JiraUtils;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * Реализация сервиса управления обращениями
@@ -749,7 +750,7 @@ public class CaseServiceImpl implements CaseService {
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
             caseObject.setPrivateCase( false );
             if( !token.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                Company company = authTokenService.getCompany(token).getData();
+                Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
                 caseObject.setInitiatorCompany( company );
             }
             caseObject.setManagerId( null );
@@ -784,7 +785,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        Result<Company> result = authTokenService.getCompany(token);
+        Result<Company> result = companyService.getCompanyUnsafe(token, token.getCompanyId());
         if (result.isError()) {
             return false;
         }
@@ -960,10 +961,10 @@ public class CaseServiceImpl implements CaseService {
     PortalConfig portalConfig;
 
     @Autowired
-    AuthTokenService authTokenService;
+    LockService lockService;
 
     @Autowired
-    LockService lockService;
+    CompanyService companyService;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

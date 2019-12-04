@@ -20,7 +20,6 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -50,9 +49,6 @@ public class WorkerController {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private AuthTokenService authTokenService;
 
     @Autowired
     private SessionIdGen sidGen;
@@ -1342,7 +1338,6 @@ public class WorkerController {
 
     private boolean checkAuth (HttpServletRequest request, HttpServletResponse response){
         Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
-
         if (authTokenAPIResult.isError()){
             try {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -1351,8 +1346,9 @@ public class WorkerController {
             }
             return false;
         }
+        AuthToken token = authTokenAPIResult.getData();
 
-        Result<UserLogin> userLoginResult = authTokenService.getUserLogin(authTokenAPIResult.getData());
+        Result<UserLogin> userLoginResult = authService.getUserLogin(token, token.getUserLoginId());
         if (userLoginResult.isError()) {
             try {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

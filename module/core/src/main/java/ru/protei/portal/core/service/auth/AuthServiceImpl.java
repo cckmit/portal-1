@@ -149,6 +149,13 @@ public class AuthServiceImpl implements AuthService {
         return ok(token);
     }
 
+    @Override
+    public Result<UserLogin> getUserLogin(AuthToken token, Long userLoginId) {
+        UserLogin userLogin = userLoginDAO.get(userLoginId);
+        jdbcManyRelationsHelper.fillAll(userLogin);
+        return ok(userLogin);
+    }
+
     private Set<UserRole> getUserRoles(Long loginId) {
         UserLogin userLogin = new UserLogin();
         userLogin.setId(loginId);

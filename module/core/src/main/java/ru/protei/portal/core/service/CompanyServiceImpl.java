@@ -187,6 +187,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Result<Company> getCompanyUnsafe(AuthToken token, Long id) {
+        return getCompany(token, id);
+    }
+
+    @Override
     public Result<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {

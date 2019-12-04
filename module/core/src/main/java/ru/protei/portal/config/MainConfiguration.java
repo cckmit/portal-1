@@ -34,8 +34,6 @@ import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.AccountServiceImpl;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.core.service.authtoken.AuthTokenServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
@@ -560,11 +558,6 @@ public class MainConfiguration {
     @Bean
     public AuthService getAuthService() {
         return new AuthServiceImpl();
-    }
-
-    @Bean
-    public AuthTokenService getAuthTokenService() {
-        return new AuthTokenServiceImpl();
     }
 
     @Bean

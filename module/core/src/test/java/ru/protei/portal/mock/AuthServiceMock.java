@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.test.service.BaseServiceTest;
+import ru.protei.winter.core.utils.Pair;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class AuthServiceMock implements AuthService {
 
-    private static final ThreadLocal<AuthToken> authTokenThreadScoped = new ThreadLocal<>();
+    private static final ThreadLocal<Pair<UserLogin, AuthToken>> authTokenThreadScoped = new ThreadLocal<>();
 
     private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
@@ -24,14 +25,15 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.CONTACT_VIEW, En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE,
     };
 
+    private UserLogin stubUserLogin;
     private AuthToken stubAuthToken;
 
     public AuthServiceMock() {
         Company company = new Company( 0L );
         Person person =  BaseServiceTest.createNewPerson( company );
         person.setId( 0L );
-        UserLogin userLogin = makeLogin( person );
-        stubAuthToken = makeAuthToken( userLogin );
+        stubUserLogin = makeLogin( person );
+        stubAuthToken = makeAuthToken( stubUserLogin );
     }
 
     @Override
@@ -40,16 +42,23 @@ public class AuthServiceMock implements AuthService {
     }
 
     public void makeThreadAuthToken(UserLogin userLogin) {
-        setThreadAuthToken(makeAuthToken(userLogin));
+        setThreadAuthToken(userLogin, makeAuthToken(userLogin));
     }
 
     public void resetThreadAuthToken() {
-        setThreadAuthToken(null);
+        setThreadAuthToken(null, null);
     }
 
     @Override
     public Result<AuthToken> logout(AuthToken token, String ip, String userAgent) {
         return ok(token);
+    }
+
+    @Override
+    public Result<UserLogin> getUserLogin(AuthToken token, Long userLoginId) {
+        UserLogin userLogin = getThreadUserLogin();
+        if (userLogin == null) return ok(stubUserLogin);
+        return ok(userLogin);
     }
 
     private UserLogin makeLogin(Person person) {
@@ -86,10 +95,20 @@ public class AuthServiceMock implements AuthService {
     }
 
     private static AuthToken getThreadAuthToken() {
-        return authTokenThreadScoped.get();
+        Pair<UserLogin, AuthToken> pair = authTokenThreadScoped.get();
+        return pair == null ? null : pair.getB();
     }
 
-    private static void setThreadAuthToken( AuthToken client ) {
-        authTokenThreadScoped.set( client );
+    private static UserLogin getThreadUserLogin() {
+        Pair<UserLogin, AuthToken> pair = authTokenThreadScoped.get();
+        return pair == null ? null : pair.getA();
+    }
+
+    private static void setThreadAuthToken( UserLogin userLogin, AuthToken client ) {
+        if (userLogin == null && client == null) {
+            authTokenThreadScoped.remove();
+            return;
+        }
+        authTokenThreadScoped.set( new Pair<>(userLogin, client) );
     }
 }
