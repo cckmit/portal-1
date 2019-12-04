@@ -73,6 +73,7 @@ public class AuthServiceMock implements AuthService {
         token.setPersonId(userLogin.getPersonId());
         token.setCompanyId(userLogin.getCompanyId());
         token.setRoles(makeRoles());
+        token.setPersonDisplayShortName("Test user short name");
         return token;
     }
 

@@ -13,6 +13,7 @@ public class AuthToken {
     private Long personId;
     private Long companyId;
     private Set<UserRole> roles;
+    private String personDisplayShortName;
 
     public AuthToken(String sid) {
         this.sid = sid;
@@ -62,15 +63,20 @@ public class AuthToken {
         this.roles = roles;
     }
 
+    public String getPersonDisplayShortName() {
+        return personDisplayShortName;
+    }
+
+    public void setPersonDisplayShortName(String personDisplayShortName) {
+        this.personDisplayShortName = personDisplayShortName;
+    }
+
     @Override
     public String toString() {
         return "AuthToken{" +
                 "sid='" + sid + '\'' +
                 ", ip='" + ip + '\'' +
                 ", userLoginId=" + userLoginId +
-                ", personId=" + personId +
-                ", companyId=" + companyId +
-                ", roles=" + roles +
                 '}';
     }
 }

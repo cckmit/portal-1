@@ -20,19 +20,22 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.SimpleAuditableObject;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging.SERVICE_FACADE_LOGGER_NAME;
@@ -154,14 +157,12 @@ public class ServiceLayerInterceptor {
     }
 
     private void makeAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
-        Person person = authTokenService.getPerson(token).getData();
-        String personDisplayShortName = person == null ? "" : person.getDisplayShortName();
         AuditObject auditObject = new AuditObject(
                 auditType.getId(),
                 auditableObject,
                 token.getPersonId(),
                 token.getIp(),
-                personDisplayShortName
+                token.getPersonDisplayShortName()
         );
         publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
@@ -313,8 +314,6 @@ public class ServiceLayerInterceptor {
 
     @Autowired
     AuthService authService;
-    @Autowired
-    AuthTokenService authTokenService;
     @Autowired
     PolicyService policyService;
     @Autowired

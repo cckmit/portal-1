@@ -183,8 +183,7 @@ public class FileController {
             if (result == null) {
                 String[] parts = base64Facade.getBase64().split(",");
                 byte[] bytes = Base64.getDecoder().decode(parts[1]);
-                Person creator = authTokenService.getPerson(authToken).getData();
-                Attachment attachment = saveAttachment(bytes, base64Facade, creator.getId());
+                Attachment attachment = saveAttachment(bytes, base64Facade, authToken.getPersonId());
                 result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
             }
         } catch (IOException | SQLException e) {
@@ -205,8 +204,6 @@ public class FileController {
             return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "auth error"));
         }
 
-        Person creator = authTokenService.getPerson(authToken).getData();
-
         for (Base64Facade currB64facade : base64Facades) {
             UploadResult result = checkInputParams(authToken, currB64facade);
 
@@ -219,7 +216,7 @@ public class FileController {
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
 
             try {
-                Attachment attachment = saveAttachment(bytes, currB64facade, creator.getId());
+                Attachment attachment = saveAttachment(bytes, currB64facade, authToken.getPersonId());
                 attachmentsJsons.add(mapper.writeValueAsString(attachment));
                 attachments.add(attachment);
             } catch (IOException | SQLException e) {

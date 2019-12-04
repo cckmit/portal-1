@@ -121,6 +121,7 @@ public class AuthServiceImpl implements AuthService {
         token.setPersonId(userLogin.getPersonId());
         token.setCompanyId(userLogin.getCompanyId());
         token.setRoles(getUserRoles(userLogin.getId()));
+        token.setPersonDisplayShortName(userLogin.getDisplayShortName());
 
         log.info("Auth success for {} / {} / {}",
                 login,
