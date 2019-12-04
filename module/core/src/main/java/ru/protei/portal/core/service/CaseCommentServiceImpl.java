@@ -34,13 +34,13 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
-    public Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, long caseObjectId) {
+    public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseObjectId);
         if (checkAccessStatus != null) {
-            return error( checkAccessStatus);
+            return error(checkAccessStatus);
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
-        applyFilterByScope( token, query );
+        applyFilterByScope(token, query);
         return getList(query);
     }
 
@@ -368,7 +368,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
     }
 
-    private Result<List<CaseComment>> getList( List<CaseComment> comments) {
+    private Result<List<CaseComment>> getList(List<CaseComment> comments) {
         if (comments == null) {
             return error( En_ResultStatus.GET_DATA_ERROR);
         }
@@ -382,7 +382,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
         });
 
-        return ok(comments.stream().sorted(Comparator.comparing(CaseComment::getCreated)).collect(Collectors.toList()));
+        return ok(comments);
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {

@@ -46,32 +46,27 @@ public final class CommonServiceImpl implements CommonService {
         final Person author = getAssignedPerson(companyId, journal.getUser());
         JournalDetail detailWithStatusChange = journal.getDetails()
                 .stream()
-                .filter(detail -> RedmineChangeType.STATUS_CHANGE.getName().equals(detail.getName()))
+                .filter(detail -> detail.getName().equals(RedmineChangeType.STATUS_CHANGE.getName()))
                 .findFirst()
-                .orElse(null);
+                .get();
 
-        if (detailWithStatusChange == null) {
+        Integer newStatus;
+        try {
+            newStatus = Integer.parseInt(detailWithStatusChange.getNewValue());
+        } catch (NumberFormatException e) {
+            logger.warn("Can't parse status to int. {}", detailWithStatusChange.toString());
+            return null;
+        }
+
+        RedmineToCrmEntry statusMapEntry = statusMapEntryDAO.getLocalStatus(statusMapId, newStatus);
+        if (statusMapEntry == null) {
             return null;
         }
 
         final CaseComment statusComment = new CaseComment();
-
-        RedmineToCrmEntry entryWithStatus = null;
-
-        try {
-            entryWithStatus = statusMapEntryDAO.getLocalStatus(statusMapId, Integer.parseInt(detailWithStatusChange.getNewValue()));
-        } catch (NumberFormatException e) {
-            logger.warn("Can't parse status to int. {}", detailWithStatusChange.toString());
-        }
-
-        if (entryWithStatus == null) {
-            return null;
-        }
-
         statusComment.setCreated(journal.getCreatedOn());
         statusComment.setAuthor(author);
-        statusComment.setCaseStateId((long) entryWithStatus.getLocalStatusId());
-
+        statusComment.setCaseStateId(statusMapEntry.getLocalStatusId().longValue());
         return statusComment;
     }
 

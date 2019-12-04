@@ -9,11 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.RedmineToCrmStatusMapEntryDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
-import ru.protei.portal.core.model.ent.RedmineToCrmEntry;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
@@ -77,7 +75,8 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
-        //Finding latest synchronized comment in our system
+
+        //Comments synchronize by date from last created comment ????
         logger.debug("Trying to get latest synchronized comment");
         final CaseComment comment = caseCommentDAO.getCaseComments(new CaseCommentQuery(object.getId()))
                 .stream()
@@ -85,25 +84,11 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .sorted(Comparator.comparing(CaseComment::getCreated))
                 .reduce((o1, o2) -> o2)
                 .orElse(null);
-
         final Date latestCreated = (comment != null) ? comment.getCreated() : issue.getCreatedOn();
-
-        logger.debug("last comment was synced on: {}, with id {}", latestCreated);
+        logger.debug("last comment was synced on {}, with id {}", latestCreated, comment.getId());
         logger.debug("starting adding new comments");
 
-        final List<Journal> latestJournals = issue.getJournals()
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(x -> x.getCreatedOn() != null
-                        && x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
-                .collect(Collectors.toList());
-
-        logger.debug("got {} journals after {}", latestJournals.size(), latestCreated);
-
-        latestJournals.forEach(x -> logger.debug("Journal with id {} has following notes: {}", x.getId(), x.getNotes()));
-
         logger.debug("finding comments (journals where notes are not empty)");
-
         final List<Journal> nonEmptyJournalsWithComments = issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
@@ -111,7 +96,6 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
                 .filter(x -> !x.getNotes().isEmpty())
                 .collect(Collectors.toList());
-
         logger.debug("found {} comments", nonEmptyJournalsWithComments.size());
         nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with id {} has following text: {}", journal.getId(), journal.getNotes()));
 
@@ -121,17 +105,24 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .filter(Objects::nonNull)
                 .map(caseComment -> commonService.processStoreComment(issue, caseComment.getAuthor(), object, object.getId(), caseComment))
                 .collect(Collectors.toList());
-
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
-        logger.debug("finding status changes (journals with journal details where status changes exist)");
+        //Status-comments and parameters synchronize by date from last update (endpoint)
+        final List<Journal> latestJournals = issue.getJournals()
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(x -> x.getCreatedOn() != null
+                        && x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
+                .collect(Collectors.toList());
+        logger.debug("got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
+        logger.debug("starting adding new status comments");
 
+        logger.debug("finding status changes (journal details where status changes exist)");
         final List<Journal> latestJournalsWithStatusChange = latestJournals
                 .stream()
                 .filter(journal -> CollectionUtils.isNotEmpty(journal.getDetails()))
-                .filter(journal -> journal.getDetails().stream().anyMatch(journalDetail -> RedmineChangeType.STATUS_CHANGE.getName().equals(journalDetail.getName())))
+                .filter(journal -> journal.getDetails().stream().anyMatch(detail -> detail.getName().equals(RedmineChangeType.STATUS_CHANGE.getName())))
                 .collect(Collectors.toList());
-
         logger.debug("found {} status changes", latestJournalsWithStatusChange.size());
 
         final List<CaseComment> statusComments = latestJournalsWithStatusChange
@@ -140,10 +131,10 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .filter(Objects::nonNull)
                 .map(statusComment -> commonService.processStoreComment(issue, statusComment.getAuthor(), object, object.getId(), statusComment))
                 .collect(Collectors.toList());
-
         statusComments.forEach(statusComment -> logger.debug("Status comment with id {} has following status: {}", statusComment.getId(), statusComment.getCaseStateId()));
         logger.debug("Added {} new status comments to issue with id: {}", statusComments.size(), object.getId());
 
+        logger.debug("starting updating case object");
         parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
 
         commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
@@ -163,9 +154,6 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private RedmineNewIssueHandler newIssueHandler;
-
-    @Autowired
-    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }
