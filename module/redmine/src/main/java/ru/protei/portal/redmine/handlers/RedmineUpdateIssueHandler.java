@@ -126,16 +126,16 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         logger.debug("finding status changes (journals with journal details where status changes exist)");
 
-        final List<Journal> nonEmptyJournalsWithStatusChange = latestJournals
+        final List<Journal> latestJournalsWithStatusChange = latestJournals
                 .stream()
                 .filter(Objects::nonNull)
                 .filter(journal -> CollectionUtils.isNotEmpty(journal.getDetails()))
                 .filter(journal -> journal.getDetails().stream().anyMatch(journalDetail -> RedmineChangeType.STATUS_CHANGE.getName().equals(journalDetail.getName())))
                 .collect(Collectors.toList());
 
-        logger.debug("found {} status changes", nonEmptyJournalsWithStatusChange.size());
+        logger.debug("found {} status changes", latestJournalsWithStatusChange.size());
 
-        final List<CaseComment> statusComments = nonEmptyJournalsWithStatusChange
+        final List<CaseComment> statusComments = latestJournalsWithStatusChange
                 .stream()
                 .map(journal -> commonService.parseJournalToStatusComment(journal, companyId, endpoint.getStatusMapId()))
                 .filter(Objects::nonNull)

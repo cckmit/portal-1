@@ -54,13 +54,20 @@ public final class CommonServiceImpl implements CommonService {
             return null;
         }
 
-        RedmineToCrmEntry entryWithStatus = statusMapEntryDAO.getLocalStatus(statusMapId, Integer.parseInt(detailWithStatusChange.getNewValue()));
+        final CaseComment statusComment = new CaseComment();
+
+        RedmineToCrmEntry entryWithStatus = null;
+
+        try {
+            entryWithStatus = statusMapEntryDAO.getLocalStatus(statusMapId, Integer.parseInt(detailWithStatusChange.getNewValue()));
+        } catch (NumberFormatException e) {
+            logger.warn("Can't parse status to int. {}", detailWithStatusChange.toString());
+        }
 
         if (entryWithStatus == null) {
             return null;
         }
 
-        final CaseComment statusComment = new CaseComment();
         statusComment.setCreated(journal.getCreatedOn());
         statusComment.setAuthor(author);
         statusComment.setCaseStateId((long) entryWithStatus.getLocalStatusId());

@@ -382,7 +382,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
         });
 
-        return ok( comments);
+        return ok(comments.stream().sorted(Comparator.comparing(CaseComment::getCreated)).collect(Collectors.toList()));
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {
