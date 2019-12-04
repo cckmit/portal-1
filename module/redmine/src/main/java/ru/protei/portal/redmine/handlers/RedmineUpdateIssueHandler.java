@@ -128,7 +128,6 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         final List<Journal> latestJournalsWithStatusChange = latestJournals
                 .stream()
-                .filter(Objects::nonNull)
                 .filter(journal -> CollectionUtils.isNotEmpty(journal.getDetails()))
                 .filter(journal -> journal.getDetails().stream().anyMatch(journalDetail -> RedmineChangeType.STATUS_CHANGE.getName().equals(journalDetail.getName())))
                 .collect(Collectors.toList());
