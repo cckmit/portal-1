@@ -66,10 +66,6 @@ public abstract class Selector<T>
         if ( value == null && nullItemOption != null ) {
             fillSelectorView( nullItemOption );
         } else {
-            if (displayOptionCreator == null) {
-                int a = 3;
-                return;
-            }
             fillSelectorView( displayOptionCreator.makeDisplaySelectedOption( value ) );
         }
 
