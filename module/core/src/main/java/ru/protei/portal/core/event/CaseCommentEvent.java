@@ -2,17 +2,10 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.apache.commons.collections4.IterableUtils.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
@@ -24,16 +17,16 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
     private CaseComment newCaseComment;
     private CaseComment oldCaseComment;
     private CaseComment removedCaseComment;
-    private Person person;
+    private Long personId;
     private ServiceModule serviceModule;
     private boolean isEagerEvent;
 
-    public CaseCommentEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId, boolean isEagerEvent,
+    public CaseCommentEvent(Object source, ServiceModule serviceModule, Long personId, Long caseObjectId, boolean isEagerEvent,
                             CaseComment oldCaseComment, CaseComment newCaseComment, CaseComment removedCaseComment
                             ) {
         super(source);
         this.serviceModule = serviceModule;
-        this.person = person;
+        this.personId = personId;
         this.caseObjectId = caseObjectId;
         this.isEagerEvent = isEagerEvent;
         this.oldCaseComment = oldCaseComment;
@@ -66,8 +59,9 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return removedCaseComment;
     }
 
-    public Person getPerson() {
-        return person;
+    @Override
+    public Long getPersonId() {
+        return personId;
     }
 
     @Override
@@ -75,7 +69,7 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return "CaseCommentEvent{" +
                 "caseObjectId=" + caseObjectId +
                 ", isEagerEvent=" + isEagerEvent() +
-                ", person=" + (person==null?null:person.getId()) +
+                ", personId=" + personId +
                 ", isEagerEvent=" + isEagerEvent +
                 ", newCaseComment=" + asString( newCaseComment) +
                 ", oldCaseComment=" + asString(oldCaseComment) +

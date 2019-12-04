@@ -10,7 +10,10 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -20,7 +23,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -46,8 +48,6 @@ public class PortalApiController {
 
     @Autowired
     private AuthService authService;
-    @Autowired
-    private AuthTokenService authTokenService;
     @Autowired
     private SessionIdGen sidGen;
     @Autowired
@@ -114,12 +114,11 @@ public class PortalApiController {
             }
 
             AuthToken authToken = authTokenAPIResult.getData();
-            Person person = authTokenService.getPerson(authToken).getData();
 
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
                     (CaseObject) auditableObject,
-                    person
+                    authToken.getPersonId()
             );
 
             return caseObjectCoreResponse.orElseGet( result ->
@@ -154,15 +153,14 @@ public class PortalApiController {
 
             AuthToken authToken = authTokenAPIResult.getData();
 
-            Person person = authTokenService.getPerson(authToken).getData();
             CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseService.updateCaseObject(authToken, caseObject, person)
-                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject), person))
-                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject), person))
+            return caseService.updateCaseObject(authToken, caseObject, authToken.getPersonId())
+                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject), authToken.getPersonId()))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject), authToken.getPersonId()))
                 .flatMap(o -> {
                     if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
-                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject), person);
+                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject), authToken.getPersonId());
                     }
                     return ok();
                 })

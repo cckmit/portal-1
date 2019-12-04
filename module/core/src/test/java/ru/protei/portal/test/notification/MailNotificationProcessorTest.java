@@ -118,7 +118,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
         Assert.assertTrue("CaseObject must be created",
-                caseService.createCaseObject(getAuthToken(), object, initiator).isOk());
+                caseService.createCaseObject(getAuthToken(), object, initiator.getId()).isOk());
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
@@ -165,7 +165,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
 
         Assert.assertTrue( "CaseComment must be created",
-                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, initiator ).isOk() );
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, initiator.getId() ).isOk() );
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;

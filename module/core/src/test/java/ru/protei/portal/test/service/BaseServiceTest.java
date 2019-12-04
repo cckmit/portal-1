@@ -140,7 +140,7 @@ public class BaseServiceTest {
         CaseObject newCaseObject = createNewCaseObject( caseType, person );
         newCaseObject.setInitiatorCompany( company );
         return checkResultAndGetData(
-                caseService.createCaseObject( getAuthToken(), newCaseObject, person )
+                caseService.createCaseObject( getAuthToken(), newCaseObject, person.getId() )
         );
     }
 

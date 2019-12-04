@@ -2,8 +2,8 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
@@ -11,11 +11,12 @@ import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseAttachment;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collection;
@@ -59,9 +60,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
-    @Autowired
-    AuthTokenService authTokenService;
-
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
      */
@@ -88,9 +86,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             if(result.isOk()
                     && token != null ) {
-                Person person = authTokenService.getPerson(token).getData();
                 publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
-                        person, ca.getCaseId(), null, Collections.singletonList(attachment)));
+                        token.getPersonId(), ca.getCaseId(), null, Collections.singletonList(attachment)));
             }
 
             return result;

@@ -9,9 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseCommentController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -41,12 +39,11 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.info("saveCaseComment(): caseType={}, comment={}", caseType, comment);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Person person = ServiceUtils.checkResultAndGetData(authTokenService.getPerson(token));
         Result<CaseComment> response;
         if (comment.getId() == null) {
-            response = caseCommentService.addCaseComment(token, caseType, comment, person);
+            response = caseCommentService.addCaseComment(token, caseType, comment, token.getPersonId());
         } else {
-            response = caseCommentService.updateCaseComment(token, caseType, comment, person);
+            response = caseCommentService.updateCaseComment(token, caseType, comment, token.getPersonId());
         }
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -60,8 +57,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.info("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Person person = ServiceUtils.checkResultAndGetData(authTokenService.getPerson(token));
-        Result<Boolean> response = caseCommentService.removeCaseComment(token, caseType, comment, person);
+        Result<Boolean> response = caseCommentService.removeCaseComment(token, caseType, comment, token.getPersonId());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -86,8 +82,6 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     SessionService sessionService;
     @Autowired
     HttpServletRequest httpServletRequest;
-    @Autowired
-    AuthTokenService authTokenService;
 
     private static final Logger log = LoggerFactory.getLogger(CaseCommentControllerImpl.class);
 }

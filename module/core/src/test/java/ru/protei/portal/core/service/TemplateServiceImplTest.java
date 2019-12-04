@@ -78,8 +78,8 @@ public class TemplateServiceImplTest {
         CaseObject lastState = createNewCaseObject( person, 4 * DAY + 15 * HOUR + 48 * MINUTE );
 
         Object dummyCaseService = new Object();
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
-        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person, En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), initState, lastState );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseObjectMetaEvent( caseObjectMetaEvent );
@@ -109,8 +109,8 @@ public class TemplateServiceImplTest {
         CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
 
         Object dummyCaseService = new Object();
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person, initState, lastState );
-        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person, En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), initState, lastState );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
         assembledCaseEvent.attachCaseObjectMetaEvent( caseObjectMetaEvent );
@@ -185,8 +185,8 @@ public class TemplateServiceImplTest {
         old.add( chang1 );
         old.add( chang2 );
 
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( new Object(), ServiceModule.GENERAL, person, null, lastState );
-        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( new Object(), ServiceModule.GENERAL, person, En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( new Object(), ServiceModule.GENERAL, person.getId(), null, lastState );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( new Object(), ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembled = new AssembledCaseEvent( caseObjectEvent );
         assembled.attachCaseObjectEvent( caseObjectEvent );
         assembled.attachCaseObjectMetaEvent( caseObjectMetaEvent );

@@ -43,7 +43,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint) {
+    public void processAttachments(Issue issue, CaseObject obj, Long contactPersonId, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
@@ -56,7 +56,7 @@ public final class CommonServiceImpl implements CommonService {
                     .forEach(x -> {
                         Attachment a = new Attachment();
                         a.setCreated(x.getCreatedOn());
-                        a.setCreatorId(contactPerson.getId());
+                        a.setCreatorId(contactPersonId);
                         a.setDataSize(x.getFileSize());
                         a.setFileName(x.getFileName());
                         a.setMimeType(x.getContentType());
@@ -81,7 +81,7 @@ public final class CommonServiceImpl implements CommonService {
             caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
         }
 
-        eventPublisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.REDMINE, contactPerson, obj.getId(),
+        eventPublisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.REDMINE, contactPersonId, obj.getId(),
                         addedAttachments, null));
     }
 
@@ -100,11 +100,11 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+    public CaseComment processStoreComment(Issue issue, Long contactPersonId, CaseObject obj, Long caseObjId, CaseComment comment) {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent( new CaseCommentEvent( caseService, ServiceModule.REDMINE, contactPerson,
+        eventPublisherService.publishEvent( new CaseCommentEvent( caseService, ServiceModule.REDMINE, contactPersonId,
                 caseObjId, false, null, comment, null ) );
 
         return comment;

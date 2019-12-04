@@ -19,26 +19,26 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
-import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.core.service.session.SessionService;
-import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.session.SessionService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -50,9 +50,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
 
-import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
@@ -75,8 +77,6 @@ public class FileController {
     AttachmentDAO attachmentDAO;
     @Autowired
     SessionService sessionService;
-    @Autowired
-    AuthTokenService authTokenService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
@@ -119,8 +119,6 @@ public class FileController {
             return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "AuthToken is null"));
         }
 
-        Person creator = authTokenService.getPerson(authToken).getData();
-
         List<Attachment> bindAttachments = new ArrayList(  );
         UploadResult result = null;
 
@@ -139,7 +137,7 @@ public class FileController {
 
                 logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
-                Attachment attachment = saveAttachment(item, creator.getId());
+                Attachment attachment = saveAttachment(item, authToken.getPersonId());
 
                 if (caseNumber != null) {
                     En_CaseType caseType = En_CaseType.find(caseTypeId);
@@ -164,7 +162,7 @@ public class FileController {
 
         if (!isEmpty( bindAttachments )) {
             caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
-                shareNotification(caseId, creator, bindAttachments )  );
+                shareNotification(caseId, authToken.getPersonId(), bindAttachments )  );
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
@@ -295,8 +293,8 @@ public class FileController {
         }
     }
 
-    private void shareNotification( Long caseId, Person initiator, List<Attachment> addedAttachments) {
-        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiator, caseId,
+    private void shareNotification( Long caseId, Long initiatorId, List<Attachment> addedAttachments) {
+        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiatorId, caseId,
                 addedAttachments, null ));
     }
 

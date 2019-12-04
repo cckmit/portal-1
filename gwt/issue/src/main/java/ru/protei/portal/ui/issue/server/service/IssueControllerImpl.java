@@ -15,17 +15,16 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.IssueController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
@@ -70,9 +69,9 @@ public class IssueControllerImpl implements IssueController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
-        caseObject.setCreatorId( getCurrentPerson().getId() );
+        caseObject.setCreatorId( token.getPersonId() );
 
-        Result< CaseObject >  response = caseService.createCaseObject( token, caseObject, getCurrentPerson() );
+        Result< CaseObject >  response = caseService.createCaseObject( token, caseObject, token.getPersonId() );
 
         log.info( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
@@ -89,7 +88,7 @@ public class IssueControllerImpl implements IssueController {
             CaseObject saved = createIssue(caseObject);
             return saved.getId();
         }
-        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
+        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, token.getPersonId());
         log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response).getId();
     }
@@ -98,7 +97,7 @@ public class IssueControllerImpl implements IssueController {
     public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
         log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result response = caseService.updateCaseObject(token, changeRequest, getCurrentPerson());
+        Result response = caseService.updateCaseObject(token, changeRequest, token.getPersonId());
         log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
 
         checkResult(response);
@@ -108,7 +107,7 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMeta updateIssueMeta(CaseObjectMeta caseMeta) throws RequestFailedException {
         log.info("updateIssueMeta(): caseId={} | caseMeta={}", caseMeta.getId(), caseMeta);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta, getCurrentPerson());
+        Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta, token.getPersonId());
         log.info("updateIssueMeta(): caseId={} | status={}", caseMeta.getId(), result.getStatus());
         return checkResultAndGetData(result);
     }
@@ -117,7 +116,7 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
         log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers, getCurrentPerson());
+        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers, token.getPersonId());
         log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
         return checkResultAndGetData(result);
     }
@@ -126,7 +125,7 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMetaJira updateIssueMetaJira(CaseObjectMetaJira caseMetaJira) throws RequestFailedException {
         log.info("updateIssueMetaJira(): caseId={} | caseMetaJira={}", caseMetaJira.getId(), caseMetaJira);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira, getCurrentPerson());
+        Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira, token.getPersonId());
         log.info("updateIssueMetaJira(): caseId={} | status={}", caseMetaJira.getId(), result.getStatus());
         return checkResultAndGetData(result);
     }
@@ -165,11 +164,6 @@ public class IssueControllerImpl implements IssueController {
         return result.getData();
     }
 
-    private Person getCurrentPerson() throws RequestFailedException {
-        AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return authTokenService.getPerson(token).getData();
-    }
-
     @Autowired
     CaseService caseService;
     @Autowired
@@ -180,8 +174,6 @@ public class IssueControllerImpl implements IssueController {
     HttpServletRequest httpServletRequest;
     @Autowired
     HttpServletRequest request;
-    @Autowired
-    AuthTokenService authTokenService;
 
     private static final Logger log = LoggerFactory.getLogger(IssueControllerImpl.class);
 

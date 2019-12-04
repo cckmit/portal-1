@@ -46,7 +46,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+    public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
 
         if (comment == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -59,11 +59,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
+            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, personId, comment.getCaseId(),
                     resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person, comment.getCaseId(), isEagerEvent,
+            publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, personId, comment.getCaseId(), isEagerEvent,
                     null, resultData.getCaseComment(), null ) );
         }
 
@@ -132,9 +132,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+    public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
 
-        Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, person);
+        Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, personId);
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
         }
@@ -142,10 +142,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
+            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, personId, comment.getCaseId(),
                     resultData.getAddedAttachments(), resultData.getRemovedAttachments())
             );
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, person, comment.getCaseId(),
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, personId, comment.getCaseId(),
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
         }
 
@@ -154,9 +154,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+    public Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
 
-        if (comment == null || comment.getId() == null || person == null) {
+        if (comment == null || comment.getId() == null || personId == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -169,7 +169,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
-        if (!Objects.equals(person.getId(), comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+        if (!Objects.equals(personId, comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
             throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
         }
 
@@ -221,17 +221,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment removedComment, Person person) {
+    public Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment removedComment, Long personId) {
 
         En_ResultStatus checkAccessStatus = null;
-        if (removedComment == null || removedComment.getId() == null || person == null || person.getId() == null) {
+        if (removedComment == null || removedComment.getId() == null || personId == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
         }
         if (checkAccessStatus == null) {
             checkAccessStatus = checkAccessForCaseObject(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(person.getId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
+            if (!Objects.equals(personId, removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
             }
         }
@@ -276,8 +276,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, person, caseId, null, removedAttachments ) );
-        publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person, caseId, isEagerEvent, null, null, removedComment ) );
+        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, personId, caseId, null, removedAttachments ) );
+        publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, personId, caseId, isEagerEvent, null, null, removedComment ) );
 
         return ok( isRemoved);
     }

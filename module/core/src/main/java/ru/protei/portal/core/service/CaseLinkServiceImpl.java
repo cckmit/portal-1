@@ -15,14 +15,16 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,9 +63,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     EventPublisherService publisherService;
 
-    @Autowired
-    AuthTokenService authTokenService;
-
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
@@ -85,7 +84,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks ) {
+    public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Long initiatorId, Collection<CaseLink> caseLinks ) {
         return mergeLinks( token, caseId, caseLinks ).ifOk( mergedLinks -> {
             if (mergedLinks.hasDifferences()) {
                 caseService.getCaseNumberById( token, caseId ).ifOk( caseNumber ->
@@ -94,7 +93,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                                 selectYouTrackLinkRemoteIds( mergedLinks.getRemovedEntries() )
                         )
                 );
-                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
+                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiatorId, caseId, mergedLinks ) );
             }
         } ).flatMap( mergedLinks -> {
             if (!mergedLinks.hasDifferences()) return ok( listOf( caseLinks ) );
@@ -251,8 +250,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     public Result<Void> sendNotificationLinkChanged(AuthToken token, Long caseId, DiffCollectionResult<CaseLink> linksDiff ) {
-        Person person = authTokenService.getPerson(token).getData();
-        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, person, caseId, linksDiff ));
+        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, linksDiff ));
         return ok();
     }
 
