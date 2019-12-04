@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -19,7 +18,6 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -45,8 +43,6 @@ public class ReportServiceImpl implements ReportService {
     ReportStorageService reportStorageService;
     @Autowired
     PolicyService policyService;
-    @Autowired
-    AuthTokenService authTokenService;
 
     @Override
     public Result<Long> createReport( AuthToken token, Report report) {
@@ -182,10 +178,9 @@ public class ReportServiceImpl implements ReportService {
 
     private void applyFilterByScope( AuthToken token, Report report) {
         if (!hasGrantAccessForReport(token)) {
-            Company company = authTokenService.getCompany(token).getData();
             report.setReportType( En_ReportType.CASE_OBJECTS);
             CaseQuery query = report.getCaseQuery();
-            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), company.getCompanyAndChildIds()));
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
             query.setAllowViewPrivate(false);
         }
     }

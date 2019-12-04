@@ -8,14 +8,12 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,8 +62,7 @@ public class PersonServiceImpl implements PersonService {
         }
 
         if (personQuery.getCompanyIds() != null) {
-            Company company = authTokenService.getCompany(token).getData();
-            personQuery.getCompanyIds().retainAll(company.getCompanyAndChildIds());
+            personQuery.getCompanyIds().retainAll(token.getCompanyAndChildIds());
         }
 
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
@@ -74,8 +71,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     AuthService authService;
-    @Autowired
-    AuthTokenService authTokenService;
     @Autowired
     PolicyService policyService;
 

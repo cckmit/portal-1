@@ -9,13 +9,11 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -119,9 +117,10 @@ public class AuthServiceImpl implements AuthService {
         token.setIp(ip);
         token.setUserLoginId(userLogin.getId());
         token.setPersonId(userLogin.getPersonId());
-        token.setCompanyId(userLogin.getCompanyId());
-        token.setRoles(getUserRoles(userLogin.getId()));
         token.setPersonDisplayShortName(userLogin.getDisplayShortName());
+        token.setCompanyId(userLogin.getCompanyId());
+        token.setCompanyAndChildIds(getCompanyAndChildIds(userLogin.getCompanyId()));
+        token.setRoles(getUserRoles(userLogin.getId()));
 
         log.info("Auth success for {} / {} / {}",
                 login,
@@ -155,6 +154,13 @@ public class AuthServiceImpl implements AuthService {
         userLogin.setId(loginId);
         jdbcManyRelationsHelper.fill(userLogin, "roles");
         return userLogin.getRoles();
+    }
+
+    private Collection<Long> getCompanyAndChildIds(Long companyId) {
+        Company company = new Company();
+        company.setId(companyId);
+        jdbcManyRelationsHelper.fill(company, "childCompanies");
+        return company.getCompanyAndChildIds();
     }
 
     public static String makePasswordString(String password) {

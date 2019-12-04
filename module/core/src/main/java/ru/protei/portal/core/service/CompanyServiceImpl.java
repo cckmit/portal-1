@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
@@ -54,9 +53,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     AuthService authService;
-
-    @Autowired
-    AuthTokenService authTokenService;
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -339,8 +335,7 @@ public class CompanyServiceImpl implements CompanyService {
     private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
         Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            Company company = authTokenService.getCompany(token).getData();
-            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), company.getCompanyAndChildIds() ) );
+            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds() ) );
         }
     }
 

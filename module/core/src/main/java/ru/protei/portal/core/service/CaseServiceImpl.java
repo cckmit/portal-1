@@ -704,8 +704,7 @@ public class CaseServiceImpl implements CaseService {
     private void applyFilterByScope( AuthToken token, CaseQuery query ) {
         Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            Company company = authTokenService.getCompany(token).getData();
-            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), company.getCompanyAndChildIds() ) );
+            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), token.getCompanyAndChildIds() ) );
             query.setAllowViewPrivate( false );
             query.setCustomerSearch( true );
         }
@@ -748,9 +747,9 @@ public class CaseServiceImpl implements CaseService {
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
         Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
-            Company company = authTokenService.getCompany(token).getData();
             caseObject.setPrivateCase( false );
-            if( !company.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
+            if( !token.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
+                Company company = authTokenService.getCompany(token).getData();
                 caseObject.setInitiatorCompany( company );
             }
             caseObject.setManagerId( null );

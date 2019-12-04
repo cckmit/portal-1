@@ -8,19 +8,21 @@ import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -35,8 +37,6 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     CaseFilterDAO caseFilterDAO;
     @Autowired
     AuthService authService;
-    @Autowired
-    AuthTokenService authTokenService;
     @Autowired
     PolicyService policyService;
 
@@ -115,9 +115,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     private void applyFilterByScope(AuthToken token, CaseFilter filter) {
         Set<UserRole> roles = token.getRoles();
         if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            Company company = authTokenService.getCompany(token).getData();
             CaseQuery query = filter.getParams();
-            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), company.getCompanyAndChildIds()));
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
             query.setAllowViewPrivate(false);
         }
     }

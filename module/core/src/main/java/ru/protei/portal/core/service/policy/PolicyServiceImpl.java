@@ -1,14 +1,11 @@
 package ru.protei.portal.core.service.policy;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.service.authtoken.AuthTokenService;
 
 import java.util.*;
 
@@ -16,7 +13,6 @@ import java.util.*;
  * Сервис для работы с привилегиями
  */
 public class PolicyServiceImpl implements PolicyService {
-
 
     @Override
     public boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
@@ -26,8 +22,7 @@ public class PolicyServiceImpl implements PolicyService {
                 return false;
             }
 
-            Company company = authTokenService.getCompany(token).getData();
-            Collection<Long> companyIds = company.getCompanyAndChildIds();
+            Collection<Long> companyIds = token.getCompanyAndChildIds();
             if (!companyIds.contains( caseObject.getInitiatorCompanyId() )) {
                 return false;
             }
@@ -133,7 +128,4 @@ public class PolicyServiceImpl implements PolicyService {
 
         return privilegeToScope;
     }
-
-    @Autowired
-    AuthTokenService authTokenService;
 }

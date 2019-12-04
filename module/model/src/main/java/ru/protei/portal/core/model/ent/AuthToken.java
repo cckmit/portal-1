@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -11,9 +12,10 @@ public class AuthToken {
     private String ip;
     private Long userLoginId;
     private Long personId;
-    private Long companyId;
-    private Set<UserRole> roles;
     private String personDisplayShortName;
+    private Long companyId;
+    private Collection<Long> companyAndChildIds;
+    private Set<UserRole> roles;
 
     public AuthToken(String sid) {
         this.sid = sid;
@@ -53,6 +55,14 @@ public class AuthToken {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public Collection<Long> getCompanyAndChildIds() {
+        return companyAndChildIds;
+    }
+
+    public void setCompanyAndChildIds(Collection<Long> companyAndChildIds) {
+        this.companyAndChildIds = companyAndChildIds;
     }
 
     public Set<UserRole> getRoles() {

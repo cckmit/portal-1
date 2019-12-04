@@ -4,6 +4,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.test.service.BaseServiceTest;
 
@@ -71,9 +72,10 @@ public class AuthServiceMock implements AuthService {
         token.setIp("127.0.0.1");
         token.setUserLoginId(userLogin.getId());
         token.setPersonId(userLogin.getPersonId());
-        token.setCompanyId(userLogin.getCompanyId());
-        token.setRoles(makeRoles());
         token.setPersonDisplayShortName("Test user short name");
+        token.setCompanyId(userLogin.getCompanyId());
+        token.setCompanyAndChildIds(CollectionUtils.listOf(userLogin.getCompanyId()));
+        token.setRoles(makeRoles());
         return token;
     }
 
