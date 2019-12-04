@@ -54,6 +54,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         .markdown pre {
             font-size: 14px !important;
         }
+        .markdown p {
+            margin-bottom: 0;
+            margin-top: 0;
+        }
         <#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false>
     </style>
 </head>
