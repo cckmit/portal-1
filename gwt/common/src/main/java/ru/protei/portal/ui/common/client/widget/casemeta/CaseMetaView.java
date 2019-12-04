@@ -43,6 +43,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -399,6 +400,10 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(null, tags));
     }
 
+    private void ensureDebugIds() {
+        collapse.ensureDebugId(DebugIds.COLLAPSIBLE_PANEL.COLLAPSE_BUTTON);
+    }
+
     @Inject
     CaseLinkProvider caseLinkProvider;
     @Inject
@@ -435,6 +440,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     HTMLPanel linkCollapsiblePanel;
     @UiField
     LabelElement headerLabel;
+    @UiField
+    Anchor collapse;
 
     private boolean enabled = true;
     private boolean linksEnabled = true;
