@@ -190,6 +190,26 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CompanyService getCompanyService() {
+        return new CompanyServiceImpl();
+    }
+
+    @Bean
+    public CompanyGroupDAO getCompanyGroupDao() {
+        return new CompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    public CompanyCategoryDAO getCompanyCategoryDao() {
+        return new CompanyCategoryDAO_Impl();
+    }
+
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDao() {
+        return new CompanySubscriptionDAO_Impl();
+    }
+
+    @Bean
     public AttachmentService getAttachmentService() {
         return new AttachmentServiceImpl();
     }
