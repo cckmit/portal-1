@@ -97,6 +97,8 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         subscription.setLangCode( "ru" );
         subscription.setId( SUBSCRIPTION_ID );
 
+        getAuthToken().setPersonId( PERSON_ID );
+
         when(companyDAO.get( COMPANY_ID )).thenReturn( company );
         when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
         when(personDAO.get( PERSON_ID )).thenReturn( initiator );
@@ -118,7 +120,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
         Assert.assertTrue("CaseObject must be created",
-                caseService.createCaseObject(getAuthToken(), object, initiator.getId()).isOk());
+                caseService.createCaseObject(getAuthToken(), object).isOk());
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
@@ -140,6 +142,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         CaseObject object = createNewCaseObject( initiator );
         object.setId( CASE_ID );
         object.setInitiatorCompany( company );
+        getAuthToken().setPersonId( PERSON_ID );
 
         CompanySubscription subscription = new CompanySubscription();
         subscription.setCompanyId( company.getId() );
@@ -165,7 +168,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
 
         Assert.assertTrue( "CaseComment must be created",
-                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, initiator.getId() ).isOk() );
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;

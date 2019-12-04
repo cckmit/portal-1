@@ -131,6 +131,20 @@ public class BaseServiceTest {
 
     // Create and persist
 
+    protected UserLogin makeUserLogin( Person person ) {
+        UserLogin userLogin = new UserLogin();
+        userLogin.setUlogin("user" + person.getId());
+        userLogin.setCreated(new Date());
+        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        userLogin.setPersonId(person.getId());
+        userLogin.setId( userLoginDAO.persist( userLogin ) );
+        if (authService instanceof AuthServiceMock) {
+            ((AuthServiceMock) authService).makeThreadAuthToken(userLogin);
+        }
+        return userLogin;
+    }
+
     protected CaseObject makeCaseObject( Person person ) {
         return makeCaseObject(En_CaseType.CRM_SUPPORT, person);
     }
@@ -140,7 +154,7 @@ public class BaseServiceTest {
         CaseObject newCaseObject = createNewCaseObject( caseType, person );
         newCaseObject.setInitiatorCompany( company );
         return checkResultAndGetData(
-                caseService.createCaseObject( getAuthToken(), newCaseObject, person.getId() )
+                caseService.createCaseObject( getAuthToken(), newCaseObject )
         );
     }
 
@@ -257,6 +271,8 @@ public class BaseServiceTest {
     protected CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
     @Autowired
     protected CaseCommentDAO caseCommentDAO;
+    @Autowired
+    protected UserLoginDAO userLoginDAO;
     @Autowired
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }

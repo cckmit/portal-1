@@ -95,6 +95,9 @@ public class TestPortalApiController extends BaseServiceTest {
         person = createAndPersistPerson( company );
         mainRole = createAndPersistUserRoles();
         userLogin = createAndPersistUserLogin();
+
+        setThreadUserLogin(userLogin);
+
         createAndPersistSomeIssues(company.getId());
         createAndPersistSomeIssuesWithManager(person, company.getId());
         createAndPersistSomePrivateIssues(company.getId());
@@ -276,7 +279,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject, person.getId()).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject).getData().getId());
         }
     }
 
@@ -286,7 +289,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setManager(manager);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject, person.getId()).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject).getData().getId());
         }
     }
 
@@ -297,8 +300,12 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject, person.getId()).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), caseObject).getData().getId());
         }
+    }
+
+    private static void setThreadUserLogin(UserLogin userLogin) {
+        authService.makeThreadAuthToken(userLogin);
     }
 
     private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {

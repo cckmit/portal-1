@@ -71,7 +71,7 @@ public class IssueControllerImpl implements IssueController {
         caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
         caseObject.setCreatorId( token.getPersonId() );
 
-        Result< CaseObject >  response = caseService.createCaseObject( token, caseObject, token.getPersonId() );
+        Result< CaseObject >  response = caseService.createCaseObject( token, caseObject );
 
         log.info( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
@@ -88,7 +88,7 @@ public class IssueControllerImpl implements IssueController {
             CaseObject saved = createIssue(caseObject);
             return saved.getId();
         }
-        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, token.getPersonId());
+        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject);
         log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response).getId();
     }
@@ -97,7 +97,7 @@ public class IssueControllerImpl implements IssueController {
     public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
         log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result response = caseService.updateCaseObject(token, changeRequest, token.getPersonId());
+        Result response = caseService.updateCaseObject(token, changeRequest);
         log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
 
         checkResult(response);
@@ -107,7 +107,7 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMeta updateIssueMeta(CaseObjectMeta caseMeta) throws RequestFailedException {
         log.info("updateIssueMeta(): caseId={} | caseMeta={}", caseMeta.getId(), caseMeta);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta, token.getPersonId());
+        Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta);
         log.info("updateIssueMeta(): caseId={} | status={}", caseMeta.getId(), result.getStatus());
         return checkResultAndGetData(result);
     }
@@ -116,7 +116,7 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
         log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers, token.getPersonId());
+        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers);
         log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
         return checkResultAndGetData(result);
     }
@@ -125,7 +125,7 @@ public class IssueControllerImpl implements IssueController {
     public CaseObjectMetaJira updateIssueMetaJira(CaseObjectMetaJira caseMetaJira) throws RequestFailedException {
         log.info("updateIssueMetaJira(): caseId={} | caseMetaJira={}", caseMetaJira.getId(), caseMetaJira);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira, token.getPersonId());
+        Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira);
         log.info("updateIssueMetaJira(): caseId={} | status={}", caseMetaJira.getId(), result.getStatus());
         return checkResultAndGetData(result);
     }

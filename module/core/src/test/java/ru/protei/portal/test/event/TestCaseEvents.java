@@ -71,7 +71,7 @@ public class TestCaseEvents extends BaseServiceTest {
         when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseObject must be created",
-                caseService.createCaseObject( getAuthToken(), object, person.getId() ).isOk() );
+                caseService.createCaseObject( getAuthToken(), object ).isOk() );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }
@@ -93,7 +93,7 @@ public class TestCaseEvents extends BaseServiceTest {
         when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseComment must be created",
-                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, person.getId() ).isOk() );
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }

@@ -41,9 +41,9 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<CaseComment> response;
         if (comment.getId() == null) {
-            response = caseCommentService.addCaseComment(token, caseType, comment, token.getPersonId());
+            response = caseCommentService.addCaseComment(token, caseType, comment);
         } else {
-            response = caseCommentService.updateCaseComment(token, caseType, comment, token.getPersonId());
+            response = caseCommentService.updateCaseComment(token, caseType, comment);
         }
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -57,7 +57,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.info("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = caseCommentService.removeCaseComment(token, caseType, comment, token.getPersonId());
+        Result<Boolean> response = caseCommentService.removeCaseComment(token, caseType, comment);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -68,7 +68,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.info("removeCaseComment(): caseCommentId={}, type={}", caseCommentId, type);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = caseCommentService.updateCaseTimeElapsedType(token, caseCommentId, type, token.getPersonId());
+        Result<Boolean> response = caseCommentService.updateCaseTimeElapsedType(token, caseCommentId, type);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

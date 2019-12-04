@@ -126,7 +126,7 @@ public class AuthControllerImpl implements AuthController {
     @Autowired
     SessionService sessionService;
     @Autowired
-    private AuthService authService;
+    AuthService authService;
     @Autowired
     PersonService personService;
     @Autowired

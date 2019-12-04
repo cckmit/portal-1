@@ -117,8 +117,7 @@ public class PortalApiController {
 
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
-                    (CaseObject) auditableObject,
-                    authToken.getPersonId()
+                    (CaseObject) auditableObject
             );
 
             return caseObjectCoreResponse.orElseGet( result ->
@@ -155,12 +154,12 @@ public class PortalApiController {
 
             CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseService.updateCaseObject(authToken, caseObject, authToken.getPersonId())
-                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject), authToken.getPersonId()))
-                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject), authToken.getPersonId()))
+            return caseService.updateCaseObject(authToken, caseObject)
+                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject)))
                 .flatMap(o -> {
                     if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
-                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject), authToken.getPersonId());
+                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject));
                     }
                     return ok();
                 })

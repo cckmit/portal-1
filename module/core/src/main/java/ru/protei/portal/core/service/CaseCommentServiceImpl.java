@@ -46,7 +46,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
+    public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         if (comment == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -59,11 +59,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, personId, comment.getCaseId(),
+            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, personId, comment.getCaseId(), isEagerEvent,
+            publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
                     null, resultData.getCaseComment(), null ) );
         }
 
@@ -132,9 +132,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
+    public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
-        Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, personId);
+        Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment);
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
         }
@@ -142,10 +142,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, personId, comment.getCaseId(),
+            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), resultData.getRemovedAttachments())
             );
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, personId, comment.getCaseId(),
+            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
         }
 
@@ -154,9 +154,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
+    public Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
-        if (comment == null || comment.getId() == null || personId == null) {
+        if (comment == null || comment.getId() == null || token.getPersonId() == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -169,7 +169,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
-        if (!Objects.equals(personId, comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+        if (!Objects.equals(token.getPersonId(), comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
             throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
         }
 
@@ -221,17 +221,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment removedComment, Long personId) {
+    public Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment removedComment) {
 
         En_ResultStatus checkAccessStatus = null;
-        if (removedComment == null || removedComment.getId() == null || personId == null) {
+        if (removedComment == null || removedComment.getId() == null || token.getPersonId() == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
         }
         if (checkAccessStatus == null) {
             checkAccessStatus = checkAccessForCaseObject(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(personId, removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
+            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
             }
         }
@@ -276,8 +276,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, personId, caseId, null, removedAttachments ) );
-        publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, personId, caseId, isEagerEvent, null, null, removedComment ) );
+        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments ) );
+        publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment ) );
 
         return ok( isRemoved);
     }
@@ -312,14 +312,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type, Long personId) {
+    public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type) {
         CaseComment caseComment;
 
         if (caseCommentId == null || type == En_TimeElapsedType.NONE || (caseComment = caseCommentDAO.get(caseCommentId)) == null) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!Objects.equals(caseComment.getAuthorId(), personId)) {
+        if (!Objects.equals(caseComment.getAuthorId(), token.getPersonId())) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 

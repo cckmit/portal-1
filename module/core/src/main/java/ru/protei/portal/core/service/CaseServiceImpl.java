@@ -113,7 +113,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject, Long initiatorId ) {
+    public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject ) {
 
         if (!validateFieldsOfNew(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -146,18 +146,18 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(initiatorId, caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
+        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
         if (stateMessageId == null) {
             log.error("State message for the issue {} not saved!", caseId);
         }
 
-        Long impMessageId = createAndPersistImportanceMessage(initiatorId, caseId, caseObject.getImpLevel());
+        Long impMessageId = createAndPersistImportanceMessage(token.getPersonId(), caseId, caseObject.getImpLevel());
         if (impMessageId == null) {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
-            Long messageId = createAndPersistManagerMessage(initiatorId, caseObject.getId(), caseObject.getManager().getId());
+            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseObject.getId(), caseObject.getManager().getId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} not saved!", caseObject.getId());
             }
@@ -202,7 +202,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiatorId, null, newState ));
+        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), null, newState ));
 
         return ok(newState);
     }
@@ -210,13 +210,13 @@ public class CaseServiceImpl implements CaseService {
     @Deprecated
     @Override
     @Transactional
-    public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Long initiatorId ) {
+    public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        UpdateResult<CaseObject> objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiatorId);
+        UpdateResult<CaseObject> objectResultData = performUpdateCaseObject(token, caseObject, oldState);
 
         if (objectResultData.isUpdated()) {
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -224,14 +224,14 @@ public class CaseServiceImpl implements CaseService {
             newState.setAttachments(objectResultData.getObject().getAttachments());
             newState.setNotifiers(objectResultData.getObject().getNotifiers());
             jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, initiatorId, oldState, newState));
+            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), oldState, newState));
         }
 
         return ok(objectResultData.getObject());
     }
 
     @Override
-    public Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, Long initiatorId) {
+    public Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
             if(oldCaseObject == null) {
@@ -261,7 +261,7 @@ public class CaseServiceImpl implements CaseService {
                     changeRequest.getId(),
                     nameDiff,
                     infoDiff,
-                    initiatorId,
+                    token.getPersonId(),
                     ServiceModule.GENERAL,
                     En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
 
@@ -271,7 +271,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<CaseObjectMeta> updateCaseObjectMeta(AuthToken token, CaseObjectMeta caseMeta, Long initiatorId) {
+    public Result<CaseObjectMeta> updateCaseObjectMeta(AuthToken token, CaseObjectMeta caseMeta) {
 
         if (caseMeta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -322,14 +322,14 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!Objects.equals(oldCaseMeta.getState(), caseMeta.getState())) {
-            Long messageId = createAndPersistStateMessage(initiatorId, caseMeta.getId(), caseMeta.getState(), null, null);
+            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getState(), null, null);
             if (messageId == null) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
         if (!Objects.equals(oldCaseMeta.getImpLevel(), caseMeta.getImpLevel())) {
-            Long messageId = createAndPersistImportanceMessage(initiatorId, caseMeta.getId(), caseMeta.getImpLevel());
+            Long messageId = createAndPersistImportanceMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getImpLevel());
             if (messageId == null) {
                 log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -337,7 +337,7 @@ public class CaseServiceImpl implements CaseService {
 
         if (oldCaseMeta.getManager() != null && caseMeta.getManager() != null &&
             !Objects.equals(oldCaseMeta.getManager().getId(), caseMeta.getManager().getId())) {
-            Long messageId = createAndPersistManagerMessage(initiatorId, caseMeta.getId(), caseMeta.getManager().getId());
+            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManager().getId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -348,7 +348,7 @@ public class CaseServiceImpl implements CaseService {
         publisherService.publishEvent(new CaseObjectMetaEvent(
                 this,
                 ServiceModule.GENERAL,
-                initiatorId,
+                token.getPersonId(),
                 En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
                 newCaseMeta
@@ -359,7 +359,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers, Long initiatorId) {
+    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers) {
 
         if (caseMetaNotifiers.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -400,7 +400,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<CaseObjectMetaJira> updateCaseObjectMetaJira(AuthToken token, CaseObjectMetaJira caseMetaJira, Long initiatorId) {
+    public Result<CaseObjectMetaJira> updateCaseObjectMetaJira(AuthToken token, CaseObjectMetaJira caseMetaJira) {
 
         if (caseMetaJira.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -461,7 +461,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Deprecated
-    private UpdateResult<CaseObject> performUpdateCaseObject(AuthToken token, CaseObject caseObject, CaseObject oldState, Long initiatorId ) {
+    private UpdateResult<CaseObject> performUpdateCaseObject(AuthToken token, CaseObject caseObject, CaseObject oldState ) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -485,7 +485,7 @@ public class CaseServiceImpl implements CaseService {
             return new UpdateResult<>(caseObject, false);
         }
 
-        boolean isSelfCase = Objects.equals(initiatorId, oldState.getCreator().getId());
+        boolean isSelfCase = Objects.equals(token.getPersonId(), oldState.getCreator().getId());
         boolean isChangedNameOrDescription = !Objects.equals(oldState.getName(), caseObject.getName()) || !Objects.equals(oldState.getInfo(), caseObject.getInfo());
         if ( !isSelfCase && isChangedNameOrDescription ) {
             log.info("Trying edit not self name or description for the issue {}", caseObject.getId());
