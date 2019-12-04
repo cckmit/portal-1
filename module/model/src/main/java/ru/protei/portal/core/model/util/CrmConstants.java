@@ -19,6 +19,14 @@ public class CrmConstants {
         Long UNDEFINED = -1L;
     }
 
+    public interface EmployeeRegistration {
+        int ADDITIONAL_SOFT_MAX_LENGTH = 512;
+        int RESOURCE_COMMENT_MAX_LENGTH = 512;
+        int OPERATING_SYSTEM_MAX_LENGTH = 64;
+        int POSITION_MAX_LENGTH = 128;
+        int WORKPLACE_MAX_LENGTH = 256;
+    }
+
     public interface Person {
         Long SYSTEM_USER_ID = 1L;
     }

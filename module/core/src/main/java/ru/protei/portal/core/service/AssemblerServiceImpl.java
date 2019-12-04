@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -27,6 +28,7 @@ public class AssemblerServiceImpl implements AssemblerService {
         if (sourceEvent == null) return;
 
         fillCaseObject( sourceEvent ).flatMap(
+                this::fillCaseNameAndDescription ).flatMap(
                 this::fillCaseMeta ).flatMap(
                 this::fillComments ).flatMap(
                 this::fillAttachments ).flatMap(
@@ -46,6 +48,23 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
         return ok( e );
+    }
+
+    private Result<AssembledCaseEvent> fillCaseNameAndDescription(AssembledCaseEvent e) {
+        if (e.isCaseNameFilled() && e.isCaseInfoFilled()) {
+            log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillCaseNameAndDescription(): CaseObjectID={} Try to fill case's Name and Description.", e.getCaseObjectId());
+
+        CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
+
+        e.getName().setNewState(caseObject.getName());
+        e.getInfo().setNewState(caseObject.getInfo());
+
+        log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is successfully filled.", e.getCaseObjectId());
+        return ok(e);
     }
 
     private Result<AssembledCaseEvent> fillCaseMeta( AssembledCaseEvent e ) {

@@ -63,11 +63,14 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
-    void switchToRONameDescriptionView(boolean b);
+    void switchToRONameAndDescriptionView( boolean b);
 
     void setDescriptionRO(String value);
 
     void setNameRO(String name, String jiraUrl);
 
     String DESCRIPTION = "description";
+
+    HasVisibility editNameAndDescriptionButtonVisibility();
+    void setNameAndDescriptionButtonsPanelVisibility(boolean visible);
 }

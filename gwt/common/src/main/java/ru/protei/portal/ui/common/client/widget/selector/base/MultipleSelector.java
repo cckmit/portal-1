@@ -69,25 +69,20 @@ public abstract class MultipleSelector<T>
         this.hasAnyValue = hasAnyValue;
     }
 
-    public void addOption( String name, T value ) {
-        addOption(name, null, value);
-    }
 
-    public void addOption( String name, String info, T value ) {
+    public void addOption( String name, T value ) {
         SelectableItem itemView;
         if ( value == null && hasAnyValue ) {
             itemView = makeAnySelectorItem( name );
         } else {
             itemView = itemFactory.get();
             itemView.setText( name );
-            itemView.setInfo( info );
             itemView.addValueChangeHandler( this );
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );
             itemToNameModel.put(value, name);
         }
         DisplayOption displayOption = new DisplayOption( name );
-        displayOption.setInfo( info );
         itemToDisplayOptionModel.put( value, displayOption );
         popup.getChildContainer().add( itemView.asWidget() );
     }
@@ -202,7 +197,7 @@ public abstract class MultipleSelector<T>
                 continue;
             }
 
-            String entryText = entry.getValue().getName().toLowerCase() + (entry.getValue().getInfo() == null ? "" : entry.getValue().getInfo().toLowerCase());
+            String entryText = entry.getValue().getName().toLowerCase();
             if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectableItem itemView = itemToViewModel.get( entry.getKey() );
                 if ( itemView != null ) {

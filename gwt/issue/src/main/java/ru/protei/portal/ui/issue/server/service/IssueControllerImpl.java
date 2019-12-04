@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
@@ -91,6 +92,16 @@ public class IssueControllerImpl implements IssueController {
         Result<CaseObject> response = caseService.updateCaseObject(token, caseObject, getCurrentPerson());
         log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
         return checkResultAndGetData(response).getId();
+    }
+
+    @Override
+    public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
+        log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result response = caseService.updateCaseObject(token, changeRequest, getCurrentPerson());
+        log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
+
+        checkResult(response);
     }
 
     @Override

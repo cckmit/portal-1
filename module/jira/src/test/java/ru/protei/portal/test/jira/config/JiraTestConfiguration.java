@@ -34,6 +34,8 @@ import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 @Configuration
 public class JiraTestConfiguration {
@@ -272,5 +274,10 @@ public class JiraTestConfiguration {
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public LockService getLockService() {
+        return new LockServiceImpl();
     }
 }
