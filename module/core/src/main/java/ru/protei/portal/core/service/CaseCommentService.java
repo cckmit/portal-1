@@ -49,7 +49,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
-    Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+    Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -70,7 +70,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
-    Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+    Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -80,7 +80,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
-    Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+    Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment );
 
 
     @Privileged(forCases = {
@@ -91,7 +91,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = En_CaseType.CRM_SUPPORT)
-    Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+    Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -101,7 +101,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
-    Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type, Long personId);
+    Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type);
 
     Result<Long> getTimeElapsed( Long caseId);
 

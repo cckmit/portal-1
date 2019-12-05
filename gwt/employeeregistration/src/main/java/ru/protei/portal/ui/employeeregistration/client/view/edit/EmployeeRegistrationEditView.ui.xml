@@ -59,6 +59,7 @@
                             </label>
                             <validatefield:ValidableTextBox styleName="form-control" ui:field="position"
                                                             notNull="true"/>
+                            <g:Label ui:field="positionErrorLabel" styleName="text-danger size-error" visible="false"/>
                         </div>
 
                         <div class="form-group col-md-3">
@@ -108,6 +109,7 @@
                                 <ui:text from="{lang.employeeRegistrationWorkplace}"/>
                             </label>
                             <textarea:AutoResizeTextArea ui:field="workplace" minRows="1" styleName="form-control"/>
+                            <g:Label ui:field="workplaceErrorLabel" styleName="text-danger size-error" visible="false"/>
                         </div>
                         <div class="form-group col-md-6">
                             <label>
@@ -123,12 +125,15 @@
                             <validatefield:ValidableTextBox ui:field="operatingSystem" notNull="false"
                                                             placeholder="{lang.employeeRegistrationOSPlaceholder}"
                                                             styleName="form-control"/>
+                            <g:Label ui:field="OSErrorLabel" styleName="text-danger size-error" visible="false"/>
+
                             <label class="m-t-10"><!--Дополнительное ПО-->
                                 <ui:text from="{lang.employeeRegistrationAdditionalSoft}"/>
                             </label>
                             <textarea:AutoResizeTextArea ui:field="additionalSoft"
                                                          placeholder="{lang.employeeRegistrationAdditionalSoftPlaceholder}"
                                                          minRows="1" styleName="form-control"/>
+                            <g:Label ui:field="additionalSoftErrorLabel" styleName="text-danger size-error" visible="false"/>
                         </div>
 
                         <div class="form-group col-md-12">
@@ -170,6 +175,7 @@
                                 <textarea:AutoResizeTextArea ui:field="resourceComment" minRows="1"
                                                              placeholder="{lang.employeeRegistrationInternalResourceOtherCommentPlaceholder}"
                                                              styleName="form-control"/>
+                                <g:Label ui:field="resourceCommentErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
                         </div>
                     </div>

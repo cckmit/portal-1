@@ -94,9 +94,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if nameChanged>
-                            <@diff new="${(name)!''}" old="${(oldName)!''}"/>
+                            <@diff new="${(caseName)!''}" old="${(oldCaseName)!''}"/>
                         <#else>
-                            ${(name)!''}
+                            ${(caseName)!''}
                         </#if>
                     </td>
                 </tr>

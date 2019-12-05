@@ -18,10 +18,10 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,7 +100,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Person initiator, Collection<CaseLink> caseLinks ) {
+    public Result<List<CaseLink>> updateLinks( AuthToken token, Long caseId, Long initiatorId, Collection<CaseLink> caseLinks ) {
         return mergeLinks( token, caseId, caseLinks ).ifOk( mergedLinks -> {
             if (mergedLinks.hasDifferences()) {
                 caseService.getCaseNumberById( token, caseId ).ifOk( caseNumber ->
@@ -109,7 +109,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                                 selectYouTrackLinkRemoteIds( mergedLinks.getRemovedEntries() )
                         )
                 );
-                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiator, caseId, mergedLinks ) );
+                publisherService.publishEvent( new CaseLinksEvent( this, ServiceModule.GENERAL, initiatorId, caseId, mergedLinks ) );
             }
         } ).flatMap( mergedLinks -> {
             if (!mergedLinks.hasDifferences()) return ok( listOf( caseLinks ) );
@@ -266,8 +266,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     public Result<Void> sendNotificationLinkChanged(AuthToken token, Long caseId, DiffCollectionResult<CaseLink> linksDiff ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, linksDiff ));
+        publisherService.publishEvent( new CaseLinksEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, linksDiff ));
         return ok();
     }
 
@@ -312,8 +311,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private boolean isShowOnlyPrivateLinks(AuthToken token) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         return !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
     }
 

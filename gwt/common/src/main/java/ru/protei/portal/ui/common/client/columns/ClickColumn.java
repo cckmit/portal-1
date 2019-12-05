@@ -7,6 +7,7 @@ import ru.brainworm.factory.widget.table.client.ColumnHeader;
 import ru.brainworm.factory.widget.table.client.ColumnValue;
 import ru.brainworm.factory.widget.table.client.Selection;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 /**
  * Стандартная колонка с текстовым заполнением c возможностью выбора строки по клику
@@ -17,12 +18,21 @@ public abstract class ClickColumn<T> {
         void onItemClicked ( T value );
     }
 
+    public interface DisplayPredicate<T> {
+        boolean isDisplayed(T value);
+    }
+
+    public interface EnabledPredicate<T> {
+        boolean isEnabled(T value);
+    }
+
     public ColumnHeader header = new ColumnHeader() {
         @Override
         public void handleEvent( Event event ) {}
 
         @Override
         public void fillHeader( Element columnHeader ) {
+            applyClassName( columnHeader );
             fillColumnHeader( columnHeader );
         }
     };
@@ -39,6 +49,14 @@ public abstract class ClickColumn<T> {
         @Override
         public void handleEvent( Event event, T value ) {
             if ( !"click".equalsIgnoreCase( event.getType() ) ) {
+                return;
+            }
+
+            if (enabledPredicate != null && !enabledPredicate.isEnabled(value)) {
+                return;
+            }
+
+            if (displayPredicate != null && !displayPredicate.isDisplayed(value)) {
                 return;
             }
 
@@ -78,7 +96,10 @@ public abstract class ClickColumn<T> {
         @Override
         public void fillValue( Element cell, T value ) {
             cell.getStyle().setCursor( Style.Cursor.POINTER );
-            fillColumnValue( cell, value );
+            applyClassName(cell);
+            if (displayPredicate == null || displayPredicate.isDisplayed(value)) {
+                fillColumnValue(cell, value);
+            }
             decideRowSelection(value);
         }
 
@@ -89,9 +110,19 @@ public abstract class ClickColumn<T> {
         private SelectRowHandler< T > selectRowHandler;
     }
 
+    protected String getColumnClassName() { return null; }
+
     protected abstract void fillColumnHeader(Element columnHeader);
 
-    public abstract void fillColumnValue( Element cell, T value );
+    protected abstract void fillColumnValue( Element cell, T value );
+
+    public void setDisplayPredicate(DisplayPredicate<T> displayPredicate) {
+        this.displayPredicate = displayPredicate;
+    }
+
+    public void setEnabledPredicate(EnabledPredicate<T> enabledPredicate) {
+        this.enabledPredicate = enabledPredicate;
+    }
 
     public void setHandler( Handler<T> handler ) {
         this.columnClickHandler = handler;
@@ -118,6 +149,15 @@ public abstract class ClickColumn<T> {
         }
     }
 
+    private void applyClassName(Element cell) {
+        String className = getColumnClassName();
+        if (StringUtils.isNotBlank(className)) {
+            cell.addClassName(className);
+        }
+    }
+
+    DisplayPredicate<T> displayPredicate;
+    EnabledPredicate<T> enabledPredicate;
     Handler<T> columnClickHandler;
     Handler<T> actionClickHandler;
     ClickColumnProvider<T> columnProvider;

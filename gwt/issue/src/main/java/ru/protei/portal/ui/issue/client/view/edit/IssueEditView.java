@@ -160,7 +160,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void switchToRONameDescriptionView(boolean isRO) {
+    public void switchToRONameAndDescriptionView(boolean isRO) {
         descriptionContainer.setVisible(!isRO);
         nameContainer.setVisible(!isRO);
 
@@ -208,6 +208,20 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         this.createdBy.setInnerHTML( value );
     }
 
+    @Override
+    public HasVisibility editNameAndDescriptionButtonVisibility() {
+        return editNameAndDescriptionButton;
+    }
+
+    @Override
+    public void setNameAndDescriptionButtonsPanelVisibility(boolean visible) {
+        if (visible) {
+            nameAndDescriptionButtonsPanel.removeClassName("hide");
+        } else {
+            nameAndDescriptionButtonsPanel.addClassName("hide");
+        }
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -230,8 +244,30 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiHandler("copy")
     public void onCopyClick(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onCopyClicked();
+        }
+    }
+
+    @UiHandler("editNameAndDescriptionButton")
+    public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked();
+        }
+    }
+
+    @UiHandler("saveNameAndDescriptionButton")
+    public void onSaveNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveNameAndDescriptionClicked();
+        }
+    }
+
+    @UiHandler("cancelNameAndDescriptionButton")
+    public void onCancelNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked();
         }
     }
 
@@ -314,6 +350,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     DivElement descriptionRO;
     @UiField
     HTMLPanel descriptionContainer;
+    @UiField
+    Button editNameAndDescriptionButton;
+    @UiField
+    Button saveNameAndDescriptionButton;
+    @UiField
+    Button cancelNameAndDescriptionButton;
+    @UiField
+    DivElement nameAndDescriptionButtonsPanel;
     @Inject
     @UiField(provided = true)
     IssueMetaView issueMeta;

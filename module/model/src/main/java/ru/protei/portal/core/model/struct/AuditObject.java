@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -38,12 +37,12 @@ public class AuditObject implements Serializable {
 
     public AuditObject() {}
 
-    public AuditObject(int auditTypeId, UserSessionDescriptor descriptor, AuditableObject auditableObject) {
+    public AuditObject(int auditTypeId, AuditableObject auditableObject, Long creatorId, String creatorIp, String creatorShortName) {
         setCreated(new Date());
         setTypeId(auditTypeId);
-        setCreatorId(descriptor.getPerson().getId());
-        setCreatorIp(descriptor.getPerson().getIpAddress());
-        setCreatorShortName(descriptor.getPerson().getDisplayShortName());
+        setCreatorId(creatorId);
+        setCreatorIp(creatorIp);
+        setCreatorShortName(creatorShortName);
         setEntryInfo(auditableObject);
     }
 

@@ -17,8 +17,6 @@ public class Profile implements Serializable {
 
     private Set<UserRole> roles;
 
-    private String login;
-
     private String name;
 
     private String fullName;
@@ -48,14 +46,6 @@ public class Profile implements Serializable {
     public void setRoles( Set<UserRole> roles ) {
         this.roles = roles;
         this.privileges2scopes = collectPrivilegeToScopeMap();
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin( String login ) {
-        this.login = login;
     }
 
     public String getName() {
@@ -156,7 +146,6 @@ public class Profile implements Serializable {
     public String toString() {
         return "Profile{" +
             "roles=" + roles +
-            ", login='" + login + '\'' +
             ", name='" + name + '\'' +
             ", id=" + id +
             ", privileges=" + privileges +

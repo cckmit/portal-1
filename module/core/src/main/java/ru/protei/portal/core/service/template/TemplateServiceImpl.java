@@ -81,16 +81,15 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "created", newState.getCreated() );
         templateModel.put( "caseNumber", newState.getCaseNumber() );
 
-        templateModel.put( "nameChanged", event.isNameChanged() );
-        templateModel.put( "name", newState.getName() );
-        templateModel.put( "oldName", oldState == null ? null : oldState.getName() );
+        templateModel.put( "nameChanged", event.getName().hasDifferences() );
+        templateModel.put( "infoChanged", event.getInfo().hasDifferences() );
+        templateModel.put( "caseName", event.getName().getNewState() );
+        templateModel.put( "oldCaseName", event.getName().getInitialState());
+        templateModel.put( "caseInfo", escapeTextAndRenderHTML( event.getInfo().getNewState(), textMarkup ) );
+        templateModel.put( "oldCaseInfo", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), textMarkup ) );
 
         templateModel.put( "privacy", newState.isPrivateCase() );
         templateModel.put( "oldPrivacy", oldState == null ? null : oldState.isPrivateCase() );
-
-        templateModel.put( "infoChanged", event.isInfoChanged() );
-        templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup) );
-        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup) );
 
         templateModel.put("hasLinks", hasLinks( mergeLinks) );
         templateModel.put("existingLinks", mergeLinks == null ? null : mergeLinks.getSameEntries());

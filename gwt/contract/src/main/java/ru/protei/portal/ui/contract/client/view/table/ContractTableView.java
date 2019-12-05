@@ -15,6 +15,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -101,7 +102,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     }
 
     private void initTable() {
-        editClickColumn.setPrivilege( En_Privilege.CONTRACT_EDIT );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT) );
 
         ClickColumn<Contract> type = new ClickColumn< Contract >() {
             @Override
@@ -173,6 +174,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     private En_ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
+
+    @Inject
+    private PolicyService policyService;
 
     private ClickColumnProvider<Contract> columnProvider = new ClickColumnProvider<>();
     private List<ClickColumn<Contract>> clickColumns = new LinkedList<>();

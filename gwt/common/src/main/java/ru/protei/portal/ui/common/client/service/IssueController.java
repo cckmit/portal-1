@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -21,6 +22,8 @@ public interface IssueController extends RemoteService {
     SearchResult<CaseShortView> getIssues(CaseQuery query) throws RequestFailedException;
 
     CaseObject getIssue( long id ) throws RequestFailedException;
+
+    void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
     CaseObjectMeta updateIssueMeta( CaseObjectMeta caseMeta ) throws RequestFailedException;
 

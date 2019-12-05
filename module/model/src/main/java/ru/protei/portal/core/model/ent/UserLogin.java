@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin extends AuditableObject implements Removable {
+public class UserLogin extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -41,6 +41,11 @@ public class UserLogin extends AuditableObject implements Removable {
             @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
     })
     private String displayName;
+
+    @JdbcJoinedColumn( mappedColumn = "displayShortName", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String displayShortName;
 
     @JdbcJoinedColumn( mappedColumn = "isfired", joinPath = {
             @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
@@ -137,6 +142,10 @@ public class UserLogin extends AuditableObject implements Removable {
 
     public void setDisplayName ( String displayName ) { this.displayName = displayName; }
 
+    public String getDisplayShortName() { return displayShortName; }
+
+    public void setDisplayShortName(String displayShortName) { this.displayShortName = displayShortName; }
+
     public boolean isFired () { return isFired; }
 
     public void setFired ( boolean fired ) { isFired = fired; }
@@ -194,11 +203,6 @@ public class UserLogin extends AuditableObject implements Removable {
     @Override
     public String getAuditType() {
         return "UserLogin";
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return !isLDAP_Auth();
     }
 
     @Override

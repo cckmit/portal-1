@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -98,9 +99,9 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     private void initTable() {
-        copyClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_CREATE);
-        editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
-        removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
+        copyClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE) );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
         columns.add(nameColumn);
         columns.add(platformColumn);
@@ -128,6 +129,9 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     @Inject
     private CopyClickColumn<Server> copyClickColumn;

@@ -41,7 +41,7 @@ public class ProjectDocumentsListItemView extends Composite implements AbstractP
 
     @Override
     public void setDecimalNumber(String number) {
-        decimalNumber.setInnerText(number.trim());
+        decimalNumber.setInnerText(number);
     }
 
     @Override

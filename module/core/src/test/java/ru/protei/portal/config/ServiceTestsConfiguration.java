@@ -15,9 +15,8 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
-import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.controller.document.DocumentStorageIndex;
-import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.index.document.DocumentStorageIndex;
+import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -93,11 +92,6 @@ public class ServiceTestsConfiguration {
     @Bean
     public AuthService getAuthService() {
         return new AuthServiceMock();
-    }
-
-    @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
     }
 
     @Bean

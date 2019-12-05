@@ -8,12 +8,11 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.service.AccountService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AccountController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -37,9 +36,9 @@ public class AccountControllerImpl implements AccountController {
     public UserLogin getAccount( long id ) throws RequestFailedException {
         log.info( "getAccount(): id={}", id );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
+        Result< UserLogin > response = accountService.getAccount( token, id );
 
         log.info( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
 
@@ -50,9 +49,9 @@ public class AccountControllerImpl implements AccountController {
     public UserLogin getContactAccount(long personId ) throws RequestFailedException {
         log.info( "getContactAccount(): personId={}", personId );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< UserLogin > response = accountService.getContactAccount( descriptor.makeAuthToken(), personId );
+        Result< UserLogin > response = accountService.getContactAccount( token, personId );
 
         log.info( "getContactAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
 
@@ -63,7 +62,7 @@ public class AccountControllerImpl implements AccountController {
     public UserLogin saveAccount( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException {
         log.info( "saveAccount(): account={} ", userLogin );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         if ( userLogin == null ) {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
@@ -72,7 +71,7 @@ public class AccountControllerImpl implements AccountController {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        Result< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
+        Result< UserLogin > response = accountService.saveAccount( token, userLogin, sendWelcomeEmail );
 
         log.info( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -103,9 +102,9 @@ public class AccountControllerImpl implements AccountController {
     public boolean removeAccount( Long accountId ) throws RequestFailedException {
         log.info( "removeAccount(): id={}", accountId );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), accountId );
+        Result< Boolean > response = accountService.removeAccount( token, accountId );
         log.info( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -128,16 +127,6 @@ public class AccountControllerImpl implements AccountController {
         if (!response.isOk()) {
             throw new RequestFailedException(response.getStatus());
         }
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

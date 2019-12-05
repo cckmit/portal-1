@@ -6,19 +6,20 @@ import ru.protei.portal.core.model.ent.Person;
 
 public interface EventAssemblerService {
 
-    void onCaseObjectEvent( CaseObjectEvent event);
+    void onCaseObjectEvent(CaseObjectEvent event);
 
-    void onCaseObjectMetaEvent( CaseObjectMetaEvent event);
+    void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event);
 
-    void onCaseCommentEvent( CaseCommentEvent event);
+    void onCaseObjectMetaEvent(CaseObjectMetaEvent event);
 
-    void onCaseAttachmentEvent( CaseAttachmentEvent event);
+    void onCaseCommentEvent(CaseCommentEvent event);
+
+    void onCaseAttachmentEvent(CaseAttachmentEvent event);
 
     @EventListener
-    void onCaseLinkEvent( CaseLinksEvent event );
+    void onCaseLinkEvent(CaseLinksEvent event );
 
-    AssembledCaseEvent getEvent( Person person, Long caseId);
+    AssembledCaseEvent getEvent(Long personId, Long caseId);
 
     int getEventsCount();
-
 }

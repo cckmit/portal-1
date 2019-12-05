@@ -98,7 +98,7 @@ public class MailNotificationProcessor {
             String publicCaseUrl = getCrmCaseUrl( !IS_PRIVATE_RECIPIENT );
 
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
-            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
+            DiffCollectionResult<LinkData> publicLinks = convertToLinkData( selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
 
             List<CaseComment> comments =  event.getAllComments();
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
@@ -572,13 +572,6 @@ public class MailNotificationProcessor {
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
-    private Date addSeconds(Date date, int sec) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.SECOND, sec);
-        return calendar.getTime();
-    }
-
     public boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
         if (assembledCaseEvent.isCreateEvent()) {
             return false;
@@ -598,11 +591,11 @@ public class MailNotificationProcessor {
     public boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
         return  assembledCaseEvent.isCaseImportanceChanged()
                 || assembledCaseEvent.isCaseStateChanged()
-                || assembledCaseEvent.isInfoChanged()
                 || assembledCaseEvent.isInitiatorChanged()
                 || assembledCaseEvent.isInitiatorCompanyChanged()
                 || assembledCaseEvent.isManagerChanged()
                 || assembledCaseEvent.isNameChanged()
+                || assembledCaseEvent.isInfoChanged()
                 || assembledCaseEvent.isProductChanged()
                 || assembledCaseEvent.isPublicLinksChanged();
     }

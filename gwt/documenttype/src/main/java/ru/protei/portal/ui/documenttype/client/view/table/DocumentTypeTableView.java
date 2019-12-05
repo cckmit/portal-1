@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -73,7 +74,7 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
     }
 
     private void initTable() {
-        editClickColumn.setPrivilege( En_Privilege.DOCUMENT_TYPE_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_EDIT) );
 
         columns.add(name);
         columns.add(shortName);
@@ -97,6 +98,9 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
 
     @UiField
     TableWidget<DocumentType> table;
+
+    @Inject
+    private PolicyService policyService;
 
     private ClickColumn<DocumentType> name = new ClickColumn<DocumentType>() {
         @Override

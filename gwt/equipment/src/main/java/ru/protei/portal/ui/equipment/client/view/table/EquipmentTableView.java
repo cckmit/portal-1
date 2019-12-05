@@ -6,7 +6,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -18,6 +17,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +105,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.EQUIPMENT_EDIT );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT) );
 
         ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
             @Override
@@ -276,6 +275,8 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     Lang lang;
     @Inject
     En_EquipmentTypeLang typeLang;
+    @Inject
+    PolicyService policyService;
 
     ClickColumnProvider<Equipment> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Equipment> editClickColumn;

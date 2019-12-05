@@ -12,7 +12,7 @@ import ru.protei.portal.core.service.PersonService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.PersonController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;

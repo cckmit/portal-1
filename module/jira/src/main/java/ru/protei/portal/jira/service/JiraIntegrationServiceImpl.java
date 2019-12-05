@@ -115,14 +115,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             CaseObjectEvent caseObjectEvent = new CaseObjectEvent(
                     this,
                     ServiceModule.JIRA,
-                    person,
+                    person.getId(),
                     oldCase,
                     newCase
             );
             CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
                     this,
                     ServiceModule.JIRA,
-                    person,
+                    person.getId(),
                     En_ExtAppType.forCode(oldCase.getExtAppType()),
                     oldCaseMeta,
                     newCaseMeta
@@ -170,7 +170,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
         final CaseObject caseObj = new CaseObject();
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ), null, caseObj );
+        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ).getId(), null, caseObj );
         caseObjectEvent.setCreateEvent(true);
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
         caseEvent.attachCaseObjectEvent(caseObjectEvent);

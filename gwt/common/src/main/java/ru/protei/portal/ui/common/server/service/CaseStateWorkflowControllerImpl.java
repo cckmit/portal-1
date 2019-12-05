@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.server.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -11,6 +10,7 @@ import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CaseStateWorkflowService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseStateWorkflowController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -24,7 +24,7 @@ public class CaseStateWorkflowControllerImpl implements CaseStateWorkflowControl
     @Override
     public CaseStateAndWorkflowList getCaseStateAndWorkflowList() throws RequestFailedException {
 
-        ServiceUtils.getDescriptor(sessionService, httpServletRequest);
+        ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<List<CaseStateWorkflow>> result1 = caseStateWorkflowService.getWorkflowList();
         List<CaseStateWorkflow> caseStateWorkflowList = ServiceUtils.checkResultAndGetData(result1);

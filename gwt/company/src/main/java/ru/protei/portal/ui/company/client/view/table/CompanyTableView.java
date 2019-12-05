@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.EmailRender;
@@ -28,8 +29,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     public void onInit(EditClickColumn<Company> editClickColumn, ArchiveClickColumn<Company> archiveClickColumn) {
         this.editClickColumn = editClickColumn;
         this.archiveClickColumn = archiveClickColumn;
-        editClickColumn.setArchivedCheckFunction(Company::isArchived);
-        archiveClickColumn.setArchivedCheckFunction(Company::isArchived);
         initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
     }
@@ -116,8 +115,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
-        archiveClickColumn.setPrivilege(En_Privilege.COMPANY_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) && !v.isArchived() );
+        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) );
+        archiveClickColumn.setArchiveFilter(Company::isArchived);
 
         name = new DynamicColumn<>(lang.companyName(), null, this::getCompanyInfoBlock);
 
@@ -214,6 +214,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     ClickColumnProvider< Company > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< Company > editClickColumn;

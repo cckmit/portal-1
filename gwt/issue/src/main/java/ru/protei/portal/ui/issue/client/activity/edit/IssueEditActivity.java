@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -265,7 +266,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             if (issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
                 initiator = issue.getInitiator();
             } else if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = Person.fromPersonShortView(new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired()));
+                initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             }
             metaView.setInitiator(initiator);
         }
@@ -317,6 +318,46 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     }
 
+    @Override
+    public void onEditNameAndDescriptionClicked() {
+        if (isEditingNameAndDescriptionView) {
+            switchToRONameAndDescriptionView(issue);
+            view.setNameAndDescriptionButtonsPanelVisibility(false);
+        } else {
+            boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
+            if (isAllowedEditNameAndDescription) {
+                switchToEditingNameAndDescriptionView(issue);
+                view.setNameAndDescriptionButtonsPanelVisibility(true);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveNameAndDescriptionClicked() {
+        if (!view.nameValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+        CaseNameAndDescriptionChangeRequest changeRequest = fillIssueNameAndDescription();
+        issueService.saveIssueNameAndDescription(changeRequest, new FluentCallback<Void>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    switchToRONameAndDescriptionView(issue);
+                    view.setNameAndDescriptionButtonsPanelVisibility(false);
+                }));
+    }
+
+    private CaseNameAndDescriptionChangeRequest fillIssueNameAndDescription() {
+        if (isSelfIssue(issue)) {
+            issue.setName(view.name().getValue());
+            issue.setInfo(view.description().getValue());
+        }
+        return new CaseNameAndDescriptionChangeRequest(
+                issue.getId(),
+                issue.getName(),
+                issue.getInfo());
+    }
+
     private void requestCaseLinks( Long issueId ) {
         caseLinkController.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
                 view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
@@ -347,6 +388,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         view.attachmentsContainer().add(issue.getAttachments());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
 
+        switchToRONameAndDescriptionView(issue);
+        view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
+        view.setNameAndDescriptionButtonsPanelVisibility(false);
+
         showComments(issue);
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
@@ -355,21 +400,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
 
         view.setNumber(issue.getCaseNumber().intValue());
-
-        if (isSelfIssue(issue)) {
-            view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
-            view.switchToRONameDescriptionView(false);
-            view.name().setValue(issue.getName());
-            view.description().setValue(issue.getInfo());
-            view.setNameRO(null, "");
-            view.setDescriptionRO(null);
-        } else {
-            view.switchToRONameDescriptionView(true);
-            view.name().setValue(null);
-            view.description().setValue(null);
-            view.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
-            renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
-        }
 
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
 
@@ -496,8 +526,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     private boolean validateView(CaseObject issue) {
 
-        boolean isRO = !isSelfIssue(issue);
-        boolean isFieldsValid = (isRO || view.nameValidator().isValid());
+        boolean isFieldsValid = !isEditingNameAndDescriptionView || view.nameValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -578,6 +607,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
+    private void switchToRONameAndDescriptionView(CaseObject issue) {
+        isEditingNameAndDescriptionView = false;
+        view.switchToRONameAndDescriptionView(true);
+        view.name().setValue(null);
+        view.description().setValue(null);
+        view.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
+        renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
+    }
+
+    private void switchToEditingNameAndDescriptionView(CaseObject issue) {
+        isEditingNameAndDescriptionView = true;
+        view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
+        view.switchToRONameAndDescriptionView(false);
+        view.name().setValue(issue.getName());
+        view.description().setValue(issue.getInfo());
+        view.setNameRO(null, "");
+        view.setDescriptionRO(null);
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -608,6 +656,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private Profile authProfile;
+    private boolean isEditingNameAndDescriptionView = false;
 
     private AppEvents.InitDetails initDetails;
 
