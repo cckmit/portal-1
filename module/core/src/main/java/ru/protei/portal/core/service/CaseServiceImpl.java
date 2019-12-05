@@ -8,7 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
@@ -197,7 +197,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (isNotEmpty(issueCreateRequest.getLinks())) {
-            caseLinkService.createLinks(token, caseId, new Person(), issueCreateRequest.getLinks());
+            caseLinkService.createLinks(token, caseId, token.getPersonId(), issueCreateRequest.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -205,39 +205,15 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        CaseObjectEvent event = new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), null, newState);
-        event.setIssueCreateRequest(issueCreateRequest);
-        event.setCreateEvent(true);
+        issueCreateRequest.setCaseObject(newState);
+        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), issueCreateRequest);
         publisherService.publishEvent(event);
 
         return ok(newState);
     }
 
-    @Deprecated
     @Override
-    @Transactional
-    public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
-        if (oldState == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        UpdateResult<CaseObject> objectResultData = performUpdateCaseObject(token, caseObject, oldState);
-
-        if (objectResultData.isUpdated()) {
-            // From GWT-side we get partially filled object, that's why we need to refresh state from db
-            CaseObject newState = caseObjectDAO.get(objectResultData.getObject().getId());
-            newState.setAttachments(objectResultData.getObject().getAttachments());
-            newState.setNotifiers(objectResultData.getObject().getNotifiers());
-            jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), oldState, newState));
-        }
-
-        return ok(objectResultData.getObject());
-    }
-
-    @Override
-    public Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
+    public Result<CaseNameAndDescriptionChangeRequest> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
             if(oldCaseObject == null) {
@@ -271,7 +247,7 @@ public class CaseServiceImpl implements CaseService {
                     ServiceModule.GENERAL,
                     En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
 
-            return ok();
+            return ok(changeRequest);
         });
     }
 

@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.AssemblerService;
 
 import java.util.Collection;
@@ -23,10 +22,10 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     @Override
     @EventListener
-    public void onCaseObjectEvent(CaseObjectEvent event) {
+    public void onCaseObjectEvent(CaseObjectCreateEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
         log.info( "onCaseObjectEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent.getInitiatorId(), assembledPrevEvent );
-        assembledPrevEvent.attachCaseObjectEvent( event );
+        assembledPrevEvent.attachCaseObjectCreateEvent( event );
     }
 
     @Override

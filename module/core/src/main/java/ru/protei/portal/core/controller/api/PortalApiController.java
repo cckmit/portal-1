@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
@@ -112,8 +113,7 @@ public class PortalApiController {
 
             AuthToken authToken = authTokenAPIResult.getData();
 
-            IssueCreateRequest issueCreateRequest = new IssueCreateRequest();
-            issueCreateRequest.setCaseObject((CaseObject) auditableObject);
+            IssueCreateRequest issueCreateRequest = new IssueCreateRequest((CaseObject) auditableObject);
 
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
@@ -154,7 +154,7 @@ public class PortalApiController {
 
             CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseService.updateCaseObject(authToken, caseObject)
+            return caseService.updateCaseObject(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()))
                 .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
                 .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject)))
                 .flatMap(o -> {

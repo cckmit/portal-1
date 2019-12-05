@@ -172,16 +172,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             return;
         }
         lockSave();
-        issueService.saveIssue( new IssueCreateRequest(issue), new FluentCallback<Long>()
-                .withError(throwable -> {
-                    unlockSave();
-                    defaultErrorHandler.accept(throwable);
-                })
-                .withSuccess(caseId -> {
-                    unlockSave();
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
-                }));
+//        issueService.saveIssue( new IssueCreateRequest(issue), new FluentCallback<Long>()
+//                .withError(throwable -> {
+//                    unlockSave();
+//                    defaultErrorHandler.accept(throwable);
+//                })
+//                .withSuccess(caseId -> {
+//                    unlockSave();
+//                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+//                    fireEvent(new Back());
+//                }));
 
     }
 

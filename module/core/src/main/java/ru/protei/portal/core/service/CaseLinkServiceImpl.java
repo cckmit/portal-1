@@ -81,7 +81,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Person initiator, List<CaseLink> caseLinks) {
+    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks) {
         List<CaseLink> allLinks = new ArrayList<>(caseLinks);
         caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
         List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);

@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -26,7 +25,6 @@ import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
 import java.util.*;
@@ -106,7 +104,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         lockSave();
-        issueService.saveIssue(issueCreateRequest, new FluentCallback<Long>()
+        issueService.createIssue(issueCreateRequest, new FluentCallback<Long>()
                 .withError(throwable -> unlockSave())
                 .withSuccess(caseId -> {
                     unlockSave();
@@ -291,9 +289,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private IssueCreateRequest fillIssueCreateRequest(CaseObject issue) {
         CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
-        IssueCreateRequest issueCreateRequest = new IssueCreateRequest();
+        IssueCreateRequest issueCreateRequest = new IssueCreateRequest(issue);
 
-        issueCreateRequest.setCaseObject(issue);
         issueCreateRequest.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
         issueCreateRequest.setTimeElapsed(caseObjectMeta.getTimeElapsed());
         issueCreateRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());

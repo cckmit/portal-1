@@ -60,37 +60,26 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    private CaseObject createIssue( IssueCreateRequest issueCreateRequest ) throws RequestFailedException{
-        log.info( "saveIssue(): case={}", issueCreateRequest );
-        if(issueCreateRequest == null || issueCreateRequest.getCaseId() != null){
-           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+    @Deprecated
+    @Override
+    public Long createIssue(IssueCreateRequest issueCreateRequest ) throws RequestFailedException {
+        log.info("saveIssue(): case={}", issueCreateRequest);
+
+        if (issueCreateRequest == null || issueCreateRequest.getCaseId() != null) {
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        issueCreateRequest.getCaseObject().setTypeId( En_CaseType.CRM_SUPPORT.getId() );
-        issueCreateRequest.getCaseObject().setCreatorId( token.getPersonId() );
+        issueCreateRequest.getCaseObject().setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        issueCreateRequest.getCaseObject().setCreatorId(token.getPersonId());
 
-        Result< CaseObject >  response = caseService.createCaseObject( token, issueCreateRequest );
+        Result<CaseObject> response = caseService.createCaseObject(token, issueCreateRequest);
 
-        log.info( "saveIssue(): response.isOk()={}", response.isOk() );
-        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        log.info( "saveIssue(): id={}", response.getData().getId() );
-        return response.getData();
-    }
-
-    @Deprecated
-    @Override
-    public Long saveIssue( IssueCreateRequest issueCreateRequest ) throws RequestFailedException {
-        log.info("saveIssue(): caseNo={} | case={}", issueCreateRequest.getCaseNumber(), issueCreateRequest);
-        AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (issueCreateRequest.getCaseId() == null) {
-            CaseObject saved = createIssue(issueCreateRequest);
-            return saved.getId();
-        }
-        Result<CaseObject> response = caseService.updateCaseObject(token, issueCreateRequest.getCaseObject());
-        log.info("saveIssue(): caseNo={}", issueCreateRequest.getCaseNumber());
-        return checkResultAndGetData(response).getId();
+        log.info("saveIssue(): response.isOk()={}", response.isOk());
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+        log.info("saveIssue(): id={}", response.getData().getId());
+        return response.getData().getId();
     }
 
     @Override

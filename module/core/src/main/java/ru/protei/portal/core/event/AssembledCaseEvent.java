@@ -55,20 +55,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.fromEvent = this;
     }
 
-    public void attachCaseObjectEvent( CaseObjectEvent objectEvent ) {
+    public void attachCaseObjectCreateEvent(CaseObjectCreateEvent objectEvent) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
-        this.initState = objectEvent.getOldState();
-        this.lastState = objectEvent.getNewState();
+        this.lastState = objectEvent.getCaseObject();
         this.initiatorId = objectEvent.getPersonId();
         this.serviceModule = objectEvent.getServiceModule();
         this.mergeLinks.putAddedEntries(objectEvent.getIssueCreateRequest().getLinks());
         this.fromEvent = objectEvent;
-        //temporary solution
-        DiffResult<String> name = new DiffResult<>(initState == null ? null : initState.getName(), lastState.getName());
-        this.name = synchronizeDiffs(this.name, name);
-        DiffResult<String> info = new DiffResult<>(initState == null ? null : initState.getInfo(), lastState.getInfo());
-        this.info = synchronizeDiffs(this.name, info);
+        this.name.setNewState(objectEvent.getCaseObject().getName());
+        this.info.setNewState(objectEvent.getCaseObject().getInfo());
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
@@ -117,11 +113,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null && !this.name.hasInitialState() && !this.info.hasInitialState();
+        return fromEvent instanceof CaseObjectCreateEvent;
     }
 
     private boolean isUpdateEvent() {
-        return (this.initState != null && lastState != null) || this.name.hasInitialState() || this.info.hasInitialState();
+        return !isCreateEvent();
     }
 
     private boolean isUpdateEventMeta() {

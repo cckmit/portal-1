@@ -12,40 +12,30 @@ import java.util.Objects;
 /**
  * Created by michael on 04.05.17.
  */
-public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEvent {
+public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-    private CaseObject newState;
-    private CaseObject oldState;
     private Long personId;
     private ServiceModule serviceModule;
     private IssueCreateRequest issueCreateRequest;
-    private boolean isCreateEvent;
 
-    public CaseObjectEvent(  Object source, ServiceModule serviceModule, Long personId, CaseObject oldState,  CaseObject newState ) {
+    public CaseObjectCreateEvent(Object source, ServiceModule serviceModule, Long personId, IssueCreateRequest createRequest) {
         super(source);
         this.serviceModule = serviceModule;
         this.personId = personId;
-        this.oldState = oldState;
-        this.newState = newState;
+        this.issueCreateRequest = createRequest;
     }
 
     public ServiceModule getServiceModule() {
         return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
     }
 
-    public CaseObject getCaseObject () {
-        return newState != null ? newState : oldState;
+    public CaseObject getCaseObject() {
+        return issueCreateRequest.getCaseObject();
     }
 
-    public CaseObject getNewState() {
-        return newState;
+    public CaseComment getCaseComment() {
+        return null;
     }
-
-    public CaseObject getOldState() {
-        return oldState;
-    }
-
-    public CaseComment getCaseComment() { return null; }
 
     @Override
     public Long getPersonId() {
@@ -56,30 +46,18 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return issueCreateRequest;
     }
 
-    public void setIssueCreateRequest(IssueCreateRequest issueCreateRequest) {
-        this.issueCreateRequest = issueCreateRequest;
-    }
-
-    public boolean isCreateEvent() {
-        return isCreateEvent;
-    }
-
-    public void setCreateEvent(boolean createEvent) {
-        isCreateEvent = createEvent;
-    }
-
     @Override
     public Long getCaseObjectId() {
         CaseObject caseObject = getCaseObject();
-        if(caseObject==null) return null;
+        if (caseObject == null) return null;
         return caseObject.getId();
     }
 
     @Override
     public boolean isEagerEvent() {
         CaseObject caseObject = getCaseObject();
-        if(caseObject==null) return false;
-        return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType() );
+        if (caseObject == null) return false;
+        return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType());
     }
 
     @Override
@@ -87,15 +65,14 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return "CaseObjectEvent{" +
                 "caseObjectId=" + getCaseObjectId() +
                 ", isEagerEvent=" + isEagerEvent() +
-                ", oldState=" + asString( oldState ) +
-                ", newState=" + asString( newState ) +
+                ", caseObject=" + asString(issueCreateRequest.getCaseObject()) +
                 ", personId=" + personId +
 
                 '}';
     }
 
-    private String asString( CaseObject caseObject ) {
-        if(caseObject==null) return null;
+    private String asString(CaseObject caseObject) {
+        if (caseObject == null) return null;
         return "CaseObject{" +
                 "id=" + caseObject.getId() +
                 ", caseNumber=" + caseObject.getCaseNumber() +
@@ -103,6 +80,4 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
                 ", extId='" + caseObject.getExtId() + '\'' +
                 '}';
     }
-
-
 }
