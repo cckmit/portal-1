@@ -37,13 +37,18 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
         return null;
     }
 
+    public IssueCreateRequest getIssueCreateRequest() {
+        return issueCreateRequest;
+    }
+
     @Override
     public Long getPersonId() {
         return personId;
     }
 
-    public IssueCreateRequest getIssueCreateRequest() {
-        return issueCreateRequest;
+    @Override
+    public boolean isCreateEvent() {
+        return true;
     }
 
     @Override

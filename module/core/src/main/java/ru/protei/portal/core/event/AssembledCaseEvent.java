@@ -40,10 +40,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
     protected long lastUpdated;
 
     public AssembledCaseEvent(AbstractCaseEvent ace) {
-        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPersonId(), ace.isEagerEvent());
+        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPersonId(), ace.isEagerEvent(), ace.isCreateEvent());
     }
 
-    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Long initiatorId, boolean isEagerEvent ) {
+    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Long initiatorId, boolean isEagerEvent, boolean isCreateEvent) {
         super( source );
         this.caseObjectId = caseObjectId;
         this.initiatorId = initiatorId;
@@ -51,6 +51,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.timeCreated = currentTimeMillis();
         lastUpdated = timeCreated;
         this.isEagerEvent = isEagerEvent;
+        this.isCreateEvent = isCreateEvent;
     }
 
     public void attachCaseObjectCreateEvent(CaseObjectCreateEvent objectEvent) {
@@ -63,7 +64,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.mergeLinks.putSameEntries(objectEvent.getIssueCreateRequest().getLinks());
         this.name.setNewState(objectEvent.getCaseObject().getName());
         this.info.setNewState(objectEvent.getCaseObject().getInfo());
-        this.isCreateEvent = true;
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
@@ -71,7 +71,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.isEagerEvent = isEagerEvent||event.isEagerEvent();
         this.name = synchronizeDiffs(this.name, event.getName());
         this.info = synchronizeDiffs(this.info, event.getInfo());
-        this.isCreateEvent = false;
     }
 
     public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
@@ -81,14 +80,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         lastMetaState = event.getNewState();
         initiatorId = event.getPersonId();
         serviceModule = event.getServiceModule();
-        this.isCreateEvent = false;
     }
 
     public void attachLinkEvent( CaseLinksEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
         mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId );
-        this.isCreateEvent = false;
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
@@ -102,14 +99,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         if (commentEvent.getRemovedCaseComment() != null) {
             comments.putRemovedEntry( commentEvent.getRemovedCaseComment() );
         }
-        this.isCreateEvent = false;
     }
 
     public void attachAttachmentEvent( CaseAttachmentEvent event ) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||event.isEagerEvent();
         attachments = synchronizeDiffs( attachments, event.getAttachments(), Attachment::getId );
-        this.isCreateEvent = false;
     }
 
     public boolean isCreateEvent() {
