@@ -88,6 +88,7 @@ public class TemplateServiceImplTest {
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
         assembledCaseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
         assembledCaseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
+        assembledCaseEvent.setLastCaseObject(lastState);
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
@@ -126,6 +127,7 @@ public class TemplateServiceImplTest {
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
         assembledCaseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
         assembledCaseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
+        assembledCaseEvent.setLastCaseObject(lastState);
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 

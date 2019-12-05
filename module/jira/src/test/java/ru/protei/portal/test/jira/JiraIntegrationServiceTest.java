@@ -110,7 +110,7 @@ public class JiraIntegrationServiceTest {
         Assert.assertNotNull("Error parsing json for update", issue);
 
         caseEvent = jiraIntegrationService.updateOrCreate(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_UPDATED, issue));
-        CaseObject object = caseObjectDAO.get(caseEvent.getCaseObject().getId());
+        CaseObject object = caseObjectDAO.get(caseEvent.getCaseObjectId());
         Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
     }
 
