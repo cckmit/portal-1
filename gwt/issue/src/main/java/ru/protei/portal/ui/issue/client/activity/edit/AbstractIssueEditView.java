@@ -40,12 +40,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setPrivacyIcon(Boolean isPrivate);
 
-    HasVisibility saveVisibility();
-
-
     void setNumber(Integer num);
-
-    HasEnabled saveEnabled();
 
     void setTagsAddButtonEnabled(boolean enabled);
 

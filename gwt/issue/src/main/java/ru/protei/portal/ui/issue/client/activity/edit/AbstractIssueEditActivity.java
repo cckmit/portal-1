@@ -10,8 +10,6 @@ import java.util.function.Consumer;
  */
 public interface AbstractIssueEditActivity {
 
-    void onSaveClicked();
-    void onCancelClicked();
     void removeAttachment(Attachment attachment);
     void renderMarkupText(String text, Consumer<String> consumer);
     void onDisplayPreviewChanged( String description, boolean isDisplay );

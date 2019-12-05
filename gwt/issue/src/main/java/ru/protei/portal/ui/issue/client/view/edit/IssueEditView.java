@@ -125,11 +125,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility saveVisibility() {
-        return saveButton;
-    }
-
-    @Override
     public void setNumber(Integer num) {
         if (num == null) {
             numberLabel.setText("");
@@ -137,11 +132,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
 
         numberLabel.setText("CRM-" + num);
-    }
-
-    @Override
-    public HasEnabled saveEnabled() {
-        return saveButton;
     }
 
     @Override
@@ -222,21 +212,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
-    @UiHandler("saveButton")
-    public void onSaveClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onSaveClicked();
-        }
-    }
-
-    @UiHandler("cancelButton")
-    public void onCancelClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
-
-    }
-
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
@@ -291,8 +266,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
@@ -311,10 +284,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     MarkdownAreaWithPreview description;
     @UiField
     Anchor copy;
-    @UiField
-    Button saveButton;
-    @UiField
-    Button cancelButton;
     @UiField
     HTMLPanel commentsContainer;
     @UiField

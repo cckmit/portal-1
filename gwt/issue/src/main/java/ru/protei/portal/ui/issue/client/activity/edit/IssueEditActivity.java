@@ -160,37 +160,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     @Override
-    public void onSaveClicked() {
-
-        if (!validateView(issue)) {
-            return;
-        }
-
-        fillIssueObject(issue);
-
-        if (isLockedSave()) {
-            return;
-        }
-        lockSave();
-//        issueService.saveIssue( new IssueCreateRequest(issue), new FluentCallback<Long>()
-//                .withError(throwable -> {
-//                    unlockSave();
-//                    defaultErrorHandler.accept(throwable);
-//                })
-//                .withSuccess(caseId -> {
-//                    unlockSave();
-//                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    fireEvent(new Back());
-//                }));
-
-    }
-
-    @Override
-    public void onCancelClicked() {
-        fireEvent(new Back());
-    }
-
-    @Override
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
             @Override
@@ -401,11 +370,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
         view.setNumber(issue.getCaseNumber().intValue());
 
-        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-
         fillMetaView(issue);
-
-        unlockSave();
     }
 
     private void fillMetaView(CaseObject issue) {
@@ -524,18 +489,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         return true;
     }
 
-    private boolean validateView(CaseObject issue) {
-
-        boolean isFieldsValid = !isEditingNameAndDescriptionView || view.nameValidator().isValid();
-
-        if (!isFieldsValid) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        return true;
-    }
-
     private void addAttachmentsToCase(Collection<Attachment> attachments){
         if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
             issue.setAttachments(new ArrayList<>());
@@ -589,20 +542,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 !En_CaseState.CANCELED.equals(caseState);
     }
 
-    private void lockSave() {
-        saving = true;
-        view.saveEnabled().setEnabled(false);
-    }
-
-    private void unlockSave() {
-        saving = false;
-        view.saveEnabled().setEnabled(true);
-    }
-
-    private boolean isLockedSave() {
-        return saving;
-    }
-
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
@@ -646,13 +585,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     TextRenderControllerAsync textRenderController;
     @Inject
     LocalStorageService localStorageService;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
 
     @ContextAware
     CaseObject issue;
 
-    private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private Profile authProfile;

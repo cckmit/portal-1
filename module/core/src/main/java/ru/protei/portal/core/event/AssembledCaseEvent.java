@@ -21,7 +21,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     private Long caseObjectId;
     private CaseObject lastState;
-    private CaseObject initState;
     private ApplicationEvent fromEvent;
     private CaseObjectMeta lastMetaState;
     private CaseObjectMeta initMetaState;
@@ -244,20 +243,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return lastUpdated;
     }
 
-    public Date getEventDate() {
-        return new Date(getTimestamp());
-    }
-
     public CaseObject getCaseObject() {
-        return lastState != null ? lastState : initState;
-    }
-
-    public CaseObject getLastState() {
         return lastState;
-    }
-
-    public CaseObject getInitState() {
-        return initState;
     }
 
     public CaseObjectMeta getCaseMeta() {
@@ -319,7 +306,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
 
     public boolean isCaseObjectFilled() {
-        return initState!=null;
+        return lastState != null;
     }
 
     public boolean isCaseMetaFilled() {
