@@ -1,5 +1,7 @@
 package ru.protei.portal.test.api;
 
+import org.apache.commons.io.IOUtils;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -31,6 +33,8 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.Photo;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -385,8 +389,8 @@ public class TestWorkerController {
 
 
     @Test
-    public void testUpdatePhoto() throws Exception {
-        String uri = BASE_URI + "update.photo";
+    public void testUpdatePhotoOld() throws Exception {
+        String uri = BASE_URI + "update.photo.old";
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
         WorkerRecord worker = createWorkerRecord();
@@ -451,7 +455,6 @@ public class TestWorkerController {
         for (int i = 0; i < list.getIds().size(); i++) {
             Photo p = pl.getPhotos().get(i);
             logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
-            logger.debug("Photo's content in Base64 = " + p.getContent());
 
             String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
             Path sourcePhotoPath = Paths.get(sourcePhotoName);
@@ -467,6 +470,76 @@ public class TestWorkerController {
             Files.deleteIfExists(receivedPhotoPath);
             Files.deleteIfExists(sourcePhotoPath);
         }
+    }
+
+    @Test
+    public void testGetPhoto() throws Exception {
+        IdList list = new IdList();
+        list.getIds().add(new Long(1));
+
+        createPhotosByIds(list.getIds());
+
+        String uri = BASE_URI + "get.photo/" + list.getIds().get(0);
+
+        logger.debug("URI = " + uri);
+
+        ResultActions result = mockMvc.perform(
+                get(uri)
+                        .header("Accept", "image/jpeg")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .contentType(MediaType.IMAGE_JPEG_VALUE)
+        );
+
+        Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, result.andReturn().getResponse().getStatus());
+
+        String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + list.getIds().get(0) + ".jpg";
+        Path sourcePhotoPath = Paths.get(sourcePhotoName);
+
+        String diffPhotoName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
+        Path diffPhotoPath = Paths.get(diffPhotoName);
+
+        byte[] receivedPhotoBytes = result.andReturn().getResponse().getContentAsByteArray();
+
+        Assert.assertTrue("Sent photo and received photo are not equals!", Arrays.equals(receivedPhotoBytes, Files.readAllBytes(sourcePhotoPath)));
+        Assert.assertFalse("Received photo are equal to different photo", Arrays.equals(receivedPhotoBytes, Files.readAllBytes(diffPhotoPath)));
+
+        Files.deleteIfExists(sourcePhotoPath);
+    }
+
+    @Test
+    public void testUpdatePhoto() throws Exception {
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
+        WorkerRecord worker = createWorkerRecord();
+        Result<Long> result = addWorker(worker);
+
+        Long id = result.getData();
+
+        createPhotosByIds(Collections.singletonList(id));
+
+        String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+        String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
+
+        Assert.assertFalse("Оld and new photo should be different", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
+
+        String uri = BASE_URI + "update.photo/" + id;
+
+        logger.debug("URI = " + uri);
+
+        ResultActions resultActions = mockMvc.perform(
+                post(uri)
+                        .header("Accept", "image/jpeg")
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .contentType(MediaType.IMAGE_JPEG_VALUE)
+                        .content(Files.readAllBytes(Paths.get(photoToUpdateName)))
+
+        );
+
+        Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, resultActions.andReturn().getResponse().getStatus());
+
+        Assert.assertTrue("Updated and new photo should be equals", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
+
+        Files.deleteIfExists(Paths.get(photoByIdName));
     }
 
     private void createPhotosByIds(List<Long> ids) throws Exception{

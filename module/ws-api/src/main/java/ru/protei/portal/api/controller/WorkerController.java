@@ -1,10 +1,13 @@
 package ru.protei.portal.api.controller;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
@@ -25,7 +28,9 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Inet4Address;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,7 +48,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
-@RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
+@RequestMapping(value = "/api/worker", produces = {"image/jpeg", "application/xml"})
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
@@ -480,12 +485,136 @@ public class WorkerController {
     }
 
     /**
+     * Получить фотографию сотрудника
+     * @param id идентификатор физического лица
+     */
+    @RequestMapping(value = "/get.photo/{id}", method = RequestMethod.GET)
+    public void getPhoto (@PathVariable("id") Long id,
+                          HttpServletResponse response,
+                          HttpServletRequest request)  {
+
+        logger.debug("getPhoto(): id = {}", id);
+
+        if (!checkAuth(request, response)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            logger.debug("getPhoto(): 403 FORBIDDEN. Bad password or login");
+            return;
+        }
+
+        if (id == null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.debug("getPhoto(): 400 BAD_REQUEST. id is null");
+            return;
+        }
+
+        Path photoPath = Paths.get(makeFileName(id));
+
+        if (!Files.exists(photoPath)){
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            logger.debug("getPhoto(): 404 NOT_FOUND. Photo not found");
+            return;
+        }
+
+        InputStream in = null;
+
+        try {
+            in = Files.newInputStream(photoPath);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            IOUtils.copy(in, response.getOutputStream());
+            logger.debug("getPhoto(): success result, photo path: {}", photoPath);
+
+        } catch (Exception e) {
+            logger.error("getPhoto(): error while getting photo", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        } finally {
+            try {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+                in.close();
+                logger.debug("getPhoto(): success closing streams");
+
+            } catch (Exception e){
+                logger.error("getPhoto(): can't close stream");
+            }
+        }
+    }
+
+    /**
+     * Обновить фотографию сотрудника
+     * @param id идентификатор физического лица
+     * @param photoBytes - фотография в виде байтого массива в теле запроса
+     */
+
+    @RequestMapping(value = "/update.photo/{id}", method = RequestMethod.POST)
+    public void updatePhoto (@PathVariable("id") Long id, @RequestBody byte[] photoBytes,
+                          HttpServletResponse response,
+                          HttpServletRequest request)  {
+
+        logger.debug("updatePhoto(): id = {}", id);
+
+        if (!checkAuth(request, response)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            logger.debug("updatePhoto(): 403 FORBIDDEN. Bad password or login");
+            return;
+        }
+
+        if (id == null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.debug("updatePhoto(): 400 BAD_REQUEST. id is null");
+            return;
+        }
+
+        if (photoBytes == null || photoBytes.length == 0) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.debug("updatePhoto(): 400 BAD_REQUEST. {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
+        }
+
+        try {
+
+            OperationData operationData = new OperationData(null, id, null, null)
+                    .requirePerson(null);
+
+            if (!operationData.isValid()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                logger.debug("updatePhoto(): 404 NOT_FOUND. Person not found");
+                return;
+            }
+
+            Files.write(Paths.get(makeFileName(id)), photoBytes);
+
+            String base64Photo = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(makeFileName(id))));
+            Photo photo = new Photo();
+            photo.setId(id);
+            photo.setContent(base64Photo);
+
+            makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
+
+            logger.debug("updatePhoto(): success result, personId={}", photo.getId());
+
+        } catch (Exception e) {
+            logger.error("updatePhoto(): error while updating photo", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        } finally {
+            try {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+                logger.debug("updatePhoto(): success closing response stream");
+
+            } catch (Exception e){
+                logger.error("updatePhoto(): can't close stream");
+            }
+        }
+    }
+
+    /**
      * Обновить фотографию сотрудника
      * @param photo фоторгафия
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    Result<Long> updatePhoto(@RequestBody Photo photo,
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo.old")
+    Result<Long> updatePhotoOld(@RequestBody Photo photo,
                               HttpServletRequest request,
                               HttpServletResponse response) {
 
