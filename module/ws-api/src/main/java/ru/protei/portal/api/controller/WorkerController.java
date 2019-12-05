@@ -48,7 +48,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
-@RequestMapping(value = "/api/worker", produces = {"image/jpeg", "application/xml"})
+@RequestMapping(value = "/api/worker")
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
@@ -100,7 +100,10 @@ public class WorkerController {
      * @param id идентификатор физического лица на портале
      * @return Result<WorkerRecord>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.person")
+    @RequestMapping(method = RequestMethod.GET,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.person")
     Result<WorkerRecord> getPerson(@RequestParam(name = "id") Long id,
                            HttpServletRequest request,
                            HttpServletResponse response) {
@@ -123,7 +126,10 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<WorkerRecord>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
+    @RequestMapping(method = RequestMethod.GET,
+                   consumes = MediaType.APPLICATION_XML_VALUE,
+                   produces = MediaType.APPLICATION_XML_VALUE,
+                   value = "/get.worker")
     Result<WorkerRecord> getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
                            HttpServletRequest request,
                            HttpServletResponse response) {
@@ -156,7 +162,10 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<DepartmentRecord>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.department")
+    @RequestMapping(method = RequestMethod.GET,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.department")
     Result<DepartmentRecord> getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
@@ -181,7 +190,10 @@ public class WorkerController {
      * @param expr строка для поиска с использованием шаблонных символов
      * @return Result<WorkerRecordList>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
+    @RequestMapping(method = RequestMethod.GET,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.persons")
     Result<WorkerRecordList> getPersons(@RequestParam(name = "expr") String expr,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
@@ -212,7 +224,10 @@ public class WorkerController {
      * @param rec данные о сотруднике
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
+    @RequestMapping(method = RequestMethod.POST,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/add.worker")
     Result<Long> addWorker(@RequestBody WorkerRecord rec,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -330,7 +345,10 @@ public class WorkerController {
      * @param rec данные о сотруднике
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.worker")
     Result<Long> updateWorker(@RequestBody WorkerRecord rec,
                                HttpServletRequest request,
                                HttpServletResponse response) {
@@ -347,7 +365,10 @@ public class WorkerController {
      * @param list список сотрудников
      * @return ResultList
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.workers")
     ResultList updateWorkers(@RequestBody WorkerRecordList list,
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
@@ -378,7 +399,10 @@ public class WorkerController {
      * @param list список сотрудников
      * @return ResultList
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.dates")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.fire.dates")
     ResultList updateFireDates(@RequestBody WorkerRecordList list,
                              HttpServletRequest request,
                              HttpServletResponse response) {
@@ -409,7 +433,10 @@ public class WorkerController {
      * @param rec данные о сотруднике
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.date")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.fire.date")
     Result<Long> updateFireDate(@RequestBody WorkerRecord rec,
                               HttpServletRequest request,
                               HttpServletResponse response) {
@@ -427,7 +454,10 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
+    @RequestMapping(method = RequestMethod.DELETE,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/delete.worker")
     Result<Long> deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
                                HttpServletRequest request,
                                HttpServletResponse response) {
@@ -488,7 +518,9 @@ public class WorkerController {
      * Получить фотографию сотрудника
      * @param id идентификатор физического лица
      */
-    @RequestMapping(value = "/get.photo/{id}", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = MediaType.IMAGE_JPEG_VALUE,
+                    value = "/get.photo/{id}")
     public void getPhoto (@PathVariable("id") Long id,
                           HttpServletResponse response,
                           HttpServletRequest request)  {
@@ -546,7 +578,9 @@ public class WorkerController {
      * @param photoBytes - фотография в виде байтого массива в теле запроса
      */
 
-    @RequestMapping(value = "/update.photo/{id}", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.IMAGE_JPEG_VALUE,
+                    value = "/update.photo/{id}")
     public void updatePhoto (@PathVariable("id") Long id, @RequestBody byte[] photoBytes,
                           HttpServletResponse response,
                           HttpServletRequest request)  {
@@ -613,7 +647,10 @@ public class WorkerController {
      * @param photo фоторгафия
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo.old")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.photo.old")
     Result<Long> updatePhotoOld(@RequestBody Photo photo,
                               HttpServletRequest request,
                               HttpServletResponse response) {
@@ -655,7 +692,10 @@ public class WorkerController {
      * @param list список идентификаторов физических лиц
      * @return Result<PhotoList>
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
+    @RequestMapping(method = RequestMethod.POST,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.photos")
     Result<PhotoList> getPhotos(@RequestBody IdList list,
                         HttpServletRequest request,
                         HttpServletResponse response) {
@@ -699,7 +739,10 @@ public class WorkerController {
      * @param rec данные об отделе
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.department")
     Result<Long> updateDepartment(@RequestBody DepartmentRecord rec,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
@@ -756,7 +799,10 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
+    @RequestMapping(method = RequestMethod.DELETE,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/delete.department")
     Result<Long> deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
@@ -796,7 +842,10 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.position")
     Result<Long> updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName")
             String newName, @RequestParam(name = "companyCode") String companyCode,
                                  HttpServletRequest request,
@@ -842,7 +891,10 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
+    @RequestMapping(method = RequestMethod.DELETE,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/delete.position")
     Result<Long> deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode,
                                  HttpServletRequest request,
                                  HttpServletResponse response) {

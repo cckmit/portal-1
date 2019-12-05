@@ -485,9 +485,8 @@ public class TestWorkerController {
 
         ResultActions result = mockMvc.perform(
                 get(uri)
-                        .header("Accept", "image/jpeg")
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.IMAGE_JPEG_VALUE)
+                        .header("Accept", MediaType.IMAGE_JPEG)
         );
 
         Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, result.andReturn().getResponse().getStatus());
@@ -527,12 +526,10 @@ public class TestWorkerController {
         logger.debug("URI = " + uri);
 
         ResultActions resultActions = mockMvc.perform(
-                post(uri)
-                        .header("Accept", "image/jpeg")
+                put(uri)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.IMAGE_JPEG_VALUE)
+                        .contentType(MediaType.IMAGE_JPEG)
                         .content(Files.readAllBytes(Paths.get(photoToUpdateName)))
-
         );
 
         Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, resultActions.andReturn().getResponse().getStatus());
@@ -622,7 +619,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 post(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
@@ -644,7 +641,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
@@ -665,7 +662,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
@@ -686,7 +683,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(listXml)
@@ -712,7 +709,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
@@ -729,7 +726,7 @@ public class TestWorkerController {
 
         ResultActions result = mockMvc.perform(
                 get(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
@@ -750,7 +747,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(departmentXml)
@@ -775,7 +772,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
@@ -798,7 +795,7 @@ public class TestWorkerController {
 
         ResultActions result = mockMvc.perform(
                 get(uriBuilder)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
         );
