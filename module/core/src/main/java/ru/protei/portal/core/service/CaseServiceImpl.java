@@ -72,42 +72,6 @@ public class CaseServiceImpl implements CaseService {
         return fillCaseObject( token, caseObject );
     }
 
-    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        if(caseObject == null)
-            return error(En_ResultStatus.NOT_FOUND);
-
-        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
-        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
-
-        Result<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
-        if (caseTags.isOk()) {
-            caseObject.setTags(new HashSet<>(caseTags.getData()));
-        }
-
-        withJiraSLAInformation(caseObject);
-
-        // RESET PRIVACY INFO
-        if ( caseObject.getInitiator() != null ) {
-            caseObject.getInitiator().resetPrivacyInfo();
-        }
-        if ( caseObject.getCreator() != null ) {
-            caseObject.getCreator().resetPrivacyInfo();
-        }
-        if ( caseObject.getManager() != null ) {
-            caseObject.getManager().resetPrivacyInfo();
-        }
-        if ( isNotEmpty(caseObject.getNotifiers())) {
-            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
-        }
-
-        return ok(caseObject);
-    }
-
     @Override
     @Transactional
     public Result< CaseObject > createCaseObject( AuthToken token, IssueCreateRequest issueCreateRequest ) {
@@ -213,7 +177,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<CaseNameAndDescriptionChangeRequest> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
+    public Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
             if(oldCaseObject == null) {
@@ -442,50 +406,6 @@ public class CaseServiceImpl implements CaseService {
         return ok(caseMetaJira);
     }
 
-    @Deprecated
-    private UpdateResult<CaseObject> performUpdateCaseObject(AuthToken token, CaseObject caseObject, CaseObject oldState ) {
-
-        if (caseObject == null) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        caseObject.setCreated(oldState.getCreated());
-        caseObject.setCaseNumber(oldState.getCaseNumber());
-
-        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        if (!validateFields(caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        synchronizeTags(caseObject, token);
-        jdbcManyRelationsHelper.persist(caseObject, "tags");
-
-        if (!isCaseChanged(caseObject, oldState)) {
-            return new UpdateResult<>(caseObject, false);
-        }
-
-        boolean isSelfCase = Objects.equals(token.getPersonId(), oldState.getCreator().getId());
-        boolean isChangedNameOrDescription = !Objects.equals(oldState.getName(), caseObject.getName()) || !Objects.equals(oldState.getInfo(), caseObject.getInfo());
-        if ( !isSelfCase && isChangedNameOrDescription ) {
-            log.info("Trying edit not self name or description for the issue {}", caseObject.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION);
-        }
-
-        caseObject.setModified(new Date());
-        caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
-
-        boolean isUpdated = caseObjectDAO.merge(caseObject);
-        if (!isUpdated) {
-            log.info("Failed to update issue {} at db", caseObject.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-        }
-
-        return new UpdateResult<>(caseObject, true);
-    }
-
     @Override
     public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
         List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
@@ -535,8 +455,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
-      return isExistsAttachments(caseId).flatMap( isExists ->
-         updateExistsAttachmentsFlag(caseId, isExists));
+        return isExistsAttachments(caseId).flatMap( isExists ->
+                updateExistsAttachmentsFlag(caseId, isExists));
     }
 
     @Override
@@ -628,6 +548,86 @@ public class CaseServiceImpl implements CaseService {
         Long caseNumber = caseObjectDAO.getCaseNumberById( caseId );
         if(caseNumber==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseNumber);
+    }
+
+    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
+        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if(caseObject == null)
+            return error(En_ResultStatus.NOT_FOUND);
+
+        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
+        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+
+        Result<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
+        if (caseTags.isOk()) {
+            caseObject.setTags(new HashSet<>(caseTags.getData()));
+        }
+
+        withJiraSLAInformation(caseObject);
+
+        // RESET PRIVACY INFO
+        if ( caseObject.getInitiator() != null ) {
+            caseObject.getInitiator().resetPrivacyInfo();
+        }
+        if ( caseObject.getCreator() != null ) {
+            caseObject.getCreator().resetPrivacyInfo();
+        }
+        if ( caseObject.getManager() != null ) {
+            caseObject.getManager().resetPrivacyInfo();
+        }
+        if ( isNotEmpty(caseObject.getNotifiers())) {
+            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
+        }
+
+        return ok(caseObject);
+    }
+
+    @Deprecated
+    private UpdateResult<CaseObject> performUpdateCaseObject(AuthToken token, CaseObject caseObject, CaseObject oldState ) {
+
+        if (caseObject == null) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        caseObject.setCreated(oldState.getCreated());
+        caseObject.setCaseNumber(oldState.getCaseNumber());
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (!validateFields(caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        synchronizeTags(caseObject, token);
+        jdbcManyRelationsHelper.persist(caseObject, "tags");
+
+        if (!isCaseChanged(caseObject, oldState)) {
+            return new UpdateResult<>(caseObject, false);
+        }
+
+        boolean isSelfCase = Objects.equals(token.getPersonId(), oldState.getCreator().getId());
+        boolean isChangedNameOrDescription = !Objects.equals(oldState.getName(), caseObject.getName()) || !Objects.equals(oldState.getInfo(), caseObject.getInfo());
+        if ( !isSelfCase && isChangedNameOrDescription ) {
+            log.info("Trying edit not self name or description for the issue {}", caseObject.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION);
+        }
+
+        caseObject.setModified(new Date());
+        caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
+
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        if (!isUpdated) {
+            log.info("Failed to update issue {} at db", caseObject.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return new UpdateResult<>(caseObject, true);
     }
 
     private void synchronizeTags(CaseObject caseObject, AuthToken token) {

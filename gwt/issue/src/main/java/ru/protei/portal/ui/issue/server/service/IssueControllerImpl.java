@@ -86,7 +86,7 @@ public class IssueControllerImpl implements IssueController {
     public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
         log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result response = caseService.updateCaseObject(token, changeRequest);
+        Result response = caseService.updateCaseNameAndDescription(token, changeRequest);
         log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
 
         checkResult(response);

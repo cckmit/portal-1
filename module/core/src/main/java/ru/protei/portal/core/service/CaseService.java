@@ -37,7 +37,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseNameAndDescriptionChangeRequest> updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
+    Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
