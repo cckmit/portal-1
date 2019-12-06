@@ -49,7 +49,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
 
-        copyNumber.getElement().setAttribute("title", lang.issueCopyToClipboard());
+        copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
+        copyNumberAndName.getElement().setAttribute("title", lang.issueCopyNumberAndName());
         caseMetaView.addValueChangeHandler(event ->  activity.onCaseMetaChanged(event.getValue()) );
     }
 
@@ -347,7 +348,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
-        copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
+        copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
+        copyNumberAndName.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_AND_NAME_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLinkLabel(DebugIds.ISSUE.LABEL.LINKS);

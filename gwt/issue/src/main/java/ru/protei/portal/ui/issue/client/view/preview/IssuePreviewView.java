@@ -43,6 +43,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
+        copyNumberAndName.getElement().setAttribute("title", lang.issueCopyNumberAndName());
         ensureDebugIds();
     }
 
@@ -54,10 +56,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setPrivateIssue( boolean isPrivate ) {
         if ( isPrivate ) {
-            privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
+            privateIssue.setClassName( "fa fa-lock text-danger m-l-10" );
             privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
         } else {
-            privateIssue.setClassName( "fa fa-unlock-alt text-success m-r-10"  );
+            privateIssue.setClassName( "fa fa-unlock-alt text-success m-l-10"  );
             privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
         }
     }
@@ -225,6 +227,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void isFullScreen(boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+        if (isFullScreen) {
+            metaTable.addClassName("p-r-15 p-l-15");
+        } else {
+            metaTable.removeClassName("p-r-15 p-l-15");
+        }
     }
 
     @UiHandler( "number" )
@@ -248,11 +255,19 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         activity.removeAttachment(event.getAttachment());
     }
 
-    @UiHandler("copy")
+    @UiHandler("copyNumber")
     public void onCopyClick(ClickEvent event) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onCopyClicked();
+            activity.onCopyNumberClicked();
+        }
+    }
+
+    @UiHandler("copyNumberAndName")
+    public void onCopyNumberAndNameClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCopyNumberAndNameClicked();
         }
     }
 
@@ -284,9 +299,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
-        copy.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_TO_CLIPBOARD_BUTTON);
+        copyNumber.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_BUTTON);
+        copyNumberAndName.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_AND_NAME_BUTTON);
     }
 
+    @UiField
+    DivElement metaTable;
     @UiField
     HTMLPanel preview;
     @UiField
@@ -355,7 +373,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HTMLPanel backButtonContainer;
     @UiField
-    Anchor copy;
+    Anchor copyNumber;
+    @UiField
+    Anchor copyNumberAndName;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject

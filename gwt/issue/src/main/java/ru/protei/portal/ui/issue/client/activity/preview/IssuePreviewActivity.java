@@ -156,7 +156,18 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
-    public void onCopyClicked() {
+    public void onCopyNumberClicked() {
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber());
+
+        if (status != 0) {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        }
+    }
+
+    @Override
+    public void onCopyNumberAndNameClicked() {
         int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
 
         if (status != 0) {
