@@ -41,7 +41,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setCreatedBy(String value);
 
-    HasVisibility copyVisibility();
+    HasVisibility copyNumberVisibility();
 
     void showComments(boolean isShow);
     boolean isAttached();
@@ -70,6 +70,8 @@ public interface AbstractIssueEditView extends IsWidget {
     void setNameRO(String name, String jiraUrl);
 
     String DESCRIPTION = "description";
+
+    HasVisibility copyNumberAndNameVisibility();
 
     HasVisibility editNameAndDescriptionButtonVisibility();
     void setNameAndDescriptionButtonsPanelVisibility(boolean visible);

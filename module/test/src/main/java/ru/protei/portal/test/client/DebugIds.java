@@ -263,7 +263,8 @@ public class DebugIds {
         String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
         String SAVE_BUTTON = "issue-save-button";
         String CANCEL_BUTTON = "issue-cancel-button";
-        String COPY_TO_CLIPBOARD_BUTTON = "issue-copy-to-clipboard-button";
+        String COPY_NUMBER_BUTTON = "issue-copy-number-button";
+        String COPY_NUMBER_AND_NAME_BUTTON = "issue-copy-number-and-name-button";
         String NOTIFIERS_SELECTOR = "issue-subscriptions-selector";
 
         interface LABEL {
@@ -307,7 +308,8 @@ public class DebugIds {
         String INFO = "issue-preview-info-item";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
-        String COPY_TO_CLIPBOARD_BUTTON = "issue-preview-copy-to-clipboard-button";
+        String COPY_NUMBER_BUTTON = "issue-preview-copy-number-button";
+        String COPY_NUMBER_AND_NAME_BUTTON = "issue-preview-copy-number-and-name-button";
 
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";

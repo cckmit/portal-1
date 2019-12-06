@@ -13,24 +13,27 @@
                 <div class="card-body">
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
-                            <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
-                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
-                            <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
-                                <i class="far fa-clone fa-xs"/>
+                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
+                                <i class="far fa-clone"/>
                             </g:Anchor>
+                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
                         </g:HTMLPanel>
                     </h4>
                     <div class="inline pull-right">
                         <small ui:field="createdBy"/>
+                        <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
                     </div>
-                    <h5  class="no-margin semi-bold">
-                        <span ui:field="name"/>
+                    <h5 class="number-and-name-copy-panel no-margin">
+                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
+                            <i class="far fa-clone"/>
+                        </g:Anchor>
+                        <span ui:field="name" class="semi-bold"/>
                     </h5>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
                                            enabled="false" showLabel="false"/>
 
-                    <div class="form-group-attached">
+                    <div ui:field="metaTable" class="form-group-attached">
                         <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">

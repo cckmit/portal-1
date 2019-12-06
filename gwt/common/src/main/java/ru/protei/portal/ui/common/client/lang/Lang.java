@@ -1834,7 +1834,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String firstHundredRecords();
 
-    String issueCopyToClipboard();
+    String issueCopyNumber();
 
     String errCopyToClipboard();
 
@@ -1927,4 +1927,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentConfirmRemove();
 
     String documentRemoved();
+
+    String issueCopyNumberAndName();
 }
