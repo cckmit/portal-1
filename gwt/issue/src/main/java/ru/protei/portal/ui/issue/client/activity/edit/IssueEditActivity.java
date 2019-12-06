@@ -398,7 +398,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         metaView.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         metaView.stateEnabled().setEnabled(true);
 
-        metaView.timeElapsedContainerVisibility().setVisible(false);
+        metaView.timeElapsedContainerVisibility().setVisible(true);
+        metaView.timeElapsedEditContainerVisibility().setVisible(false);
 
         Company company = issue.getInitiatorCompany();
         if (company == null) company = policyService.getUserCompany();
