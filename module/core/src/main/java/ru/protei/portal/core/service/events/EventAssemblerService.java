@@ -5,7 +5,7 @@ import ru.protei.portal.core.event.*;
 
 public interface EventAssemblerService {
 
-    void onCaseObjectEvent(CaseObjectCreateEvent event);
+    void onCaseObjectCreateEvent(CaseObjectCreateEvent event);
 
     void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event);
 

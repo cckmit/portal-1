@@ -60,10 +60,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.lastState = objectEvent.getCaseObject();
         this.initiatorId = objectEvent.getPersonId();
         this.serviceModule = objectEvent.getServiceModule();
-        this.attachments.putSameEntries(objectEvent.getCaseObject().getAttachments());
-        this.mergeLinks.putSameEntries(objectEvent.getIssueCreateRequest().getLinks());
-        this.name.setNewState(objectEvent.getCaseObject().getName());
-        this.info.setNewState(objectEvent.getCaseObject().getInfo());
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
