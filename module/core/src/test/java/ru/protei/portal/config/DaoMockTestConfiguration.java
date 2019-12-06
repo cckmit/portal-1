@@ -123,11 +123,6 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return  mock(UserSessionDAO.class);
-    }
-
-    @Bean
     public UserRoleDAO getUserRoleDAO() {
         return  mock(UserRoleDAO.class);
     }

@@ -61,13 +61,8 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
         selector.clearOptions();
     }
 
-    private void refreshOptions() {
-        subscribersMap.forEach((caseType, subscribers) -> refreshOptionsForCaseType(caseType));
-    }
-
     private void refreshOptionsForCaseType(En_CaseType caseType) {
-        CaseTagQuery query = new CaseTagQuery(caseType);
-        caseTagController.getTags(query, new FluentCallback<List<CaseTag>>()
+        caseTagController.getTags(new CaseTagQuery(caseType), new FluentCallback<List<CaseTag>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(caseTags -> {
                     valuesMap.put(caseType, caseTags.stream()
@@ -76,6 +71,10 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
                     notifySubscribers(caseType);
                 })
         );
+    }
+
+    private void refreshOptions() {
+        subscribersMap.forEach((caseType, subscribers) -> refreshOptionsForCaseType(caseType));
     }
 
     private void notifySubscribers(En_CaseType caseType) {

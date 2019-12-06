@@ -4,8 +4,6 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 
 /**
  * Представление создания и редактирования обращения
@@ -51,7 +49,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
-    void switchToRONameDescriptionView(boolean b);
+    void switchToRONameAndDescriptionView( boolean b);
 
     void setDescriptionRO(String value);
 
@@ -62,4 +60,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasWidgets getTagsContainer();
 
     HasWidgets getLinksContainer();
+
+    HasVisibility editNameAndDescriptionButtonVisibility();
+
+    void setNameAndDescriptionButtonsPanelVisibility(boolean visible);
 }

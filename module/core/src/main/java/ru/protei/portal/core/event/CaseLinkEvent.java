@@ -3,7 +3,6 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.Person;
 
 /**
  * Ссылки на обращения
@@ -11,17 +10,17 @@ import ru.protei.portal.core.model.ent.Person;
 public class CaseLinkEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private Long caseObjectId;
-    private Person person;
+    private Long personId;
     private ServiceModule serviceModule;
     private CaseLink addedLink;
     private CaseLink removedLink;
 
-    public CaseLinkEvent(Object source, ServiceModule serviceModule, Person person, Long caseObjectId,
+    public CaseLinkEvent(Object source, ServiceModule serviceModule, Long personId, Long caseObjectId,
                          CaseLink addedLink, CaseLink removedLink
                             ) {
         super(source);
         this.serviceModule = serviceModule;
-        this.person = person;
+        this.personId = personId;
         this.caseObjectId = caseObjectId;
         this.addedLink = addedLink;
         this.removedLink = removedLink;
@@ -40,8 +39,8 @@ public class CaseLinkEvent extends ApplicationEvent implements AbstractCaseEvent
         return false;
     }
 
-    public Person getPerson() {
-        return person;
+    public Long getPersonId() {
+        return personId;
     }
 
     public CaseLink getAddedLink() {
@@ -56,7 +55,7 @@ public class CaseLinkEvent extends ApplicationEvent implements AbstractCaseEvent
     public String toString() {
         return "CaseLinkEvent{" +
                 "caseObjectId=" + caseObjectId +
-                ", person=" + (person == null ? "" : person.getId()) +
+                ", person=" + personId +
                 ", serviceModule=" + serviceModule +
                 ", addedLink=" + (addedLink == null ? "" : addedLink.getId()) +
                 ", removedLink=" + (removedLink == null ? "" : removedLink.getId()) +

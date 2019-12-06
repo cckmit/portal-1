@@ -1664,6 +1664,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+    String employeeRegistrationPositionExceed(int num);
+
+    String employeeRegistrationWorkplaceExceed(int num);
+
+    String employeeRegistrationOperatingSystemExceed(int num);
+
     String employeeRegistrationAdditionalSoftLengthExceed(int num);
 
     String employeeRegistrationResourceCommentLengthExceed(int num);

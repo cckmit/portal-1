@@ -1,12 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 
 import java.util.List;
@@ -26,7 +23,7 @@ public interface CaseLinkService {
 
     Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
-    Result<Long> createLink(AuthToken authToken, Person initiator, CaseLink value);
+    Result<Long> createLink(AuthToken authToken, CaseLink value);
 
-    Result removeLink(AuthToken authToken, Person initiator, Long id);
+    Result removeLink(AuthToken authToken, Long id);
 }

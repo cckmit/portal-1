@@ -53,9 +53,9 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
         externalCaseAppDAO.merge(appData);
 
-        commonService.processAttachments(issue, obj, contactPerson, endpoint);
+        commonService.processAttachments(issue, obj, contactPerson.getId(), endpoint);
 
-        handleComments(issue, contactPerson, obj, caseObjId, companyId);
+        handleComments(issue, contactPerson.getId(), obj, caseObjId, companyId);
 
         return obj;
     }
@@ -103,7 +103,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         return obj;
     }
 
-    private void handleComments(Issue issue, Person person, CaseObject obj, long caseObjId, long companyId) {
+    private void handleComments(Issue issue, Long personId, CaseObject obj, long caseObjId, long companyId) {
         logger.debug("Processing comments ...");
 
         issue.getJournals()
@@ -113,7 +113,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
                 .filter(x -> !x.getNotes().isEmpty())
                 .map(x -> commonService.parseJournal(x, companyId))
                 .filter(Objects::nonNull)
-                .forEach(x -> commonService.processStoreComment(issue, person, obj, caseObjId, x));
+                .forEach(x -> commonService.processStoreComment(issue, personId, obj, caseObjId, x));
     }
 
     @Autowired

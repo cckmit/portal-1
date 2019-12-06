@@ -3,35 +3,34 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+
 import java.util.concurrent.TimeUnit;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 public class CaseTagServiceImpl implements CaseTagService {
 
     @Autowired
     private CaseTagDAO caseTagDAO;
     @Autowired
     private CaseObjectTagDAO caseObjectTagDAO;
-    @Autowired
-    private AuthService authService;
     @Autowired
     private PolicyService policyService;
     @Autowired
@@ -70,10 +69,8 @@ public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     public Result<List<CaseTag>> getTags(AuthToken token, CaseTagQuery query) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyId(descriptor.getCompany().getId());
+        if ( !policyService.hasGrantAccessFor( token.getRoles(), En_Privilege.ISSUE_VIEW ) ) {
+            query.setCompanyId(token.getCompanyId());
         }
 
         List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);

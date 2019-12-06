@@ -2,8 +2,9 @@ package ru.protei.portal.core.model.util;
 
 public class CrmConstants {
 
-    public interface Auth {
-        String SESSION_DESC = "auth-session-data";
+    public interface Session {
+        String AUTH_TOKEN = "session-auth-token";
+        String FILE_ITEM = "file-item";
     }
 
     public interface Header {
@@ -18,6 +19,14 @@ public class CrmConstants {
         Long UNDEFINED = -1L;
     }
 
+    public interface EmployeeRegistration {
+        int ADDITIONAL_SOFT_MAX_LENGTH = 512;
+        int RESOURCE_COMMENT_MAX_LENGTH = 512;
+        int OPERATING_SYSTEM_MAX_LENGTH = 64;
+        int POSITION_MAX_LENGTH = 128;
+        int WORKPLACE_MAX_LENGTH = 256;
+    }
+
     public interface Person {
         Long SYSTEM_USER_ID = 1L;
     }
@@ -25,10 +34,6 @@ public class CrmConstants {
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
         int MIN_LENGTH_FOR_SEARCH_BY_COMMENTS = 3;
-    }
-
-    public interface FileUpload {
-        String FILE_ITEM_DESC = "file-item";
     }
 
     public interface CaseTag {

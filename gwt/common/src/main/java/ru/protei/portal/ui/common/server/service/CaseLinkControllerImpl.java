@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseLinkController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.core.service.CaseLinkService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -47,22 +47,20 @@ public class CaseLinkControllerImpl implements CaseLinkController {
 
     @Override
     public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
+        AuthToken token = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData( caseService.getCaseLinks(token, caseId ) );
     }
 
     @Override
     public Long createLink(CaseLink value) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        Person person = getCurrentPerson( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.createLink( authToken, person, value) );
+        return checkResultAndGetData( linkService.createLink( authToken, value) );
     }
 
     @Override
     public void removeLink(Long id) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        Person person = getCurrentPerson( sessionService, httpServletRequest );
-        checkResult( linkService.removeLink( authToken, person, id) );
+        checkResult( linkService.removeLink( authToken, id) );
     }
 
     @Autowired

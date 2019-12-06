@@ -11,7 +11,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -24,11 +23,6 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
-
-import java.util.Set;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -154,7 +148,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void switchToRONameDescriptionView(boolean isRO) {
+    public void switchToRONameAndDescriptionView(boolean isRO) {
         descriptionContainer.setVisible(!isRO);
         nameContainer.setVisible(!isRO);
 
@@ -212,6 +206,20 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return copy;
     }
 
+    @Override
+    public HasVisibility editNameAndDescriptionButtonVisibility() {
+        return editNameAndDescriptionButton;
+    }
+
+    @Override
+    public void setNameAndDescriptionButtonsPanelVisibility(boolean visible) {
+        if (visible) {
+            nameAndDescriptionButtonsPanel.removeClassName("hide");
+        } else {
+            nameAndDescriptionButtonsPanel.addClassName("hide");
+        }
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -244,6 +252,27 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         event.preventDefault();
         if (activity != null) {
             activity.onCopyClicked();
+        }
+    }
+
+    @UiHandler("editNameAndDescriptionButton")
+    public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked();
+        }
+    }
+
+    @UiHandler("saveNameAndDescriptionButton")
+    public void onSaveNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveNameAndDescriptionClicked();
+        }
+    }
+
+    @UiHandler("cancelNameAndDescriptionButton")
+    public void onCancelNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked();
         }
     }
 
@@ -331,6 +360,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel tagsContainer;
     @UiField
     HTMLPanel issueMetaContainer;
+    @UiField
+    Button editNameAndDescriptionButton;
+    @UiField
+    Button saveNameAndDescriptionButton;
+    @UiField
+    Button cancelNameAndDescriptionButton;
+    @UiField
+    DivElement nameAndDescriptionButtonsPanel;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

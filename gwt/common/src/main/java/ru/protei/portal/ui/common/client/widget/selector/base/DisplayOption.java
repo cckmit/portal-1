@@ -6,7 +6,6 @@ package ru.protei.portal.ui.common.client.widget.selector.base;
 public class DisplayOption {
 
     private String name;
-    private String info;
     private String style;
     private String icon;
     private String imageSrc;
@@ -35,14 +34,6 @@ public class DisplayOption {
 
     public void setName( String name ) {
         this.name = name;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo( String info ) {
-        this.info = info;
     }
 
     public String getIcon() {

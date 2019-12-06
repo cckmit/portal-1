@@ -11,11 +11,11 @@ import ru.protei.portal.core.model.ent.RedmineEndpoint;
 public interface CommonService {
     CaseComment parseJournal(Journal journal, long companyId);
 
-    void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint);
+    void processAttachments(Issue issue, CaseObject obj, Long contactPersonId, RedmineEndpoint endpoint);
 
     void processUpdateCreationDateAttachments(Issue issue, Long caseObjId);
 
-    CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment);
+    CaseComment processStoreComment(Issue issue, Long contactPersonId, CaseObject obj, Long caseObjId, CaseComment comment);
 
     Person getAssignedPerson(Long companyId, User user);
 }

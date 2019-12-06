@@ -16,6 +16,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
@@ -105,7 +106,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     }
 
     private Comment convertComment (CaseComment ourComment, Person initiator) {
-        return Comment.valueOf(initiator.getDisplayShortName() + "\r\n" + ourComment.getText());
+        return Comment.valueOf(TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText());
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

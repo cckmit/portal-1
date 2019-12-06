@@ -1337,9 +1337,19 @@ public class WorkerController {
     }
 
     private boolean checkAuth (HttpServletRequest request, HttpServletResponse response){
-        Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+        Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+        if (authTokenAPIResult.isError()){
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        AuthToken token = authTokenAPIResult.getData();
 
-        if (userSessionDescriptorAPIResult.isError()){
+        Result<UserLogin> userLoginResult = authService.getUserLogin(token, token.getUserLoginId());
+        if (userLoginResult.isError()) {
             try {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             } catch (IOException e) {
@@ -1348,7 +1358,7 @@ public class WorkerController {
             return false;
         }
 
-        if (!userSessionDescriptorAPIResult.getData().getLogin().getUlogin().equals("ws_api")) {
+        if (!userLoginResult.getData().getUlogin().equals("ws_api")) {
             try {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
             } catch (IOException e) {

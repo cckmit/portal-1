@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 
 import java.util.*;
 import java.util.function.Function;
@@ -24,9 +25,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObjectMeta lastMetaState;
     private CaseObjectMeta initMetaState;
     private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
+    private DiffResult<String> name = new DiffResult<>();
+    private DiffResult<String> info = new DiffResult<>();
+    private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
 
+    private Long initiatorId;
     private Person initiator;
     private ServiceModule serviceModule;
     private List<CaseComment> existingComments;
@@ -36,13 +41,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
     protected long lastUpdated;
 
     public AssembledCaseEvent(AbstractCaseEvent ace) {
-        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPerson(), ace.isEagerEvent());
+        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPersonId(), ace.isEagerEvent());
     }
 
-    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator, boolean isEagerEvent ) {
+    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Long initiatorId, boolean isEagerEvent ) {
         super( source );
         this.caseObjectId = caseObjectId;
-        this.initiator = initiator;
+        this.initiatorId = initiatorId;
         this.serviceModule = serviceModule;
         this.timeCreated = currentTimeMillis();
         lastUpdated = timeCreated;
@@ -54,9 +59,20 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
         this.initState = objectEvent.getOldState();
         this.lastState = objectEvent.getNewState();
-        this.initiator = objectEvent.getPerson();
+        this.initiatorId = objectEvent.getPersonId();
         this.serviceModule = objectEvent.getServiceModule();
+        //temporary solution
+        DiffResult<String> name = new DiffResult<>(initState == null ? null : initState.getName(), lastState.getName());
+        this.name = synchronizeDiffs(this.name, name);
+        DiffResult<String> info = new DiffResult<>(initState == null ? null : initState.getInfo(), lastState.getInfo());
+        this.info = synchronizeDiffs(this.name, info);
+    }
 
+    public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
+        this.lastUpdated = currentTimeMillis();
+        this.isEagerEvent = isEagerEvent||event.isEagerEvent();
+        this.name = synchronizeDiffs(this.name, event.getName());
+        this.info = synchronizeDiffs(this.info, event.getInfo());
     }
 
     public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
@@ -64,7 +80,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent || event.isEagerEvent();
         initMetaState = event.getOldState();
         lastMetaState = event.getNewState();
-        initiator = event.getPerson();
+        initiatorId = event.getPersonId();
         serviceModule = event.getServiceModule();
     }
 
@@ -105,11 +121,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null;
+        return this.initState == null && !this.name.hasInitialState() && !this.info.hasInitialState();
     }
 
     private boolean isUpdateEvent() {
-        return initState != null && lastState != null;
+        return (this.initState != null && lastState != null) || this.name.hasInitialState() || this.info.hasInitialState();
     }
 
     private boolean isUpdateEventMeta() {
@@ -150,14 +166,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isInitiatorCompanyChanged() {
         return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getInitiatorCompanyId(), initMetaState.getInitiatorCompanyId());
-    }
-
-    public boolean isInfoChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getInfo(), initState.getInfo());
-    }
-
-    public boolean isNameChanged() {
-        return isUpdateEvent() && !HelperFunc.equals(lastState.getName(), initState.getName());
     }
 
     public boolean isPrivacyChanged() {
@@ -272,13 +280,34 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initMetaState;
     }
 
+    public Long getInitiatorId() {
+        return initiatorId;
+    }
+
+    public void setInitiator(Person initiator) {
+        this.initiator = initiator;
+    }
+
     public Person getInitiator() {
         return initiator;
     }
 
     public DiffCollectionResult<CaseLink> getLinks() {
-        links = synchronizeExists(links, CaseLink::getId );
+        links = synchronizeExists(links, CaseLink::getId);
         return links;
+    }
+
+    public DiffResult<String> getName() {
+        return name;
+    }
+
+    public DiffResult<String> getInfo() {
+        return info;
+    }
+
+    public DiffCollectionResult<CaseLink> getMergeLinks() {
+        mergeLinks = synchronizeExists( mergeLinks, CaseLink::getId );
+        return mergeLinks;
     }
 
     public boolean isCoreModuleEvent () {
@@ -322,13 +351,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private boolean isPublicChangedWithOutComments() {
         return  isCaseImportanceChanged()
                 || isCaseStateChanged()
-                || isInfoChanged()
                 || isInitiatorChanged()
                 || isInitiatorCompanyChanged()
                 || isManagerChanged()
-                || isNameChanged()
                 || isPrivacyChanged()
                 || isProductChanged()
+                || name.hasDifferences()
+                || info.hasDifferences()
                 || isPublicLinksChanged();
     }
 
@@ -343,6 +372,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isCaseCommentsFilled() {
         return existingComments !=null;
+    }
+
+    public boolean isCaseNameFilled() {
+        synchronized (name) {
+            return name.hasNewState();
+        }
+    }
+
+    public boolean isCaseInfoFilled() {
+        synchronized (info) {
+            return info.hasNewState();
+        }
     }
 
     public void setLastCaseObject( CaseObject caseObject ) {
@@ -433,7 +474,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     // Убрать из существующих элементов добавленные и удаленные
-    private <T> DiffCollectionResult<T> synchronizeExists( DiffCollectionResult<T> diff,Function<T, Object> getId) {
+    private <T> DiffCollectionResult<T> synchronizeExists(DiffCollectionResult<T> diff, Function<T, Object> getId) {
         log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
         if (diff.hasSameEntries()){
             synchronized (diff) {
@@ -443,6 +484,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
         log.info( "synchronizeExists(): after +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
         return diff;
+    }
+
+    private <T> DiffResult<T> synchronizeDiffs(DiffResult<T> source, DiffResult<T> other) {
+        if(!other.hasDifferences()) return source;
+        synchronized (source) {
+            DiffResult<T> result = new DiffResult<>();
+            result.setInitialState(source.hasInitialState() ? source.getInitialState() : other.getInitialState());
+            result.setNewState(other.getNewState());
+            return result;
+        }
     }
 
     private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );

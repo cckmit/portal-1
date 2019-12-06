@@ -16,9 +16,14 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -42,8 +47,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Autowired
     private PolicyService policyService;
-    @Autowired
-    private AuthService authService;
     @Autowired
     private PortalConfig portalConfig;
     @Autowired
@@ -106,9 +109,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         );
     }
 
-    // TODO: убрать person!!! (после реализации задачи PORTAL-907)
     @Override
-    public Result<Long> createLink(AuthToken authToken, Person initiator, CaseLink link) {
+    public Result<Long> createLink(AuthToken authToken, CaseLink link) {
         if (link == null || !isValidLink(link)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -151,15 +153,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
             }
 
-            publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, initiator, link.getCaseId(), link, null ) );
+            publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null ) );
 
             return ok(createdLinkId);
         });
     }
 
-    // TODO: убрать person!!! (после реализации задачи PORTAL-907)
     @Override
-    public Result removeLink(AuthToken authToken, Person initiator, Long id) {
+    public Result removeLink(AuthToken authToken, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -192,7 +193,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
 
-        publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, initiator, existedLink.getCaseId(), null, existedLink ) );
+        publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), existedLink.getCaseId(), null, existedLink ) );
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -235,14 +236,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private Result<Long> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, added, null ));
+        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null ));
         return ok(added.getId());
     }
 
     private Result<Long> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, descriptor.getPerson(), caseId, null, removed ));
+        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ));
         return ok(removed.getId());
     }
 
@@ -255,8 +254,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private boolean isShowOnlyPrivateLinks(AuthToken token) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
-        return !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+        return !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW);
     }
 }
