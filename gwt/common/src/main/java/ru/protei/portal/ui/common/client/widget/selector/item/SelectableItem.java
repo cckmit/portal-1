@@ -44,7 +44,7 @@ public class SelectableItem
 
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< Boolean > handler ) {
-        return checkbox.addHandler( handler, ValueChangeEvent.getType() );
+        return addHandler( handler, ValueChangeEvent.getType() );
     }
 
     @Override
@@ -64,6 +64,7 @@ public class SelectableItem
     @UiHandler("checkbox")
     public void onValueChange(ValueChangeEvent<Boolean> event) {
         checkbox.setFormValue(event.getValue().toString());
+        ValueChangeEvent.fire(this, event.getValue());
     }
 
     @UiField
