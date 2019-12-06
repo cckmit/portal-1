@@ -3956,9 +3956,10 @@ label {
 .number-copy-panel {
   display: inline-block!important;
   padding-right: 30px;
-  .copy-issue-description {
+  margin-left: -24px !important;
+  .copy-issue-number {
+    opacity: .0;
     margin-left: 3px;
-    display: none;
     .far {
       color: #929292;
     }
@@ -3970,8 +3971,32 @@ label {
   }
 
   &:hover {
-    .copy-issue-description {
-      display: inline-block;
+    .copy-issue-number {
+      opacity: 1;
+    }
+  }
+}
+
+.number-and-name-copy-panel {
+  margin-left: -20px !important;
+  label {
+    font-size: 18px;
+  }
+  .copy-issue-number-and-name {
+    opacity: .0;
+    .far {
+      color: #929292;
+    }
+    &:hover {
+      .far {
+        color: #5698d3;
+      }
+    }
+  }
+
+  &:hover {
+    .copy-issue-number-and-name {
+      opacity: 1;
     }
   }
 }

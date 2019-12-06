@@ -16,8 +16,9 @@ public interface AbstractIssueEditActivity {
     void onLocalClicked();
     void renderMarkupText(String text, Consumer<String> consumer);
     void onDisplayPreviewChanged( String description, boolean isDisplay );
-    void onCopyClicked();
+    void onCopyNumberClicked();
     void onCaseMetaChanged( CaseMeta value );
     void onEditNameAndDescriptionClicked();
     void onSaveNameAndDescriptionClicked();
+    void onCopyNumberAndNameClicked();
 }
