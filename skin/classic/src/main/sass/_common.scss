@@ -3954,54 +3954,49 @@ label {
 }
 
 .number-copy-panel {
-  display: inline-block!important;
-  padding-right: 30px;
-  margin-left: -24px !important;
-  .copy-number-anchor {
+  display: inline-block;
+  .copy-issue-number {
     opacity: .0;
-    &.copy-number-anchor-edit {
-      margin-left: 3px;
-    }
+    position: absolute;
+    left: 3px;
+    font-size: 14px;
+    margin-top: 1px;
     .far {
       color: #929292;
     }
     &:hover {
       .far {
-        color: #5698d3;
+        color: #008080;
       }
     }
   }
 
   &:hover {
-    .copy-number-anchor {
+    .copy-issue-number {
       opacity: 1;
     }
   }
 }
 
 .number-and-name-copy-panel {
-  margin-left: -20px !important;
-  label {
-    font-size: 18px;
-  }
-  .copy-number-name-anchor {
+  .copy-issue-number-and-name {
     opacity: .0;
-    &.copy-number-name-anchor-preview {
-      margin-left: -3px;
-      margin-right: 3px;
-    }
+    position: absolute;
+    left: 3px;
+    font-size: 14px;
+    margin-top: 1px;
     .far {
       color: #929292;
     }
     &:hover {
       .far {
-        color: #5698d3;
+        color: #008080;
       }
     }
   }
 
   &:hover {
-    .copy-number-name-anchor {
+    .copy-issue-number-and-name {
       opacity: 1;
     }
   }

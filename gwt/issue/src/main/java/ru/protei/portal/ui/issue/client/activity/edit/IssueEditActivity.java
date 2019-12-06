@@ -325,23 +325,23 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCopyNumberClicked() {
-        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber());
+        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber());
 
-        if (status != 0) {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        } else {
+        if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         }
     }
 
     @Override
     public void onCopyNumberAndNameClicked() {
-        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
+        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
 
-        if (status != 0) {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        } else {
+        if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         }
     }
 
