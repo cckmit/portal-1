@@ -184,15 +184,9 @@ public class CaseObjectSqlBuilder {
                         .append(query.getProductDirectionId());
             }
 
-            /* --OR CONDITIONS-- */
-
-//            if (query.isOrWithoutManager() != null && query.isOrWithoutManager()) {
-//                condition.append(" or deleted = 0");
-//                condition.append(" and case_type=?");
-//                condition.append(" and manager is null");
-//
-//                args.add(En_CaseType.CRM_SUPPORT);
-//            }
+            if (query.isWithoutManager() != null && query.isWithoutManager()) {
+                condition.append(" and manager IS NULL");
+            }
         });
     }
 }
