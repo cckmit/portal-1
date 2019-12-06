@@ -30,6 +30,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
 
+    private Long initiatorId;
     private Person initiator;
     private ServiceModule serviceModule;
     private List<CaseComment> existingComments;
@@ -39,13 +40,13 @@ public class AssembledCaseEvent extends ApplicationEvent {
     protected long lastUpdated;
 
     public AssembledCaseEvent(AbstractCaseEvent ace) {
-        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPerson(), ace.isEagerEvent());
+        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPersonId(), ace.isEagerEvent());
     }
 
-    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Person initiator, boolean isEagerEvent ) {
+    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Long initiatorId, boolean isEagerEvent ) {
         super( source );
         this.caseObjectId = caseObjectId;
-        this.initiator = initiator;
+        this.initiatorId = initiatorId;
         this.serviceModule = serviceModule;
         this.timeCreated = currentTimeMillis();
         lastUpdated = timeCreated;
@@ -57,7 +58,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
         this.initState = objectEvent.getOldState();
         this.lastState = objectEvent.getNewState();
-        this.initiator = objectEvent.getPerson();
+        this.initiatorId = objectEvent.getPersonId();
         this.serviceModule = objectEvent.getServiceModule();
         //temporary solution
         DiffResult<String> name = new DiffResult<>(initState == null ? null : initState.getName(), lastState.getName());
@@ -78,7 +79,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent || event.isEagerEvent();
         initMetaState = event.getOldState();
         lastMetaState = event.getNewState();
-        initiator = event.getPerson();
+        initiatorId = event.getPersonId();
         serviceModule = event.getServiceModule();
     }
 
@@ -265,6 +266,14 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public CaseObjectMeta getInitCaseMeta() {
         return initMetaState;
+    }
+
+    public Long getInitiatorId() {
+        return initiatorId;
+    }
+
+    public void setInitiator(Person initiator) {
+        this.initiator = initiator;
     }
 
     public Person getInitiator() {

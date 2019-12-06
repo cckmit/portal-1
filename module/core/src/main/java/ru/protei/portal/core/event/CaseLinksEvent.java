@@ -2,11 +2,7 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
@@ -17,16 +13,16 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 public class CaseLinksEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private Long caseObjectId;
-    private Person person;
+    private Long personId;
     private ServiceModule serviceModule;
     private DiffCollectionResult<CaseLink> mergeLinks;
 
-    public CaseLinksEvent( Object source, ServiceModule serviceModule, Person person, Long caseObjectId,
+    public CaseLinksEvent( Object source, ServiceModule serviceModule, Long personId, Long caseObjectId,
                            DiffCollectionResult<CaseLink> mergeLinks
                             ) {
         super(source);
         this.serviceModule = serviceModule;
-        this.person = person;
+        this.personId = personId;
         this.caseObjectId = caseObjectId;
         this.mergeLinks = mergeLinks;
     }
@@ -44,8 +40,9 @@ public class CaseLinksEvent extends ApplicationEvent implements AbstractCaseEven
         return false;
     }
 
-    public Person getPerson() {
-        return person;
+    @Override
+    public Long getPersonId() {
+        return personId;
     }
 
     public DiffCollectionResult<CaseLink> getMergeLinks() {
@@ -56,7 +53,7 @@ public class CaseLinksEvent extends ApplicationEvent implements AbstractCaseEven
     public String toString() {
         return "CaseLinksEvent{" +
                 "caseObjectId=" + caseObjectId +
-                ", person=" + (person==null?null:person.getId()) +
+                ", personId=" + personId +
                 asString( mergeLinks ) +
                 '}';
     }

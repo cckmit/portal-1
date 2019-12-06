@@ -43,7 +43,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     public void handleUpdateAttachmentsByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
         final CaseObject object = caseObjectDAO.get(caseId);
-        commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
+        commonService.processAttachments(issue, object, object.getInitiator().getId(), endpoint);
     }
 
     /**
@@ -116,14 +116,14 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .stream()
                 .map(x -> commonService.parseJournal(x, companyId))
                 .filter(Objects::nonNull)
-                .map(x -> commonService.processStoreComment(issue, x.getAuthor(), object, object.getId(), x))
+                .map(x -> commonService.processStoreComment(issue, x.getAuthor().getId(), object, object.getId(), x))
                 .collect(Collectors.toList());
 
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
         parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
 
-        commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
+        commonService.processAttachments(issue, object, object.getInitiator().getId(), endpoint);
     }
 
     @Autowired

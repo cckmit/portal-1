@@ -186,7 +186,7 @@ public class AccountServiceImpl implements AccountService {
     public Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword) {
         UserLogin userLogin = getAccount(token, loginId).getData();
 
-        Long personIdFromSession = authService.findSession(token).getPerson().getId();
+        Long personIdFromSession = token.getPersonId();
 
         if (userLogin.isLDAP_Auth() || !Objects.equals(personIdFromSession, userLogin.getPersonId())) {
             return error( En_ResultStatus.NOT_AVAILABLE);
@@ -214,11 +214,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void applyFilterByScope( AuthToken token, AccountQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-
-        if ( !policyService.hasGrantAccessFor( descriptor.getLogin().getRoles(), En_Privilege.ACCOUNT_VIEW ) ) {
+        if ( !policyService.hasGrantAccessFor( token.getRoles(), En_Privilege.ACCOUNT_VIEW ) ) {
             query.setRoleIds(
-                    Optional.ofNullable( descriptor.getLogin().getRoles())
+                    Optional.ofNullable( token.getRoles())
                             .orElse( Collections.emptySet() )
                             .stream()
                             .map( UserRole::getId )

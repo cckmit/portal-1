@@ -1,6 +1,5 @@
 package ru.protei.portal.core.controller.api;
 
-import jdk.nashorn.internal.runtime.options.OptionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,10 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -31,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -47,10 +48,8 @@ public class PortalApiController {
 
     @Autowired
     private AuthService authService;
-
     @Autowired
     private SessionIdGen sidGen;
-
     @Autowired
     private CaseService caseService;
     @Autowired
@@ -75,13 +74,13 @@ public class PortalApiController {
         log.info("API | getCaseList(): query={}", query);
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (userSessionDescriptorAPIResult.isError()) {
-                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
             }
 
-            AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
+            AuthToken authToken = authTokenAPIResult.getData();
 
             Result<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
 
@@ -108,18 +107,17 @@ public class PortalApiController {
         }
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (userSessionDescriptorAPIResult.isError()) {
-                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
             }
 
-            AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
+            AuthToken authToken = authTokenAPIResult.getData();
 
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
-                    (CaseObject) auditableObject,
-                    userSessionDescriptorAPIResult.getData().getPerson()
+                    (CaseObject) auditableObject
             );
 
             return caseObjectCoreResponse.orElseGet( result ->
@@ -146,23 +144,22 @@ public class PortalApiController {
         }
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (userSessionDescriptorAPIResult.isError()) {
-                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
             }
 
-            AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
+            AuthToken authToken = authTokenAPIResult.getData();
 
-            Person person = userSessionDescriptorAPIResult.getData().getPerson();
             CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseService.updateCaseObject(authToken, caseObject, person)
-                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject), person))
-                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject), person))
+            return caseService.updateCaseObject(authToken, caseObject)
+                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject)))
                 .flatMap(o -> {
                     if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
-                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject), person);
+                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject));
                     }
                     return ok();
                 })
@@ -185,7 +182,7 @@ public class PortalApiController {
                                                 @PathVariable("youtrackId") String youtrackId ) {
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
                 .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
@@ -199,7 +196,7 @@ public class PortalApiController {
                                                       @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
                 .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
@@ -214,7 +211,7 @@ public class PortalApiController {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
         // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
                 .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )

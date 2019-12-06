@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Реализация сервиса управления проектами
  */
@@ -453,10 +453,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
-            UserSessionDescriptor descriptor = authService.findSession(authToken);
-            if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberId(descriptor.getPerson().getId());
-            }
+            caseQuery.setMemberId(authToken.getPersonId());
         }
 
         if (projectQuery.getCustomerType() != null) {

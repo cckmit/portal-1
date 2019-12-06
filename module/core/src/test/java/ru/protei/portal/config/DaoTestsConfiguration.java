@@ -134,11 +134,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
-    }
-
-    @Bean
     public UserRoleDAO getUserRoleDAO() {
         return new UserRoleDAO_impl();
     }

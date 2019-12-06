@@ -3,7 +3,6 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.util.DiffResult;
 
 import java.util.Objects;
@@ -13,7 +12,7 @@ public class CaseNameAndDescriptionEvent extends ApplicationEvent implements Abs
     private Long caseObjectId;
     private DiffResult<String> name;
     private DiffResult<String> info;
-    private Person person;
+    private Long personId;
     private ServiceModule serviceModule;
     private En_ExtAppType extAppType;
 
@@ -22,14 +21,14 @@ public class CaseNameAndDescriptionEvent extends ApplicationEvent implements Abs
             Long caseObjectId,
             DiffResult<String> name,
             DiffResult<String> info,
-            Person person,
+            Long personId,
             ServiceModule serviceModule,
             En_ExtAppType extAppType) {
         super(source);
         this.caseObjectId = caseObjectId;
         this.name = name;
         this.info = info;
-        this.person = person;
+        this.personId = personId;
         this.serviceModule = serviceModule;
         this.extAppType = extAppType;
     }
@@ -40,8 +39,8 @@ public class CaseNameAndDescriptionEvent extends ApplicationEvent implements Abs
     }
 
     @Override
-    public Person getPerson() {
-        return person;
+    public Long getPersonId() {
+        return personId;
     }
 
     @Override

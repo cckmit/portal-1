@@ -19,7 +19,7 @@ public interface EventAssemblerService {
     @EventListener
     void onCaseLinkEvent(CaseLinksEvent event );
 
-    AssembledCaseEvent getEvent(Person person, Long caseId);
+    AssembledCaseEvent getEvent(Long personId, Long caseId);
 
     int getEventsCount();
 }

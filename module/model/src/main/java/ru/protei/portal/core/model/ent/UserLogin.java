@@ -42,6 +42,11 @@ public class UserLogin extends AuditableObject {
     })
     private String displayName;
 
+    @JdbcJoinedColumn( mappedColumn = "displayShortName", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String displayShortName;
+
     @JdbcJoinedColumn( mappedColumn = "isfired", joinPath = {
             @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
     })
@@ -136,6 +141,10 @@ public class UserLogin extends AuditableObject {
     public String getDisplayName () { return displayName; }
 
     public void setDisplayName ( String displayName ) { this.displayName = displayName; }
+
+    public String getDisplayShortName() { return displayShortName; }
+
+    public void setDisplayShortName(String displayShortName) { this.displayShortName = displayShortName; }
 
     public boolean isFired () { return isFired; }
 

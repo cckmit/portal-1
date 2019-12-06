@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.core.service.DocumentSvnService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.session.SessionService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,8 +41,9 @@ public class DocumentController {
     @ResponseBody
     public String uploadDocument(HttpServletRequest request) {
         logger.debug("upload document");
-        if (authService.getUserSessionDescriptor(request) == null) {
-            logger.error("user session descriptor not found");
+
+        if (sessionService.getAuthToken(request) == null) {
+            logger.error("auth token not found");
             return "error";
         }
 

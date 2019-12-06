@@ -27,13 +27,27 @@ public class AssemblerServiceImpl implements AssemblerService {
     public void proceed( final AssembledCaseEvent sourceEvent ) {
         if (sourceEvent == null) return;
 
-        fillCaseObject( sourceEvent ).flatMap(
+        fillInitiator( sourceEvent ).flatMap(
+                this::fillCaseObject ).flatMap(
                 this::fillCaseNameAndDescription ).flatMap(
                 this::fillCaseMeta ).flatMap(
                 this::fillComments ).flatMap(
                 this::fillAttachments ).flatMap(
                 this::fillLinks ).ifOk( filledEvent ->
                 publisherService.publishEvent( filledEvent ) );
+    }
+
+    private Result<AssembledCaseEvent> fillInitiator( AssembledCaseEvent e ) {
+        if (e.getInitiator() != null) {
+            log.info("fillInitiator(): CaseObjectID={} initiator is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillInitiator(): CaseObjectID={} Try to fill initiator.", e.getCaseObjectId());
+        e.setInitiator(personDAO.get(e.getInitiatorId()));
+        log.info("fillInitiator(): CaseObjectID={} initiator is successfully filled.", e.getCaseObjectId());
+
+        return ok(e);
     }
 
     private Result<AssembledCaseEvent> fillCaseObject( AssembledCaseEvent e ) {
@@ -154,6 +168,8 @@ public class AssemblerServiceImpl implements AssemblerService {
     CaseLinkDAO caseLinkDAO;
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    PersonDAO personDAO;
 
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

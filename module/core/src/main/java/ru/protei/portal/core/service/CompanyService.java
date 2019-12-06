@@ -35,6 +35,7 @@ public interface CompanyService {
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     Result<Company> getCompany( AuthToken token, Long id );
+    Result<Company> getCompanyUnsafe( AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
     @Auditable( En_AuditType.COMPANY_CREATE )
