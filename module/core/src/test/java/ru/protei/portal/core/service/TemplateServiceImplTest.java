@@ -199,7 +199,7 @@ public class TemplateServiceImplTest {
         old.add( chang1 );
         old.add( chang2 );
 
-        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( new Object(), ServiceModule.GENERAL, person.getId(), new IssueCreateRequest(lastState));
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( new Object(), ServiceModule.GENERAL, person.getId(), lastState);
         CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( new Object(), ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembled = new AssembledCaseEvent(caseObjectCreateEvent);
         assembled.attachCaseObjectCreateEvent(caseObjectCreateEvent);

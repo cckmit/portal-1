@@ -172,7 +172,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
         final CaseObject caseObj = new CaseObject();
-        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ).getId(), new IssueCreateRequest(caseObj) );
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ).getId(), caseObj );
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectCreateEvent);
         caseEvent.attachCaseObjectCreateEvent(caseObjectCreateEvent);
 

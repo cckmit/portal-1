@@ -16,13 +16,13 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
 
     private Long personId;
     private ServiceModule serviceModule;
-    private IssueCreateRequest issueCreateRequest;
+    private CaseObject caseObject;
 
-    public CaseObjectCreateEvent(Object source, ServiceModule serviceModule, Long personId, IssueCreateRequest createRequest) {
+    public CaseObjectCreateEvent(Object source, ServiceModule serviceModule, Long personId, CaseObject caseObject) {
         super(source);
         this.serviceModule = serviceModule;
         this.personId = personId;
-        this.issueCreateRequest = createRequest;
+        this.caseObject = caseObject;
     }
 
     public ServiceModule getServiceModule() {
@@ -30,15 +30,15 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
     }
 
     public CaseObject getCaseObject() {
-        return issueCreateRequest.getCaseObject();
+        return caseObject;
+    }
+
+    public void setCaseObject(CaseObject caseObject) {
+        this.caseObject = caseObject;
     }
 
     public CaseComment getCaseComment() {
         return null;
-    }
-
-    public IssueCreateRequest getIssueCreateRequest() {
-        return issueCreateRequest;
     }
 
     @Override
@@ -70,9 +70,8 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
         return "CaseObjectEvent{" +
                 "caseObjectId=" + getCaseObjectId() +
                 ", isEagerEvent=" + isEagerEvent() +
-                ", caseObject=" + asString(issueCreateRequest.getCaseObject()) +
+                ", caseObject=" + asString(getCaseObject()) +
                 ", personId=" + personId +
-
                 '}';
     }
 
