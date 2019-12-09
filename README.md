@@ -48,3 +48,59 @@ IDEA->Конфигурация запуска->VM options добавить:
 >
 > Примечание:  
 Системная переменная `сatalina.home` устанавливается Tomcat-ом при его старте  
+>
+
+### Настройка базы данных в docker
+
+После установки докера, необходимо cоздать файл my.cnf со следующим содержимым: 
+>  [mysqld]   
+pid-file        = /var/run/mysqld/mysqld.pid  
+socket          = /var/run/mysqld/mysqld.sock  
+datadir         = /var/lib/mysql  
+secure-file-priv= NULL  
+lower_case_table_names = 1  
+character-set-client-handshake = FALSE  
+character-set-server = utf8mb4  
+collation-server = utf8mb4_unicode_ci  
+innodb_file_per_table=1  
+symbolic-links=0  
+>
+>[client]  
+default-character-set = utf8mb4  
+>
+> [mysql]  
+default-character-set = utf8mb4  
+!includedir /etc/mysql/conf.d/
+
+Завести dockerfile примерно со следующим содержимым: 
+> FROM mysql:8.0.18 
+>
+> RUN apt-get update && apt-get install -y nano mc
+>
+> ENV MYSQL_ROOT_PASSWORD=my_root_pw
+>
+> COPY /path/to/my/custom/my.cnf /etc/mysql/my.cnf
+
+В папке с докер файлом выполнить команду:
+
+`docker build -t my_img_name -f my_dockerfile_name .`
+
+Создать папку, например, data, в которой будут лежать файлы mysql из контейнера.
+
+Выполнить команду:
+
+`docker run -d --name container_name -v /path/to/data:/var/lib/mysql -p 3000:3306 my_img_name`
+
+БД доступна по localhost:3000. Вход в контейнер:
+
+`docker exec -it container_name /bin/bash`
+
+Создание тестовой бд:
+
+`create database portal_test CHARACTER SET utf8 COLLATE utf8_bin;`
+
+Теперь в файлах winter.properties с тестами, можно подменять проперти на свои. 
+
+Дамп базы данных для разработки можно положить в папку data и применить дамп из контенера.
+
+Image - https://hub.docker.com/_/mysql
