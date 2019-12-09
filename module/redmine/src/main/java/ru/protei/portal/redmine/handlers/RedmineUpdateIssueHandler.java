@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
@@ -47,6 +48,13 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
     }
 
+    public void handleUpdateCaseObjectByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
+        final CaseObject object = caseObjectDAO.get(caseId);
+        compareAndUpdate(issue, object, endpoint);
+        caseObjectDAO.saveOrUpdate(object);
+        logger.debug("Object with id {} saved", object.getId());
+    }
+
     /**
      * Finding changes made after last update querying.
      * FIltering out comments, getting lists of details, parsing them to change types, distinct and returning it
@@ -76,7 +84,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
 
-        //Comments synchronize by date from last created comment ????
+        //Comments synchronize by date from last created comment
         logger.debug("Trying to get latest synchronized comment");
         final CaseComment comment = caseCommentDAO.getCaseComments(new CaseCommentQuery(object.getId()))
                 .stream()
@@ -92,9 +100,9 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         final List<Journal> nonEmptyJournalsWithComments = issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(x -> x.getNotes() != null && x.getCreatedOn() != null)
-                .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
-                .filter(x -> !x.getNotes().isEmpty())
+                .filter(x -> x.getCreatedOn() != null &&
+                        x.getCreatedOn().compareTo(latestCreated) > 0)
+                .filter(x -> StringUtils.isNotEmpty(x.getNotes()))
                 .collect(Collectors.toList());
         logger.debug("found {} comments", nonEmptyJournalsWithComments.size());
         nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with id {} has following text: {}", journal.getId(), journal.getNotes()));
@@ -107,25 +115,19 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .collect(Collectors.toList());
         logger.debug("Added {} new case comments to issue with id: {}", comments.size(), object.getId());
 
-        //Status-comments and parameters synchronize by date from last update (endpoint)
-        final List<Journal> latestJournals = issue.getJournals()
+        logger.debug("starting adding new status comments");
+        logger.debug("finding status changes (journal details where status changes exist)");
+        final List<Journal> nonEmptyJournalsWithStatusChange = issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(x -> x.getCreatedOn() != null
-                        && x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
-                .collect(Collectors.toList());
-        logger.debug("got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
-        logger.debug("starting adding new status comments");
-
-        logger.debug("finding status changes (journal details where status changes exist)");
-        final List<Journal> latestJournalsWithStatusChange = latestJournals
-                .stream()
+                .filter(x -> x.getCreatedOn() != null &&
+                        x.getCreatedOn().compareTo(latestCreated) > 0)
                 .filter(journal -> CollectionUtils.isNotEmpty(journal.getDetails()))
                 .filter(journal -> journal.getDetails().stream().anyMatch(detail -> detail.getName().equals(RedmineChangeType.STATUS_CHANGE.getName())))
                 .collect(Collectors.toList());
-        logger.debug("found {} status changes", latestJournalsWithStatusChange.size());
+        logger.debug("found {} status changes", nonEmptyJournalsWithStatusChange.size());
 
-        final List<CaseComment> statusComments = latestJournalsWithStatusChange
+        final List<CaseComment> statusComments = nonEmptyJournalsWithStatusChange
                 .stream()
                 .map(journal -> commonService.parseJournalToStatusComment(journal, companyId, endpoint.getStatusMapId()))
                 .filter(Objects::nonNull)
@@ -133,6 +135,15 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .collect(Collectors.toList());
         statusComments.forEach(statusComment -> logger.debug("Status comment with id {} has following status: {}", statusComment.getId(), statusComment.getCaseStateId()));
         logger.debug("Added {} new status comments to issue with id: {}", statusComments.size(), object.getId());
+
+        //Parameters synchronize by date from last update (endpoint)
+        final List<Journal> latestJournals = issue.getJournals()
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(x -> x.getCreatedOn() != null &&
+                        x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
+                .collect(Collectors.toList());
+        logger.debug("got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
 
         logger.debug("starting updating case object");
         parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
