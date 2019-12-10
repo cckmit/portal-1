@@ -1829,9 +1829,7 @@ a {
     padding: 0;
 
     .case-tag {
-      position: relative;
       text-align: center;
-      height: 22px;
       line-height: 22px;
       display: flex;
       margin: 6px;
@@ -3674,14 +3672,25 @@ table {
 /**** case links ****/
 .case-links {
   padding: 5px 10px !important;
+  max-height: 120px;
+  overflow: auto;
 
   .case-link {
     list-style: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    width: 100%;
 
     .case-link-close {
       padding: 0 10px;
-      color: grey;
       visibility: hidden;
+      position: absolute;
+      right: 0;
+      top: 6px;
+      color: #168888 !important;
+      background: #f7f7f7;
     }
 
     .without-link {
