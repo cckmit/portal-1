@@ -53,5 +53,5 @@ public interface AbstractIssueCreateView extends IsWidget {
 
     String DESCRIPTION = "description";
 
-    HTMLPanel getIssueMetaViewContainer();
+    HasWidgets getIssueMetaViewContainer();
 }

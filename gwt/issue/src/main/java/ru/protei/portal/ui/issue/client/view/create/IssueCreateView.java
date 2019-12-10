@@ -145,7 +145,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     }
 
     @Override
-    public HTMLPanel getIssueMetaViewContainer() {
+    public HasWidgets getIssueMetaViewContainer() {
         return issueMetaViewContainer;
     }
 

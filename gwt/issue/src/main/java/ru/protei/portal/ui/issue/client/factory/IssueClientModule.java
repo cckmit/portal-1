@@ -47,7 +47,7 @@ public class IssueClientModule extends AbstractGinModule {
         bind( AbstractIssueCreateActivity.class ).to( IssueCreateActivity.class ).asEagerSingleton();
         bind( AbstractIssueCreateView.class ).to( IssueCreateView.class ).in( Singleton.class );
 
-        bind( AbstractIssueMetaView.class ).to( IssueMetaView.class ).in(Singleton.class);
+        bind( AbstractIssueMetaView.class ).to( IssueMetaView.class );
 
         bind( AbstractIssueFilterView.class ).to(IssueFilterView.class).in(Singleton.class);
     }

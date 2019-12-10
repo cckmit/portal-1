@@ -60,7 +60,6 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    @Deprecated
     @Override
     public Long createIssue(IssueCreateRequest issueCreateRequest ) throws RequestFailedException {
         log.info("saveIssue(): case={}", issueCreateRequest);
