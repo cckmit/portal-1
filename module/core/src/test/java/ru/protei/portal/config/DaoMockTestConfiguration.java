@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -9,6 +10,11 @@ import static org.mockito.Mockito.mock;
 
 @Configuration
 public class DaoMockTestConfiguration {
+
+    @Bean
+    public TransactionTemplate getTransactionTemplate() {
+        return mock(TransactionTemplate.class);
+    }
 
     @Bean
     public CaseLinkDAO getCaseLinkDAO() {

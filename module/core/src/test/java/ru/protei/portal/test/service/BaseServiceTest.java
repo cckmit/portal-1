@@ -39,11 +39,6 @@ public class BaseServiceTest {
         return product;
     }
 
-    public static CaseObject createNewCaseObject( Person person, CaseTag caseTag ) {
-        CaseObject caseObject = createNewCaseObject( En_CaseType.CRM_SUPPORT, person );
-        return caseObject;
-    }
-
     public static CaseObject createNewCaseObject( Person person ) {
         return createNewCaseObject( En_CaseType.CRM_SUPPORT, person );
     }
@@ -157,18 +152,11 @@ public class BaseServiceTest {
         );
     }
 
-    protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag, Long initiatorCompanyId ) {
-        CaseObject caseObject = createNewCaseObject( person, caseTag );
+    protected CaseObject makeCaseObject( Person person, Long productId, Date date, Long initiatorCompanyId ) {
+        CaseObject caseObject = createNewCaseObject( person );
         caseObject.setProductId( productId );
         caseObject.setCreated( date );
         caseObject.setInitiatorCompanyId( initiatorCompanyId );
-        return makeCaseObject(caseObject);
-    }
-
-    protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag ) {
-        CaseObject caseObject = createNewCaseObject( person, caseTag );
-        caseObject.setProductId( productId );
-        caseObject.setCreated( date );
         return makeCaseObject(caseObject);
     }
 
@@ -248,6 +236,8 @@ public class BaseServiceTest {
     protected CompanyDAO companyDAO;
     @Autowired
     protected CaseTagDAO caseTagDAO;
+    @Autowired
+    protected CaseObjectTagDAO caseObjectTagDAO;
     @Autowired
     protected CaseTypeDAO caseTypeDAO;
     @Autowired

@@ -187,30 +187,6 @@ public class TestPortalApiController extends BaseServiceTest {
         authService.resetThreadAuthToken();
     }
 
-    @Test
-    public void testUpdateIssue() throws Exception {
-        CaseObject startCaseObject = caseObjectDAO.getAll().stream().findAny().orElse(null);
-        Assert.assertNotNull("Expected at least 1 case object in db before update", startCaseObject);
-
-        String startCaseObjectName = startCaseObject.getName();
-
-        startCaseObject.setName(ISSUES_PREFIX + "new");
-
-        authService.makeThreadAuthToken( userLogin );
-        ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
-
-        List<CaseObject> caseObjects = caseObjectDAO.getAll();
-        CaseObject endCaseObject = caseObjects.stream().filter(currCaseObj -> currCaseObj.getId().equals(startCaseObject.getId())).findAny().orElse(null);
-
-        Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
-        Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
-        Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
-        authService.resetThreadAuthToken();
-    }
-
     @AfterClass
     public static void destroy() {
         caseCommentDAO.removeByCaseIds(issuesIds);
