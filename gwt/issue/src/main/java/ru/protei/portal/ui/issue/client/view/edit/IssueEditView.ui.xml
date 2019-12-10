@@ -9,7 +9,7 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <div class="row">
-                <div class="col-lg-8 order-last order-lg-first">
+                <div class="col-lg-8 order-last order-lg-first p-l-25">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
                             <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
@@ -22,20 +22,25 @@
                     </div>
 
                     <g:HTMLPanel ui:field="numberContainer">
-                        <h5 class="number-copy-panel no-margin p-b-10">
-                            <i ui:field="privacyIcon"/>
-                            <g:InlineLabel ui:field="numberLabel"/>
-                            <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
-                                <i class="far fa-clone fa-xs"/>
+                        <h5 class="number-copy-panel no-margin">
+                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
+                                <i class="far fa-clone"/>
                             </g:Anchor>
+                            <g:InlineLabel ui:field="numberLabel"/>
                         </h5>
 
                         <div class="inline pull-right">
                             <small ui:field="createdBy"/>
+                            <i ui:field="privacyIcon"/>
                         </div>
                     </g:HTMLPanel>
 
-                    <h5 ui:field="nameRO" class="no-margin semi-bold"/>
+                    <h5 ui:field="nameROContainer" class="number-and-name-copy-panel no-margin">
+                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
+                            <i class="far fa-clone"/>
+                        </g:Anchor>
+                        <label ui:field="nameROLabel" class="semi-bold large-text"/>
+                    </h5>
 
                     <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
 

@@ -38,7 +38,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
 
-        copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
+        copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
+        copyNumberAndName.getElement().setAttribute("title", lang.issueCopyNumberAndName());
     }
 
     @Override
@@ -109,10 +110,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setPrivacyIcon(Boolean isPrivate) {
         if ( isPrivate ) {
-            privacyIcon.setClassName("fas fa-lock text-danger m-r-10");
+            privacyIcon.setClassName("fas fa-lock text-danger m-l-10");
             privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
         } else {
-            privacyIcon.setClassName("fas fa-unlock text-success m-r-10");
+            privacyIcon.setClassName("fas fa-unlock text-success m-l-10");
             privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
         }
     }
@@ -153,10 +154,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         nameContainer.setVisible(!isRO);
 
         if (isRO) {
-            nameRO.removeClassName(UiConstants.Styles.HIDE);
+            nameROLabel.removeClassName(UiConstants.Styles.HIDE);
             descriptionRO.removeClassName(UiConstants.Styles.HIDE);
         } else {
-            nameRO.addClassName(UiConstants.Styles.HIDE);
+            nameROLabel.addClassName(UiConstants.Styles.HIDE);
             descriptionRO.addClassName(UiConstants.Styles.HIDE);
         }
     }
@@ -170,7 +171,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setNameRO( String value, String jiraUrl ) {
         if (jiraUrl.isEmpty() || !value.startsWith("CLM")) {
-            this.nameRO.setInnerHTML(value);
+            this.nameROLabel.setInnerHTML(value);
         }
         else {
             String idCLM = value.split(" ")[0];
@@ -185,9 +186,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             LabelElement nameWithoutLink = DOM.createLabel().cast();
             nameWithoutLink.setInnerHTML(remainingName);
 
-            this.nameRO.setInnerHTML("");
-            this.nameRO.appendChild(jiraLink);
-            this.nameRO.appendChild(nameWithoutLink);
+            this.nameROLabel.setInnerHTML("");
+            this.nameROLabel.appendChild(jiraLink);
+            this.nameROLabel.appendChild(nameWithoutLink);
         }
     }
 
@@ -202,8 +203,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility copyVisibility() {
-        return copy;
+    public HasVisibility copyNumberVisibility() {
+        return copyNumber;
+    }
+
+    @Override
+    public HasVisibility copyNumberAndNameVisibility() {
+        return copyNumberAndName;
     }
 
     @Override
@@ -247,11 +253,19 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
-    @UiHandler("copy")
-    public void onCopyClick(ClickEvent event) {
+    @UiHandler("copyNumber")
+    public void onCopyNumberClick(ClickEvent event) {
         event.preventDefault();
         if (activity != null) {
-            activity.onCopyClicked();
+            activity.onCopyNumberClicked();
+        }
+    }
+
+    @UiHandler("copyNumberAndName")
+    public void onCopyNumberAndNameClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCopyNumberAndNameClicked();
         }
     }
 
@@ -292,14 +306,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         privacyButton.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
-        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
+        nameROLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
-        copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
+        copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
+        copyNumberAndName.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_AND_NAME_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
@@ -317,7 +332,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     ToggleButton privacyButton;
     @UiField
-    Anchor copy;
+    Anchor copyNumber;
+    @UiField
+    Anchor copyNumberAndName;
     @UiField
     Button saveButton;
     @UiField
@@ -349,7 +366,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     LabelElement nameLabel;
     @UiField
-    HeadingElement nameRO;
+    HeadingElement nameROContainer;
+    @UiField
+    LabelElement nameROLabel;
     @UiField
     DivElement descriptionRO;
     @UiField

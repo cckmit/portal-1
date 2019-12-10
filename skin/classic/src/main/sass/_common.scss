@@ -3481,24 +3481,50 @@ label {
 }
 
 .number-copy-panel {
-  display: inline-block!important;
-  padding-right: 30px;
-  .copy-issue-description {
-    margin-left: 3px;
-    display: none;
+  display: inline-block;
+  .copy-issue-number {
+    opacity: .0;
+    position: absolute;
+    left: 3px;
+    font-size: 14px;
+    margin-top: 1px;
     .far {
       color: #929292;
     }
     &:hover {
       .far {
-        color: #5698d3;
+        color: #008080;
       }
     }
   }
 
   &:hover {
-    .copy-issue-description {
-      display: inline-block;
+    .copy-issue-number {
+      opacity: 1;
+    }
+  }
+}
+
+.number-and-name-copy-panel {
+  .copy-issue-number-and-name {
+    opacity: .0;
+    position: absolute;
+    left: 3px;
+    font-size: 14px;
+    margin-top: 1px;
+    .far {
+      color: #929292;
+    }
+    &:hover {
+      .far {
+        color: #008080;
+      }
+    }
+  }
+
+  &:hover {
+    .copy-issue-number-and-name {
+      opacity: 1;
     }
   }
 }

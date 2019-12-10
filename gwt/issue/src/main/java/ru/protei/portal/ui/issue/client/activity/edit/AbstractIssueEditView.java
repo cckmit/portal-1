@@ -32,7 +32,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setCreatedBy(String value);
 
-    HasVisibility copyVisibility();
+    HasVisibility copyNumberVisibility();
 
     void showComments(boolean isShow);
     boolean isAttached();
@@ -60,6 +60,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasWidgets getTagsContainer();
 
     HasWidgets getLinksContainer();
+
+    HasVisibility copyNumberAndNameVisibility();
 
     HasVisibility editNameAndDescriptionButtonVisibility();
 

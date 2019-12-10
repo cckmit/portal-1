@@ -38,7 +38,7 @@ public class SelectableItem
 
     @Override
     public void setValue( Boolean value, boolean fireEvents ) {
-        checkbox.setValue( value );
+        checkbox.setValue( value, fireEvents );
         checkbox.setFormValue( value.toString());
     }
 

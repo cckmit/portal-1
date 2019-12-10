@@ -311,13 +311,24 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     @Override
-    public void onCopyClicked() {
-        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + (isAllowedEditNameAndDescription(issue) ? view.name().getValue() : issue.getName()));
+    public void onCopyNumberClicked() {
+        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber());
 
-        if (status != 0) {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        } else {
+        if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        }
+    }
+
+    @Override
+    public void onCopyNumberAndNameClicked() {
+        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
+
+        if (isCopied) {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         }
     }
 
@@ -430,7 +441,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         initiatorSelectorAllowAddNew(issue.getInitiatorCompanyId());
-        view.copyVisibility().setVisible(!isNew(issue));
+        view.copyNumberVisibility().setVisible(!isNew(issue));
+        view.copyNumberAndNameVisibility().setVisible(!isNew(issue));
 
         fillMetaView(issue, isRestoredIssue);
 
@@ -685,6 +697,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         view.description().setValue(null);
         view.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
         renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
+        view.copyNumberAndNameVisibility().setVisible(true);
     }
 
     private void switchToEditingNameAndDescriptionView(CaseObject issue) {
@@ -695,6 +708,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         view.description().setValue(issue.getInfo());
         view.setNameRO(null, "");
         view.setDescriptionRO(null);
+        view.copyNumberAndNameVisibility().setVisible(false);
     }
 
     @Inject
