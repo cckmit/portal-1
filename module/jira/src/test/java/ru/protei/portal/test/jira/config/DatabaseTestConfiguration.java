@@ -16,7 +16,7 @@ import ru.protei.winter.jdbc.config.JdbcConfig;
 import javax.sql.DataSource;
 
 @Configuration
-public class DatabaseConfiguration {
+public class DatabaseTestConfiguration {
 
     private final static String WINTER_PROPERTIES_CONFIG = CoreConfigurationContext.WINTER_CONFIG;
     private final static String LIQUIBASE_CHANGELOG_PATH = "classpath:liquibase/changelog.xml";

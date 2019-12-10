@@ -1,6 +1,5 @@
 package ru.protei.portal.test.api;
 
-import org.apache.commons.codec.binary.Base64OutputStream;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -17,13 +16,13 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.APIConfigurationContext;
-import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
+import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.Company;
@@ -38,7 +37,10 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -57,6 +59,7 @@ public class TestWorkerController {
     private UserRoleDAO userRoleDAO;
     private UserLoginDAO userLoginDAO;
     private PersonDAO personDAO;
+    private WorkerEntryDAO workerEntryDAO;
     private String WS_API_TEST_ROLE_CODE = "ws_api_test_role" + System.currentTimeMillis();
     private String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
     private UserRole userRole;
@@ -74,6 +77,7 @@ public class TestWorkerController {
         personDAO = webApplicationContext.getBean(PersonDAO.class);
         userLoginDAO = webApplicationContext.getBean(UserLoginDAO.class);
         userRoleDAO = webApplicationContext.getBean(UserRoleDAO.class);
+        workerEntryDAO = webApplicationContext.getBean(WorkerEntryDAO.class);
         createAndPersistPerson();
         createAndPersistUserRoles();
         createAndPersistUserLogin();
@@ -84,6 +88,7 @@ public class TestWorkerController {
         removeUserLogin();
         removeUserRoles();
         removePerson();
+        workerEntryDAO.removeAll();
     }
 
     @Test
@@ -382,78 +387,6 @@ public class TestWorkerController {
 
         Assert.assertEquals("delete.position is not success! " + result.getMessage(), true, result.isOk());
     }
-
-
-    @Test
-    @Ignore
-    public void testUpdatePhoto() throws Exception {
-        DepartmentRecord department = createDepartmentRecord();
-        createOrUpdateDepartment(department);
-        WorkerRecord worker = createWorkerRecord();
-        Result<Long> result = addWorker(worker);
-
-        Long id = result.getData();
-        byte[] buf = read(id);
-
-        String uri = BASE_URI + "update.photo";
-
-        Photo photo = new Photo();
-        photo.setId(result.getData());
-        photo.setContent(Base64.getEncoder().encodeToString(buf));
-        String photoXml = toXml(photo);
-
-        ResultActions resultActions = mockMvc.perform(
-                put(uri)
-                        .header("Accept", "application/xml")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
-                        .content(photoXml)
-        );
-        result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
-
-        Assert.assertEquals("updatePhoto() is not success! " + result.getMessage(), true, result.isOk());
-    }
-
-    @Test
-    @Ignore
-    public void testGetPhotos() throws Exception {
-        IdList list = new IdList();
-        list.getIds().add(new Long(148));
-        list.getIds().add(new Long(149));
-
-        String uri = BASE_URI + "get.photos";
-        ResultActions result = mockMvc.perform(
-                get(uri)
-                        .header("Accept", "application/xml")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
-        );
-
-
-        PhotoList pl = (PhotoList) fromXml(result.andReturn().getResponse().getContentAsString());
-
-        Assert.assertNotNull("Result getPhotos() is null!", pl);
-        for (Photo p : pl.getPhotos()) {
-            logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
-            logger.debug("Photo's content in Base64 = " + p.getContent());
-            String newFileName = WSConfig.getInstance().getDirPhotos() + "new/" + p.getId() + ".jpg";
-            Base64OutputStream out = null;
-            try {
-                out = new Base64OutputStream(new FileOutputStream(newFileName), false);
-                out.write(p.getContent().getBytes());
-                //out.write (p.getContent());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                try {
-                    if (out != null)
-                        out.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-    }
-
 
     private WorkerRecord createWorkerRecord() {
         WorkerRecord worker = new WorkerRecord();
