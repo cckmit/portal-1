@@ -190,7 +190,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public Element timeElapsedHeader() {
+    public HasVisibility timeElapsedHeaderVisibility() {
         return timeElapsedHeader;
     }
 
@@ -438,7 +438,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField
     HTMLPanel timeElapsedContainer;
     @UiField
-    DivElement timeElapsedHeader;
+    HTMLPanel timeElapsedHeader;
     @UiField
     LabelElement timeElapsedLabel;
     @Inject

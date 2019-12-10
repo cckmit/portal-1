@@ -25,22 +25,6 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
         this.caseObject = caseObject;
     }
 
-    public ServiceModule getServiceModule() {
-        return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
-    }
-
-    public CaseObject getCaseObject() {
-        return caseObject;
-    }
-
-    public void setCaseObject(CaseObject caseObject) {
-        this.caseObject = caseObject;
-    }
-
-    public CaseComment getCaseComment() {
-        return null;
-    }
-
     @Override
     public Long getPersonId() {
         return personId;
@@ -63,6 +47,14 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
         CaseObject caseObject = getCaseObject();
         if (caseObject == null) return false;
         return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType());
+    }
+
+    public ServiceModule getServiceModule() {
+        return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
+    }
+
+    public CaseObject getCaseObject() {
+        return caseObject;
     }
 
     @Override

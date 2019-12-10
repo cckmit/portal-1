@@ -120,11 +120,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isNameChanged() {
-        return name != null && name.hasDifferences();
+        return name.hasDifferences();
     }
 
     public boolean isInfoChanged() {
-        return info != null && info.hasDifferences();
+        return info.hasDifferences();
     }
 
     public boolean isCaseStateChanged() {

@@ -39,6 +39,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        issueMetaView.setMetaActivity(this);
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
@@ -77,7 +78,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        issueMetaView.setMetaActivity(this);
         view.getIssueMetaViewContainer().add(issueMetaView);
 
         fillView();
@@ -250,7 +250,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.stateEnabled().setEnabled(true);
         issueMetaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         issueMetaView.timeElapsedEditContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
-        issueMetaView.timeElapsedHeader().addClassName("hide");
+        issueMetaView.timeElapsedHeaderVisibility().setVisible(false);
         issueMetaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);
         issueMetaView.setCaseMetaNotifiers(new CaseObjectMetaNotifiers(issue));

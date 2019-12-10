@@ -36,7 +36,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setInitiator(Person initiator);
     void setPlatform(Platform platform);
 
-    Element timeElapsedHeader();
+    HasVisibility timeElapsedHeaderVisibility();
 
     HasValidable stateValidator();
     HasValidable importanceValidator();

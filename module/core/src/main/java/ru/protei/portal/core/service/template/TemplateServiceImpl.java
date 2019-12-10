@@ -80,8 +80,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "created", newState.getCreated() );
         templateModel.put( "caseNumber", newState.getCaseNumber() );
 
-        templateModel.put( "nameChanged", event.getName().hasDifferences() );
-        templateModel.put( "infoChanged", event.getInfo().hasDifferences() );
+        templateModel.put( "nameChanged", event.isNameChanged() );
+        templateModel.put( "infoChanged", event.isInfoChanged() );
         templateModel.put( "caseName", event.getName().getNewState() );
         templateModel.put( "oldCaseName", event.getName().getInitialState());
         templateModel.put( "caseInfo", escapeTextAndRenderHTML( event.getInfo().getNewState(), textMarkup ) );
