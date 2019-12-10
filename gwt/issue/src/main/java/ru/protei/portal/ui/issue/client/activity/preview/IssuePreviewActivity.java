@@ -156,7 +156,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void onCopyNumberClicked() {
-        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber());
+        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(caseObject.getCaseNumber()));
 
         if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
