@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.service.CaseLinkService;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseLinkController;
@@ -17,12 +15,10 @@ import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 @Service("CaseLinkController")
 public class CaseLinkControllerImpl implements CaseLinkController {
@@ -45,7 +41,7 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     @Override
     public YouTrackIssueInfo getYtLinkInfo( String ytId ) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(caseLinkService.getIssueInfo(authToken, ytId));
+        return checkResultAndGetData(caseLinkService.getYoutrackIssueInfo(authToken, ytId));
     }
 
 
@@ -56,14 +52,19 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public List<CaseLink> updateCaseLinks( Long caseId, Collection<CaseLink> links ) throws RequestFailedException {
-        AuthToken token = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.updateLinks( token, caseId, token.getPersonId(), links ) );
+    public Long createLink(CaseLink value) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return checkResultAndGetData( linkService.createLink( authToken, value) );
+    }
+
+    @Override
+    public void removeLink(Long id) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        checkResult( linkService.removeLink( authToken, id) );
     }
 
     @Autowired
     CaseService caseService;
-
     @Autowired
     CaseLinkService linkService;
     @Autowired

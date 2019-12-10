@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
-import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
@@ -43,7 +42,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-        view.setMetaActivity( this );
+        metaView.setActivity( this );
+
+        view.getMetaContainer().add(metaView.asWidget());
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
@@ -102,7 +103,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
-        final AbstractIssueMetaView metaView = view.getMetaView();
         metaView.setTimeElapsed(event.timeElapsed);
     }
 
@@ -118,20 +118,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @Event
     public void onFillPerson(PersonEvents.PersonCreated event) {
         if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && event.person != null) {
-            final AbstractIssueMetaView metaView = view.getMetaView();
             metaView.setInitiator(event.person);
         }
     }
 
-    @Event
-    public void onRemoveTag(CaseTagEvents.Remove event) {
-        issue.getTags().remove(event.getCaseTag());
-        view.tags().setValue(issue.getTags());
-    }
-
     @Override
     public void onCaseMetaChanged(CaseObjectMeta caseMeta) {
-
         if (!validateCaseMeta(caseMeta)) {
             return;
         }
@@ -140,7 +132,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     issue = caseMetaUpdated.collectToCaseObject(issue);
-                    view.getMetaView().setCaseMeta(caseMetaUpdated);
+                    metaView.setCaseMeta(caseMetaUpdated);
                     showComments(issue);
                     onCompanyChanged();
                 }));
@@ -157,7 +149,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseMetaNotifiersUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     issue = caseMetaNotifiersUpdated.collectToCaseObject(issue);
-                    view.getMetaView().setCaseMetaNotifiers(caseMetaNotifiersUpdated);
+                    metaView.setCaseMetaNotifiers(caseMetaNotifiersUpdated);
                     showComments(issue);
                 }));
     }
@@ -173,7 +165,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(caseMetaJiraUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     issue = caseMetaJiraUpdated.collectToCaseObject(issue);
-                    view.getMetaView().setCaseMetaJira(caseMetaJiraUpdated);
+                    metaView.setCaseMetaJira(caseMetaJiraUpdated);
                     showComments(issue);
                 }));
     }
@@ -227,15 +219,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
                 if (!isNew(issue)) {
-                    fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                    fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                             .withCaseType(En_CaseType.CRM_SUPPORT)
                             .withCaseId(issue.getId())
                             .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                             .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                             .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                             .withPrivateCase(issue.isPrivateCase())
-                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                            .build());
+                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
                 }
             }
         });
@@ -243,9 +234,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCompanyChanged() {
-
-        final AbstractIssueMetaView metaView = view.getMetaView();
-
         Company company = metaView.getCaseMeta().getInitiatorCompany();
 
         metaView.initiatorEnabled().setEnabled(company != null);
@@ -298,7 +286,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void onCreateContactClicked() {
-        final AbstractIssueMetaView metaView = view.getMetaView();
         if (metaView.getCaseMeta().getInitiatorCompany() != null) {
             fillIssueObject(issue);
             fireEvent(new ContactEvents.Edit(null, metaView.getCaseMeta().getInitiatorCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
@@ -346,17 +333,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     @Override
-    public void onCaseMetaChanged( CaseMeta value ) {//TODO rework CaseMetaView handlers, separate links and tags
-
-        caseLinkController.updateCaseLinks( issue.getId(), view.links().getValue(), new FluentCallback<List<CaseLink>>()
-                .withError( t -> view.links().setValue( null ) )
-                .withSuccess( caseLinks ->
-                        view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
-                ) );
-
-    }
-
-    @Override
     public void onEditNameAndDescriptionClicked() {
         if (isEditingNameAndDescriptionView) {
             switchToRONameAndDescriptionView(issue);
@@ -397,12 +373,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 issue.getInfo());
     }
 
-    private void requestCaseLinks( Long issueId ) {
-        caseLinkController.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
-                view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
-        ) );
-    }
-
     private void requestIssue(Long number, final boolean isRestoredIssue ){
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
@@ -413,7 +383,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 IssueEditActivity.this.issue = issue;
                 initDetails.parent.add(view.asWidget());
                 fillView(issue, isRestoredIssue);
-                requestCaseLinks(issue.getId());
             }
         });
     }
@@ -455,12 +424,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
         showComments(issue);
 
-//        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT));
 
-        view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
-        view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
-
-        view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
+        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ))
+                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )));
 
         view.numberVisibility().setVisible( !isNew(issue) );
         view.setNumber(isNew(issue) ? null : issue.getCaseNumber().intValue() );
@@ -478,8 +450,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     private void fillMetaView(CaseObject issue, boolean isRestoredIssue) {
-
-        final AbstractIssueMetaView metaView = view.getMetaView();
         final boolean isNew = isNew(issue);
         final boolean isNewNotRestored = isNew && !isRestoredIssue;
         CaseObjectMeta caseMeta = new CaseObjectMeta(issue);
@@ -563,10 +533,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         }
         issue.setPrivateCase( view.isPrivate().getValue() );
 
-//        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
-        issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
-
-        final AbstractIssueMetaView metaView = view.getMetaView();
         if (metaView.getCaseMeta() != null) metaView.getCaseMeta().collectToCaseObject(issue);
         if (metaView.getCaseMetaNotifiers() != null) metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
         if (metaView.getCaseMetaJira() != null) metaView.getCaseMetaJira().collectToCaseObject(issue);
@@ -576,15 +542,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         if (isNew(issue)) {
             return;
         }
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withCaseId(issue.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                 .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                 .withPrivateCase(issue.isPrivateCase())
-                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                .build());
+                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
@@ -605,9 +570,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         }
 
         boolean isFieldsValid =
-                view.getMetaView().stateValidator().isValid() &&
-                view.getMetaView().importanceValidator().isValid() &&
-                view.getMetaView().companyValidator().isValid();
+                metaView.stateValidator().isValid() &&
+                metaView.importanceValidator().isValid() &&
+                metaView.companyValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -690,7 +655,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     }
 
     private void setSubscriptionEmails(String value) {
-        final AbstractIssueMetaView metaView = view.getMetaView();
         metaView.setSubscriptionEmails(value);
         metaView.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
     }
@@ -722,7 +686,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         if (companyId == null) {
             return;
         }
-        final AbstractIssueMetaView metaView = view.getMetaView();
         boolean allowCreateContact = policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId);
         metaView.initiatorSelectorAllowAddNew(allowCreateContact);
     }
@@ -751,11 +714,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     @Inject
     AbstractIssueEditView view;
     @Inject
+    AbstractIssueMetaView metaView;
+
+    @Inject
     IssueControllerAsync issueService;
     @Inject
-    CaseLinkControllerAsync caseLinkController;
-    @Inject
     AttachmentServiceAsync attachmentService;
+
     @Inject
     Lang lang;
     @Inject

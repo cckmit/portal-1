@@ -17,5 +17,7 @@ public interface CaseLinkControllerAsync {
 
     void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
 
-    void updateCaseLinks( Long caseId, Collection<CaseLink> links, AsyncCallback<List<CaseLink>> setFluentCallback );
+    void createLink(CaseLink value, AsyncCallback<Long> async);
+
+    void removeLink(Long id, AsyncCallback<Void> async);
 }

@@ -69,7 +69,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
-        jdbcManyRelationsHelper.fillAll(employeeRegistration);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
         }

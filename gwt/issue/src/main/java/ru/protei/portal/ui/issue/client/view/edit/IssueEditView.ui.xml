@@ -2,9 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
-             xmlns:meta="urn:import:ru.protei.portal.ui.issue.client.view.meta">
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -19,6 +17,10 @@
                             </g:Button>
                         </div>
                     </div>
+                    <div class="row">
+                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
+                    </div>
+
                     <g:HTMLPanel ui:field="numberContainer">
                         <h5 class="number-copy-panel no-margin">
                             <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
@@ -64,14 +66,11 @@
                         </div>
                     </g:HTMLPanel>
 
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+
                     <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
                         <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
                         <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
-                    </div>
-
-                    <div class="row form-group">
-                        <casemeta:CaseMetaView ui:field="caseMetaView" styleName="col-md-12 m-b-0"
-                                               tagCaseType="CRM_SUPPORT"/>
                     </div>
 
                     <div class="row form-group">
@@ -105,7 +104,7 @@
 
                 <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
-                        <meta:IssueMetaView ui:field="issueMeta" styleName="card-body"/>
+                        <g:HTMLPanel ui:field="issueMetaContainer" styleName="card-body"/>
                     </div>
                 </div>
             </div>

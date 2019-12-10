@@ -3,7 +3,6 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -11,6 +10,10 @@
         <g:HTMLPanel ui:field="preview" styleName="preview card-body no-padding">
             <div class="card card-default no-border">
                 <div class="card-body">
+                    <div class="row">
+                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
+                    </div>
+
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
                             <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
@@ -29,9 +32,6 @@
                         </g:Anchor>
                         <span ui:field="name" class="semi-bold"/>
                     </h5>
-
-                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
-                                           enabled="false" showLabel="false"/>
 
                     <div ui:field="metaTable" class="form-group-attached">
                         <div class="row clearfix">
@@ -63,13 +63,6 @@
                                 </div>
                             </div>
                         </div>
-
-<!--
-                        <g:HTMLPanel ui:field="platformContainer">
-                            <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
-                            <a href="#" ui:field="platform" class="full-screen-link" target="_blank"/>
-                        </g:HTMLPanel>
--->
 
                         <div class="row clearfix">
                             <div class="col-md-6">
@@ -116,6 +109,8 @@
                     </g:HTMLPanel>
 
                     <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
+
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>

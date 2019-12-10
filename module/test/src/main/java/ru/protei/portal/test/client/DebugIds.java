@@ -233,8 +233,9 @@ public class DebugIds {
         String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
         String LINKS_INPUT = "issue-links-input";
         String LINKS_APPLY_BUTTON = "issue-links-apply-button";
+        String LINKS_COLLAPSE_BUTTON = "issue-links-collapse-button";
         @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
-        String LINK_INFO_CONTAINER = "issue-link-info-container";
+        @Deprecated String LINK_INFO_CONTAINER = "issue-link-info-container";
         String LINK_REMOVE_BUTTON = "issue-link-remove-button";
         String LINK_STATE = "issue-link-state";
         String LINK_IMPORTANCE_ICON = "issue-link-importance-icon";
@@ -283,7 +284,7 @@ public class DebugIds {
             String SUBSCRIPTIONS = "issue-label-subscriptions";
             String NOTIFIERS = "issue-label-notifiers";
             String ATTACHMENTS = "issue-label-attachments";
-            String TAGS = "issue-label-tags";
+            @Deprecated String TAGS = "issue-label-tags";
             String TIME_ELAPSED_TYPE = "issue-label-time-elapsed-type";
         }
     }
@@ -292,7 +293,7 @@ public class DebugIds {
         String PRIVACY_ICON = "issue-preview-privacy-icon";
         String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
         @Deprecated String TITLE_LABEL = "issue-preview-title-label";
-        String LINKS_CONTAINER = "issue-preview-links-container";
+        @Deprecated String LINKS_CONTAINER = "issue-preview-links-container";
         String DATE_CREATED = "issue-preview-date-created-item";
         String IMPORTANCE = "issue-preview-importance-item";
         String PRODUCT = "issue-preview-product-item";
@@ -442,7 +443,7 @@ public class DebugIds {
         String SUBSCRIPTION = "company-preview-subscription-item";
 
         interface LABEL {
-            String TAGS = "company-preview-tags-label";
+            @Deprecated String TAGS = "company-preview-tags-label";
             String SUBSCRIPTION = "company-preview-label-subscription-label";
             String CONTACT_INFO = "company-preview-contact-info-label";
         }

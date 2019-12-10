@@ -1055,10 +1055,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkCrmShort();
 
-    String caseLinkOldCrm();
-
-    String caseLinkOldCrmShort();
-
     String caseLinkYouTrack();
 
     String caseLinkYouTrackShort();
@@ -1923,6 +1919,10 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmailWarning();
 
     String errAccessDenied();
+
+    String caseLinkSuccessfulCreated();
+
+    String caseLinkSuccessfulRemoved();
 
     String documentConfirmRemove();
 

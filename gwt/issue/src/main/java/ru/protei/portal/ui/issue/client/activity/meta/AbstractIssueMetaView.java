@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractIssueMetaView extends IsWidget {
 
-    void setMetaActivity(AbstractIssueMetaActivity activity);
+    void setActivity(AbstractIssueMetaActivity activity);
 
     void setCaseMeta(CaseObjectMeta caseObjectMeta);
     void setCaseMetaNotifiers(CaseObjectMetaNotifiers caseObjectMetaNotifiers);

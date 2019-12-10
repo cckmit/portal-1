@@ -1,13 +1,10 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
 
 import java.util.function.Consumer;
 
-/**
- * Created by bondarenko on 11.11.16.
- */
 public interface AbstractIssueEditActivity {
 
     void onSaveClicked();
@@ -16,8 +13,8 @@ public interface AbstractIssueEditActivity {
     void onLocalClicked();
     void renderMarkupText(String text, Consumer<String> consumer);
     void onDisplayPreviewChanged( String description, boolean isDisplay );
+    void onCaseMetaChanged( CaseObjectMeta value );
     void onCopyNumberClicked();
-    void onCaseMetaChanged( CaseMeta value );
     void onEditNameAndDescriptionClicked();
     void onSaveNameAndDescriptionClicked();
     void onCopyNumberAndNameClicked();

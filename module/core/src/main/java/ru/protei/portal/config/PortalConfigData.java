@@ -343,7 +343,6 @@ public class PortalConfigData {
     }
 
     public static class IntegrationConfig {
-        private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
@@ -351,16 +350,11 @@ public class PortalConfigData {
         private final boolean redminePatchAttachmentsEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
-            hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
 
             redminePatchAttachmentsEnabled = properties.getProperty("integration.redmine.patch.attachments", Boolean.class, false);
-        }
-
-        public boolean isHpsmEnabled() {
-            return hpsmEnabled;
         }
 
         public boolean isRedmineEnabled() {
@@ -471,21 +465,15 @@ public class PortalConfigData {
 
     public static class CaseLinkConfig {
         private final String linkCrm;
-        private final String linkOldCrm;
         private final String linkYouTrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
-            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 
         public String getLinkCrm() {
             return linkCrm;
-        }
-
-        public String getLinkOldCrm() {
-            return linkOldCrm;
         }
 
         public String getLinkYouTrack() {

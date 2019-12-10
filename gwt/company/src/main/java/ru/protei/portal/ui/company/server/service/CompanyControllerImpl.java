@@ -5,11 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -24,9 +22,11 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -223,13 +223,6 @@ public class CompanyControllerImpl implements CompanyController {
         log.info( "getCompanyCaseStates() companyId={}", companyId );
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
-    }
-
-    @Override
-    public List<CaseTag> getCompanyTags( Long companyId ) throws RequestFailedException {
-        log.info( "getCompanyTags() companyId={}", companyId );
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return ServiceUtils.checkResultAndGetData( caseTagService.getTagsByCompanyId( authToken, companyId ));
     }
 
     @Override

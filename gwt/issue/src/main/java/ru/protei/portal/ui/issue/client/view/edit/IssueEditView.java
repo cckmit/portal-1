@@ -4,9 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -14,8 +11,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -23,17 +18,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
-
-import java.util.Set;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -51,7 +40,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
         copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
         copyNumberAndName.getElement().setAttribute("title", lang.issueCopyNumberAndName());
-        caseMetaView.addValueChangeHandler(event ->  activity.onCaseMetaChanged(event.getValue()) );
     }
 
     @Override
@@ -60,13 +48,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setMetaActivity(AbstractIssueMetaActivity activity) {
-        issueMeta.setMetaActivity(activity);
-    }
-
-    @Override
-    public AbstractIssueMetaView getMetaView() {
-        return issueMeta;
+    public HasWidgets getMetaContainer() {
+        return issueMetaContainer;
     }
 
     @Override
@@ -85,13 +68,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<Set<CaseLink>> links() {
-        return linksHasValue;
-    }
-
-    @Override
-    public HasValue<Set<CaseTag>> tags() {
-        return tagsHasValue;
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
@@ -166,16 +144,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setTagsAddButtonEnabled(boolean enabled) {
-        caseMetaView.setTagsAddButtonEnabled(enabled);
-    }
-
-    @Override
-    public void setTagsEditButtonEnabled(boolean enabled) {
-        caseMetaView.setTagsEditButtonEnabled(enabled);
-    }
-
-    @Override
     public void setDescriptionPreviewAllowed(boolean isPreviewAllowed) {
         description.setDisplayPreview(isPreviewAllowed);
     }
@@ -222,6 +190,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             this.nameROLabel.appendChild(jiraLink);
             this.nameROLabel.appendChild(nameWithoutLink);
         }
+    }
+
+    @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
@@ -334,14 +307,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         nameROLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
-        caseMetaView.setEnsureDebugLinkId(DebugIds.ISSUE.LINKS_BUTTON);
-        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE.LINKS_CONTAINER);
-        caseMetaView.setEnsureDebugIdLinkSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
-        caseMetaView.setEnsureDebugIdLinkTextBox(DebugIds.ISSUE.LINKS_INPUT);
-        caseMetaView.setEnsureDebugIdLinkApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
-        caseMetaView.setEnsureDebugTagId(DebugIds.ISSUE.TAGS_BUTTON);
-        caseMetaView.setEnsureDebugIdTagLabel(DebugIds.ISSUE.LABEL.TAGS);
-        caseMetaView.setEnsureDebugIdTagContainer(DebugIds.ISSUE.TAGS_CONTAINER);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
@@ -352,7 +317,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         copyNumberAndName.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_AND_NAME_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
-        caseMetaView.setEnsureDebugIdLinkLabel(DebugIds.ISSUE.LABEL.LINKS);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
         attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
@@ -385,9 +349,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
     @UiField
     LabelElement descriptionLabel;
     @UiField
@@ -413,6 +374,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel descriptionContainer;
     @UiField
+    HTMLPanel linksContainer;
+    @UiField
+    HTMLPanel tagsContainer;
+    @UiField
+    HTMLPanel issueMetaContainer;
+    @UiField
     Button editNameAndDescriptionButton;
     @UiField
     Button saveNameAndDescriptionButton;
@@ -420,25 +387,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Button cancelNameAndDescriptionButton;
     @UiField
     DivElement nameAndDescriptionButtonsPanel;
-    @Inject
-    @UiField(provided = true)
-    IssueMetaView issueMeta;
-
-    private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
-        @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
-        @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
-        @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
-        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
-        @Override public void fireEvent(GwtEvent<?> event) {}
-    };
-
-    private HasValue<Set<CaseLink>> linksHasValue = new HasValue<Set<CaseLink>>() {
-        @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
-        @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
-        @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
-        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
-        @Override public void fireEvent(GwtEvent<?> event) {}
-    };
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

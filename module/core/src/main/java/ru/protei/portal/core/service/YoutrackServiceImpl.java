@@ -54,7 +54,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     @Override
     public Result<YouTrackIssueInfo> getIssueInfo( String issueId ) {
         if (issueId == null) {
-            log.warn( "getIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
+            log.warn( "getYoutrackIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
             return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 

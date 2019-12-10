@@ -13,8 +13,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
@@ -24,14 +22,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
-
-import java.util.Set;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -89,16 +84,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setLinks( Set<CaseLink> value ) {
-        this.caseMetaView.setLinks( value );
-    }
-
-    @Override
-    public void setTags(Set<CaseTag> value) {
-        this.caseMetaView.setTags(value);
-    }
-
-    @Override
     public void setContact( String value ) {
         this.contact.setInnerText( value );
     }
@@ -148,13 +133,18 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
+    }
+
+    @Override
     public HasAttachments attachmentsContainer(){
         return attachmentContainer;
     }
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        number.setText("CRM-" + caseNumber);
+        number.setText(lang.crmPrefix() + caseNumber);
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
@@ -166,6 +156,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public HasVisibility backBtnVisibility() {
         return backButtonContainer;
+    }
+
+    @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
@@ -275,9 +270,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
         criticalityLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.IMPORTANCE);
         criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE);
@@ -363,9 +358,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField(provided = true)
     TimeLabel timeElapsed;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
     @UiField
     Button backButton;
     @UiField
@@ -376,10 +368,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Anchor copyNumber;
     @UiField
     Anchor copyNumberAndName;
-    @Inject
-    En_CaseImportanceLang caseImportanceLang;
-    @Inject
-    En_CaseStateLang caseStateLang;
     @UiField
     HTMLPanel numberCopyPanel;
     @UiField
@@ -406,6 +394,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     DivElement platformContainer;
     @UiField
     LabelElement platformLabel;
+    @UiField
+    HTMLPanel linksContainer;
+    @UiField
+    HTMLPanel tagsContainer;
+
+    @Inject
+    En_CaseStateLang caseStateLang;
+    @Inject
+    En_CaseImportanceLang caseImportanceLang;
 
     AbstractIssuePreviewActivity activity;
 

@@ -12,7 +12,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card-body">
+    <g:HTMLPanel ui:field="root">
 
         <div class="form-group-attached">
             <div class="row">

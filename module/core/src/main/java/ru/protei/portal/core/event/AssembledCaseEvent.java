@@ -24,6 +24,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObject initState;
     private CaseObjectMeta lastMetaState;
     private CaseObjectMeta initMetaState;
+    private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
     private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
@@ -83,10 +84,21 @@ public class AssembledCaseEvent extends ApplicationEvent {
         serviceModule = event.getServiceModule();
     }
 
-    public void attachLinkEvent( CaseLinksEvent event ) {
+    public void attachLinkEvent( CaseLinkEvent event ) {
         this.lastUpdated = currentTimeMillis();
-        isEagerEvent = isEagerEvent||event.isEagerEvent();
-        mergeLinks = synchronizeDiffs(mergeLinks, event.getMergeLinks(), CaseLink::getId);
+        isEagerEvent = isEagerEvent || event.isEagerEvent();
+        if (event.getAddedLink() != null) {
+            // check if link is removed and added once more
+            if (links.getRemovedEntries() == null || !links.getRemovedEntries().remove(event.getAddedLink())){
+                links.putAddedEntry(event.getAddedLink());
+            }
+        }
+        if (event.getRemovedLink() != null) {
+            // check if link is added and removed once more
+            if (links.getAddedEntries() == null || !links.getAddedEntries().remove(event.getRemovedLink())) {
+                links.putRemovedEntry(event.getRemovedLink());
+            }
+        }
     }
 
     public void attachCommentEvent( CaseCommentEvent commentEvent ) {
@@ -173,11 +185,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private boolean publicLinksChanged() {
-        if (!CollectionUtils.isEmpty(mergeLinks.getAddedEntries()) && mergeLinks.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+        if (!CollectionUtils.isEmpty(links.getAddedEntries()) && links.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
             return true;
         }
 
-        if (!CollectionUtils.isEmpty(mergeLinks.getRemovedEntries()) && mergeLinks.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+        if (!CollectionUtils.isEmpty(links.getRemovedEntries()) && links.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
             return true;
         }
 
@@ -185,8 +197,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isLinksFilled() {
-        synchronized (mergeLinks){
-            return mergeLinks.hasSameEntries();
+        synchronized (links){
+            return links.hasSameEntries();
         }
     }
 
@@ -278,6 +290,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public Person getInitiator() {
         return initiator;
+    }
+
+    public DiffCollectionResult<CaseLink> getLinks() {
+        links = synchronizeExists(links, CaseLink::getId);
+        return links;
     }
 
     public DiffResult<String> getName() {
@@ -382,7 +399,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public void setExistingLinks( List<CaseLink> existingLinks ) {
-        mergeLinks.putSameEntries( existingLinks );
+        links.putSameEntries( existingLinks );
     }
 
     public void setExistingAttachments( List<Attachment> existingAttachments ) {

@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -86,11 +85,6 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
-
-        Result<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
-        if (caseTags.isOk()) {
-            caseObject.setTags(new HashSet<>(caseTags.getData()));
-        }
 
         withJiraSLAInformation(caseObject);
 
@@ -188,20 +182,10 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if (isNotEmpty(caseObject.getTags())) {
-            caseObjectTagDAO.persistBatch(
-                    caseObject.getTags()
-                            .stream()
-                            .map(tag -> new CaseObjectTag(caseId, tag.getId()))
-                            .collect(Collectors.toList())
-            );
-        }
-
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        newState.setTags(caseObject.getTags());
         publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), null, newState ));
 
         return ok(newState);
@@ -474,11 +458,14 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+
+        applyStateBasedOnManager(caseObject);
+
         if (!validateFields(caseObject)) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        synchronizeTags(caseObject, token);
         jdbcManyRelationsHelper.persist(caseObject, "tags");
 
         if (!isCaseChanged(caseObject, oldState)) {
@@ -648,29 +635,6 @@ public class CaseServiceImpl implements CaseService {
         return ok(caseNumber);
     }
 
-    private void synchronizeTags(CaseObject caseObject, AuthToken token) {
-        if (caseObject == null || token == null || caseObject.getTags() == null) {
-            return;
-        }
-
-        Set<UserRole> roles = token.getRoles();
-        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            return;
-        }
-
-        Set<CaseTag> tags = caseObject.getTags();
-        List<CaseTag> allTags = caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId()));
-        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(token.getCompanyId())).collect(Collectors.toList());
-
-        List<CaseTag> deletedTags = existingTags.stream().filter(tag -> !tags.contains(tag)).collect(Collectors.toList());
-        List<CaseTag> addedTags = tags.stream().filter(tag -> !existingTags.contains(tag)).collect(Collectors.toList());
-
-        allTags.removeAll(deletedTags);
-        allTags.addAll(addedTags);
-
-        caseObject.setTags(allTags.stream().collect(Collectors.toSet()));
-    }
-
     private Long createAndPersistStateMessage(Long authorId, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
@@ -780,7 +744,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {
-
         if (token == null || token.getCompanyId() == null) {
             return false;
         }
@@ -920,9 +883,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseNotifierDAO caseNotifierDAO;
-
-    @Autowired
-    CaseObjectTagDAO caseObjectTagDAO;
 
     @Autowired
     ExternalCaseAppDAO externalCaseAppDAO;

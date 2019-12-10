@@ -132,15 +132,14 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                         .withCaseType(En_CaseType.CRM_SUPPORT)
                         .withCaseId(issueId)
                         .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                         .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                         .withPrivateCase(isPrivateCase)
-                        .withTextMarkup(textMarkup)
-                        .build());
+                        .withTextMarkup(textMarkup));
             }
         });
     }
@@ -208,7 +207,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         Long timeElapsed = value.getTimeElapsed();
         view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
-        view.setTags(value.getTags() == null ? new HashSet<>() : value.getTags());
+
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
@@ -222,19 +221,27 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         fillViewForJira(value);
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(value.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .readOnly());
+
+        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
+                .withCaseId(value.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .readOnly());
+
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                 .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                 .withPrivateCase(isPrivateCase)
-                .withTextMarkup(textMarkup)
-                .build());
+                .withTextMarkup(textMarkup));
     }
 
     private void fillViewForJira(CaseObject value) {
-
         view.jiraContainerVisibility().setVisible(false);
 
         if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
@@ -295,17 +302,9 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 isPrivateCase = caseObject.isPrivateCase();
                 textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);
 
-                requestCaseLinks(issueId);
-
                 fillView( caseObject );
             }
         } );
-    }
-
-    private void requestCaseLinks( Long issueId ) {
-        caseLinkController.getCaseLinks(issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
-                view.setLinks(caseLinks == null ? null : new HashSet<>(caseLinks))
-        ));
     }
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){
@@ -357,8 +356,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     AbstractIssuePreviewView view;
     @Inject
     IssueControllerAsync issueService;
-    @Inject
-    CaseLinkControllerAsync caseLinkController;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject

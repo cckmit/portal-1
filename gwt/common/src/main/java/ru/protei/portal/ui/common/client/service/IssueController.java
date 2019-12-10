@@ -36,11 +36,5 @@ public interface IssueController extends RemoteService {
 
     CaseObjectMetaJira updateIssueMetaJira( CaseObjectMetaJira caseMetaJira ) throws RequestFailedException;
 
-    /**
-     * Получение списка статусов
-     * @return список статусов
-     */
-    List<En_CaseState> getStateList() throws RequestFailedException;
-
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 }

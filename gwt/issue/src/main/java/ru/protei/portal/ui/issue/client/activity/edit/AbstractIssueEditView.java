@@ -1,15 +1,9 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-
-import java.util.Set;
 
 /**
  * Представление создания и редактирования обращения
@@ -17,15 +11,12 @@ import java.util.Set;
 public interface AbstractIssueEditView extends IsWidget {
 
     void setActivity( AbstractIssueEditActivity activity );
-    void setMetaActivity( AbstractIssueMetaActivity activity );
 
-    AbstractIssueMetaView getMetaView();
+    HasWidgets getMetaContainer();
 
     HasValue<String> name();
     HasValue<String> description();
     HasValue<Boolean> isPrivate();
-    HasValue<Set<CaseLink>> links();
-    HasValue<Set<CaseTag>> tags();
 
     HasValidable nameValidator();
 
@@ -50,16 +41,11 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility saveVisibility();
 
-
     void setNumber(Integer num);
 
     HasVisibility privacyVisibility();
 
     HasEnabled saveEnabled();
-
-    void setTagsAddButtonEnabled(boolean enabled);
-
-    void setTagsEditButtonEnabled(boolean enabled);
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
@@ -71,8 +57,13 @@ public interface AbstractIssueEditView extends IsWidget {
 
     String DESCRIPTION = "description";
 
+    HasWidgets getTagsContainer();
+
+    HasWidgets getLinksContainer();
+
     HasVisibility copyNumberAndNameVisibility();
 
     HasVisibility editNameAndDescriptionButtonVisibility();
+
     void setNameAndDescriptionButtonsPanelVisibility(boolean visible);
 }

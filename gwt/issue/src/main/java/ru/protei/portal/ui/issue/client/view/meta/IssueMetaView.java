@@ -62,7 +62,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setMetaActivity(AbstractIssueMetaActivity activity) {
+    public void setActivity(AbstractIssueMetaActivity activity) {
         this.activity = activity;
     }
 
