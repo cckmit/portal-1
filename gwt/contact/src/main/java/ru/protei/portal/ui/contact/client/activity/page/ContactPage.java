@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -28,7 +29,8 @@ public abstract class ContactPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
+        this.profile = event.profile;
+        if ( profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTACT, DebugIds.SIDEBAR_MENU.CONTACT ) );
             fireEvent( new AppEvents.InitPage( new ContactEvents.Show( true ) ) );
         }
@@ -61,11 +63,15 @@ public abstract class ContactPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
 
     @Inject
     Lang lang;
+
+    private Profile profile;
 
     private String ТAB;
 }

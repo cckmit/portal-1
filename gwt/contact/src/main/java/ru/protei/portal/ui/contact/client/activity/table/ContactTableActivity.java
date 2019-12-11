@@ -57,6 +57,11 @@ public abstract class ContactTableActivity
 
     @Event
     public void onShow( ContactEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );

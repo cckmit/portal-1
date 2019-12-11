@@ -4,12 +4,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.ProductService;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
@@ -48,6 +51,11 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     @Event
     public void onShow(ProductEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PRODUCT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget(true));
 
@@ -103,6 +111,8 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     TextRenderControllerAsync textRenderController;
     @Inject
     ProductControllerAsync productService;
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
     private Long productId;
