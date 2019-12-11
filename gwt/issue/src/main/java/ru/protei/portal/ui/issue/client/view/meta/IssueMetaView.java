@@ -177,6 +177,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setTimeElapsedType(En_TimeElapsedType timeElapsedType) {
+        this.timeElapsedType.setValue(timeElapsedType);
+    }
+
+    @Override
     public void setInitiator(Person initiator) {
         CaseObjectMeta caseMeta = getCaseMeta();
         caseMeta.setInitiator(initiator);
@@ -228,16 +233,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasEnabled stateEnabled() {
         return state;
-    }
-
-    @Override
-    public HasEnabled platformEnabled() {
-        return platform;
-    }
-
-    @Override
-    public HasEnabled initiatorEnabled() {
-        return initiator;
     }
 
     @Override

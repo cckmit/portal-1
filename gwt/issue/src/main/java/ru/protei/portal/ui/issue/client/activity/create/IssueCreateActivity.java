@@ -167,23 +167,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
         Company companyOption = caseObjectMeta.getInitiatorCompany();
 
-        issueMetaView.initiatorEnabled().setEnabled(companyOption != null);
         issueMetaView.initiatorUpdateCompany(companyOption);
 
-        if ( companyOption == null ) {
-            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
-            issueMetaView.setInitiator(null);
-        } else {
-            initiatorSelectorAllowAddNew(companyOption.getId());
-            Long selectedCompanyId = companyOption.getId();
+        initiatorSelectorAllowAddNew(companyOption.getId());
+        Long selectedCompanyId = companyOption.getId();
 
-            issueMetaView.setPlatform(null);
-            issueMetaView.platformEnabled().setEnabled(true);
-            issueMetaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+        issueMetaView.setPlatform(null);
+        issueMetaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
-            companyService.getCompanyWithParentCompanySubscriptions(
-                    selectedCompanyId,
-                    new ShortRequestCallback<List<CompanySubscription>>()
+        companyService.getCompanyWithParentCompanySubscriptions(
+                selectedCompanyId,
+                new ShortRequestCallback<List<CompanySubscription>>()
                         .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
                                 subscriptions,
                                 CollectionUtils.isEmpty(subscriptions) ?
@@ -191,22 +185,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                                         lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
                                 )
                         ))
-            );
+        );
 
-            companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
-                    .setOnSuccess(caseStates -> {
-                        issueMetaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
-                        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-                    }));
+        companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
+                .setOnSuccess(caseStates -> {
+                    issueMetaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
+                    fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                }));
 
-            Profile profile = policyService.getProfile();
-            if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                String transliteration = transliteration(profile.getFullName());
-                Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration, profile.getId(), profile.isFired()));
-                issueMetaView.setInitiator(initiator);
-            } else {
-                issueMetaView.setInitiator(null);
-            }
+        Profile profile = policyService.getProfile();
+        if (!Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
+            issueMetaView.setInitiator(null);
+        } else {
+            Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
+            issueMetaView.setInitiator(initiator);
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
@@ -258,6 +250,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ))
                 .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )));
 
+        links.clear();
+        tags.clear();
+
         fillMetaView(new CaseObject());
         unlockSave();
     }
@@ -268,6 +263,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObjectMeta.setState(En_CaseState.CREATED);
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
+
+        Profile profile = policyService.getProfile();
+        Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
+        caseObjectMeta.setInitiator(initiator);
 
         issueMetaView.companyEnabled().setEnabled(true);
         issueMetaView.productEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT));
@@ -281,8 +280,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);
         issueMetaView.setCaseMetaNotifiers(new CaseObjectMetaNotifiers(issue));
         issueMetaView.setCaseMeta(caseObjectMeta);
-
-        onCompanyChanged();
+        issueMetaView.setTimeElapsedType(issue.getTimeElapsedType());
     }
 
     private CaseObject fillCaseObject(CaseObject issue) {

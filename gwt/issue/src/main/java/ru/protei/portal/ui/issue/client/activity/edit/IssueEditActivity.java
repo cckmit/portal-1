@@ -119,10 +119,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    Company companyBeforeUpdate = issue.getInitiatorCompany();
                     issue = caseMetaUpdated.collectToCaseObject(issue);
+                    Company companyAfterUpdate = issue.getInitiatorCompany();
                     metaView.setCaseMeta(caseMetaUpdated);
                     showComments(issue);
-                    onCompanyChanged();
+
+                    if (!Objects.equals(companyBeforeUpdate, companyAfterUpdate)) {
+                        onCompanyChanged();
+                    }
                 }));
     }
 
@@ -191,49 +196,43 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     public void onCompanyChanged() {
         Company company = metaView.getCaseMeta().getInitiatorCompany();
 
-        metaView.initiatorEnabled().setEnabled(company != null);
         metaView.initiatorUpdateCompany(company);
 
-        if (company == null) {
-            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
-            metaView.setInitiator(null);
-        } else {
-            Long selectedCompanyId = company.getId();
+        Long selectedCompanyId = company.getId();
 
-            metaView.setPlatform(null);
-            metaView.platformEnabled().setEnabled(true);
-            metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+        metaView.setPlatform(null);
+        metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
-            companyService.getCompanyWithParentCompanySubscriptions(
-                    selectedCompanyId,
-                    new ShortRequestCallback<List<CompanySubscription>>()
-                            .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                    subscriptions,
-                                    CollectionUtils.isEmpty(subscriptions) ?
-                                            lang.issueCompanySubscriptionNotDefined() :
-                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                    )
-                            ))
-            );
+        companyService.getCompanyWithParentCompanySubscriptions(
+                selectedCompanyId,
+                new ShortRequestCallback<List<CompanySubscription>>()
+                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                subscriptions,
+                                CollectionUtils.isEmpty(subscriptions) ?
+                                        lang.issueCompanySubscriptionNotDefined() :
+                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                )
+                        ))
+        );
 
-            companyService.getCompanyCaseStates(
-                    selectedCompanyId,
-                    new ShortRequestCallback<List<CaseState>>()
-                            .setOnSuccess(caseStates -> {
-                                metaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
-                                fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-                            })
-            );
+        companyService.getCompanyCaseStates(
+                selectedCompanyId,
+                new ShortRequestCallback<List<CaseState>>()
+                        .setOnSuccess(caseStates -> {
+                            metaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
+                            fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                        })
+        );
 
-            Person initiator = null;
-            Profile profile = policyService.getProfile();
-            if (issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
-                initiator = issue.getInitiator();
-            } else if (profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
-            }
-            metaView.setInitiator(initiator);
+        Person initiator = null;
+        Profile profile = policyService.getProfile();
+        if (Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
+            initiator = issue.getInitiator();
+        } else if (Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
+            initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
         }
+
+        metaView.setInitiator(initiator);
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
@@ -391,9 +390,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         metaView.timeElapsedContainerVisibility().setVisible(true);
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
 
-        Company company = issue.getInitiatorCompany();
-        if (company == null) company = policyService.getUserCompany();
-        caseMeta.setInitiatorCompany(company);
+        caseMeta.setInitiatorCompany(issue.getInitiatorCompany());
+        caseMeta.setInitiator(issue.getInitiator());
+        metaView.initiatorUpdateCompany(issue.getInitiatorCompany());
+        metaView.setPlatformFilter(platformOption -> issue.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
         metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
@@ -404,11 +404,32 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             caseMetaJira = null;
         }
 
+        companyService.getCompanyWithParentCompanySubscriptions(
+                issue.getInitiatorCompanyId(),
+                new ShortRequestCallback<List<CompanySubscription>>()
+                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                subscriptions,
+                                CollectionUtils.isEmpty(subscriptions) ?
+                                        lang.issueCompanySubscriptionNotDefined() :
+                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                )
+                        ))
+        );
+
+        companyService.getCompanyCaseStates(
+                issue.getInitiatorCompanyId(),
+                new ShortRequestCallback<List<CaseState>>()
+                        .setOnSuccess(caseStates -> {
+                            metaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
+                            fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                        })
+        );
+
+        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+
         metaView.setCaseMeta(caseMeta);
         metaView.setCaseMetaNotifiers(caseMetaNotifiers);
         metaView.setCaseMetaJira(caseMetaJira);
-
-        onCompanyChanged();
     }
 
     private boolean makePreviewDisplaying( String key ) {
