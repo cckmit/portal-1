@@ -88,6 +88,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
         Long timeElapsedValue = caseMeta.getTimeElapsed();
         timeElapsed.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
+        timeElapsedInput.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
     }
 
     @Override
