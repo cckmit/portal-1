@@ -16,36 +16,22 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasValue<String> name();
     HasValue<String> description();
-    HasValue<Boolean> isPrivate();
 
     HasValidable nameValidator();
 
-    HasVisibility numberVisibility();
-
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
-
-    HasVisibility numberContainerVisibility();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
     void setCreatedBy(String value);
 
-    HasVisibility copyNumberVisibility();
-
-    void showComments(boolean isShow);
     boolean isAttached();
 
     void setPrivacyIcon(Boolean isPrivate);
 
-    HasVisibility saveVisibility();
-
     void setNumber(Integer num);
-
-    HasVisibility privacyVisibility();
-
-    HasEnabled saveEnabled();
 
     void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 

@@ -69,25 +69,25 @@ public class IssueEvents {
         public Long issueCaseNumber;
     }
 
+    /**
+     * Показать форму редактирования
+     */
     @Url( value = "issue", primary = false )
     public static class Edit {
-
         public Long id;
-        public Long issueId;
 
         public Edit() { this.id = null; }
-        public Edit (Long id, Long issueId ) {
+        public Edit (Long id) {
             this.id = id;
-            this.issueId = issueId;
         }
+    }
 
-        public static Edit byId (Long id) {
-            return new Edit(id, null);
-        }
-
-        public static Edit newItem (EntityOption option) {
-            return new Edit(null, option != null ? option.getId() : null);
-        }
+    /**
+     * Показать форму создания
+     */
+    @Url(value = "create_issue")
+    public static class Create {
+        public Create() {}
     }
 
     public static class ChangeIssue {

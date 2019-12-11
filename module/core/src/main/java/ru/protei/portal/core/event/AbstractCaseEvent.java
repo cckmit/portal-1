@@ -19,4 +19,8 @@ public interface AbstractCaseEvent {
     Object getSource();
 
     boolean isEagerEvent();//TODO нужен для Redmine
+
+    default boolean isCreateEvent() {
+        return false;
+    }
 }

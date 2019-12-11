@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.activity.caselink.item;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseLink;
 
 /**
  * Представление линка
@@ -20,7 +21,7 @@ public interface AbstractCaseLinkItemView extends IsWidget {
 
     void setState(En_CaseState value);
 
-    void setModelId(Long id);
+    void setModel(CaseLink caseLink);
 
-    Long getModelId();
+    CaseLink getModel();
 }

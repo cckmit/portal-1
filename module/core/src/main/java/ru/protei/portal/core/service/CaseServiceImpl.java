@@ -8,7 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
@@ -17,10 +17,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.struct.JiraExtAppData;
-import ru.protei.portal.core.model.struct.UpdateResult;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
@@ -107,7 +104,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, CaseObject caseObject ) {
+    public Result< CaseObject > createCaseObject( AuthToken token, IssueCreateRequest issueCreateRequest ) {
+
+        CaseObject caseObject = issueCreateRequest.getCaseObject();
 
         if (!validateFieldsOfNew(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -182,40 +181,31 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        if (isNotEmpty(issueCreateRequest.getTags())) {
+            caseObjectTagDAO.persistBatch(
+                    issueCreateRequest.getTags()
+                            .stream()
+                            .map(tag -> new CaseObjectTag(caseId, tag.getId()))
+                            .collect(Collectors.toList())
+            );
+        }
+
+        if (isNotEmpty(issueCreateRequest.getLinks())) {
+            caseLinkService.createLinks(token, caseId, token.getPersonId(), issueCreateRequest.getLinks());
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), null, newState ));
+        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
+        publisherService.publishEvent(event);
 
         return ok(newState);
     }
 
-    @Deprecated
     @Override
-    @Transactional
-    public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
-        if (oldState == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        UpdateResult<CaseObject> objectResultData = performUpdateCaseObject(token, caseObject, oldState);
-
-        if (objectResultData.isUpdated()) {
-            // From GWT-side we get partially filled object, that's why we need to refresh state from db
-            CaseObject newState = caseObjectDAO.get(objectResultData.getObject().getId());
-            newState.setAttachments(objectResultData.getObject().getAttachments());
-            newState.setNotifiers(objectResultData.getObject().getNotifiers());
-            jdbcManyRelationsHelper.fill(oldState, "attachments");
-            publisherService.publishEvent( new CaseObjectEvent(this, ServiceModule.GENERAL, token.getPersonId(), oldState, newState));
-        }
-
-        return ok(objectResultData.getObject());
-    }
-
-    @Override
-    public Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
+    public Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
             if(oldCaseObject == null) {
@@ -249,7 +239,7 @@ public class CaseServiceImpl implements CaseService {
                     ServiceModule.GENERAL,
                     En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
 
-            return ok();
+            return ok(changeRequest);
         });
     }
 
@@ -444,53 +434,6 @@ public class CaseServiceImpl implements CaseService {
         return ok(caseMetaJira);
     }
 
-    @Deprecated
-    private UpdateResult<CaseObject> performUpdateCaseObject(AuthToken token, CaseObject caseObject, CaseObject oldState ) {
-
-        if (caseObject == null) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        caseObject.setCreated(oldState.getCreated());
-        caseObject.setCaseNumber(oldState.getCaseNumber());
-
-        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
-
-        applyStateBasedOnManager(caseObject);
-
-        if (!validateFields(caseObject)) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        jdbcManyRelationsHelper.persist(caseObject, "tags");
-
-        if (!isCaseChanged(caseObject, oldState)) {
-            return new UpdateResult<>(caseObject, false);
-        }
-
-        boolean isSelfCase = Objects.equals(token.getPersonId(), oldState.getCreator().getId());
-        boolean isChangedNameOrDescription = !Objects.equals(oldState.getName(), caseObject.getName()) || !Objects.equals(oldState.getInfo(), caseObject.getInfo());
-        if ( !isSelfCase && isChangedNameOrDescription ) {
-            log.info("Trying edit not self name or description for the issue {}", caseObject.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION);
-        }
-
-        caseObject.setModified(new Date());
-        caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
-
-        boolean isUpdated = caseObjectDAO.merge(caseObject);
-        if (!isUpdated) {
-            log.info("Failed to update issue {} at db", caseObject.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-        }
-
-        return new UpdateResult<>(caseObject, true);
-    }
-
     @Override
     public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
         List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
@@ -540,8 +483,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
-      return isExistsAttachments(caseId).flatMap( isExists ->
-         updateExistsAttachmentsFlag(caseId, isExists));
+        return isExistsAttachments(caseId).flatMap( isExists ->
+                updateExistsAttachmentsFlag(caseId, isExists));
     }
 
     @Override
@@ -925,6 +868,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CompanyService companyService;
+
+    @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

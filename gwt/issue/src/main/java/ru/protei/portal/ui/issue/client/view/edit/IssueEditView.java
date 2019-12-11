@@ -63,11 +63,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValue<Boolean> isPrivate() {
-        return privacyButton;
-    }
-
-    @Override
     public HasWidgets getLinksContainer() {
         return linksContainer;
     }
@@ -78,11 +73,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility numberVisibility(){
-        return numberLabel;
-    }
-
-    @Override
     public HasWidgets getCommentsContainer() {
         return commentsContainer;
     }
@@ -90,11 +80,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasAttachments attachmentsContainer() {
         return attachmentContainer;
-    }
-
-    @Override
-    public HasVisibility numberContainerVisibility() {
-        return numberContainer;
     }
 
     @Override
@@ -119,11 +104,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility saveVisibility() {
-        return saveButton;
-    }
-
-    @Override
     public void setNumber(Integer num) {
         if (num == null) {
             numberLabel.setText("");
@@ -131,16 +111,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
 
         numberLabel.setText("CRM-" + num);
-    }
-
-    @Override
-    public HasVisibility privacyVisibility() {
-        return privacyButton;
-    }
-
-    @Override
-    public HasEnabled saveEnabled() {
-        return saveButton;
     }
 
     @Override
@@ -203,11 +173,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility copyNumberVisibility() {
-        return copyNumber;
-    }
-
-    @Override
     public HasVisibility copyNumberAndNameVisibility() {
         return copyNumberAndName;
     }
@@ -226,31 +191,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
-    @UiHandler("saveButton")
-    public void onSaveClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onSaveClicked();
-        }
-    }
-
-    @UiHandler("cancelButton")
-    public void onCancelClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
-
-    }
-
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
-    }
-
-    @UiHandler("privacyButton")
-    public void onLocalClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onLocalClicked();
-        }
     }
 
     @UiHandler("copyNumber")
@@ -290,20 +233,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
-    @Override
-    public void showComments(boolean isShow) {
-        if (isShow)
-            comments.removeClassName(UiConstants.Styles.HIDE);
-        else
-            comments.addClassName(UiConstants.Styles.HIDE);
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
-        privacyButton.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         nameROLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
@@ -311,8 +245,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
         copyNumberAndName.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_AND_NAME_BUTTON);
 
@@ -330,15 +262,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     MarkdownAreaWithPreview description;
     @UiField
-    ToggleButton privacyButton;
-    @UiField
     Anchor copyNumber;
     @UiField
     Anchor copyNumberAndName;
-    @UiField
-    Button saveButton;
-    @UiField
-    Button cancelButton;
     @UiField
     HTMLPanel commentsContainer;
     @UiField

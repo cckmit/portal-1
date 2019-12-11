@@ -120,7 +120,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
         Assert.assertTrue("CaseObject must be created",
-                caseService.createCaseObject(getAuthToken(), object).isOk());
+                caseService.createCaseObject(getAuthToken(), new IssueCreateRequest(object)).isOk());
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;

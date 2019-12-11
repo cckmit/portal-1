@@ -54,6 +54,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         .markdown pre {
             font-size: 14px !important;
         }
+        .markdown p {
+            margin-bottom: 0;
+            margin-top: 0;
+        }
         <#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false>
     </style>
 </head>
@@ -102,11 +106,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             ${_issue_private}
                         </td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                            <#if privacyChanged>
-                                <@changeTo old="${oldPrivacy?string(_yes,_no)}" new="${privacy?string(_yes,_no)}"/>
-                            <#else>
-                                ${privacy?string(_yes,_no)}
-                            </#if>
+                            ${privacy?string(_yes,_no)}
                         </td>
                     </tr>
                 </#if>
@@ -123,7 +123,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <@changeTo
                                 old="${(oldInitiator)???then(
                                     TranslitUtils.transliterate(oldInitiator, lang) +' ('+ (TranslitUtils.transliterate(oldInitiatorCompany, lang)!'?') +')',
-                                    (TranslitUtils.transliterate(oldInitiatorCompany))!'?'
+                                    (TranslitUtils.transliterate(oldInitiatorCompany, lang))!'?'
                                 )}"
                                 new="${TranslitUtils.transliterate(newCustomer, lang)}"
                             />

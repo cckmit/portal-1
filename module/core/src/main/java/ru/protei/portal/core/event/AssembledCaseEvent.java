@@ -21,13 +21,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     private Long caseObjectId;
     private CaseObject lastState;
-    private CaseObject initState;
+    private boolean isCreateEvent;
     private CaseObjectMeta lastMetaState;
     private CaseObjectMeta initMetaState;
-    private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
-    private DiffCollectionResult <CaseLink> mergeLinks = new DiffCollectionResult<>();
+    private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
 
@@ -41,10 +40,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
     protected long lastUpdated;
 
     public AssembledCaseEvent(AbstractCaseEvent ace) {
-        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPersonId(), ace.isEagerEvent());
+        this(ace.getSource(), ace.getServiceModule(), ace.getCaseObjectId(), ace.getPersonId(), ace.isEagerEvent(), ace.isCreateEvent());
     }
 
-    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Long initiatorId, boolean isEagerEvent ) {
+    private AssembledCaseEvent( Object source, ServiceModule serviceModule, Long caseObjectId, Long initiatorId, boolean isEagerEvent, boolean isCreateEvent) {
         super( source );
         this.caseObjectId = caseObjectId;
         this.initiatorId = initiatorId;
@@ -52,20 +51,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.timeCreated = currentTimeMillis();
         lastUpdated = timeCreated;
         this.isEagerEvent = isEagerEvent;
+        this.isCreateEvent = isCreateEvent;
     }
 
-    public void attachCaseObjectEvent( CaseObjectEvent objectEvent ) {
+    public void attachCaseObjectCreateEvent(CaseObjectCreateEvent objectEvent) {
         this.lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent||objectEvent.isEagerEvent();
-        this.initState = objectEvent.getOldState();
-        this.lastState = objectEvent.getNewState();
+        this.lastState = objectEvent.getCaseObject();
         this.initiatorId = objectEvent.getPersonId();
         this.serviceModule = objectEvent.getServiceModule();
-        //temporary solution
-        DiffResult<String> name = new DiffResult<>(initState == null ? null : initState.getName(), lastState.getName());
-        this.name = synchronizeDiffs(this.name, name);
-        DiffResult<String> info = new DiffResult<>(initState == null ? null : initState.getInfo(), lastState.getInfo());
-        this.info = synchronizeDiffs(this.name, info);
     }
 
     public void attachCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
@@ -121,11 +115,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCreateEvent() {
-        return this.initState == null && !this.name.hasInitialState() && !this.info.hasInitialState();
+        return isCreateEvent;
     }
 
     private boolean isUpdateEvent() {
-        return (this.initState != null && lastState != null) || this.name.hasInitialState() || this.info.hasInitialState();
+        return !isCreateEvent();
     }
 
     private boolean isUpdateEventMeta() {
@@ -134,10 +128,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isCommentAttached() {
         return comments.hasAdded();
-    }
-
-    public boolean isCommentRemoved() {
-        return comments.hasRemovedEntries();
     }
 
     public boolean isCaseStateChanged() {
@@ -168,19 +158,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getInitiatorCompanyId(), initMetaState.getInitiatorCompanyId());
     }
 
-    public boolean isPrivacyChanged() {
-        return isUpdateEvent() && lastState.isPrivateCase() != initState.isPrivateCase();
-    }
-
     public boolean isPlatformChanged() {
         return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getPlatformId(), initMetaState.getPlatformId());
     }
 
-    public boolean isEagerEvent() {
-        return isEagerEvent;
-    }
-
-    private boolean isPublicLinksChanged() {
+    public boolean isPublicLinksChanged() {
         return isUpdateEvent() && publicLinksChanged();
     }
 
@@ -194,6 +176,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
 
         return false;
+    }
+
+    public boolean isEagerEvent() {
+        return isEagerEvent;
     }
 
     public boolean isLinksFilled() {
@@ -252,20 +238,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return lastUpdated;
     }
 
-    public Date getEventDate() {
-        return new Date(getTimestamp());
-    }
-
     public CaseObject getCaseObject() {
-        return lastState != null ? lastState : initState;
-    }
-
-    public CaseObject getLastState() {
         return lastState;
-    }
-
-    public CaseObject getInitState() {
-        return initState;
     }
 
     public CaseObjectMeta getCaseMeta() {
@@ -305,33 +279,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return info;
     }
 
-    public DiffCollectionResult<CaseLink> getMergeLinks() {
-        mergeLinks = synchronizeExists( mergeLinks, CaseLink::getId );
-        return mergeLinks;
-    }
-
     public boolean isCoreModuleEvent () {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
-    }
-
-    public boolean isPrivateSend() {
-        if (isCreateEvent()) {
-            return false;
-        }
-
-        if (isAttachedCommentNotPrivate()) {
-            return false;
-        }
-
-        if (isRemovedCommentNotPrivate()) {
-            return false;
-        }
-
-        if (isPublicChangedWithOutComments()) {
-            return false;
-        }
-
-        return true;
     }
 
     public boolean isAttachedCommentNotPrivate() {
@@ -341,29 +290,18 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return true;
     }
 
-    private boolean isRemovedCommentNotPrivate() {
-        for (CaseComment removedComment : emptyIfNull( comments.getRemovedEntries())) {
-            if(removedComment.isPrivateComment()) return false;
-        }
-        return true;
-    }
+    public boolean isPublicCommentsChanged() {
+        List<CaseComment> allEntries = new ArrayList<>();
+        allEntries.addAll(emptyIfNull(comments.getAddedEntries()));
+        allEntries.addAll(emptyIfNull(comments.getRemovedEntries()));
+        allEntries.addAll(emptyIfNull(comments.getChangedEntries()).stream().map(DiffResult::getNewState).collect(Collectors.toList()));
 
-    private boolean isPublicChangedWithOutComments() {
-        return  isCaseImportanceChanged()
-                || isCaseStateChanged()
-                || isInitiatorChanged()
-                || isInitiatorCompanyChanged()
-                || isManagerChanged()
-                || isPrivacyChanged()
-                || isProductChanged()
-                || name.hasDifferences()
-                || info.hasDifferences()
-                || isPublicLinksChanged();
+        return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
     }
 
 
     public boolean isCaseObjectFilled() {
-        return initState!=null;
+        return lastState != null;
     }
 
     public boolean isCaseMetaFilled() {

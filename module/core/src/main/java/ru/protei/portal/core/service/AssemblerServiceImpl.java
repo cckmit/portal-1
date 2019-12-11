@@ -27,13 +27,15 @@ public class AssemblerServiceImpl implements AssemblerService {
     public void proceed( final AssembledCaseEvent sourceEvent ) {
         if (sourceEvent == null) return;
 
-        fillInitiator( sourceEvent ).flatMap(
-                this::fillCaseObject ).flatMap(
-                this::fillCaseNameAndDescription ).flatMap(
-                this::fillCaseMeta ).flatMap(
-                this::fillComments ).flatMap(
-                this::fillAttachments ).flatMap(
-                this::fillLinks ).ifOk( filledEvent ->
+        Result<AssembledCaseEvent> assembledCaseEventResult = fillInitiator(sourceEvent).flatMap(
+                this::fillCaseObject).flatMap(
+                this::fillCaseNameAndDescription).flatMap(
+                this::fillCaseMeta).flatMap(
+                this::fillComments).flatMap(
+                this::fillAttachments).flatMap(
+                this::fillLinks);
+
+        assembledCaseEventResult.ifOk(filledEvent ->
                 publisherService.publishEvent( filledEvent ) );
     }
 

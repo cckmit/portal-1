@@ -46,7 +46,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     @Override
     public void onItemClicked( CaseShortView value ) {
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
     }
 
     @Override

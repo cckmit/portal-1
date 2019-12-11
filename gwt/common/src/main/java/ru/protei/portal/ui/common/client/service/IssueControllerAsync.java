@@ -20,7 +20,7 @@ public interface IssueControllerAsync {
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
-    void saveIssue( CaseObject p, AsyncCallback<Long> callback );
+    void createIssue(IssueCreateRequest p, AsyncCallback<Long> callback);
 
     void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> callback);
 

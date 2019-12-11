@@ -66,12 +66,12 @@ public abstract class CaseLinkListActivity
         }
 
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModelId()));
+            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel()));
             removeLinkViewFromParentAndModifyLinksCount(itemView);
             return;
         }
 
-        controller.removeLink(itemView.getModelId(), new FluentCallback<Void>()
+        controller.removeLink(itemView.getModel().getId(), new FluentCallback<Void>()
                 .withSuccess(res -> {
                     removeLinkViewFromParentAndModifyLinksCount(itemView);
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
@@ -170,7 +170,7 @@ public abstract class CaseLinkListActivity
         AbstractCaseLinkItemView itemWidget = itemViewProvider.get();
         itemWidget.setActivity(this);
         itemWidget.setEnabled(show.isEnabled);
-        itemWidget.setModelId(value.getId());
+        itemWidget.setModel(value);
 
         String linkId = null;
         if ( Objects.equals(value.getType(), CRM) && value.getCaseInfo() != null) {

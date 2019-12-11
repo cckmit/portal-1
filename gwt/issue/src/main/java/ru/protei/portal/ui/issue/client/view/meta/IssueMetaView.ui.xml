@@ -82,13 +82,13 @@
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="form-group"/>
 
         <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
-            <div ui:field="timeElapsedHeader" class="col-md-12">
+            <g:HTMLPanel ui:field="timeElapsedHeader" styleName="col-md-12">
                 <label ui:field="timeElapsedLabel">
                     <ui:text from="{lang.timeElapsed}"/>
                 </label>
                 <timefield:TimeLabel ui:field="timeElapsed"
                                      styleName="inline m-l-10 small hint-text"/>
-            </div>
+            </g:HTMLPanel>
             <g:HTMLPanel ui:field="timeElapsedEditContainer" styleName="col-md-12 form-group-attached">
                 <div class="row clearfix">
                     <div class="col-md-6">

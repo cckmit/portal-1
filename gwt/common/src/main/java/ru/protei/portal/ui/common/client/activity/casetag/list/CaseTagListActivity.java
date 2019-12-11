@@ -84,6 +84,7 @@ public abstract class   CaseTagListActivity
 
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Detach(show.caseId, itemView.getModelId()));
+            itemView.asWidget().removeFromParent();
             return;
         }
 
@@ -99,6 +100,7 @@ public abstract class   CaseTagListActivity
 
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Attach(show.caseId, value));
+            makeCaseTagViewAndAddToParent(value);
             return;
         }
 

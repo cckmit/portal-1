@@ -3,10 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseObjectMeta;
-import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -26,8 +23,6 @@ public interface IssueController extends RemoteService {
 
     CaseObject getIssue( long id ) throws RequestFailedException;
 
-    Long saveIssue( CaseObject p ) throws RequestFailedException;
-
     void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
     CaseObjectMeta updateIssueMeta( CaseObjectMeta caseMeta ) throws RequestFailedException;
@@ -37,4 +32,6 @@ public interface IssueController extends RemoteService {
     CaseObjectMetaJira updateIssueMetaJira( CaseObjectMetaJira caseMetaJira ) throws RequestFailedException;
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
+
+    Long createIssue(IssueCreateRequest p) throws RequestFailedException;
 }

@@ -5,45 +5,25 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.IssueCreateRequest;
 
 import java.util.Objects;
 
 /**
  * Created by michael on 04.05.17.
  */
-public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEvent {
+public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-    private CaseObject newState;
-    private CaseObject oldState;
     private Long personId;
     private ServiceModule serviceModule;
+    private CaseObject caseObject;
 
-
-    public CaseObjectEvent(  Object source, ServiceModule serviceModule, Long personId, CaseObject oldState,  CaseObject newState ) {
+    public CaseObjectCreateEvent(Object source, ServiceModule serviceModule, Long personId, CaseObject caseObject) {
         super(source);
         this.serviceModule = serviceModule;
         this.personId = personId;
-        this.oldState = oldState;
-        this.newState = newState;
+        this.caseObject = caseObject;
     }
-
-    public ServiceModule getServiceModule() {
-        return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
-    }
-
-    public CaseObject getCaseObject () {
-        return newState != null ? newState : oldState;
-    }
-
-    public CaseObject getNewState() {
-        return newState;
-    }
-
-    public CaseObject getOldState() {
-        return oldState;
-    }
-
-    public CaseComment getCaseComment() { return null; }
 
     @Override
     public Long getPersonId() {
@@ -51,17 +31,30 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
     }
 
     @Override
+    public boolean isCreateEvent() {
+        return true;
+    }
+
+    @Override
     public Long getCaseObjectId() {
         CaseObject caseObject = getCaseObject();
-        if(caseObject==null) return null;
+        if (caseObject == null) return null;
         return caseObject.getId();
     }
 
     @Override
     public boolean isEagerEvent() {
         CaseObject caseObject = getCaseObject();
-        if(caseObject==null) return false;
-        return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType() );
+        if (caseObject == null) return false;
+        return Objects.equals(En_ExtAppType.REDMINE.getCode(), caseObject.getExtAppType());
+    }
+
+    public ServiceModule getServiceModule() {
+        return serviceModule != null ? serviceModule : ServiceModule.GENERAL;
+    }
+
+    public CaseObject getCaseObject() {
+        return caseObject;
     }
 
     @Override
@@ -69,15 +62,13 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
         return "CaseObjectEvent{" +
                 "caseObjectId=" + getCaseObjectId() +
                 ", isEagerEvent=" + isEagerEvent() +
-                ", oldState=" + asString( oldState ) +
-                ", newState=" + asString( newState ) +
+                ", caseObject=" + asString(getCaseObject()) +
                 ", personId=" + personId +
-
                 '}';
     }
 
-    private String asString( CaseObject caseObject ) {
-        if(caseObject==null) return null;
+    private String asString(CaseObject caseObject) {
+        if (caseObject == null) return null;
         return "CaseObject{" +
                 "id=" + caseObject.getId() +
                 ", caseNumber=" + caseObject.getCaseNumber() +
@@ -85,6 +76,4 @@ public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEve
                 ", extId='" + caseObject.getExtId() + '\'' +
                 '}';
     }
-
-
 }

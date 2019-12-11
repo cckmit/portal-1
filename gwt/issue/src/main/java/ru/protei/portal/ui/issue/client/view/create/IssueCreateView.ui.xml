@@ -2,49 +2,21 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <div class="row">
-                <div class="col-lg-8 order-last order-lg-first p-l-25">
-                    <div class="btn-toolbar flex-wrap">
-                        <div class="btn-group form-group">
-                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
-                                <i class="fa fa-pencil-alt"/>
-                            </g:Button>
-                        </div>
-                    </div>
+                <div class="col-lg-8 order-last order-lg-first">
                     <div class="row">
                         <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12 m-b-5"/>
                     </div>
 
-                    <g:HTMLPanel ui:field="numberContainer">
-                        <h5 class="number-copy-panel no-margin">
-                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
-                                <i class="far fa-clone"/>
-                            </g:Anchor>
-                            <g:InlineLabel ui:field="numberLabel"/>
-                        </h5>
-
-                        <div class="inline pull-right">
-                            <small ui:field="createdBy"/>
-                            <i ui:field="privacyIcon"/>
-                        </div>
-                    </g:HTMLPanel>
-
-                    <h5 ui:field="nameROContainer" class="number-and-name-copy-panel no-margin">
-                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
-                            <i class="far fa-clone"/>
-                        </g:Anchor>
-                        <label ui:field="nameROLabel" class="semi-bold large-text"/>
-                    </h5>
-
-                    <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
-
                     <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
+                        <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn no-shadow no-outline"/>
 
                         <div class="form-input-group">
                             <label ui:field="nameLabel" class="fade">
@@ -67,11 +39,6 @@
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
-                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
-                        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
-                        <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
-                    </div>
-
                     <div class="row form-group">
                         <div class="col-md-12">
                             <label ui:field="attachmentsLabel">
@@ -91,22 +58,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-md-12" ui:field="comments">
-                            <label>
-                                <ui:text from="{lang.comments}"/>
-                            </label>
-                            <g:HTMLPanel ui:field="commentsContainer"/>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
-                        <g:HTMLPanel ui:field="issueMetaContainer" styleName="card-body"/>
+                        <g:HTMLPanel ui:field="issueMetaViewContainer" styleName="card-body"/>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button"
+                      text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

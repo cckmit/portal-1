@@ -102,6 +102,17 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         return person;
     }
 
+    public static Person fromPersonFullNameShortView(PersonShortView personShortView) {
+        if(personShortView == null)
+            return null;
+
+        Person person = new Person();
+        person.setId( personShortView.getId());
+        person.setDisplayName( personShortView.getName());
+        person.setFired( personShortView.isFired());
+        return person;
+    }
+
     public Person(Long personId){
         this();
         this.id = personId;

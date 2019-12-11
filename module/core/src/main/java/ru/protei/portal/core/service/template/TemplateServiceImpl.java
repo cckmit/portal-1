@@ -62,7 +62,6 @@ public class TemplateServiceImpl implements TemplateService {
             AssembledCaseEvent event, List<CaseComment> caseComments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
     ) {
         CaseObject newState = event.getCaseObject();
-        CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
@@ -88,9 +87,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "caseInfo", escapeTextAndRenderHTML( event.getInfo().getNewState(), textMarkup ) );
         templateModel.put( "oldCaseInfo", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), textMarkup ) );
 
-        templateModel.put( "privacyChanged", event.isPrivacyChanged() );
         templateModel.put( "privacy", newState.isPrivateCase() );
-        templateModel.put( "oldPrivacy", oldState == null ? null : oldState.isPrivateCase() );
 
         templateModel.put("hasLinks", hasLinks( mergeLinks) );
         templateModel.put("existingLinks", mergeLinks == null ? null : mergeLinks.getSameEntries());

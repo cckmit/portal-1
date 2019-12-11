@@ -60,44 +60,32 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    private CaseObject createIssue( CaseObject caseObject ) throws RequestFailedException{
-        log.info( "saveIssue(): case={}", caseObject );
-        if(caseObject == null || caseObject.getId() != null){
-           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+    @Override
+    public Long createIssue(IssueCreateRequest issueCreateRequest ) throws RequestFailedException {
+        log.info("saveIssue(): case={}", issueCreateRequest);
+
+        if (issueCreateRequest == null || issueCreateRequest.getCaseId() != null) {
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
-        caseObject.setCreatorId( token.getPersonId() );
+        issueCreateRequest.getCaseObject().setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        issueCreateRequest.getCaseObject().setCreatorId(token.getPersonId());
 
-        Result< CaseObject >  response = caseService.createCaseObject( token, caseObject );
+        Result<CaseObject> response = caseService.createCaseObject(token, issueCreateRequest);
 
-        log.info( "saveIssue(): response.isOk()={}", response.isOk() );
-        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        log.info( "saveIssue(): id={}", response.getData().getId() );
-        return response.getData();
-    }
-
-    @Deprecated
-    @Override
-    public Long saveIssue( CaseObject caseObject ) throws RequestFailedException {
-        log.info("saveIssue(): caseNo={} | case={}", caseObject.getCaseNumber(), caseObject);
-        AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (caseObject.getId() == null) {
-            CaseObject saved = createIssue(caseObject);
-            return saved.getId();
-        }
-        Result<CaseObject> response = caseService.updateCaseObject(token, caseObject);
-        log.info("saveIssue(): caseNo={}", caseObject.getCaseNumber());
-        return checkResultAndGetData(response).getId();
+        log.info("saveIssue(): response.isOk()={}", response.isOk());
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+        log.info("saveIssue(): id={}", response.getData().getId());
+        return response.getData().getId();
     }
 
     @Override
     public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
         log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result response = caseService.updateCaseObject(token, changeRequest);
+        Result response = caseService.updateCaseNameAndDescription(token, changeRequest);
         log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
 
         checkResult(response);

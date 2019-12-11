@@ -16,9 +16,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -27,9 +25,11 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
@@ -51,7 +51,11 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private EventPublisherService publisherService;
 
     @Autowired
+    private CaseService caseService;
+
+    @Autowired
     private LockService lockService;
+
     @Autowired
     private TransactionTemplate transactionTemplate;
 
@@ -70,6 +74,25 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivateLinks(token)));
+        return ok(caseLinks);
+    }
+
+    @Override
+    @Transactional
+    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks) {
+        List<CaseLink> allLinks = new ArrayList<>(caseLinks);
+        caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
+        List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);
+        List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
+        notYoutrackLinks.forEach(caseLink -> allLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
+        caseLinkDAO.persistBatch(allLinks);
+        caseService.getCaseNumberById( token, caseId ).ifOk(caseNumber ->
+                youtrackService.mergeYouTrackLinks(caseNumber,
+                        youtrackLinksRemoteIds,
+                        Collections.emptyList()
+                )
+        );
+
         return ok(caseLinks);
     }
 
@@ -251,5 +274,27 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private boolean isShowOnlyPrivateLinks(AuthToken token) {
         return !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW);
+    }
+
+    private List<String> selectYouTrackLinkRemoteIds( Collection<CaseLink> links ) {
+        return stream(links).filter(  caseLink -> YT.equals( caseLink.getType() )).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
+    }
+
+    private CaseLink createCrossCRMLink(Long linkedCaseId, Long caseId) {
+        CaseLink crossLink = new CaseLink();
+        crossLink.setType(En_CaseLink.CRM);
+        crossLink.setRemoteId(String.valueOf(caseId));
+        crossLink.setCaseId(linkedCaseId);
+
+        return crossLink;
+    }
+
+    private Long parseRemoteIdAsLongValue(String remoteId) {
+        try {
+            return Long.parseLong(remoteId);
+        } catch (NumberFormatException e) {
+            log.warn("Can't parse linked case number link={}", remoteId);
+            return null;
+        }
     }
 }

@@ -36,12 +36,12 @@ public class CaseLinkEvents {
     }
 
     public static class Removed {
-        public Removed(Long caseId, Long id) {
+        public Removed(Long caseId, CaseLink caseLink) {
             this.caseId = caseId;
-            this.id = id;
+            this.caseLink = caseLink;
         }
 
-        public Long id;
+        public CaseLink caseLink;
         public Long caseId;
     }
 

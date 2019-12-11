@@ -15,10 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
-import ru.protei.portal.core.event.CaseObjectMetaEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -26,6 +23,7 @@ import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -78,11 +76,19 @@ public class TemplateServiceImplTest {
         CaseObject lastState = createNewCaseObject( person, 4 * DAY + 15 * HOUR + 48 * MINUTE );
 
         Object dummyCaseService = new Object();
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), initState, lastState );
+        CaseNameAndDescriptionEvent caseNameAndDescriptionEvent = new CaseNameAndDescriptionEvent(
+                dummyCaseService,
+                initState.getId(),
+                new DiffResult<>(initState.getName(), lastState.getName()),
+                new DiffResult<>(initState.getInfo(), lastState.getInfo()),
+                person.getId(),
+                ServiceModule.JIRA,
+                En_ExtAppType.JIRA);
         CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseObjectEvent );
-        assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
-        assembledCaseEvent.attachCaseObjectMetaEvent( caseObjectMetaEvent );
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
+        assembledCaseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
+        assembledCaseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
+        assembledCaseEvent.setLastCaseObject(lastState);
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
@@ -109,11 +115,19 @@ public class TemplateServiceImplTest {
         CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
 
         Object dummyCaseService = new Object();
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), initState, lastState );
+        CaseNameAndDescriptionEvent caseNameAndDescriptionEvent = new CaseNameAndDescriptionEvent(
+                dummyCaseService,
+                initState.getId(),
+                new DiffResult<>(initState.getName(), lastState.getName()),
+                new DiffResult<>(initState.getInfo(), lastState.getInfo()),
+                person.getId(),
+                ServiceModule.JIRA,
+                En_ExtAppType.JIRA);
         CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( dummyCaseService, ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(initState.getExtAppType()), new CaseObjectMeta(initState), new CaseObjectMeta(lastState) );
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent( caseObjectEvent );
-        assembledCaseEvent.attachCaseObjectEvent( caseObjectEvent );
-        assembledCaseEvent.attachCaseObjectMetaEvent( caseObjectMetaEvent );
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
+        assembledCaseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
+        assembledCaseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
+        assembledCaseEvent.setLastCaseObject(lastState);
 
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
@@ -185,10 +199,10 @@ public class TemplateServiceImplTest {
         old.add( chang1 );
         old.add( chang2 );
 
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( new Object(), ServiceModule.GENERAL, person.getId(), null, lastState );
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( new Object(), ServiceModule.GENERAL, person.getId(), lastState);
         CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( new Object(), ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
-        AssembledCaseEvent assembled = new AssembledCaseEvent( caseObjectEvent );
-        assembled.attachCaseObjectEvent( caseObjectEvent );
+        AssembledCaseEvent assembled = new AssembledCaseEvent(caseObjectCreateEvent);
+        assembled.attachCaseObjectCreateEvent(caseObjectCreateEvent);
         assembled.attachCaseObjectMetaEvent( caseObjectMetaEvent );
 
         assembled.setExistingCaseComments( existing );

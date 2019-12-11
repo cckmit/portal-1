@@ -33,16 +33,11 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    Result<CaseObject> createCaseObject( AuthToken token, CaseObject p );
-
-    @Deprecated
-    @Privileged({ En_Privilege.ISSUE_EDIT })
-    @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
+    Result<CaseObject> createCaseObject( AuthToken token, IssueCreateRequest request);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result updateCaseObject(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
+    Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )

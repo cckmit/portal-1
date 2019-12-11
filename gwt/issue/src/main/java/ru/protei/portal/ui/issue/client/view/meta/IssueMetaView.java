@@ -10,10 +10,7 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
@@ -91,7 +88,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
         Long timeElapsedValue = caseMeta.getTimeElapsed();
         timeElapsed.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
-        timeElapsedInput.setTime(timeElapsedValue);
+        timeElapsedInput.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
     }
 
     @Override
@@ -194,7 +191,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public Element timeElapsedHeader() {
+    public HasVisibility timeElapsedHeaderVisibility() {
         return timeElapsedHeader;
     }
 
@@ -271,6 +268,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasVisibility jiraSlaSelectorVisibility() {
         return jiraSlaSelector;
+    }
+
+    @Override
+    public HasValue<En_TimeElapsedType> timeElapsedType() {
+        return timeElapsedType;
     }
 
     private void triggerCaseMeta() {
@@ -395,11 +397,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         triggerCaseMeta();
     }
 
-    @UiHandler("timeElapsedType")
-    public void onTimeElapsedTypeChanged(ValueChangeEvent<En_TimeElapsedType> event) {
-        triggerCaseMeta();
-    }
-
     @UiHandler("notifiers")
     public void onNotifiersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
         triggerCaseMetaNotification();
@@ -442,7 +439,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField
     HTMLPanel timeElapsedContainer;
     @UiField
-    DivElement timeElapsedHeader;
+    HTMLPanel timeElapsedHeader;
     @UiField
     LabelElement timeElapsedLabel;
     @Inject

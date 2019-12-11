@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
@@ -65,13 +66,13 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     }
 
     @Override
-    public void setModelId(Long id) {
-        this.modelId = id;
+    public void setModel(CaseLink caseLink) {
+        this.caseLink = caseLink;
     }
 
     @Override
-    public Long getModelId() {
-        return modelId;
+    public CaseLink getModel() {
+        return caseLink;
     }
 
     @UiHandler("remove")
@@ -102,7 +103,7 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     @UiField
     HTMLPanel root;
 
-    private Long modelId;
+    private CaseLink caseLink;
     private AbstractCaseLinkItemActivity activity;
 
     interface CaseLinkViewUiBinder extends UiBinder<HTMLPanel, CaseLinkItemView> {}

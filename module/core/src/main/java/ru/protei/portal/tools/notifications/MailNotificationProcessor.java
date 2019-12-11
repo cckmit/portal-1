@@ -156,8 +156,12 @@ public class MailNotificationProcessor {
     }
 
     private boolean isPublic( CaseLink caseLink){
-        if(caseLink.isPrivate()) return false;
-        if(!CRM.equals( caseLink.getType() )) return false;
+        if(caseLink.isPrivate()) {
+            return false;
+        }
+        if(!CRM.equals( caseLink.getType() )) {
+            return false;
+        }
         return true;
     }
 
@@ -173,7 +177,7 @@ public class MailNotificationProcessor {
 
     private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
-                || event.isPrivateSend()
+                || isPrivateSend(event)
                 || config.data().smtp().isBlockExternalRecipients();
     }
 
@@ -568,14 +572,33 @@ public class MailNotificationProcessor {
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
-    private Date addSeconds(Date date, int sec) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.SECOND, sec);
-        return calendar.getTime();
+    private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
+
+        if (assembledCaseEvent.isPublicCommentsChanged()) {
+            return false;
+        }
+
+        if (publicChangesExistWithoutComments(assembledCaseEvent)) {
+            return false;
+        }
+
+        return true;
     }
 
-
+    private boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.getName().hasDifferences()
+                || assembledCaseEvent.getInfo().hasDifferences()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
+    }
 
     private class MimeMessageHeadersFacade {
 
