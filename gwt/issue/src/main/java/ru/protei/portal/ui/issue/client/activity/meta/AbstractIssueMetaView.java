@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
@@ -33,6 +32,9 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
     void setTimeElapsed(Long timeElapsed);
+
+    void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
+
     void setInitiator(Person initiator);
     void setPlatform(Platform platform);
 
@@ -46,8 +48,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
     HasEnabled stateEnabled();
-    HasEnabled platformEnabled();
-    HasEnabled initiatorEnabled();
 
     HasVisibility caseSubscriptionContainer();
     HasVisibility timeElapsedLabelVisibility();

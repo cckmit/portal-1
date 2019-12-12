@@ -33,7 +33,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    Result<CaseObject> createCaseObject( AuthToken token, IssueCreateRequest request);
+    Result<CaseObject> createCaseObject( AuthToken token, CaseObjectCreateRequest request);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )

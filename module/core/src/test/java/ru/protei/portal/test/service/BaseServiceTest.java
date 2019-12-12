@@ -15,11 +15,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class BaseServiceTest {
 
@@ -148,7 +146,7 @@ public class BaseServiceTest {
         CaseObject newCaseObject = createNewCaseObject( caseType, person );
         newCaseObject.setInitiatorCompany( company );
         return checkResultAndGetData(
-                caseService.createCaseObject( getAuthToken(), new IssueCreateRequest(newCaseObject) )
+                caseService.createCaseObject( getAuthToken(), new CaseObjectCreateRequest(newCaseObject) )
         );
     }
 
