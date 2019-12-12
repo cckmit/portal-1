@@ -1,5 +1,4 @@
-package ru.protei.portal.core.controller.document;
-
+package ru.protei.portal.core.index.document;
 
 import java.io.IOException;
 import java.util.List;

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.controller.document.DocumentStorageIndex;
+import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dict.En_CustomerType;
@@ -398,7 +398,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private boolean saveToIndex(byte[] data, Long documentId, Long projectId) {
         try {
-            documentStorageIndex.addPdfDocument(data, projectId, documentId);
+            documentStorageIndex.addPdfDocument(data, documentId, projectId);
         } catch (Exception e) {
             log.error("saveToIndex(" + documentId + ", " + projectId + "): failed to add file to the index", e);
             return false;
@@ -408,7 +408,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private boolean updateAtIndex(byte[] data, Long documentId, Long projectId) {
         try {
-            documentStorageIndex.updatePdfDocument(data, projectId, documentId);
+            documentStorageIndex.updatePdfDocument(data, documentId, projectId);
         } catch (Exception e) {
             log.error("updateAtIndex(" + documentId + ", " + projectId + "): failed to update file at the index", e);
             return false;
