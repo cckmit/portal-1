@@ -22,7 +22,7 @@ public class RedmineBootstrapService {
         updateCreationDateAttachments();
         updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
         updateNullIssueCreator();
-        updateCaseObjectById(156418L);
+        //updateCaseObjectById(156952L);
     }
 
     private void updateCreationDateAttachments() {

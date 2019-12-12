@@ -76,7 +76,7 @@ public final class CommonServiceImpl implements CommonService {
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
-            logger.debug("process attachments for case, id={}, existingAttachmentsHashCodes={}", caseObjId, existingAttachmentsHashCodes);
+            logger.debug("Process attachments for case, id={}, existingAttachmentsHashCodes={}", caseObjId, existingAttachmentsHashCodes);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
             issue.getAttachments()
                     .stream()
@@ -91,18 +91,18 @@ public final class CommonServiceImpl implements CommonService {
                         a.setLabelText(x.getDescription());
                         addedAttachments.add(a);
                         try {
-                            logger.debug("invoke file controller to store attachment {} (size={}, hashCode={})", x.getFileName(), x.getFileSize(), toHashCode(x));
+                            logger.debug("Invoke file controller to store attachment {} (size={}, hashCode={})", x.getFileName(), x.getFileSize(), toHashCode(x));
                             Long caId = fileController.saveAttachment(a,
                                     new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), x.getFileSize(), x.getContentType(), caseObjId);
-                            logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
+                            logger.debug("Result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
                             final boolean isAlreadyExists =
                                     caseAttachmentDAO.getByCondition("CASE_ID = ? and ATT_ID = ?", caseObjId, a.getId()) != null;
                             if (caId != null && !isAlreadyExists) {
                                 caseAttachments.add(new CaseAttachment(caseObjId, a.getId()));
                             }
                         } catch (Exception e) {
-                            logger.debug("unable to process attachment {}", x.getFileName());
-                            logger.debug("trace", e);
+                            logger.debug("Unable to process attachment {}", x.getFileName());
+                            logger.debug("Trace", e);
                         }
                     });
             addedAttachments.forEach(attachmentDAO::saveOrUpdate);
@@ -135,7 +135,7 @@ public final class CommonServiceImpl implements CommonService {
         eventPublisherService.publishEvent( new CaseCommentEvent( caseService, ServiceModule.REDMINE, contactPerson,
                 caseObjId, false, null, comment, null ) );
 
-        return caseCommentDAO.getByCreationDate(comment.getCreated());
+        return comment;
     }
 
     @Override
