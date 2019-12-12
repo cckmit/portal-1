@@ -347,14 +347,14 @@ public class PortalConfigData {
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
 
-        private final boolean redminePatchAttachmentsEnabled;
+        private final boolean redminePatchEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
 
-            redminePatchAttachmentsEnabled = properties.getProperty("integration.redmine.patch.attachments", Boolean.class, false);
+            redminePatchEnabled = properties.getProperty("integration.redmine.patch", Boolean.class, false);
         }
 
         public boolean isRedmineEnabled() {
@@ -369,8 +369,8 @@ public class PortalConfigData {
             return jiraEnabled;
         }
 
-        public boolean isRedminePatchAttachmentsEnabled() {
-            return redminePatchAttachmentsEnabled;
+        public boolean isRedminePatchEnabled() {
+            return redminePatchEnabled;
         }
     }
 
