@@ -32,6 +32,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
+    public String getName(Long documentId) {
+        return partialGet(documentId, "name").getName();
+    }
+
+    @Override
     public boolean updateState(Document document) {
         return partialMerge(document, "state");
     }
