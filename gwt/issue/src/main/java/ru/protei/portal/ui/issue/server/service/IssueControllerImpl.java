@@ -99,6 +99,12 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
+    public CaseObjectMeta getIssueMeta( Long isssueid ) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseService.getIssueMeta(token, isssueid ));
+    }
+
+    @Override
     public CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
         log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);

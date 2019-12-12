@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
@@ -28,4 +29,6 @@ public interface IssueControllerAsync {
     void updateIssueMetaJira( CaseObjectMetaJira caseMetaJira, AsyncCallback<CaseObjectMetaJira> async);
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
+
+    void getIssueMeta( Long isssueid, AsyncCallback<CaseObjectMeta> async );
 }

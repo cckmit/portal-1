@@ -58,16 +58,17 @@ public class CaseObjectMeta implements Serializable {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    // --------------------
+    @JdbcColumn(name = "private_flag")
+    private boolean privateCase;
+
+    @JdbcColumn(name = CaseObject.Columns.EXT_APP)
+    private String extAppType;
+
 
     public CaseObjectMeta() {}
 
-    public CaseObjectMeta(CaseObject caseObject) {
-        fillFromCaseObject(caseObject);
-    }
-
-    public CaseObjectMeta fillFromCaseObject(CaseObject co) {
-        if (co == null) return this;
+    public CaseObjectMeta(CaseObject co) {
+        if (co == null) return;
         if (co.getId() != null) setId(co.getId());
         if (co.getModified() != null) setModified(co.getModified());
         if (co.getStateId() != 0) setStateId(co.getStateId());
@@ -83,7 +84,6 @@ public class CaseObjectMeta implements Serializable {
         if (co.getPlatformId() != null) setPlatformId(co.getPlatformId());
         if (co.getPlatformName() != null) setPlatformName(co.getPlatformName());
         if (co.getTimeElapsed() != null) setTimeElapsed(co.getTimeElapsed());
-        return this;
     }
 
     public CaseObject collectToCaseObject(CaseObject co) {
@@ -244,5 +244,13 @@ public class CaseObjectMeta implements Serializable {
 
     public void setTimeElapsed(Long timeElapsed) {
         this.timeElapsed = timeElapsed;
+    }
+
+    public boolean isPrivateCase() {
+        return privateCase;
+    }
+
+    public String getExtAppType() {
+        return extAppType;
     }
 }

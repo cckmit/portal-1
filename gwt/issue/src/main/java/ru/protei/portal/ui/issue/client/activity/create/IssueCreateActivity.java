@@ -36,12 +36,14 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_
 /**
  * Активность создания обращения
  */
-public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity, Activity {
+public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
+//        , AbstractIssueMetaActivity
+        , Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        issueMetaView.setActivity(this);
+//        issueMetaView.setActivity(this);
         view.getIssueMetaViewContainer().add(issueMetaView);
 
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
@@ -77,6 +79,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         subscriptionsListEmptyMessage = null;
 
         fillView();
+        fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
     }
 
     @Event
@@ -146,7 +149,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onCompanyChanged() {
-        Company companyOption = issueMetaView.getCaseMeta().getInitiatorCompany();
+        Company companyOption = issueMetaView.getCompany();
 
         issueMetaView.initiatorUpdateCompany(companyOption);
 
@@ -184,14 +187,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
-    @Override
-    public void onCreateContactClicked() {
-        if (issueMetaView.getCaseMeta().getInitiatorCompany() == null) {
-            return;
-        }
-
-        fireEvent(new ContactEvents.Edit(null, issueMetaView.getCaseMeta().getInitiatorCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
-    }
+//    @Override
+//    public void onCreateContactClicked() {
+//        if (issueMetaView.getCompany() == null) {
+//            return;
+//        }
+//
+//        fireEvent(new ContactEvents.Edit(null, issueMetaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+//    }
 
     @Override
     public void onPrivacyChanged() {
@@ -218,7 +221,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.description().setValue(null);
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
 
-        fillMetaView();
+//        fillMetaView();
 
         view.attachmentsContainer().clear();
 

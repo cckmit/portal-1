@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -13,18 +14,23 @@ import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.Set;
+
 public interface AbstractIssueMetaView extends IsWidget {
 
     void setActivity(AbstractIssueMetaActivity activity);
 
-    void setCaseMeta(CaseObjectMeta caseObjectMeta);
-    void setCaseMetaNotifiers(CaseObjectMetaNotifiers caseObjectMetaNotifiers);
-    void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
-    CaseObjectMeta getCaseMeta();
-    CaseObjectMetaNotifiers getCaseMetaNotifiers();
-    CaseObjectMetaJira getCaseMetaJira();
 
-    void setStateWorkflow(En_CaseStateWorkflow workflow);
+    //    void setCaseMeta(CaseObjectMeta caseObjectMeta);
+    void setCaseMetaNotifiers(Set<Person> caseObjectMetaNotifiers);
+    void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
+    //    CaseObjectMeta getCaseMeta();
+    Set<Person> getCaseMetaNotifiers();
+//    CaseObjectMetaJira getCaseMetaJira();
+
+    HasValue<CaseObjectMetaJira> jiraSlaSelector();
+
+    void setStateWorkflow( En_CaseStateWorkflow workflow);
     void applyCompanyValueIfOneOption();
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
@@ -35,8 +41,13 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
 
-    void setInitiator(Person initiator);
-    void setPlatform(Platform platform);
+    void setInitiator( Person initiator);
+
+    Person getInitiator();
+
+    void setPlatform( Platform platform);
+
+    long getPlatformId();
 
     HasVisibility timeElapsedHeaderVisibility();
 
@@ -50,11 +61,30 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasEnabled stateEnabled();
 
     HasVisibility caseSubscriptionContainer();
-    HasVisibility timeElapsedLabelVisibility();
+//    HasVisibility timeElapsedLabelVisibility();
     HasVisibility timeElapsedContainerVisibility();
     HasVisibility timeElapsedEditContainerVisibility();
     HasVisibility platformVisibility();
     HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<En_TimeElapsedType> timeElapsedType();
+
+    HasValue<En_CaseState> state( );
+
+    HasValue<En_ImportanceLevel> importance(  );
+
+
+    void setProduct( DevUnit product );
+
+    DevUnit getProduct();
+
+    void setManager( Person manager );
+
+    Person getManager();
+
+    void setCompany( Company company );
+
+    Company getCompany();
+
+    Long getTimeElapsed();
 }

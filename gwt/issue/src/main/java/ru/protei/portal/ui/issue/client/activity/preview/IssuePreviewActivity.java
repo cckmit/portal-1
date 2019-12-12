@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,6 +113,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
         view.timeElapsed().setTime(event.timeElapsed);
     }
+
 
     @Override
     public void removeAttachment(Attachment attachment) {
