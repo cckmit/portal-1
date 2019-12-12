@@ -13,4 +13,6 @@ public interface SelectorPopup {
     void showLoading( boolean isLoading );
 
     void setNoElements( boolean isSearchResultEmpty, String noElementsMessage );
+
+    void hide();
 }

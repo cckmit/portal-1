@@ -111,6 +111,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         T value = selector.getValue();
         showValue(value);
+        getPopup().hide();
         ValueChangeEvent.fire(this, value);
     }
 

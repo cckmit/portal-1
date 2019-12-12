@@ -76,6 +76,17 @@ public class CollectionUtils {
         }
     }
 
+    public static <I, O> void transform( final I[] iterable, final Collection<O> output,
+                                         final Function<? super I, ? extends O> mapper ) {
+        if ( iterable == null || mapper == null || output == null ) {
+            return;
+        }
+
+        for (final I next : iterable) {
+            output.add( mapper.apply( next ) );
+        }
+    }
+
     public static <T> Optional<T> find(Collection<T> col, Predicate<T> predicate) {
         return stream(col).filter(predicate).findAny();
     }
@@ -109,6 +120,12 @@ public class CollectionUtils {
     public static <R, T> List<R> toList( Iterable<T> iterable, BiConsumer<? super T, Consumer<R>> consumer ) {
         List<R> result = new ArrayList<>();
         transform( iterable, result, consumer );
+        return result;
+    }
+
+    public static <R, T> List<R> toList( T[] iterable, Function<? super T, ? extends R> mapper  ) {
+        List<R> result = new ArrayList<R>();
+        transform( iterable, result, mapper );
         return result;
     }
 
