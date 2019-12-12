@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.service.DocumentSvnService;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -288,7 +288,7 @@ public class BootstrapService {
             Long documentId = partialDocuments.get(i).getId();
             Long projectId = partialDocuments.get(i).getProjectId();
             try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                documentSvnService.getDocument(projectId, documentId, out);
+                documentSvnApi.getDocument(projectId, documentId, out);
                 final byte[] fileData = out.toByteArray();
                 if (fileData.length == 0) {
                     log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
@@ -340,7 +340,7 @@ public class BootstrapService {
     @Autowired
     DocumentDAO documentDAO;
     @Autowired
-    DocumentSvnService documentSvnService;
+    DocumentSvnApi documentSvnApi;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
     @Autowired

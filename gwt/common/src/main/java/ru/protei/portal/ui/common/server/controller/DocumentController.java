@@ -9,8 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
-import ru.protei.portal.core.service.DocumentSvnService;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.service.DocumentService;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.session.SessionService;
 
@@ -29,12 +33,12 @@ public class DocumentController {
 
     @Autowired
     AuthService authService;
-
     @Autowired
-    DocumentSvnService documentSvnService;
-
+    DocumentSvnApi documentSvnApi;
     @Autowired
     SessionService sessionService;
+    @Autowired
+    DocumentService documentService;
 
 
     @RequestMapping(value = "/uploadDocument", method = RequestMethod.POST)
@@ -70,17 +74,33 @@ public class DocumentController {
                         @PathVariable("projectId") Long projectId,
                         @PathVariable("documentId") Long documentId) throws IOException {
         try {
-            documentSvnService.getDocument(projectId, documentId, response.getOutputStream());
+            documentSvnApi.getDocument(projectId, documentId, response.getOutputStream());
         } catch (SVNException e) {
-            logger.error("Failed to get document from repository: projectId=" + projectId + ", documentIdColumnHeader=" + documentId, e);
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
+                logger.info("getFile(): Document not found (projectId = " + projectId + ", documentId = " + documentId + ")", e);
+                response.setStatus(HttpStatus.NOT_FOUND.value());
+            } else {
+                logger.error("getFile(): Failed to get document (projectId = " + projectId + ", documentId = " + documentId + "), " +
+                        "error code = " + (e.getErrorMessage() != null ? e.getErrorMessage().getErrorCode() : "null"), e);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
             return;
         }
+
+        String documentName = getDocumentName(documentId);
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/pdf");
         response.setHeader("Content-Transfer-Encoding", "binary");
-        response.setHeader("Content-Disposition", "filename=" + documentId + ".pdf");
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodeToRFC2231(documentId + ".pdf"));
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodeToRFC2231(documentName + ".pdf"));
+    }
+
+    private String getDocumentName(Long documentId) {
+        Result<String> result = documentService.getDocumentName(documentId);
+        if (result.isOk() && StringUtils.isNotBlank(result.getData())) {
+            return result.getData();
+        } else {
+            return String.valueOf(documentId);
+        }
     }
 }

@@ -139,8 +139,8 @@ public class ExcelReportWriter implements
         values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? issue.getInitiator().getDisplayShortName() : "");
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? issue.getManager().getDisplayShortName() : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImpLevel() != null ? lang.get("importance_" + String.valueOf(issue.getImpLevel())) : "");
-        values.add(issue.getState() != null ? lang.get("case_state_" + String.valueOf(issue.getState().getId())) : "");
+        values.add(issue.getImpLevel() != null ? lang.get("importance_" + issue.getImpLevel()) : "");
+        values.add(issue.getState() != null ? issue.getState().getName() : "");
         values.add(created != null ? dateFormat.format(created) : "");
         values.add(opened != null ? dateFormat.format(opened) : "");
         values.add(workaround != null ? dateFormat.format(workaround) : "");
@@ -152,7 +152,7 @@ public class ExcelReportWriter implements
         if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ?
                 timeFormatter.formatHourMinutes(issue.getTimeElapsed()) : "");
 
-        return values.stream().toArray();
+        return values.toArray();
     }
 
     private Long getDurationBetween(Date from, Date... toList) {

@@ -91,8 +91,8 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
         }
         List<String> result = getIndex().searchByField(CONTENT_FIELD_NAME, contentQuery, ID_FIELD_NAME, maxHits);
         return CollectionUtils.stream(result)
-            .map(Long::parseLong)
-            .collect(Collectors.toList());
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
     }
 
     @Override

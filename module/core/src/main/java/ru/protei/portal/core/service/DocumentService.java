@@ -49,4 +49,6 @@ public interface DocumentService {
     @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result updateState( AuthToken token, Long documentId, En_DocumentState state);
+
+    Result<String> getDocumentName(Long documentId);
 }
