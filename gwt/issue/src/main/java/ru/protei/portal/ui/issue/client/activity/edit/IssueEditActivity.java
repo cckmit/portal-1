@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
+import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -51,12 +52,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
             }
             @Override
             public void onError(En_FileUploadStatus status, String details) {
-                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
-                }
-                else {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
-                }
+                fireEvent(new NotifyEvents.Show(En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
     }
@@ -165,31 +161,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-            }
-            @Override
-            public void onSuccess(Boolean result) {
-                if(!result){
-                    onError(null);
-                    return;
-                }
-
-                view.attachmentsContainer().remove(attachment);
-                issue.getAttachments().remove(attachment);
-                issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                        .withCaseType(En_CaseType.CRM_SUPPORT)
-                        .withCaseId(issue.getId())
-                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                        .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                        .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                        .withPrivateCase(issue.isPrivateCase())
-                        .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
-            }
-        });
+        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(result -> {
+                    view.attachmentsContainer().remove(attachment);
+                    issue.getAttachments().remove(attachment);
+                    issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+                    fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
+                            .withCaseType(En_CaseType.CRM_SUPPORT)
+                            .withCaseId(issue.getId())
+                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                            .withPrivateCase(issue.isPrivateCase())
+                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
+                }));
     }
 
     @Override
@@ -356,8 +342,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ))
-                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )));
+                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT ))
+                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT )));
 
         view.setNumber(issue.getCaseNumber().intValue());
 

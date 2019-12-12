@@ -11,7 +11,7 @@ public interface AbstractIssueCreateActivity {
 
     void removeAttachment(Attachment attachment);
 
-    void onLocalClicked();
+    void onPrivacyChanged();
 
     void renderMarkupText(String text, Consumer<String> consumer);
 

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;

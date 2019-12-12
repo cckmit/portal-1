@@ -12,10 +12,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -101,7 +98,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         caseMeta.setInitiator(Person.fromPersonShortView(initiator.getValue()));
         caseMeta.setPlatformId(platform.getValue() == null ? null : platform.getValue().getId());
         caseMeta.setTimeElapsed(timeElapsedInput.getTime());
-        // En_TimeElapsedType elapsedType = timeElapsedType.getValue() != null ? timeElapsedType.getValue() : En_TimeElapsedType.NONE;
         return caseMeta;
     }
 

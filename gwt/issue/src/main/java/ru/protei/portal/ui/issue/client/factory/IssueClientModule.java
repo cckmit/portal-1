@@ -16,6 +16,7 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewVie
 import ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
+import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.create.IssueCreateView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
 import ru.protei.portal.ui.issue.client.view.filter.IssueFilterView;

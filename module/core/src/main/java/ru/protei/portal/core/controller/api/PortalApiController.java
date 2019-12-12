@@ -113,11 +113,11 @@ public class PortalApiController {
 
             AuthToken authToken = authTokenAPIResult.getData();
 
-            IssueCreateRequest issueCreateRequest = new IssueCreateRequest((CaseObject) auditableObject);
+            CaseObjectCreateRequest caseObjectCreateRequest = new CaseObjectCreateRequest((CaseObject) auditableObject);
 
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
-                    issueCreateRequest
+                    caseObjectCreateRequest
             );
 
             return caseObjectCoreResponse.orElseGet( result ->

@@ -41,8 +41,7 @@ public class IssueEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, Long issueCaseNumber )
-        {
+        public ShowPreview ( HasWidgets parent, Long issueCaseNumber ) {
             this.parent = parent;
             this.issueCaseNumber = issueCaseNumber;
         }
@@ -72,7 +71,7 @@ public class IssueEvents {
     /**
      * Показать форму редактирования
      */
-    @Url( value = "issue", primary = false )
+    @Url(value = "issue")
     public static class Edit {
         public Long id;
 
@@ -85,10 +84,8 @@ public class IssueEvents {
     /**
      * Показать форму создания
      */
-    @Url(value = "create_issue")
-    public static class Create {
-        public Create() {}
-    }
+    @Url(value = "issue_create")
+    public static class Create {}
 
     public static class ChangeIssue {
         public Long id;

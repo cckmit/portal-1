@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -22,7 +21,6 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
@@ -61,19 +59,19 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public Long createIssue(IssueCreateRequest issueCreateRequest ) throws RequestFailedException {
-        log.info("saveIssue(): case={}", issueCreateRequest);
+    public Long createIssue(CaseObjectCreateRequest caseObjectCreateRequest) throws RequestFailedException {
+        log.info("saveIssue(): case={}", caseObjectCreateRequest);
 
-        if (issueCreateRequest == null || issueCreateRequest.getCaseId() != null) {
+        if (caseObjectCreateRequest == null || caseObjectCreateRequest.getCaseId() != null) {
             throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        issueCreateRequest.getCaseObject().setTypeId(En_CaseType.CRM_SUPPORT.getId());
-        issueCreateRequest.getCaseObject().setCreatorId(token.getPersonId());
+        caseObjectCreateRequest.getCaseObject().setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        caseObjectCreateRequest.getCaseObject().setCreatorId(token.getPersonId());
 
-        Result<CaseObject> response = caseService.createCaseObject(token, issueCreateRequest);
+        Result<CaseObject> response = caseService.createCaseObject(token, caseObjectCreateRequest);
 
         log.info("saveIssue(): response.isOk()={}", response.isOk());
         if (response.isError()) throw new RequestFailedException(response.getStatus());

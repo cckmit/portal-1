@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -120,7 +118,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
         Assert.assertTrue("CaseObject must be created",
-                caseService.createCaseObject(getAuthToken(), new IssueCreateRequest(object)).isOk());
+                caseService.createCaseObject(getAuthToken(), new CaseObjectCreateRequest(object)).isOk());
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;

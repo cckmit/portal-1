@@ -20,10 +20,9 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
+import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
@@ -31,15 +30,20 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
+
 
 /**
  * Активность создания обращения
  */
 public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity, Activity {
+
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
         issueMetaView.setActivity(this);
+        view.getIssueMetaViewContainer().add(issueMetaView);
+
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
@@ -48,24 +52,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
             @Override
             public void onError(En_FileUploadStatus status, String details) {
-                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
-                }
-                else {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
-                }
+                fireEvent(new NotifyEvents.Show(En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
     }
 
     @Event
-    public void onAuthSuccess(AuthEvents.Success event) {
-        this.authProfile = event.profile;
-    }
-
-    @Event
-    public void onInitDetails(AppEvents.InitDetails initDetails) {
-        this.initDetails = initDetails;
+    public void onInit(AppEvents.InitDetails init) {
+        this.init = init;
     }
 
     @Event
@@ -75,10 +69,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        init.parent.clear();
+        init.parent.add(view.asWidget());
 
-        view.getIssueMetaViewContainer().add(issueMetaView);
+        createRequest = new CaseObjectCreateRequest();
+        subscriptionsList = null;
+        subscriptionsListEmptyMessage = null;
 
         fillView();
     }
@@ -92,25 +88,25 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void onAttachTag(CaseTagEvents.Attach event) {
-        tags.add(event.tag);
+        createRequest.addTag(event.tag);
     }
 
     @Event
     public void onDetachTag(CaseTagEvents.Detach event) {
-        tags.stream()
-                .filter(tag -> tag.getId().equals(event.id))
+        createRequest.getTags().stream()
+                .filter(tag -> Objects.equals(tag.getId(), event.id))
                 .findFirst()
-                .ifPresent(caseTag -> tags.remove(caseTag));
+                .ifPresent(caseTag -> createRequest.getTags().remove(caseTag));
     }
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        links.add(event.caseLink);
+        createRequest.addLink(event.caseLink);
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        links.remove(event.caseLink);
+        createRequest.getLinks().remove(event.caseLink);
     }
 
     @Override
@@ -119,15 +115,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        CaseObject caseObject = fillCaseObject(new CaseObject());
-        IssueCreateRequest issueCreateRequest = fillIssueCreateRequest(caseObject);
+        fillCaseCreateRequest();
 
         if (isLockedSave()) {
             return;
         }
 
         lockSave();
-        issueService.createIssue(issueCreateRequest, new FluentCallback<Long>()
+        issueService.createIssue(createRequest, new FluentCallback<Long>()
                 .withError(throwable -> unlockSave())
                 .withSuccess(caseId -> {
                     unlockSave();
@@ -144,39 +139,24 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (!result) {
-                    onError(null);
-                    return;
-                }
-
-                view.attachmentsContainer().remove(attachment);
-            }
-        });
+        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(result -> view.attachmentsContainer().remove(attachment)));
     }
 
     @Override
     public void onCompanyChanged() {
-        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
-        Company companyOption = caseObjectMeta.getInitiatorCompany();
+        Company companyOption = issueMetaView.getCaseMeta().getInitiatorCompany();
 
         issueMetaView.initiatorUpdateCompany(companyOption);
 
         initiatorSelectorAllowAddNew(companyOption.getId());
-        Long selectedCompanyId = companyOption.getId();
 
         issueMetaView.setPlatform(null);
-        issueMetaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+        issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         companyService.getCompanyWithParentCompanySubscriptions(
-                selectedCompanyId,
+                companyOption.getId(),
                 new ShortRequestCallback<List<CompanySubscription>>()
                         .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
                                 subscriptions,
@@ -187,14 +167,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                         ))
         );
 
-        companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
+        companyService.getCompanyCaseStates(companyOption.getId(), new ShortRequestCallback<List<CaseState>>()
                 .setOnSuccess(caseStates -> {
                     issueMetaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
                     fireEvent(new CaseStateEvents.UpdateSelectorOptions());
                 }));
 
         Profile profile = policyService.getProfile();
-        if (!Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
+        if (!Objects.equals(profile.getCompany().getId(), companyOption.getId())) {
             issueMetaView.setInitiator(null);
         } else {
             Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
@@ -206,15 +186,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onCreateContactClicked() {
-        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
-
-        if (caseObjectMeta.getInitiatorCompany() != null) {
-            fireEvent(new ContactEvents.Edit(null, caseObjectMeta.getInitiatorCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+        if (issueMetaView.getCaseMeta().getInitiatorCompany() == null) {
+            return;
         }
+
+        fireEvent(new ContactEvents.Edit(null, issueMetaView.getCaseMeta().getInitiatorCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
     }
 
     @Override
-    public void onLocalClicked() {
+    public void onPrivacyChanged() {
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
     }
 
@@ -224,49 +204,38 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withError(throwable -> consumer.accept(null))
                 .withSuccess(consumer));
     }
+
     @Override
     public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
-        localStorageService.set( ISSUE_CREATE + "_" + key, String.valueOf( isDisplay ) );
+        localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
     }
 
     private void fillView() {
-        view.attachmentsContainer().clear();
         view.privacyVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-
         view.isPrivate().setValue(false);
 
-        view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
         view.name().setValue(null);
         view.description().setValue(null);
+        view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
 
-        view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
-        initiatorSelectorAllowAddNew(null);
+        fillMetaView();
+
+        view.attachmentsContainer().clear();
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
         fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ))
-                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )));
+                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT ))
+                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT )));
 
-        links.clear();
-        tags.clear();
-
-        fillMetaView(new CaseObject());
+        view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();
     }
 
-    private void fillMetaView(CaseObject issue) {
-        CaseObjectMeta caseObjectMeta = new CaseObjectMeta(issue);
-
-        caseObjectMeta.setState(En_CaseState.CREATED);
-        caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
-        caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
-
-        Profile profile = policyService.getProfile();
-        Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
-        caseObjectMeta.setInitiator(initiator);
+    private void fillMetaView() {
+        CaseObjectMeta caseObjectMeta = initCaseMeta();
 
         issueMetaView.companyEnabled().setEnabled(true);
         issueMetaView.productEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT));
@@ -278,48 +247,50 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.timeElapsedHeaderVisibility().setVisible(false);
         issueMetaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);
-        issueMetaView.setCaseMetaNotifiers(new CaseObjectMetaNotifiers(issue));
+        issueMetaView.setTimeElapsedType(En_TimeElapsedType.NONE);
+
+        issueMetaView.setCaseMetaNotifiers(new CaseObjectMetaNotifiers());
         issueMetaView.setCaseMeta(caseObjectMeta);
-        issueMetaView.setTimeElapsedType(issue.getTimeElapsedType());
+
+        onCompanyChanged();
     }
 
-    private CaseObject fillCaseObject(CaseObject issue) {
+    private CaseObjectMeta initCaseMeta() {
+        CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
+        caseObjectMeta.setState(En_CaseState.CREATED);
+        caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
+        caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
+
+        return caseObjectMeta;
+    }
+
+    private void fillCaseCreateRequest() {
         CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
         CaseObjectMetaNotifiers notifiers = issueMetaView.getCaseMetaNotifiers();
+        CaseObject caseObject = createRequest.getCaseObject();
 
-        issue.setName(view.name().getValue());
-        issue.setInfo(view.description().getValue());
-        issue.setPrivateCase(view.isPrivate().getValue());
-        issue.setStateId(caseObjectMeta.getStateId());
-        issue.setImpLevel(caseObjectMeta.getImpLevel());
+        caseObject.setName(view.name().getValue());
+        caseObject.setInfo(view.description().getValue());
+        caseObject.setPrivateCase(view.isPrivate().getValue());
+        caseObject.setStateId(caseObjectMeta.getStateId());
+        caseObject.setImpLevel(caseObjectMeta.getImpLevel());
 
-        issue.setInitiatorCompany(caseObjectMeta.getInitiatorCompany());
-        issue.setInitiator(caseObjectMeta.getInitiator());
-        issue.setProduct(caseObjectMeta.getProduct());
-        issue.setManager(caseObjectMeta.getManager());
-        issue.setNotifiers(notifiers.getNotifiers());
-        issue.setPlatformId(caseObjectMeta.getPlatformId());
-        issue.setAttachmentExists(!CollectionUtils.isEmpty(view.attachmentsContainer().getAll()));
-        issue.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
+        caseObject.setInitiatorCompany(caseObjectMeta.getInitiatorCompany());
+        caseObject.setInitiator(caseObjectMeta.getInitiator());
+        caseObject.setProduct(caseObjectMeta.getProduct());
+        caseObject.setManager(caseObjectMeta.getManager());
+        caseObject.setNotifiers(notifiers.getNotifiers());
+        caseObject.setPlatformId(caseObjectMeta.getPlatformId());
+        caseObject.setAttachmentExists(!CollectionUtils.isEmpty(view.attachmentsContainer().getAll()));
+        caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
-            issue.setTimeElapsed(caseObjectMeta.getTimeElapsed());
-            issue.setTimeElapsedType(issueMetaView.timeElapsedType().getValue() == null ? En_TimeElapsedType.NONE : issueMetaView.timeElapsedType().getValue());
+            caseObject.setTimeElapsed(caseObjectMeta.getTimeElapsed());
+            caseObject.setTimeElapsedType(issueMetaView.timeElapsedType().getValue() == null ? En_TimeElapsedType.NONE : issueMetaView.timeElapsedType().getValue());
         }
 
-        return issue;
-    }
-
-    private IssueCreateRequest fillIssueCreateRequest(CaseObject issue) {
-        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
-        IssueCreateRequest issueCreateRequest = new IssueCreateRequest(issue);
-
-        issueCreateRequest.setLinks(links);
-        issueCreateRequest.setTags(tags);
-        issueCreateRequest.setTimeElapsed(caseObjectMeta.getTimeElapsed());
-        issueCreateRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
-
-        return issueCreateRequest;
+        createRequest.setTimeElapsed(issueMetaView.getCaseMeta().getTimeElapsed());
+        createRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
     }
 
     private void setSubscriptionEmails(String value) {
@@ -406,25 +377,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean makePreviewDisplaying( String key ) {
-        return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE + "_" + key, "false" ) );
+        return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
     }
 
     @Inject
-    PolicyService policyService;
-    @Inject
-    HomeCompanyService homeCompanyService;
-    @Inject
-    IssueControllerAsync issueService;
-    @Inject
-    AttachmentServiceAsync attachmentService;
+    Lang lang;
     @Inject
     TextRenderControllerAsync textRenderController;
     @Inject
-    Lang lang;
-    @Inject
     LocalStorageService localStorageService;
-    @Inject
-    CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
 
@@ -433,12 +394,21 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     IssueMetaView issueMetaView;
 
+    @Inject
+    PolicyService policyService;
+    @Inject
+    HomeCompanyService homeCompanyService;
+    @Inject
+    AttachmentServiceAsync attachmentService;
+    @Inject
+    CompanyControllerAsync companyService;
+    @Inject
+    IssueControllerAsync issueService;
+
     private boolean saving;
-    private AppEvents.InitDetails initDetails;
-    private Profile authProfile;
+    private AppEvents.InitDetails init;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
-    private List<CaseTag> tags = new ArrayList<>();
-    private List<CaseLink> links = new ArrayList<>();
-    private static final String ISSUE_CREATE = "issue_create_is_preview_displayed";
+    private CaseObjectCreateRequest createRequest;
+
 }

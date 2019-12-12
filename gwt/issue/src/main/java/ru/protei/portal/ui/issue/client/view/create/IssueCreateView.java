@@ -126,7 +126,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     @UiHandler("privacyButton")
     public void onLocalClick(ClickEvent event) {
         if (activity != null) {
-            activity.onLocalClicked();
+            activity.onPrivacyChanged();
         }
     }
 

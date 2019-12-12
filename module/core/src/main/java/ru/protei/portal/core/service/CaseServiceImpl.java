@@ -104,9 +104,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, IssueCreateRequest issueCreateRequest ) {
+    public Result< CaseObject > createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
 
-        CaseObject caseObject = issueCreateRequest.getCaseObject();
+        CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
         if (!validateFieldsOfNew(caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -181,17 +181,17 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if (isNotEmpty(issueCreateRequest.getTags())) {
+        if (isNotEmpty(caseObjectCreateRequest.getTags())) {
             caseObjectTagDAO.persistBatch(
-                    issueCreateRequest.getTags()
+                    caseObjectCreateRequest.getTags()
                             .stream()
                             .map(tag -> new CaseObjectTag(caseId, tag.getId()))
                             .collect(Collectors.toList())
             );
         }
 
-        if (isNotEmpty(issueCreateRequest.getLinks())) {
-            caseLinkService.createLinks(token, caseId, token.getPersonId(), issueCreateRequest.getLinks());
+        if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
+            caseLinkService.createLinks(token, caseId, token.getPersonId(), caseObjectCreateRequest.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
