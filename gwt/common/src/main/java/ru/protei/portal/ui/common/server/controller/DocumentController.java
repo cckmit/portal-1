@@ -14,7 +14,7 @@ import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.DocumentService;
-import ru.protei.portal.core.svn.document.DocumentSvn;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 
@@ -34,7 +34,7 @@ public class DocumentController {
     @Autowired
     AuthService authService;
     @Autowired
-    DocumentSvn documentSvn;
+    DocumentSvnApi documentSvnApi;
     @Autowired
     SessionService sessionService;
     @Autowired
@@ -73,7 +73,7 @@ public class DocumentController {
                         @PathVariable("projectId") Long projectId,
                         @PathVariable("documentId") Long documentId) throws IOException {
         try {
-            documentSvn.getDocument(projectId, documentId, response.getOutputStream());
+            documentSvnApi.getDocument(projectId, documentId, response.getOutputStream());
         } catch (SVNException e) {
             if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
                 logger.info("getFile(): Document not found (projectId = " + projectId + ", documentId = " + documentId + ")", e);

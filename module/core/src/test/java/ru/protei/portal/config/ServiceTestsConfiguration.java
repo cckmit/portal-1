@@ -35,8 +35,8 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
-import ru.protei.portal.core.svn.document.DocumentSvn;
-import ru.protei.portal.core.svn.document.DocumentSvnImpl;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
@@ -218,8 +218,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public DocumentSvn getDocumentSvn() {
-        return new DocumentSvnImpl();
+    public DocumentSvnApi getDocumentSvnApi() {
+        return new DocumentSvnApiImpl();
     }
     
     @Bean

@@ -16,9 +16,9 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import javax.annotation.PostConstruct;
 import java.io.*;
 
-public class DocumentSvnImpl implements DocumentSvn {
+public class DocumentSvnApiImpl implements DocumentSvnApi {
 
-    private static final Logger log = LoggerFactory.getLogger(DocumentSvnImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentSvnApiImpl.class);
     private SVNRepository repository;
     private static final long HEAD_REVISION = -1;
     private static final String NO_COPY_FROM_PATH = null;
