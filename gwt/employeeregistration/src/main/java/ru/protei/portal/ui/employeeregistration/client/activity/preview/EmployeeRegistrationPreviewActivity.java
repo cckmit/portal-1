@@ -45,6 +45,12 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             fireEvent(new Back());
             return;
         }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         fullScreenContainer.clear();
         fullScreenContainer.add( view.asWidget() );
         loadDetails(event.id);

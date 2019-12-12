@@ -5,14 +5,17 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
@@ -40,11 +43,17 @@ public abstract class RegionListActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        this.profile = event.profile;
         filterView.resetFilter();
     }
 
     @Event
     public void onShow( RegionEvents.Show event ) {
+        if (!profile.hasGrantAccessFor(En_Privilege.REGION_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
 
@@ -112,7 +121,8 @@ public abstract class RegionListActivity
         return itemView;
     }
 
-     Consumer<RegionInfo> fillViewer = new Consumer<RegionInfo> () {
+
+    Consumer<RegionInfo> fillViewer = new Consumer<RegionInfo> () {
         @Override
         public void accept( RegionInfo product ) {
             AbstractRegionItemView itemView = makeView(product);
@@ -141,4 +151,5 @@ public abstract class RegionListActivity
     private Map<AbstractRegionItemView, RegionInfo > itemViewToModel = new HashMap<>();
     private AppEvents.InitDetails init;
     private ProjectQuery query;
+    private Profile profile;
 }

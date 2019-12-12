@@ -51,6 +51,11 @@ public abstract class ProjectTableActivity
 
     @Event
     public void onShow( ProjectEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 

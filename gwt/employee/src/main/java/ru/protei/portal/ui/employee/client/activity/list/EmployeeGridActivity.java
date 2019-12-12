@@ -4,16 +4,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.EmployeeEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 
@@ -27,11 +26,16 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
+        this.profile = event.profile;
         filterView.resetFilter();
     }
 
     @Event
     public void onShow(EmployeeEvents.Show event) {
+        if (!profile.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         fireEvent(new ActionBarEvents.Clear());
 
@@ -76,6 +80,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
     }
 
+
     @Inject
     AbstractEmployeeFilterView filterView;
     @Inject
@@ -86,4 +91,5 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     private ViewType currentViewType;
     private EmployeeQuery query;
     private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
+    private Profile profile;
 }

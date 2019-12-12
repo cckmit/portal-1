@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.RegionEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -26,7 +27,8 @@ public abstract class RegionPage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
+        this.profile = event.profile;
+        if ( profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.REGION, DebugIds.SIDEBAR_MENU.REGION ) );
         }
     }
@@ -48,13 +50,17 @@ public abstract class RegionPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String ТAB;
     private RegionEvents.Show show = new RegionEvents.Show();
+    private Profile profile;
 }
 

@@ -9,6 +9,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -25,7 +26,9 @@ public abstract class CaseStatePage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
+        this.profile = event.profile;
+
+        if ( profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CASE_STATE, DebugIds.SIDEBAR_MENU.CASE_STATE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -48,13 +51,17 @@ public abstract class CaseStatePage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String ТAB;
     private CaseStateEvents.Show show = new CaseStateEvents.Show();
+    private Profile profile;
 }
 

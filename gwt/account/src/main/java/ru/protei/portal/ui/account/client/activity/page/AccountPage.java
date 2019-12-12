@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -26,7 +27,9 @@ public abstract class AccountPage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
+        this.profile = event.profile;
+
+        if ( profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT, DebugIds.SIDEBAR_MENU.ACCOUNT ) );
             fireEvent( new AppEvents.InitPage( new AccountEvents.Show(true) ) );
         }
@@ -54,11 +57,15 @@ public abstract class AccountPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String ТAB;
+    private Profile profile;
 }

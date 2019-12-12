@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -25,7 +26,9 @@ public abstract class ContractPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
+        this.profile = event.profile;
+
+        if ( profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTRACT, DebugIds.SIDEBAR_MENU.CONTRACT) );
             fireEvent( new AppEvents.InitPage( new ContractEvents.Show( true ) ) );
         }
@@ -53,12 +56,16 @@ public abstract class ContractPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String ТAB;
+    private Profile profile;
 }
 

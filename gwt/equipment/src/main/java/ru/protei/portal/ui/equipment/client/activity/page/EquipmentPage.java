@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -28,7 +29,9 @@ public abstract class EquipmentPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
+        this.profile = event.profile;
+
+        if ( profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT, DebugIds.SIDEBAR_MENU.EQUIPMENT ) );
             fireEvent( new AppEvents.InitPage( new EquipmentEvents.Show( true ) ) );
         }
@@ -61,12 +64,16 @@ public abstract class EquipmentPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String ТAB;
+    private Profile profile;
 }
 

@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -25,7 +26,9 @@ public abstract class DocumentPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+        this.profile = event.profile;
+
+        if (profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, DebugIds.SIDEBAR_MENU.DOCUMENT));
             fireEvent(new AppEvents.InitPage(new DocumentEvents.Show(true)));
         }
@@ -53,11 +56,15 @@ public abstract class DocumentPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new MenuEvents.Select(TAB));
+        if (profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new MenuEvents.Select(TAB));
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String TAB;
+    private Profile profile;
 }

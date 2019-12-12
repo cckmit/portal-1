@@ -5,9 +5,12 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
@@ -30,6 +33,11 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
 
     @Event
     public void onShow(DocumentEvents.Edit event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         requestDocument(event.id, document -> {
@@ -69,6 +77,8 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
     AbstractDocumentEditView view;
     @Inject
     DocumentControllerAsync documentService;
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
     private final String TAG = "DocumentEditActivity";

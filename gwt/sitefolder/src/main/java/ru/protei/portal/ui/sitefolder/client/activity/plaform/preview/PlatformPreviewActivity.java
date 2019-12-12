@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -35,6 +37,11 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
     @Event
     public void onShow(SiteFolderPlatformEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
@@ -114,6 +121,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     SiteFolderControllerAsync siteFolderController;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    PolicyService policyService;
 
 
     private Long platformId;

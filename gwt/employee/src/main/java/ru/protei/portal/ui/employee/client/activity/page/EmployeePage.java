@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -28,7 +29,9 @@ public abstract class EmployeePage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
+        this.profile = event.profile;
+
+        if ( profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -51,7 +54,9 @@ public abstract class EmployeePage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
 
     @Inject
@@ -59,6 +64,5 @@ public abstract class EmployeePage implements Activity {
 
     private String ТAB;
     private EmployeeEvents.Show show = new EmployeeEvents.Show();
-    Logger logger = Logger.getLogger( this.getClass().getName() );
-
+    private Profile profile;
 }
