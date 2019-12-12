@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +52,8 @@ public class DocumentServiceImpl implements DocumentService {
     LockService lockService;
     @Autowired
     DocumentSvnService documentSvnService;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
@@ -103,6 +106,10 @@ public class DocumentServiceImpl implements DocumentService {
 
         if (document == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (document.getProjectAsCaseObject() != null) {
+            jdbcManyRelationsHelper.fill(document.getProjectAsCaseObject(), "locations");
         }
 
         resetDocumentPrivacyInfo(document);

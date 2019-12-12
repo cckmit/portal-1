@@ -62,6 +62,10 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         return tabContent.remove(widget);
     }
 
+    public void setTabContentStyleName(String style) {
+        tabContent.addStyleName(style);
+    }
+
     public void setWithCustomSelect(boolean isSelectable) {
         this.isSelectable = isSelectable;
     }

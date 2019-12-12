@@ -1921,4 +1921,16 @@ public interface Lang extends Messages, ContactItemLang {
     String documentConfirmRemove();
 
     String documentRemoved();
+
+    String documentProjectCustomerType();
+
+    String documentProjectProductDirection();
+
+    String documentProjectRegion();
+
+    String documentSectionProject();
+
+    String documentSectionEquipment();
+
+    String documentSectionInfo();
 }

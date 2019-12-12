@@ -1312,7 +1312,7 @@ td.info {
   font-size: 85% !important;
 }
 
-.label {
+.label:not(.tag) {
   display: inline;
   padding: .2em .6em .3em;
   font-size: 75%;

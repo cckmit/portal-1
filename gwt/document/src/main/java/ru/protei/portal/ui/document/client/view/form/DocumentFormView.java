@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -19,23 +20,22 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
-import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategoryFormSelector;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
-import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectFormSelector;
+import ru.protei.portal.ui.common.client.widget.stringselectform.StringTagInputForm;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormActivity;
 import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormView;
-import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
+import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeFormSelector;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -139,57 +139,37 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
-    public HasEnabled decimalNumberEnabled() {
-        return decimalNumber;
+    public HasValue<Boolean> isApproved() {
+        return approved;
     }
 
     @Override
-    public HasValue<Boolean> isApproved() { return approved; }
-
-    @Override
-    public HasVisibility equipmentVisible() {
-        return equipmentSelectorContainer;
+    public void uploaderEnabled(boolean isEnabled) {
+        selectFileButton.setEnabled(isEnabled);
     }
 
     @Override
-    public HasVisibility decimalNumberVisible() {
-        return decimalNumberContainer;
+    public void equipmentEnabled(boolean isEnabled) {
+        equipment.setEnabled(isEnabled);
     }
 
     @Override
-    public HasVisibility inventoryNumberVisible() {
-        return inventoryNumberContainer;
+    public void documentTypeEnabled(boolean isEnabled) {
+        documentType.setEnabled(isEnabled);
     }
 
     @Override
-    public HasVisibility uploaderVisible() {
-        return new HasVisibility() {
-            @Override
-            public boolean isVisible() {
-                return documentUploader.isVisible();
-            }
-
-            @Override
-            public void setVisible(boolean visible) {
-                selectFileContainer.setVisible(visible);
-                //nameContainer.getElement().setClassName("form-group " + (visible ? "col-md-6" : "col-md-9"));
-            }
-        };
+    public void inventoryNumberEnabled(boolean isEnabled) {
+        inventoryNumber.setEnabled(isEnabled);
+        inventoryNumberContainer.removeClassName("disabled");
+        if (!isEnabled) inventoryNumberContainer.addClassName("disabled");
     }
 
     @Override
-    public HasEnabled equipmentEnabled() {
-        return equipment;
-    }
-
-    @Override
-    public HasEnabled documentTypeEnabled() {
-        return documentType;
-    }
-
-    @Override
-    public HasEnabled inventoryNumberEnabled() {
-        return inventoryNumber;
+    public void decimalNumberEnabled(boolean isEnabled) {
+        decimalNumber.setEnabled(isEnabled);
+        decimalNumberContainer.removeClassName("disabled");
+        if (!isEnabled) decimalNumberContainer.addClassName("disabled");
     }
 
     @Override
@@ -206,6 +186,13 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     public void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter) {
         documentType.setFilter(filter);
         documentType.refreshValue();
+    }
+
+    @Override
+    public void setProjectInfo(String customerType, String productDirection, String region) {
+        projectCustomerType.setValue(customerType);
+        projectProductDirection.setValue(productDirection);
+        projectRegion.setValue(region);
     }
 
     @UiHandler("selectFileButton")
@@ -233,6 +220,7 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
 
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
+        setProjectInfo("", "", "");
         if (activity != null)
             activity.onProjectChanged();
     }
@@ -247,59 +235,58 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @UiField
     ValidableTextBox name;
     @UiField
-    HTMLPanel nameContainer;
-    @UiField
     TextBox fileName;
     @Inject
     @UiField(provided = true)
     DocumentUploader documentUploader;
     @Inject
     @UiField(provided = true)
-    DocumentTypeSelector documentType;
+    DocumentTypeFormSelector documentType;
     @Inject
     @UiField(provided = true)
-    DocumentCategorySelector documentCategory;
+    DocumentCategoryFormSelector documentCategory;
     @UiField
     TextArea annotation;
     @UiField
     LongBox inventoryNumber;
+    @UiField
+    DivElement inventoryNumberContainer;
     @Inject
     @UiField(provided = true)
-    ProjectButtonSelector project;
+    ProjectFormSelector project;
+    @UiField
+    TextBox projectCustomerType;
+    @UiField
+    TextBox projectProductDirection;
+    @UiField
+    TextBox projectRegion;
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector contractor;
+    EmployeeFormSelector contractor;
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector registrar;
+    EmployeeFormSelector registrar;
     @UiField
     TextBox version;
     @Inject
     @UiField(provided = true)
-    DocumentExecutionTypeSelector executionType;
+    DocumentExecutionTypeFormSelector executionType;
     @Inject
     @UiField(provided = true)
-    StringSelectInput keywords;
+    StringTagInputForm keywords;
     @Inject
     @UiField(provided = true)
     DecimalNumberInput decimalNumber;
     @UiField
-    Switcher approved;
+    DivElement decimalNumberContainer;
+    @UiField
+    CheckBox approved;
     @UiField
     Button selectFileButton;
-    @UiField
-    HTMLPanel selectFileContainer;
     @Inject
     @UiField(provided = true)
-    EquipmentButtonSelector equipment;
-    @UiField
-    HTMLPanel equipmentSelectorContainer;
-    @UiField
-    HTMLPanel decimalNumberContainer;
-    @UiField
-    HTMLPanel inventoryNumberContainer;
-    @UiField
-    HTMLPanel approvedContainer;
+    EquipmentFormSelector equipment;
+
 
     @Inject
     @UiField

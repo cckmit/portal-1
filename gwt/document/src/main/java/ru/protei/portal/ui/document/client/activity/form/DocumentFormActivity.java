@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -60,9 +61,12 @@ public abstract class DocumentFormActivity
         tag = event.tag;
         fillView(event.document);
         if (view.project().getValue() != null) {
-            refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+            refreshProject(proj -> {
+                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
+                fillViewProjectInfo(proj);
+            });
         } else {
-            setDesignationVisibility(false);
+            setDesignationEnabled(false);
         }
     }
 
@@ -83,7 +87,7 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        view.project().setValue(new EntityOption(event.project.getName(), event.project.getId()));
+        fillViewProject(event.project);
         onProjectChanged();
     }
 
@@ -93,14 +97,14 @@ public abstract class DocumentFormActivity
 
     @Override
     public void onDocumentCategoryChanged() {
-        setDesignationVisibility(isDesignationVisible(project, view.documentCategory().getValue()));
+        setDesignationEnabled(isDesignationVisible(project, view.documentCategory().getValue()));
 
         En_DocumentCategory category = view.documentCategory().getValue();
 
-        view.documentTypeEnabled().setEnabled(category != null);
+        setDocumentTypeEnabled(category != null);
 
         if (category == null) {
-            view.equipmentVisible().setVisible(false);
+            setEquipmentEnabled(false);
             return;
         }
 
@@ -109,7 +113,7 @@ public abstract class DocumentFormActivity
         }
         view.setDocumentTypeCategoryFilter(documentType -> documentType.getDocumentCategory() == category );
 
-        view.equipmentVisible().setVisible(category.isForEquipment());
+        setEquipmentEnabled(category.isForEquipment());
 
         setDecimalNumberEnabled();
     }
@@ -117,13 +121,16 @@ public abstract class DocumentFormActivity
     @Override
     public void onProjectChanged() {
         if (view.project().getValue() != null) {
-            refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+            refreshProject(proj -> {
+                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
+                fillViewProjectInfo(proj);
+            });
         } else {
-            setDesignationVisibility(false);
+            setDesignationEnabled(false);
         }
 
         EntityOption project = view.project().getValue();
-        view.equipmentEnabled().setEnabled(project != null);
+        setEquipmentEnabled(project != null);
         view.equipment().setValue(null, true);
 
         if (project != null)
@@ -138,7 +145,7 @@ public abstract class DocumentFormActivity
             setDecimalNumberEnabled();
         } else {
             List<DecimalNumber> decimalNumbers = equipment.getDecimalNumbers();
-            view.decimalNumberEnabled().setEnabled(true);
+            setDecimalNumberEnabled(true);
             view.setDecimalNumberHints(decimalNumbers);
         }
     }
@@ -152,9 +159,44 @@ public abstract class DocumentFormActivity
         );
     }
 
-    private void setDesignationVisibility(boolean isDesignationVisible) {
-        view.decimalNumberVisible().setVisible(isDesignationVisible);
-        view.inventoryNumberVisible().setVisible(isDesignationVisible);
+    private void setDesignationEnabled(boolean isDesignationEnabled) {
+        setDecimalNumberEnabled(isDesignationEnabled);
+        setInventoryNumberEnabled(isDesignationEnabled);
+    }
+
+    private void setDecimalNumberEnabled(boolean isEnabled) {
+        view.decimalNumberEnabled(isEnabled);
+        if (!isEnabled) {
+            view.decimalNumber().setValue(null);
+        }
+    }
+
+    private void setInventoryNumberEnabled(boolean isEnabled) {
+        view.inventoryNumberEnabled(isEnabled);
+        if (!isEnabled) {
+            view.inventoryNumber().setValue(null);
+        }
+    }
+
+    private void setEquipmentEnabled(boolean isEnabled) {
+        view.equipmentEnabled(isEnabled);
+        if (!isEnabled) {
+            view.equipment().setValue(null);
+        }
+    }
+
+    private void setDocumentTypeEnabled(boolean isEnabled) {
+        view.documentTypeEnabled(isEnabled);
+        if (!isEnabled) {
+            view.documentType().setValue(null);
+        }
+    }
+
+    private void setUploaderEnabled(boolean isEnabled) {
+        view.uploaderEnabled(isEnabled);
+        if (!isEnabled) {
+            view.documentUploader().resetForm();
+        }
     }
 
     private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
@@ -167,7 +209,7 @@ public abstract class DocumentFormActivity
 
     private void setDecimalNumberEnabled() {
         En_DocumentCategory category = view.documentCategory().getValue();
-        view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
+        setDecimalNumberEnabled(category != null && !category.isForEquipment());
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {
@@ -271,7 +313,7 @@ public abstract class DocumentFormActivity
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProject().getName(), document.getProjectId()));
+        fillViewProject(document.getProject());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
@@ -290,18 +332,40 @@ public abstract class DocumentFormActivity
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
         boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
 
-        view.uploaderVisible().setVisible(isNew || !document.getApproved());
-        view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
-        view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
-        view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
+        setUploaderEnabled(isNew || !document.getApproved());
+        setEquipmentEnabled(isNew || decimalNumberIsNotSet);
+        setDecimalNumberEnabled(decimalNumberIsNotSet);
+        setInventoryNumberEnabled(inventoryNumberIsNotSet);
 
         view.nameValidator().setValid(true);
 
         view.documentUploader().resetForm();
     }
 
+    private void fillViewProject(Project project) {
+        view.project().setValue(project == null ? null : new EntityOption(project.getName(), project.getId()));
+        fillViewProjectInfo(project);
+    }
+
+    private void fillViewProjectInfo(Project project) {
+        view.setProjectInfo(
+            project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
+            project == null ? "" : fetchDisplayText(project.getProductDirection()),
+            project == null ? "" : fetchDisplayText(project.getRegion())
+        );
+    }
+
+    private String fetchDisplayText(EntityOption option) {
+        if (option == null) {
+            return "";
+        }
+        return option.getDisplayText();
+    }
+
     @Inject
     Lang lang;
+    @Inject
+    En_CustomerTypeLang customerTypeLang;
     @Inject
     AbstractDocumentFormView view;
     @Inject
