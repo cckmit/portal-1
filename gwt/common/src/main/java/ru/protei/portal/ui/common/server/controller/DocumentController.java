@@ -9,8 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
-import ru.protei.portal.core.service.DocumentSvnService;
+import ru.protei.portal.core.svn.document.DocumentSvn;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 
@@ -31,7 +32,7 @@ public class DocumentController {
     AuthService authService;
 
     @Autowired
-    DocumentSvnService documentSvnService;
+    DocumentSvn documentSvn;
 
     @Autowired
     SessionService sessionService;
@@ -69,10 +70,16 @@ public class DocumentController {
                         @PathVariable("projectId") Long projectId,
                         @PathVariable("documentId") Long documentId) throws IOException {
         try {
-            documentSvnService.getDocument(projectId, documentId, response.getOutputStream());
+            documentSvn.getDocument(projectId, documentId, response.getOutputStream());
         } catch (SVNException e) {
-            logger.error("Failed to get document from repository: projectId=" + projectId + ", documentIdColumnHeader=" + documentId, e);
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
+                logger.info("getFile(): Document not found (projectId = " + projectId + ", documentId = " + documentId + ")", e);
+                response.setStatus(HttpStatus.NOT_FOUND.value());
+            } else {
+                logger.error("getFile(): Failed to get document (projectId = " + projectId + ", documentId = " + documentId + "), " +
+                        "error code = " + (e.getErrorMessage() != null ? e.getErrorMessage().getErrorCode() : "null"), e);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
             return;
         }
 

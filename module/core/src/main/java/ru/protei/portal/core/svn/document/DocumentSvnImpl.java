@@ -1,25 +1,24 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.svn.document;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tmatesoft.svn.core.SVNCommitInfo;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNProperties;
-import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.*;
+import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
 
-public class DocumentSvnServiceImpl implements DocumentSvnService {
+public class DocumentSvnImpl implements DocumentSvn {
 
-    private static final Logger log = LoggerFactory.getLogger(DocumentSvnServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentSvnImpl.class);
     private SVNRepository repository;
     private static final long HEAD_REVISION = -1;
     private static final String NO_COPY_FROM_PATH = null;
@@ -27,15 +26,18 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
 
     @PostConstruct
     public void init() {
-        DAVRepositoryFactory.setup();
         String repositoryUrl = config.data().svn().getUrl();
+        String username = config.data().svn().getUsername();
+        String password = config.data().svn().getPassword();
         try {
+            DAVRepositoryFactory.setup();
             repository = DAVRepositoryFactory.create(SVNURL.parseURIEncoded(repositoryUrl));
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(username, password.toCharArray());
+            repository.setAuthenticationManager(authManager);
         } catch (SVNException e) {
-            log.error("Failed to condition repository " + repositoryUrl, e);
-            return;
+            log.error("Failed to init repository (" + repositoryUrl + ") using username=" +
+                      username + " and password=" + (StringUtils.isEmpty(password) ? "<no>" : "<yes>"), e);
         }
-        repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(config.data().svn().getUsername(), config.data().svn().getPassword()));
     }
 
     @Autowired

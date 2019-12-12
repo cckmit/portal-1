@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.svn.document.DocumentSvn;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -50,7 +51,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Autowired
     LockService lockService;
     @Autowired
-    DocumentSvnService documentSvnService;
+    DocumentSvn documentSvn;
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
@@ -428,7 +429,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId) {
         try {
-            documentSvnService.saveDocument(projectId, documentId, inputStream);
+            documentSvn.saveDocument(projectId, documentId, inputStream);
         } catch (Exception e) {
             log.error("saveToSVN(" + documentId + ", " + projectId + "): failed to save file to the svn", e);
             return false;
@@ -438,7 +439,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId) {
         try {
-            documentSvnService.updateDocument(projectId, documentId, inputStream);
+            documentSvn.updateDocument(projectId, documentId, inputStream);
         } catch (Exception e) {
             log.error("updateAtSVN(" + documentId + ", " + projectId + "): failed to update file at the svn", e);
             return false;
@@ -448,7 +449,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private boolean removeFromSVN(Long documentId, Long projectId) {
         try {
-            documentSvnService.removeDocument(projectId, documentId);
+            documentSvn.removeDocument(projectId, documentId);
         } catch (Exception e) {
             log.error("removeFromSVN(" + documentId + ", " + projectId + "): failed to remove document from the svn", e);
             return false;
@@ -458,7 +459,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private byte[] getFromSVN(Long documentId, Long projectId) throws SVNException, IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            documentSvnService.getDocument(projectId, documentId, out);
+            documentSvn.getDocument(projectId, documentId, out);
             return out.toByteArray();
         }
     }
