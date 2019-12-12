@@ -68,7 +68,7 @@ public class TestCaseEvents extends BaseServiceTest {
         when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseObject must be created",
-                caseService.createCaseObject( getAuthToken(), new IssueCreateRequest(object) ).isOk() );
+                caseService.createCaseObject( getAuthToken(), new CaseObjectCreateRequest(object) ).isOk() );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }

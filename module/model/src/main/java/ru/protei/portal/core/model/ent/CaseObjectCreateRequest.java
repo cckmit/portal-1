@@ -3,9 +3,10 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class IssueCreateRequest implements Serializable {
+public class CaseObjectCreateRequest implements Serializable {
     private CaseObject caseObject;
 
     private List<CaseLink> links;
@@ -16,9 +17,11 @@ public class IssueCreateRequest implements Serializable {
 
     private Long timeElapsed;
 
-    public IssueCreateRequest() {}
+    public CaseObjectCreateRequest() {
+        caseObject = new CaseObject();
+    }
 
-    public IssueCreateRequest(CaseObject caseObject) {
+    public CaseObjectCreateRequest(CaseObject caseObject) {
         this.caseObject = caseObject;
     }
 
@@ -34,16 +37,22 @@ public class IssueCreateRequest implements Serializable {
         return tags;
     }
 
-    public void setTags(List<CaseTag> tags) {
-        this.tags = tags;
+    public void addTag(CaseTag tag) {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        tags.add(tag);
     }
 
     public List<CaseLink> getLinks() {
         return links;
     }
 
-    public void setLinks(List<CaseLink> links) {
-        this.links = links;
+    public void addLink(CaseLink link) {
+        if (links == null) {
+            links = new ArrayList<>();
+        }
+        links.add(link);
     }
 
     public En_TimeElapsedType getTimeElapsedType() {
