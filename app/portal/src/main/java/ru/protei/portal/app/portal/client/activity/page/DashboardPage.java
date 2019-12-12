@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -27,6 +28,8 @@ public abstract class DashboardPage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
+        this.profile = event.profile;
+
         if ( event.profile.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD, DebugIds.SIDEBAR_MENU.DASHBOARD ) );
             fireEvent( new AppEvents.InitPage( show ) );
@@ -50,8 +53,11 @@ public abstract class DashboardPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select(TAB) );
+        if ( profile.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
+            fireEvent( new MenuEvents.Select(TAB) );
+        }
     }
+
 
     @Inject
     Lang lang;
@@ -60,4 +66,5 @@ public abstract class DashboardPage implements Activity {
     private DashboardEvents.Show show = new DashboardEvents.Show();
 
 
+    private Profile profile;
 }

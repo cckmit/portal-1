@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -27,7 +28,9 @@ public abstract class IssueReportPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        if (event.profile.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
+        this.profile = event.profile;
+
+        if (profile.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
             fireEvent(new MenuEvents.Add(ТAB, UiConstants.TabIcons.ISSUE_REPORTS, DebugIds.SIDEBAR_MENU.ISSUE_REPORTS));
             fireEvent(new AppEvents.InitPage(show));
         }
@@ -55,12 +58,16 @@ public abstract class IssueReportPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new MenuEvents.Select(ТAB));
+        if (profile.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
+            fireEvent(new MenuEvents.Select(ТAB));
+        }
     }
+
 
     @Inject
     Lang lang;
 
     private String ТAB;
     private IssueReportEvents.Show show = new IssueReportEvents.Show();
+    private Profile profile;
 }
