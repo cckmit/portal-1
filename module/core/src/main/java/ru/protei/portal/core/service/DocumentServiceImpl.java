@@ -177,6 +177,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public Result<String> getDocumentName(Long documentId) {
+        String name = documentDAO.getName(documentId);
+        return ok(name);
+    }
+
+    @Override
     @Transactional
     public Result<Document> updateDocument( AuthToken token, Document document) {
 
