@@ -28,7 +28,6 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
-import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -90,7 +89,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         issueId = null;
         isPrivateCase = false;
 
-        fillView(issueCaseNumber);
+        requestIssue(issueCaseNumber);
         view.backBtnVisibility().setVisible(false);
         view.isFullScreen(false);
     }
@@ -104,7 +103,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         issueId = null;
         isPrivateCase = false;
 
-        fillView(issueCaseNumber);
+        requestIssue(issueCaseNumber);
         view.backBtnVisibility().setVisible(true);
         view.isFullScreen(true);
     }
@@ -286,7 +285,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 } ) );
     }
 
-    private void fillView( Long number ) {
+    private void requestIssue( Long number ) {
         if (number == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -299,14 +298,28 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             }
 
             @Override
-            public void onSuccess( CaseObject caseObject ) {
-                issueId = caseObject.getId();
-                isPrivateCase = caseObject.isPrivateCase();
-                textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);
+            public void onSuccess( CaseObject issue ) {
+                issueId = issue.getId();
+                isPrivateCase = issue.isPrivateCase();
+                textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
 
-                fillView( caseObject );
+                fillView( issue );
+                fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
             }
         } );
+    }
+
+    private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
+        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) return null;
+        return new CaseObjectMetaJira(issue);
+    }
+
+    private CaseObjectMetaNotifiers makeMetaNotifiers( CaseObject issue ) {
+        return new CaseObjectMetaNotifiers(issue);
+    }
+
+    private CaseObjectMeta makeMeta( CaseObject issue ) {
+        return new CaseObjectMeta(issue);
     }
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){

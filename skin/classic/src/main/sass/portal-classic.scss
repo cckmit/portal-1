@@ -176,3 +176,145 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   min-width: 60px;
   font-size: 14px !important;
 }
+
+.issue-meta-edit {
+  .meta-fields{
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+
+    .meta-issue-importance{
+      width: 50%;
+      .form-group-default{
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-state{
+      width: 50%;
+      .form-group-default{
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-product{
+      width: 100%;
+      .form-group-default{
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-manager{
+      width: 100%;
+      .form-group-default{
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-initiator-info {
+      margin-top: 10px;
+      margin-bottom: 0px;
+    }
+
+    .meta-issue-company {
+      width: 100%;
+      .form-group-default{
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-initiator{
+      width: 100%;
+      .form-group-default{
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-platform{
+      width: 100%;
+    }
+  }
+}
+
+.issue-meta-preview {
+  .meta-fields {
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+
+    .meta-issue-importance{
+      width: 25%;
+      -webkit-order: 1;
+      order: 1;
+      .form-group-default{
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-state {
+      width: 25%;
+      -webkit-order: 2;
+      order: 2;
+
+      .form-group-default {
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-product {
+      width: 25%;
+      -webkit-order: 3;
+      order: 3;
+
+      .form-group-default {
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+    .meta-issue-manager {
+      width: 50%;
+      -webkit-order: 6;
+      order: 6;
+    }
+
+    .meta-issue-initiator-info {
+      display: none;
+    }
+
+    .meta-issue-company {
+      display: none;
+    }
+
+    .meta-issue-initiator{
+      width: 50%;
+      -webkit-order: 5;
+      order: 5;
+      .form-group-default {
+        border-right-color: transparent;
+      }
+    }
+
+    .meta-issue-platform{
+      width: 25%;
+      -webkit-order: 4;
+      order: 4;
+      .form-group-default {
+        border-bottom-color: transparent;
+        margin-bottom: 0px
+      }
+    }
+
+  }
+}

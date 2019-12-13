@@ -59,4 +59,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
     HasVisibility backBtnVisibility();
 
     HasWidgets getTagsContainer();
+
+    HasWidgets getMetaContainer();
+
 }

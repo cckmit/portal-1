@@ -164,6 +164,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public HasWidgets getMetaContainer() {
+        return metaContainer;
+    }
+
+    @Override
     public HasVisibility timeElapsedContainerVisibility() {
         return timeElapsedContainer;
     }
@@ -398,6 +403,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     HTMLPanel linksContainer;
     @UiField
     HTMLPanel tagsContainer;
+    @UiField
+    HTMLPanel metaContainer;
 
     @Inject
     En_CaseStateLang caseStateLang;

@@ -501,8 +501,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     PlatformFormSelector platform;
-    @UiField
-    HTMLPanel platformContainer;
+//    @UiField
+//    HTMLPanel platformContainer;
     @Inject
     @UiField(provided = true)
     JiraSLASelector jiraSlaSelector;

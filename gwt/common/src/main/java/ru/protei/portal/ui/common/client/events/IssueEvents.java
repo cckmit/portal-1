@@ -4,12 +4,10 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.view.EntityOption;
 
 /**
  * Created by turik on 28.10.16.
@@ -77,11 +75,12 @@ public class IssueEvents {
      */
     @Url(value = "issue")
     public static class Edit {
-        public Long id;
+        @Name( "id" )
+        public Long caseNumber;
 
-        public Edit() { this.id = null; }
-        public Edit (Long id) {
-            this.id = id;
+        public Edit() { this.caseNumber = null; }
+        public Edit (Long caseNumber) {
+            this.caseNumber = caseNumber;
         }
     }
 
