@@ -26,13 +26,11 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn,
-                       ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn,
-                       RemoveClickColumn<Document> removeClickColumn
+    public void onInit(EditClickColumn<Document> editClickColumn, DocumentNameColumn<Document> documentNameColumn,
+                       ArchiveClickColumn<Document> archiveClickColumn, RemoveClickColumn<Document> removeClickColumn
     ) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
-        this.downloadClickColumn = downloadClickColumn;
         this.archiveClickColumn = archiveClickColumn;
         this.removeClickColumn = removeClickColumn;
         this.documentNameColumn = documentNameColumn;
@@ -46,8 +44,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
         editClickColumn.setColumnProvider(columnProvider);
-
-        downloadClickColumn.setDownloadHandler(activity);
 
         archiveClickColumn.setArchiveHandler(activity);
         archiveClickColumn.setColumnProvider(columnProvider);
@@ -121,8 +117,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private void initTable() {
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
-        downloadClickColumn.setDownloadCustomImage("./images/pdficon.png");
-        downloadClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
         archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) );
         archiveClickColumn.setArchiveFilter(Document::isDeprecatedUnit);
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_REMOVE) && !v.isDeprecatedUnit());
@@ -132,7 +126,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         columns.add(decimalNumber);
 
         table.addColumn(id.header, id.values);
-        table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
         table.addColumn(documentNameColumn.header, documentNameColumn.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
@@ -225,7 +218,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     ClickColumnProvider<Document> columnProvider = new ClickColumnProvider<>();
     EditClickColumn<Document> editClickColumn;
-    DownloadClickColumn<Document> downloadClickColumn;
     ArchiveClickColumn<Document> archiveClickColumn;
     RemoveClickColumn<Document> removeClickColumn;
     DocumentNameColumn<Document> documentNameColumn;

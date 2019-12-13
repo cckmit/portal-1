@@ -81,7 +81,7 @@
                                     <i class="fa fa-cloud-upload-alt"/>
                                 </g:Button>
                             </div>
-                            <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
+                            <fileuploader:DocumentUploader ui:field="documentUploader" visible="false" format="PDF"/>
                         </div>
                     </div>
                 </div>

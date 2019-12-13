@@ -255,22 +255,16 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         Result<Document> response;
+
+        FileItem pdfFile = sessionService.getFilePdf(httpRequest);
+        FileItem docFile = sessionService.getFileDoc(httpRequest);
+        sessionService.setFilePdf(httpRequest, null);
+        sessionService.setFileDoc(httpRequest, null);
+
         if (document.getId() == null) {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                log.error("saveDocument: id={} | file item in session was null", id4log);
-                throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
-            }
-            sessionService.setFileItem(httpRequest, null);
-            response = documentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
+            response = documentService.createDocument(descriptor.makeAuthToken(), document, docFile, pdfFile);
         } else {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                response = documentService.updateDocument(descriptor.makeAuthToken(), document);
-            } else {
-                sessionService.setFileItem(httpRequest, null);
-                response = documentService.updateDocumentAndContent(descriptor.makeAuthToken(), document, fileItem);
-            }
+            response = documentService.updateDocument(descriptor.makeAuthToken(), document, docFile, pdfFile);
         }
 
         log.info("saveDocument: id={} | result: {}", id4log, response.isOk() ? "ok" : response.getStatus());

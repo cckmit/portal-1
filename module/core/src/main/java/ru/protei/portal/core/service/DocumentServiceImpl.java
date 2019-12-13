@@ -1,20 +1,24 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -23,14 +27,13 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 import static ru.protei.portal.api.struct.Result.error;
@@ -119,9 +122,14 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Document> createDocument( AuthToken token, Document document, FileItem fileItem) {
+    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile) {
 
-        if (document == null || !isValidDocument(document) || fileItem == null) {
+        boolean withDoc = docFile != null;
+        boolean withPdf = pdfFile != null;
+        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
+        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
+
+        if (document == null || !isValidDocument(document)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -130,9 +138,8 @@ public class DocumentServiceImpl implements DocumentService {
             return error(validationStatus);
         }
 
-        InputStream fileInputStream = getInputStream(fileItem);
-        if (fileInputStream == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
+        if (document.getApproved() && !withDoc) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         return lockService.doWithLock(Document.class, DOCUMENT_ID_FOR_CREATE, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
@@ -140,24 +147,121 @@ public class DocumentServiceImpl implements DocumentService {
             document.setState(En_DocumentState.ACTIVE);
 
             if (!saveToDB(document)) {
-                log.error("createDocument(): failed to save/update document to the db");
+                log.error("createDocument(): failed to create document at the db");
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
             Long documentId = document.getId();
             Long projectId = document.getProjectId();
 
-            if (!saveToIndex(fileItem.get(), documentId, projectId)) {
-                log.error("createDocument(" + documentId + "): failed to add file to the index");
+            if (withPdf && !saveToIndex(pdfFile.get(), documentId, projectId)) {
+                log.error("createDocument(" + documentId + "): failed to add pdf file to the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            if (!saveToSVN(fileInputStream, documentId, projectId)) {
-                log.error("createDocument(" + documentId + "): failed to save file to the svn");
-                if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the index");
+            if (withDoc && !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat)) {
+                log.error("createDocument(" + documentId + "): failed to save doc file to the svn");
+                if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
+            }
+
+            if (withPdf && !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat)) {
+                log.error("createDocument(" + documentId + "): failed to save pdf file to the svn");
+                if (withDoc && !removeFromSVN(documentId, projectId, docFormat)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the index");
+                if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_CREATED);
+            }
+
+            return ok(document);
+        });
+    }
+
+    @Override
+    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile) {
+
+        boolean withDoc = docFile != null;
+        boolean withPdf = pdfFile != null;
+        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
+        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
+
+        if (document == null || document.getId() == null || !isValidDocument(document)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Long projectId = document.getProjectId();
+        Long documentId = document.getId();
+
+        if (document.getApproved() && (withDoc || withPdf)) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
+
+            Document oldDocument = documentDAO.get(documentId);
+            if (oldDocument == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
+
+            En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
+            if (validationStatus != En_ResultStatus.OK) {
+                return error(validationStatus);
+            }
+
+            List<En_DocumentFormat> formatsAtSvn = (withDoc || withPdf) ? listDocumentFormatsAtSVN(documentId, projectId) : Collections.emptyList();
+            boolean withDocAtSvn = withDoc && formatsAtSvn.contains(docFormat);
+            boolean withPdfAtSvn = withPdf && formatsAtSvn.contains(pdfFormat);
+            byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
+            byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
+            boolean withDocFileRollback = withDoc && oldBytesDoc != null;
+            boolean withPdfFileRollback = withPdf && oldBytesPdf != null;
+
+            if (!updateAtDB(document)) {
+                log.error("updateDocument(" + documentId + "): failed to update document at the db");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            if (withPdf && !updateAtIndex(pdfFile.get(), documentId, projectId)) {
+                log.error("updateDocument(" + documentId + "): failed to update pdf file at the index");
+                if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            if (withDoc && (withDocAtSvn ?
+                !updateAtSVN(docFile.getInputStream(), documentId, projectId, docFormat) :
+                !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat))
+            ) {
+                log.error("updateDocument(" + documentId + "): failed to update doc file at the svn");
+                if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
+                if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_CREATED);
+            }
+
+            if (withPdf && (withPdfAtSvn ?
+                !updateAtSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat) :
+                !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat))
+            ) {
+                log.error("updateDocument(" + documentId + "): failed to update pdf file at the svn");
+                if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
+                if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            List<En_DocumentFormat> filesToRemove = formatsAtSvn
+                    .stream()
+                    .filter(format -> format != docFormat)
+                    .filter(format -> format != pdfFormat)
+                    .collect(Collectors.toList());
+            if (!filesToRemove.isEmpty()) {
+                log.info("updateDocument(" + documentId + "): cleanup | going to remove files from svn: " + StringUtils.join(filesToRemove, ", "));
+                for (En_DocumentFormat format : filesToRemove) {
+                    if (!removeFromSVN(documentId, projectId, format)) {
+                        log.error("updateDocument(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
+                    }
+                }
             }
 
             return ok(document);
@@ -184,91 +288,27 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public Result<En_DocumentFormat> getDocumentFile(AuthToken token, Long documentId, Long projectId, En_DocumentFormat format, OutputStream outputStream) {
+        try {
+            format = mergeDocDocxFormats(documentId, projectId, format);
+            documentSvnApi.getDocument(projectId, documentId, format, outputStream);
+            return ok(format);
+        } catch (SVNException e) {
+            if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
+                log.info("getDocumentFile(): File not found (projectId = " + projectId + ", documentId = " + documentId + ")", e);
+                return error(En_ResultStatus.NOT_FOUND);
+            } else {
+                log.error("getDocumentFile(): Failed to get file (projectId = " + projectId + ", documentId = " + documentId + "), " +
+                          "error code = " + (e.getErrorMessage() != null ? e.getErrorMessage().getErrorCode() : "null"), e);
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        }
+    }
+
+    @Override
     public Result<String> getDocumentName(Long documentId) {
         String name = documentDAO.getName(documentId);
         return ok(name);
-    }
-
-    @Override
-    @Transactional
-    public Result<Document> updateDocument( AuthToken token, Document document) {
-
-        if (document == null || document.getId() == null || !isValidDocument(document)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        Document oldDocument = documentDAO.get(document.getId());
-
-        if (oldDocument == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
-        if (validationStatus != En_ResultStatus.OK) {
-            return error(validationStatus);
-        }
-
-        if (!updateAtDB(document)) {
-            log.error("updateDocument(" + document.getId() + "): failed to update document at the db");
-            return error(En_ResultStatus.NOT_UPDATED);
-        }
-
-        return ok(document);
-    }
-
-    @Override
-    public Result<Document> updateDocumentAndContent( AuthToken token, Document document, FileItem fileItem) {
-
-        if (document == null || document.getId() == null || !isValidDocument(document) || fileItem == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        Long projectId = document.getProjectId();
-        Long documentId = document.getId();
-
-        if (document.getApproved()) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-
-        InputStream fileInputStream = getInputStream(fileItem);
-        if (fileInputStream == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
-
-            Document oldDocument = documentDAO.get(documentId);
-            if (oldDocument == null) {
-                return error(En_ResultStatus.NOT_FOUND);
-            }
-
-            En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
-            if (validationStatus != En_ResultStatus.OK) {
-                return error(validationStatus);
-            }
-
-            byte[] oldFileData = getFromSVN(documentId, projectId);
-
-            if (!updateAtDB(document)) {
-                log.error("updateDocumentAndContent(" + documentId + "): failed to update document at the db");
-                return error(En_ResultStatus.NOT_UPDATED);
-            }
-
-            if (!updateAtIndex(fileItem.get(), documentId, projectId)) {
-                log.error("updateDocumentAndContent(" + documentId + "): failed to update file at the index");
-                if (!updateAtDB(oldDocument)) log.error("updateDocumentAndContent(" + documentId + "): failed to rollback document from the db");
-                return error(En_ResultStatus.NOT_UPDATED);
-            }
-
-            if (!updateAtSVN(fileInputStream, documentId, projectId)) {
-                log.error("updateDocumentAndContent(" + documentId + "): failed to update file at the svn");
-                if (!updateAtDB(oldDocument)) log.error("updateDocumentAndContent(" + documentId + "): failed to rollback document from the db");
-                if (!updateAtIndex(oldFileData, documentId, projectId)) log.error("updateDocumentAndContent(" + documentId + "): failed to rollback document from the index");
-                return error(En_ResultStatus.NOT_UPDATED);
-            }
-
-            return ok(document);
-        });
     }
 
     @Override
@@ -285,12 +325,14 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_REMOVED);
             }
 
-            if (!removeFromSVN(documentId, projectId)) {
-                log.error("removeDocument(" + documentId + "): failed to remove document from the svn | data inconsistency");
-            }
-
             if (!removeFromIndex(documentId)) {
                 log.error("removeDocument(" + documentId + "): failed to remove document from the index | data inconsistency");
+            }
+
+            for (En_DocumentFormat format : En_DocumentFormat.values()) {
+                if (!removeFromSVN(documentId, projectId, format)) {
+                    log.error("removeDocument(" + documentId + "): failed to remove " + format.getFormat() + " file from the svn | data inconsistency");
+                }
             }
 
             return ok(documentId);
@@ -371,6 +413,25 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
+    private En_DocumentFormat predictDocFormat(FileItem fileItem) {
+        String fileName = fileItem.getName();
+        String fileExt = FilenameUtils.getExtension(fileName);
+        En_DocumentFormat documentFormat = En_DocumentFormat.of(fileExt);
+        return documentFormat == null ? En_DocumentFormat.DOCX : documentFormat;
+    }
+
+    private En_DocumentFormat mergeDocDocxFormats(Long documentId, Long projectId, En_DocumentFormat format) throws SVNException {
+        if (format == En_DocumentFormat.PDF) {
+            return format;
+        }
+        List<En_DocumentFormat> formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+        if (formatsAtSvn.contains(En_DocumentFormat.DOCX)) {
+            return En_DocumentFormat.DOCX;
+        } else {
+            return En_DocumentFormat.DOC;
+        }
+    }
+
     private boolean saveToDB(Document document) {
         try {
             if (documentDAO.persist(document) == null) {
@@ -440,9 +501,13 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId) {
+    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
+        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat);
+    }
+
+    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
         try {
-            documentSvnApi.saveDocument(projectId, documentId, inputStream);
+            documentSvnApi.saveDocument(projectId, documentId, documentFormat, inputStream);
         } catch (Exception e) {
             log.error("saveToSVN(" + documentId + ", " + projectId + "): failed to save file to the svn", e);
             return false;
@@ -450,9 +515,13 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId) {
+    private boolean updateAtSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
+        return updateAtSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat);
+    }
+
+    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
         try {
-            documentSvnApi.updateDocument(projectId, documentId, inputStream);
+            documentSvnApi.updateDocument(projectId, documentId, documentFormat, inputStream);
         } catch (Exception e) {
             log.error("updateAtSVN(" + documentId + ", " + projectId + "): failed to update file at the svn", e);
             return false;
@@ -460,9 +529,15 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean removeFromSVN(Long documentId, Long projectId) {
+    private boolean removeFromSVN(Long documentId, Long projectId, En_DocumentFormat documentFormat) {
         try {
-            documentSvnApi.removeDocument(projectId, documentId);
+            documentSvnApi.removeDocument(projectId, documentId, documentFormat);
+        } catch (SVNException e) {
+            if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
+                return true;
+            }
+            log.error("removeFromSVN(" + documentId + ", " + projectId + "): failed to remove document from the svn", e);
+            return false;
         } catch (Exception e) {
             log.error("removeFromSVN(" + documentId + ", " + projectId + "): failed to remove document from the svn", e);
             return false;
@@ -470,19 +545,27 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private byte[] getFromSVN(Long documentId, Long projectId) throws SVNException, IOException {
+    private byte[] getFromSVN(Long documentId, Long projectId, En_DocumentFormat documentFormat) throws SVNException, IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            documentSvnApi.getDocument(projectId, documentId, out);
+            documentSvnApi.getDocument(projectId, documentId, documentFormat, out);
             return out.toByteArray();
+        } catch (SVNException e) {
+            if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
+                return null;
+            }
+            throw e;
         }
     }
 
-    private InputStream getInputStream(FileItem fileItem) {
-        try {
-            return fileItem.getInputStream();
-        } catch (Exception e) {
-            log.error("getInputStream(): failed to get input stream from file item", e);
-            return null;
-        }
+    private List<En_DocumentFormat> listDocumentFormatsAtSVN(Long documentId, Long projectId) throws SVNException {
+        return documentSvnApi.listDocuments(projectId, documentId)
+                .stream()
+                .map(FilenameUtils::getName)
+                .filter(Objects::nonNull)
+                .filter(filename -> filename.startsWith(String.valueOf(documentId)))
+                .map(FilenameUtils::getExtension)
+                .map(En_DocumentFormat::of)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

@@ -53,7 +53,8 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
-        view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
+        view.setDownloadLinkPdf(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf");
+        view.setDownloadLinkDoc(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc");
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
         fillProject(document);
@@ -72,7 +73,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
     }
 
-    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/document/";
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 
     @Inject
     RegionControllerAsync regionService;

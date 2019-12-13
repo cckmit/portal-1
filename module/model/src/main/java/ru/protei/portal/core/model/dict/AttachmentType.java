@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.attachment;
+package ru.protei.portal.core.model.dict;
 
 /**
  * Created by bondarenko on 12.01.17.

@@ -6,8 +6,11 @@
     <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
             <h4 ui:field="header" class="m-r-50"/>
-            <g:Anchor href="javascript:void(0)" ui:field="downloadButton" target="_blank">
-                <img src="./images/pdficon.png" class="preview-title-image_right"/>
+            <g:Anchor href="javascript:void(0)" ui:field="downloadPdfButton" target="_blank">
+                <img src="./images/document-pdf.svg" class="preview-title-image_right"/>
+            </g:Anchor>
+            <g:Anchor href="javascript:void(0)" ui:field="downloadDocButton" target="_blank">
+                <img src="./images/document-doc.svg" class="preview-title-image_right"/>
             </g:Anchor>
 
             <div class="inline">

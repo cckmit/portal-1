@@ -87,8 +87,13 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public void setDownloadLink(String link) {
-        downloadButton.setHref(link);
+    public void setDownloadLinkPdf(String link) {
+        downloadPdfButton.setHref(link);
+    }
+
+    @Override
+    public void setDownloadLinkDoc(String link) {
+        downloadDocButton.setHref(link);
     }
 
     @Override
@@ -97,7 +102,10 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
 
-    @UiField Anchor downloadButton;
+    @UiField
+    Anchor downloadPdfButton;
+    @UiField
+    Anchor downloadDocButton;
     @UiField
     HeadingElement header;
     @UiField
