@@ -21,19 +21,19 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setPrivateIssue(boolean privateIssue);
     void setCaseNumber(Long caseNumber);
     void setCreatedBy(String value);
-    void setState(long value );
-    void setImportance(int value);
-    void setProduct(String value);
-
-    void setContact(String value);
-    void setManager(String value);
+//    void setState(long value );
+//    void setImportance(int value);
+//    void setProduct(String value);
+//
+//    void setContact(String value);
+//    void setManager(String value);
     void setName(String value, String jiraUrl);
 
     void setInfo(String value);
-
-    void setPlatformName(String value);
-    void setPlatformLink(String link);
-    void setPlatformVisibility(boolean visible);
+//
+//    void setPlatformName(String value);
+//    void setPlatformLink(String link);
+//    void setPlatformVisibility(boolean visible);
     void isFullScreen(boolean isFullScreen);
 
     void setSubscriptionEmails(String value);

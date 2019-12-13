@@ -183,23 +183,23 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setCaseNumber(value.getCaseNumber());
         view.setCreatedBy(lang.createBy(transliteration(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
 
-        view.setState( value.getStateId() );
-        view.setImportance( value.getImpLevel() );
-        view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
-
-        String contact = value.getInitiator() == null ? "" : transliteration(value.getInitiator().getDisplayName());
-        Company initiatorCompany = value.getInitiatorCompany();
-        if ( initiatorCompany != null ) {
-            contact += " (" + transliteration(initiatorCompany.getCname()) + ")";
-        }
-        view.setContact( contact );
-        String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
-        view.setManager( manager );
+//        view.setState( value.getStateId() );
+//        view.setImportance( value.getImpLevel() );
+//        view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
+//
+//        String contact = value.getInitiator() == null ? "" : transliteration(value.getInitiator().getDisplayName());
+//        Company initiatorCompany = value.getInitiatorCompany();
+//        if ( initiatorCompany != null ) {
+//            contact += " (" + transliteration(initiatorCompany.getCname()) + ")";
+//        }
+//        view.setContact( contact );
+//        String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
+//        view.setManager( manager );
         view.setName(value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()) ? value.getJiraUrl() : "");
 
-        view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
-        view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
-        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+//        view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
+//        view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
+//        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
 
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
 
