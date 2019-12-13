@@ -126,7 +126,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        Result<Boolean> response = equipmentService.removeEquipment( descriptor.makeAuthToken(), equipmentId );
+        Result<Boolean> response = equipmentService.removeEquipment( descriptor.makeAuthToken(), equipmentId, descriptor.getPerson() );
         log.info( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -262,9 +262,9 @@ public class EquipmentControllerImpl implements EquipmentController {
         sessionService.setFileDoc(httpRequest, null);
 
         if (document.getId() == null) {
-            response = documentService.createDocument(descriptor.makeAuthToken(), document, docFile, pdfFile);
+            response = documentService.createDocument(descriptor.makeAuthToken(), document, docFile, pdfFile, descriptor.getPerson());
         } else {
-            response = documentService.updateDocument(descriptor.makeAuthToken(), document, docFile, pdfFile);
+            response = documentService.updateDocument(descriptor.makeAuthToken(), document, docFile, pdfFile, descriptor.getPerson());
         }
 
         log.info("saveDocument: id={} | result: {}", id4log, response.isOk() ? "ok" : response.getStatus());

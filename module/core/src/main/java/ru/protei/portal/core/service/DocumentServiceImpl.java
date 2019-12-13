@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
@@ -45,6 +46,7 @@ public class DocumentServiceImpl implements DocumentService {
     private static final Long DOCUMENT_ID_FOR_CREATE = -1L;
     private static final Long LOCK_TIMEOUT = 5L;
     private static final TimeUnit LOCK_TIMEOUT_TIME_UNIT = TimeUnit.SECONDS;
+    private static final String authorRollback = "auto-rollback";
 
     @Autowired
     DocumentDAO documentDAO;
@@ -122,8 +124,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile) {
+    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, Person person) {
 
+        String author = person.getDisplayName();
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
@@ -160,16 +163,16 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            if (withDoc && !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat)) {
+            if (withDoc && !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, author)) {
                 log.error("createDocument(" + documentId + "): failed to save doc file to the svn");
                 if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            if (withPdf && !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat)) {
+            if (withPdf && !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, author)) {
                 log.error("createDocument(" + documentId + "): failed to save pdf file to the svn");
-                if (withDoc && !removeFromSVN(documentId, projectId, docFormat)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withDoc && !removeFromSVN(documentId, projectId, docFormat, authorRollback)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
                 if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
@@ -180,8 +183,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile) {
+    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, Person person) {
 
+        String author = person.getDisplayName();
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
@@ -230,8 +234,8 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc && (withDocAtSvn ?
-                !updateAtSVN(docFile.getInputStream(), documentId, projectId, docFormat) :
-                !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat))
+                !updateAtSVN(docFile.getInputStream(), documentId, projectId, docFormat, author) :
+                !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, author))
             ) {
                 log.error("updateDocument(" + documentId + "): failed to update doc file at the svn");
                 if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
@@ -240,11 +244,11 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withPdf && (withPdfAtSvn ?
-                !updateAtSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat) :
-                !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat))
+                !updateAtSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, author) :
+                !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, author))
             ) {
                 log.error("updateDocument(" + documentId + "): failed to update pdf file at the svn");
-                if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat, authorRollback)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
                 if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
                 if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_UPDATED);
@@ -259,7 +263,7 @@ public class DocumentServiceImpl implements DocumentService {
                 if (!filesToRemove.isEmpty()) {
                     log.info("updateDocument(" + documentId + "): cleanup | going to remove files from svn: " + StringUtils.join(filesToRemove, ", "));
                     for (En_DocumentFormat format : filesToRemove) {
-                        if (!removeFromSVN(documentId, projectId, format)) {
+                        if (!removeFromSVN(documentId, projectId, format, author)) {
                             log.error("updateDocument(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
                         }
                     }
@@ -314,7 +318,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Long> removeDocument( AuthToken token, Long documentId, Long projectId) {
+    public Result<Long> removeDocument(AuthToken token, Long documentId, Long projectId, Person person) {
+
+        String author = person.getDisplayName();
 
         if (documentId == null || projectId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -332,7 +338,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             for (En_DocumentFormat format : En_DocumentFormat.values()) {
-                if (!removeFromSVN(documentId, projectId, format)) {
+                if (!removeFromSVN(documentId, projectId, format, author)) {
                     log.error("removeDocument(" + documentId + "): failed to remove " + format.getFormat() + " file from the svn | data inconsistency");
                 }
             }
@@ -512,13 +518,13 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
-        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat);
+    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
+        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, author);
     }
 
-    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
+    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
         try {
-            documentSvnApi.saveDocument(projectId, documentId, documentFormat, inputStream);
+            documentSvnApi.saveDocument(projectId, documentId, documentFormat, author, inputStream);
         } catch (Exception e) {
             log.error("saveToSVN(" + documentId + ", " + projectId + "): failed to save file to the svn", e);
             return false;
@@ -526,13 +532,13 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean updateAtSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
-        return updateAtSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat);
+    private boolean updateAtSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
+        return updateAtSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, author);
     }
 
-    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat) {
+    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
         try {
-            documentSvnApi.updateDocument(projectId, documentId, documentFormat, inputStream);
+            documentSvnApi.updateDocument(projectId, documentId, documentFormat, author, inputStream);
         } catch (Exception e) {
             log.error("updateAtSVN(" + documentId + ", " + projectId + "): failed to update file at the svn", e);
             return false;
@@ -540,9 +546,9 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean removeFromSVN(Long documentId, Long projectId, En_DocumentFormat documentFormat) {
+    private boolean removeFromSVN(Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
         try {
-            documentSvnApi.removeDocument(projectId, documentId, documentFormat);
+            documentSvnApi.removeDocument(projectId, documentId, documentFormat, author);
         } catch (SVNException e) {
             if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
                 return true;

@@ -395,9 +395,9 @@ public class PortalConfigData {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
-            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
-            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s");
-            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s");
+            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s (%3$s)");
+            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s (%3$s)");
+            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s (%3$s)");
         }
 
         public String getUrl() {

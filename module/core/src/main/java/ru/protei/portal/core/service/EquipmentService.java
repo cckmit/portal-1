@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -51,5 +52,5 @@ public interface EquipmentService {
 
     @Privileged( En_Privilege.EQUIPMENT_REMOVE )
     @Auditable( En_AuditType.EQUIPMENT_REMOVE )
-    Result<Boolean> removeEquipment( AuthToken token, Long equipmentId );
+    Result<Boolean> removeEquipment( AuthToken token, Long equipmentId, Person person );
 }

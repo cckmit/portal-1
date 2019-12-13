@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface DocumentSvnApi {
 
-    void saveDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, InputStream inputStream) throws SVNException;
+    void saveDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author, InputStream inputStream) throws SVNException;
 
-    void updateDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, InputStream inputStream) throws SVNException, IOException;
+    void updateDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author, InputStream inputStream) throws SVNException, IOException;
 
     void getDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, OutputStream outputStream) throws SVNException;
 
-    void removeDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat) throws SVNException;
+    void removeDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author) throws SVNException;
 
     List<String> listDocuments(Long projectId, Long documentId) throws SVNException;
 }

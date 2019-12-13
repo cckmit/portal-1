@@ -66,9 +66,9 @@ public class DocumentControllerImpl implements DocumentController {
         sessionService.setFileDoc(httpRequest, null);
 
         if (document.getId() == null) {
-            response = documentService.createDocument(descriptor.makeAuthToken(), document, docFile, pdfFile);
+            response = documentService.createDocument(descriptor.makeAuthToken(), document, docFile, pdfFile, descriptor.getPerson());
         } else {
-            response = documentService.updateDocument(descriptor.makeAuthToken(), document, docFile, pdfFile);
+            response = documentService.updateDocument(descriptor.makeAuthToken(), document, docFile, pdfFile, descriptor.getPerson());
         }
 
         log.info("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
@@ -88,8 +88,9 @@ public class DocumentControllerImpl implements DocumentController {
             throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
         log.info("removeDocument(): id = {}", document.getId());
+        UserSessionDescriptor descriptor = ServiceUtils.getDescriptor(sessionService, httpRequest);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId());
+        Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), descriptor.getPerson());
         log.info("removeDocument(): id = {}, status = {}", document.getId(), result.getStatus());
         return ServiceUtils.checkResultAndGetData(result);
     }
