@@ -28,7 +28,9 @@ public class CrmConstants {
     }
 
     public interface FileUpload {
-        String FILE_ITEM_DESC = "file-item";
+        String FILE_ITEM = "file-item";
+        String FILE_ITEM_PDF = "file-item-pdf";
+        String FILE_ITEM_DOC = "file-item-doc";
     }
 
     public interface CaseTag {

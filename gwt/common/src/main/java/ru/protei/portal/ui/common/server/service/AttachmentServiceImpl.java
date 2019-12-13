@@ -52,7 +52,7 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public void clearUploadedAttachmentsCache() {
-        sessionService.clearFileItem(httpServletRequest);
+        sessionService.clearAllFiles(httpServletRequest);
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

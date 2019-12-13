@@ -288,7 +288,7 @@ public class BootstrapService {
             Long documentId = partialDocuments.get(i).getId();
             Long projectId = partialDocuments.get(i).getProjectId();
             try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                documentSvnApi.getDocument(projectId, documentId, out);
+                documentSvnApi.getDocument(projectId, documentId, En_DocumentFormat.PDF, out);
                 final byte[] fileData = out.toByteArray();
                 if (fileData.length == 0) {
                     log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);

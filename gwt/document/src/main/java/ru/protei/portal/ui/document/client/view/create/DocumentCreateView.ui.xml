@@ -5,7 +5,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <wizard:WizardWidget ui:field="wizard">
+        <wizard:WizardWidget ui:field="wizard" tabContentStyleName="no-padding">
 
             <wizard:pane.WizardWidgetPane tabName="{lang.documentProjectHeader}" tabIcon="fa fa-archive"
                 buttonBack="{lang.buttonCancel}" buttonForward="{lang.buttonForward}">
@@ -33,7 +33,7 @@
 
             <wizard:pane.WizardWidgetPane tabName="{lang.documentCreateHeader}" tabIcon="fa fa-book"
                 buttonBack="{lang.buttonBack}" buttonForward="{lang.buttonCreate}">
-                <g:HTMLPanel ui:field="documentContainer"/>
+                <g:HTMLPanel styleName="card-body" ui:field="documentContainer"/>
             </wizard:pane.WizardWidgetPane>
         </wizard:WizardWidget>
     </g:HTMLPanel>

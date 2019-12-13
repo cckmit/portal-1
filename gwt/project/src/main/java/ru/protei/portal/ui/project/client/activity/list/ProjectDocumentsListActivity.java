@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public abstract class ProjectDocumentsListActivity implements Activity, AbstractProjectDocumentsListItemActivity {
 
-    private static final String DOWNLOAD_PATH = "springApi/document/";
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 
     @PostConstruct
     public void init() { ; }
@@ -76,7 +76,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
             return;
         }
 
-        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
+        Window.open(DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId() + "/pdf", value.getName(), "");
     }
 
     private void handleDocuments(List<Document> documents) {

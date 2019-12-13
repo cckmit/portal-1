@@ -23,6 +23,11 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         boolean isArchived(T value);
     }
 
+    public interface IconProvider {
+        String addToArchive();
+        String removeFromArchive();
+    }
+
     @Inject
     public ArchiveClickColumn(Lang lang) {
         this.lang = lang;
@@ -33,13 +38,15 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         this.lock = DOM.createAnchor().cast();
         lock.setHref("#");
         lock.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.ARCHIVE);
+        String classAdd = "fa-lg " + iconProvider.addToArchive();
+        String classARemove = "fa-lg " + iconProvider.removeFromArchive();
         if (archiveFilter != null && archiveFilter.isArchived(value)) {
             lock.addClassName("archive-lock");
-            lock.replaceClassName("fa-lg fa fa-archive", "fa-lg fa fa-history");
+            lock.replaceClassName(classAdd, classARemove);
             lock.setTitle(lang.buttonFromArchive());
         } else {
             lock.removeClassName("archive-lock");
-            lock.replaceClassName("fa-lg fa fa-history", "fa-lg fa fa-archive");
+            lock.replaceClassName(classARemove, classAdd);
             lock.setTitle(lang.buttonToArchive());
         }
         if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
@@ -63,7 +70,15 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         this.archiveFilter = archiveFilter;
     }
 
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider;
+    }
+
     private final Lang lang;
     private AnchorElement lock;
     private ArchiveFilter<T> archiveFilter;
+    private IconProvider iconProvider = new IconProvider() {
+        public String addToArchive() { return "fa fa-archive"; }
+        public String removeFromArchive() { return "fa fa-history"; }
+    };
 }
