@@ -13,9 +13,12 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
@@ -26,14 +29,13 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DocumentNameColumn<Document> documentNameColumn,
-                       ArchiveClickColumn<Document> archiveClickColumn, RemoveClickColumn<Document> removeClickColumn
+    public void onInit(EditClickColumn<Document> editClickColumn, ArchiveClickColumn<Document> archiveClickColumn,
+                       RemoveClickColumn<Document> removeClickColumn
     ) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.archiveClickColumn = archiveClickColumn;
         this.removeClickColumn = removeClickColumn;
-        this.documentNameColumn = documentNameColumn;
         initTable();
     }
 
@@ -50,8 +52,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         removeClickColumn.setRemoveHandler(activity);
         removeClickColumn.setColumnProvider(columnProvider);
-
-        documentNameColumn.setColumnProvider(columnProvider);
 
         project.setActionHandler(activity::onProjectColumnClicked);
 
@@ -119,14 +119,18 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !v.isDeprecatedUnit() );
         archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) );
         archiveClickColumn.setArchiveFilter(Document::isDeprecatedUnit);
+        archiveClickColumn.setIconProvider(new ArchiveClickColumn.IconProvider() {
+            public String addToArchive() { return "far fa-hdd"; }
+            public String removeFromArchive() { return "fa fa-history"; }
+        });
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_REMOVE) && !v.isDeprecatedUnit());
 
-        columns.add(id);
-        columns.add(documentNameColumn);
+        columns.add(approve);
+        columns.add(name);
         columns.add(decimalNumber);
 
-        table.addColumn(id.header, id.values);
-        table.addColumn(documentNameColumn.header, documentNameColumn.values);
+        table.addColumn(approve.header, approve.values);
+        table.addColumn(name.header, name.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -134,28 +138,62 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
-    private final ClickColumn<Document> id = new ClickColumn<Document>() {
+    private final ClickColumn<Document> approve = new ClickColumn<Document>() {
         @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.documentIdColumnHeader());
-        }
-
+        protected String getColumnClassName() { return "document-approve-column"; }
         @Override
-        public void fillColumnValue(Element cell, Document value) {
-            cell.setInnerText(value.getId().toString());
+        protected void fillColumnHeader(Element columnHeader) {}
+        @Override
+        protected void fillColumnValue(Element cell, Document value) {
+            String icon = value.getApproved() ? UiConstants.Icons.APPROVED : UiConstants.Icons.NOT_APPROVED;
+            cell.setInnerHTML("<i class='fa fa-lg " + icon + "'></i>");
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
         }
     };
 
+    private final ClickColumn<Document> name = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-name-column"; }
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.documentName());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (value.isDeprecatedUnit()) {
+                html
+                        .append("<div class =\"document-name\">")
+                        .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_TABLE.LOCK_ICON + "\"></i> ")
+                        .append(value.getName())
+                        .append("</div>");
+            } else {
+                html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
+            }
+
+            if (value.getProject() != null && value.getProject().getCustomer() != null) {
+                html.append( "<div class=\"document-name\">(" + value.getProject().getCustomer().getCname() + ")</div>" );
+            }
+
+            html.append( "<div><b>" + value.getType().getName() + " (" + DateFormatter.formatYear(value.getCreated()) + ")</b></div>" );
+
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("deprecated-entity");
+            }
+            cell.setInnerHTML(html.toString());
+        }
+    };
+
     private final ClickColumn<Document> decimalNumber = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-number-column"; }
         @Override
         protected void fillColumnHeader(Element columnHeader) {
             columnHeader.setInnerText(lang.designation());
-            columnHeader.addClassName("document-number-column");
         }
-
         @Override
         public void fillColumnValue(Element cell, Document value) {
             StringBuilder html = new StringBuilder();
@@ -177,10 +215,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private final ClickColumn<Document> project = new ClickColumn<Document>() {
         @Override
+        protected String getColumnClassName() { return "document-project-column"; }
+        @Override
         protected void fillColumnHeader(Element element) {
             element.setInnerText(lang.equipmentProject());
         }
-
         @Override
         public void fillColumnValue(Element cell, Document value) {
             Project project = value.getProject();
@@ -195,7 +234,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
         }
     };
-
 
     @UiField
     InfiniteTableWidget<Document> table;
@@ -220,7 +258,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     EditClickColumn<Document> editClickColumn;
     ArchiveClickColumn<Document> archiveClickColumn;
     RemoveClickColumn<Document> removeClickColumn;
-    DocumentNameColumn<Document> documentNameColumn;
     List<ClickColumn<Document>> columns = new LinkedList<>();
 
     AbstractDocumentTableActivity activity;

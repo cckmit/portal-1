@@ -3780,3 +3780,19 @@ table {
     height: 50px;
   }
 }
+
+.table-documents {
+  .document-approve-column {
+    width: 40px;
+    text-align: center;
+  }
+  .document-name-column {
+    width: 50%;
+  }
+  .document-number-column {
+    width: 18%;
+  }
+  .document-project-column {
+    width: 18%;
+  }
+}
