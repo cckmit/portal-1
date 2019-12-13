@@ -250,16 +250,18 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_UPDATED);
             }
 
-            List<En_DocumentFormat> filesToRemove = formatsAtSvn
-                    .stream()
-                    .filter(format -> format != docFormat)
-                    .filter(format -> format != pdfFormat)
-                    .collect(Collectors.toList());
-            if (!filesToRemove.isEmpty()) {
-                log.info("updateDocument(" + documentId + "): cleanup | going to remove files from svn: " + StringUtils.join(filesToRemove, ", "));
-                for (En_DocumentFormat format : filesToRemove) {
-                    if (!removeFromSVN(documentId, projectId, format)) {
-                        log.error("updateDocument(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
+            if (withDoc) {
+                List<En_DocumentFormat> filesToRemove = formatsAtSvn
+                        .stream()
+                        .filter(format -> format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX)
+                        .filter(format -> format != docFormat)
+                        .collect(Collectors.toList());
+                if (!filesToRemove.isEmpty()) {
+                    log.info("updateDocument(" + documentId + "): cleanup | going to remove files from svn: " + StringUtils.join(filesToRemove, ", "));
+                    for (En_DocumentFormat format : filesToRemove) {
+                        if (!removeFromSVN(documentId, projectId, format)) {
+                            log.error("updateDocument(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
+                        }
                     }
                 }
             }

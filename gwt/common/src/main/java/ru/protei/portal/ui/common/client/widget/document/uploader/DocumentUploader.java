@@ -9,16 +9,17 @@ import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploaderdropzone.FileDropzoneUploader;
 
-public class DocumentUploader extends FileUploader implements AbstractDocumentUploader {
+public class DocumentUploader extends FileDropzoneUploader implements AbstractDocumentUploader, ru.protei.portal.ui.common.client.widget.uploaderdropzone.UploadHandler {
 
-    public void click() {
-        fileUpload.click();
+    public DocumentUploader() {
+        setUploadHandler(this);
     }
 
     public void setFormat(En_DocumentFormat format) {
         this.format = format;
-        fileUpload.getElement().setAttribute("accept", makeMimeTypes(this.format));
+        setAccept(makeMimeTypes(this.format));
     }
 
     @Override
@@ -33,17 +34,12 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
 
     @Override
     public void submitForm(String url) {
-        form.setAction(url + format.getFormat());
-        form.addStyleName("attachment-uploading");
-        form.submit();
-        fileUpload.setEnabled(false);
+        super.submitForm(url + format.getFormat());
     }
 
     @Override
     public void resetForm() {
-        form.removeStyleName("attachment-uploading");
-        form.reset();
-        fileUpload.setEnabled(true);
+        super.resetForm();
         if (resetHandler != null) {
             resetHandler.onFormReset();
         }
@@ -55,19 +51,18 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
-    public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
+    public void onChange() {}
+
+    @Override
+    public void onComplete(String result) {
         resetForm();
-        if (uploadHandler == null)
-            return;
-        if ("error".equals(event.getResults())) {
+        if (uploadHandler == null) return;
+        if ("error".equals(result)) {
             uploadHandler.onError();
         } else {
             uploadHandler.onSuccess();
         }
     }
-
-    @Override
-    public void changeHandler(ChangeEvent event) {}
 
     @Override
     public void uploadBindToDocument(Document document) {

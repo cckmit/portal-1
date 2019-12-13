@@ -62,7 +62,9 @@ public interface AbstractDocumentFormView extends IsWidget {
     void uploaderEnabled(boolean isEnabled);
 
 
-    AbstractDocumentUploader documentUploader();
+    AbstractDocumentUploader documentDocUploader();
+
+    AbstractDocumentUploader documentPdfUploader();
 
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);

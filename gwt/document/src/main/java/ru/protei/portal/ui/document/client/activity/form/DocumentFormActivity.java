@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.document.client.activity.form;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -42,16 +44,6 @@ public abstract class DocumentFormActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.documentUploader().setUploadHandler(new UploadHandler() {
-            @Override
-            public void onError() {
-                fireErrorMessage(lang.errSaveDocumentFile());
-            }
-            @Override
-            public void onSuccess() {
-                saveUploadedDocument();
-            }
-        });
     }
 
     @Event
@@ -76,7 +68,7 @@ public abstract class DocumentFormActivity
             return;
         }
         Document newDocument = fillDto(new Document());
-        if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
+        if (!checkDocumentValid(newDocument)) {
             return;
         }
         saveDocument(newDocument);
@@ -150,6 +142,18 @@ public abstract class DocumentFormActivity
         }
     }
 
+    @Override
+    public void onDownloadPdf() {
+        if (document == null) return;
+        Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf", document.getName(), "");
+    }
+
+    @Override
+    public void onDownloadDoc() {
+        if (document == null) return;
+        Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
+    }
+
     private void refreshProject(Consumer<Project> consumer) {
         regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
                 .withSuccess(result -> {
@@ -195,7 +199,8 @@ public abstract class DocumentFormActivity
     private void setUploaderEnabled(boolean isEnabled) {
         view.uploaderEnabled(isEnabled);
         if (!isEnabled) {
-            view.documentUploader().resetForm();
+            view.documentPdfUploader().resetForm();
+            view.documentDocUploader().resetForm();
         }
     }
 
@@ -210,14 +215,6 @@ public abstract class DocumentFormActivity
     private void setDecimalNumberEnabled() {
         En_DocumentCategory category = view.documentCategory().getValue();
         setDecimalNumberEnabled(category != null && !category.isForEquipment());
-    }
-
-    private boolean checkDocumentUploadValid(Document newDocument) {
-        if (newDocument.getId() == null && !view.documentUploader().isFileSet()) {
-            fireErrorMessage(lang.uploadingDocumentNotSet());
-            return false;
-        }
-        return true;
     }
 
     private boolean checkDocumentValid(Document newDocument) {
@@ -244,22 +241,47 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document) {
         this.document = document;
-        boolean isNew = document.getId() == null;
-        boolean isApproved = document.getApproved();
-        boolean isFileSet = view.documentUploader().isFileSet();
-        if ((isNew || !isApproved) && isFileSet) {
+        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
+        boolean isDocFileSet = view.documentDocUploader().isFileSet();
+        if (isPdfFileSet || isDocFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
-            view.documentUploader().uploadBindToDocument(document);
-        } else {
-            saveUploadedDocument();
         }
+        uploadPdf(() -> uploadDoc(() -> saveDocument()));
+    }
+
+    private void uploadPdf(Runnable andThen) {
+        if (!view.documentPdfUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentPdfUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() { fireErrorMessage(lang.errSaveDocumentFile()); }
+            @Override
+            public void onSuccess() { andThen.run(); }
+        });
+        view.documentPdfUploader().uploadBindToDocument(document);
+    }
+
+    private void uploadDoc(Runnable andThen) {
+        if (!view.documentDocUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentDocUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() { fireErrorMessage(lang.errSaveDocumentFile()); }
+            @Override
+            public void onSuccess() { andThen.run(); }
+        });
+        view.documentDocUploader().uploadBindToDocument(document);
     }
 
     private void fireErrorMessage(String msg) {
         fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
     }
 
-    private void saveUploadedDocument() {
+    private void saveDocument() {
         documentService.saveDocument(this.document, new FluentCallback<Document>()
             .withErrorMessage(lang.errDocumentNotSaved())
             .withSuccess(result -> fireEvent(new DocumentEvents.Form.Saved(tag))));
@@ -339,7 +361,8 @@ public abstract class DocumentFormActivity
 
         view.nameValidator().setValid(true);
 
-        view.documentUploader().resetForm();
+        view.documentDocUploader().resetForm();
+        view.documentPdfUploader().resetForm();
     }
 
     private void fillViewProject(Project project) {
@@ -377,4 +400,5 @@ public abstract class DocumentFormActivity
     private Document document;
     private Project project;
     private Profile authorizedProfile;
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

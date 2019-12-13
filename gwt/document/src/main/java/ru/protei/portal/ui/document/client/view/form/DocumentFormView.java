@@ -2,12 +2,12 @@ package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -47,10 +47,8 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
         equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
-        documentUploader.setResetHandler(() -> fileName.setText(null));
     }
 
     @Override
@@ -134,8 +132,13 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
-    public AbstractDocumentUploader documentUploader() {
-        return documentUploader;
+    public AbstractDocumentUploader documentDocUploader() {
+        return documentDocUploader;
+    }
+
+    @Override
+    public AbstractDocumentUploader documentPdfUploader() {
+        return documentPdfUploader;
     }
 
     @Override
@@ -145,7 +148,8 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
 
     @Override
     public void uploaderEnabled(boolean isEnabled) {
-        selectFileButton.setEnabled(isEnabled);
+        documentDocUploader.setEnabled(isEnabled);
+        documentPdfUploader.setEnabled(isEnabled);
     }
 
     @Override
@@ -195,11 +199,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         projectRegion.setValue(region);
     }
 
-    @UiHandler("selectFileButton")
-    public void onSelectFileClicked(ClickEvent event) {
-        documentUploader.click();
-    }
-
     @UiHandler("equipment")
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
         if (activity != null)
@@ -225,20 +224,32 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
             activity.onProjectChanged();
     }
 
-    @UiHandler("documentUploader")
-    public void onFilenameChanged(ChangeEvent event) {
-        fileName.setValue(documentUploader.getFilename());
+    @UiHandler("downloadDoc")
+    public void downloadDocClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onDownloadDoc();
+        }
+    }
+
+    @UiHandler("downloadPdf")
+    public void downloadPdfClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onDownloadPdf();
+        }
     }
 
     private void ensureDebugIds() {}
 
     @UiField
     ValidableTextBox name;
-    @UiField
-    TextBox fileName;
     @Inject
     @UiField(provided = true)
-    DocumentUploader documentUploader;
+    DocumentUploader documentDocUploader;
+    @Inject
+    @UiField(provided = true)
+    DocumentUploader documentPdfUploader;
     @Inject
     @UiField(provided = true)
     DocumentTypeFormSelector documentType;
@@ -281,11 +292,13 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     DivElement decimalNumberContainer;
     @UiField
     CheckBox approved;
-    @UiField
-    Button selectFileButton;
     @Inject
     @UiField(provided = true)
     EquipmentFormSelector equipment;
+    @UiField
+    Anchor downloadDoc;
+    @UiField
+    Anchor downloadPdf;
 
 
     @Inject

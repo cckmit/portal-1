@@ -4,7 +4,6 @@
              xmlns:doctype="urn:import:ru.protei.portal.ui.common.client.widget.document.doctype"
              xmlns:doccategory="urn:import:ru.protei.portal.ui.common.client.widget.document.doccategory"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
-             xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.selector.decimalnumber'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.document.uploader'
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
@@ -72,16 +71,34 @@
                 </div>
 
                 <div class="row">
-                    <div class="form-group col-md-6">
-                        <label><ui:text from="{lang.uploadDocuments}"/></label>
-                        <div class="input-group">
-                            <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
-                            <div class="input-group-btn">
-                                <g:Button ui:field="selectFileButton" styleName="btn btn-default">
-                                    <i class="fa fa-cloud-upload-alt"/>
-                                </g:Button>
+                    <div class="col-md-6">
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <div class="card-title"><ui:text from="{lang.documentFileDoc}"/></div>
+                                <div class="card-controls">
+                                    <ul>
+                                        <li><g:Anchor ui:field="downloadDoc"><i class="fas fa-cloud-download-alt"/></g:Anchor></li>
+                                    </ul>
+                                </div>
                             </div>
-                            <fileuploader:DocumentUploader ui:field="documentUploader" visible="false" format="PDF"/>
+                            <div class="card-body no-scroll no-padding card-body-dropzone">
+                                <fileuploader:DocumentUploader ui:field="documentDocUploader" format="DOC"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <div class="card-title"><ui:text from="{lang.documentFilePdf}"/></div>
+                                <div class="card-controls">
+                                    <ul>
+                                        <li><g:Anchor ui:field="downloadPdf"><i class="fas fa-cloud-download-alt"/></g:Anchor></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body no-scroll no-padding card-body-dropzone">
+                                <fileuploader:DocumentUploader ui:field="documentPdfUploader" format="PDF"/>
+                            </div>
                         </div>
                     </div>
                 </div>

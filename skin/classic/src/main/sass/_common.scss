@@ -2834,13 +2834,6 @@ div.select2-container {
   margin-bottom: 0;
 }
 
-.preview-title-image_right {
-  height: 50px;
-  position: absolute;
-  right: 20px;
-  top: 20px;
-}
-
 .preview.site-folder {
 
   fieldset {
@@ -3777,4 +3770,13 @@ table {
 // todo: remove after PORTAL-915
 .company-tags .card-links {
   display: none;
+}
+
+.preview-title-image-container-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  img {
+    height: 50px;
+  }
 }

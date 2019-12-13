@@ -1933,4 +1933,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentSectionEquipment();
 
     String documentSectionInfo();
+
+    String fileDropzoneLabel();
+
+    String documentFileDoc();
+
+    String documentFilePdf();
 }
