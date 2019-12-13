@@ -251,13 +251,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setCaseMetaJira( caseMetaJira );
     }
 
-    private void fillView(CaseObjectMeta issue) {
+    private void fillView(CaseObjectMeta meta) {
 
 //        CaseObjectMeta caseMeta = new CaseObjectMeta(issue);
 //        CaseObjectMetaNotifiers caseMetaNotifiers = new CaseObjectMetaNotifiers(issue);//TODO fill
 //        CaseObjectMetaJira caseMetaJira = new CaseObjectMetaJira(issue);//TODO fill
 
-        metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(issue.isPrivateCase()) );
+        metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(meta.isPrivateCase()) );
         metaView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         metaView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
 
@@ -270,18 +270,19 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
-        metaView.importance().setValue( issue.getImportance() );//        caseMeta.setImportance(caseMeta.getImportance());
-        metaView.setStateWorkflow(recognizeWorkflow(issue.getExtAppType()));//Обязательно сетить до установки значения!
-        metaView.state().setValue( issue.getState() ); //        caseMeta.setState(caseMeta.getState());
+        metaView.importance().setValue( meta.getImportance() );//        caseMeta.setImportance(caseMeta.getImportance());
+        metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
+        metaView.state().setValue( meta.getState() ); //        caseMeta.setState(caseMeta.getState());
         metaView.stateEnabled().setEnabled(true);
 
         metaView.timeElapsedContainerVisibility().setVisible(true);
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
+        metaView.setTimeElapsed(meta.getTimeElapsed());
 
-        metaView.setCompany(issue.getInitiatorCompany());//caseMeta.setInitiatorCompany(issue.getInitiatorCompany());
-        metaView.setInitiator(issue.getInitiator());//      caseMeta.setInitiator(issue.getInitiator());
-        metaView.initiatorUpdateCompany(issue.getInitiatorCompany());
-        metaView.setPlatformFilter(platformOption -> issue.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
+        metaView.setCompany(meta.getInitiatorCompany());//caseMeta.setInitiatorCompany(issue.getInitiatorCompany());
+        metaView.setInitiator(meta.getInitiator());//      caseMeta.setInitiator(issue.getInitiator());
+        metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
+        metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
         metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
@@ -293,7 +294,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 //        }
 
         companyService.getCompanyWithParentCompanySubscriptions(
-                issue.getInitiatorCompanyId(),
+                meta.getInitiatorCompanyId(),
                 new ShortRequestCallback<List<CompanySubscription>>()
                         .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
                                 subscriptions,
@@ -305,7 +306,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         );
 
         companyService.getCompanyCaseStates(
-                issue.getInitiatorCompanyId(),
+                meta.getInitiatorCompanyId(),
                 new ShortRequestCallback<List<CaseState>>()
                         .setOnSuccess(caseStates -> {
                             metaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
@@ -315,8 +316,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        metaView.setProduct( issue.getProduct() );
-        metaView.setManager( issue.getManager() );
+        metaView.setProduct( meta.getProduct() );
+        metaView.setManager( meta.getManager() );
 //        metaView.setCaseMeta(caseMeta);
 //        metaView.setCaseMetaNotifiers(caseMetaNotifiers);
 //        metaView.setCaseMetaJira(caseMetaJira);

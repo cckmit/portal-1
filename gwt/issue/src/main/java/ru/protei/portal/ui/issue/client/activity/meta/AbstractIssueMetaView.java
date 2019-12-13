@@ -47,7 +47,7 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setPlatform( Platform platform);
 
-    long getPlatformId();
+    Long getPlatformId();
 
     HasVisibility timeElapsedHeaderVisibility();
 

@@ -118,7 +118,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        fillCaseCreateRequest();
+        createRequest.setCaseObject( fillCaseCreateRequest( createRequest.getCaseObject() ) );
 
         if (isLockedSave()) {
             return;
@@ -275,11 +275,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return caseObjectMeta;
     }
 
-    private void fillCaseCreateRequest() {
+    private CaseObject fillCaseCreateRequest(CaseObject caseObject) {
 //        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
 //        CaseObjectMetaNotifiers notifiers = issueMetaView.getCaseMetaNotifiers();
         Set<Person> caseMetaNotifiers = issueMetaView.getCaseMetaNotifiers();
-        CaseObject caseObject = createRequest.getCaseObject();
+//        CaseObject caseObject = createRequest.getCaseObject();
 
         caseObject.setName(view.name().getValue());
         caseObject.setInfo(view.description().getValue());
@@ -303,6 +303,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         createRequest.setTimeElapsed(issueMetaView.getTimeElapsed());
         createRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
+
+        return caseObject;
     }
 
     private void setSubscriptionEmails(String value) {

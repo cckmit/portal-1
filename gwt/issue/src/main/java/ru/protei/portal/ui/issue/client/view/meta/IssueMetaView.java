@@ -256,7 +256,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public long getPlatformId() {
+    public Long getPlatformId() {
         return platform.getValue() == null ? null : platform.getValue().getId();
     }
 
