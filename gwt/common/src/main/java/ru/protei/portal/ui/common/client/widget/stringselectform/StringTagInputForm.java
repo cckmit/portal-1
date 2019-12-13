@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.stringselectform.item.StringTagInputFormItem;
 
@@ -41,7 +42,9 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
     @Override
     public void setValue(List<String> values, boolean fireEvents) {
         value.clear();
-        value.addAll(values);
+        if (CollectionUtils.isNotEmpty(values)) {
+            value.addAll(values);
+        }
         render();
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);

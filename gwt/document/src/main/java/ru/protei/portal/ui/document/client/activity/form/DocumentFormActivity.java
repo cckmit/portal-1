@@ -225,8 +225,16 @@ public abstract class DocumentFormActivity
         return true;
     }
 
-    private boolean isValidDocument(Document document){
-        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+    private boolean isValidDocument(Document document) {
+        boolean isNew = document.getId() == null;
+        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
+        boolean isDocFileSet = view.documentDocUploader().isFileSet();
+        if (isNew && isDocFileSet && !isPdfFileSet) {
+            return StringUtils.isNotEmpty(document.getName()) &&
+                    document.getProjectId() != null;
+        } else {
+            return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+        }
     }
 
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
@@ -283,7 +291,6 @@ public abstract class DocumentFormActivity
 
     private void saveDocument() {
         documentService.saveDocument(this.document, new FluentCallback<Document>()
-            .withErrorMessage(lang.errDocumentNotSaved())
             .withSuccess(result -> fireEvent(new DocumentEvents.Form.Saved(tag))));
     }
 

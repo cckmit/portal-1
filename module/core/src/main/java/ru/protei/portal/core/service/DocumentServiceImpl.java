@@ -129,7 +129,7 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
 
-        if (document == null || !isValidDocument(document)) {
+        if (document == null || !isValidNewDocument(document, withDoc, withPdf)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -395,6 +395,15 @@ public class DocumentServiceImpl implements DocumentService {
 
     private <T> boolean isValueSetTwice(T oldObj, T newObj) {
         return oldObj != null && !oldObj.equals(newObj);
+    }
+
+    private boolean isValidNewDocument(Document document, boolean withDoc, boolean withPdf) {
+        if (withDoc && !withPdf) {
+            return StringUtils.isNotEmpty(document.getName()) &&
+                    document.getProjectId() != null;
+        } else {
+            return isValidDocument(document);
+        }
     }
 
     private boolean isValidDocument(Document document){

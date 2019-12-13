@@ -5,9 +5,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -53,8 +55,8 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
-        view.setDownloadLinkPdf(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf");
-        view.setDownloadLinkDoc(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc");
+        view.setDownloadLinkPdf(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
+        view.setDownloadLinkDoc(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
         fillProject(document);
@@ -73,6 +75,10 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
     }
 
+    private boolean canEdit() {
+        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_EDIT);
+    }
+
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 
     @Inject
@@ -83,4 +89,6 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     En_DocumentExecutionTypeLang executionTypeLang;
     @Inject
     AbstractDocumentPreviewView view;
+    @Inject
+    PolicyService policyService;
 }
