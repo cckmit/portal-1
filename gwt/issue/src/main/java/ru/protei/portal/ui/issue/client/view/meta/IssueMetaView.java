@@ -61,7 +61,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
 //    @Override
-//    public void setCaseMeta1(CaseObjectMeta caseObjectMeta) {
+//    public void setCaseMeta(CaseObjectMeta caseObjectMeta) {
 //        caseMeta = caseObjectMeta;
 //
 //        state.setValue(En_CaseState.getById(caseMeta.getStateId()));

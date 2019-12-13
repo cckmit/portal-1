@@ -37,13 +37,13 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_
  * Активность создания обращения
  */
 public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
-//        , AbstractIssueMetaActivity
+        , AbstractIssueMetaActivity
         , Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-//        issueMetaView.setActivity(this);
+        issueMetaView.setActivity(this);
         view.getIssueMetaViewContainer().add(issueMetaView);
 
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
@@ -79,7 +79,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         subscriptionsListEmptyMessage = null;
 
         fillView();
-        fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
+//        fireEvent( new IssueEvents.CreateMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
     }
 
     @Event
@@ -187,14 +187,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
-//    @Override
-//    public void onCreateContactClicked() {
-//        if (issueMetaView.getCompany() == null) {
-//            return;
-//        }
-//
-//        fireEvent(new ContactEvents.Edit(null, issueMetaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
-//    }
+    @Override
+    public void onCreateContactClicked() {
+        if (issueMetaView.getCompany() == null) {
+            return;
+        }
+
+        fireEvent(new ContactEvents.Edit(null, issueMetaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+    }
 
     @Override
     public void onPrivacyChanged() {
@@ -221,7 +221,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.description().setValue(null);
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
 
-//        fillMetaView();
+        fillMetaView();
+        onCompanyChanged();
 
         view.attachmentsContainer().clear();
 
@@ -249,13 +250,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.timeElapsedEditContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         issueMetaView.timeElapsedHeaderVisibility().setVisible(false);
         issueMetaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
-        issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);
+        issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);//Обязательно сетить до установки значения
         issueMetaView.setTimeElapsedType(En_TimeElapsedType.NONE);
 
-        issueMetaView.setCaseMetaNotifiers(new CaseObjectMetaNotifiers());
-        issueMetaView.setCaseMeta(caseObjectMeta);
+        issueMetaView.setCaseMetaNotifiers(null);
+//        issueMetaView.setCaseMeta(caseObjectMeta);
 
-        onCompanyChanged();
+        issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
+        issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
+        issueMetaView.setInitiator(caseObjectMeta.getInitiator());
+//        issueMetaView.initiatorUpdateCompany(caseObjectMeta.getInitiatorCompany());//TODO  в onCompanyChanged()
+        issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
+
+//        onCompanyChanged();
     }
 
     private CaseObjectMeta initCaseMeta() {
@@ -268,31 +276,32 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void fillCaseCreateRequest() {
-        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
-        CaseObjectMetaNotifiers notifiers = issueMetaView.getCaseMetaNotifiers();
+//        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
+//        CaseObjectMetaNotifiers notifiers = issueMetaView.getCaseMetaNotifiers();
+        Set<Person> caseMetaNotifiers = issueMetaView.getCaseMetaNotifiers();
         CaseObject caseObject = createRequest.getCaseObject();
 
         caseObject.setName(view.name().getValue());
         caseObject.setInfo(view.description().getValue());
         caseObject.setPrivateCase(view.isPrivate().getValue());
-        caseObject.setStateId(caseObjectMeta.getStateId());
-        caseObject.setImpLevel(caseObjectMeta.getImpLevel());
+        caseObject.setStateId(issueMetaView.state().getValue().getId());
+        caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
 
-        caseObject.setInitiatorCompany(caseObjectMeta.getInitiatorCompany());
-        caseObject.setInitiator(caseObjectMeta.getInitiator());
-        caseObject.setProduct(caseObjectMeta.getProduct());
-        caseObject.setManager(caseObjectMeta.getManager());
-        caseObject.setNotifiers(notifiers.getNotifiers());
-        caseObject.setPlatformId(caseObjectMeta.getPlatformId());
+        caseObject.setInitiatorCompany(issueMetaView.getCompany());
+        caseObject.setInitiator(issueMetaView.getInitiator());
+        caseObject.setProduct(issueMetaView.getProduct());
+        caseObject.setManager(issueMetaView.getManager());
+        caseObject.setNotifiers(caseMetaNotifiers);
+        caseObject.setPlatformId(issueMetaView.getPlatformId());
         caseObject.setAttachmentExists(!CollectionUtils.isEmpty(view.attachmentsContainer().getAll()));
         caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
-            caseObject.setTimeElapsed(caseObjectMeta.getTimeElapsed());
+            caseObject.setTimeElapsed(issueMetaView.getTimeElapsed());
             caseObject.setTimeElapsedType(issueMetaView.timeElapsedType().getValue() == null ? En_TimeElapsedType.NONE : issueMetaView.timeElapsedType().getValue());
         }
 
-        createRequest.setTimeElapsed(issueMetaView.getCaseMeta().getTimeElapsed());
+        createRequest.setTimeElapsed(issueMetaView.getTimeElapsed());
         createRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
     }
 
@@ -315,19 +324,19 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean validateView() {
-        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
+//        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
 
-        if (caseObjectMeta.getInitiatorCompany() == null) {
+        if (issueMetaView.getCompany() == null) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (caseObjectMeta.getManager() == null && isStateWithRestrictions(caseObjectMeta.getState())) {
+        if (issueMetaView.getManager() == null && isStateWithRestrictions(issueMetaView.state().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (caseObjectMeta.getProduct() == null && isStateWithRestrictions(caseObjectMeta.getState())) {
+        if (issueMetaView.getProduct() == null && isStateWithRestrictions(issueMetaView.state().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -414,4 +423,62 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
 
+//    private MetaActivity metaActivity = new MetaActivity();
+//
+//    class MetaActivity implements AbstractIssueMetaActivity {
+//        @Override
+//        public void onCompanyChanged() {
+//            IssueCreateActivity.this.onCompanyChanged();
+//        }
+//
+//        @Override
+//        public void onCreateContactClicked() {
+//
+//
+//        }
+//
+//        @Override
+//        public void onStateChange() {
+//            log.warning( "onStateChange(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//
+//        @Override
+//        public void onImportanceChanged() {
+//            log.warning( "onImportanceChanged(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//
+//        @Override
+//        public void onProductChanged() {
+//            log.warning( "onProductChanged(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//
+//        @Override
+//        public void onManagerChanged() {
+//            log.warning( "onManagerChanged(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//
+//        @Override
+//        public void onInitiatorChanged() {
+//            log.warning( "onInitiatorChanged(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//
+//        @Override
+//        public void onPlatformChanged() {
+//            log.warning( "onPlatformChanged(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//
+//        @Override
+//        public void onTimeElapsedChanged() {
+//            log.warning( "onTimeElapsedChanged(): Not implemented." );//TODO NotImplemented
+//
+//        }
+//    }
+
 }
+

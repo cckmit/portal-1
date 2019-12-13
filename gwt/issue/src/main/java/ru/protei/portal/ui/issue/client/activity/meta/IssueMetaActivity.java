@@ -10,18 +10,14 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -41,6 +37,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @PostConstruct
     public void onInit() {
+        log.info( "onInit():" );
         metaView.setActivity( this );
     }
 
@@ -54,9 +51,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         event.parent.clear();
         event.parent.add(metaView.asWidget());
 
-        this.issue = event.meta;
+        this.meta = event.meta;
         caseMetaJira = event.metaJira;
-        caseMetaNotifiers = event.metaNotifiers;
+        metaNotifiers = event.metaNotifiers;
 
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
@@ -78,44 +75,44 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
-        issue.setStateId(metaView.state().getValue().getId());
-        onCaseMetaChanged(issue);
+        meta.setStateId(metaView.state().getValue().getId());
+        onCaseMetaChanged( meta );
     }
 
     @Override
     public void onImportanceChanged() {
-        issue.setImpLevel(metaView.importance().getValue().getId());
-        onCaseMetaChanged(issue);
+        meta.setImpLevel(metaView.importance().getValue().getId());
+        onCaseMetaChanged( meta );
     }
 
     @Override
     public void onProductChanged() {
-        issue.setProduct(metaView.getProduct());
-        onCaseMetaChanged(issue);
+        meta.setProduct(metaView.getProduct());
+        onCaseMetaChanged( meta );
     }
 
     @Override
     public void onManagerChanged() {
-        issue.setManager(metaView.getManager());
-        onCaseMetaChanged(issue);
+        meta.setManager(metaView.getManager());
+        onCaseMetaChanged( meta );
     }
 
     @Override
     public void onInitiatorChanged() {
-        issue.setInitiator(metaView.getInitiator());
-        onCaseMetaChanged(issue);
+        meta.setInitiator(metaView.getInitiator());
+        onCaseMetaChanged( meta );
     }
 
     @Override
     public void onPlatformChanged() {
-        issue.setPlatformId(metaView.getPlatformId());
-        onCaseMetaChanged(issue);
+        meta.setPlatformId(metaView.getPlatformId());
+        onCaseMetaChanged( meta );
     }
 
     @Override
     public void onTimeElapsedChanged() {
-        issue.setTimeElapsed(metaView.getTimeElapsed());
-        onCaseMetaChanged(issue);
+        meta.setTimeElapsed(metaView.getTimeElapsed());
+        onCaseMetaChanged( meta );
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
@@ -142,7 +139,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onCaseMetaNotifiersChanged() {
         Set<Person> caseMetaNotifiers = metaView.getCaseMetaNotifiers();
-        CaseObjectMetaNotifiers metaNotifiers = new CaseObjectMetaNotifiers();
+
         metaNotifiers.setNotifiers( caseMetaNotifiers );
 
         issueService.updateIssueMetaNotifiers(metaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
@@ -206,8 +203,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Person initiator = null;
         Profile profile = policyService.getProfile();
-        if (Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
-            initiator = issue.getInitiator();
+        if (Objects.equals( meta.getInitiator().getCompanyId(), selectedCompanyId)) {
+            initiator = meta.getInitiator();
         } else if (Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
             initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
         }
@@ -232,7 +229,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
             @Override
             public void onSuccess(CaseObjectMeta meta) {
-                IssueMetaActivity.this.issue = meta;
+                IssueMetaActivity.this.meta = meta;
 
                 fillView(meta);
             }
@@ -274,8 +271,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         metaView.importance().setValue( issue.getImportance() );//        caseMeta.setImportance(caseMeta.getImportance());
+        metaView.setStateWorkflow(recognizeWorkflow(issue.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( issue.getState() ); //        caseMeta.setState(caseMeta.getState());
-        metaView.setStateWorkflow(recognizeWorkflow(issue.getExtAppType()));
         metaView.stateEnabled().setEnabled(true);
 
         metaView.timeElapsedContainerVisibility().setVisible(true);
@@ -336,7 +333,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 //        if (metaView.getCaseMetaNotifiers() != null) metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
 //        if (metaView.getCaseMetaJira() != null) metaView.getCaseMetaJira().collectToCaseObject(issue);
 //    }
-
+//
 //    private void showComments(CaseObject issue) {
 //        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
 //                .withCaseType(En_CaseType.CRM_SUPPORT)
@@ -378,9 +375,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return true;
     }
 
-    private boolean isSelfIssue(CaseObject issue) {
-        return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
-    }
+//    private boolean isSelfIssue(CaseObject issue) {
+//        return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
+//    }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsList = subscriptionsList;
@@ -390,7 +387,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
-                .filter(mail -> !issue.isPrivateCase() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
+                .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
 
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
                 ? subscriptionsListEmptyMessage
@@ -411,7 +408,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setSubscriptionEmails(String value) {
         metaView.setSubscriptionEmails(value);
-        metaView.companyEnabled().setEnabled(isCompanyChangeAllowed(issue.isPrivateCase()));
+        metaView.companyEnabled().setEnabled(isCompanyChangeAllowed( meta.isPrivateCase()));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
@@ -429,8 +426,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Inject
     IssueControllerAsync issueService;
-    @Inject
-    AttachmentServiceAsync attachmentService;
 
     @Inject
     Lang lang;
@@ -440,15 +435,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
-    @Inject
-    TextRenderControllerAsync textRenderController;
-    @Inject
-    LocalStorageService localStorageService;
 
     @ContextAware
-    CaseObjectMeta issue;
+    CaseObjectMeta meta;
     @ContextAware
-    CaseObjectMetaNotifiers caseMetaNotifiers;
+    CaseObjectMetaNotifiers metaNotifiers;
     @ContextAware
     CaseObjectMetaJira caseMetaJira;
 
@@ -459,5 +450,5 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
-    private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
+
 }

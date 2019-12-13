@@ -9,7 +9,9 @@ import ru.protei.portal.ui.issue.client.activity.create.IssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.*;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
+import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
+import ru.protei.portal.ui.issue.client.activity.meta.IssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.page.IssuePage;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
@@ -37,6 +39,7 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind( CaseStateFilterProvider.class ).asEagerSingleton();
         bind( IssueTableActivity.class ).asEagerSingleton();
+        bind( AbstractIssueMetaActivity.class ).to(IssueMetaActivity.class).asEagerSingleton();
         bind( AbstractIssueTableView.class ).to(IssueTableView.class);
 
         bind( AbstractIssuePreviewActivity.class).to(IssuePreviewActivity.class).asEagerSingleton();

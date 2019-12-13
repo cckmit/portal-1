@@ -11,17 +11,11 @@ public interface AbstractIssueMetaActivity {
     default void onCaseMetaNotifiersChanged() {}
     default void onCaseMetaJiraChanged() {}
 
-    void onStateChange();
-
-    void onImportanceChanged();
-
-    void onProductChanged();
-
-    void onManagerChanged();
-
-    void onInitiatorChanged();
-
-    void onPlatformChanged();
-
-    void onTimeElapsedChanged();
+    default void onStateChange(){};
+    default void onImportanceChanged(){};
+    default void onProductChanged(){};
+    default void onManagerChanged(){};
+    default void onInitiatorChanged(){};
+    default void onPlatformChanged(){};
+    default void onTimeElapsedChanged(){};
 }
