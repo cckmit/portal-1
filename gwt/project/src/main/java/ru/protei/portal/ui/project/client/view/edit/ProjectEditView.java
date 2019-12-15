@@ -134,6 +134,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return saveButton;
     }
 
+    @Override
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -225,6 +230,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     DivElement documents;
     @UiField
     HTMLPanel documentsContainer;
+    @UiField
+    HTMLPanel linksContainer;
 
     @UiField
     Button saveButton;

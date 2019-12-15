@@ -126,6 +126,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(project.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .readOnly());
+
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(value.getId())

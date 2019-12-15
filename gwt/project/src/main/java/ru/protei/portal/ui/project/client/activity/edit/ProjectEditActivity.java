@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -13,10 +14,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -145,6 +143,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.showComments(true);
         view.showDocuments(true);
+
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(project.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .readOnly(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_EDIT)));
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)

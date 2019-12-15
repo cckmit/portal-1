@@ -23,6 +23,8 @@
                     <label><ui:text from="{lang.projectName}"/></label>
                     <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
                 </div>
+
+                <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12"/>
             </div>
 
             <div class="row">

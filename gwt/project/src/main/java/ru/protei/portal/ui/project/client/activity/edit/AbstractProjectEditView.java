@@ -46,6 +46,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
+    HasWidgets getLinksContainer();
+
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
 }
