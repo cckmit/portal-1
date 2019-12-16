@@ -1947,4 +1947,8 @@ public interface Lang extends Messages, ContactItemLang {
     String documentFileDoc();
 
     String documentFilePdf();
+
+    String backToIssues();
+
+    String editNameAndDescription();
 }

@@ -120,20 +120,29 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void switchToRONameAndDescriptionView(boolean isRO) {
-        descriptionContainer.setVisible(!isRO);
-        nameContainer.setVisible(!isRO);
+        descriptionPanel.setVisible(!isRO);
+        namePanel.setVisible(!isRO);
+        linksContainer.setVisible(isRO);
 
         if (isRO) {
-            nameROLabel.removeClassName(UiConstants.Styles.HIDE);
+            nameRO.removeClassName(UiConstants.Styles.HIDE);
             descriptionRO.removeClassName(UiConstants.Styles.HIDE);
+            copyNumberAndName.removeStyleName(UiConstants.Styles.HIDE);
+
+            attachmentsPanel.removeClassName(UiConstants.Styles.HIDE);
+            commentsPanel.removeClassName(UiConstants.Styles.HIDE);
         } else {
-            nameROLabel.addClassName(UiConstants.Styles.HIDE);
+            nameRO.addClassName(UiConstants.Styles.HIDE);
             descriptionRO.addClassName(UiConstants.Styles.HIDE);
+            copyNumberAndName.addStyleName(UiConstants.Styles.HIDE);
+
+            attachmentsPanel.addClassName(UiConstants.Styles.HIDE);
+            commentsPanel.addClassName(UiConstants.Styles.HIDE);
         }
     }
 
     @Override
-    public void setDescriptionRO(String value) {
+    public void setDescriptionRO( String value) {
         descriptionRO.setInnerHTML(value);
     }
 
@@ -141,7 +150,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setNameRO( String value, String jiraUrl ) {
         if (jiraUrl.isEmpty() || !value.startsWith("CLM")) {
-            this.nameROLabel.setInnerHTML(value);
+            this.nameRO.setInnerHTML(value);
         }
         else {
             String idCLM = value.split(" ")[0];
@@ -156,9 +165,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             LabelElement nameWithoutLink = DOM.createLabel().cast();
             nameWithoutLink.setInnerHTML(remainingName);
 
-            this.nameROLabel.setInnerHTML("");
-            this.nameROLabel.appendChild(jiraLink);
-            this.nameROLabel.appendChild(nameWithoutLink);
+            this.nameRO.setInnerHTML("");
+            this.nameRO.appendChild(jiraLink);
+            this.nameRO.appendChild(nameWithoutLink);
         }
     }
 
@@ -170,11 +179,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
-    }
-
-    @Override
-    public HasVisibility copyNumberAndNameVisibility() {
-        return copyNumberAndName;
     }
 
     @Override
@@ -233,6 +237,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("backButton")
+    public void onBackButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -240,7 +251,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
         numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
-        nameROLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
+        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
@@ -284,21 +295,21 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Element createdBy;
     @UiField
-    HTMLPanel numberContainer;
+    HTMLPanel numberPanel;
     @UiField
     Element privacyIcon;
     @UiField
-    HTMLPanel nameContainer;
+    HTMLPanel namePanel;
     @UiField
     LabelElement nameLabel;
     @UiField
-    HeadingElement nameROContainer;
+    HeadingElement nameROPanel;
     @UiField
-    LabelElement nameROLabel;
+    LabelElement nameRO;
     @UiField
     DivElement descriptionRO;
     @UiField
-    HTMLPanel descriptionContainer;
+    HTMLPanel descriptionPanel;
     @UiField
     HTMLPanel linksContainer;
     @UiField
@@ -313,14 +324,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Button cancelNameAndDescriptionButton;
     @UiField
     DivElement nameAndDescriptionButtonsPanel;
+    @UiField
+    DivElement attachmentsPanel;
+    @UiField
+    DivElement commentsPanel;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override
         public void setValid(boolean isValid) {
             if ( isValid ) {
-                nameContainer.removeStyleName("has-error");
+                namePanel.removeStyleName("has-error");
             } else {
-                nameContainer.addStyleName("has-error");
+                namePanel.addStyleName("has-error");
             }
         }
 
