@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -26,9 +27,7 @@ public abstract class CaseStatePage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-
-        if ( profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CASE_STATE, DebugIds.SIDEBAR_MENU.CASE_STATE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -51,7 +50,7 @@ public abstract class CaseStatePage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
             fireEvent( new MenuEvents.Select( ТAB ) );
         }
     }
@@ -60,8 +59,10 @@ public abstract class CaseStatePage
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
     private CaseStateEvents.Show show = new CaseStateEvents.Show();
-    private Profile profile;
 }
 

@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -27,8 +28,7 @@ public abstract class RegionPage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-        if ( profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.REGION, DebugIds.SIDEBAR_MENU.REGION ) );
         }
     }
@@ -50,7 +50,7 @@ public abstract class RegionPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
             fireEvent( new MenuEvents.Select( ТAB ) );
         }
     }
@@ -59,8 +59,10 @@ public abstract class RegionPage implements Activity {
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
     private RegionEvents.Show show = new RegionEvents.Show();
-    private Profile profile;
 }
 

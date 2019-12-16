@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -29,9 +30,7 @@ public abstract class EmployeePage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-
-        if ( profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -54,7 +53,7 @@ public abstract class EmployeePage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
             fireEvent( new MenuEvents.Select( ТAB ) );
         }
     }
@@ -62,7 +61,9 @@ public abstract class EmployeePage implements Activity {
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
     private EmployeeEvents.Show show = new EmployeeEvents.Show();
-    private Profile profile;
 }

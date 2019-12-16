@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
@@ -27,9 +28,7 @@ public abstract class AccountPage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-
-        if ( profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT, DebugIds.SIDEBAR_MENU.ACCOUNT ) );
             fireEvent( new AppEvents.InitPage( new AccountEvents.Show(true) ) );
         }
@@ -57,7 +56,7 @@ public abstract class AccountPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
             fireEvent( new MenuEvents.Select( ТAB ) );
         }
     }
@@ -66,6 +65,8 @@ public abstract class AccountPage implements Activity {
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
-    private Profile profile;
 }

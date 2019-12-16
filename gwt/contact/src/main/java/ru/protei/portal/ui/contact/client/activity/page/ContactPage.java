@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -29,8 +30,7 @@ public abstract class ContactPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-        if ( profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTACT, DebugIds.SIDEBAR_MENU.CONTACT ) );
             fireEvent( new AppEvents.InitPage( new ContactEvents.Show( true ) ) );
         }
@@ -63,15 +63,16 @@ public abstract class ContactPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
+        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
             fireEvent( new MenuEvents.Select( ТAB ) );
         }
     }
 
     @Inject
-    Lang lang;
+    PolicyService policyService;
 
-    private Profile profile;
+    @Inject
+    Lang lang;
 
     private String ТAB;
 }

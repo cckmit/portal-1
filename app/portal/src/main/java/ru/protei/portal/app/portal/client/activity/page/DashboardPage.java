@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -28,8 +29,6 @@ public abstract class DashboardPage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-
         if ( event.profile.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD, DebugIds.SIDEBAR_MENU.DASHBOARD ) );
             fireEvent( new AppEvents.InitPage( show ) );
@@ -53,7 +52,7 @@ public abstract class DashboardPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
             fireEvent( new MenuEvents.Select(TAB) );
         }
     }
@@ -62,9 +61,9 @@ public abstract class DashboardPage implements Activity {
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String TAB;
     private DashboardEvents.Show show = new DashboardEvents.Show();
-
-
-    private Profile profile;
 }

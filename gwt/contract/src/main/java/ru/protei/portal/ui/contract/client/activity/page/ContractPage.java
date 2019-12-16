@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -26,9 +27,7 @@ public abstract class ContractPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-
-        if ( profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTRACT, DebugIds.SIDEBAR_MENU.CONTRACT) );
             fireEvent( new AppEvents.InitPage( new ContractEvents.Show( true ) ) );
         }
@@ -45,6 +44,11 @@ public abstract class ContractPage
     }
 
     @Event
+    public void onShowPreview(ContractEvents.ShowFullScreen event) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;
@@ -56,7 +60,7 @@ public abstract class ContractPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
             fireEvent( new MenuEvents.Select( ТAB ) );
         }
     }
@@ -65,7 +69,9 @@ public abstract class ContractPage
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
-    private Profile profile;
 }
 

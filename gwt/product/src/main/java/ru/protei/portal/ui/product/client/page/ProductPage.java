@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -29,8 +30,7 @@ public abstract class ProductPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        this.profile = event.profile;
-        if ( profile.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PRODUCT, DebugIds.SIDEBAR_MENU.PRODUCT ) );
             fireEvent( new AppEvents.InitPage( new ProductEvents.Show( true ) ) );
         }
@@ -47,6 +47,11 @@ public abstract class ProductPage
     }
 
     @Event
+    public void onShowPreview(ProductEvents.ShowFullScreen event) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;
@@ -58,7 +63,7 @@ public abstract class ProductPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( profile.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW ) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW ) ) {
             fireEvent(new MenuEvents.Select(ТAB));
         }
     }
@@ -67,7 +72,7 @@ public abstract class ProductPage
     @Inject
     Lang lang;
     @Inject
-    private Profile profile;
+    private PolicyService policyService;
 
     private String ТAB;
 }

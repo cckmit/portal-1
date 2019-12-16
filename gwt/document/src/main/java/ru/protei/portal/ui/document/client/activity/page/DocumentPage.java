@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -26,9 +27,7 @@ public abstract class DocumentPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        this.profile = event.profile;
-
-        if (profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+        if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, DebugIds.SIDEBAR_MENU.DOCUMENT));
             fireEvent(new AppEvents.InitPage(new DocumentEvents.Show(true)));
         }
@@ -56,7 +55,7 @@ public abstract class DocumentPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
-        if (profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+        if (policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
             fireEvent(new MenuEvents.Select(TAB));
         }
     }
@@ -65,6 +64,8 @@ public abstract class DocumentPage implements Activity {
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String TAB;
-    private Profile profile;
 }

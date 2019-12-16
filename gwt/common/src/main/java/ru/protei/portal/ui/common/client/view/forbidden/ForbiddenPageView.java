@@ -9,8 +9,7 @@ import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPag
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class ForbiddenPageView extends Composite implements AbstractForbiddenPageView {
-    @Inject
-    public void onInit() {
+    public ForbiddenPageView() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
