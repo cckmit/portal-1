@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,7 +9,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -22,12 +22,10 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
-import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Активность создания и редактирования обращения
@@ -72,7 +70,37 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         }
 
         initDetails.parent.clear();
-        requestIssue(event.caseNumber );
+        initDetails.parent.add(view.asWidget());
+        view.setFullScreen( EDIT_MODE );
+        requestIssue(event.caseNumber, view.getMetaEditContainer() );
+    }
+
+    @Event
+    public void onShow( IssueEvents.ShowPreview event ) {
+        event.parent.clear();
+        view.backBtnVisibility().setVisible(false);
+        view.setFullScreen(false);
+        event.parent.add( view.asWidget() );
+
+//        this.issueCaseNumber = event.issueCaseNumber;
+//        issueId = null;
+//        isPrivateCase = false;
+
+        requestIssue( event.issueCaseNumber, view.getMetaPreviewContainer());
+
+    }
+
+    @Event
+    public void onShow( IssueEvents.ShowFullScreen event ) {
+        displayFullScreen();
+        requestIssue(event.issueCaseNumber, view.getMetaPreviewContainer());
+    }
+
+    private void displayFullScreen() {
+        initDetails.parent.clear();
+        initDetails.parent.add( view.asWidget() );
+        view.backBtnVisibility().setVisible(true);
+        view.setFullScreen(true);
     }
 
     @Event
@@ -264,6 +292,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
     }
 
     @Override
+    public void onGoToIssuesClicked() {
+        fireEvent(new IssueEvents.Show());
+    }
+
+    @Override
+    public void onFullScreenPreviewClicked() {
+        displayFullScreen();
+
+    }
+
+    @Override
     public void onEditNameAndDescriptionClicked() {
         if (isEditingNameAndDescriptionView) {
             switchToRONameAndDescriptionView(issue);
@@ -303,7 +342,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
                 issue.getInfo());
     }
 
-    private void requestIssue(Long number) {
+    private void requestIssue( Long number, HasWidgets metaContainer ) {
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {}
@@ -311,9 +350,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
             @Override
             public void onSuccess(CaseObject issue) {
                 IssueEditActivity.this.issue = issue;
-                initDetails.parent.add(view.asWidget());
+//                initDetails.parent.add(view.asWidget());
                 fillView(issue);
-                fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
+                fireEvent( new IssueEvents.EditMeta( metaContainer, makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
             }
         });
     }
@@ -617,4 +656,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
     private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
+    public static final Boolean EDIT_MODE = null;
 }

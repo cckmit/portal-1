@@ -276,7 +276,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.state().setValue( meta.getState() ); //        caseMeta.setState(caseMeta.getState());
         metaView.stateEnabled().setEnabled(true);
 
-        metaView.timeElapsedContainerVisibility().setVisible(true);
+        metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
         metaView.setTimeElapsed(meta.getTimeElapsed());
 

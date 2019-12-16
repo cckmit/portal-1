@@ -40,12 +40,12 @@ public interface AbstractIssuePreviewView extends IsWidget {
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();
 
-    HasVisibility jiraContainerVisibility();
-
-    void setJiraIssueType(String value);
-    void setJiraSeverity(String value);
-    void setJiraTimeOfReaction(String value);
-    void setJiraTimeOfDecision(String value);
+//    HasVisibility jiraContainerVisibility();
+//
+//    void setJiraIssueType(String value);
+//    void setJiraSeverity(String value);
+//    void setJiraTimeOfReaction(String value);
+//    void setJiraTimeOfDecision(String value);
 
     HasWidgets getCommentsContainer();
 

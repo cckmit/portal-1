@@ -12,7 +12,9 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setActivity( AbstractIssueEditActivity activity );
 
-    HasWidgets getMetaContainer();
+    HasWidgets getMetaEditContainer();
+
+    HasWidgets getMetaPreviewContainer();
 
     HasValue<String> name();
     HasValue<String> description();
@@ -40,6 +42,10 @@ public interface AbstractIssueEditView extends IsWidget {
     void setDescriptionRO(String value);
 
     void setNameRO(String name, String jiraUrl);
+
+    HasVisibility backBtnVisibility();
+
+    void setFullScreen( Boolean isFullScreen );
 
     String DESCRIPTION = "description";
 

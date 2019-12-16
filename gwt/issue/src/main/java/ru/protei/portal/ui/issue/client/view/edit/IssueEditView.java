@@ -48,8 +48,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasWidgets getMetaContainer() {
-        return issueMetaContainer;
+    public HasWidgets getMetaEditContainer() {
+        return metaEditContainer;
+    }
+
+    @Override
+    public HasWidgets getMetaPreviewContainer() {
+        return metaPreviewContainer;
     }
 
     @Override
@@ -106,11 +111,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setNumber(Integer num) {
         if (num == null) {
-            numberLabel.setText("");
+            number.setText("");
             return;
         }
 
-        numberLabel.setText("CRM-" + num);
+        number.setText("CRM-" + num);
     }
 
     @Override
@@ -160,6 +165,28 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             this.nameROLabel.appendChild(jiraLink);
             this.nameROLabel.appendChild(nameWithoutLink);
         }
+    }
+
+    @Override
+    public HasVisibility backBtnVisibility() {
+        return backButtonContainer;
+    }
+
+    @Override
+    public void setFullScreen( Boolean isFullScreen ) {
+        if (isFullScreen == null) {
+            root.setStyleName( "card card-transparent no-margin card-with-fixable-footer" );
+            cardBody.setStyleName( "card-body" );
+            metaEditContainer.setStyleName( "p-r-15 p-l-15" );
+            return;
+        }
+        if (isFullScreen) {
+            root.setStyleName( "card card-transparent no-margin preview-wrapper card-with-fixable-footer" );
+        } else {
+            root.setStyleName( "card card-fixed no-border preview-card" );
+        }
+
+        metaEditContainer.setStyleName("issue-meta-preview");
     }
 
     @Override
@@ -233,12 +260,29 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler( "backButton" )
+    public void onGoToIssuesClicked ( ClickEvent event) {
+        if ( activity != null ) {
+            activity.onGoToIssuesClicked();
+        }
+    }
+
+    @UiHandler( "number" )
+    public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
+
+        if ( activity != null ) {
+            activity.onFullScreenPreviewClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
-        numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
+//        number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
+        number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         nameROLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
@@ -280,7 +324,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     LabelElement attachmentsLabel;
     @UiField
-    InlineLabel numberLabel;
+    Anchor number;
     @UiField
     Element createdBy;
     @UiField
@@ -304,7 +348,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel tagsContainer;
     @UiField
-    HTMLPanel issueMetaContainer;
+    HTMLPanel metaEditContainer;
+    @UiField
+    HTMLPanel metaPreviewContainer;
     @UiField
     Button editNameAndDescriptionButton;
     @UiField
@@ -313,6 +359,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Button cancelNameAndDescriptionButton;
     @UiField
     DivElement nameAndDescriptionButtonsPanel;
+    @UiField
+    HTMLPanel backButtonContainer;
+    @UiField
+    Button backButton;
+    @UiField
+    HTMLPanel cardBody;
+
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

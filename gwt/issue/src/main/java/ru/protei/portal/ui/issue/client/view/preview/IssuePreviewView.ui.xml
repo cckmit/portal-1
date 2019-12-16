@@ -7,8 +7,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
-        <g:HTMLPanel ui:field="preview" styleName="preview card-body no-padding">
-            <div class="card card-default no-border">
+<!--        <g:HTMLPanel styleName="preview card-body no-padding">-->
+            <g:HTMLPanel ui:field="cardBody" styleName="card card-default no-border">
                 <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
@@ -82,34 +82,34 @@
 
                     <g:HTMLPanel ui:field="metaContainer" styleName="issue-meta-preview"/>
 
-                    <g:HTMLPanel ui:field="jiraMetaDataContainer" styleName="form-group-attached" visible="false">
-                        <div class="row clearfix">
-                            <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraIssueType}"/></label>
-                                    <span ui:field="jiraIssueType"/>
-                                </div>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraSeverity}"/></label>
-                                    <span ui:field="jiraSeverity"/>
-                                </div>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
-                                    <span ui:field="jiraTimeOfReaction"/>
-                                </div>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
-                                    <span ui:field="jiraTimeOfDecision"/>
-                                </div>
-                            </g:HTMLPanel>
-                        </div>
-                    </g:HTMLPanel>
+<!--                    <g:HTMLPanel ui:field="jiraMetaDataContainer" styleName="form-group-attached" visible="false">-->
+<!--                        <div class="row clearfix">-->
+<!--                            <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-md-3">-->
+<!--                                <div class="form-group form-group-default b-t-none">-->
+<!--                                    <label class="fade"><ui:text from="{lang.jiraIssueType}"/></label>-->
+<!--                                    <span ui:field="jiraIssueType"/>-->
+<!--                                </div>-->
+<!--                            </g:HTMLPanel>-->
+<!--                            <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-md-3">-->
+<!--                                <div class="form-group form-group-default b-t-none">-->
+<!--                                    <label class="fade"><ui:text from="{lang.jiraSeverity}"/></label>-->
+<!--                                    <span ui:field="jiraSeverity"/>-->
+<!--                                </div>-->
+<!--                            </g:HTMLPanel>-->
+<!--                            <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-md-3">-->
+<!--                                <div class="form-group form-group-default b-t-none">-->
+<!--                                    <label class="fade"><ui:text from="{lang.jiraTimeOfReaction}"/></label>-->
+<!--                                    <span ui:field="jiraTimeOfReaction"/>-->
+<!--                                </div>-->
+<!--                            </g:HTMLPanel>-->
+<!--                            <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-md-3">-->
+<!--                                <div class="form-group form-group-default b-t-none">-->
+<!--                                    <label class="fade"><ui:text from="{lang.jiraTimeOfDecision}"/></label>-->
+<!--                                    <span ui:field="jiraTimeOfDecision"/>-->
+<!--                                </div>-->
+<!--                            </g:HTMLPanel>-->
+<!--                        </div>-->
+<!--                    </g:HTMLPanel>-->
 
                     <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
 
@@ -146,8 +146,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </g:HTMLPanel>
+            </g:HTMLPanel>
+<!--        </g:HTMLPanel>-->
         <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
             <div class="card card-transparent no-margin">
                 <div class="text-right">

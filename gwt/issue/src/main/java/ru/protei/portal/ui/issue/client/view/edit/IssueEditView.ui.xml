@@ -7,7 +7,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
-        <div class="card-body">
+        <g:HTMLPanel ui:field="cardBody" styleName="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first p-l-25">
                     <div class="btn-toolbar flex-wrap">
@@ -26,7 +26,8 @@
                             <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
                                 <i class="far fa-clone"/>
                             </g:Anchor>
-                            <g:InlineLabel ui:field="numberLabel"/>
+<!--                            <g:InlineLabel ui:field="numberLabel"/>-->
+                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
                         </h5>
 
                         <div class="inline pull-right">
@@ -65,6 +66,9 @@
                         </div>
                     </g:HTMLPanel>
 
+                    <g:HTMLPanel ui:field="metaPreviewContainer" styleName="issue-meta-preview"/>
+
+
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
@@ -101,12 +105,19 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 order-first order-lg-last">
+                <g:HTMLPanel styleName="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
-                        <g:HTMLPanel ui:field="issueMetaContainer" styleName="card-body issue-meta-edit"/>
+                        <g:HTMLPanel ui:field="metaEditContainer" styleName="card-body issue-meta-edit"/>
                     </div>
+                </g:HTMLPanel>
+            </div>
+        </g:HTMLPanel>
+        <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
                 </div>
             </div>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

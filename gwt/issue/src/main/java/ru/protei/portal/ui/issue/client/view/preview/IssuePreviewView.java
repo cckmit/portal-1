@@ -173,30 +173,30 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         return timeElapsedContainer;
     }
 
-    @Override
-    public HasVisibility jiraContainerVisibility() {
-        return jiraMetaDataContainer;
-    }
-
-    @Override
-    public void setJiraIssueType(String value) {
-        jiraIssueType.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
-
-    @Override
-    public void setJiraSeverity(String value) {
-        jiraSeverity.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
-
-    @Override
-    public void setJiraTimeOfReaction(String value) {
-        jiraTimeOfReaction.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
-
-    @Override
-    public void setJiraTimeOfDecision(String value) {
-        jiraTimeOfDecision.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
+//    @Override
+//    public HasVisibility jiraContainerVisibility() {
+//        return jiraMetaDataContainer;
+//    }
+//
+//    @Override
+//    public void setJiraIssueType(String value) {
+//        jiraIssueType.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+//    }
+//
+//    @Override
+//    public void setJiraSeverity(String value) {
+//        jiraSeverity.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+//    }
+//
+//    @Override
+//    public void setJiraTimeOfReaction(String value) {
+//        jiraTimeOfReaction.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+//    }
+//
+//    @Override
+//    public void setJiraTimeOfDecision(String value) {
+//        jiraTimeOfDecision.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+//    }
 
     @Override
     public HasTime timeElapsed() {
@@ -306,7 +306,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 //    @UiField
 //    DivElement metaTable;
     @UiField
-    HTMLPanel preview;
+    HTMLPanel cardBody;
     @UiField
     Element privateIssue;
     @UiField
@@ -340,24 +340,24 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     AttachmentList attachmentContainer;
     @UiField
     Element subscriptions;
-    @UiField
-    HTMLPanel jiraMetaDataContainer;
-    @UiField
-    HTMLPanel jiraIssueTypeContainer;
-    @UiField
-    HTMLPanel jiraSeverityContainer;
-    @UiField
-    HTMLPanel jiraTimeOfReactionContainer;
-    @UiField
-    HTMLPanel jiraTimeOfDecisionContainer;
-    @UiField
-    SpanElement jiraIssueType;
-    @UiField
-    SpanElement jiraSeverity;
-    @UiField
-    SpanElement jiraTimeOfReaction;
-    @UiField
-    SpanElement jiraTimeOfDecision;
+//    @UiField
+//    HTMLPanel jiraMetaDataContainer;
+//    @UiField
+//    HTMLPanel jiraIssueTypeContainer;
+//    @UiField
+//    HTMLPanel jiraSeverityContainer;
+//    @UiField
+//    HTMLPanel jiraTimeOfReactionContainer;
+//    @UiField
+//    HTMLPanel jiraTimeOfDecisionContainer;
+//    @UiField
+//    SpanElement jiraIssueType;
+//    @UiField
+//    SpanElement jiraSeverity;
+//    @UiField
+//    SpanElement jiraTimeOfReaction;
+//    @UiField
+//    SpanElement jiraTimeOfDecision;
     @UiField
     HTMLPanel timeElapsedContainer;
     @Inject

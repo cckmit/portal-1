@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.preview;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -87,7 +88,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         this.issueCaseNumber = event.issueCaseNumber;
         issueId = null;
-        isPrivateCase = false;
+//        isPrivateCase = false;
 
         requestIssue(issueCaseNumber);
         view.backBtnVisibility().setVisible(false);
@@ -101,7 +102,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         this.issueCaseNumber = event.issueCaseNumber;
         issueId = null;
-        isPrivateCase = false;
+//        isPrivateCase = false;
 
         requestIssue(issueCaseNumber);
         view.backBtnVisibility().setVisible(true);
@@ -138,8 +139,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                         .withCaseId(issueId)
                         .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                        .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                        .withPrivateCase(isPrivateCase)
+                        .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                        .withPrivateCase(issue.isPrivateCase())
                         .withTextMarkup(textMarkup));
             }
         });
@@ -157,7 +158,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void onCopyNumberClicked() {
-        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(caseObject.getCaseNumber()));
+        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(issue.getCaseNumber()));
 
         if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
@@ -168,7 +169,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void onCopyNumberAndNameClicked() {
-        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
+        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
 
         if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
@@ -178,7 +179,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView(CaseObject value ) {
-        this.caseObject = value;
+//        this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
         view.setCreatedBy(lang.createBy(transliteration(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
@@ -237,8 +238,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                .withPrivateCase(isPrivateCase)
+                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                .withPrivateCase(issue.isPrivateCase())
                 .withTextMarkup(textMarkup));
     }
 
@@ -299,8 +300,9 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
             @Override
             public void onSuccess( CaseObject issue ) {
-                issueId = issue.getId();
-                isPrivateCase = issue.isPrivateCase();
+               IssuePreviewActivity.this.issue = issue;
+//                issueId = issue.getId();
+//                isPrivateCase = issue.isPrivateCase();
                 textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
 
                 fillView( issue );
@@ -382,11 +384,14 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @Inject
     SLAControllerAsync slaController;
 
+    @ContextAware
+    CaseObject issue;
+
     private Long issueCaseNumber;
     private Long issueId;
-    private boolean isPrivateCase;
+//    private boolean isPrivateCase;
     private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;
     private WorkTimeFormatter workTimeFormatter;
-    private CaseObject caseObject;
+//    private CaseObject caseObject;
 }
