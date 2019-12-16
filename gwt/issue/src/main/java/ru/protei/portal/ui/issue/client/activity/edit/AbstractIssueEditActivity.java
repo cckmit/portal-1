@@ -9,14 +9,14 @@ public interface AbstractIssueEditActivity {
 
     void removeAttachment(Attachment attachment);
     void renderMarkupText(String text, Consumer<String> consumer);
-    void onDisplayPreviewChanged( String description, boolean isDisplay );
+//    void onDisplayPreviewChanged( String description, boolean isDisplay );
 //    void onCaseMetaChanged( CaseObjectMeta value );
     void onCopyNumberClicked();
-    void onEditNameAndDescriptionClicked();
-    void onSaveNameAndDescriptionClicked();
-    void onCopyNumberAndNameClicked();
-
-    void onGoToIssuesClicked();
+    void onEditNameAndDescriptionClicked(AbstractIssueDetailsView view);
+//    void onSaveNameAndDescriptionClicked();
+//    void onCopyNumberAndNameClicked();
+//
+//    void onGoToIssuesClicked();
 
     void onFullScreenPreviewClicked();
 }

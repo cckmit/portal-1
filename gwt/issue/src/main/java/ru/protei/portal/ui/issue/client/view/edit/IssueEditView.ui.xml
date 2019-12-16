@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -36,45 +37,44 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <h5 ui:field="nameROContainer" class="number-and-name-copy-panel no-margin">
-                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
-                            <i class="far fa-clone"/>
-                        </g:Anchor>
-                        <label ui:field="nameROLabel" class="semi-bold large-text"/>
-                    </h5>
+                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
 
-                    <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
+<!--                    <h5 ui:field="nameROContainer" class="number-and-name-copy-panel no-margin">-->
+<!--                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">-->
+<!--                            <i class="far fa-clone"/>-->
+<!--                        </g:Anchor>-->
+<!--                        <label ui:field="nameROLabel" class="semi-bold large-text"/>-->
+<!--                    </h5>-->
 
-                    <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
+<!--                    <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />-->
 
-                        <div class="form-input-group">
-                            <label ui:field="nameLabel" class="fade">
-                                <ui:text from="{lang.issueName}"/>
-                            </label>
-                            <g:TextBox ui:field="name" styleName="form-control"/>
-                        </div>
-                    </g:HTMLPanel>
+<!--                    <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">-->
 
-                    <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
-                        <div class="col-md-12">
-                            <div class="form-group-default">
-                                <label class="fade" ui:field="descriptionLabel">
-                                    <ui:text from="{lang.description}"/>
-                                </label>
-                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
-                            </div>
-                        </div>
-                    </g:HTMLPanel>
+<!--                        <div class="form-input-group">-->
+<!--                            <label ui:field="nameLabel" class="fade">-->
+<!--                                <ui:text from="{lang.issueName}"/>-->
+<!--                            </label>-->
+<!--                            <g:TextBox ui:field="name" styleName="form-control"/>-->
+<!--                        </div>-->
+<!--                    </g:HTMLPanel>-->
 
-                    <g:HTMLPanel ui:field="metaPreviewContainer" styleName="issue-meta-preview"/>
-
+<!--                    <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="form-group-default">-->
+<!--                                <label class="fade" ui:field="descriptionLabel">-->
+<!--                                    <ui:text from="{lang.description}"/>-->
+<!--                                </label>-->
+<!--                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </g:HTMLPanel>-->
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
-                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
-                        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
-                        <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
-                    </div>
+<!--                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">-->
+<!--                        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>-->
+<!--                        <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>-->
+<!--                    </div>-->
 
                     <div class="row form-group">
                         <div class="col-md-12">
@@ -110,13 +110,6 @@
                         <g:HTMLPanel ui:field="metaEditContainer" styleName="card-body issue-meta-edit"/>
                     </div>
                 </g:HTMLPanel>
-            </div>
-        </g:HTMLPanel>
-        <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
-            <div class="card card-transparent no-margin">
-                <div class="text-right">
-                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
-                </div>
             </div>
         </g:HTMLPanel>
     </g:HTMLPanel>

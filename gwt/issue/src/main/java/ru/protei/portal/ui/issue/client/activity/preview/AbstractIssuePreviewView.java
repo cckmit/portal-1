@@ -8,33 +8,30 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueDetailsView;
 
 import java.util.Set;
 
 /**
  * Абстракция вида превью обращения
  */
-public interface AbstractIssuePreviewView extends IsWidget {
+public interface AbstractIssuePreviewView extends IsWidget, AbstractIssueDetailsView {
 
     void setActivity(AbstractIssuePreviewActivity activity);
 
-    void setPrivateIssue(boolean privateIssue);
-    void setCaseNumber(Long caseNumber);
-    void setCreatedBy(String value);
-//    void setState(long value );
+    //    void setState(long value );
 //    void setImportance(int value);
 //    void setProduct(String value);
 //
 //    void setContact(String value);
 //    void setManager(String value);
-    void setName(String value, String jiraUrl);
+//    void setName(String value, String jiraUrl);
 
-    void setInfo(String value);
-//
+    //
 //    void setPlatformName(String value);
 //    void setPlatformLink(String link);
 //    void setPlatformVisibility(boolean visible);
-    void isFullScreen(boolean isFullScreen);
+    void setFullScreen( boolean isFullScreen);
 
     void setSubscriptionEmails(String value);
     HasTime timeElapsed();
@@ -47,19 +44,19 @@ public interface AbstractIssuePreviewView extends IsWidget {
 //    void setJiraTimeOfReaction(String value);
 //    void setJiraTimeOfDecision(String value);
 
-    HasWidgets getCommentsContainer();
-
-    HasWidgets getLinksContainer();
-
-    HasAttachments attachmentsContainer();
+//    HasWidgets getCommentsContainer();
+//
+//    HasWidgets getLinksContainer();
+//
+//    HasAttachments attachmentsContainer();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     boolean isAttached();
 
     HasVisibility backBtnVisibility();
 
-    HasWidgets getTagsContainer();
-
-    HasWidgets getMetaContainer();
+//    HasWidgets getTagsContainer();
+//
+//    HasWidgets getMetaContainer();
 
 }

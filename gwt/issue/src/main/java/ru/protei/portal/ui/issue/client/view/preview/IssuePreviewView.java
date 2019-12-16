@@ -39,7 +39,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
-        copyNumberAndName.getElement().setAttribute("title", lang.issueCopyNumberAndName());
+//        copyNumberAndName.getElement().setAttribute("title", lang.issueCopyNumberAndName());
         ensureDebugIds();
     }
 
@@ -64,7 +64,18 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         this.createdBy.setInnerHTML( value );
     }
 
-//    @Override
+    @Override
+    public HasVisibility editNameAndDescriptionButtonVisibility() {
+        return editNameAndDescriptionButton;
+    }
+
+    @Override
+    public HasWidgets getNameInfoContainer() {
+        return issueInfoContainer;
+    }
+
+
+    //    @Override
 //    public void setState( long value ) {
 //        En_CaseState caseState = En_CaseState.getById( value );
 //        this.state.setInnerHTML( "<i class='fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase() + "'></i>" +
@@ -93,34 +104,34 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 //        this.manager.setInnerText( value );
 //    }
 
-    @Override
-    public void setName( String value, String jiraUrl ) {
-        if (jiraUrl.isEmpty() || !value.startsWith("CLM")) {
-            this.name.setInnerHTML(value);
-        }
-        else {
-            String idCLM = value.split(" ")[0];
-            String remainingName = "&nbsp;" + value.substring(idCLM.length());
+//    @Override
+//    public void setName( String value, String jiraUrl ) {
+//        if (jiraUrl.isEmpty() || !value.startsWith("CLM")) {
+//            this.name.setInnerHTML(value);
+//        }
+//        else {
+//            String idCLM = value.split(" ")[0];
+//            String remainingName = "&nbsp;" + value.substring(idCLM.length());
+//
+//            AnchorElement jiraLink = DOM.createAnchor().cast();
+//
+//            jiraLink.setHref(jiraUrl + idCLM);
+//            jiraLink.setTarget("_blank");
+//            jiraLink.setInnerText(idCLM);
+//
+//            LabelElement nameWithoutLink = DOM.createLabel().cast();
+//            nameWithoutLink.setInnerHTML(remainingName);
+//
+//            this.name.setInnerHTML("");
+//            this.name.appendChild(jiraLink);
+//            this.name.appendChild(nameWithoutLink);
+//        }
+//    }
 
-            AnchorElement jiraLink = DOM.createAnchor().cast();
-
-            jiraLink.setHref(jiraUrl + idCLM);
-            jiraLink.setTarget("_blank");
-            jiraLink.setInnerText(idCLM);
-
-            LabelElement nameWithoutLink = DOM.createLabel().cast();
-            nameWithoutLink.setInnerHTML(remainingName);
-
-            this.name.setInnerHTML("");
-            this.name.appendChild(jiraLink);
-            this.name.appendChild(nameWithoutLink);
-        }
-    }
-
-    @Override
-    public void setInfo( String value ) {
-        this.info.setInnerHTML( value );
-    }
+//    @Override
+//    public void setInfo( String value ) {
+//        this.info.setInnerHTML( value );
+//    }
 
     @Override
     public void setSubscriptionEmails( String value ) {
@@ -225,12 +236,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 //    }
 
     @Override
-    public void isFullScreen(boolean isFullScreen) {
+    public void setFullScreen( boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
         if (isFullScreen) {
             metaContainer.addStyleName("p-r-15 p-l-15");
         } else {
-            metaContainer.addStyleName("p-r-15 p-l-15");
+            metaContainer.removeStyleName("p-r-15 p-l-15");
         }
     }
 
@@ -263,13 +274,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
-    @UiHandler("copyNumberAndName")
-    public void onCopyNumberAndNameClicked(ClickEvent event) {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onCopyNumberAndNameClicked();
-        }
-    }
+//    @UiHandler("copyNumberAndName")
+//    public void onCopyNumberAndNameClicked(ClickEvent event) {
+//        event.preventDefault();
+//        if (activity != null) {
+//            activity.onCopyNumberAndNameClicked();
+//        }
+//    }
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
@@ -293,14 +304,14 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 //        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER);
         subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.SUBSCRIPTION);
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION);
-        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
+//        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
 //        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PLATFORM);
 //        platform.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PLATFORM);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
         copyNumber.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_BUTTON);
-        copyNumberAndName.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_AND_NAME_BUTTON);
+//        copyNumberAndName.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_AND_NAME_BUTTON);
     }
 
 //    @UiField
@@ -323,8 +334,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 //    SpanElement contact;
 //    @UiField
 //    SpanElement manager;
-    @UiField
-    SpanElement name;
+//    @UiField
+//    SpanElement name;
     @UiField
     DivElement info;
     @Inject
@@ -371,10 +382,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     HTMLPanel backButtonContainer;
     @UiField
     Anchor copyNumber;
-    @UiField
-    Anchor copyNumberAndName;
-    @UiField
-    HTMLPanel numberCopyPanel;
+//    @UiField
+//    Anchor copyNumberAndName;
+//    @UiField
+//    HTMLPanel numberCopyPanel;
 //    @UiField
 //    LabelElement stateLabel;
 //    @UiField
@@ -405,6 +416,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     HTMLPanel tagsContainer;
     @UiField
     HTMLPanel metaContainer;
+    @UiField
+    Button editNameAndDescriptionButton;
+    @UiField
+    HTMLPanel issueInfoContainer;
 
     @Inject
     En_CaseStateLang caseStateLang;

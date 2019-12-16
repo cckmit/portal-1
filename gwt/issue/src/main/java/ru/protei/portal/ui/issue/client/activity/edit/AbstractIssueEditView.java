@@ -8,54 +8,38 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 /**
  * Представление создания и редактирования обращения
  */
-public interface AbstractIssueEditView extends IsWidget {
+public interface AbstractIssueEditView extends IsWidget, AbstractIssueDetailsView {
 
     void setActivity( AbstractIssueEditActivity activity );
 
-    HasWidgets getMetaEditContainer();
-
-    HasWidgets getMetaPreviewContainer();
-
-    HasValue<String> name();
-    HasValue<String> description();
-
-    HasValidable nameValidator();
-
-    HasWidgets getCommentsContainer();
-    HasAttachments attachmentsContainer();
+//    HasValue<String> name();
+//    HasValue<String> description();
+//    HasValidable nameValidator();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
-    void setCaseNumber(Long caseNumber);
-
-    void setCreatedBy(String value);
+//    void setCaseNumber(Long caseNumber);
+//
+//    void setCreatedBy(String value);
 
     boolean isAttached();
 
-    void setPrivacyIcon(Boolean isPrivate);
+//    void setPrivacyIcon(Boolean isPrivate);
 
-    void setNumber(Integer num);
+//    void setNumber(Integer num);
 
-    void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
+//    void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
-    void switchToRONameAndDescriptionView( boolean b);
+//    void switchToRONameAndDescriptionView( boolean b);
 
-    void setDescriptionRO(String value);
-
-    void setNameRO(String name, String jiraUrl);
-
-    HasVisibility backBtnVisibility();
-
-    void setFullScreen( Boolean isFullScreen );
+//    void setDescriptionRO(String value);
+//
+//    void setNameRO(String name, String jiraUrl);
 
     String DESCRIPTION = "description";
 
-    HasWidgets getTagsContainer();
+//    HasVisibility copyNumberAndNameVisibility();
 
-    HasWidgets getLinksContainer();
+//    HasVisibility editNameAndDescriptionButtonVisibility();
 
-    HasVisibility copyNumberAndNameVisibility();
-
-    HasVisibility editNameAndDescriptionButtonVisibility();
-
-    void setNameAndDescriptionButtonsPanelVisibility(boolean visible);
+//    void setNameAndDescriptionButtonsPanelVisibility(boolean visible);
 }

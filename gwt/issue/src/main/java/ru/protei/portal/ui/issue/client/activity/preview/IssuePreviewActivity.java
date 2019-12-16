@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
-import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
@@ -31,6 +30,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,33 +81,33 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         }
     }
 
-    @Event
-    public void onShow( IssueEvents.ShowPreview event ) {
-        event.parent.clear();
-        event.parent.add( view.asWidget() );
-
-        this.issueCaseNumber = event.issueCaseNumber;
-        issueId = null;
-//        isPrivateCase = false;
-
-        requestIssue(issueCaseNumber);
-        view.backBtnVisibility().setVisible(false);
-        view.isFullScreen(false);
-    }
-
-    @Event
-    public void onShow( IssueEvents.ShowFullScreen event ) {
-        initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
-
-        this.issueCaseNumber = event.issueCaseNumber;
-        issueId = null;
-//        isPrivateCase = false;
-
-        requestIssue(issueCaseNumber);
-        view.backBtnVisibility().setVisible(true);
-        view.isFullScreen(true);
-    }
+//    @Event
+//    public void onShow( IssueEvents.ShowPreview event ) {
+//        event.parent.clear();
+//        event.parent.add( view.asWidget() );
+//
+//        this.issueCaseNumber = event.issueCaseNumber;
+//        issueId = null;
+////        isPrivateCase = false;
+//
+//        requestIssue(issueCaseNumber);
+//        view.backBtnVisibility().setVisible(false);
+//        view.setFullScreen(false);
+//    }
+//
+//    @Event
+//    public void onShow( IssueEvents.ShowFullScreen event ) {
+//        initDetails.parent.clear();
+//        initDetails.parent.add( view.asWidget() );
+//
+//        this.issueCaseNumber = event.issueCaseNumber;
+//        issueId = null;
+////        isPrivateCase = false;
+//
+//        requestIssue(issueCaseNumber);
+//        view.backBtnVisibility().setVisible(true);
+//        view.setFullScreen(true);
+//    }
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
@@ -167,81 +167,89 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         }
     }
 
-    @Override
-    public void onCopyNumberAndNameClicked() {
-        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
-
-        if (isCopied) {
-            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
-        } else {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        }
-    }
-
-    private void fillView(CaseObject value ) {
-//        this.caseObject = value;
-        view.setPrivateIssue( value.isPrivateCase() );
-        view.setCaseNumber(value.getCaseNumber());
-        view.setCreatedBy(lang.createBy(transliteration(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
-
-//        view.setState( value.getStateId() );
-//        view.setImportance( value.getImpLevel() );
-//        view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
+//    @Override
+//    public void onCopyNumberAndNameClicked() {
+//        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
 //
-//        String contact = value.getInitiator() == null ? "" : transliteration(value.getInitiator().getDisplayName());
-//        Company initiatorCompany = value.getInitiatorCompany();
-//        if ( initiatorCompany != null ) {
-//            contact += " (" + transliteration(initiatorCompany.getCname()) + ")";
+//        if (isCopied) {
+//            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+//        } else {
+//            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
 //        }
-//        view.setContact( contact );
-//        String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
-//        view.setManager( manager );
-        view.setName(value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()) ? value.getJiraUrl() : "");
+//    }
 
-//        view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
-//        view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
-//        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+//    private void fillView(CaseObject value ) {
+////        this.caseObject = value;
+//        view.setPrivateIssue( value.isPrivateCase() );
+//        view.setCaseNumber(value.getCaseNumber());
+//        view.setCreatedBy(lang.createBy(transliteration(value.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(value.getCreated())));
+//
+////        view.setState( value.getStateId() );
+////        view.setImportance( value.getImpLevel() );
+////        view.setProduct( value.getProduct() == null ? "" : value.getProduct().getName() );
+////
+////        String contact = value.getInitiator() == null ? "" : transliteration(value.getInitiator().getDisplayName());
+////        Company initiatorCompany = value.getInitiatorCompany();
+////        if ( initiatorCompany != null ) {
+////            contact += " (" + transliteration(initiatorCompany.getCname()) + ")";
+////        }
+////        view.setContact( contact );
+////        String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
+////        view.setManager( manager );
+//        view.setName(value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()) ? value.getJiraUrl() : "");
+//
+////        view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
+////        view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
+////        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
+//
+//        view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
+//
+//        fillSubscriptions(value);
+//
+//        view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
+//        Long timeElapsed = value.getTimeElapsed();
+//        view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
+//
+//
+//        view.attachmentsContainer().clear();
+//        view.attachmentsContainer().add(value.getAttachments());
+//
+//        if (StringUtils.isNotBlank(value.getInfo())) {
+//            En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(value);
+//            textRenderController.render(value.getInfo(), textMarkup, new FluentCallback<String>()
+//                    .withError(throwable -> {})
+//                    .withSuccess(rendered -> view.setInfo(rendered)));
+//        }
+//
+////        fillViewForJira(value);
+//
+//        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+//                .withCaseId(value.getId())
+//                .withCaseType(En_CaseType.CRM_SUPPORT)
+//                .readOnly());
+//
+//        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
+//                .withCaseId(value.getId())
+//                .withCaseType(En_CaseType.CRM_SUPPORT)
+//                .readOnly());
+//
+//        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
+//                .withCaseType(En_CaseType.CRM_SUPPORT)
+//                .withCaseId(value.getId())
+//                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+//                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+//                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+//                .withPrivateCase(issue.isPrivateCase())
+//                .withTextMarkup(textMarkup));
+//    }
 
-        view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
+    @Override
+    public void onIssueNameInfoChanged( CaseObject issue ) {
+        log.warning( "onIssueNameInfoChanged(): Not implemented." );//TODO NotImplemented
 
-        fillSubscriptions(value);
-
-        view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
-        Long timeElapsed = value.getTimeElapsed();
-        view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
-
-
-        view.attachmentsContainer().clear();
-        view.attachmentsContainer().add(value.getAttachments());
-
-        if (StringUtils.isNotBlank(value.getInfo())) {
-            En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(value);
-            textRenderController.render(value.getInfo(), textMarkup, new FluentCallback<String>()
-                    .withError(throwable -> {})
-                    .withSuccess(rendered -> view.setInfo(rendered)));
-        }
-
-//        fillViewForJira(value);
-
-        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
-                .withCaseId(value.getId())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .readOnly());
-
-        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
-                .withCaseId(value.getId())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .readOnly());
-
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                .withPrivateCase(issue.isPrivateCase())
-                .withTextMarkup(textMarkup));
     }
+
+    private static final Logger log = Logger.getLogger( IssuePreviewActivity.class.getName() );
 
 //    private void fillViewForJira(CaseObject value) {
 //        view.jiraContainerVisibility().setVisible(false);
@@ -286,30 +294,30 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 } ) );
     }
 
-    private void requestIssue( Long number ) {
-        if (number == null) {
-            fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-
-        issueService.getIssue( number, new RequestCallback<CaseObject>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( CaseObject issue ) {
-               IssuePreviewActivity.this.issue = issue;
-//                issueId = issue.getId();
-//                isPrivateCase = issue.isPrivateCase();
-                textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
-
-                fillView( issue );
-                fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
-            }
-        } );
-    }
+//    private void requestIssue( Long number ) {
+//        if (number == null) {
+//            fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
+//            return;
+//        }
+//
+//        issueService.getIssue( number, new RequestCallback<CaseObject>() {
+//            @Override
+//            public void onError( Throwable throwable ) {
+//                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+//            }
+//
+//            @Override
+//            public void onSuccess( CaseObject issue ) {
+//               IssuePreviewActivity.this.issue = issue;
+////                issueId = issue.getId();
+////                isPrivateCase = issue.isPrivateCase();
+//                textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
+//
+//                fillView( issue );
+//                fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
+//            }
+//        } );
+//    }
 
     private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
         if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) return null;
