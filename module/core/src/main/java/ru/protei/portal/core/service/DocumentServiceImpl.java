@@ -124,9 +124,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, Person person) {
+    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author) {
 
-        String author = person.getDisplayName();
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
@@ -183,9 +182,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, Person person) {
+    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author) {
 
-        String author = person.getDisplayName();
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
@@ -318,9 +316,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Long> removeDocument(AuthToken token, Long documentId, Long projectId, Person person) {
-
-        String author = person.getDisplayName();
+    public Result<Long> removeDocument(AuthToken token, Long documentId, Long projectId, String author) {
 
         if (documentId == null || projectId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

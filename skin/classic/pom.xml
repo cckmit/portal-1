@@ -21,17 +21,8 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${project.gwt.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
-        <sourceDirectory>src/main/java</sourceDirectory>
 
         <resources>
             <resource>

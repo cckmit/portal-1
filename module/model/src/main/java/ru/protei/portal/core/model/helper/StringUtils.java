@@ -125,7 +125,8 @@ public class StringUtils {
         return null == string ? null : string.trim();
     }
 
-    public static int length(String string) {
+    public static int length(CharSequence string) {
         return null == string ? 0 : string.length();
     }
+
 }

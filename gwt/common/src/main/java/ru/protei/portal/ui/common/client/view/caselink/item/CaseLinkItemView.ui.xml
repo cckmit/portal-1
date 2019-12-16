@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" styleName="case-link" tag="li">
+        <i ui:field="state" class="fas fa-circle m-l-5"/>
+        <g:Anchor ui:field="number" href="#" target="_blank" styleName="case-link-number"/>
+        <g:Anchor ui:field="header" href="#" styleName="m-l-5" target="_blank"/>
+        <div class="pull-right">
+            <g:Anchor ui:field="remove" href="#" styleName="case-link-close fas fa-times"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

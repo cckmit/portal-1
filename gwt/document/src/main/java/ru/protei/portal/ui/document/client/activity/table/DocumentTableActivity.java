@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
@@ -129,8 +130,12 @@ public abstract class DocumentTableActivity
             return;
         }
         documentService.removeDocument(documentToRemove, new FluentCallback<Long>()
-                .withResult(() -> documentToRemove = null)
+                .withError(throwable -> {
+                    documentToRemove = null;
+                    errorHandler.accept(throwable);
+                })
                 .withSuccess(id -> {
+                    documentToRemove = null;
                     fireEvent(new DocumentEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 }));
@@ -264,6 +269,8 @@ public abstract class DocumentTableActivity
     DocumentControllerAsync documentService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler errorHandler;
 
     private Integer scrollTop;
     private static String CREATE_ACTION;

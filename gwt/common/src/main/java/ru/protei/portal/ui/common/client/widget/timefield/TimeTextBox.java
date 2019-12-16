@@ -35,7 +35,7 @@ public class TimeTextBox extends ValidableTextBox implements HasTime, KeyUpHandl
 
     @Override
     public void setTime(Long minutes) {
-        setValue( workTimeFormatter.asString(minutes));
+        setValue( minutes == null ? "" : workTimeFormatter.asString(minutes));
     }
 
     @Override

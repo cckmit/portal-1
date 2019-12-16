@@ -115,6 +115,7 @@
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
             </Policies>
+            <DefaultRolloverStrategy max="20"/>
         </RollingFile>
 
         <!-- Логгирование данных ( toString() ). Большие объёмы. -->

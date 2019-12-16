@@ -249,7 +249,48 @@ public final class RedmineServiceImpl implements RedmineService {
         updateHandler.handleUpdateAttachmentsByIssue(issue, caseId, endpoint);
     }
 
-    private Issue getIssueByIdWithAttachmentsOnly( int id, RedmineEndpoint endpoint) {
+    @Override
+    public void updateCaseObjectById(Long caseId) {
+        ExternalCaseAppData externalCaseAppData = externalCaseAppDAO.get(caseId);
+        if (externalCaseAppData == null) {
+            logger.debug("Case object with id {} was not fount", caseId);
+            return;
+        }
+
+        String extAppId = externalCaseAppData.getExtAppCaseId();
+        if (extAppId == null) {
+            logger.debug("Case {} has no ext-app-id", caseId);
+            return;
+        }
+
+        final String[] issueAndCompanyIds = extAppId.split("_");
+        if (issueAndCompanyIds.length != 2
+                || !issueAndCompanyIds[0].matches("^[0-9]+$")
+                || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
+            logger.debug("Case {} has invalid ext-app-id : {}", caseId, extAppId);
+            return;
+        }
+
+        final int issueId = Integer.parseInt(issueAndCompanyIds[0]);
+        final String projectId = externalCaseAppData.getExtAppData();
+        final long companyId = Long.parseLong(issueAndCompanyIds[1]);
+
+        final RedmineEndpoint endpoint = redmineEndpointDAO.getByCompanyIdAndProjectId(companyId, projectId);
+        if (endpoint == null) {
+            logger.debug("Endpoint was not found for companyId {} and projectId {}", companyId, projectId);
+            return;
+        }
+
+        final Issue issue = getIssueById(issueId, endpoint);
+        if (issue == null) {
+            logger.debug("Issue with id {} was not found", issueId);
+            return;
+        }
+
+        updateHandler.handleUpdateCaseObjectByIssue(issue, caseId, endpoint);
+    }
+
+    private Issue getIssueByIdWithAttachmentsOnly(int id, RedmineEndpoint endpoint) {
         try {
             final RedmineManager manager =
                     RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());

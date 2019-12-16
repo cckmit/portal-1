@@ -43,7 +43,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
+            query.setManagerIds(CollectionUtils.singleValueList(token.getPersonId()));
         }
         SearchResult<Contract> sr = contractDAO.getSearchResult(query);
         return ok(sr);
@@ -56,7 +56,7 @@ public class ContractServiceImpl implements ContractService {
         if (hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
             contract = contractDAO.get(id);
         } else {
-            contract = contractDAO.getByIdAndManagerId(id, getCurrentPerson(token).getId());
+            contract = contractDAO.getByIdAndManagerId(id, token.getPersonId());
         }
 
         if (contract == null) {
@@ -147,13 +147,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
-    }
-
-    private Person getCurrentPerson(AuthToken token) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        return personDAO.get(descriptor.getLogin().getPersonId());
     }
 }

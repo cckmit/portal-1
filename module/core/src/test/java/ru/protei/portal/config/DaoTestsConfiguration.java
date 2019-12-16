@@ -114,6 +114,16 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
+    }
+
+    @Bean
     public CaseShortViewDAO getCaseShortDAO() {
         return new CaseShortViewDAO_Impl();
     }
@@ -121,11 +131,6 @@ public class DaoTestsConfiguration {
     @Bean
     public AuditObjectDAO getAuditDAO() {
         return new AuditObjectDAO_Impl();
-    }
-
-    @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
     }
 
     @Bean

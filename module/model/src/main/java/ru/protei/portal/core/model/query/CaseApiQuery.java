@@ -16,9 +16,6 @@ public class CaseApiQuery extends BaseQuery {
     private List<String> states;
 
     @JsonIgnore
-    private boolean orWithoutManager;
-
-    @JsonIgnore
     private En_CaseType type;
     /**
      * if true then both states otherwise only non-private state
@@ -54,13 +51,6 @@ public class CaseApiQuery extends BaseQuery {
     public List<Long> getManagerIds() { return managerIds; }
     public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
-    public boolean isOrWithoutManager() {
-        return orWithoutManager;
-    }
-    public void setOrWithoutManager(boolean withoutManager) {
-        this.orWithoutManager = withoutManager;
-    }
-
     public boolean isAllowViewPrivate() {
         return allowViewPrivate;
     }
@@ -73,7 +63,6 @@ public class CaseApiQuery extends BaseQuery {
         return "CaseApiQuery{" +
                 "managerIds=" + managerIds +
                 ", states=" + states +
-                ", orWithoutManager=" + orWithoutManager +
                 ", type=" + type +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +

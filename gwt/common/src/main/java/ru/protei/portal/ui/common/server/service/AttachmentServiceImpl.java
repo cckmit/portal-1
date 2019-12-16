@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AttachmentService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,8 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public List<Attachment> getAttachmentsByCaseId(En_CaseType caseType, Long caseId) throws RequestFailedException {
-        Result<List<Attachment>> response =  attachmentService.getAttachmentsByCaseId( getDescriptorAndCheckSession().makeAuthToken(), caseType, caseId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<List<Attachment>> response =  attachmentService.getAttachmentsByCaseId( token, caseType, caseId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
@@ -32,7 +34,8 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public List<Attachment> getAttachments(En_CaseType caseType, List<Long> attachmentIds) throws RequestFailedException {
-        Result<List<Attachment>> response =  attachmentService.getAttachments( getDescriptorAndCheckSession().makeAuthToken(), caseType, attachmentIds);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<List<Attachment>> response =  attachmentService.getAttachments( token, caseType, attachmentIds);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
@@ -42,7 +45,8 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public boolean removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException{
-        Result<Boolean> response =  attachmentService.removeAttachmentEverywhere( getDescriptorAndCheckSession().makeAuthToken(), caseType, attachmentId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<Boolean> response =  attachmentService.removeAttachmentEverywhere( token, caseType, attachmentId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
@@ -53,15 +57,6 @@ public class AttachmentServiceImpl implements AttachmentService{
     @Override
     public void clearUploadedAttachmentsCache() {
         sessionService.clearAllFiles(httpServletRequest);
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

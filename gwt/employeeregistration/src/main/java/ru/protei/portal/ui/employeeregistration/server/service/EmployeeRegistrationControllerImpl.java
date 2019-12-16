@@ -8,14 +8,13 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.EmployeeRegistrationService;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -35,9 +34,9 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
     public EmployeeRegistration getEmployeeRegistration(Long id) throws RequestFailedException {
         log.info(" get employee registration, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<EmployeeRegistration> response = employeeRegistrationService.getEmployeeRegistration(descriptor.makeAuthToken(), id);
+        Result<EmployeeRegistration> response = employeeRegistrationService.getEmployeeRegistration(token, id);
         log.info(" get employee registration, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -55,10 +54,10 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
 
         log.info("create employee registration, id: {}", HelperFunc.nvlt(employeeRegistration.getId(), "new"));
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        employeeRegistration.setCreatorId(descriptor.getPerson().getId());
-        Result<Long> response = employeeRegistrationService.createEmployeeRegistration(descriptor.makeAuthToken(), employeeRegistration);
+        employeeRegistration.setCreatorId(token.getPersonId());
+        Result<Long> response = employeeRegistrationService.createEmployeeRegistration(token, employeeRegistration);
 
         log.info("create employee registration, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -68,16 +67,6 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
-        log.info("userSessionDescriptor={}", descriptor);
-        if (descriptor == null) {
-            throw new RequestFailedException(En_ResultStatus.SESSION_NOT_FOUND);
-        }
-
-        return descriptor;
     }
 
     @Autowired

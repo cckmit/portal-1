@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.JiraMetaData;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -132,15 +132,14 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                         .withCaseType(En_CaseType.CRM_SUPPORT)
                         .withCaseId(issueId)
                         .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                         .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                         .withPrivateCase(isPrivateCase)
-                        .withTextMarkup(textMarkup)
-                        .build());
+                        .withTextMarkup(textMarkup));
             }
         });
     }
@@ -156,13 +155,24 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
-    public void onCopyClicked() {
-        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
+    public void onCopyNumberClicked() {
+        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(caseObject.getCaseNumber()));
 
-        if (status != 0) {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        } else {
+        if (isCopied) {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        }
+    }
+
+    @Override
+    public void onCopyNumberAndNameClicked() {
+        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
+
+        if (isCopied) {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         }
     }
 
@@ -184,7 +194,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setContact( contact );
         String manager = value.getManager() == null ? "" : transliteration(value.getManager().getDisplayName() + " (" + value.getManager().getCompany().getCname() + ")");
         view.setManager( manager );
-        view.setName(value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()) ? value.getJiraMetaData().getUrl() : "");
+        view.setName(value.getName() == null ? "" : value.getName(), En_ExtAppType.JIRA.getCode().equals(value.getExtAppType()) ? value.getJiraUrl() : "");
 
         view.setPlatformName(value.getPlatformId() == null ? "" : value.getPlatformName());
         view.setPlatformLink(LinkUtils.makeLink(Platform.class, value.getPlatformId()));
@@ -197,8 +207,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         Long timeElapsed = value.getTimeElapsed();
         view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
-        view.setLinks(value.getLinks() == null ? null : new HashSet<>(value.getLinks()));
-        view.setTags(value.getTags() == null ? new HashSet<>() : value.getTags());
+
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
@@ -212,26 +221,34 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         fillViewForJira(value);
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(value.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .readOnly());
+
+        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
+                .withCaseId(value.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .readOnly());
+
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                 .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                 .withPrivateCase(isPrivateCase)
-                .withTextMarkup(textMarkup)
-                .build());
+                .withTextMarkup(textMarkup));
     }
 
     private void fillViewForJira(CaseObject value) {
-
         view.jiraContainerVisibility().setVisible(false);
 
         if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
             return;
         }
 
-        JiraMetaData meta = value.getJiraMetaData();
+        CaseObjectMetaJira meta = value.getCaseObjectMetaJira();
         boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
 
         view.jiraContainerVisibility().setVisible(true);
@@ -285,17 +302,9 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 isPrivateCase = caseObject.isPrivateCase();
                 textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);
 
-                requestCaseLinks(issueId);
-
                 fillView( caseObject );
             }
         } );
-    }
-
-    private void requestCaseLinks( Long issueId ) {
-        issueService.getCaseLinks(issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
-                view.setLinks(caseLinks == null ? null : new HashSet<>(caseLinks))
-        ));
     }
 
     private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){

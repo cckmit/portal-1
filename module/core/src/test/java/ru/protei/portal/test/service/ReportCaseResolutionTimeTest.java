@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.*;
-import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.DAY;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     @Test
-    public void productQueryTest() throws Exception {
+    public void productQueryTest() {
         QueryModel model = new QueryModel( "productQueryTest" );
         try {
             model = initCaseObjectsQueryTestModel( model );
@@ -52,7 +52,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     @Test
-    public void tagQueryTest() throws Exception {
+    public void tagQueryTest() {
         QueryModel model = new QueryModel( "tagQueryTest" );
         try {
             model = initCaseObjectsQueryTestModel( model );
@@ -74,7 +74,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     @Test
-    public void companiesQueryTest() throws Exception {
+    public void companiesQueryTest() {
         QueryModel model = new QueryModel( "companiesQueryTest" );
         try {
             model = initCaseObjectsQueryTestModel( model );
@@ -564,9 +564,11 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         public Long makeCase( Date day, CaseTag caseTag, Long productId, Company initiatorCompany ) {
             Long id = ReportCaseResolutionTimeTest.this.makeCaseObject(
-                    model.person, productId, day, caseTag, initiatorCompany.getId()
+                    model.person, productId, day, initiatorCompany.getId()
             ).getId();
             model.rememberCaseId( id );
+            caseObjectTagDAO.persist(new CaseObjectTag(id, caseTag.getId()));
+
             return id;
         }
 

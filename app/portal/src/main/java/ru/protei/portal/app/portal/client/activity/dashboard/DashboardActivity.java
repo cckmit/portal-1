@@ -40,7 +40,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             return;
         }
 
-        fireEvent(new IssueEvents.Edit());
+        fireEvent(new IssueEvents.Create());
     }
 
     @Event
@@ -55,16 +55,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         }
         initWidgets();
 
-    }
-
-    @Event
-    public void onChangeIssues( IssueEvents.ChangeModel event ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW ) ) {
-            return;
-        }
-
-        initWidgets();
     }
 
     private void initWidgets(){
@@ -95,8 +85,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateNewRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Arrays.asList(En_CaseState.CREATED));
-        query.setOrWithoutManager( true );
+        query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
+        query.setWithoutManager(true);
 
         return query;
     }

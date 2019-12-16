@@ -261,15 +261,7 @@ public class PortalConfigData {
 
         public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
             long v = properties.getProperty("core.waiting_period", Long.class, 30L);
-
-            if (v > java.util.concurrent.TimeUnit.MINUTES.toSeconds(2)) {
-                v = java.util.concurrent.TimeUnit.MINUTES.toSeconds(2);
-            }
-            else if (v < 10 ){
-                v = 10;
-            }
-
-            logger.debug("Use event assembly period = {}", v);
+           logger.debug("Use event assembly period = {}", v);
             waitingPeriod = v;
         }
 
@@ -351,24 +343,18 @@ public class PortalConfigData {
     }
 
     public static class IntegrationConfig {
-        private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
 
-        private final boolean redminePatchAttachmentsEnabled;
+        private final boolean redminePatchEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
-            hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
 
-            redminePatchAttachmentsEnabled = properties.getProperty("integration.redmine.patch.attachments", Boolean.class, false);
-        }
-
-        public boolean isHpsmEnabled() {
-            return hpsmEnabled;
+            redminePatchEnabled = properties.getProperty("integration.redmine.patch", Boolean.class, false);
         }
 
         public boolean isRedmineEnabled() {
@@ -383,8 +369,8 @@ public class PortalConfigData {
             return jiraEnabled;
         }
 
-        public boolean isRedminePatchAttachmentsEnabled() {
-            return redminePatchAttachmentsEnabled;
+        public boolean isRedminePatchEnabled() {
+            return redminePatchEnabled;
         }
     }
 
@@ -479,21 +465,15 @@ public class PortalConfigData {
 
     public static class CaseLinkConfig {
         private final String linkCrm;
-        private final String linkOldCrm;
         private final String linkYouTrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
-            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
-            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 
         public String getLinkCrm() {
             return linkCrm;
-        }
-
-        public String getLinkOldCrm() {
-            return linkOldCrm;
         }
 
         public String getLinkYouTrack() {

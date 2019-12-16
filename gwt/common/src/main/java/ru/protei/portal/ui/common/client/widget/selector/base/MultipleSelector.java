@@ -78,6 +78,7 @@ public abstract class MultipleSelector<T>
             itemView = itemFactory.get();
             itemView.setText( name );
             itemView.addValueChangeHandler( this );
+            if (selected.contains(value)) itemView.setValue(true);
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );
             itemToNameModel.put(value, name);

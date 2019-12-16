@@ -15,7 +15,6 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
-import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -37,7 +36,6 @@ import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
-import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
@@ -98,16 +96,6 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
-    }
-
-    @Bean
-    public CaseControlService getCaseControlService () {
-        return new CaseControlServiceImpl();
-    }
-
-    @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
 
     @Bean
@@ -149,11 +137,6 @@ public class ServiceTestsConfiguration {
     public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
 
     @Bean
-    public EventPublisherService getEventPublisherService () {
-        return new AsyncEventPublisherService();
-    }
-
-    @Bean
     public CaseSubscriptionService getCaseSubscriptionService () {
         return new CaseSubscriptionServiceImpl();
     }
@@ -188,8 +171,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public EventExpirationControl getEventExpirationControl() {
-        return new EventExpirationControl();
+    public AssemblerService getAssemblerService() {
+        return new AssemblerServiceImpl();
     }
 
     @Bean

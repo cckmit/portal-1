@@ -1,46 +1,47 @@
 package ru.protei.portal.test.notification;
 
-import org.junit.*;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.config.TestNotificationConfiguration;
+import ru.protei.portal.config.*;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CompanyService;
+import ru.protei.portal.core.service.events.CaseSubscriptionService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.mail.internet.MimeMessage;
-import java.util.Collections;
-import java.util.Date;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
 /**
  * Тесты для
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration(classes = {
-        CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        IntegrationTestsConfiguration.class, NotificationConfiguration.class, TestNotificationConfiguration.class
+        PortalConfigTestConfiguration.class,
+        DaoMockTestConfiguration.class,
+        ServiceTestsConfiguration.class,
+        TestEventConfiguration.class,
+        NotificationConfiguration.class, TestNotificationConfiguration.class
 })
 public class MailNotificationProcessorTest extends BaseServiceTest {
-
-    public static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-02";
-    private En_CaseType caseType = En_CaseType.CRM_SUPPORT;
 
     @Autowired
     CaseService caseService;
@@ -52,71 +53,127 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
     CompanyService companyService;
 
     @Autowired
-    CaseControlService caseControlService;
-
-    @Autowired
     MailSendChannel sendChannel;
 
     @Autowired
     CompanySubscriptionDAO subscriptionDAO;
 
+    @Autowired
+    EventAssemblerService eventAssemblerService;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    CaseSubscriptionService subscriptionService;
+    @Autowired
+    CompanySubscriptionDAO companySubscriptionDAO;
+
+    private static final Long CASE_ID = 222L;
+    private static final long COMPANY_ID = 1L;
+    private static final long PERSON_ID = 2L;
+    private static final long SUBSCRIPTION_ID = 3L;
+    private static final long COMMENT_ID = 4L;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks( this );
+    }
+
     @Test
-    public void test001() throws Exception {
+    public void mail_on_createCaseObject() throws Exception {
         VirtualMailSendChannel mockChannel = (VirtualMailSendChannel) sendChannel;
 
-        Company company = makeCustomerCompany();
-        Person initiator = makePerson(company);
+        Company company = createNewCustomerCompany();
+        company.setId( COMPANY_ID );
+        Person initiator = createNewPerson(company);
+        initiator.setId( PERSON_ID );
 
         CompanySubscription subscription = new CompanySubscription();
         subscription.setCompanyId( company.getId() );
         subscription.setEmail( "junit-test@protei.ru" );
         subscription.setLangCode( "ru" );
-        subscription.setId( subscriptionDAO.persist( subscription ) );
+        subscription.setId( SUBSCRIPTION_ID );
 
-        CaseObject object = new CaseObject();
-        object.setCaseType( caseType );
+        getAuthToken().setPersonId( PERSON_ID );
+
+        when(companyDAO.get( COMPANY_ID )).thenReturn( company );
+        when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
+        when(personDAO.get( PERSON_ID )).thenReturn( initiator );
+
+        En_CaseType caseType = En_CaseType.CRM_SUPPORT;
+        CaseObject object = createNewCaseObject(initiator);
         object.setInitiatorCompany( company );
         object.setInitiator( initiator );
-        object.setCreator( initiator );
-        object.setState( En_CaseState.CREATED );
-        object.setImpLevel( En_ImportanceLevel.BASIC.getId() );
-        object.setCreated( new Date() );
-        object.setCreatorInfo( "junit-test-events" );
-        object.setName( "Event-publisher test" );
-        object.setInfo( "some text is here" );
-        object.setExtAppType( "junit-test" );
 
-        Result<CaseObject> response = caseService.createCaseObject(getAuthToken(), object, initiator);
-        Assert.assertTrue(response.isOk());
-        object = response.getData();
+        CaseObjectMeta meta = new CaseObjectMeta(object);
+        meta.setId( CASE_ID );
+        CaseObjectMetaNotifiers metaNotifiers = new CaseObjectMetaNotifiers(object);
+        metaNotifiers.setId( CASE_ID );
 
-        // wait for async event
-        Thread.sleep(2000);
+        when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
+        when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
+        when( caseObjectMetaDAO.get( CASE_ID ) ).thenReturn( meta );
+        when( caseObjectMetaNotifiersDAO.get( CASE_ID ) ).thenReturn( metaNotifiers );
+        when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
+
+        Assert.assertTrue("CaseObject must be created",
+                caseService.createCaseObject(getAuthToken(), new CaseObjectCreateRequest(object)).isOk());
+
+        long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
+        long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
+        Thread.sleep( waitScheduleAndEventAssembler );
 
         MimeMessage msg = mockChannel.get();
         Assert.assertNotNull( msg );
 
-        CaseComment comment = new CaseComment();
-        comment.setCaseId(object.getId());
-        comment.setCreated(new Date());
-        comment.setClientIp(getAuthToken().getIp());
-        comment.setCaseStateId(object.getStateId());
-        comment.setAuthorId(object.getInitiatorId());
-        comment.setText("A new comment, publishing test");
-        comment.setCaseAttachments(Collections.emptyList());
-
-        Result<CaseComment> r2 = caseCommentService.addCaseComment( getAuthToken(), caseType, comment, initiator );
-        Assert.assertTrue(r2.isOk());
-
-        // wait for async event
-        Thread.sleep(2000);
-
-        msg = mockChannel.get();
-        Assert.assertNotNull(msg);
-
-        Assert.assertTrue(removeCaseObjectAndComments(object));
-        Assert.assertTrue(personDAO.remove(initiator));
-        Assert.assertTrue(subscriptionDAO.remove(subscription));
-        Assert.assertTrue(companyDAO.remove(company));
     }
+
+    @Test
+    public void mail_on_createCaseComment() throws Exception {
+        VirtualMailSendChannel mockChannel = (VirtualMailSendChannel) sendChannel;
+
+        Company company = createNewCustomerCompany();
+        company.setId( COMPANY_ID );
+        Person initiator = createNewPerson(company);
+        initiator.setId( PERSON_ID );
+        CaseObject object = createNewCaseObject( initiator );
+        object.setId( CASE_ID );
+        object.setInitiatorCompany( company );
+        getAuthToken().setPersonId( PERSON_ID );
+
+        CompanySubscription subscription = new CompanySubscription();
+        subscription.setCompanyId( company.getId() );
+        subscription.setEmail( "junit-test@protei.ru" );
+        subscription.setLangCode( "ru" );
+        subscription.setId( SUBSCRIPTION_ID );
+
+        when(companyDAO.get( COMPANY_ID )).thenReturn( company );
+        when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
+        when(personDAO.get( PERSON_ID )).thenReturn( initiator );
+
+        long commentId = COMMENT_ID;
+        CaseComment comment = createNewComment( initiator, CASE_ID, "A new comment, publishing test" );
+        comment.setId(commentId );
+
+        when( caseObjectDAO.checkExistsByKey( CASE_ID ) ).thenReturn( true );
+        when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
+        when( caseObjectDAO.get( any() ) ).thenReturn( object );
+        when( caseObjectMetaDAO.get( any() ) ).thenReturn( new CaseObjectMeta(object) );
+        when( caseObjectMetaNotifiersDAO.get( any() ) ).thenReturn( new CaseObjectMetaNotifiers(object) );
+
+        when( caseCommentDAO.get( commentId ) ).thenReturn( comment );
+        when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
+
+        Assert.assertTrue( "CaseComment must be created",
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );
+
+        long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
+        long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
+        Thread.sleep( waitScheduleAndEventAssembler );
+
+        MimeMessage msg = mockChannel.get();
+        Assert.assertNotNull(msg);
+    }
+
 }

@@ -38,7 +38,7 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> managerIds;
 
-    private boolean orWithoutManager;
+    private Boolean withoutManager;
 
     private En_CaseType type;
 
@@ -116,7 +116,7 @@ public class CaseQuery extends BaseQuery {
         setModifiedFrom(query.getModifiedFrom());
         setModifiedTo(query.getModifiedTo());
         setManagerIds(query.getManagerIds());
-        setOrWithoutManager(query.isOrWithoutManager());
+        setWithoutManager(query.isWithoutManager());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
         setCommentAuthorIds(query.getCommentAuthorIds());
@@ -227,12 +227,12 @@ public class CaseQuery extends BaseQuery {
 
     public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
-    public boolean isOrWithoutManager() {
-        return orWithoutManager;
+    public Boolean isWithoutManager() {
+        return withoutManager;
     }
 
-    public void setOrWithoutManager(boolean withoutManager) {
-        this.orWithoutManager = withoutManager;
+    public void setWithoutManager(Boolean withoutManager) {
+        this.withoutManager = withoutManager;
     }
 
     public boolean isAllowViewPrivate() {
@@ -363,7 +363,8 @@ public class CaseQuery extends BaseQuery {
                 local != null ||
                 contractIndependentProject != null ||
                 platformIndependentProject != null ||
-                productDirectionId != null;
+                productDirectionId != null ||
+                withoutManager != null;
     }
 
     @Override
@@ -375,7 +376,7 @@ public class CaseQuery extends BaseQuery {
                 ", locationIds=" + locationIds +
                 ", districtIds=" + districtIds +
                 ", managerIds=" + managerIds +
-                ", orWithoutManager=" + orWithoutManager +
+                ", withoutManager=" + withoutManager +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +

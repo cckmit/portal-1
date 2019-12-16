@@ -2,6 +2,7 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
+import com.taskadapter.redmineapi.bean.JournalDetail;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +11,15 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EventPublisherService;
-import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
+import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
 public final class CommonServiceImpl implements CommonService {
 
     @Override
-    public CaseComment parseJournal(Journal journal, long companyId) {
+    public CaseComment parseJournalToCaseComment(Journal journal, long companyId) {
         final Person author = getAssignedPerson(companyId, journal.getUser());
         if (journal.getNotes().startsWith(RedmineUtils.COMMENT_PROTEI_USER_PREFIX)) {
             return null;
@@ -44,12 +42,41 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint) {
+    public CaseComment parseJournalToStatusComment(Journal journal, long companyId, long statusMapId) {
+        final Person author = getAssignedPerson(companyId, journal.getUser());
+        JournalDetail detailWithStatusChange = journal.getDetails()
+                .stream()
+                .filter(detail -> detail.getName().equals(RedmineChangeType.STATUS_CHANGE.getName()))
+                .findFirst()
+                .get();
+
+        Integer newStatus;
+        try {
+            newStatus = Integer.parseInt(detailWithStatusChange.getNewValue());
+        } catch (NumberFormatException e) {
+            logger.warn("Can't parse status to int. {}", detailWithStatusChange.toString());
+            return null;
+        }
+
+        RedmineToCrmEntry statusMapEntry = statusMapEntryDAO.getLocalStatus(statusMapId, newStatus);
+        if (statusMapEntry == null) {
+            return null;
+        }
+
+        final CaseComment statusComment = new CaseComment();
+        statusComment.setCreated(journal.getCreatedOn());
+        statusComment.setAuthor(author);
+        statusComment.setCaseStateId(statusMapEntry.getLocalStatusId().longValue());
+        return statusComment;
+    }
+
+    @Override
+    public void processAttachments(Issue issue, CaseObject obj, Long contactPersonId, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
-            logger.debug("process attachments for case, id={}, existingAttachmentsHashCodes={}", caseObjId, existingAttachmentsHashCodes);
+            logger.debug("Process attachments for case, id={}, existingAttachmentsHashCodes={}", caseObjId, existingAttachmentsHashCodes);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
             issue.getAttachments()
                     .stream()
@@ -57,36 +84,33 @@ public final class CommonServiceImpl implements CommonService {
                     .forEach(x -> {
                         Attachment a = new Attachment();
                         a.setCreated(x.getCreatedOn());
-                        a.setCreatorId(contactPerson.getId());
+                        a.setCreatorId(contactPersonId);
                         a.setDataSize(x.getFileSize());
                         a.setFileName(x.getFileName());
                         a.setMimeType(x.getContentType());
                         a.setLabelText(x.getDescription());
                         addedAttachments.add(a);
                         try {
-                            logger.debug("invoke file controller to store attachment {} (size={}, hashCode={})", x.getFileName(), x.getFileSize(), toHashCode(x));
+                            logger.debug("Invoke file controller to store attachment {} (size={}, hashCode={})", x.getFileName(), x.getFileSize(), toHashCode(x));
                             Long caId = fileController.saveAttachment(a,
                                     new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), x.getFileSize(), x.getContentType(), caseObjId);
-                            logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
+                            logger.debug("Result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
                             final boolean isAlreadyExists =
                                     caseAttachmentDAO.getByCondition("CASE_ID = ? and ATT_ID = ?", caseObjId, a.getId()) != null;
                             if (caId != null && !isAlreadyExists) {
                                 caseAttachments.add(new CaseAttachment(caseObjId, a.getId()));
                             }
                         } catch (Exception e) {
-                            logger.debug("unable to process attachment {}", x.getFileName());
-                            logger.debug("trace", e);
+                            logger.debug("Unable to process attachment {}", x.getFileName());
+                            logger.debug("Trace", e);
                         }
                     });
             addedAttachments.forEach(attachmentDAO::saveOrUpdate);
             caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
         }
 
-        eventPublisherService.publishEvent(new CaseAttachmentEvent.Builder(this, ServiceModule.REDMINE)
-                .withCaseObject(obj)
-                .withAddedAttachments(addedAttachments)
-                .withPerson(contactPerson)
-                .build());
+        eventPublisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.REDMINE, contactPersonId, obj.getId(),
+                        addedAttachments, null));
     }
 
     @Override
@@ -104,15 +128,12 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
+    public CaseComment processStoreComment(Issue issue, Long contactPersonId, CaseObject obj, Long caseObjId, CaseComment comment) {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent(new CaseCommentEvent.Builder(caseService, ServiceModule.REDMINE)
-                .withState(obj)
-                .withCaseComment(comment)
-                .withPerson(contactPerson)
-                .build());
+        eventPublisherService.publishEvent( new CaseCommentEvent( caseService, ServiceModule.REDMINE, contactPersonId,
+                caseObjId, false, null, comment, null ) );
 
         return comment;
     }
@@ -217,6 +238,9 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private EventPublisherService eventPublisherService;
+
+    @Autowired
+    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 

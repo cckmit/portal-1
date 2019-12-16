@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
-import ru.protei.portal.test.jira.config.DatabaseConfiguration;
+import ru.protei.portal.test.jira.config.DatabaseTestConfiguration;
 import ru.protei.portal.test.jira.config.JiraTestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -32,7 +32,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseTestConfiguration.class, JiraTestConfiguration.class})
 public class JiraIntegrationServiceTest {
 
     @Autowired
@@ -110,7 +110,7 @@ public class JiraIntegrationServiceTest {
         Assert.assertNotNull("Error parsing json for update", issue);
 
         caseEvent = jiraIntegrationService.updateOrCreate(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_UPDATED, issue));
-        CaseObject object = caseObjectDAO.get(caseEvent.getCaseObject().getId());
+        CaseObject object = caseObjectDAO.get(caseEvent.getCaseObjectId());
         Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
     }
 

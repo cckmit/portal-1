@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
@@ -16,8 +17,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -61,7 +64,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public Long getCaseNo(long caseId) {
+    public Long getCaseNumberById( long caseId) {
         CaseObject obj = partialGetByCondition("id=?", Collections.singletonList(caseId), "CASENO");
         return obj != null ? obj.getCaseNumber() : null;
     }
@@ -91,11 +94,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public List< CaseObject > getCases(CaseQuery query) {
-//        SqlCondition condition = caseQueryCondition( query );
-//        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
-//                "id", "CASENO", "IMPORTANCE", "STATE", "CREATED", "INFO", "InitiatorName" ).getResults();
-
-        //
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);
     }
@@ -107,11 +105,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers) {
-        return partialGetListByCondition("case_object.CASENO in (" + caseNumbers.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(", ")) + ")", Collections.emptyList(), "id", "CASENO"
-        );
+    public String getExternalAppName( Long caseId ) {
+        String select = query().
+                select( EXT_APP ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
+
+        return jdbcTemplate.queryForObject( select, String.class, caseId );
     }
 
     @Override
@@ -119,23 +117,22 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         String sql = "SELECT case_object.CASENO FROM " + getTableName() + " WHERE case_object.platform_id = " + id;
         return jdbcTemplate.queryForList(sql, Long.class);
     }
-
     @Override
-    public boolean updateEmailLastId(Long caseId, Long emailLastId) {
-        String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + emailLastId + " WHERE " + getIdColumnName() + " = " + caseId;
-        return jdbcTemplate.update(sql) > 0;
+    @Transactional
+    public Long getAndIncrementEmailLastId( Long caseId ) {
+        String selectForUpdate = query().forUpdate().
+                select( COLUMN_EMAIL_LAST_ID ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
+
+        Long lastId = jdbcTemplate.queryForObject( selectForUpdate, Long.class, caseId );
+        String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + COLUMN_EMAIL_LAST_ID + "+1 WHERE " + getIdColumnName() + " = " + caseId;
+        jdbcTemplate.update(sql);
+        return lastId;
     }
 
     @Override
     public boolean updateNullCreatorByExtAppType(String extAppType) {
         String sql = "UPDATE " + getTableName() + " SET creator = initiator WHERE creator IS NULL AND EXT_APP = ?";
         return jdbcTemplate.update(sql, extAppType) > 0;
-    }
-
-    @Override
-    public Long getEmailLastId(Long caseId) {
-        String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, caseId);
     }
 
     @Override

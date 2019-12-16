@@ -44,6 +44,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     public void getCaseCommentsDaoTest() {
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
+        makeUserLogin(person);
         CaseObject caseObject = makeCaseObject(person);
 
         CaseComment comment = createNewComment(person, caseObject.getId(), "Test_Comment");
@@ -60,6 +61,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
+        makeUserLogin(person);
         CaseObject caseObject = makeCaseObject(caseType, person);
 
         makeCaseComment(person, caseObject.getId(), "Test message");
@@ -95,6 +97,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
+        makeUserLogin(person);
         CaseObject caseObject = makeCaseObject(caseType, person);
 
         // create
@@ -106,7 +109,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         comment.setText("Unit-test - тестовый комментарий");
         comment.setCaseAttachments(Collections.emptyList());
 
-        result = caseCommentService.addCaseComment(getAuthToken(), caseType, comment, person);
+        result = caseCommentService.addCaseComment(getAuthToken(), caseType, comment);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
@@ -119,7 +122,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         // update
         comment.setText("Unit-test - тестовый комментарий (update)");
 
-        result = caseCommentService.updateCaseComment(getAuthToken(), caseType, comment, person);
+        result = caseCommentService.updateCaseComment(getAuthToken(), caseType, comment);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
@@ -130,7 +133,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         log.info("Size after update = " + resultList.getData().size());
 
         // delete
-        Result<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment, person);
+        Result<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment);
         Assert.assertNotNull(result2);
         Assert.assertTrue(result2.isOk());
         log.info("{}", result2.getData());
@@ -148,18 +151,19 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     public void changeTimeElapsedTest() {
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
+        makeUserLogin(person);
         CaseObject caseObject = makeCaseObject(person);
 
         CaseComment comment1 = createNewComment(person, caseObject.getId(), "Comment1");
         Long timeElapsed1 = 4 * MINUTE;
         comment1.setTimeElapsed(timeElapsed1);
 
-        CaseComment saved = checkResultAndGetData(caseCommentService.addCaseComment(getAuthToken(), caseType, comment1, person));
+        CaseComment saved = checkResultAndGetData(caseCommentService.addCaseComment(getAuthToken(), caseType, comment1));
         CaseComment fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1, fromDb.getTimeElapsed());
 
-        CaseObject caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
+        CaseObject caseObjectWithComment = checkResultAndGetData(caseService.getCaseObjectByNumber(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", timeElapsed1, caseObjectWithComment.getTimeElapsed());
 
         // Comment 2
@@ -167,23 +171,23 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         Long timeElapsed2 = 5 * MINUTE;
         comment2.setTimeElapsed(timeElapsed2);
 
-        saved = checkResultAndGetData(caseCommentService.addCaseComment(getAuthToken(), caseType, comment2, person));
+        saved = checkResultAndGetData(caseCommentService.addCaseComment(getAuthToken(), caseType, comment2));
         fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment2.getText(), timeElapsed2, fromDb.getTimeElapsed());
 
-        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
+        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObjectByNumber(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1 + timeElapsed2), caseObjectWithComment.getTimeElapsed());
 
         //  Change comment 1
         Long timeElapsed1Changed = 18 * MINUTE;
         comment1.setTimeElapsed(timeElapsed1Changed);
-        saved = checkResultAndGetData(caseCommentService.updateCaseComment(getAuthToken(), caseType, comment1, person));
+        saved = checkResultAndGetData(caseCommentService.updateCaseComment(getAuthToken(), caseType, comment1));
         fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1Changed, fromDb.getTimeElapsed());
 
-        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
+        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObjectByNumber(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1Changed + timeElapsed2), caseObjectWithComment.getTimeElapsed());
     }
 

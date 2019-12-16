@@ -17,6 +17,7 @@ import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.*;
 
 public class ReportCaseResolutionTime {
 
@@ -158,11 +159,6 @@ public class ReportCaseResolutionTime {
     private static DateFormat makeDateFormat() {
         return new SimpleDateFormat( DATE_FORMAT );
     }
-
-    public static final long SEC = 1000L;
-    public static final long MINUTE = 60 * SEC;
-    public static final long HOUR = 60 * MINUTE;
-    public static final long DAY = 24 * HOUR;
 
     public static final String DATE_FORMAT = "yyyy-MM-dd" ;
     public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count", "Active cases" );

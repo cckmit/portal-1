@@ -13,7 +13,7 @@ public class CaseObjectSqlBuilder {
 
     public SqlCondition caseCommonQuery (CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1 and deleted = 0");
+            condition.append("deleted = 0");
 
             // TODO merge ids to use queries simultaneously
             if ( query.getId() != null ) {
@@ -96,10 +96,6 @@ public class CaseObjectSqlBuilder {
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
                 condition.append(" and manager in " + HelperFunc.makeInArg(query.getManagerIds(), false));
-
-                if ( query.isOrWithoutManager() ) {
-                    condition.append(" or manager is null" );
-                }
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
@@ -186,6 +182,10 @@ public class CaseObjectSqlBuilder {
                 condition
                         .append(" and product_id = ")
                         .append(query.getProductDirectionId());
+            }
+
+            if (query.isWithoutManager() != null && query.isWithoutManager()) {
+                condition.append(" and manager IS NULL");
             }
         });
     }

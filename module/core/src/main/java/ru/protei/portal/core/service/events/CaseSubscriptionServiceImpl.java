@@ -10,9 +10,11 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -39,6 +41,12 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Autowired
+    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     PortalConfig portalConfig;
@@ -70,19 +78,11 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     @Override
-    public Set<NotificationEntry> subscribers( AssembledCaseEvent event ) {
-        CaseObject caseObject = event.getCaseObject();
+    public Set<NotificationEntry> subscribers( CaseObjectMeta caseMeta ) {
         Set<NotificationEntry> result = new HashSet<>();
-        appendCompanySubscriptions(caseObject.getInitiatorCompanyId(), result);
-        appendProductSubscriptions(caseObject.getProductId(), result);
-        if(caseObject.getNotifiers() != null){
-            for(Person notifier: caseObject.getNotifiers()){
-                ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
-                if(email == null)
-                    continue;
-                result.add(NotificationEntry.email(email.value(), "ru"));
-            }
-        }
+        appendCompanySubscriptions(caseMeta.getInitiatorCompanyId(), result);
+        appendProductSubscriptions(caseMeta.getProductId(), result);
+        appendNotifiers(caseMeta.getId(), result);
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
         log.info( "subscribers: AssembledCaseEvent: {}", join( result, ni->ni.getAddress(), ",") );
@@ -112,6 +112,16 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     private void appendProductSubscriptions( Long devUnitId, Set<NotificationEntry> result ) {
         safeGetByDevUnit(devUnitId)
                 .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+    }
+
+    private void appendNotifiers(Long caseId, Set<NotificationEntry> result) {
+        CaseObjectMetaNotifiers caseMetaNotifiers = caseObjectMetaNotifiersDAO.get(caseId);
+        jdbcManyRelationsHelper.fill(caseMetaNotifiers, "notifiers");
+        for (Person notifier : CollectionUtils.emptyIfNull(caseMetaNotifiers.getNotifiers())) {
+            ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+            if (email == null) continue;
+            result.add(NotificationEntry.email(email.value(), "ru"));
+        }
     }
 
     private static final Logger log = LoggerFactory.getLogger( CaseSubscriptionServiceImpl.class );

@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
@@ -16,9 +14,9 @@ import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RegionController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,9 +36,9 @@ public class RegionControllerImpl implements RegionController {
         log.info( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< List< RegionInfo > > response = projectService.listRegions( descriptor.makeAuthToken(), query );
+        Result< List< RegionInfo > > response = projectService.listRegions( token, query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -50,7 +48,8 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public List< DistrictInfo > getDistrictList() throws RequestFailedException {
 
-        Result< List< DistrictInfo > > result = locationService.districtList( getDescriptorAndCheckSession().makeAuthToken(), new DistrictQuery() );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List< DistrictInfo > > result = locationService.districtList( token, new DistrictQuery() );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -61,7 +60,8 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public List< EntityOption > getRegionList() throws RequestFailedException {
 
-        Result< List< EntityOption > > result = locationService.regionShortList( getDescriptorAndCheckSession().makeAuthToken() );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List< EntityOption > > result = locationService.regionShortList( token );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -74,9 +74,9 @@ public class RegionControllerImpl implements RegionController {
         log.info( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< Map< String, List<Project> > > response = projectService.listProjectsByRegions( descriptor.makeAuthToken(), query );
+        Result< Map< String, List<Project> > > response = projectService.listProjectsByRegions( token, query );
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
@@ -87,9 +87,9 @@ public class RegionControllerImpl implements RegionController {
     public Project getProject(Long id ) throws RequestFailedException {
         log.info( "getProject(): id={}", id );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Project> response = projectService.getProject( descriptor.makeAuthToken(), id );
+        Result<Project> response = projectService.getProject( token, id );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -101,9 +101,9 @@ public class RegionControllerImpl implements RegionController {
     public Project getProjectInfo(Long id) throws RequestFailedException {
         log.info("getProjectInfo(): id={}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Project> response = projectService.getProjectInfo( descriptor.makeAuthToken(), id );
+        Result<Project> response = projectService.getProjectInfo( token, id );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -115,16 +115,16 @@ public class RegionControllerImpl implements RegionController {
     public Project saveProject(Project project) throws RequestFailedException {
         log.info("saveProject(): project={}", project);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Project> response;
         if (project.getId() == null) {
             project.setCreated(new Date());
-            project.setCreatorId(descriptor.getPerson().getId());
-            response = projectService.createProject(descriptor.makeAuthToken(), project);
+            project.setCreatorId(token.getPersonId());
+            response = projectService.createProject(token, project);
         }
         else {
-            response = projectService.saveProject(descriptor.makeAuthToken(), project);
+            response = projectService.saveProject(token, project);
         }
 
         if ( response.isError() ) {
@@ -138,9 +138,9 @@ public class RegionControllerImpl implements RegionController {
     public long createNewProject() throws RequestFailedException {
         log.info( "createNewProject()" );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< Long > response = projectService.createProject( descriptor.makeAuthToken(), descriptor.getPerson().getId() );
+        Result< Long > response = projectService.createProject( token, token.getPersonId() );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -177,9 +177,9 @@ public class RegionControllerImpl implements RegionController {
     public Boolean removeProject(Long projectId) throws RequestFailedException {
         log.info("removeProject(): id={}", projectId);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = projectService.removeProject(descriptor.makeAuthToken(), projectId);
+        Result<Boolean> response = projectService.removeProject(token, projectId);
         log.info("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -187,16 +187,6 @@ public class RegionControllerImpl implements RegionController {
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

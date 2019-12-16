@@ -81,8 +81,8 @@ public class LuceneIndexTest {
             log.info("Document added");
 
             index.updateDocument(
-                    new Term(FIELD_ID, String.valueOf(1L)),
-                    makeFields(1L, content)
+                new Term(FIELD_ID, String.valueOf(1L)),
+                makeFields(1L, content)
             );
             log.info("Document updated");
 

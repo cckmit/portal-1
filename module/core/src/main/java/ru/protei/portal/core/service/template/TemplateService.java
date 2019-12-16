@@ -18,7 +18,7 @@ public interface TemplateService {
     PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent caseObject, List<CaseComment> caseComments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients );
 
-    PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson );
+    PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 
     PreparedTemplate getEmployeeRegistrationEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients);
 

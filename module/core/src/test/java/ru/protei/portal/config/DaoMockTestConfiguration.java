@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -11,6 +12,11 @@ import static org.mockito.Mockito.mock;
 public class DaoMockTestConfiguration {
 
     @Bean
+    public TransactionTemplate getTransactionTemplate() {
+        return mock(TransactionTemplate.class);
+    }
+
+    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return mock( CaseLinkDAO.class );
     }
@@ -18,6 +24,16 @@ public class DaoMockTestConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO() {
         return mock( CaseObjectDAO.class );
+    }
+
+    @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return mock( CaseObjectMetaDAO.class );
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return mock( CaseObjectMetaNotifiersDAO.class );
     }
 
     @Bean
@@ -110,11 +126,6 @@ public class DaoMockTestConfiguration {
     @Bean
     public AuditObjectDAO getAuditDAO() {
         return  mock(AuditObjectDAO.class);
-    }
-
-    @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return  mock(UserSessionDAO.class);
     }
 
     @Bean

@@ -5,25 +5,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.IssueController;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
  * Реализация сервиса по работе с обращениями
@@ -46,9 +46,9 @@ public class IssueControllerImpl implements IssueController {
     public CaseObject getIssue( long number ) throws RequestFailedException {
         log.info("getIssue(): number: {}", number);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseObject> response = caseService.getCaseObject( descriptor.makeAuthToken(), number );
+        Result<CaseObject> response = caseService.getCaseObjectByNumber( token, number );
         log.info("getIssue(), number: {} -> {} ", number, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -58,44 +58,70 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    private CaseObject createIssue( CaseObject caseObject ) throws RequestFailedException{
-        log.info( "saveIssue(): case={}", caseObject );
-        if(caseObject == null || caseObject.getId() != null){
-           throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+    @Override
+    public Long createIssue(CaseObjectCreateRequest caseObjectCreateRequest) throws RequestFailedException {
+        log.info("saveIssue(): case={}", caseObjectCreateRequest);
+
+        if (caseObjectCreateRequest == null || caseObjectCreateRequest.getCaseId() != null) {
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        caseObject.setTypeId( En_CaseType.CRM_SUPPORT.getId() );
-        caseObject.setCreatorId( getCurrentPerson().getId() );
+        caseObjectCreateRequest.getCaseObject().setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        caseObjectCreateRequest.getCaseObject().setCreatorId(token.getPersonId());
 
-        Result< CaseObject >  response = caseService.createCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
+        Result<CaseObject> response = caseService.createCaseObject(token, caseObjectCreateRequest);
 
-        log.info( "saveIssue(): response.isOk()={}", response.isOk() );
-        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        log.info( "saveIssue(): id={}", response.getData().getId() );
-        return response.getData();
+        log.info("saveIssue(): response.isOk()={}", response.isOk());
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+        log.info("saveIssue(): id={}", response.getData().getId());
+        return response.getData().getId();
     }
 
     @Override
-    public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
-        log.info("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
+    public void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException {
+        log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getInfo());
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        if (caseObject.getId() == null) {
-            CaseObject saved = createIssue(caseObject);
-            return new CaseObjectWithCaseComment(saved, null);
-        }
-        Result<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
-        log.info("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
-        return checkResultAndGetData(response);
+        Result response = caseService.updateCaseNameAndDescription(token, changeRequest);
+        log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
+
+        checkResult(response);
+    }
+
+    @Override
+    public CaseObjectMeta updateIssueMeta(CaseObjectMeta caseMeta) throws RequestFailedException {
+        log.info("updateIssueMeta(): caseId={} | caseMeta={}", caseMeta.getId(), caseMeta);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta);
+        log.info("updateIssueMeta(): caseId={} | status={}", caseMeta.getId(), result.getStatus());
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
+        log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers);
+        log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public CaseObjectMetaJira updateIssueMetaJira(CaseObjectMetaJira caseMetaJira) throws RequestFailedException {
+        log.info("updateIssueMetaJira(): caseId={} | caseMetaJira={}", caseMetaJira.getId(), caseMetaJira);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMetaJira> result = caseService.updateCaseObjectMetaJira(token, caseMetaJira);
+        log.info("updateIssueMetaJira(): caseId={} | status={}", caseMetaJira.getId(), result.getStatus());
+        return checkResultAndGetData(result);
     }
 
     @Override
     public CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException {
         log.info("getIssueShortInfo(): number: {}", caseNumber);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
+        Result<CaseInfo> response = caseService.getCaseShortInfo( token, caseNumber );
         log.info("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
@@ -105,54 +131,14 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
-    @Override
-    public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( caseService.getCaseLinks(authToken, caseId ) );
-    }
-
-    @Override
-    public List<En_CaseState> getStateList() throws RequestFailedException {
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        En_CaseType type = En_CaseType.CRM_SUPPORT;
-
-        log.info( "getStatesByCaseType: caseType={} ", type );
-
-        Result< List<En_CaseState> > result = caseService.stateList( type );
-
-        log.info("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
-
-        if (result.isError())
-            throw new RequestFailedException(result.getStatus());
-
-        return result.getData();
-    }
-
-    private Person getCurrentPerson(){
-        return sessionService.getUserSessionDescriptor(request).getPerson();
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
-    }
-
     @Autowired
     CaseService caseService;
-
+    @Autowired
+    CaseLinkService linkService;
     @Autowired
     SessionService sessionService;
-
     @Autowired
     HttpServletRequest httpServletRequest;
-
     @Autowired
     HttpServletRequest request;
 

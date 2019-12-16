@@ -3,7 +3,6 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -11,25 +10,30 @@
         <g:HTMLPanel ui:field="preview" styleName="preview card-body no-padding">
             <div class="card card-default no-border">
                 <div class="card-body">
+                    <div class="row">
+                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
+                    </div>
+
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
-                            <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
-                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
-                            <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
-                                <i class="far fa-clone fa-xs"/>
+                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
+                                <i class="far fa-clone"/>
                             </g:Anchor>
+                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
                         </g:HTMLPanel>
                     </h4>
                     <div class="inline pull-right">
                         <small ui:field="createdBy"/>
+                        <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
                     </div>
-                    <h5  class="no-margin semi-bold">
-                        <span ui:field="name"/>
+                    <h5 class="number-and-name-copy-panel no-margin">
+                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
+                            <i class="far fa-clone"/>
+                        </g:Anchor>
+                        <span ui:field="name" class="semi-bold"/>
                     </h5>
 
-                    <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="true" styleName="form-group"/>
-
-                    <div class="form-group-attached">
+                    <div ui:field="metaTable" class="form-group-attached">
                         <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
@@ -59,13 +63,6 @@
                                 </div>
                             </div>
                         </div>
-
-<!--
-                        <g:HTMLPanel ui:field="platformContainer">
-                            <h5 ui:field="platformLabel"><ui:text from="{lang.issuePlatformHeader}"/></h5>
-                            <a href="#" ui:field="platform" class="full-screen-link" target="_blank"/>
-                        </g:HTMLPanel>
--->
 
                         <div class="row clearfix">
                             <div class="col-md-6">
@@ -112,6 +109,8 @@
                     </g:HTMLPanel>
 
                     <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
+
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
                     <small ui:field="subscriptions"/>

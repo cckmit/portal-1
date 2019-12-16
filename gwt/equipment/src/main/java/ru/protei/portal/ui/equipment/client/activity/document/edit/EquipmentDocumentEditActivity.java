@@ -225,11 +225,9 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
     private void saveUploadedDocument() {
         equipmentController.saveDocument(document, new FluentCallback<Document>()
-                .withResult(() -> {
+                .withError(throwable -> {
                     view.saveButtonEnabled().setEnabled(true);
                     view.cancelButtonEnabled().setEnabled(true);
-                })
-                .withError(throwable -> {
                     view.documentUploader().resetForm();
                     if (throwable instanceof RequestFailedException) {
                         RequestFailedException rf = (RequestFailedException) throwable;
@@ -241,6 +239,8 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     errorHandler.accept(throwable);
                 })
                 .withSuccess(doc -> {
+                    view.saveButtonEnabled().setEnabled(true);
+                    view.cancelButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.documentSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new DocumentEvents.ChangeModel());
                     fireEvent(new Back());

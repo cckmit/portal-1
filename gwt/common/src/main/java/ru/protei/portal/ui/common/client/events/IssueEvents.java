@@ -41,8 +41,7 @@ public class IssueEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, Long issueCaseNumber )
-        {
+        public ShowPreview ( HasWidgets parent, Long issueCaseNumber ) {
             this.parent = parent;
             this.issueCaseNumber = issueCaseNumber;
         }
@@ -69,26 +68,24 @@ public class IssueEvents {
         public Long issueCaseNumber;
     }
 
-    @Url( value = "issue", primary = false )
+    /**
+     * Показать форму редактирования
+     */
+    @Url(value = "issue")
     public static class Edit {
-
         public Long id;
-        public Long issueId;
 
         public Edit() { this.id = null; }
-        public Edit (Long id, Long issueId ) {
+        public Edit (Long id) {
             this.id = id;
-            this.issueId = issueId;
-        }
-
-        public static Edit byId (Long id) {
-            return new Edit(id, null);
-        }
-
-        public static Edit newItem (EntityOption option) {
-            return new Edit(null, option != null ? option.getId() : null);
         }
     }
+
+    /**
+     * Показать форму создания
+     */
+    @Url(value = "issue_create")
+    public static class Create {}
 
     public static class ChangeIssue {
         public Long id;
@@ -102,12 +99,7 @@ public class IssueEvents {
      */
     public static class ChangeStateModel {}
 
-    /**
-     * Добавление / изменение / удаление обращений
-     */
-    public static class ChangeModel {}
-
-    /**
+   /**
      * Изменилась модель фильтров пользователя
      */
     public static class ChangeUserFilterModel{}
