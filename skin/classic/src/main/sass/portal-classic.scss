@@ -7,6 +7,7 @@
 @import "color-palette";
 @import "spinners";
 @import "display-table";
+@import "dropzone";
 @import "pages";
 
 /**
@@ -170,4 +171,13 @@ blockquote::before {
 div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
+}
+
+.form-group-default.form-group-default-selectFx .cs-wrapper .cs-placeholder {
+  text-overflow: ellipsis;
+}
+
+.bootstrap-tagsinput .tag [data-role=remove]:after {
+  font-family: "Font Awesome 5 Free", serif;
+  content: "\f00d";
 }

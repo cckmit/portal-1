@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.controller.document.DocumentStorageIndex;
+import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.service.DocumentSvnService;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -288,13 +288,13 @@ public class BootstrapService {
             Long documentId = partialDocuments.get(i).getId();
             Long projectId = partialDocuments.get(i).getProjectId();
             try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                documentSvnService.getDocument(projectId, documentId, out);
+                documentSvnApi.getDocument(projectId, documentId, En_DocumentFormat.PDF, out);
                 final byte[] fileData = out.toByteArray();
                 if (fileData.length == 0) {
                     log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
                     continue;
                 }
-                documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
+                documentStorageIndex.addPdfDocument(fileData, documentId, projectId);
                 log.info("Index created for document({}), {}/{}", documentId, i + 1, size);
             } catch (SVNException e) {
                 log.warn("Content for document(" + documentId + ") not found, " + (i + 1) + "/" + size, e);
@@ -340,7 +340,7 @@ public class BootstrapService {
     @Autowired
     DocumentDAO documentDAO;
     @Autowired
-    DocumentSvnService documentSvnService;
+    DocumentSvnApi documentSvnApi;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
     @Autowired

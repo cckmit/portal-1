@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
@@ -195,13 +192,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<Boolean> removeEquipment( AuthToken token, Long equipmentId ) {
+    public Result<Boolean> removeEquipment(AuthToken token, Long equipmentId, Person person) {
 
         if (equipmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        removeLinkedDocuments(token, equipmentId);
+        removeLinkedDocuments(token, equipmentId, person);
 
         Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
         return ok(removeStatus );
@@ -315,7 +312,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         return (decimalNumber != null && decimalNumber.getId() == null);
     }
 
-    private void removeLinkedDocuments(AuthToken token, Long equipmentId) {
+    private void removeLinkedDocuments(AuthToken token, Long equipmentId, Person person) {
 
         Result<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
 
@@ -337,7 +334,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 documents2merge.add(document);
                 continue;
             }
-            Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId());
+            Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), person);
             if (result.isError()) {
                 log.error("removeLinkedDocuments(): failed to remove document | status={}", result.getStatus());
             }

@@ -16,8 +16,8 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.controller.document.DocumentStorageIndex;
-import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.index.document.DocumentStorageIndex;
+import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -35,6 +35,8 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
@@ -216,8 +218,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public DocumentSvnService getDocumentSvnService() {
-        return new DocumentSvnServiceImpl();
+    public DocumentSvnApi getDocumentSvnApi() {
+        return new DocumentSvnApiImpl();
     }
     
     @Bean
