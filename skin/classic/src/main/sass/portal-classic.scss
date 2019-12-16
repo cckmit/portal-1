@@ -285,8 +285,8 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 
     .meta-issue-manager {
       width: 50%;
-      -webkit-order: 6;
-      order: 6;
+      -webkit-order: 7;
+      order: 7;
     }
 
     .meta-issue-initiator-info {
@@ -294,13 +294,19 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-company {
-      display: none;
+      width: 25%;
+      -webkit-order: 5;
+      order: 5;
+      .form-group-default {
+        border-right-color: transparent;
+        margin-bottom: 0px
+      }
     }
 
     .meta-issue-initiator{
-      width: 50%;
-      -webkit-order: 5;
-      order: 5;
+      width: 25%;
+      -webkit-order: 6;
+      order: 6;
       .form-group-default {
         border-right-color: transparent;
       }
