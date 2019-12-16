@@ -81,7 +81,7 @@
 <!--            </g:HTMLPanel>-->
         </div>
 
-        <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="form-group"/>
+        <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>
 
         <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
             <g:HTMLPanel ui:field="timeElapsedHeader" styleName="col-md-12">

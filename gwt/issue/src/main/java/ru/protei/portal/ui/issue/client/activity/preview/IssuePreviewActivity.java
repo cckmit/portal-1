@@ -220,7 +220,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                     .withSuccess(rendered -> view.setInfo(rendered)));
         }
 
-        fillViewForJira(value);
+//        fillViewForJira(value);
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(value.getId())
@@ -242,36 +242,36 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withTextMarkup(textMarkup));
     }
 
-    private void fillViewForJira(CaseObject value) {
-        view.jiraContainerVisibility().setVisible(false);
-
-        if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
-            return;
-        }
-
-        CaseObjectMetaJira meta = value.getCaseObjectMetaJira();
-        boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
-
-        view.jiraContainerVisibility().setVisible(true);
-
-        view.setJiraIssueType(meta.getIssueType());
-        view.setJiraSeverity(isSeverityDisplayed ? meta.getSeverity() : null);
-
-        slaController.getJiraSLAEntry(meta.getSlaMapId(), meta.getIssueType(), meta.getSeverity(), new FluentCallback<JiraSLAMapEntry>()
-            .withError(throwable -> {
-                view.setJiraTimeOfReaction(null);
-                view.setJiraTimeOfDecision(null);
-            })
-            .withSuccess(entry -> {
-                String timeOfReaction = entry.getTimeOfReactionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfReactionMinutes());
-                String timeOfDecision = entry.getTimeOfDecisionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfDecisionMinutes());
-                String description = entry.getDescription();
-                String severity = StringUtils.isNotBlank(description) ? description : meta.getSeverity();
-                view.setJiraTimeOfReaction(timeOfReaction);
-                view.setJiraTimeOfDecision(timeOfDecision);
-                view.setJiraSeverity(isSeverityDisplayed ? severity : null);
-            }));
-    }
+//    private void fillViewForJira(CaseObject value) {
+//        view.jiraContainerVisibility().setVisible(false);
+//
+//        if (!En_ExtAppType.JIRA.getCode().equals(value.getExtAppType())) {
+//            return;
+//        }
+//
+//        CaseObjectMetaJira meta = value.getCaseObjectMetaJira();
+//        boolean isSeverityDisplayed = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(meta.getIssueType()));
+//
+//        view.jiraContainerVisibility().setVisible(true);
+//
+//        view.setJiraIssueType(meta.getIssueType());
+//        view.setJiraSeverity(isSeverityDisplayed ? meta.getSeverity() : null);
+//
+//        slaController.getJiraSLAEntry(meta.getSlaMapId(), meta.getIssueType(), meta.getSeverity(), new FluentCallback<JiraSLAMapEntry>()
+//            .withError(throwable -> {
+//                view.setJiraTimeOfReaction(null);
+//                view.setJiraTimeOfDecision(null);
+//            })
+//            .withSuccess(entry -> {
+//                String timeOfReaction = entry.getTimeOfReactionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfReactionMinutes());
+//                String timeOfDecision = entry.getTimeOfDecisionMinutes() == null ? null : workTimeFormatter.asString(entry.getTimeOfDecisionMinutes());
+//                String description = entry.getDescription();
+//                String severity = StringUtils.isNotBlank(description) ? description : meta.getSeverity();
+//                view.setJiraTimeOfReaction(timeOfReaction);
+//                view.setJiraTimeOfDecision(timeOfDecision);
+//                view.setJiraSeverity(isSeverityDisplayed ? severity : null);
+//            }));
+//    }
 
     private void fillSubscriptions( CaseObject value ) {
         List<CompanySubscription> companySubscriptions = value.getInitiatorCompany() == null ? null : value.getInitiatorCompany().getSubscriptions();

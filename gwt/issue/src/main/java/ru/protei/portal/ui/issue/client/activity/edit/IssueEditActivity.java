@@ -344,7 +344,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
         view.setNameAndDescriptionButtonsPanelVisibility(false);
 
-        showComments(issue);
+//        showComments(issue);
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
@@ -355,6 +355,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT ))
                 .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT )));
+
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withCaseId(issue.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                .withPrivateCase(issue.isPrivateCase())
+                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
 
         view.setNumber(issue.getCaseNumber().intValue());
 
@@ -446,18 +455,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 //        if (metaView.getCaseMetaNotifiers() != null) metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
 //        if (metaView.getCaseMetaJira() != null) metaView.getCaseMetaJira().collectToCaseObject(issue);
 //    }
-
-    private void showComments(CaseObject issue) {
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withCaseId(issue.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                .withPrivateCase(issue.isPrivateCase())
-                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
-    }
-
+//
+//    private void showComments(CaseObject issue) {
+//        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
+//                .withCaseType(En_CaseType.CRM_SUPPORT)
+//                .withCaseId(issue.getId())
+//                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+//                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+//                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+//                .withPrivateCase(issue.isPrivateCase())
+//                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
+//    }
+//
 //    private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
 //
 //        if (caseMeta.getInitiatorCompany() == null) {
@@ -511,33 +520,33 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
     }
 
-    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
-        this.subscriptionsList = subscriptionsList;
-        this.subscriptionsListEmptyMessage = emptyMessage;
-
-        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
-
-        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
-                .map(CompanySubscription::getEmail)
-                .filter(mail -> !issue.isPrivateCase() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
-
-        return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
-                ? subscriptionsListEmptyMessage
-                : String.join(", ", subscriptionsBasedOnPrivacyList);
-    }
-
-    private boolean isCompanyChangeAllowed(CaseObject issue) {
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT) &&
-                (subscriptionsList == null || subscriptionsList.isEmpty() || issue.isPrivateCase())
-        ) {
-            return true;
-        }
-
-        return subscriptionsList == null || subscriptionsList.stream()
-                .map(CompanySubscription::getEmail)
-                .allMatch(CompanySubscription::isProteiRecipient);
-    }
-
+//    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
+//        this.subscriptionsList = subscriptionsList;
+//        this.subscriptionsListEmptyMessage = emptyMessage;
+//
+//        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
+//
+//        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
+//                .map(CompanySubscription::getEmail)
+//                .filter(mail -> !issue.isPrivateCase() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
+//
+//        return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
+//                ? subscriptionsListEmptyMessage
+//                : String.join(", ", subscriptionsBasedOnPrivacyList);
+//    }
+//
+//    private boolean isCompanyChangeAllowed(CaseObject issue) {
+//        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT) &&
+//                (subscriptionsList == null || subscriptionsList.isEmpty() || issue.isPrivateCase())
+//        ) {
+//            return true;
+//        }
+//
+//        return subscriptionsList == null || subscriptionsList.stream()
+//                .map(CompanySubscription::getEmail)
+//                .allMatch(CompanySubscription::isProteiRecipient);
+//    }
+//
 //    private void setSubscriptionEmails(String value) {
 //        metaView.setSubscriptionEmails(value);
 //        metaView.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
@@ -587,10 +596,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
     Lang lang;
     @Inject
     PolicyService policyService;
-    @Inject
-    CompanyControllerAsync companyService;
-    @Inject
-    CaseStateFilterProvider caseStateFilter;
+//    @Inject
+//    CompanyControllerAsync companyService;
+//    @Inject
+//    CaseStateFilterProvider caseStateFilter;
     @Inject
     TextRenderControllerAsync textRenderController;
     @Inject
@@ -599,8 +608,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
     @ContextAware
     CaseObject issue;
 
-    private List<CompanySubscription> subscriptionsList;
-    private String subscriptionsListEmptyMessage;
+//    private List<CompanySubscription> subscriptionsList;
+//    private String subscriptionsListEmptyMessage;
     private Profile authProfile;
     private boolean isEditingNameAndDescriptionView = false;
 

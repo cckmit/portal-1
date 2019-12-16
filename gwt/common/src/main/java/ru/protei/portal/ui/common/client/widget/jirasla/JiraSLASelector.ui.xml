@@ -4,8 +4,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
-        <p class="m-t-10">Jira</p>
+    <g:HTMLPanel styleName="jira-sla-selector">
+        <p class="jira-sla-selector-header m-t-10">Jira</p>
         <div class="form-group-attached">
             <div class="row clearfix">
                 <div class="col-md-3">

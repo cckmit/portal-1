@@ -248,6 +248,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillJiraView(CaseObjectMetaJira caseMetaJira) {
         metaView.jiraSlaSelectorVisibility().setVisible( caseMetaJira != null );
+//        metaView.jiraSlaSelectorVisibility().setVisible( true);
         metaView.setCaseMetaJira( caseMetaJira );
     }
 
