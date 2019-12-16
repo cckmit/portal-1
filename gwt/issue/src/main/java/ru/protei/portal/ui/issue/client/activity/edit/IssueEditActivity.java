@@ -7,24 +7,33 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.shared.model.*;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameInfoWidget;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -41,16 +50,20 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         previewView.setActivity( this );
         issueNameInfoWidget.setActivity( this );
 
-        editView.setFileUploadHandler( new AttachmentUploader.FileUploadHandler() {
+        AttachmentUploader.FileUploadHandler uploadHandler = new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
-                addAttachmentsToCase(Collections.singleton(attachment));
+            public void onSuccess( Attachment attachment ) {
+                addAttachmentsToCase( Collections.singleton( attachment ) );
             }
+
             @Override
-            public void onError(En_FileUploadStatus status, String details) {
-                fireEvent(new NotifyEvents.Show(En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError( En_FileUploadStatus status, String details ) {
+                fireEvent( new NotifyEvents.Show( En_FileUploadStatus.SIZE_EXCEED_ERROR.equals( status ) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR ) );
             }
-        });
+        };
+
+        editView.setFileUploadHandler( uploadHandler );
+        previewView.setFileUploadHandler( uploadHandler );
     }
 
     @Event
@@ -137,11 +150,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
                 .withSuccess(consumer));
     }
 
-//    @Override
-//    public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
-//        localStorageService.set( ISSUE_EDIT + "_" + key, String.valueOf( isDisplay ) );
-//    }
-
     @Override
     public void onCopyNumberClicked() {
         boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(issue.getCaseNumber()));
@@ -165,16 +173,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         if (!isAllowedEditNameAndDescription) return;
         view.editNameAndDescriptionButtonVisibility().setVisible( false );
         issueNameInfoWidget.edit();
-//        if (isEditingNameAndDescriptionView) {
-//            switchToRONameAndDescriptionView( view, issue);
-//            view.setNameAndDescriptionButtonsPanelVisibility(false);
-//        } else {
-//            boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
-//            if (isAllowedEditNameAndDescription) {
-//                switchToEditingNameAndDescriptionView(issue);
-//                view.setNameAndDescriptionButtonsPanelVisibility(true);
-//            }
-//        }
     }
 
 
@@ -205,7 +203,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
             @Override
             public void onSuccess(CaseObject issue) {
                 IssueEditActivity.this.issue = issue;
-//                initDetails.parent.add(view.asWidget());
                 fillView(issue, view);
 
             }
@@ -234,16 +231,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         view.attachmentsContainer().add(issue.getAttachments());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
 
-
-//        issueNameInfoWidget.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
-        renderMarkupText(issue.getInfo(), converted -> issueNameInfoWidget.setDescriptionRO(converted));
-//        issueNameWidget.copyNumberAndNameVisibility().setVisible(true);
         issueNameInfoWidget.setIssue(issue);
         view.getNameInfoContainer().add( issueNameInfoWidget );
 
-//        switchToRONameAndDescriptionView(view, issue);
         view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
-//        view.setNameAndDescriptionButtonsPanelVisibility(false);
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
@@ -268,14 +259,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     }
 
-
-
-
-    private boolean makePreviewDisplaying( String key ) {
-        return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_EDIT + "_" + key, "false" ) );
-    }
-
-
     private void addAttachmentsToCase(Collection<Attachment> attachments){
         if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
             issue.setAttachments(new ArrayList<>());
@@ -295,33 +278,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
-//    private void switchToRONameAndDescriptionView( AbstractIssueDetailsView view1, CaseObject issue ) {
-//        isEditingNameAndDescriptionView = false;
-//        view.switchToRONameAndDescriptionView(true);
-//        view.name().setValue(null);
-//        view.description().setValue(null);
-//        view.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
-//        renderMarkupText(issue.getInfo(), converted -> this.view.setDescriptionRO(converted));
-//        view.copyNumberAndNameVisibility().setVisible(true);
-//    }
-//
-//    private void switchToEditingNameAndDescriptionView(CaseObject issue) {
-//        isEditingNameAndDescriptionView = true;
-//        view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
-//        view.switchToRONameAndDescriptionView(false);
-//        view.name().setValue(issue.getName());
-//        view.description().setValue(issue.getInfo());
-//        view.setNameRO(null, "");
-//        view.setDescriptionRO(null);
-//        view.copyNumberAndNameVisibility().setVisible(false);
-//    }
-
     @Inject
     AbstractIssueEditView editView;
     @Inject
     AbstractIssuePreviewView previewView;
-//    @Inject
-//    AbstractIssueMetaView metaView;
 
     @Inject
     IssueControllerAsync issueService;
@@ -332,29 +292,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
     Lang lang;
     @Inject
     PolicyService policyService;
-//    @Inject
-//    CompanyControllerAsync companyService;
-//    @Inject
-//    CaseStateFilterProvider caseStateFilter;
     @Inject
     TextRenderControllerAsync textRenderController;
-    @Inject
-    LocalStorageService localStorageService;
 
     @Inject
     IssueNameInfoWidget issueNameInfoWidget;
 
     @ContextAware
     CaseObject issue;
-
-//    private List<CompanySubscription> subscriptionsList;
-//    private String subscriptionsListEmptyMessage;
     private Profile authProfile;
-//    private boolean isEditingNameAndDescriptionView = false;
 
     private AppEvents.InitDetails initDetails;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
-    private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
-    public static final Boolean EDIT_MODE = null;
 }

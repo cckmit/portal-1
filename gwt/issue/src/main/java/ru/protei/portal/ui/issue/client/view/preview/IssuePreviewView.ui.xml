@@ -33,12 +33,6 @@
                         <small ui:field="createdBy"/>
                         <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
                     </div>
-<!--                    <h5 class="number-and-name-copy-panel no-margin">-->
-<!--                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">-->
-<!--                            <i class="far fa-clone"/>-->
-<!--                        </g:Anchor>-->
-<!--                        <span ui:field="name" class="semi-bold"/>-->
-<!--                    </h5>-->
 
                     <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
 
@@ -48,16 +42,6 @@
                     <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
-
-                    <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
-                    <small ui:field="subscriptions"/>
-
-                    <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
-                        <h5 class="col-md-12">
-                            <span ui:field="timeElapsedLabel"><ui:text from="{lang.timeElapsed}"/></span>
-                            <timefield:TimeLabel ui:field="timeElapsed" styleName="inline m-l-5"/>
-                        </h5>
-                    </g:HTMLPanel>
 
                     <div class="row">
                         <div class="form-group col-md-12">

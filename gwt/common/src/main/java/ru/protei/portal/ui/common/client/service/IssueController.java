@@ -32,5 +32,4 @@ public interface IssueController extends RemoteService {
 
     Long createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
 
-    CaseObjectMeta getIssueMeta( Long isssueid ) throws RequestFailedException;
 }

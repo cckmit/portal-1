@@ -8,7 +8,10 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -21,17 +24,13 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setActivity(AbstractIssueMetaActivity activity);
 
 
-    //    void setCaseMeta(CaseObjectMeta caseObjectMeta);
     void setCaseMetaNotifiers(Set<Person> caseObjectMetaNotifiers);
     void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
-    //    CaseObjectMeta getCaseMeta();
     Set<Person> getCaseMetaNotifiers();
-//    CaseObjectMetaJira getCaseMetaJira();
 
     HasValue<CaseObjectMetaJira> jiraSlaSelector();
 
     void setStateWorkflow( En_CaseStateWorkflow workflow);
-    void applyCompanyValueIfOneOption();
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
@@ -61,7 +60,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasEnabled stateEnabled();
 
     HasVisibility caseSubscriptionContainer();
-//    HasVisibility timeElapsedLabelVisibility();
     HasVisibility timeElapsedContainerVisibility();
     HasVisibility timeElapsedEditContainerVisibility();
     HasVisibility platformVisibility();

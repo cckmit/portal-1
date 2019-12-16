@@ -22,8 +22,6 @@ public interface AbstractIssueDetailsView extends IsWidget {
 
     void setCaseNumber( Long caseNumber );
 
-//    void setInfo( String value );
-
     void setCreatedBy( String value );
 
 

@@ -22,11 +22,14 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
+import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -36,9 +39,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_
 /**
  * Активность создания обращения
  */
-public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
-        , AbstractIssueMetaActivity
-        , Activity {
+public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -79,7 +80,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         subscriptionsListEmptyMessage = null;
 
         fillView();
-//        fireEvent( new IssueEvents.CreateMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
     }
 
     @Event
@@ -254,16 +254,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setTimeElapsedType(En_TimeElapsedType.NONE);
 
         issueMetaView.setCaseMetaNotifiers(null);
-//        issueMetaView.setCaseMeta(caseObjectMeta);
 
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         issueMetaView.state().setValue( caseObjectMeta.getState() );
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
-//        issueMetaView.initiatorUpdateCompany(caseObjectMeta.getInitiatorCompany());//TODO  в onCompanyChanged()
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
-//        onCompanyChanged();
     }
 
     private CaseObjectMeta initCaseMeta() {
@@ -276,10 +273,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private CaseObject fillCaseCreateRequest(CaseObject caseObject) {
-//        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
-//        CaseObjectMetaNotifiers notifiers = issueMetaView.getCaseMetaNotifiers();
         Set<Person> caseMetaNotifiers = issueMetaView.getCaseMetaNotifiers();
-//        CaseObject caseObject = createRequest.getCaseObject();
 
         caseObject.setName(view.name().getValue());
         caseObject.setInfo(view.description().getValue());
@@ -326,7 +320,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean validateView() {
-//        CaseObjectMeta caseObjectMeta = issueMetaView.getCaseMeta();
 
         if (issueMetaView.getCompany() == null) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
@@ -424,63 +417,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
-
-//    private MetaActivity metaActivity = new MetaActivity();
-//
-//    class MetaActivity implements AbstractIssueMetaActivity {
-//        @Override
-//        public void onCompanyChanged() {
-//            IssueCreateActivity.this.onCompanyChanged();
-//        }
-//
-//        @Override
-//        public void onCreateContactClicked() {
-//
-//
-//        }
-//
-//        @Override
-//        public void onStateChange() {
-//            log.warning( "onStateChange(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//
-//        @Override
-//        public void onImportanceChanged() {
-//            log.warning( "onImportanceChanged(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//
-//        @Override
-//        public void onProductChanged() {
-//            log.warning( "onProductChanged(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//
-//        @Override
-//        public void onManagerChanged() {
-//            log.warning( "onManagerChanged(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//
-//        @Override
-//        public void onInitiatorChanged() {
-//            log.warning( "onInitiatorChanged(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//
-//        @Override
-//        public void onPlatformChanged() {
-//            log.warning( "onPlatformChanged(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//
-//        @Override
-//        public void onTimeElapsedChanged() {
-//            log.warning( "onTimeElapsedChanged(): Not implemented." );//TODO NotImplemented
-//
-//        }
-//    }
 
 }
 

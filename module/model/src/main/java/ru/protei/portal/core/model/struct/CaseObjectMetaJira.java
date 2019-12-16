@@ -7,14 +7,9 @@ import java.io.Serializable;
 public class CaseObjectMetaJira implements Serializable {
 
     private Long id;
-
-    // --------------------
-
     private String issueType;
     private String severity;
     private Long slaMapId;
-
-    // --------------------
 
     public CaseObjectMetaJira() {}
 
@@ -34,12 +29,6 @@ public class CaseObjectMetaJira implements Serializable {
         setSeverity(jira.getSeverity());
         setSlaMapId(jira.getSlaMapId());
     }
-
-//    public CaseObject collectToCaseObject(CaseObject co) {
-//        co.setId(getId());
-//        co.setCaseObjectMetaJira(this);
-//        return co;
-//    }
 
     public Long getId() {
         return id;

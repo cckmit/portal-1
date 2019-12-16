@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
@@ -32,7 +31,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -51,44 +49,107 @@ public class IssueNameInfoWidget extends Composite {
         copyNumberAndName.getElement().setAttribute( "title", lang.issueCopyNumberAndName() );
     }
 
-    //    @Override
-    public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
-        localStorageService.set( ISSUE_EDIT + "_" + key, String.valueOf( isDisplay ) );
-    }
-
     public void setActivity( AbstractIssueNameWidgetActivity activity ) {
         this.activity = activity;
     }
-
-
-    private boolean makePreviewDisplaying( String key ) {
-        return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_EDIT + "_" + key, "false" ) );
-    }
-
 
     public void setIssue( CaseObject issue ) {
         this.issue = issue;
         toReadOnlyMode();
         setNameRO( issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals( issue.getExtAppType() ) ? issue.getJiraUrl() : "" );
-        En_TextMarkup textMarkup  = CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
         renderMarkupText( issue.getInfo(), textMarkup, converted -> setDescriptionRO( converted ) );
     }
 
-    //    @Override
-    public void renderMarkupText( String text, En_TextMarkup markup, Consumer<String> consumer ) {
+    public void edit() {
+        setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
+        toEditMode();
+        name.setValue( issue.getName() );
+        description.setValue( issue.getInfo() );
+    }
 
+    @UiHandler("copyNumberAndName")
+    public void onCopyNumberAndNameClick( ClickEvent event ) {
+        event.preventDefault();
+        boolean isCopied = ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() );
+
+        if (isCopied) {
+            activity.fireEvent( new NotifyEvents.Show( lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS ) );
+        } else {
+            activity.fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
+        }
+    }
+
+    @UiHandler("saveNameAndDescriptionButton")
+    public void onSaveNameAndDescriptionButtonClick( ClickEvent event ) {
+        onSaveNameAndDescriptionClicked();
+    }
+
+    @UiHandler("cancelNameAndDescriptionButton")
+    public void onCancelNameAndDescriptionButtonClick( ClickEvent event ) {
+        toReadOnlyMode();
+    }
+
+    private void toReadOnlyMode() {
+        nameAndDescriptionButtonsPanel.addClassName( HIDE );
+        descriptionContainer.setVisible( false );
+        nameContainer.setVisible( false );
+
+        nameROLabel.removeClassName( HIDE );
+        descriptionRO.removeClassName( HIDE );
+        copyNumberAndName.setVisible( true );
+    }
+
+    private void toEditMode() {
+        nameAndDescriptionButtonsPanel.removeClassName( HIDE );
+        descriptionContainer.setVisible( true );
+        nameContainer.setVisible( true );
+
+        nameROLabel.addClassName( HIDE );
+        descriptionRO.addClassName( HIDE );
+        copyNumberAndName.setVisible( false );
+    }
+
+    private void onSaveNameAndDescriptionClicked() {
+        if (!nameValidator.isValid()) {
+            activity.fireEvent( new NotifyEvents.Show( lang.errEmptyName(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+        if (requested) return;
+        requested = true;
+
+        final CaseNameAndDescriptionChangeRequest changeRequest = new CaseNameAndDescriptionChangeRequest(
+                issue.getId(), name.getValue(), description.getValue() );
+
+        issueService.saveIssueNameAndDescription( changeRequest, new FluentCallback<Void>()
+                .withError( t -> requested = false )
+                .withSuccess( result -> {
+                    requested = false;
+
+                    issue.setName( changeRequest.getName() );
+                    issue.setInfo( changeRequest.getInfo() );
+
+                    setIssue( issue );
+
+                    activity.fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ) );
+                    activity.onIssueNameInfoChanged( issue );
+                } ) );
+    }
+
+    private boolean makePreviewDisplaying( String key ) {
+        return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_EDIT + "_" + key, "false" ) );
+    }
+
+    private void renderMarkupText( String text, En_TextMarkup markup, Consumer<String> consumer ) {
         textRenderController.render( text, markup, new FluentCallback<String>()
                 .withError( throwable -> consumer.accept( null ) )
                 .withSuccess( consumer ) );
     }
 
-    //    @Override
-    public void setDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
+    private void setDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
         description.setDisplayPreview( isPreviewAllowed );
     }
 
-
-    //    @Override
     private void setNameRO( String value, String jiraUrl ) {
         if (jiraUrl.isEmpty() || !value.startsWith( "CLM" )) {
             this.nameROLabel.setInnerHTML( value );
@@ -111,103 +172,12 @@ public class IssueNameInfoWidget extends Composite {
         }
     }
 
-    //    @Override
-    public void setDescriptionRO( String value ) {
+    private void onDisplayPreviewChanged( String key, boolean isDisplay ) {
+        localStorageService.set( ISSUE_EDIT + "_" + key, String.valueOf( isDisplay ) );
+    }
+
+    private void setDescriptionRO( String value ) {
         descriptionRO.setInnerHTML( value );
-    }
-
-    //    @Override
-    public HasVisibility copyNumberAndNameVisibility() {
-        return copyNumberAndName;
-    }
-
-
-    @UiHandler("copyNumberAndName")
-    public void onCopyNumberAndNameClick( ClickEvent event ) {
-        event.preventDefault();
-        boolean isCopied = ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() );
-
-        if (isCopied) {
-            activity.fireEvent( new NotifyEvents.Show( lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS ) );
-        } else {
-            activity.fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
-        }
-    }
-
-    @UiHandler("saveNameAndDescriptionButton")
-    public void onSaveNameAndDescriptionButtonClick( ClickEvent event ) {
-        onSaveNameAndDescriptionClicked();
-    }
-
-    @UiHandler("cancelNameAndDescriptionButton")
-    public void onCancelNameAndDescriptionButtonClick( ClickEvent event ) {
-
-        toReadOnlyMode();
-//        view.name().setValue(null);
-//        view.description().setValue(null);
-//        view.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
-//        renderMarkupText(issue.getInfo(), converted -> this.view.setDescriptionRO(converted));
-        copyNumberAndNameVisibility().setVisible( true );
-    }
-
-    public void edit() {
-        setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
-        toEditMode();
-        name.setValue( issue.getName() );
-        description.setValue( issue.getInfo() );
-//        setNameRO( null, "");
-//        setDescriptionRO(null);
-        copyNumberAndNameVisibility().setVisible( false );
-
-    }
-
-
-    public void toReadOnlyMode() {
-        nameAndDescriptionButtonsPanel.addClassName( HIDE );
-        descriptionContainer.setVisible( false );
-        nameContainer.setVisible( false );
-
-        nameROLabel.removeClassName( HIDE );
-        descriptionRO.removeClassName( HIDE );
-    }
-
-    public void toEditMode() {
-        nameAndDescriptionButtonsPanel.removeClassName( HIDE );
-        descriptionContainer.setVisible( true );
-        nameContainer.setVisible( true );
-
-        nameROLabel.addClassName( HIDE );
-        descriptionRO.addClassName( HIDE );
-    }
-
-
-    //    @Override
-    public void onSaveNameAndDescriptionClicked() {
-        if (!nameValidator.isValid()) {
-            activity.fireEvent( new NotifyEvents.Show( lang.errEmptyName(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-        if (requested) return;
-        requested = true;
-
-        final CaseNameAndDescriptionChangeRequest changeRequest = new CaseNameAndDescriptionChangeRequest(
-                issue.getId(), name.getValue(), description.getValue() );
-
-        issueService.saveIssueNameAndDescription( changeRequest, new FluentCallback<Void>()
-                .withError( t -> requested = false )
-                .withSuccess( result -> {
-                    requested = false;
-//
-//                    toReadOnlyMode();
-
-                    issue.setName( changeRequest.getName() );
-                    issue.setInfo( changeRequest.getInfo() );
-
-                    setIssue( issue );
-
-                    activity.fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ) );
-                    activity.onIssueNameInfoChanged( issue );
-                } ) );
     }
 
     private HasValidable nameValidator = new HasValidable() {

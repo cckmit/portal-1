@@ -30,5 +30,4 @@ public interface IssueControllerAsync {
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 
-    void getIssueMeta( Long isssueid, AsyncCallback<CaseObjectMeta> async );
 }

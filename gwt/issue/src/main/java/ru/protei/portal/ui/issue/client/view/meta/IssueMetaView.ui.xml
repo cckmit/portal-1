@@ -15,7 +15,7 @@
     <g:HTMLPanel ui:field="root">
 
         <div class="1form-group-attached form-group meta-fields">
-<!--            <div class="row">-->
+
                 <div class="1col-md-6 meta-issue-importance">
                     <issueimportance:ImportanceFormSelector ui:field="importance"
                                                             validation="true"
@@ -29,30 +29,23 @@
                                                        mandatory="true"/>
                 </div>
 
-<!--            </div>-->
-<!--            <div class="row">-->
                 <div class="1col-md-12 meta-issue-product">
                     <devunit:DevUnitFormSelector ui:field="product"
                                                  validation="false"
                                                  header="{lang.issueProduct}"
                                                  mandatory="false"/>
                 </div>
-<!--            </div>-->
-<!--            <div class="row">-->
+
                 <div class="1col-md-12 meta-issue-manager">
                     <person:EmployeeFormSelector ui:field="manager"
                                                  validation="false"
                                                  header="{lang.issueManager}"
                                                  mandatory="false"/>
                 </div>
-<!--            </div>-->
-<!--        </div>-->
 
         <div class="form-group meta-issue-initiator-info ">
             <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
         </div>
-<!--        <div class="form-group-attached form-group">-->
-<!--            <div class="row">-->
                 <div class="1col-md-12 meta-issue-company">
                     <company:CompanyFormSelector ui:field="company"
                                                  validation="false"
@@ -60,8 +53,6 @@
                                                  hasNullValue="false"
                                                  mandatory="false"/>
                 </div>
-<!--            </div>-->
-<!--            <div class="row">-->
                 <div class="1col-md-12 meta-issue-initiator">
                     <person:PersonFormSelector ui:field="initiator"
                                                validation="false"
@@ -69,16 +60,12 @@
                                                mandatory="false"
                                                fired="false"/>
                 </div>
-<!--            </div>-->
-<!--            <g:HTMLPanel ui:field="platformContainer" styleName="row">-->
                 <div class="1col-md-12 meta-issue-platform">
                     <selector:PlatformFormSelector ui:field="platform"
                                                    validation="false"
                                                    header="{lang.siteFolderPlatform}"
                                                    mandatory="false"/>
                 </div>
-<!--            </div>-->
-<!--            </g:HTMLPanel>-->
         </div>
 
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>

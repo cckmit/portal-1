@@ -6,7 +6,8 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -20,11 +21,12 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -39,11 +41,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onInit() {
         log.info( "onInit():" );
         metaView.setActivity( this );
-    }
-
-    @Event
-    public void onAuthSuccess(AuthEvents.Success event) {
-        this.authProfile = event.profile;
     }
 
     @Event
@@ -123,15 +120,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    Company companyBeforeUpdate = issue.getInitiatorCompany();
-//                    issue = caseMetaUpdated.collectToCaseObject(issue);
-//                    Company companyAfterUpdate = issue.getInitiatorCompany();
-                    fillView( caseMetaUpdated );//          metaView.setCaseMeta(caseMetaUpdated);
-//                    showComments(issue);
-
-//                    if (!Objects.equals(companyBeforeUpdate, companyAfterUpdate)) {
-//                        onCompanyChanged();
-//                    }
+                    fillView( caseMetaUpdated );
                 }));
     }
 
@@ -145,9 +134,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         issueService.updateIssueMetaNotifiers(metaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
                 .withSuccess(caseMetaNotifiersUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    issue = caseMetaNotifiersUpdated.collectToCaseObject(issue);
-                    fillNotifiersView( caseMetaNotifiersUpdated ); //  metaView.setCaseMetaNotifiers(caseMetaNotifiersUpdated.getNotifiers());
-//                    showComments(issue);
+                    fillNotifiersView( caseMetaNotifiersUpdated );
                 }));
     }
 
@@ -161,13 +148,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         issueService.updateIssueMetaJira(caseMetaJira, new FluentCallback<CaseObjectMetaJira>()
                 .withSuccess(caseMetaJiraUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    issue = caseMetaJiraUpdated.collectToCaseObject(issue);
                     caseMetaJira = caseMetaJiraUpdated;
-                    fillJiraView( caseMetaJiraUpdated ); // metaView.setCaseMetaJira(caseMetaJiraUpdated);
-//                    showComments(issue);
+                    fillJiraView( caseMetaJiraUpdated );
                 }));
     }
-
 
     @Override
     public void onCompanyChanged() {
@@ -217,27 +201,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onCreateContactClicked() {
         if (metaView.getCompany() != null) {
-//            fillIssueObject(issue);
             fireEvent(new ContactEvents.Edit(null, metaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
     }
 
-    private void requestIssue(Long number) {
-        issueService.getIssueMeta(number, new RequestCallback<CaseObjectMeta>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(CaseObjectMeta meta) {
-                IssueMetaActivity.this.meta = meta;
-
-                fillView(meta);
-            }
-        });
-    }
 
     private void fillNotifiersView(CaseObjectMetaNotifiers caseMetaNotifiers) {
-
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
         } else {
             caseMetaNotifiers.setNotifiers(null);
@@ -248,17 +217,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillJiraView(CaseObjectMetaJira caseMetaJira) {
         metaView.jiraSlaSelectorVisibility().setVisible( caseMetaJira != null );
-//        metaView.jiraSlaSelectorVisibility().setVisible( true);
         metaView.setCaseMetaJira( caseMetaJira );
     }
 
     private void fillView(CaseObjectMeta meta) {
-
-//        CaseObjectMeta caseMeta = new CaseObjectMeta(issue);
-//        CaseObjectMetaNotifiers caseMetaNotifiers = new CaseObjectMetaNotifiers(issue);//TODO fill
-//        CaseObjectMetaNotifiers caseMetaNotifiers = new CaseObjectMetaNotifiers(issue);//TODO fill
-//        CaseObjectMetaJira caseMetaJira = new CaseObjectMetaJira(issue);//TODO fill
-
         metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(meta.isPrivateCase()) );
         metaView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         metaView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
@@ -268,32 +230,24 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
             metaView.caseSubscriptionContainer().setVisible(true);
         } else {
-//            caseMetaNotifiers.setNotifiers(null);
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
-        metaView.importance().setValue( meta.getImportance() );//        caseMeta.setImportance(caseMeta.getImportance());
+        metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
-        metaView.state().setValue( meta.getState() ); //        caseMeta.setState(caseMeta.getState());
+        metaView.state().setValue( meta.getState() );
         metaView.stateEnabled().setEnabled(true);
 
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
         metaView.setTimeElapsed(meta.getTimeElapsed());
 
-        metaView.setCompany(meta.getInitiatorCompany());//caseMeta.setInitiatorCompany(issue.getInitiatorCompany());
-        metaView.setInitiator(meta.getInitiator());//      caseMeta.setInitiator(issue.getInitiator());
+        metaView.setCompany(meta.getInitiatorCompany());
+        metaView.setInitiator(meta.getInitiator());
         metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
         metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
         metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
-
-//        if (En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) {
-//            metaView.jiraSlaSelectorVisibility().setVisible(true);
-//        } else {
-//            metaView.jiraSlaSelectorVisibility().setVisible(false);
-//            caseMetaJira = null;
-//        }
 
         companyService.getCompanyWithParentCompanySubscriptions(
                 meta.getInitiatorCompanyId(),
@@ -320,33 +274,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
-//        metaView.setCaseMeta(caseMeta);
-//        metaView.setCaseMetaNotifiers(caseMetaNotifiers);
-//        metaView.setCaseMetaJira(caseMetaJira);
     }
-
-//    private void fillIssueObject(CaseObject issue) {
-//        boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
-//        if (isAllowedEditNameAndDescription) {
-//            issue.setName(view.name().getValue());
-//            issue.setInfo(view.description().getValue());
-//        }
-//
-//        if (metaView.getCaseMeta() != null) metaView.getCaseMeta().collectToCaseObject(issue);
-//        if (metaView.getCaseMetaNotifiers() != null) metaView.getCaseMetaNotifiers().collectToCaseObject(issue);
-//        if (metaView.getCaseMetaJira() != null) metaView.getCaseMetaJira().collectToCaseObject(issue);
-//    }
-//
-//    private void showComments(CaseObject issue) {
-//        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-//                .withCaseType(En_CaseType.CRM_SUPPORT)
-//                .withCaseId(issue.getId())
-//                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-//                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-//                .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-//                .withPrivateCase(issue.isPrivateCase())
-//                .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
-//    }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
 
@@ -377,10 +305,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         return true;
     }
-
-//    private boolean isSelfIssue(CaseObject issue) {
-//        return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
-//    }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsList = subscriptionsList;
@@ -448,9 +372,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
-    private Profile authProfile;
-
-
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
 
