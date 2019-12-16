@@ -271,12 +271,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
     public void onEditNameAndDescriptionClicked() {
         if (isEditingNameAndDescriptionView) {
             switchToRONameAndDescriptionView(issue);
-            view.setNameAndDescriptionButtonsPanelVisibility(false);
         } else {
             boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
             if (isAllowedEditNameAndDescription) {
                 switchToEditingNameAndDescriptionView(issue);
-                view.setNameAndDescriptionButtonsPanelVisibility(true);
             }
         }
     }
@@ -292,7 +290,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     switchToRONameAndDescriptionView(issue);
-                    view.setNameAndDescriptionButtonsPanelVisibility(false);
                 }));
     }
 
@@ -337,7 +334,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
 
         switchToRONameAndDescriptionView(issue);
         view.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
-        view.setNameAndDescriptionButtonsPanelVisibility(false);
 
         showComments(issue);
 
