@@ -5,9 +5,4 @@ import ru.protei.portal.core.model.ent.CaseObject;
 
 public interface AbstractIssueNameWidgetActivity extends Activity {
     void onIssueNameInfoChanged( CaseObject issue );
-//    void onCopyNumberAndNameClicked();
-
-//    void onSaveNameAndDescriptionClicked();
-
-//    void onEditNameAndDescriptionClicked();
 }

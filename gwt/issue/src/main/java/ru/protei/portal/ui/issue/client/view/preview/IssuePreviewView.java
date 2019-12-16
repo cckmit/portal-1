@@ -66,13 +66,21 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public HasVisibility editNameAndDescriptionButtonVisibility() {
-        return editNameAndDescriptionButton;
+        return editNameAndDescriptionButtonContainer;
     }
 
     @Override
     public HasWidgets getNameInfoContainer() {
         return issueInfoContainer;
     }
+
+    @UiHandler("editNameAndDescriptionButton")
+    public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditNameAndDescriptionClicked(this);
+        }
+    }
+
 
 
     //    @Override
@@ -420,6 +428,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Button editNameAndDescriptionButton;
     @UiField
     HTMLPanel issueInfoContainer;
+    @UiField
+    HTMLPanel editNameAndDescriptionButtonContainer;
 
     @Inject
     En_CaseStateLang caseStateLang;

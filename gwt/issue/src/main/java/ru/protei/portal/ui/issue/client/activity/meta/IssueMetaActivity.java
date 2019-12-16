@@ -256,6 +256,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
 //        CaseObjectMeta caseMeta = new CaseObjectMeta(issue);
 //        CaseObjectMetaNotifiers caseMetaNotifiers = new CaseObjectMetaNotifiers(issue);//TODO fill
+//        CaseObjectMetaNotifiers caseMetaNotifiers = new CaseObjectMetaNotifiers(issue);//TODO fill
 //        CaseObjectMetaJira caseMetaJira = new CaseObjectMetaJira(issue);//TODO fill
 
         metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(meta.isPrivateCase()) );

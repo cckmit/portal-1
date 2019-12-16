@@ -524,7 +524,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField(provided = true)
     ElapsedTimeTypeFormSelector timeElapsedType;
     @UiField
-    LabelElement subscriptionsLabel;
+    LabelElement subscriptionsLabel;// TODO
     @UiField
     Element subscriptions;
     @UiField

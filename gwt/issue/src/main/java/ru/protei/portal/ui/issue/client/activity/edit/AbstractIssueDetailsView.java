@@ -2,9 +2,10 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 
-public interface AbstractIssueDetailsView {
+public interface AbstractIssueDetailsView extends IsWidget {
 
     HasWidgets getNameInfoContainer();
     HasWidgets getMetaContainer();

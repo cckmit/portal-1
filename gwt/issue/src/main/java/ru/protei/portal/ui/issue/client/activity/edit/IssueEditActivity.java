@@ -8,7 +8,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -38,11 +37,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     @PostConstruct
     public void onInit() {
-        view.setActivity( this );
+        editView.setActivity( this );
         previewView.setActivity( this );
         issueNameInfoWidget.setActivity( this );
 
-        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
+        editView.setFileUploadHandler( new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
                 addAttachmentsToCase(Collections.singleton(attachment));
@@ -72,20 +71,20 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         }
 
         initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        initDetails.parent.add( editView.asWidget());
 
-        requestIssue(event.caseNumber, view );
+        requestIssue(event.caseNumber, editView );
     }
 
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
         event.parent.clear();
-        previewView.backBtnVisibility().setVisible(false);
-        previewView.setFullScreen(false);
-        event.parent.add( view.asWidget() );
 
         requestIssue( event.issueCaseNumber, previewView);
 
+        previewView.backBtnVisibility().setVisible(false);
+        previewView.setFullScreen(false);
+        event.parent.add( previewView.asWidget() );
     }
 
     @Event
@@ -94,25 +93,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         requestIssue(event.issueCaseNumber, previewView);
     }
 
-
-    private void displayFullScreen() {
-        initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
-        previewView.backBtnVisibility().setVisible(true);
-        previewView.setFullScreen(true);
-    }
-
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(view.isAttached() && issue.getId().equals(event.issueId)) {
+        if(editView.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
         }
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
-        if(view.isAttached() && issue.getId().equals(event.issueId)) {
-            event.attachments.forEach(view.attachmentsContainer()::remove);
+        if(editView.isAttached() && issue.getId().equals(event.issueId)) {
+            event.attachments.forEach( editView.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
         }
@@ -123,10 +114,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(result -> {
-                    view.attachmentsContainer().remove(attachment);
+                    editView.attachmentsContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);
                     issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                    fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
+                    fireEvent(new CaseCommentEvents.Show( editView.getCommentsContainer())
                             .withCaseType(En_CaseType.CRM_SUPPORT)
                             .withCaseId(issue.getId())
                             .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
@@ -162,27 +153,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         }
     }
 
-//    @Override
-//    public void onCopyNumberAndNameClicked() {
-//        boolean isCopied = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
-//
-//        if (isCopied) {
-//            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
-//        } else {
-//            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-//        }
-//    }
-
     @Override
     public void onGoToIssuesClicked() {
         fireEvent(new IssueEvents.Show());
     }
 
-    @Override
-    public void onFullScreenPreviewClicked() {
-        displayFullScreen();
-
-    }
 
     @Override
     public void onEditNameAndDescriptionClicked(AbstractIssueDetailsView view) {
@@ -205,36 +180,24 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     @Override
     public void onIssueNameInfoChanged( CaseObject issue ) {
-        view.editNameAndDescriptionButtonVisibility().setVisible( true );
+        editView.editNameAndDescriptionButtonVisibility().setVisible( true );
+        previewView.editNameAndDescriptionButtonVisibility().setVisible( true );
     }
 
-//    @Override
-//    public void onSaveNameAndDescriptionClicked() {
-//        if (!view.nameValidator().isValid()) {
-//            fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
-//            return;
-//        }
-//        CaseNameAndDescriptionChangeRequest changeRequest = fillIssueNameAndDescription();
-//        issueService.saveIssueNameAndDescription(changeRequest, new FluentCallback<Void>()
-//                .withSuccess(result -> {
-//                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    switchToRONameAndDescriptionView( view, issue);
-//                    view.setNameAndDescriptionButtonsPanelVisibility(false);
-//                }));
-//    }
+    @Override
+    public void onFullScreenPreviewClicked() {
+        displayFullScreen();
+    }
 
-//    private CaseNameAndDescriptionChangeRequest fillIssueNameAndDescription() {
-//        if (isSelfIssue(issue)) {
-//            issue.setName(view.name().getValue());
-//            issue.setInfo(view.description().getValue());
-//        }
-//        return new CaseNameAndDescriptionChangeRequest(
-//                issue.getId(),
-//                issue.getName(),
-//                issue.getInfo());
-//    }
+    private void displayFullScreen() {
+        initDetails.parent.clear();
 
-    private void requestIssue( Long number, AbstractIssueDetailsView view ) {
+        previewView.backBtnVisibility().setVisible(true);
+        previewView.setFullScreen(true);
+        initDetails.parent.add( previewView.asWidget() );
+    }
+
+    private void requestIssue( Long number, final AbstractIssueDetailsView view ) {
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {}
@@ -270,6 +233,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         view.setPrivateIssue(issue.isPrivateCase());
         view.attachmentsContainer().add(issue.getAttachments());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
+
 
 //        issueNameInfoWidget.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
         renderMarkupText(issue.getInfo(), converted -> issueNameInfoWidget.setDescriptionRO(converted));
@@ -317,7 +281,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
             issue.setAttachments(new ArrayList<>());
 
         if (attachments != null && !attachments.isEmpty()) {
-            view.attachmentsContainer().add(attachments);
+            editView.attachmentsContainer().add(attachments);
             issue.getAttachments().addAll(attachments);
             issue.setAttachmentExists(true);
         }
@@ -353,7 +317,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 //    }
 
     @Inject
-    AbstractIssueEditView view;
+    AbstractIssueEditView editView;
     @Inject
     AbstractIssuePreviewView previewView;
 //    @Inject

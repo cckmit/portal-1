@@ -68,7 +68,7 @@ public class IssueNameInfoWidget extends Composite {
 
     public void setIssue( CaseObject issue ) {
         this.issue = issue;
-
+        toReadOnlyMode();
         setNameRO( issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals( issue.getExtAppType() ) ? issue.getJiraUrl() : "" );
         En_TextMarkup textMarkup  = CaseTextMarkupUtil.recognizeTextMarkup( issue );
         renderMarkupText( issue.getInfo(), textMarkup, converted -> setDescriptionRO( converted ) );
@@ -197,8 +197,8 @@ public class IssueNameInfoWidget extends Composite {
                 .withError( t -> requested = false )
                 .withSuccess( result -> {
                     requested = false;
-
-                    toReadOnlyMode();
+//
+//                    toReadOnlyMode();
 
                     issue.setName( changeRequest.getName() );
                     issue.setInfo( changeRequest.getInfo() );
