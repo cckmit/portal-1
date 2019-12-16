@@ -12,7 +12,10 @@
                 <div class="col-lg-8 order-last order-lg-first p-l-25">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
-                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                            <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">
+                                <i class="fa fa-arrow-left"/>
+                            </g:Button>
+                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>
                         </div>
@@ -21,7 +24,7 @@
                         <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12 m-b-5"/>
                     </div>
 
-                    <g:HTMLPanel ui:field="numberContainer">
+                    <g:HTMLPanel ui:field="numberPanel">
                         <h5 class="number-copy-panel no-margin">
                             <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
                                 <i class="far fa-clone"/>
@@ -35,17 +38,16 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <h5 ui:field="nameROContainer" class="number-and-name-copy-panel no-margin">
+                    <h5 ui:field="nameROPanel" class="number-and-name-copy-panel no-margin">
                         <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
                             <i class="far fa-clone"/>
                         </g:Anchor>
-                        <label ui:field="nameROLabel" class="semi-bold large-text"/>
+                        <label ui:field="nameRO" class="semi-bold large-text"/>
                     </h5>
 
                     <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
 
-                    <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
-
+                    <g:HTMLPanel ui:field="namePanel" styleName="form-group form-group-default input-group required">
                         <div class="form-input-group">
                             <label ui:field="nameLabel" class="fade">
                                 <ui:text from="{lang.issueName}"/>
@@ -54,7 +56,7 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
+                    <g:HTMLPanel ui:field="descriptionPanel" styleName="row form-group">
                         <div class="col-md-12">
                             <div class="form-group-default">
                                 <label class="fade" ui:field="descriptionLabel">
@@ -65,14 +67,14 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
-
-                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group m-b-30">
+                    <div ui:field="nameAndDescriptionButtonsPanel" class="form-group">
                         <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
                         <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
                     </div>
 
-                    <div class="row form-group">
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+
+                    <div ui:field="attachmentsPanel" class="row form-group">
                         <div class="col-md-12">
                             <label ui:field="attachmentsLabel">
                                 <ui:text from="{lang.issueAttachments}"/>
@@ -91,7 +93,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div ui:field="commentsPanel" class="row">
                         <div class="form-group col-md-12" ui:field="comments">
                             <label>
                                 <ui:text from="{lang.comments}"/>

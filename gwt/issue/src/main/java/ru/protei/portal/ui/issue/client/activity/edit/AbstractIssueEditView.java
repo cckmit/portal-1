@@ -47,8 +47,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasWidgets getLinksContainer();
 
-    HasVisibility copyNumberAndNameVisibility();
-
     HasVisibility editNameAndDescriptionButtonVisibility();
 
     void setNameAndDescriptionButtonsPanelVisibility(boolean visible);

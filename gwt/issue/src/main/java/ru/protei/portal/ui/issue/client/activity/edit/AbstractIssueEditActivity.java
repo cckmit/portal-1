@@ -15,4 +15,5 @@ public interface AbstractIssueEditActivity {
     void onEditNameAndDescriptionClicked();
     void onSaveNameAndDescriptionClicked();
     void onCopyNumberAndNameClicked();
+    void onBackClicked();
 }

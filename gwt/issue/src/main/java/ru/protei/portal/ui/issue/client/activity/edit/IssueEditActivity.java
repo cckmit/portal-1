@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -295,6 +296,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
                 }));
     }
 
+    @Override
+    public void onBackClicked() {
+        fireEvent(new Back());
+    }
+
     private CaseNameAndDescriptionChangeRequest fillIssueNameAndDescription() {
         if (isSelfIssue(issue)) {
             issue.setName(view.name().getValue());
@@ -546,7 +552,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         view.description().setValue(null);
         view.setNameRO(issue.getName() == null ? "" : issue.getName(), En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? issue.getJiraUrl() : "");
         renderMarkupText(issue.getInfo(), converted -> view.setDescriptionRO(converted));
-        view.copyNumberAndNameVisibility().setVisible(true);
     }
 
     private void switchToEditingNameAndDescriptionView(CaseObject issue) {
@@ -557,7 +562,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ab
         view.description().setValue(issue.getInfo());
         view.setNameRO(null, "");
         view.setDescriptionRO(null);
-        view.copyNumberAndNameVisibility().setVisible(false);
     }
 
     @Inject
