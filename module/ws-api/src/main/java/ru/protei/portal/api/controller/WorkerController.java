@@ -575,7 +575,7 @@ public class WorkerController {
     /**
      * Обновить фотографию сотрудника
      * @param id идентификатор физического лица
-     * @param photoBytes - фотография в виде байтого массива в теле запроса
+     * @param photoBytes - фотография в виде байтового массива в теле запроса
      */
 
     @RequestMapping(method = RequestMethod.PUT,
@@ -640,98 +640,6 @@ public class WorkerController {
                 logger.error("updatePhoto(): can't close stream");
             }
         }
-    }
-
-    /**
-     * Обновить фотографию сотрудника
-     * @param photo фоторгафия
-     * @return Result<Long>
-     */
-    @RequestMapping(method = RequestMethod.PUT,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
-                    produces = MediaType.APPLICATION_XML_VALUE,
-                    value = "/update.photo.old")
-    Result<Long> updatePhotoOld(@RequestBody Photo photo,
-                              HttpServletRequest request,
-                              HttpServletResponse response) {
-
-        logger.debug("updatePhoto(): photo={}", photo);
-
-        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
-
-        if (HelperFunc.isEmpty(photo.getContent())) {
-            logger.debug("error result: {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
-        }
-
-        try {
-
-            OperationData operationData = new OperationData(null, photo.getId(), null, null)
-                    .requirePerson(null);
-
-            if (!operationData.isValid())
-                return operationData.failResult();
-
-                byte[] receivedPhotoByte = Base64.getDecoder().decode(photo.getContent());
-                Files.write(Paths.get(makeFileName(photo.getId())), receivedPhotoByte);
-
-                makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
-
-                logger.debug("success result, personId={}", photo.getId());
-                return ok(photo.getId());
-
-        } catch (Exception e) {
-            logger.error("error while update photo", e);
-        }
-
-        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
-    }
-
-    /**
-     * Получить фотографии сотрудников
-     * @param list список идентификаторов физических лиц
-     * @return Result<PhotoList>
-     */
-    @RequestMapping(method = RequestMethod.POST,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
-                    produces = MediaType.APPLICATION_XML_VALUE,
-                    value = "/get.photos")
-    Result<PhotoList> getPhotos(@RequestBody IdList list,
-                        HttpServletRequest request,
-                        HttpServletResponse response) {
-
-        logger.debug("getPhotos(): list={}", list);
-
-        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
-
-        PhotoList photos = new PhotoList();
-
-        try {
-
-            for (Long id : list.getIds()) {
-                Path idPath = Paths.get(makeFileName(id));
-
-                if (Files.exists(idPath)) {
-                    String sw = Base64.getEncoder().encodeToString(Files.readAllBytes(idPath));
-
-                    Photo photo = new Photo();
-                    photo.setId(id);
-                    photo.setContent(sw);
-                    photos.getPhotos().add(photo);
-
-                    logger.debug("file exists, photo={}", photo);
-
-                } else {
-                    logger.debug("file doesn't exist");
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error("error while get photos", e);
-        }
-
-        logger.debug("result, size of photo's list {}", photos.getPhotos().size());
-        return ok(photos);
     }
 
     /**

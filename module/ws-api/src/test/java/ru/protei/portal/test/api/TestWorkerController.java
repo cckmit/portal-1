@@ -387,91 +387,6 @@ public class TestWorkerController {
         Assert.assertEquals("delete.position is not success! " + result.getMessage(), true, result.isOk());
     }
 
-
-    @Test
-    public void testUpdatePhotoOld() throws Exception {
-        String uri = BASE_URI + "update.photo.old";
-        DepartmentRecord department = createDepartmentRecord();
-        createOrUpdateDepartment(department);
-        WorkerRecord worker = createWorkerRecord();
-        Result<Long> result = addWorker(worker);
-
-        Long id = result.getData();
-
-        createPhotosByIds(Collections.singletonList(id));
-
-        String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
-        String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
-
-        Assert.assertFalse("Оld and new photo should be different", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
-
-        String base64Photo = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(photoToUpdateName)));
-        Photo photo = new Photo();
-        photo.setId(id);
-        photo.setContent(base64Photo);
-        String photoXml = toXml(photo);
-
-        ResultActions resultActions = mockMvc.perform(
-                put(uri)
-                        .header("Accept", "application/xml")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
-                        .content(photoXml)
-        );
-        result = (Result<Long>) fromXml(resultActions.andReturn().getResponse().getContentAsString());
-
-        Assert.assertEquals("updatePhoto() is not success! " + result.getMessage(), true, result.isOk());
-
-        Assert.assertTrue("Updated and new photo should be equals", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
-
-        Files.deleteIfExists(Paths.get(photoByIdName));
-    }
-
-    @Test
-    public void testGetPhotos() throws Exception {
-        IdList list = new IdList();
-        list.getIds().add(new Long(1));
-        list.getIds().add(new Long(2));
-
-        createPhotosByIds(list.getIds());
-
-        String listXml = toXml(list);
-
-        String uri = BASE_URI + "get.photos";
-        ResultActions result = mockMvc.perform(
-                post(uri)
-                        .header("Accept", "application/xml")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
-                        .content(listXml)
-        );
-
-        Result<PhotoList> resultPhotoList = (Result<PhotoList>) fromXml(result.andReturn().getResponse().getContentAsString());
-
-        PhotoList pl = resultPhotoList.getData();
-
-        Assert.assertNotNull("Result getPhotos() is null!", pl);
-        Assert.assertEquals("The number of photos received differs from the number of photos sent", list.getIds().size(), pl.getPhotos().size());
-        for (int i = 0; i < list.getIds().size(); i++) {
-            Photo p = pl.getPhotos().get(i);
-            logger.debug("Photo for id = " + p.getId() + " exist. Length of photo = " + p.getContent().length());
-
-            String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + ".jpg";
-            Path sourcePhotoPath = Paths.get(sourcePhotoName);
-
-            String receivedPhotoName = WSConfig.getInstance().getDirPhotos() + p.getId() + "test.jpg";
-            Path receivedPhotoPath = Paths.get(receivedPhotoName);
-            byte[] receivedPhotoByte = Base64.getDecoder().decode(p.getContent());
-            Files.deleteIfExists(receivedPhotoPath);
-            Files.write(receivedPhotoPath, receivedPhotoByte);
-
-            Assert.assertTrue("Sent photo and received photo are not equals!", Arrays.equals(Files.readAllBytes(receivedPhotoPath), Files.readAllBytes(sourcePhotoPath)));
-
-            Files.deleteIfExists(receivedPhotoPath);
-            Files.deleteIfExists(sourcePhotoPath);
-        }
-    }
-
     @Test
     public void testGetPhoto() throws Exception {
         IdList list = new IdList();
@@ -815,44 +730,6 @@ public class TestWorkerController {
 
     private Object fromXml(String xml) throws Exception {
         return unmarshaller.unmarshal(new StringReader(xml));
-    }
-
-    private byte[] read(Long id) {
-
-        ByteArrayOutputStream out = null;
-        InputStream input = null;
-
-        try {
-            String fileName = id + ".jpg";
-            logger.debug("fileName = " + fileName);
-            File file = new File(getClass().getClassLoader().getResource("source.jpg").getFile());
-            if (file.exists()) {
-                copy(file.getAbsolutePath(), file.getParent() + "/" + id + ".jpg");
-                out = new ByteArrayOutputStream();
-                input = new BufferedInputStream(new FileInputStream(file));
-                int data = 0;
-                while ((data = input.read()) != -1) {
-                    out.write(data);
-                }
-                logger.debug("file exists");
-            } else {
-                logger.debug("file doesn't exist");
-            }
-        } catch (Exception e) {
-            logger.error("error while update photo", e);
-        } finally {
-            try {
-                input.close();
-                out.close();
-            } catch (Exception e) {
-            }
-        }
-        return out.toByteArray();
-    }
-
-    public static void copy(String resourceFileName, String destinationFileName) throws IOException {
-        if (Files.exists(Paths.get(destinationFileName))) Files.delete(Paths.get(destinationFileName));
-        Files.copy(Paths.get(resourceFileName), Paths.get(destinationFileName));
     }
 
     private void createAndPersistPerson() {
