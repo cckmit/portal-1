@@ -130,6 +130,10 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
         isValidable = validable;
     }
 
+    public void setPlaceholder(String placeholder) {
+        text.getElement().setAttribute("placeholder", placeholder);
+    }
+
     private void showHintsIfNotEmpty() {
         if (filteredHints.isEmpty())
             closePopup();

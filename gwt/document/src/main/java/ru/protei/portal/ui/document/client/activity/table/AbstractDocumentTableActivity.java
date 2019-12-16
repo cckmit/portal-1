@@ -8,8 +8,7 @@ import ru.protei.portal.ui.common.client.columns.*;
 public interface AbstractDocumentTableActivity
         extends ClickColumn.Handler<Document>, EditClickColumn.EditHandler<Document>,
         InfiniteLoadHandler<Document>, InfiniteTableWidget.PagerListener,
-        DownloadClickColumn.DownloadHandler<Document>, ArchiveClickColumn.ArchiveHandler<Document>,
-        RemoveClickColumn.RemoveHandler<Document> {
+        ArchiveClickColumn.ArchiveHandler<Document>, RemoveClickColumn.RemoveHandler<Document> {
 
     void onProjectColumnClicked(Document value);
 }

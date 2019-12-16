@@ -1924,9 +1924,27 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkSuccessfulRemoved();
 
+    String issueCopyNumberAndName();
+
     String documentConfirmRemove();
 
     String documentRemoved();
 
-    String issueCopyNumberAndName();
+    String documentProjectCustomerType();
+
+    String documentProjectProductDirection();
+
+    String documentProjectRegion();
+
+    String documentSectionProject();
+
+    String documentSectionEquipment();
+
+    String documentSectionInfo();
+
+    String fileDropzoneLabel();
+
+    String documentFileDoc();
+
+    String documentFilePdf();
 }

@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.document.client.activity.form;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -19,6 +21,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -41,16 +44,6 @@ public abstract class DocumentFormActivity
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.documentUploader().setUploadHandler(new UploadHandler() {
-            @Override
-            public void onError() {
-                fireErrorMessage(lang.errSaveDocumentFile());
-            }
-            @Override
-            public void onSuccess() {
-                saveUploadedDocument();
-            }
-        });
     }
 
     @Event
@@ -60,9 +53,12 @@ public abstract class DocumentFormActivity
         tag = event.tag;
         fillView(event.document);
         if (view.project().getValue() != null) {
-            refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+            refreshProject(proj -> {
+                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
+                fillViewProjectInfo(proj);
+            });
         } else {
-            setDesignationVisibility(false);
+            setDesignationEnabled(false);
         }
     }
 
@@ -72,7 +68,7 @@ public abstract class DocumentFormActivity
             return;
         }
         Document newDocument = fillDto(new Document());
-        if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
+        if (!checkDocumentValid(newDocument)) {
             return;
         }
         saveDocument(newDocument);
@@ -83,7 +79,7 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        view.project().setValue(new EntityOption(event.project.getName(), event.project.getId()));
+        fillViewProject(event.project);
         onProjectChanged();
     }
 
@@ -93,14 +89,14 @@ public abstract class DocumentFormActivity
 
     @Override
     public void onDocumentCategoryChanged() {
-        setDesignationVisibility(isDesignationVisible(project, view.documentCategory().getValue()));
+        setDesignationEnabled(isDesignationVisible(project, view.documentCategory().getValue()));
 
         En_DocumentCategory category = view.documentCategory().getValue();
 
-        view.documentTypeEnabled().setEnabled(category != null);
+        setDocumentTypeEnabled(category != null);
 
         if (category == null) {
-            view.equipmentVisible().setVisible(false);
+            setEquipmentEnabled(false);
             return;
         }
 
@@ -109,7 +105,7 @@ public abstract class DocumentFormActivity
         }
         view.setDocumentTypeCategoryFilter(documentType -> documentType.getDocumentCategory() == category );
 
-        view.equipmentVisible().setVisible(category.isForEquipment());
+        setEquipmentEnabled(category.isForEquipment());
 
         setDecimalNumberEnabled();
     }
@@ -117,13 +113,16 @@ public abstract class DocumentFormActivity
     @Override
     public void onProjectChanged() {
         if (view.project().getValue() != null) {
-            refreshProject(proj -> setDesignationVisibility(isDesignationVisible(proj, view.documentCategory().getValue())));
+            refreshProject(proj -> {
+                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
+                fillViewProjectInfo(proj);
+            });
         } else {
-            setDesignationVisibility(false);
+            setDesignationEnabled(false);
         }
 
         EntityOption project = view.project().getValue();
-        view.equipmentEnabled().setEnabled(project != null);
+        setEquipmentEnabled(project != null);
         view.equipment().setValue(null, true);
 
         if (project != null)
@@ -138,9 +137,21 @@ public abstract class DocumentFormActivity
             setDecimalNumberEnabled();
         } else {
             List<DecimalNumber> decimalNumbers = equipment.getDecimalNumbers();
-            view.decimalNumberEnabled().setEnabled(true);
+            setDecimalNumberEnabled(true);
             view.setDecimalNumberHints(decimalNumbers);
         }
+    }
+
+    @Override
+    public void onDownloadPdf() {
+        if (document == null) return;
+        Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf", document.getName(), "");
+    }
+
+    @Override
+    public void onDownloadDoc() {
+        if (document == null) return;
+        Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
     private void refreshProject(Consumer<Project> consumer) {
@@ -152,9 +163,45 @@ public abstract class DocumentFormActivity
         );
     }
 
-    private void setDesignationVisibility(boolean isDesignationVisible) {
-        view.decimalNumberVisible().setVisible(isDesignationVisible);
-        view.inventoryNumberVisible().setVisible(isDesignationVisible);
+    private void setDesignationEnabled(boolean isDesignationEnabled) {
+        setDecimalNumberEnabled(isDesignationEnabled);
+        setInventoryNumberEnabled(isDesignationEnabled);
+    }
+
+    private void setDecimalNumberEnabled(boolean isEnabled) {
+        view.decimalNumberEnabled(isEnabled);
+        if (!isEnabled) {
+            view.decimalNumber().setValue(null);
+        }
+    }
+
+    private void setInventoryNumberEnabled(boolean isEnabled) {
+        view.inventoryNumberEnabled(isEnabled);
+        if (!isEnabled) {
+            view.inventoryNumber().setValue(null);
+        }
+    }
+
+    private void setEquipmentEnabled(boolean isEnabled) {
+        view.equipmentEnabled(isEnabled);
+        if (!isEnabled) {
+            view.equipment().setValue(null);
+        }
+    }
+
+    private void setDocumentTypeEnabled(boolean isEnabled) {
+        view.documentTypeEnabled(isEnabled);
+        if (!isEnabled) {
+            view.documentType().setValue(null);
+        }
+    }
+
+    private void setUploaderEnabled(boolean isEnabled) {
+        view.uploaderEnabled(isEnabled);
+        if (!isEnabled) {
+            view.documentPdfUploader().resetForm();
+            view.documentDocUploader().resetForm();
+        }
     }
 
     private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
@@ -167,15 +214,7 @@ public abstract class DocumentFormActivity
 
     private void setDecimalNumberEnabled() {
         En_DocumentCategory category = view.documentCategory().getValue();
-        view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
-    }
-
-    private boolean checkDocumentUploadValid(Document newDocument) {
-        if (newDocument.getId() == null && !view.documentUploader().isFileSet()) {
-            fireErrorMessage(lang.uploadingDocumentNotSet());
-            return false;
-        }
-        return true;
+        setDecimalNumberEnabled(category != null && !category.isForEquipment());
     }
 
     private boolean checkDocumentValid(Document newDocument) {
@@ -186,8 +225,16 @@ public abstract class DocumentFormActivity
         return true;
     }
 
-    private boolean isValidDocument(Document document){
-        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+    private boolean isValidDocument(Document document) {
+        boolean isNew = document.getId() == null;
+        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
+        boolean isDocFileSet = view.documentDocUploader().isFileSet();
+        if (isNew && isDocFileSet && !isPdfFileSet) {
+            return StringUtils.isNotEmpty(document.getName()) &&
+                    document.getProjectId() != null;
+        } else {
+            return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+        }
     }
 
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
@@ -202,24 +249,48 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document) {
         this.document = document;
-        boolean isNew = document.getId() == null;
-        boolean isApproved = document.getApproved();
-        boolean isFileSet = view.documentUploader().isFileSet();
-        if ((isNew || !isApproved) && isFileSet) {
+        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
+        boolean isDocFileSet = view.documentDocUploader().isFileSet();
+        if (isPdfFileSet || isDocFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
-            view.documentUploader().uploadBindToDocument(document);
-        } else {
-            saveUploadedDocument();
         }
+        uploadPdf(() -> uploadDoc(() -> saveDocument()));
+    }
+
+    private void uploadPdf(Runnable andThen) {
+        if (!view.documentPdfUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentPdfUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() { fireErrorMessage(lang.errSaveDocumentFile()); }
+            @Override
+            public void onSuccess() { andThen.run(); }
+        });
+        view.documentPdfUploader().uploadBindToDocument(document);
+    }
+
+    private void uploadDoc(Runnable andThen) {
+        if (!view.documentDocUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentDocUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() { fireErrorMessage(lang.errSaveDocumentFile()); }
+            @Override
+            public void onSuccess() { andThen.run(); }
+        });
+        view.documentDocUploader().uploadBindToDocument(document);
     }
 
     private void fireErrorMessage(String msg) {
         fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
     }
 
-    private void saveUploadedDocument() {
+    private void saveDocument() {
         documentService.saveDocument(this.document, new FluentCallback<Document>()
-            .withErrorMessage(lang.errDocumentNotSaved())
             .withSuccess(result -> fireEvent(new DocumentEvents.Form.Saved(tag))));
     }
 
@@ -271,7 +342,7 @@ public abstract class DocumentFormActivity
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProject().getName(), document.getProjectId()));
+        fillViewProject(document.getProject());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
@@ -290,18 +361,41 @@ public abstract class DocumentFormActivity
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
         boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
 
-        view.uploaderVisible().setVisible(isNew || !document.getApproved());
-        view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
-        view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
-        view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
+        setUploaderEnabled(isNew || !document.getApproved());
+        setEquipmentEnabled(isNew || decimalNumberIsNotSet);
+        setDecimalNumberEnabled(decimalNumberIsNotSet);
+        setInventoryNumberEnabled(inventoryNumberIsNotSet);
 
         view.nameValidator().setValid(true);
 
-        view.documentUploader().resetForm();
+        view.documentDocUploader().resetForm();
+        view.documentPdfUploader().resetForm();
+    }
+
+    private void fillViewProject(Project project) {
+        view.project().setValue(project == null ? null : new EntityOption(project.getName(), project.getId()));
+        fillViewProjectInfo(project);
+    }
+
+    private void fillViewProjectInfo(Project project) {
+        view.setProjectInfo(
+            project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
+            project == null ? "" : fetchDisplayText(project.getProductDirection()),
+            project == null ? "" : fetchDisplayText(project.getRegion())
+        );
+    }
+
+    private String fetchDisplayText(EntityOption option) {
+        if (option == null) {
+            return "";
+        }
+        return option.getDisplayText();
     }
 
     @Inject
     Lang lang;
+    @Inject
+    En_CustomerTypeLang customerTypeLang;
     @Inject
     AbstractDocumentFormView view;
     @Inject
@@ -313,4 +407,5 @@ public abstract class DocumentFormActivity
     private Document document;
     private Project project;
     private Profile authorizedProfile;
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

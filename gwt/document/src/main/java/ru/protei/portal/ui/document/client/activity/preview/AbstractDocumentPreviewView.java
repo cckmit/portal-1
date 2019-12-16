@@ -30,7 +30,9 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setKeyWords(String keyWords);
 
-    void setDownloadLink(String link);
+    void setDownloadLinkPdf(String link);
+
+    void setDownloadLinkDoc(String link);
 
     void setExecutionType(String executionType);
 }

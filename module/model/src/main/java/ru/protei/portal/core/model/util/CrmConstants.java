@@ -5,6 +5,8 @@ public class CrmConstants {
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";
+        String FILE_ITEM_PDF = "file-item-pdf";
+        String FILE_ITEM_DOC = "file-item-doc";
     }
 
     public interface Header {

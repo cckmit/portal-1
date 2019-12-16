@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -35,14 +36,18 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
             return;
         }
 
+        String valueName = selectedValue.getName() == null ? "" : selectedValue.getName();
+
         String innerHtml = "";
         if ( selectedValue.getIcon() != null ) {
             innerHtml += "<i class='" + selectedValue.getIcon() + "'></i>";
         }
-
-        innerHtml += selectedValue.getName() == null ? "" : selectedValue.getName();
+        innerHtml += valueName;
 
         text.setInnerHTML(innerHtml);
+        if (StringUtils.isNotEmpty(valueName)) {
+            text.setTitle(valueName);
+        }
 
         if (selectedValue.getExternalLink() != null) {
             Element element = DOM.createAnchor();

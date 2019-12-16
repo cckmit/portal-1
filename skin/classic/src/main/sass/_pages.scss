@@ -131,7 +131,7 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   margin-right: 15px !important;
 }
 
-.card .card-body.no-padding .row {
+.card .card-body.no-padding .row:not(.reset-no-padding) {
   margin-right: -15px;
   margin-left: -15px;
 }

@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.util.CrmConstants;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Component
 public class SessionServiceImpl implements SessionService {
@@ -28,19 +29,40 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void setFileItem(HttpServletRequest request, FileItem fileItem) {
+    public void setFile(HttpServletRequest request, FileItem fileItem) {
         request.getSession().setAttribute(CrmConstants.Session.FILE_ITEM, fileItem);
     }
 
     @Override
-    public FileItem getFileItem(HttpServletRequest request) {
+    public void setFilePdf(HttpServletRequest request, FileItem fileItem) {
+        request.getSession().setAttribute(CrmConstants.Session.FILE_ITEM_PDF, fileItem);
+    }
+
+    @Override
+    public void setFileDoc(HttpServletRequest request, FileItem fileItem) {
+        request.getSession().setAttribute(CrmConstants.Session.FILE_ITEM_DOC, fileItem);
+    }
+
+    @Override
+    public FileItem getFile(HttpServletRequest request) {
         return (FileItem) request.getSession().getAttribute(CrmConstants.Session.FILE_ITEM);
     }
 
     @Override
-    public void clearFileItem(HttpServletRequest request) {
-        setFileItem(request, null);
+    public FileItem getFilePdf(HttpServletRequest request) {
+        return (FileItem) request.getSession().getAttribute(CrmConstants.Session.FILE_ITEM_PDF);
+    }
+
+    @Override
+    public FileItem getFileDoc(HttpServletRequest request) {
+        return (FileItem) request.getSession().getAttribute(CrmConstants.Session.FILE_ITEM_DOC);
+    }
+
+    @Override
+    public void clearAllFiles(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.setAttribute(CrmConstants.Session.FILE_ITEM, null);
+        session.setAttribute(CrmConstants.Session.FILE_ITEM_PDF, null);
+        session.setAttribute(CrmConstants.Session.FILE_ITEM_DOC, null);
     }
 }
-
-
