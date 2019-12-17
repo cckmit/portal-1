@@ -64,46 +64,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public HasVisibility editNameAndDescriptionButtonVisibility() {
-        return editNameAndDescriptionButtonContainer;
-    }
-
-    @Override
-    public HasWidgets getNameInfoContainer() {
+    public HasWidgets getInfoContainer() {
         return issueInfoContainer;
-    }
-
-    @UiHandler("editNameAndDescriptionButton")
-    public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onEditNameAndDescriptionClicked(this);
-        }
-    }
-
-    @Override
-    public HasWidgets getCommentsContainer() {
-        return commentsContainer;
-    }
-
-    @Override
-    public HasWidgets getLinksContainer() {
-        return linksContainer;
-    }
-
-    @Override
-    public HasAttachments attachmentsContainer(){
-        return attachmentContainer;
     }
 
     @Override
     public void setCaseNumber(Long caseNumber) {
         number.setText(lang.crmPrefix() + caseNumber);
-        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
-    }
-
-    @Override
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
-        fileUploader.setUploadHandler(handler);
     }
 
     @Override
@@ -170,7 +137,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
         copyNumber.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_BUTTON);
     }
@@ -188,9 +154,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Lang lang;
     @UiField
     HTMLPanel commentsContainer;
-    @Inject
-    @UiField
-    AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
@@ -211,11 +174,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HTMLPanel metaContainer;
     @UiField
-    Button editNameAndDescriptionButton;
-    @UiField
     HTMLPanel issueInfoContainer;
-    @UiField
-    HTMLPanel editNameAndDescriptionButtonContainer;
 
     AbstractIssuePreviewActivity activity;
 

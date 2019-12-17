@@ -10,13 +10,13 @@
 
             <g:HTMLPanel ui:field="cardBody" styleName="card card-default no-border">
                 <div class="card-body">
-                    <g:HTMLPanel ui:field="editNameAndDescriptionButtonContainer" styleName="btn-toolbar flex-wrap">
-                        <div class="btn-group form-group">
-                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
-                                <i class="fa fa-pencil-alt"/>
-                            </g:Button>
-                        </div>
-                    </g:HTMLPanel>
+<!--                    <g:HTMLPanel ui:field="editNameAndDescriptionButtonContainer" styleName="btn-toolbar flex-wrap">-->
+<!--                        <div class="btn-group form-group">-->
+<!--                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">-->
+<!--                                <i class="fa fa-pencil-alt"/>-->
+<!--                            </g:Button>-->
+<!--                        </div>-->
+<!--                    </g:HTMLPanel>-->
                     <div class="row">
                         <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
                     </div>

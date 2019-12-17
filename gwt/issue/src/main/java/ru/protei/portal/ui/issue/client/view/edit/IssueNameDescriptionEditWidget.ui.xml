@@ -6,15 +6,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <h5 ui:field="nameROContainer" class="number-and-name-copy-panel no-margin">
-            <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
-                <i class="far fa-clone"/>
-            </g:Anchor>
-            <label ui:field="nameROLabel" class="semi-bold large-text"/>
-        </h5>
-
-        <div ui:field="descriptionRO" class="form-group pre-formatted-info markdown p-t-15" />
-
         <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
 
             <div class="form-input-group">

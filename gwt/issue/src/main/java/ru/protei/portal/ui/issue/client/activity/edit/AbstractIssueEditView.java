@@ -1,16 +1,15 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 /**
  * Представление создания и редактирования обращения
  */
-public interface AbstractIssueEditView extends IsWidget, AbstractIssueDetailsView {
-
+public interface AbstractIssueEditView extends IsWidget, AbstractIssueView {
     void setActivity( AbstractIssueEditActivity activity );
 
-    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
+    HasVisibility editNameAndDescriptionButtonVisibility();
 
     boolean isAttached();
 

@@ -2,20 +2,16 @@ package ru.protei.portal.ui.issue.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueDetailsView;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueView;
 
 /**
  * Абстракция вида превью обращения
  */
-public interface AbstractIssuePreviewView extends IsWidget, AbstractIssueDetailsView {
+public interface AbstractIssuePreviewView extends IsWidget, AbstractIssueView {
 
-    void setActivity(AbstractIssuePreviewActivity activity);
+    void setActivity( AbstractIssuePreviewActivity activity );
 
-    void setFullScreen( boolean isFullScreen);
-
-    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
+    void setFullScreen( boolean isFullScreen );
 
     HasVisibility backBtnVisibility();
-
 }

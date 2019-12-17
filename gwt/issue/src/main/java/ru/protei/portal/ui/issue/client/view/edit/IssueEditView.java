@@ -48,34 +48,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasWidgets getNameInfoContainer() {
+    public HasWidgets getInfoContainer() {
         return issueInfoContainer;
-    }
-
-    @Override
-    public HasWidgets getLinksContainer() {
-        return linksContainer;
-    }
-
-    @Override
-    public HasWidgets getCommentsContainer() {
-        return commentsContainer;
-    }
-
-    @Override
-    public HasAttachments attachmentsContainer() {
-        return attachmentContainer;
-    }
-
-    @Override
-    public void setFileUploadHandler( AttachmentUploader.FileUploadHandler handler ) {
-        fileUploader.setUploadHandler( handler );
     }
 
     @Override
     public void setCaseNumber( Long caseNumber ) {
         number.setText( lang.crmPrefix() + caseNumber );
-        fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
     }
 
     @Override
@@ -94,13 +73,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return tagsContainer;
     }
 
-//    public void setDescriptionRO( String value) {
-//        this.nameRO.setInnerHTML(value);
-//        this.nameRO.setInnerHTML("");
-//        this.nameRO.appendChild(jiraLink);
-//        this.nameRO.appendChild(nameWithoutLink);
-//    }
-
     @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
@@ -109,11 +81,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasVisibility editNameAndDescriptionButtonVisibility() {
         return editNameAndDescriptionButton;
-    }
-
-    @UiHandler("attachmentContainer")
-    public void attachmentContainerRemove(RemoveEvent event) {
-        activity.removeAttachment(event.getAttachment());
     }
 
     @UiHandler("copyNumber")
@@ -153,11 +120,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
-        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
 
     @UiField
@@ -167,18 +130,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Anchor copyNumber;
     @UiField
-    HTMLPanel commentsContainer;
-    @UiField
-    DivElement comments;
-    @Inject
-    @UiField
-    AttachmentUploader fileUploader;
-    @Inject
-    @UiField(provided = true)
-    AttachmentList attachmentContainer;
-    @UiField
-    LabelElement attachmentsLabel;
-    @UiField
     Anchor number;
     @UiField
     Element createdBy;
@@ -186,8 +137,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel numberPanel;
     @UiField
     Element privacyIcon;
-    @UiField
-    HTMLPanel linksContainer;
     @UiField
     HTMLPanel tagsContainer;
     @UiField
@@ -199,21 +148,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel issueInfoContainer;
     @UiField
-    DivElement attachmentsPanel;
-    @UiField
-    DivElement commentsPanel;
-    @UiField
     Button backButton;
-
-    @UiField
-    HTMLPanel namePanel;
-    @UiField
-    HeadingElement nameROPanel;
-    @UiField
-    LabelElement nameRO;
-    @UiField
-    HTMLPanel descriptionPanel;
-
 
     private AbstractIssueEditActivity activity;
 
