@@ -43,13 +43,12 @@ public abstract class RegionListActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        this.profile = event.profile;
         filterView.resetFilter();
     }
 
     @Event
     public void onShow( RegionEvents.Show event ) {
-        if (!profile.hasGrantAccessFor(En_Privilege.REGION_VIEW)) {
+        if (!policyService.hasGrantAccessFor(En_Privilege.REGION_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -143,6 +142,8 @@ public abstract class RegionListActivity
     Provider<AbstractRegionItemView > factory;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    PolicyService policyService;
 
     @Inject
     PeriodicTaskService taskService;
@@ -151,5 +152,4 @@ public abstract class RegionListActivity
     private Map<AbstractRegionItemView, RegionInfo > itemViewToModel = new HashMap<>();
     private AppEvents.InitDetails init;
     private ProjectQuery query;
-    private Profile profile;
 }

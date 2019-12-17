@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -26,13 +27,12 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        this.profile = event.profile;
         filterView.resetFilter();
     }
 
     @Event
     public void onShow(EmployeeEvents.Show event) {
-        if (!profile.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -87,9 +87,10 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     Lang lang;
     @Inject
     LocalStorageService localStorageService;
+    @Inject
+    PolicyService policyService;
 
     private ViewType currentViewType;
     private EmployeeQuery query;
     private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
-    private Profile profile;
 }
