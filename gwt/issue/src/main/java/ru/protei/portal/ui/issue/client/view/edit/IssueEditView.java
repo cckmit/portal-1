@@ -129,7 +129,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             descriptionRO.removeClassName(UiConstants.Styles.HIDE);
             copyNumberAndName.removeStyleName(UiConstants.Styles.HIDE);
 
-            nameAndDescriptionButtonsPanel.removeClassName(UiConstants.Styles.HIDE);
+            nameAndDescriptionButtonsPanel.addClassName(UiConstants.Styles.HIDE);
             attachmentsPanel.removeClassName(UiConstants.Styles.HIDE);
             commentsPanel.removeClassName(UiConstants.Styles.HIDE);
         } else {
@@ -137,7 +137,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             descriptionRO.addClassName(UiConstants.Styles.HIDE);
             copyNumberAndName.addStyleName(UiConstants.Styles.HIDE);
 
-            nameAndDescriptionButtonsPanel.addClassName(UiConstants.Styles.HIDE);
+            nameAndDescriptionButtonsPanel.removeClassName(UiConstants.Styles.HIDE);
             attachmentsPanel.addClassName(UiConstants.Styles.HIDE);
             commentsPanel.addClassName(UiConstants.Styles.HIDE);
         }
