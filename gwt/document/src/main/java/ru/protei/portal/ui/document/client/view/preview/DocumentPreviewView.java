@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
@@ -87,8 +88,21 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public void setDownloadLink(String link) {
-        downloadButton.setHref(link);
+    public void setDownloadLinkPdf(String link) {
+        if (StringUtils.isEmpty(link)) {
+            downloadPdfButton.setVisible(false);
+        }
+        downloadPdfButton.setVisible(true);
+        downloadPdfButton.setHref(link);
+    }
+
+    @Override
+    public void setDownloadLinkDoc(String link) {
+        if (StringUtils.isEmpty(link)) {
+            downloadDocButton.setVisible(false);
+        }
+        downloadDocButton.setVisible(true);
+        downloadDocButton.setHref(link);
     }
 
     @Override
@@ -97,7 +111,10 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
 
-    @UiField Anchor downloadButton;
+    @UiField
+    Anchor downloadPdfButton;
+    @UiField
+    Anchor downloadDocButton;
     @UiField
     HeadingElement header;
     @UiField

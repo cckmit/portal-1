@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -185,6 +186,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
     @Override
     public void onFullScreenPreviewClicked() {
         displayFullScreen();
+    }
+
+    @Override
+    public void onBackClicked() {
+        fireEvent(new Back());
     }
 
     private void displayFullScreen() {

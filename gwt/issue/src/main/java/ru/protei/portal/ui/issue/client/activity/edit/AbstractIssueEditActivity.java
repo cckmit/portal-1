@@ -12,4 +12,5 @@ public interface AbstractIssueEditActivity {
     void onEditNameAndDescriptionClicked(AbstractIssueDetailsView view);
 
     void onFullScreenPreviewClicked();
+    void onBackClicked();
 }

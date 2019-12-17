@@ -180,6 +180,10 @@ public class Document implements Serializable {
         this.projectId = projectId;
     }
 
+    public CaseObject getProjectAsCaseObject() {
+        return project;
+    }
+
     public Project getProject() {
         return Project.fromCaseObject(project);
     }

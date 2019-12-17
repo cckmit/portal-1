@@ -73,6 +73,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     PlatformDAO platformDAO;
 
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
         List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
@@ -132,6 +135,8 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        jdbcManyRelationsHelper.fill(projectFromDb, "locations");
+
         Project project = new Project();
         project.setId(projectFromDb.getId());
         project.setName(projectFromDb.getName());
@@ -139,6 +144,9 @@ public class ProjectServiceImpl implements ProjectService {
         project.setContragent(projectFromDb.getInitiatorCompany() == null ? null : new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId()));
         project.setProductDirection(projectFromDb.getProduct() == null ? null : new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()));
         project.setManager(projectFromDb.getManager() == null ? null : new EntityOption(projectFromDb.getManager().getDisplayShortName(), projectFromDb.getManagerId()));
+        if (CollectionUtils.isNotEmpty(projectFromDb.getLocations())) {
+            project.setRegion(EntityOption.fromLocation(projectFromDb.getLocations().get(0).getLocation()));
+        }
 
         return ok(project);
     }

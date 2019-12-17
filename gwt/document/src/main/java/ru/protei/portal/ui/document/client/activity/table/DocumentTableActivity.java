@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.document.client.activity.table;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -34,7 +33,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 
 public abstract class DocumentTableActivity
         implements Activity, AbstractDocumentTableActivity, AbstractDocumentFilterActivity,
@@ -79,13 +77,6 @@ public abstract class DocumentTableActivity
     @Override
     public void onPageSelected(int page) {
         view.scrollTo(page);
-    }
-
-    @Override
-    public void onDownloadClicked(Document value) {
-        if (value.getId() == null || value.getProjectId() == null)
-            return;
-        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
     }
 
     @Override
@@ -281,12 +272,9 @@ public abstract class DocumentTableActivity
     @Inject
     DefaultErrorHandler errorHandler;
 
-
     private Integer scrollTop;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;
     private Document documentToRemove;
-
-    private static final String DOWNLOAD_PATH = "springApi/document/";
 }

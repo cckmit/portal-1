@@ -51,7 +51,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void clearElapsedTime();
 
-    void setRemoteLinkNumber(String link);
+    void setRemoteLinkNumber(String number);
 
     void setRemoteLinkHref(String link);
 

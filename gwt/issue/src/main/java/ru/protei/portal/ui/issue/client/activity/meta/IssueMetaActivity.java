@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.meta;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -204,7 +205,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new ContactEvents.Edit(null, metaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
     }
-
 
     private void fillNotifiersView(CaseObjectMetaNotifiers caseMetaNotifiers) {
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule

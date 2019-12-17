@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -30,14 +31,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     public void onInit() {
-        initWidget(ourUiBinder.createAndBindUi(this));
+        initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
 
-        copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
+        copyNumber.getElement().setAttribute( "title", lang.issueCopyNumber() );
     }
 
     @Override
-    public void setActivity(AbstractIssueEditActivity activity) {
+    public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
     }
 
@@ -67,24 +68,24 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
-        fileUploader.setUploadHandler(handler);
+    public void setFileUploadHandler( AttachmentUploader.FileUploadHandler handler ) {
+        fileUploader.setUploadHandler( handler );
     }
 
     @Override
-    public void setCaseNumber(Long caseNumber) {
-        number.setText(lang.crmPrefix() + caseNumber);
-        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
+    public void setCaseNumber( Long caseNumber ) {
+        number.setText( lang.crmPrefix() + caseNumber );
+        fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
     }
 
     @Override
     public void setPrivateIssue( boolean isPrivate ) {
-        if ( isPrivate ) {
-            privacyIcon.setClassName("fas fa-lock text-danger m-l-10");
-            privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
+        if (isPrivate) {
+            privacyIcon.setClassName( "fas fa-lock text-danger m-l-10" );
+            privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE );
         } else {
-            privacyIcon.setClassName("fas fa-unlock text-success m-l-10");
-            privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
+            privacyIcon.setClassName( "fas fa-unlock text-success m-l-10" );
+            privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC );
         }
     }
 
@@ -92,6 +93,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public HasWidgets getTagsContainer() {
         return tagsContainer;
     }
+
+//    public void setDescriptionRO( String value) {
+//        this.nameRO.setInnerHTML(value);
+//        this.nameRO.setInnerHTML("");
+//        this.nameRO.appendChild(jiraLink);
+//        this.nameRO.appendChild(nameWithoutLink);
+//    }
 
     @Override
     public void setCreatedBy(String value) {
@@ -132,12 +140,20 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("backButton")
+    public void onBackButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
+        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
@@ -167,7 +183,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Element createdBy;
     @UiField
-    HTMLPanel numberContainer;
+    HTMLPanel numberPanel;
     @UiField
     Element privacyIcon;
     @UiField
@@ -182,6 +198,22 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel cardBody;
     @UiField
     HTMLPanel issueInfoContainer;
+    @UiField
+    DivElement attachmentsPanel;
+    @UiField
+    DivElement commentsPanel;
+    @UiField
+    Button backButton;
+
+    @UiField
+    HTMLPanel namePanel;
+    @UiField
+    HeadingElement nameROPanel;
+    @UiField
+    LabelElement nameRO;
+    @UiField
+    HTMLPanel descriptionPanel;
+
 
     private AbstractIssueEditActivity activity;
 

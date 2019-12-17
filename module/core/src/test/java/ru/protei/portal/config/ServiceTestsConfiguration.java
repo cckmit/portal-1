@@ -34,6 +34,8 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
@@ -199,8 +201,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public DocumentSvnService getDocumentSvnService() {
-        return new DocumentSvnServiceImpl();
+    public DocumentSvnApi getDocumentSvnApi() {
+        return new DocumentSvnApiImpl();
     }
     
     @Bean

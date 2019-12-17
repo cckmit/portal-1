@@ -18,9 +18,17 @@ public interface SessionService {
     AuthToken getAuthToken(HttpServletRequest request);
 
 
-    void setFileItem(HttpServletRequest request, FileItem fileItem);
+    void setFile(HttpServletRequest request, FileItem fileItem);
 
-    FileItem getFileItem(HttpServletRequest request);
+    void setFilePdf(HttpServletRequest request, FileItem fileItem);
 
-    void clearFileItem(HttpServletRequest request);
+    void setFileDoc(HttpServletRequest request, FileItem fileItem);
+
+    FileItem getFile(HttpServletRequest request);
+
+    FileItem getFilePdf(HttpServletRequest request);
+
+    FileItem getFileDoc(HttpServletRequest request);
+
+    void clearAllFiles(HttpServletRequest request);
 }
