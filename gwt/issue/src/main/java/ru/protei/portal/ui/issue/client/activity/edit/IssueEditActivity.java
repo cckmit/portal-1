@@ -246,7 +246,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
                         .withPrivateCase(issue.isPrivateCase())
                         .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
 
-                fireEvent( new IssueEvents.EditMeta( editView.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
+                fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
 
             }
         });
