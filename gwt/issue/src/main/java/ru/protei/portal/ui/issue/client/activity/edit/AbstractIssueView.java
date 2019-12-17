@@ -16,4 +16,9 @@ public interface AbstractIssueView {
 
     HasWidgets getMetaContainer();
 
+    HasWidgets getLinksContainer();
+
+    void setName( String issueName );
+
+    void setNameVisible( boolean isNameVisible );
 }

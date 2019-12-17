@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractIssueEditView extends IsWidget, AbstractIssueView {
     void setActivity( AbstractIssueEditActivity activity );
 
-    HasVisibility editNameAndDescriptionButtonVisibility();
+    HasVisibility nameAndDescriptionEditButtonVisibility();
 
     boolean isAttached();
 

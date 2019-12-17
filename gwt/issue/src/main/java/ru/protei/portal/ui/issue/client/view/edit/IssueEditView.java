@@ -2,23 +2,15 @@ package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
@@ -40,6 +32,22 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
+        nameWidget.setActivity( activity );
+    }
+
+    @Override
+    public void setCaseNumber( Long caseNumber ) {
+        number.setText( lang.crmPrefix() + caseNumber );
+    }
+
+    @Override
+    public void setName( String issueName ) {
+        nameWidget.setName( issueName );
+    }
+
+    @Override
+    public void setNameVisible( boolean isNameVisible ) {
+        nameWidget.setVisible( isNameVisible );
     }
 
     @Override
@@ -48,13 +56,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasWidgets getInfoContainer() {
-        return issueInfoContainer;
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
-    public void setCaseNumber( Long caseNumber ) {
-        number.setText( lang.crmPrefix() + caseNumber );
+    public HasWidgets getInfoContainer() {
+        return issueInfoContainer;
     }
 
     @Override
@@ -79,8 +87,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility editNameAndDescriptionButtonVisibility() {
-        return editNameAndDescriptionButton;
+    public HasVisibility nameAndDescriptionEditButtonVisibility() {
+        return nameAndDescriptionEditButton;
     }
 
     @UiHandler("copyNumber")
@@ -91,10 +99,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
-    @UiHandler("editNameAndDescriptionButton")
+    @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
-            activity.onEditNameAndDescriptionClicked(this);
+            activity.onNameAndDescriptionEditClicked(this);
         }
     }
 
@@ -142,13 +150,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel metaEditContainer;
     @UiField
-    Button editNameAndDescriptionButton;
+    Button nameAndDescriptionEditButton;
     @UiField
     HTMLPanel cardBody;
     @UiField
     HTMLPanel issueInfoContainer;
     @UiField
     Button backButton;
+    @Inject
+    @UiField(provided = true)
+    IssueNameWidget nameWidget;
+    @UiField
+    HTMLPanel linksContainer;
 
     private AbstractIssueEditActivity activity;
 

@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:nw='urn:import:ru.protei.portal.ui.issue.client.view.edit'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -13,7 +14,7 @@
                             <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">
                                 <i class="fa fa-arrow-left"/>
                             </g:Button>
-                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
+                            <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>
                         </div>
@@ -35,6 +36,10 @@
                             <i ui:field="privacyIcon"/>
                         </div>
                     </g:HTMLPanel>
+
+                    <nw:IssueNameWidget ui:field="nameWidget" />
+
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
                 </div>

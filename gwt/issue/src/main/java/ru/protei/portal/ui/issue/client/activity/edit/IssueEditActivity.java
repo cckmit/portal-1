@@ -164,10 +164,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
 
     @Override
-    public void onEditNameAndDescriptionClicked( AbstractIssueEditView view) {
+    public void onNameAndDescriptionEditClicked( AbstractIssueEditView view) {
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
         if (!isAllowedEditNameAndDescription) return;
-        view.editNameAndDescriptionButtonVisibility().setVisible( false );
+        view.nameAndDescriptionEditButtonVisibility().setVisible( false );
+        view.setNameVisible(false);
 
         editView.getInfoContainer().clear();
         editView.getInfoContainer().add( issueNameDescriptionEditWidget );
@@ -179,7 +180,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     @Override
     public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        editView.editNameAndDescriptionButtonVisibility().setVisible( true );
+        editView.nameAndDescriptionEditButtonVisibility().setVisible( true );
+        editView.setNameVisible( true );
         editView.getInfoContainer().clear();
         editView.getInfoContainer().add( issueInfoWidget );
         issue.setName( changeRequest.getName() );
@@ -227,7 +229,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
                 fillView(issue, view);
 
-                fireEvent(new CaseLinkEvents.Show(issueInfoWidget.getLinksContainer())
+                fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                         .withCaseId(issue.getId())
                         .withCaseType(En_CaseType.CRM_SUPPORT));
 
@@ -269,15 +271,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         view.setCaseNumber(issue.getCaseNumber());
         view.setPrivateIssue(issue.isPrivateCase());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
+        view.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
-        issueInfoWidget.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
         issueInfoWidget.setDescription(issue.getInfo());
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
         view.getInfoContainer().add( issueInfoWidget );
 
-        editView.editNameAndDescriptionButtonVisibility().setVisible(isSelfIssue(issue));
+        editView.nameAndDescriptionEditButtonVisibility().setVisible(isSelfIssue(issue));
     }
 
     private String makeName( String issueName, String jiraUrl, String extAppType ) {

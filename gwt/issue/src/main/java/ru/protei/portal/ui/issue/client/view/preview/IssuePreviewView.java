@@ -2,31 +2,20 @@ package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
-import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
+import ru.protei.portal.ui.issue.client.view.edit.IssueNameWidget;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -45,6 +34,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setActivity( AbstractIssuePreviewActivity activity ) {
         this.activity = activity;
+        nameWidget.setActivity( activity );
     }
 
     @Override
@@ -74,6 +64,16 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setName( String issueName ) {
+        nameWidget.setName( issueName );
+    }
+
+    @Override
+    public void setNameVisible( boolean isNameVisible ) {
+        nameWidget.setVisible( isNameVisible );
+    }
+
+    @Override
     public HasVisibility backBtnVisibility() {
         return backButtonContainer;
     }
@@ -86,6 +86,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public HasWidgets getMetaContainer() {
         return metaContainer;
+    }
+
+    @Override
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
@@ -127,7 +132,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -136,7 +140,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
-        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
         copyNumber.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_BUTTON);
     }
@@ -147,8 +150,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Element privateIssue;
     @UiField
     Element createdBy;
-    @UiField
-    DivElement info;
+
     @Inject
     @UiField
     Lang lang;
@@ -175,6 +177,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     HTMLPanel metaContainer;
     @UiField
     HTMLPanel issueInfoContainer;
+    @Inject
+    @UiField(provided = true)
+    IssueNameWidget nameWidget;
 
     AbstractIssuePreviewActivity activity;
 

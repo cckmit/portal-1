@@ -1,22 +1,14 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
-             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:nw='urn:import:ru.protei.portal.ui.issue.client.view.edit'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
-
             <g:HTMLPanel ui:field="cardBody" styleName="card card-default no-border">
                 <div class="card-body">
-<!--                    <g:HTMLPanel ui:field="editNameAndDescriptionButtonContainer" styleName="btn-toolbar flex-wrap">-->
-<!--                        <div class="btn-group form-group">-->
-<!--                            <g:Button ui:field="editNameAndDescriptionButton" styleName="btn btn-default btn-xs btn-cons-toolbar">-->
-<!--                                <i class="fa fa-pencil-alt"/>-->
-<!--                            </g:Button>-->
-<!--                        </div>-->
-<!--                    </g:HTMLPanel>-->
                     <div class="row">
                         <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
                     </div>
@@ -34,14 +26,13 @@
                         <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
                     </div>
 
-                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
+                    <nw:IssueNameWidget ui:field="nameWidget" />
+
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <g:HTMLPanel ui:field="metaContainer" styleName="issue-meta-preview"/>
 
-
-                    <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
-
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
 
                     <div class="row">
                         <div class="form-group col-md-12">
