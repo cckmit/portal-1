@@ -6,9 +6,11 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -34,6 +36,11 @@ public abstract class SiteFolderPage implements Activity {
             //fireEvent(new MenuEvents.Add(SUB_TAB_APPS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_APPS).withParent(TAB));
             fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show(true)));
         }
+    }
+
+    @Event
+    public void onShowPreview(SiteFolderPlatformEvents.ShowFullScreen event) {
+        fireSelectTab();
     }
 
     @Event
@@ -73,8 +80,11 @@ public abstract class SiteFolderPage implements Activity {
 
     private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new MenuEvents.Select(TAB));
+        if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new MenuEvents.Select(TAB));
+        }
     }
+
 
     //private void fireSelectTab(String sub) {
     //    fireEvent(new ActionBarEvents.Clear());
@@ -83,6 +93,9 @@ public abstract class SiteFolderPage implements Activity {
 
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private String TAB;
     private String SUB_TAB_PLATFORMS;

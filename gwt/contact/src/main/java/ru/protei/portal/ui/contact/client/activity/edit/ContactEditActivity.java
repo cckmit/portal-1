@@ -6,10 +6,12 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -38,6 +40,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Event
     public void onShow( ContactEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -341,6 +347,18 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 view.personalEmail().getText().isEmpty();
     }
 
+    private boolean hasPrivileges(Long personId) {
+        if (personId == null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE)) {
+            return true;
+        }
+
+        if (personId != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     AbstractContactEditView view;
     @Inject
@@ -349,6 +367,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     ContactControllerAsync contactService;
     @Inject
     AccountControllerAsync accountService;
+    @Inject
+    PolicyService policyService;
 
     private Person contact;
     private UserLogin account;

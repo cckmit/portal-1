@@ -5,13 +5,16 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
@@ -36,6 +39,10 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Event
     public void onShow( AccountEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -185,6 +192,18 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
                 !view.roles().getValue().isEmpty();
     }
 
+    private boolean hasPrivileges(Long accountId) {
+        if (accountId == null && policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_CREATE)) {
+            return true;
+        }
+
+        if (accountId != null && policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     AbstractAccountEditView view;
 
@@ -193,6 +212,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Inject
     AccountControllerAsync accountService;
+
+    @Inject
+    PolicyService policyService;
 
     private UserLogin account;
     private AppEvents.InitDetails initDetails;

@@ -88,8 +88,8 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class );
 
+        bind( ForbiddenPageActivity.class ).asEagerSingleton();
         bind( AbstractForbiddenPageView.class ).to(ForbiddenPageView.class).in( Singleton.class );
-        bind( AbstractForbiddenPageActivity.class ).to(ForbiddenPageActivity.class).asEagerSingleton();
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );

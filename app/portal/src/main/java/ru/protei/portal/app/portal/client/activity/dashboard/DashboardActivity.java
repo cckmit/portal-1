@@ -45,6 +45,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onShow( DashboardEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DASHBOARD_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 

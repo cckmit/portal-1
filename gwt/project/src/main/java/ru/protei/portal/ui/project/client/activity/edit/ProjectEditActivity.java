@@ -13,10 +13,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -43,6 +40,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onShow (ProjectEvents.Edit event) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         resetView();
@@ -191,6 +193,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
 
         return true;
+    }
+
+    private boolean hasPrivileges(Long projectId) {
+        if (projectId == null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE)) {
+            return true;
+        }
+
+        if (projectId != null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject
