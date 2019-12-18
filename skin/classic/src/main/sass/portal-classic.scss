@@ -194,7 +194,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     flex-wrap: wrap;
 
     .meta-issue-importance{
-      width: 50%;
+      flex-basis: 50%;
       .form-group-default{
         border-right-color: transparent;
         border-bottom-color: transparent;
@@ -203,7 +203,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-state{
-      width: 50%;
+      flex-basis: 50%;
       .form-group-default{
         border-bottom-color: transparent;
         margin-bottom: 0px
@@ -211,7 +211,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-product{
-      width: 100%;
+      flex-basis: 100%;
       .form-group-default{
         border-bottom-color: transparent;
         margin-bottom: 0px
@@ -219,7 +219,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-manager{
-      width: 100%;
+      flex-basis: 100%;
       .form-group-default{
         margin-bottom: 0px
       }
@@ -231,7 +231,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-company {
-      width: 100%;
+      flex-basis: 100%;
       .form-group-default{
         border-bottom-color: transparent;
         margin-bottom: 0px
@@ -239,15 +239,16 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-initiator{
-      width: 100%;
+      flex-basis: 100%;
       .form-group-default{
-        border-bottom-color: transparent;
+
         margin-bottom: 0px
       }
     }
 
     .meta-issue-platform{
-      width: 100%;
+      border-top-color: transparent;
+      flex-basis: 100%;
     }
   }
 }
@@ -259,7 +260,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     flex-wrap: wrap;
 
     .meta-issue-importance{
-      width: 25%;
+      flex-basis: 25%;
       -webkit-order: 1;
       order: 1;
       .form-group-default{
@@ -270,7 +271,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-state {
-      width: 25%;
+      flex-basis: 25%;
       -webkit-order: 2;
       order: 2;
 
@@ -282,19 +283,19 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-product {
-      width: 25%;
+      flex-basis: 25%;
+      flex-grow: 2;
       -webkit-order: 3;
       order: 3;
 
       .form-group-default {
-        border-right-color: transparent;
         border-bottom-color: transparent;
         margin-bottom: 0px
       }
     }
 
     .meta-issue-manager {
-      width: 50%;
+      flex-basis: 25%;
       -webkit-order: 7;
       order: 7;
     }
@@ -304,7 +305,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-company {
-      width: 25%;
+      flex-basis: 50%;
       -webkit-order: 5;
       order: 5;
       .form-group-default {
@@ -314,7 +315,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-initiator{
-      width: 25%;
+      flex-basis: 25%;
       -webkit-order: 6;
       order: 6;
       .form-group-default {
@@ -323,10 +324,11 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     }
 
     .meta-issue-platform{
-      width: 25%;
+      flex-basis: 25%;
       -webkit-order: 4;
       order: 4;
       .form-group-default {
+        border-left-color: transparent;
         border-bottom-color: transparent;
         margin-bottom: 0px
       }

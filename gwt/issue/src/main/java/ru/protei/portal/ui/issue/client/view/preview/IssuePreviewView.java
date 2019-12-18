@@ -119,11 +119,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
-    @UiHandler("attachmentContainer")
-    public void attachmentContainerRemove(RemoveEvent event) {
-        activity.removeAttachment(event.getAttachment());
-    }
-
     @UiHandler("copyNumber")
     public void onCopyClick(ClickEvent event) {
         event.preventDefault();
@@ -140,7 +135,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
         copyNumber.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_BUTTON);
     }
 
@@ -154,11 +148,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    HTMLPanel commentsContainer;
-    @Inject
-    @UiField(provided = true)
-    AttachmentList attachmentContainer;
     @UiField
     Button backButton;
     @UiField

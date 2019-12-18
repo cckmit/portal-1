@@ -33,27 +33,6 @@
                     <g:HTMLPanel ui:field="metaContainer" styleName="issue-meta-preview"/>
 
                     <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
-
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <h5><ui:text from="{lang.issueAttachments}"/></h5>
-                            <div class="attach attach-add">
-                                <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                    <div class="attach-add-circle">
-                                        <i class="fas fa-plus ion-plus"/>
-                                        <i class="fas fa-spin icon-verifiable"/>
-                                    </div>
-                                </fileuploader:AttachmentUploader>
-                            </div>
-                            <attachment:AttachmentList ui:field="attachmentContainer"/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <h5><ui:text from="{lang.comments}"/></h5>
-                            <g:HTMLPanel ui:field="commentsContainer"/>
-                        </div>
-                    </div>
                 </div>
             </g:HTMLPanel>
 
