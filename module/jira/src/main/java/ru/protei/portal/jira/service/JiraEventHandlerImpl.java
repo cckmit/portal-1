@@ -11,7 +11,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
-import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
 
@@ -40,7 +40,7 @@ public class JiraEventHandlerImpl {
     PortalConfig portalConfig;
 
     @Autowired
-    EventPublisherService eventPublisherService;
+    AssemblerService assemblerService;
 
     @Autowired
     ThreadPoolTaskScheduler scheduler;
@@ -84,8 +84,8 @@ public class JiraEventHandlerImpl {
 
     private void sendEvent (AssembledCaseEvent event) {
         if (event != null) {
+            assemblerService.proceed(event);
             logger.debug("send assembled event {}", event.getCaseObject().defGUID());
-            eventPublisherService.publishEvent(event);
         }
     }
 
