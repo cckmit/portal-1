@@ -14,7 +14,7 @@
 
     <g:HTMLPanel ui:field="root">
 
-        <div class="form-group meta-fields">
+        <div class="meta-fields">
 
                 <div class="meta-issue-importance">
                     <issueimportance:ImportanceFormSelector ui:field="importance"

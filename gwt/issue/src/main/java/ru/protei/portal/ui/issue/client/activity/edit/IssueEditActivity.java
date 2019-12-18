@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -88,27 +89,23 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
             return;
         }
 
+        requestIssue(event.caseNumber, initDetails.parent, editView );
         initDetails.parent.clear();
-        initDetails.parent.add( editView.asWidget());
-
-        requestIssue(event.caseNumber, editView );
     }
 
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
+        requestIssue( event.issueCaseNumber, event.parent, previewView);
         event.parent.clear();
 
         previewView.backBtnVisibility().setVisible(false);
         previewView.setFullScreen(false);
-        event.parent.add( previewView.asWidget() );
-
-        requestIssue( event.issueCaseNumber, previewView);
     }
 
     @Event
     public void onShow( IssueEvents.ShowFullScreen event ) {
         displayFullScreen();
-        requestIssue(event.issueCaseNumber, previewView);
+        requestIssue(event.issueCaseNumber, initDetails.parent, previewView);
     }
 
     @Event
@@ -218,7 +215,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         initDetails.parent.add( previewView.asWidget() );
     }
 
-    private void requestIssue( Long number, final AbstractIssueView view ) {
+    private void requestIssue( Long number, HasWidgets parent, final AbstractIssueView view ) {
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {}
@@ -250,6 +247,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
                 fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
 
+                parent.add( view.asWidget() );
             }
         });
     }

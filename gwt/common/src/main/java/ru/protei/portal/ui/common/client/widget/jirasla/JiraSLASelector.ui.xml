@@ -5,7 +5,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="jira-sla-selector">
-        <p class="jira-sla-selector-header m-t-10">Jira</p>
+        <label class="jira-sla-selector-header">Jira</label>
         <div class="form-group-attached">
             <div class="row clearfix">
                 <div class="col-md-3">
