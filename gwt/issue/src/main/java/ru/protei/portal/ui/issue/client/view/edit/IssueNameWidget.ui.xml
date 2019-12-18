@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+    <g:HTMLPanel>
+        <h5 ui:field="nameROPanel" class="number-and-name-copy-panel no-margin">
+            <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
+                <i class="far fa-clone"/>
+            </g:Anchor>
+            <label ui:field="nameRO" class="semi-bold large-text"/>
+        </h5>
+    </g:HTMLPanel>
+</ui:UiBinder>

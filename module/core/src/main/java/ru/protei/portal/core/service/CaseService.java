@@ -43,6 +43,9 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObjectMeta> updateCaseObjectMeta( AuthToken token, CaseObjectMeta caseMeta );
 
+    @Privileged({ En_Privilege.ISSUE_VIEW })
+    Result<CaseObjectMeta> getIssueMeta( AuthToken token, Long issueId );
+
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers );
@@ -81,4 +84,5 @@ public interface CaseService {
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
+
 }
