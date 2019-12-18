@@ -140,7 +140,7 @@ public class DocumentServiceImpl implements DocumentService {
             return error(validationStatus);
         }
 
-        if (document.getApproved() && !withDoc) {
+        if (document.getApproved() && !withPdf) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
