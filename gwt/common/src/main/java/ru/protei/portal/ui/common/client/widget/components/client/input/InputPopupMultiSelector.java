@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.components.client.input;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -36,7 +37,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
-        initHandlers();
+//        initHandlers();
     }
 
     public void setHeader( String label ) {
@@ -91,7 +92,9 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (!isEnabled) {
             return;
         }
-        showPopup( itemContainer );
+        getPopup().getChildContainer().clear();
+        getSelector().fillFromBegin( this );
+        getPopup().showNear( itemContainer );
     }
 
     @UiHandler({"clearButton"})
@@ -108,16 +111,11 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire( this, getValue() );
     }
 
-    private void showPopup( UIObject itemContainer ) {
-        getPopup().getChildContainer().clear();
-        getSelector().fillFromBegin( this );
-        getPopup().showNear( itemContainer );
-    }
-
     @Override
     protected void onSelectionChanged() {
         Set<T> value = getValue();
         showValue( value );
+        getPopup().showNear( itemContainer );
         ValueChangeEvent.fire( this, value );
     }
 
@@ -170,14 +168,14 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire( this, getValue() );
     }
 
-    private void initHandlers() {
-        itemContainer.addDomHandler( event -> {
-            if (!isEnabled) {
-                return;
-            }
-            showPopup( itemContainer );
-        }, ClickEvent.getType() );
-    }
+//    private void initHandlers() {
+//        itemContainer.addDomHandler( event -> {
+//            if (!isEnabled) {
+//                return;
+//            }
+//            getPopup().showNear( selectButton );
+//        }, ClickEvent.getType() );
+//    }
 
     public void setAddEnsureDebugId( String debugId ) {
         caretButton.ensureDebugId( debugId );

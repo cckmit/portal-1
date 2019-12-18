@@ -57,6 +57,7 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         if(isValidable)
             setValid( isValid() );
 
+        getPopup().hide();
         ValueChangeEvent.fire(this, value);
     }
 

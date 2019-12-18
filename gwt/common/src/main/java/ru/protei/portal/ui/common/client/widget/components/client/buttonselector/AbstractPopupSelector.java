@@ -76,8 +76,8 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     @Override
     public void fill( T element, String elementHtml) {
-        Widget itemView = makeItemView(element, elementHtml);
-        getPopup().getChildContainer().add(itemView);
+        SelectorItem itemView = makeItemView(element, elementHtml);
+        getPopup().getChildContainer().add(itemView.asWidget());
     }
 
     @Override
@@ -158,8 +158,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public SelectorPopup getPopup() {
         if (popup == null) {
-            SelectorPopupWithSearch searchPopup = new SelectorPopupWithSearch();
-            setPopup(searchPopup);
+            setPopup( new SelectorPopupWithSearch() );
         }
         return popup;
     }
@@ -182,11 +181,11 @@ public abstract class AbstractPopupSelector<T> extends Composite
         getPopup().getChildContainer().clear();
     }
 
-    private Widget makeItemView(T t, String elementHtml) {
+    private SelectorItem makeItemView(T t, String elementHtml) {
         SelectorItem itemView = makeSelectorItem(t, elementHtml);
         itemView.setValue(t);
         itemView.addSelectorHandler(this);
-        return itemView.asWidget();
+        return itemView;
     }
 
     private SearchHandler searchHandler = new SearchHandler() {

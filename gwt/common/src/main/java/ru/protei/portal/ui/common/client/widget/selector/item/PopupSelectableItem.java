@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -71,6 +72,11 @@ public class PopupSelectableItem<T>
     @Override
     public HandlerRegistration addKeyUpHandler( KeyUpHandler keyUpHandler) {
         return addHandler( keyUpHandler, KeyUpEvent.getType() );
+    }
+
+    @UiHandler( "checkbox" )
+    public void onCheckboxClicked( ClickEvent event) {
+        selectorItemHandler.onSelectorItemClicked(this);
     }
 
     @UiHandler("checkbox")
