@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,11 +8,15 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
@@ -22,7 +25,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Date;
 import java.util.HashSet;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 
 public abstract class EmployeeRegistrationEditActivity implements Activity, AbstractEmployeeRegistrationEditActivity {
@@ -39,6 +43,11 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
     @Event
     public void onShow(EmployeeRegistrationEvents.Create event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_CREATE)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         clearView();
 
         initDetails.parent.clear();
@@ -58,6 +67,37 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
+    }
+
+    @Override
+    public void validateLimitedFields() {
+        if (view.position().getValue() != null) {
+            view.positionErrorLabelVisibility().setVisible(view.position().getValue().length() > CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH);
+        }
+
+        if (view.workplace().getValue() != null) {
+            view.workplaceErrorLabelVisibility().setVisible(view.workplace().getValue().length() > CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH);
+        }
+
+        if (view.operatingSystem().getValue() != null) {
+            view.operatingSystemErrorLabelVisibility().setVisible(view.operatingSystem().getValue().length() > CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH);
+        }
+
+        if (view.additionalSoft().getValue() != null) {
+            view.additionalSoftErrorLabelVisibility().setVisible(view.additionalSoft().getValue().length() > CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH);
+        }
+
+        if (view.resourceComment().getValue() != null) {
+            view.resourceCommentErrorLabelVisibility().setVisible(view.resourceComment().getValue().length() > CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH);
+        }
+
+        view.saveEnabled().setEnabled(
+                view.position().getValue().length() <= CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH
+                        && view.workplace().getValue().length() <= CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH
+                        && view.operatingSystem().getValue().length() <= CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH
+                        && view.additionalSoft().getValue().length() <= CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH
+                        && view.resourceComment().getValue().length() <= CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH
+        );
     }
 
     private void showValidationError(EmployeeRegistration employeeRegistration) {
@@ -86,11 +126,25 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         if ( registration.getCuratorsIds().contains(registration.getHeadOfDepartment().getId()))
             return lang.employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
-        if (registration.getAdditionalSoft().length() > ADDITIONAL_SOFT_MAX_LENGTH)
-            return lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH);
+        if (registration.getPosition().length() > CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH) {
+            return lang.employeeRegistrationPositionExceed(CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH);
+        }
 
-        if (registration.getResourceComment().length() > RESOURCE_COMMENT_MAX_LENGTH )
-            return lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH);
+        if (registration.getWorkplace().length() > CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH) {
+            return lang.employeeRegistrationWorkplaceExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH);
+        }
+
+        if (registration.getOperatingSystem().length() > CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH) {
+            return lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH);
+        }
+
+        if (registration.getAdditionalSoft().length() > CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH) {
+            return lang.employeeRegistrationAdditionalSoftLengthExceed(CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH);
+        }
+
+        if (registration.getResourceComment().length() > CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH) {
+            return lang.employeeRegistrationResourceCommentLengthExceed(CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH);
+        }
 
         return null;
     }
@@ -165,6 +219,12 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.setEmploymentDateValid(true);
         view.curators().setValue( null );
 
+        view.setPositionErrorLabel(lang.employeeRegistrationPositionExceed(CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH));
+        view.setWorkplaceErrorLabel(lang.employeeRegistrationWorkplaceExceed(CrmConstants.EmployeeRegistration.WORKPLACE_MAX_LENGTH));
+        view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH));
+        view.setAdditionalSoftErrorLabel(lang.employeeRegistrationAdditionalSoftLengthExceed(CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH));
+        view.setResourceCommentErrorLabel(lang.employeeRegistrationResourceCommentLengthExceed(CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH));
+
         view.saveEnabled().setEnabled(true);
     }
 
@@ -174,9 +234,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private AbstractEmployeeRegistrationEditView view;
     @Inject
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
+    @Inject
+    private PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
-
-    private static final int ADDITIONAL_SOFT_MAX_LENGTH = 512;
-    private static final int RESOURCE_COMMENT_MAX_LENGTH = 512;
 }

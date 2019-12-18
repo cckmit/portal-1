@@ -95,6 +95,9 @@ public class TestPortalApiController extends BaseServiceTest {
         person = createAndPersistPerson( company );
         mainRole = createAndPersistUserRoles();
         userLogin = createAndPersistUserLogin();
+
+        setThreadUserLogin(userLogin);
+
         createAndPersistSomeIssues(company.getId());
         createAndPersistSomeIssuesWithManager(person, company.getId());
         createAndPersistSomePrivateIssues(company.getId());
@@ -169,7 +172,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseObject.setInitiator(person);
         caseObject.setInitiatorCompany( company );
 
-        authService.makeThreadDescriptor( userLogin, person, company );
+        authService.makeThreadAuthToken( userLogin );
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
@@ -181,31 +184,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseCommentDAO.removeByCaseIds(Collections.singletonList(caseObjectFromDb.getId()));
         caseObjectDAO.removeByKey(caseObjectFromDb.getId());
-        authService.resetThreadDescriptor();
-    }
-
-    @Test
-    public void testUpdateIssue() throws Exception {
-        CaseObject startCaseObject = caseObjectDAO.getAll().stream().findAny().orElse(null);
-        Assert.assertNotNull("Expected at least 1 case object in db before update", startCaseObject);
-
-        String startCaseObjectName = startCaseObject.getName();
-
-        startCaseObject.setName(ISSUES_PREFIX + "new");
-
-        authService.makeThreadDescriptor( userLogin, person, company );
-        ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
-
-        List<CaseObject> caseObjects = caseObjectDAO.getAll();
-        CaseObject endCaseObject = caseObjects.stream().filter(currCaseObj -> currCaseObj.getId().equals(startCaseObject.getId())).findAny().orElse(null);
-
-        Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
-        Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
-        Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
-        authService.resetThreadDescriptor();
+        authService.resetThreadAuthToken();
     }
 
     @AfterClass
@@ -276,7 +255,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setInitiator(person);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
         }
     }
 
@@ -286,7 +265,7 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setName(ISSUES_PREFIX + i);
             caseObject.setManager(manager);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
         }
     }
 
@@ -297,8 +276,12 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setInitiator(person);
             caseObject.setPrivateCase(true);
             caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person).getData().getId());
+            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
         }
+    }
+
+    private static void setThreadUserLogin(UserLogin userLogin) {
+        authService.makeThreadAuthToken(userLogin);
     }
 
     private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {

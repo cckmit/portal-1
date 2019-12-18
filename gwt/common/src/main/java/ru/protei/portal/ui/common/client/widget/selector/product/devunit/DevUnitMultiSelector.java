@@ -49,15 +49,14 @@ public class DevUnitMultiSelector
     @Override
     protected SelectorItem makeSelectorItem( ProductShortView element, String elementHtml ) {
         PopupSelectableItem item = new PopupSelectableItem();
-        item.setText( elementHtml );
+        item.setElementHtml( elementHtml );
         if (hasNullValue() && element == null) {
             element = new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 );
         }
-        item.setSelected( CollectionUtils.contains( getValue(), element) );
+        item.setSelected( isSelected( element ) );
 
         return item;
     }
-
 
     @Inject
     private Lang lang;

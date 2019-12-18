@@ -1,26 +1,12 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.ui.common.client.widget.casemeta.model.CaseMeta;
+public interface AbstractIssueEditActivity extends AbstractIssueActivity {
 
-import java.util.function.Consumer;
+    void onNameAndDescriptionEditClicked( AbstractIssueEditView view );
 
-/**
- * Created by bondarenko on 11.11.16.
- */
-public interface AbstractIssueEditActivity {
+    void onFullScreenPreviewClicked();
 
-    void onSaveClicked();
-    void onCancelClicked();
-    void removeAttachment(Attachment attachment);
-    void onCompanyChanged();
-    void onCreateContactClicked();
-    void onLocalClicked();
-    void renderMarkupText(String text, Consumer<String> consumer);
+    void onBackClicked();
 
-    void onDisplayPreviewChanged( String description, boolean isDisplay );
-
-    void onCopyClicked();
-
-    void onCaseMetaChanged( CaseMeta value );
 }
+

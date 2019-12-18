@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:FormPanel ui:field="form">
+        <g:HTMLPanel tag="label" styleName="dropzone-label">
+            <g:FileUpload ui:field="fileUpload" name="file" styleName="hide"/>
+            <g:HTMLPanel ui:field="dropzone" styleName="dropzone">
+                <div class="dropzone-default">
+                    <span><ui:text from="{lang.fileDropzoneLabel}"/></span>
+                    <span ui:field="filenameInfo"/>
+                </div>
+            </g:HTMLPanel>
+        </g:HTMLPanel>
+    </g:FormPanel>
+</ui:UiBinder>

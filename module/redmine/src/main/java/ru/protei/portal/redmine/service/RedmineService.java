@@ -24,6 +24,8 @@ public interface RedmineService {
 
     void updateAttachmentsByCaseId(Long caseId);
 
+    void updateCaseObjectById(Long caseId);
+
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);
 

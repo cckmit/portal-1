@@ -90,6 +90,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         this.popupHandler = popupHandler;
     }
 
+    @Override
     public void setSearchHandler(SearchHandler searchHandler) {
         this.searchHandler = searchHandler;
     }
@@ -105,18 +106,6 @@ public class SelectorPopupWithSearch extends BasePopupView
     public void setAddButton(boolean addVisible, String text) {
         addButton.setText(text);
         setAddButton(addVisible);
-    }
-
-    @UiHandler( "search" )
-    public void onSearchKeyUpEvent( KeyUpEvent event ) {
-        if(event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            event.preventDefault();
-            if (childContainer.getWidgetCount() == 0) {
-                return;
-            }
-            SelectorItem item = (SelectorItem) childContainer.getWidget(0);
-            item.setFocus(true);
-        }
     }
 
     @UiHandler( "search" )

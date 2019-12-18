@@ -2,36 +2,18 @@ package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
-import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
-
-import java.util.Set;
+import ru.protei.portal.ui.issue.client.view.edit.IssueNameWidget;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -43,21 +25,23 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        copyNumber.getElement().setAttribute("title", lang.issueCopyNumber());
         ensureDebugIds();
     }
 
     @Override
     public void setActivity( AbstractIssuePreviewActivity activity ) {
         this.activity = activity;
+        nameWidget.setActivity( activity );
     }
 
     @Override
     public void setPrivateIssue( boolean isPrivate ) {
         if ( isPrivate ) {
-            privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
+            privateIssue.setClassName( "fa fa-lock text-danger m-l-10" );
             privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
         } else {
-            privateIssue.setClassName( "fa fa-unlock-alt text-success m-r-10"  );
+            privateIssue.setClassName( "fa fa-unlock-alt text-success m-l-10"  );
             privateIssue.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
         }
     }
@@ -68,97 +52,23 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setState( long value ) {
-        En_CaseState caseState = En_CaseState.getById( value );
-        this.state.setInnerHTML( "<i class='fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase() + "'></i>" +
-                caseStateLang.getStateName( caseState ) );
-    }
-
-    @Override
-    public void setImportance(int value ) {
-        En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-        this.iconCriticality.setClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value)));
-        this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
-    }
-
-    @Override
-    public void setProduct( String value ) {
-        this.product.setInnerText( value );
-    }
-
-    @Override
-    public void setLinks( Set<CaseLink> value ) {
-        this.caseMetaView.setLinks( value );
-    }
-
-    @Override
-    public void setTags(Set<CaseTag> value) {
-        this.caseMetaView.setTags(value);
-    }
-
-    @Override
-    public void setContact( String value ) {
-        this.contact.setInnerText( value );
-    }
-
-    @Override
-    public void setManager( String value ) {
-        this.manager.setInnerText( value );
-    }
-
-    @Override
-    public void setName( String value, boolean isJira ) {
-        if (!isJira || !value.startsWith("CLM")) {
-            this.name.setInnerHTML(value);
-        }
-        else {
-            String idCLM = value.split(" ")[0];
-            String remainingName = "&nbsp;" + value.substring(idCLM.length());
-
-            AnchorElement jiraLink = DOM.createAnchor().cast();
-
-            jiraLink.setHref(JIRA_LINK + idCLM);
-            jiraLink.setTarget("_blank");
-            jiraLink.setInnerText(idCLM);
-
-            LabelElement nameWithoutLink = DOM.createLabel().cast();
-            nameWithoutLink.setInnerHTML(remainingName);
-
-            this.name.setInnerHTML("");
-            this.name.appendChild(jiraLink);
-            this.name.appendChild(nameWithoutLink);
-        }
-    }
-
-    @Override
-    public void setInfo( String value ) {
-        this.info.setInnerHTML( value );
-    }
-
-    @Override
-    public void setSubscriptionEmails( String value ) {
-        this.subscriptions.setInnerText( value );
-    }
-
-    @Override
-    public HasWidgets getCommentsContainer() {
-        return commentsContainer;
-    }
-
-    @Override
-    public HasAttachments attachmentsContainer(){
-        return attachmentContainer;
+    public HasWidgets getInfoContainer() {
+        return issueInfoContainer;
     }
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        number.setText("CRM-" + caseNumber);
-        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
+        number.setText(lang.crmPrefix() + caseNumber);
     }
 
     @Override
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
-        fileUploader.setUploadHandler(handler);
+    public void setName( String issueName ) {
+        nameWidget.setName( issueName );
+    }
+
+    @Override
+    public void setNameVisible( boolean isNameVisible ) {
+        nameWidget.setVisible( isNameVisible );
     }
 
     @Override
@@ -167,64 +77,28 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public HasVisibility timeElapsedContainerVisibility() {
-        return timeElapsedContainer;
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
-    public HasVisibility jiraContainerVisibility() {
-        return jiraMetaDataContainer;
+    public HasWidgets getMetaContainer() {
+        return metaContainer;
     }
 
     @Override
-    public void setJiraIssueType(String value) {
-        jiraIssueType.setInnerText(StringUtils.isEmpty(value) ? "" : value);
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
-    public void setJiraSeverity(String value) {
-        jiraSeverity.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
-
-    @Override
-    public void setJiraTimeOfReaction(String value) {
-        jiraTimeOfReaction.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
-
-    @Override
-    public void setJiraTimeOfDecision(String value) {
-        jiraTimeOfDecision.setInnerText(StringUtils.isEmpty(value) ? "" : value);
-    }
-
-    @Override
-    public HasTime timeElapsed() {
-        return timeElapsed;
-    }
-
-    @Override
-    public void setPlatformName(String value) {
-        platform.setInnerText(value);
-    }
-
-    @Override
-    public void setPlatformLink(String link) {
-        platform.setHref(link);
-    }
-
-    @Override
-    public void setPlatformVisibility(boolean visible) {
-        if (visible) {
-            platformContainer.removeClassName("hide");
-            productContainer.replaceClassName("col-md-6", "col-md-3");
-        } else {
-            platformContainer.addClassName("hide");
-            productContainer.replaceClassName("col-md-3", "col-md-6");
-        }
-    }
-
-    @Override
-    public void isFullScreen(boolean isFullScreen) {
+    public void setFullScreen( boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+        if (isFullScreen) {
+            metaContainer.addStyleName("p-r-15 p-l-15");
+        } else {
+            metaContainer.removeStyleName("p-r-15 p-l-15");
+        }
     }
 
     @UiHandler( "number" )
@@ -243,16 +117,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
-    @UiHandler("attachmentContainer")
-    public void attachmentContainerRemove(RemoveEvent event) {
-        activity.removeAttachment(event.getAttachment());
-    }
-
-    @UiHandler("copy")
+    @UiHandler("copyNumber")
     public void onCopyClick(ClickEvent event) {
         event.preventDefault();
         if ( activity != null ) {
-            activity.onCopyClicked();
+            activity.onCopyNumberClicked();
         }
     }
 
@@ -260,94 +129,23 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED);
-        criticalityLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.IMPORTANCE);
-        criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE);
-        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PRODUCT);
-        product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT);
-        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.STATE);
-        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE);
-        timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.TIME_ELAPSED);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.TIME_ELAPSED);
-        contactLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.CONTACT);
-        contact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.CONTACT);
-        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.MANAGER);
-        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER);
-        subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.SUBSCRIPTION);
-        subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION);
-        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME);
-        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.LABEL.PLATFORM);
-        platform.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PLATFORM);
-        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO);
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
-        copy.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_TO_CLIPBOARD_BUTTON);
+        copyNumber.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_NUMBER_BUTTON);
     }
 
     @UiField
-    HTMLPanel preview;
+    HTMLPanel cardBody;
     @UiField
     Element privateIssue;
     @UiField
     Element createdBy;
-    @UiField
-    SpanElement product;
-    @UiField
-    DivElement state;
-    @UiField
-    Element iconCriticality;
-    @UiField
-    SpanElement criticality;
-    @UiField
-    SpanElement contact;
-    @UiField
-    SpanElement manager;
-    @UiField
-    SpanElement name;
-    @UiField
-    DivElement info;
+
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    HTMLPanel commentsContainer;
-    @Inject
-    @UiField
-    AttachmentUploader fileUploader;
-    @Inject
-    @UiField(provided = true)
-    AttachmentList attachmentContainer;
-    @UiField
-    Element subscriptions;
-    @UiField
-    HTMLPanel jiraMetaDataContainer;
-    @UiField
-    HTMLPanel jiraIssueTypeContainer;
-    @UiField
-    HTMLPanel jiraSeverityContainer;
-    @UiField
-    HTMLPanel jiraTimeOfReactionContainer;
-    @UiField
-    HTMLPanel jiraTimeOfDecisionContainer;
-    @UiField
-    SpanElement jiraIssueType;
-    @UiField
-    SpanElement jiraSeverity;
-    @UiField
-    SpanElement jiraTimeOfReaction;
-    @UiField
-    SpanElement jiraTimeOfDecision;
-    @UiField
-    HTMLPanel timeElapsedContainer;
-    @Inject
-    @UiField(provided = true)
-    TimeLabel timeElapsed;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
     @UiField
     Button backButton;
     @UiField
@@ -355,41 +153,22 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HTMLPanel backButtonContainer;
     @UiField
-    Anchor copy;
-    @Inject
-    En_CaseImportanceLang caseImportanceLang;
-    @Inject
-    En_CaseStateLang caseStateLang;
-    @UiField
-    HTMLPanel numberCopyPanel;
-    @UiField
-    LabelElement stateLabel;
-    @UiField
-    LabelElement productLabel;
-    @UiField
-    LabelElement contactLabel;
-    @UiField
-    LabelElement managerLabel;
-    @UiField
-    HeadingElement subscriptionsLabel;
-    @UiField
-    LabelElement criticalityLabel;
-    @UiField
-    SpanElement timeElapsedLabel;
-    @UiField
-    AnchorElement platform;
+    Anchor copyNumber;
     @UiField
     HTMLPanel previewWrapperContainer;
     @UiField
-    DivElement productContainer;
+    HTMLPanel linksContainer;
     @UiField
-    DivElement platformContainer;
+    HTMLPanel tagsContainer;
     @UiField
-    LabelElement platformLabel;
+    HTMLPanel metaContainer;
+    @UiField
+    HTMLPanel issueInfoContainer;
+    @Inject
+    @UiField(provided = true)
+    IssueNameWidget nameWidget;
 
     AbstractIssuePreviewActivity activity;
-
-    private final String JIRA_LINK ="https://jira.billing.ru/browse/";
 
     interface IssuePreviewViewUiBinder extends UiBinder<HTMLPanel, IssuePreviewView> {}
     private static IssuePreviewViewUiBinder ourUiBinder = GWT.create( IssuePreviewViewUiBinder.class );

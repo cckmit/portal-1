@@ -8,20 +8,24 @@ import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
  */
@@ -31,10 +35,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Autowired
     CaseFilterDAO caseFilterDAO;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     PolicyService policyService;
 
@@ -73,11 +75,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
         if (filter.getLoginId() == null) {
-            filter.setLoginId(descriptor.getLogin().getId());
+            filter.setLoginId(token.getUserLoginId());
         }
-        applyFilterByScope(descriptor, filter);
+        applyFilterByScope(token, filter);
 
         filter.setName(filter.getName().trim());
 
@@ -111,11 +112,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
                 filter.getParams() == null;
     }
 
-    private void applyFilterByScope(UserSessionDescriptor descriptor, CaseFilter filter) {
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+    private void applyFilterByScope(AuthToken token, CaseFilter filter) {
+        Set<UserRole> roles = token.getRoles();
         if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
             CaseQuery query = filter.getParams();
-            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds()));
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
             query.setAllowViewPrivate(false);
         }
     }

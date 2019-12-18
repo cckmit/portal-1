@@ -1,12 +1,18 @@
 package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
 
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.*;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.*;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.*;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItemHandler;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.ItemsContainer;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.PopupHandler;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
 
 import java.util.Iterator;
 
@@ -50,11 +56,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     @Override
-    public void setSelectorModel(SelectorModel<T> selectorModel) {
-        this.getSelector().setSelectorModel(selectorModel);
-    }
-
-    @Override
     public void onPopupUnload(SelectorPopup selectorPopup) {
             clearPopup();
     }
@@ -84,16 +85,17 @@ public abstract class AbstractPopupSelector<T> extends Composite
         searchHandler.onSearch(searchString);
     }
 
-    public void setSearchAutoFocus(boolean isSearchAutoFocus){//TODO
-        if(getPopup() instanceof SelectorPopupWithSearch) ((SelectorPopupWithSearch) getPopup()).setSearchAutoFocus(isSearchAutoFocus);
+    @Override
+    public void setSelectorModel(SelectorModel<T> selectorModel) {
+        getSelector().setSelectorModel(selectorModel);
     }
 
-    public void setPageSize(int pageSize) {
-        getSelector().setPageSize(pageSize);
+    public boolean isSelected(T element){
+        return getSelector().getSelectionModel().isSelected( element );
     }
 
     public void setAsyncSelectorModel(final AsyncSelectorModel<T> selectorModel) {
-        this.getSelector().setSelectorModel(new SelectorModel<T>() {
+        getSelector().setSelectorModel(new SelectorModel<T>() {
             @Override
             public T get(int elementIndex) {
                 return selectorModel.get(elementIndex, AbstractPopupSelector.this);
@@ -102,7 +104,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public void setAsyncSearchSelectorModel(final AsyncSearchSelectorModel<T> selectorModel) {
-        this.getSelector().setSelectorModel(new SelectorModel<T>() {
+        getSelector().setSelectorModel(new SelectorModel<T>() {
             @Override
             public T get(int elementIndex) {
                 return selectorModel.get(elementIndex, AbstractPopupSelector.this);
@@ -116,6 +118,14 @@ public abstract class AbstractPopupSelector<T> extends Composite
                 getSelector().fillFromBegin(AbstractPopupSelector.this);
             }
         };
+    }
+
+    public void setSearchAutoFocus(boolean isSearchAutoFocus){//TODO
+        if(getPopup() instanceof SelectorPopupWithSearch) ((SelectorPopupWithSearch) getPopup()).setSearchAutoFocus(isSearchAutoFocus);
+    }
+
+    public void setPageSize(int pageSize) {
+        getSelector().setPageSize(pageSize);
     }
 
     public void setHasNullValue(boolean hasNullValue) {
@@ -140,29 +150,16 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public void setSearchEnabled(boolean isSearchEnabled) {
         if (isSearchEnabled) {
-            setPopup(makeSearchPopup());
+            getPopup().setSearchHandler(this);
         } else {
-            setPopup(makeSimplePopup());
+            getPopup().setSearchHandler(null);
         }
     }
 
-    public SimpleSelectorPopup makeSimplePopup() {
-        final SimpleSelectorPopup popup = new SimpleSelectorPopup();
-        popup.setPopupHandler(this);
-        return popup;
-    }
-
-    public SelectorPopupWithSearch makeSearchPopup() {
-        final SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
-        popup.setPopupHandler(this);
-        popup.setSearchHandler(this);
-        return popup;
-    }
-
-
     public SelectorPopup getPopup() {
         if (popup == null) {
-            setPopup(makeSimplePopup());
+            SelectorPopupWithSearch searchPopup = new SelectorPopupWithSearch();
+            setPopup(searchPopup);
         }
         return popup;
     }
@@ -170,9 +167,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
     public void setPopup(SelectorPopup popup) {
         this.popup = popup;
         popup.setPopupHandler(this);
-        if (getPopup() instanceof SelectorPopupWithSearch) {
-            ((SelectorPopupWithSearch) getPopup()).setSearchHandler(this);
-        }
     }
 
     /**
@@ -180,7 +174,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
      */
     protected abstract SelectorItem makeSelectorItem( T element, String elementHtml );
 
-    protected abstract AbstractPageableSelector getSelector();
+    protected abstract AbstractPageableSelector getSelector();//TODO упростить
 
     protected abstract void onSelectionChanged();
 
@@ -192,7 +186,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
         SelectorItem itemView = makeSelectorItem(t, elementHtml);
         itemView.setValue(t);
         itemView.addSelectorHandler(this);
-        itemView.addKeyUpHandler( keyUpItemHandler );
         return itemView.asWidget();
     }
 
@@ -204,39 +197,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
             getSelector().fillFromBegin(AbstractPopupSelector.this);
         }
     };
-
-    private void onArrowUp( SelectorItem item) {
-        HTMLPanel panel = (HTMLPanel) getPopup().getChildContainer();
-        int selectedItemIndex = panel.getWidgetIndex(item);
-        if (selectedItemIndex == 0) {
-            return;
-        }
-        SelectorItem previousSelectorItem = (SelectorItem) panel.getWidget(--selectedItemIndex);
-        previousSelectorItem.setFocus(true);
-    }
-
-    private void onArrowDown( SelectorItem item) {
-        HTMLPanel panel = (HTMLPanel) getPopup().getChildContainer();
-        int selectedItemIndex = panel.getWidgetIndex(item);
-        if (selectedItemIndex == panel.getWidgetCount() - 1) {
-            return;
-        }
-        SelectorItem nextSelectorItem = (SelectorItem) panel.getWidget(++selectedItemIndex);
-        nextSelectorItem.setFocus(true);
-    }
-
-
-    KeyUpHandler keyUpItemHandler = keyUpEvent -> {
-        keyUpEvent.preventDefault();
-        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            onArrowDown((SelectorItem) keyUpEvent.getSource());
-        }
-
-        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
-            onArrowUp((SelectorItem) keyUpEvent.getSource());
-        }
-    };
-
 
     private SelectorPopup popup;
 

@@ -11,12 +11,15 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.factory.JiraClientFactory;
@@ -89,7 +92,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
-        if (caseObj != null) {
+        if (caseObj == null) {
+            return createCaseObject(event.getUser(), issue, endpoint, personMapper);
+        } else {
             if (CommonUtils.isTechUser(endpoint, event.getUser())) {
                 logger.info("skip event to prevent recursion, author is tech-login");
                 return null;
@@ -105,10 +110,34 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 return null;
             }
 
-            CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( event.getUser() ), caseObjectDAO.get( caseObj.getId() ), caseObj );
-            AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
-            caseEvent.attachCaseObjectEvent(caseObjectEvent);
+            CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
+            CaseObject newCase = caseObj;
+            CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldCase);
+            CaseObjectMeta newCaseMeta = new CaseObjectMeta(newCase);
+            Person person = personMapper.toProteiPerson(event.getUser());
 
+            CaseNameAndDescriptionEvent caseNameAndDescriptionEvent = new CaseNameAndDescriptionEvent(
+                    this,
+                    caseObj.getId(),
+                    new DiffResult<>(oldCase.getName(), newCase.getName()),
+                    new DiffResult<>(oldCase.getInfo(), newCase.getInfo()),
+                    person.getId(),
+                    ServiceModule.JIRA,
+                    En_ExtAppType.JIRA
+            );
+
+            CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
+                    this,
+                    ServiceModule.JIRA,
+                    person.getId(),
+                    En_ExtAppType.forCode(oldCase.getExtAppType()),
+                    oldCaseMeta,
+                    newCaseMeta
+            );
+
+            AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
+            caseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
+            caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
             logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
@@ -139,16 +168,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             return caseEvent;
         }
-        else {
-            return createCaseObject(event.getUser(), issue, endpoint, personMapper);
-        }
     }
 
     private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
         final CaseObject caseObj = new CaseObject();
-        CaseObjectEvent caseObjectEvent = new CaseObjectEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ), null, caseObj );
-        final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectEvent);
-        caseEvent.attachCaseObjectEvent(caseObjectEvent);
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ).getId(), caseObj );
+        final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectCreateEvent);
+        caseEvent.attachCaseObjectCreateEvent(caseObjectCreateEvent);
 
         caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
         caseObj.setCreated(issue.getCreationDate().toDate());

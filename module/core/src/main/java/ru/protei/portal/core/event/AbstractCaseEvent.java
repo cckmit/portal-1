@@ -12,11 +12,15 @@ public interface AbstractCaseEvent {
 
     ServiceModule getServiceModule();
 
-    Person getPerson();
+    Long getPersonId();
 
     Long getCaseObjectId();
 
     Object getSource();
 
     boolean isEagerEvent();//TODO нужен для Redmine
+
+    default boolean isCreateEvent() {
+        return false;
+    }
 }

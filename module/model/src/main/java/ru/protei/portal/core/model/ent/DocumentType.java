@@ -10,7 +10,7 @@ import java.util.Objects;
  * Вид документа
  */
 @JdbcEntity(table = "document_type")
-public class DocumentType implements Serializable, Removable {
+public class DocumentType implements Serializable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -82,10 +82,5 @@ public class DocumentType implements Serializable, Removable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return true;
     }
 }

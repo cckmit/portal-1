@@ -10,17 +10,17 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Сервис управления person
  */
@@ -28,6 +28,14 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Override
+    public Result<Person> getPerson(AuthToken token, Long personId) {
+        Person person = personDAO.get(personId);
+        // RESET PRIVACY INFO
+        person.resetPrivacyInfo();
+        return ok(person);
+    }
 
     @Override
     public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
@@ -38,7 +46,7 @@ public class PersonServiceImpl implements PersonService {
         if ( list == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List< PersonShortView > result = list.stream().map( Person::toShortNameShortView ).collect( Collectors.toList() );
+        List< PersonShortView > result = list.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
 
         return ok(result);
     }
@@ -56,14 +64,13 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {
             return personQuery;
         }
 
         if (personQuery.getCompanyIds() != null) {
-            personQuery.getCompanyIds().retainAll( descriptor.getAllowedCompaniesIds() );
+            personQuery.getCompanyIds().retainAll(token.getCompanyAndChildIds());
         }
 
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
@@ -72,7 +79,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     AuthService authService;
-
     @Autowired
     PolicyService policyService;
 

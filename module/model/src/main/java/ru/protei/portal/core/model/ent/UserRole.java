@@ -14,7 +14,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_role")
-public class UserRole extends AuditableObject implements EntityOptionSupport, Removable {
+public class UserRole extends AuditableObject implements EntityOptionSupport {
 
     @JdbcId(name = "id")
     private Long id;
@@ -122,11 +122,6 @@ public class UserRole extends AuditableObject implements EntityOptionSupport, Re
         }
 
         return false;
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return true;
     }
 
     @Override

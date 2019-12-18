@@ -3,9 +3,9 @@ package ru.protei.portal.util;
 import org.slf4j.Logger;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.controller.api.Credentials;
-import ru.protei.portal.core.controller.auth.SecurityDefs;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 
@@ -16,7 +16,8 @@ import java.io.IOException;
 import static ru.protei.portal.api.struct.Result.error;
 
 public class AuthUtils {
-    public static Result<UserSessionDescriptor> authenticate(HttpServletRequest request, HttpServletResponse response, AuthService authService, SessionIdGen sidGen, Logger logger) {
+
+    public static Result<AuthToken> authenticate(HttpServletRequest request, HttpServletResponse response, AuthService authService, SessionIdGen sidGen, Logger logger) {
         Credentials cr = null;
         try {
             cr = Credentials.parse( request.getHeader( "Authorization" ) );
@@ -37,7 +38,7 @@ public class AuthUtils {
         }
 
         String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
+        String userAgent = request.getHeader(CrmConstants.Header.USER_AGENT);
 
         logger.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
         return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent )

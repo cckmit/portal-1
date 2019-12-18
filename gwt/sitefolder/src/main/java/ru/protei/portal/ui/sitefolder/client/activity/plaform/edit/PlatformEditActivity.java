@@ -58,6 +58,10 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
+        if (!hasPrivileges(event.platformId)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -271,6 +275,18 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             platform.setAttachments(new ArrayList<>());
         }
         platform.getAttachments().addAll(attachments);
+    }
+
+    private boolean hasPrivileges(Long platformId) {
+        if (platformId == null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return true;
+        }
+
+        if (platformId != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

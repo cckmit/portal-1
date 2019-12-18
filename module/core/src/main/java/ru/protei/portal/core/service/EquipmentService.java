@@ -51,5 +51,5 @@ public interface EquipmentService {
 
     @Privileged( En_Privilege.EQUIPMENT_REMOVE )
     @Auditable( En_AuditType.EQUIPMENT_REMOVE )
-    Result<Boolean> removeEquipment( AuthToken token, Long equipmentId );
+    Result<Boolean> removeEquipment( AuthToken token, Long equipmentId, String author );
 }

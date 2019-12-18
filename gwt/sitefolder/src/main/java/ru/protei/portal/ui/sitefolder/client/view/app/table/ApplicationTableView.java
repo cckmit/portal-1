@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Application;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -97,8 +98,8 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     }
 
     private void initTable() {
-        editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
-        removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
         columns.add(nameColumn);
         columns.add(serverColumn);
@@ -123,6 +124,9 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     @Inject
     private EditClickColumn<Application> editClickColumn;

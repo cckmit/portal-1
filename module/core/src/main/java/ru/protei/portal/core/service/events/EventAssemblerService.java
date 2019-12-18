@@ -1,22 +1,22 @@
 package ru.protei.portal.core.service.events;
 
-import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.ent.Person;
 
 public interface EventAssemblerService {
 
-    void onCaseObjectEvent( CaseObjectEvent event);
+    void onCaseObjectCreateEvent(CaseObjectCreateEvent event);
 
-    void onCaseCommentEvent( CaseCommentEvent event);
+    void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event);
 
-    void onCaseAttachmentEvent( CaseAttachmentEvent event);
+    void onCaseObjectMetaEvent(CaseObjectMetaEvent event);
 
-    @EventListener
-    void onCaseLinkEvent( CaseLinksEvent event );
+    void onCaseCommentEvent(CaseCommentEvent event);
 
-    AssembledCaseEvent getEvent( Person person, Long caseId);
+    void onCaseAttachmentEvent(CaseAttachmentEvent event);
+
+    void onCaseLinkEvent(CaseLinkEvent event);
+
+    AssembledCaseEvent getEvent(Long personId, Long caseId);
 
     int getEventsCount();
-
 }

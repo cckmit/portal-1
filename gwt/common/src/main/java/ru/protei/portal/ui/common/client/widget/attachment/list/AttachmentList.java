@@ -14,7 +14,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
-import ru.protei.portal.ui.common.client.activity.attachment.AttachmentType;
+import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;

@@ -49,6 +49,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Event
     public void onShow( ProjectEvents.ShowFullScreen event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
@@ -112,7 +117,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             StringBuilder teamBuilder = new StringBuilder();
             value.getTeam().stream()
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
-                            Collectors.mapping(PersonProjectMemberView::getDisplayShortName, Collectors.joining(", "))))
+                            Collectors.mapping(PersonProjectMemberView::getName, Collectors.joining(", "))))
                     .forEach((role, team) ->
                             teamBuilder.append("<b>")
                                     .append(roleTypeLang.getName(role))
@@ -126,11 +131,10 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
-                .build());
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT)));
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

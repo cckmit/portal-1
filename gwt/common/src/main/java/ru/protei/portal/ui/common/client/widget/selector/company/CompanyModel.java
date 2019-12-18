@@ -72,27 +72,25 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
     }
 
     private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query) {
-       return new SelectorDataCacheLoadHandler() {
-            @Override
-            public void loadData( int offset, int limit, AsyncCallback handler ) {
-                query.setOffset(offset);
-                query.setLimit(limit);
-                companyService.getCompanyOptionList( query, new RequestCallback<List<EntityOption>>() {
-                    @Override
-                    public void onError( Throwable throwable ) {
-                        fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                        handler.onFailure( throwable );
-                    }
+       return ( offset, limit, handler ) -> {
+            query.setOffset(offset);
+            query.setLimit(limit);
+            companyService.getCompanyOptionList( query, new RequestCallback<List<EntityOption>>() {
+                @Override
+                public void onError( Throwable throwable ) {
+                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                    handler.onFailure( throwable );
+                }
 
-                    @Override
-                    public void onSuccess( List<EntityOption> options ) {
-                        transliteration(options);
-                        handler.onSuccess(options);
-                    }
-                } );
-            }
+                @Override
+                public void onSuccess( List<EntityOption> options ) {
+                    transliteration(options);
+                    handler.onSuccess(options);
+                }
+            } );
         };
     }
+
     private CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {

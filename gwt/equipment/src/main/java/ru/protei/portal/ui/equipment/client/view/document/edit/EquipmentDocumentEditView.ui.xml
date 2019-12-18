@@ -34,7 +34,7 @@
                                         <i class="fa fa-cloud-upload-alt"/>
                                     </g:Button>
                                 </div>
-                                <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
+                                <fileuploader:DocumentUploader ui:field="documentUploader" visible="false" format="PDF"/>
                             </div>
                         </g:HTMLPanel>
                         <div class="form-group col-md-3">

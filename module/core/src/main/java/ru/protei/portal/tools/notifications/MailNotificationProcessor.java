@@ -97,13 +97,13 @@ public class MailNotificationProcessor {
             String privateCaseUrl = getCrmCaseUrl( IS_PRIVATE_RECIPIENT );
             String publicCaseUrl = getCrmCaseUrl( !IS_PRIVATE_RECIPIENT );
 
-            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
-            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
+            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
+            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
             List<CaseComment> comments =  event.getAllComments();
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
-            if ( isPrivateCase(event) ) {
+            if ( isPrivateNotification(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
 
                 performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
@@ -156,8 +156,12 @@ public class MailNotificationProcessor {
     }
 
     private boolean isPublic( CaseLink caseLink){
-        if(caseLink.isPrivate()) return false;
-        if(!CRM.equals( caseLink.getType() )) return false;
+        if(caseLink.isPrivate()) {
+            return false;
+        }
+        if(!CRM.equals( caseLink.getType() )) {
+            return false;
+        }
         return true;
     }
 
@@ -171,9 +175,9 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
-    private boolean isPrivateCase(AssembledCaseEvent event) {
+    private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
-                || !event.isSendToCustomers()
+                || isPrivateSend(event)
                 || config.data().smtp().isBlockExternalRecipients();
     }
 
@@ -210,7 +214,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(caseObject, event.getInitiator());
+        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(event, event.getInitiator());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for caseId={}", caseObject.getId());
             return;
@@ -239,7 +243,7 @@ public class MailNotificationProcessor {
 
 
     private Collection<NotificationEntry> collectNotifiers(AssembledCaseEvent event) {
-        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers(  event.getCaseObject() );
+        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers(event.getCaseMeta());
         return formNotifiers(defaultNotifiers,
                 event.getInitiator(),
                 event.getCreator(),
@@ -568,14 +572,33 @@ public class MailNotificationProcessor {
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
-    private Date addSeconds(Date date, int sec) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.SECOND, sec);
-        return calendar.getTime();
+    private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
+
+        if (assembledCaseEvent.isPublicCommentsChanged()) {
+            return false;
+        }
+
+        if (publicChangesExistWithoutComments(assembledCaseEvent)) {
+            return false;
+        }
+
+        return true;
     }
 
-
+    private boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.getName().hasDifferences()
+                || assembledCaseEvent.getInfo().hasDifferences()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
+    }
 
     private class MimeMessageHeadersFacade {
 

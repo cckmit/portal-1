@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -97,20 +95,30 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         subscription.setLangCode( "ru" );
         subscription.setId( SUBSCRIPTION_ID );
 
+        getAuthToken().setPersonId( PERSON_ID );
+
         when(companyDAO.get( COMPANY_ID )).thenReturn( company );
         when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
+        when(personDAO.get( PERSON_ID )).thenReturn( initiator );
 
         En_CaseType caseType = En_CaseType.CRM_SUPPORT;
         CaseObject object = createNewCaseObject(initiator);
         object.setInitiatorCompany( company );
         object.setInitiator( initiator );
 
+        CaseObjectMeta meta = new CaseObjectMeta(object);
+        meta.setId( CASE_ID );
+        CaseObjectMetaNotifiers metaNotifiers = new CaseObjectMetaNotifiers(object);
+        metaNotifiers.setId( CASE_ID );
+
         when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
+        when( caseObjectMetaDAO.get( CASE_ID ) ).thenReturn( meta );
+        when( caseObjectMetaNotifiersDAO.get( CASE_ID ) ).thenReturn( metaNotifiers );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
         Assert.assertTrue("CaseObject must be created",
-                caseService.createCaseObject(getAuthToken(), object, initiator).isOk());
+                caseService.createCaseObject(getAuthToken(), new CaseObjectCreateRequest(object)).isOk());
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
@@ -132,6 +140,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         CaseObject object = createNewCaseObject( initiator );
         object.setId( CASE_ID );
         object.setInitiatorCompany( company );
+        getAuthToken().setPersonId( PERSON_ID );
 
         CompanySubscription subscription = new CompanySubscription();
         subscription.setCompanyId( company.getId() );
@@ -141,6 +150,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         when(companyDAO.get( COMPANY_ID )).thenReturn( company );
         when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
+        when(personDAO.get( PERSON_ID )).thenReturn( initiator );
 
         long commentId = COMMENT_ID;
         CaseComment comment = createNewComment( initiator, CASE_ID, "A new comment, publishing test" );
@@ -149,12 +159,14 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( caseObjectDAO.checkExistsByKey( CASE_ID ) ).thenReturn( true );
         when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
         when( caseObjectDAO.get( any() ) ).thenReturn( object );
+        when( caseObjectMetaDAO.get( any() ) ).thenReturn( new CaseObjectMeta(object) );
+        when( caseObjectMetaNotifiersDAO.get( any() ) ).thenReturn( new CaseObjectMetaNotifiers(object) );
 
         when( caseCommentDAO.get( commentId ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
 
         Assert.assertTrue( "CaseComment must be created",
-                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, initiator ).isOk() );
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );
 
         long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
         long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;

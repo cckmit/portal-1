@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.ui.common.client.service.EmployeeController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 

@@ -6,7 +6,7 @@
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
-             xmlns:casemeta='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
+             xmlns:casemeta='urn:import:ru.protei.portal.ui.common.client.widget.casetag'
     >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -110,24 +110,6 @@
                                 </label>
                                 <autoresizetextarea:AutoResizeTextArea ui:field="legalAddress" styleName="form-control"
                                                                        minRows="1" maxRows="7"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div ui:field="tagsPanel" class="container-fluid padding-15">
-                <div class="card card-transparent no-margin">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <label><ui:text from="{lang.tags}"/></label>
-                                <div>
-                                    <g:Button ui:field="addTagButton" styleName="btn btn-flat btn-white">
-                                        <i class="fa fa-plus"/>
-                                    </g:Button>
-                                    <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" tagCaseType="CRM_SUPPORT" showLabel="false" styleName="company-tags"/>
-                                </div>
                             </div>
                         </div>
                     </div>

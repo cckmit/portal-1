@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -16,10 +17,12 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
@@ -48,6 +51,10 @@ public abstract class EquipmentEditActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         view.setVisibilitySettingsForCreated(event.id != null);
 
@@ -177,7 +184,7 @@ public abstract class EquipmentEditActivity
         if ( equipment.getManagerId() != null ) {
             manager = new PersonShortView();
             manager.setId( equipment.getManagerId() );
-            manager.setDisplayShortName( equipment.getManagerShortName() );
+            manager.setName( equipment.getManagerShortName() );
         }
         view.manager().setValue( manager );
 
@@ -213,7 +220,7 @@ public abstract class EquipmentEditActivity
             equipment.setManagerShortName(null);
         } else {
             equipment.setManagerId(view.manager().getValue().getId());
-            equipment.setManagerShortName(view.manager().getValue().getDisplayShortName());
+            equipment.setManagerShortName(view.manager().getValue().getName());
         }
         if (view.project().getValue() == null) {
             equipment.setProjectId(null);
@@ -226,6 +233,18 @@ public abstract class EquipmentEditActivity
 
     private boolean isNew(Equipment equipment) {
         return equipment.getId() == null;
+    }
+
+    private boolean hasPrivileges(Long equipmentId) {
+        if (equipmentId == null && policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_CREATE)) {
+            return true;
+        }
+
+        if (equipmentId != null && policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject
@@ -241,6 +260,8 @@ public abstract class EquipmentEditActivity
     EquipmentControllerAsync equipmentService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
 }

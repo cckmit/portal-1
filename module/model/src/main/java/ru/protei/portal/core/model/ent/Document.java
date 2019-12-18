@@ -15,7 +15,7 @@ import java.util.List;
  * элемент раздела "Банк документов"
  */
 @JdbcEntity(table = "document")
-public class Document implements Serializable, Downloadable {
+public class Document implements Serializable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -100,11 +100,6 @@ public class Document implements Serializable, Downloadable {
 
     public Document(){}
 
-    @Override
-    public boolean isAllowedDownload() {
-        return true;
-    }
-
     public Long getId() {
         return id;
     }
@@ -183,6 +178,10 @@ public class Document implements Serializable, Downloadable {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public CaseObject getProjectAsCaseObject() {
+        return project;
     }
 
     public Project getProject() {

@@ -26,20 +26,10 @@ public class PopupSelectorItem<T>
         extends Composite
         implements SelectorItem<T>
 {
-
-    private SelectorItemHandler selectorItemHandler;
-    private T value;
-
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.POPUP.ITEM);
-//        root.addDomHandler( event -> {
-//            if(selectorItemHandler!=null) {
-//                selectorItemHandler.onSelectorItemClickedItemClicked(this);
-//            }
-//        }, KeyUpEvent.getType() );
     }
-
 
     @Override
     public T getValue() {
@@ -64,11 +54,6 @@ public class PopupSelectorItem<T>
     @Override
     public void setElementHtml(String elementHtml ) {
         root.getElement().setInnerHTML( elementHtml );
-    }
-
-    @Override
-    public void setElementWidget(Widget widget ) {
-        root.add( widget );
     }
 
     public void setName( String name ) {
@@ -104,12 +89,6 @@ public class PopupSelectorItem<T>
         KeyUpEvent.fireNativeEvent(keyUpEvent.getNativeEvent(), this);
     }
 
-    @Override
-    public void setFocus( boolean isFocused ) {
-        anchor.setFocus( isFocused );
-    }
-
-
     @UiField
     SpanElement text;
     @UiField
@@ -121,6 +100,8 @@ public class PopupSelectorItem<T>
     @UiField
     Element icon;
 
+    private SelectorItemHandler selectorItemHandler;
+    private T value;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectorItem> {
     }

@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
@@ -60,15 +61,9 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
         selector.clearOptions();
     }
 
-    private void refreshOptions() {
-        subscribersMap.forEach((caseType, subscribers) -> refreshOptionsForCaseType(caseType));
-    }
-
     private void refreshOptionsForCaseType(En_CaseType caseType) {
-        caseTagController.getCaseTagsForCaseType(caseType, new FluentCallback<List<CaseTag>>()
-                .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                })
+        caseTagController.getTags(new CaseTagQuery(caseType), new FluentCallback<List<CaseTag>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(caseTags -> {
                     valuesMap.put(caseType, caseTags.stream()
                             .map(tag -> IssueFilterUtils.toEntityOption(tag, policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )))
@@ -76,6 +71,10 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
                     notifySubscribers(caseType);
                 })
         );
+    }
+
+    private void refreshOptions() {
+        subscribersMap.forEach((caseType, subscribers) -> refreshOptionsForCaseType(caseType));
     }
 
     private void notifySubscribers(En_CaseType caseType) {

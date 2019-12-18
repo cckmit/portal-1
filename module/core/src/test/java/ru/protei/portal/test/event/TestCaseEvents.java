@@ -9,10 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.*;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -67,9 +64,11 @@ public class TestCaseEvents extends BaseServiceTest {
         when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( person ) );
+        when( personDAO.get( PERSON_ID ) ).thenReturn( person );
+        when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseObject must be created",
-                caseService.createCaseObject( getAuthToken(), object, person ).isOk() );
+                caseService.createCaseObject( getAuthToken(), new CaseObjectCreateRequest(object) ).isOk() );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }
@@ -87,9 +86,11 @@ public class TestCaseEvents extends BaseServiceTest {
         when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
         when( caseCommentDAO.get( COMMENT_ID ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( COMMENT_ID );
+        when( personDAO.get( PERSON_ID ) ).thenReturn( person );
+        when( companyDAO.get( COMPANY_ID ) ).thenReturn( company );
 
         Assert.assertTrue( "CaseComment must be created",
-                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment, person ).isOk() );
+                caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }

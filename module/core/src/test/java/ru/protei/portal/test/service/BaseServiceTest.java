@@ -8,17 +8,16 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class BaseServiceTest {
 
@@ -36,12 +35,6 @@ public class BaseServiceTest {
         product.setTypeId( En_DevUnitType.PRODUCT.getId() );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
         return product;
-    }
-
-    public static CaseObject createNewCaseObject( Person person, CaseTag caseTag ) {
-        CaseObject caseObject = createNewCaseObject( En_CaseType.CRM_SUPPORT, person );
-        caseObject.setTags( setOf( caseTag ) );
-        return caseObject;
     }
 
     public static CaseObject createNewCaseObject( Person person ) {
@@ -123,16 +116,26 @@ public class BaseServiceTest {
         return result.getData();
     }
 
-    protected UserSessionDescriptor getDescriptor() {
-        return authService.findSession(null);
-    }
-
     protected AuthToken getAuthToken() {
-        return getDescriptor().makeAuthToken();
+        return (authService instanceof AuthServiceMock) ? ((AuthServiceMock) authService).getAuthToken() : null;
     }
 
 
     // Create and persist
+
+    protected UserLogin makeUserLogin( Person person ) {
+        UserLogin userLogin = new UserLogin();
+        userLogin.setUlogin("user" + person.getId());
+        userLogin.setCreated(new Date());
+        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        userLogin.setPersonId(person.getId());
+        userLogin.setId( userLoginDAO.persist( userLogin ) );
+        if (authService instanceof AuthServiceMock) {
+            ((AuthServiceMock) authService).makeThreadAuthToken(userLogin);
+        }
+        return userLogin;
+    }
 
     protected CaseObject makeCaseObject( Person person ) {
         return makeCaseObject(En_CaseType.CRM_SUPPORT, person);
@@ -143,34 +146,21 @@ public class BaseServiceTest {
         CaseObject newCaseObject = createNewCaseObject( caseType, person );
         newCaseObject.setInitiatorCompany( company );
         return checkResultAndGetData(
-                caseService.createCaseObject( getAuthToken(), newCaseObject, person )
+                caseService.createCaseObject( getAuthToken(), new CaseObjectCreateRequest(newCaseObject) )
         );
     }
 
-    protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag, Long initiatorCompanyId ) {
-        CaseObject caseObject = createNewCaseObject( person, caseTag );
+    protected CaseObject makeCaseObject( Person person, Long productId, Date date, Long initiatorCompanyId ) {
+        CaseObject caseObject = createNewCaseObject( person );
         caseObject.setProductId( productId );
         caseObject.setCreated( date );
         caseObject.setInitiatorCompanyId( initiatorCompanyId );
         return makeCaseObject(caseObject);
     }
 
-    protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag ) {
-        CaseObject caseObject = createNewCaseObject( person, caseTag );
-        caseObject.setProductId( productId );
-        caseObject.setCreated( date );
-        return makeCaseObject(caseObject);
-    }
-
     protected CaseObject makeCaseObject( CaseObject caseObject ) {
         Long caseId = caseObjectDAO.insertCase( caseObject );
         caseObject.setId( caseId );
-        caseObjectTagDAO.persistBatch(
-                caseObject.getTags()
-                        .stream()
-                        .map(tag -> new CaseObjectTag(caseId, tag.getId()))
-                        .collect( Collectors.toList())
-        );
         return caseObject;
     }
 
@@ -255,7 +245,13 @@ public class BaseServiceTest {
     @Autowired
     protected CaseObjectDAO caseObjectDAO;
     @Autowired
+    protected CaseObjectMetaDAO caseObjectMetaDAO;
+    @Autowired
+    protected CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
+    @Autowired
     protected CaseCommentDAO caseCommentDAO;
+    @Autowired
+    protected UserLoginDAO userLoginDAO;
     @Autowired
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }

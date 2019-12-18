@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 /**
@@ -73,8 +74,15 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
         return companyIds;
     }
 
-    private void transliteration(List<PersonShortView> options) {
-        options.forEach(option -> option.setDisplayShortName(TransliterationUtils.transliterate(option.getDisplayShortName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+    public void setFired( boolean value ) {
+        log.warning(     "setFired(): Not implemented." );//TODO NotImplemented
+
+    }
+
+    private static final Logger log = Logger.getLogger( InitiatorModel.class.getName() );
+
+    private void transliteration( List<PersonShortView> options) {
+        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
     }
 
     @Override

@@ -8,14 +8,15 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
@@ -45,10 +46,8 @@ public class PortalApiController {
 
     @Autowired
     private AuthService authService;
-
     @Autowired
     private SessionIdGen sidGen;
-
     @Autowired
     private CaseService caseService;
     @Autowired
@@ -73,13 +72,13 @@ public class PortalApiController {
         log.info("API | getCaseList(): query={}", query);
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (userSessionDescriptorAPIResult.isError()) {
-                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
             }
 
-            AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
+            AuthToken authToken = authTokenAPIResult.getData();
 
             Result<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
 
@@ -106,18 +105,19 @@ public class PortalApiController {
         }
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (userSessionDescriptorAPIResult.isError()) {
-                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
             }
 
-            AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
+            AuthToken authToken = authTokenAPIResult.getData();
+
+            CaseObjectCreateRequest caseObjectCreateRequest = new CaseObjectCreateRequest((CaseObject) auditableObject);
 
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
-                    (CaseObject) auditableObject,
-                    userSessionDescriptorAPIResult.getData().getPerson()
+                    caseObjectCreateRequest
             );
 
             return caseObjectCoreResponse.orElseGet( result ->
@@ -144,22 +144,27 @@ public class PortalApiController {
         }
 
         try {
-            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (userSessionDescriptorAPIResult.isError()) {
-                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
             }
 
-            AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
+            AuthToken authToken = authTokenAPIResult.getData();
 
-            Result<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
-                    authToken,
-                    (CaseObject) auditableObject,
-                    userSessionDescriptorAPIResult.getData().getPerson()
-            );
+            CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseObjectCoreResponse.orElseGet( result ->
-                    error( result.getStatus(),  "Service Error" ));
+            return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()))
+                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject)))
+                .flatMap(o -> {
+                    if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject));
+                    }
+                    return ok();
+                })
+                .map(ignore -> caseObject)
+                .orElseGet(result -> error(result.getStatus(), "Service Error"));
 
         } catch (IllegalArgumentException  ex) {
             log.error(ex.getMessage());
@@ -177,7 +182,7 @@ public class PortalApiController {
                                                 @PathVariable("youtrackId") String youtrackId ) {
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
                 .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
@@ -191,7 +196,7 @@ public class PortalApiController {
                                                       @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
                 .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
@@ -206,7 +211,7 @@ public class PortalApiController {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
         // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
                 .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
@@ -222,9 +227,6 @@ public class PortalApiController {
         // optional
         query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
         query.setManagerIds(apiQuery.getManagerIds());
-        if (CollectionUtils.isEmpty(query.getManagerIds())) {
-            query.setOrWithoutManager(true);
-        }
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
         query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
         query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));

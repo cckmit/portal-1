@@ -9,15 +9,14 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.ContactService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ContactController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -46,9 +45,9 @@ public class ContactControllerImpl implements ContactController {
     public Person getContact(long id) throws RequestFailedException {
         log.info("get contact, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Person> response = contactService.getContact( descriptor.makeAuthToken(), id );
+        Result<Person> response = contactService.getContact( token, id );
 
         log.info("get contact, id: {} -> {} ", id, response.isError() ? "error" : response.getData().getDisplayName());
 
@@ -64,9 +63,9 @@ public class ContactControllerImpl implements ContactController {
 
         log.info("store contact, id: {} ", HelperFunc.nvl(p.getId(), "new"));
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Person> response = contactService.saveContact( descriptor.makeAuthToken(), p );
+        Result<Person> response = contactService.saveContact( token, p );
 
         log.info("store contact, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -82,9 +81,9 @@ public class ContactControllerImpl implements ContactController {
     public boolean fireContact(long id) throws RequestFailedException {
         log.info("fire contact, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = contactService.fireContact(descriptor.makeAuthToken(), id);
+        Result<Boolean> response = contactService.fireContact(token, id);
 
         log.info("fire contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
@@ -95,9 +94,9 @@ public class ContactControllerImpl implements ContactController {
     public boolean removeContact(long id) throws RequestFailedException {
         log.info("remove contact, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = contactService.removeContact(descriptor.makeAuthToken(), id);
+        Result<Boolean> response = contactService.removeContact(token, id);
 
         log.info("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
 
@@ -109,7 +108,8 @@ public class ContactControllerImpl implements ContactController {
         log.info( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        Result< List<PersonShortView> > result = contactService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List<PersonShortView> > result = contactService.shortViewList( token, query );
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -126,7 +126,7 @@ public class ContactControllerImpl implements ContactController {
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
         }
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         if ( HelperFunc.isEmpty( userLogin.getUlogin() ) ) {
             if ( userLogin.getId() == null ) {
@@ -135,7 +135,7 @@ public class ContactControllerImpl implements ContactController {
 
             log.info( "remove account, id: {} ", userLogin.getId() );
 
-            Result< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), userLogin.getId() );
+            Result< Boolean > response = accountService.removeAccount( token, userLogin.getId() );
 
             log.info( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -151,7 +151,7 @@ public class ContactControllerImpl implements ContactController {
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-            Result< UserLogin > response = accountService.saveContactAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
+            Result< UserLogin > response = accountService.saveContactAccount( token, userLogin, sendWelcomeEmail );
 
             log.info( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -176,16 +176,6 @@ public class ContactControllerImpl implements ContactController {
             throw new RequestFailedException( response.getStatus() );
 
         return response.getData();
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

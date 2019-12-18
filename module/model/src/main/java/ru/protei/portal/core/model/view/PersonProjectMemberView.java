@@ -23,7 +23,7 @@ public class PersonProjectMemberView extends PersonShortView {
     }
 
     public static PersonProjectMemberView fromPersonShortView(PersonShortView psv, En_DevUnitPersonRoleType role) {
-        return new PersonProjectMemberView(psv.getDisplayShortName(), psv.getId(), psv.isFired(), role);
+        return new PersonProjectMemberView(psv.getName(), psv.getId(), psv.isFired(), role);
     }
 
     public static PersonProjectMemberView fromPerson(Person person, En_DevUnitPersonRoleType role) {

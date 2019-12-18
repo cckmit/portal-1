@@ -10,13 +10,12 @@ import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.service.DocumentService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.DocumentController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -36,9 +35,9 @@ public class DocumentControllerImpl implements DocumentController {
     public Document getDocument(Long id) throws RequestFailedException {
         log.info("get document, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
+        Result<Document> response = documentService.getDocument(token, id);
         log.info("get document, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -49,6 +48,7 @@ public class DocumentControllerImpl implements DocumentController {
 
     @Override
     public Document saveDocument(Document document) throws RequestFailedException {
+
         if (document == null) {
             log.warn("null document in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
@@ -56,18 +56,18 @@ public class DocumentControllerImpl implements DocumentController {
 
         log.info("save document, id: {}", HelperFunc.nvlt(document.getId(), "new"));
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         Result<Document> response;
+
+        FileItem pdfFile = sessionService.getFilePdf(httpRequest);
+        FileItem docFile = sessionService.getFileDoc(httpRequest);
+        sessionService.setFilePdf(httpRequest, null);
+        sessionService.setFileDoc(httpRequest, null);
+
         if (document.getId() == null) {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                log.error("file item in session was null");
-                throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
-            }
-            sessionService.setFileItem(httpRequest, null);
-            response = documentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
+            response = documentService.createDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         } else {
-            response = documentService.updateDocument(descriptor.makeAuthToken(), document);
+            response = documentService.updateDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         }
 
         log.info("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
@@ -81,11 +81,24 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
+    public Long removeDocument(Document document) throws RequestFailedException {
+        if (document == null) {
+            log.info("removeDocument(): null document in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        log.info("removeDocument(): id = {}", document.getId());
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), token.getPersonDisplayShortName());
+        log.info("removeDocument(): id = {}, status = {}", document.getId(), result.getStatus());
+        return ServiceUtils.checkResultAndGetData(result);
+    }
+
+    @Override
     public Boolean updateState(Long documentId, En_DocumentState state) throws RequestFailedException {
         log.info("change state document, id: {} | state: {}", documentId, state);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Result response = documentService.updateState(descriptor.makeAuthToken(), documentId, state);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        Result response = documentService.updateState(token, documentId, state);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -104,18 +117,6 @@ public class DocumentControllerImpl implements DocumentController {
         log.info("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
         return ServiceUtils.checkResultAndGetData(response);
     }
-
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
-        log.info("userSessionDescriptor={}", descriptor);
-        if (descriptor == null) {
-            throw new RequestFailedException(En_ResultStatus.SESSION_NOT_FOUND);
-        }
-
-        return descriptor;
-    }
-
 
     @Autowired
     private DocumentService documentService;

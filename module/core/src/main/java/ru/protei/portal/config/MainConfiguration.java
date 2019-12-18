@@ -21,9 +21,8 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
-import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.controller.document.DocumentStorageIndex;
-import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.index.document.DocumentStorageIndex;
+import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -48,6 +47,8 @@ import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -73,7 +74,6 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.concurrent.*;
-
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -264,6 +264,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
+    }
+
+    @Bean
     public CaseShortViewDAO getCaseShortDAO() {
         return new CaseShortViewDAO_Impl();
     }
@@ -271,11 +281,6 @@ public class MainConfiguration {
     @Bean
     public AuditObjectDAO getAuditDAO() {
         return new AuditObjectDAO_Impl();
-    }
-
-    @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
     }
 
     @Bean
@@ -558,11 +563,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
-    }
-
-    @Bean
     public EmployeeService getEmployeeService() {
         return new EmployeeServiceImpl();
     }
@@ -713,8 +713,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public DocumentSvnService getDocumentSvnService() {
-        return new DocumentSvnServiceImpl();
+    public DocumentSvnApi getDocumentSvnApi() {
+        return new DocumentSvnApiImpl();
     }
 
     @Bean

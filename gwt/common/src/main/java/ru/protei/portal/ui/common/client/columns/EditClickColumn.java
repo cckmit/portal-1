@@ -1,17 +1,12 @@
 package ru.protei.portal.ui.common.client.columns;
 
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import java.util.function.Function;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -21,9 +16,7 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.columns.ClickColumn< T > {
 
     public interface EditHandler< T > extends AbstractColumnHandler< T > {
-
         void onEditClicked( T value );
-
     }
 
     @Inject
@@ -32,56 +25,31 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
     }
 
     @Override
-    protected void fillColumnHeader( Element element ) {
-        element.addClassName( "edit" );
+    protected String getColumnClassName() {
+        return "edit";
     }
 
     @Override
-    public void fillColumnValue( Element cell, T value ) {
-        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply( value );
+    protected void fillColumnHeader( Element element ) {}
 
-        cell.addClassName( "edit" );
+    @Override
+    public void fillColumnValue( Element cell, T value ) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
         a.addClassName( "far fa-edit fa-lg" );
         a.setTitle( lang.edit() );
         a.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.EDIT );
-        setEditEnabled( a );
+        if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
+            a.removeClassName( "link-disabled" );
+        } else {
+            a.addClassName( "link-disabled" );
+        }
         cell.appendChild( a );
-    }
-
-    public void setPrivilege( En_Privilege privilege ) {
-        this.privilege = privilege;
     }
 
     public void setEditHandler( EditHandler< T > editHandler ) {
         setActionHandler( editHandler::onEditClicked );
     }
 
-    public void setArchivedCheckFunction( Function<T, Boolean> archivedCheckFunction ) {
-        this.archivedCheckFunction = archivedCheckFunction;
-    }
-
-    private void setEditEnabled( AnchorElement a ) {
-
-        if ( privilege == null ) {
-            return;
-        }
-
-        if ( policyService.hasPrivilegeFor( privilege ) && !isArchived ) {
-            a.removeClassName( "link-disabled" );
-        } else {
-            a.addClassName( "link-disabled" );
-        }
-    }
-
-    @Inject
-    PolicyService policyService;
-
-    Lang lang;
-
-    En_Privilege privilege;
-
-    private boolean isArchived;
-    private Function<T, Boolean> archivedCheckFunction;
+    private final Lang lang;
 }

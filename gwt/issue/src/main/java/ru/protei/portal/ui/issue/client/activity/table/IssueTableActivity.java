@@ -46,7 +46,7 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.Loadi
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
+import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
@@ -142,7 +142,7 @@ public abstract class IssueTableActivity
             return;
         }
 
-        fireEvent(new IssueEvents.Edit());
+        fireEvent(new IssueEvents.Create());
     }
 
     @Event
@@ -193,7 +193,7 @@ public abstract class IssueTableActivity
     @Override
     public void onEditClicked( CaseShortView value ) {
         persistScrollTopPosition();
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
     }
 
     @Override

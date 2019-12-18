@@ -1,11 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-<!--    <g:HTMLPanel ui:field="panel" tag="li" styleName="selectable-item">-->
-<!--        <g:CheckBox ui:field="checkbox" styleName="checkbox"/>-->
-<!--        <g:InlineLabel ui:field="text" styleName="selectable-item-text"/>-->
-<!--        <g:InlineLabel ui:field="info" styleName="selectable-item-info" visible="false"/>-->
-<!--    </g:HTMLPanel>-->
     <g:HTMLPanel ui:field="root" tag="li">
         <g:Anchor ui:field="anchor" href='#'>
             <img ui:field="image" src="" class="hide"/>

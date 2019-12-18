@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -29,11 +27,29 @@ public class AssemblerServiceImpl implements AssemblerService {
     public void proceed( final AssembledCaseEvent sourceEvent ) {
         if (sourceEvent == null) return;
 
-        fillCaseObject( sourceEvent ).flatMap(
-                this::fillComments ).flatMap(
-                this::fillAttachments ).flatMap(
-                this::fillLinks ).ifOk( filledEvent ->
+        Result<AssembledCaseEvent> assembledCaseEventResult = fillInitiator(sourceEvent).flatMap(
+                this::fillCaseObject).flatMap(
+                this::fillCaseNameAndDescription).flatMap(
+                this::fillCaseMeta).flatMap(
+                this::fillComments).flatMap(
+                this::fillAttachments).flatMap(
+                this::fillLinks);
+
+        assembledCaseEventResult.ifOk(filledEvent ->
                 publisherService.publishEvent( filledEvent ) );
+    }
+
+    private Result<AssembledCaseEvent> fillInitiator( AssembledCaseEvent e ) {
+        if (e.getInitiator() != null) {
+            log.info("fillInitiator(): CaseObjectID={} initiator is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillInitiator(): CaseObjectID={} Try to fill initiator.", e.getCaseObjectId());
+        e.setInitiator(personDAO.get(e.getInitiatorId()));
+        log.info("fillInitiator(): CaseObjectID={} initiator is successfully filled.", e.getCaseObjectId());
+
+        return ok(e);
     }
 
     private Result<AssembledCaseEvent> fillCaseObject( AssembledCaseEvent e ) {
@@ -48,6 +64,36 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
         return ok( e );
+    }
+
+    private Result<AssembledCaseEvent> fillCaseNameAndDescription(AssembledCaseEvent e) {
+        if (e.isCaseNameFilled() && e.isCaseInfoFilled()) {
+            log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillCaseNameAndDescription(): CaseObjectID={} Try to fill case's Name and Description.", e.getCaseObjectId());
+
+        CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
+
+        e.getName().setNewState(caseObject.getName());
+        e.getInfo().setNewState(caseObject.getInfo());
+
+        log.info("fillCaseNameAndDescription(): CaseObjectID={} case's Name and Description is successfully filled.", e.getCaseObjectId());
+        return ok(e);
+    }
+
+    private Result<AssembledCaseEvent> fillCaseMeta( AssembledCaseEvent e ) {
+        if (e.isCaseMetaFilled()) {
+            log.info("fillCaseMeta(): CaseObjectID={} caseMeta is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillCaseMeta(): CaseObjectID={} Try to fill caseMeta.", e.getCaseObjectId());
+        e.setLastCaseMeta(caseObjectMetaDAO.get(e.getCaseObjectId()));
+        log.info("fillCaseMeta(): CaseObjectID={} caseMeta is successfully filled.", e.getCaseObjectId());
+
+        return ok(e);
     }
 
     private Result<AssembledCaseEvent> fillAttachments( AssembledCaseEvent e ) {//TODO
@@ -114,18 +160,18 @@ public class AssemblerServiceImpl implements AssemblerService {
 
     @Autowired
     EventPublisherService publisherService;
-
     @Autowired
     CaseCommentDAO caseCommentDAO;
-
     @Autowired
     CaseObjectDAO caseObjectDAO;
-
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
     CaseLinkDAO caseLinkDAO;
-
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    PersonDAO personDAO;
 
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

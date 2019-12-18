@@ -22,7 +22,7 @@ public class EmployeeButtonSelector
         setFilter(personView -> !personView.isFired());
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
 
-        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getDisplayShortName() );
+        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
     @Override

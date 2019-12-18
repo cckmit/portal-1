@@ -35,6 +35,7 @@ public interface CompanyService {
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     Result<Company> getCompany( AuthToken token, Long id );
+    Result<Company> getCompanyUnsafe( AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
     @Auditable( En_AuditType.COMPANY_CREATE )
@@ -50,6 +51,5 @@ public interface CompanyService {
     Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
     Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
 
-    @Privileged({En_Privilege.COMPANY_VIEW})
     Result<List<Long>> getAllHomeCompanyIds(AuthToken token);
 }

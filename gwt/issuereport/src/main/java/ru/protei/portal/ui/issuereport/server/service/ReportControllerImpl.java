@@ -8,12 +8,11 @@ import protei.utils.common.CollectionUtils;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.service.ReportService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ReportController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -41,9 +40,9 @@ public class ReportControllerImpl implements ReportController {
     public Long createReport(Report report) throws RequestFailedException {
         log.info("createReport(): locale={} | caseQuery={}", report.getLocale(), report.getCaseQuery());
 
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Long> response = reportService.createReport(descriptor.makeAuthToken(), report);
+        Result<Long> response = reportService.createReport(token, report);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -56,9 +55,9 @@ public class ReportControllerImpl implements ReportController {
     public Report getReport(Long id) throws RequestFailedException {
         log.info("getReport(): id={}", id);
 
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Report> response = reportService.getReport(descriptor.makeAuthToken(), id);
+        Result<Report> response = reportService.getReport(token, id);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -81,9 +80,9 @@ public class ReportControllerImpl implements ReportController {
                 exclude == null ? "" : CollectionUtils.joinIter(exclude, ",")
         );
 
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result response = reportService.removeReports(descriptor.makeAuthToken(), include, exclude);
+        Result response = reportService.removeReports(token, include, exclude);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -94,9 +93,9 @@ public class ReportControllerImpl implements ReportController {
     public void recreateReport(Long id) throws RequestFailedException {
         log.info("createReport(): id={}", id);
 
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result response = reportService.recreateReport(descriptor.makeAuthToken(), id);
+        Result response = reportService.recreateReport(token, id);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Реализация сервиса управления проектами
  */
@@ -72,6 +72,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     PlatformDAO platformDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -132,6 +135,8 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        jdbcManyRelationsHelper.fill(projectFromDb, "locations");
+
         Project project = new Project();
         project.setId(projectFromDb.getId());
         project.setName(projectFromDb.getName());
@@ -139,6 +144,9 @@ public class ProjectServiceImpl implements ProjectService {
         project.setContragent(projectFromDb.getInitiatorCompany() == null ? null : new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId()));
         project.setProductDirection(projectFromDb.getProduct() == null ? null : new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()));
         project.setManager(projectFromDb.getManager() == null ? null : new EntityOption(projectFromDb.getManager().getDisplayShortName(), projectFromDb.getManagerId()));
+        if (CollectionUtils.isNotEmpty(projectFromDb.getLocations())) {
+            project.setRegion(EntityOption.fromLocation(projectFromDb.getLocations().get(0).getLocation()));
+        }
 
         return ok(project);
     }
@@ -453,10 +461,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
-            UserSessionDescriptor descriptor = authService.findSession(authToken);
-            if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberId(descriptor.getPerson().getId());
-            }
+            caseQuery.setMemberId(authToken.getPersonId());
         }
 
         if (projectQuery.getCustomerType() != null) {

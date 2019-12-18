@@ -2,58 +2,19 @@ package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.JiraMetaData;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
-import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
-import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
-import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
-import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
-import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.*;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
-import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
-import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
-
-import java.util.Set;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
-
 
 /**
  * Вид создания и редактирования обращения
@@ -62,332 +23,62 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     public void onInit() {
-        initWidget(ourUiBinder.createAndBindUi(this));
+        initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-        importance.setDefaultValue(lang.selectIssueImportance());
-        platform.setDefaultValue(lang.selectPlatform());
-        company.setDefaultValue(lang.selectIssueCompany());
 
-        product.setDefaultValue(lang.selectIssueProduct());
-        manager.setDefaultValue(lang.selectIssueManager());
-        initiator.setDefaultValue(lang.selectIssueInitiator());
-        initiator.setAddButtonText(lang.personCreateNew());
-        initiator.setSelectorModel( initiatorModel );
-        description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
-        description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
-
-        copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
-        caseMetaView.addValueChangeHandler(event ->  activity.onCaseMetaChanged(event.getValue()) );
+        copyNumber.getElement().setAttribute( "title", lang.issueCopyNumber() );
     }
 
     @Override
-    public void setActivity(AbstractIssueEditActivity activity) {
+    public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
+        nameWidget.setActivity( activity );
     }
 
     @Override
-    public HasValue<String> name() {
-        return name;
+    public void setCaseNumber( Long caseNumber ) {
+        number.setText( lang.crmPrefix() + caseNumber );
     }
 
     @Override
-    public HasValue<String> description() {
-        return description;
+    public void setName( String issueName ) {
+        nameWidget.setName( issueName );
     }
 
     @Override
-    public HasValue<En_CaseState> state() {
-        return state;
+    public void setNameVisible( boolean isNameVisible ) {
+        nameWidget.setVisible( isNameVisible );
     }
 
     @Override
-    public HasValue<En_ImportanceLevel> importance() {
-        return importance;
+    public HasWidgets getMetaContainer() {
+        return metaEditContainer;
     }
 
     @Override
-    public HasTime timeElapsedLabel() {
-        return timeElapsed;
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
     }
 
     @Override
-    public HasTime timeElapsedInput() {
-        return timeElapsedInput;
+    public HasWidgets getInfoContainer() {
+        return issueInfoContainer;
     }
 
     @Override
-    public HasValue<En_TimeElapsedType> timeElapsedType() {
-        return timeElapsedType;
-    }
-
-    @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
-
-    @Override
-    public HasValue<PersonShortView> initiator() {
-        return initiator;
-    }
-
-    @Override
-    public HasValue<PersonShortView> manager() {
-        return manager;
-    }
-
-    @Override
-    public HasValue<ProductShortView> product() {
-        return product;
-    }
-
-    @Override
-    public HasValue<Boolean> isPrivate() {
-        return privacyButton;
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> notifiers() {
-        return notifiers;
-    }
-
-    @Override
-    public HasValue<Set<CaseLink>> links() {
-        return linksHasValue;
-    }
-
-    @Override
-    public HasValue<Set<CaseTag>> tags() {
-        return tagsHasValue;
-    }
-
-    @Override
-    public HasValue<JiraMetaData> jiraSlaSelector() {
-        return jiraSlaSelector;
-    }
-
-    @Override
-    public HasValidable nameValidator() {
-        return nameValidator;
-    }
-
-    @Override
-    public HasValidable stateValidator() {
-        return state;
-    }
-
-    @Override
-    public HasValidable importanceValidator() {
-        return importance;
-    }
-
-    @Override
-    public HasVisibility timeElapsedContainerVisibility() {
-        return timeElapsedContainer;
-    }
-
-    @Override
-    public HasValidable companyValidator() {
-        return company;
-    }
-
-    @Override
-    public HasEnabled initiatorState() {
-        return initiator;
-    }
-
-    @Override
-    public HasEnabled platformState() {
-        return platform;
-    }
-
-    @Override
-    public HasVisibility numberVisibility(){
-        return numberLabel;
-    }
-
-    @Override
-    public HasVisibility jiraSlaSelectorVisibility() {
-        return jiraSlaSelector;
-    }
-
-    @Override
-    public void setSubscriptionEmails(String value) {
-        subscriptions.setInnerText(value);
-    }
-
-    @Override
-    public HasWidgets getCommentsContainer() {
-        return commentsContainer;
-    }
-
-    @Override
-    public HasAttachments attachmentsContainer() {
-        return attachmentContainer;
-    }
-
-    @Override
-    public HasVisibility numberContainerVisibility() {
-        return numberContainer;
-    }
-
-    @Override
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
-        fileUploader.setUploadHandler(handler);
-    }
-
-    @Override
-    public void setCaseNumber(Long caseNumber) {
-        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
-    }
-
-    @Override
-    public void setPrivacyIcon(Boolean isPrivate) {
-        if ( isPrivate ) {
-            privacyIcon.setClassName("fas fa-lock text-danger m-r-10");
-            privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE);
+    public void setPrivateIssue( boolean isPrivate ) {
+        if (isPrivate) {
+            privacyIcon.setClassName( "fas fa-lock text-danger m-l-10" );
+            privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE );
         } else {
-            privacyIcon.setClassName("fas fa-unlock text-success m-r-10");
-            privacyIcon.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC);
+            privacyIcon.setClassName( "fas fa-unlock text-success m-l-10" );
+            privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC );
         }
     }
 
     @Override
-    public HasVisibility saveVisibility() {
-        return saveButton;
-    }
-
-    @Override
-    public HasEnabled companyEnabled() {
-        return company;
-    }
-
-    @Override
-    public HasEnabled productEnabled() {
-        return product;
-    }
-
-    @Override
-    public HasEnabled managerEnabled() {
-        return manager;
-    }
-
-    @Override
-    public HasEnabled stateEnabled() {
-        return state;
-    }
-
-    @Override
-    public void setNumber(Integer num) {
-        if (num == null) {
-            numberLabel.setText("");
-            return;
-        }
-
-        numberLabel.setText("CRM-" + num);
-    }
-
-    @Override
-    public HasVisibility caseSubscriptionContainer() {
-        return caseSubscriptionContainers;
-    }
-
-    @Override
-    public HasVisibility privacyVisibility() {
-        return privacyButton;
-    }
-
-    @Override
-    public HasVisibility timeElapsedLabelVisibility() {
-        return timeElapsed;
-    }
-
-    @Override
-    public HasVisibility timeElapsedEditContainerVisibility() {
-        return timeElapsedEditContainer;
-    }
-
-    @Override
-    public HasEnabled saveEnabled() {
-        return saveButton;
-    }
-
-    @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> filter) {
-        state.setFilter(filter);
-    }
-
-    @Override
-    public void initiatorUpdateCompany(Company company) {
-        initiatorModel.updateCompanies(null, InitiatorModel.makeCompanyIds(company), false);
-    }
-
-    @Override
-    public void initiatorSelectorAllowAddNew(boolean isVisible) {
-        initiator.setAddButtonVisible(isVisible);
-    }
-
-    @Override
-    public void setTagsAddButtonEnabled(boolean enabled) {
-        caseMetaView.setTagsAddButtonEnabled(enabled);
-    }
-
-    @Override
-    public void setTagsEditButtonEnabled(boolean enabled) {
-        caseMetaView.setTagsEditButtonEnabled(enabled);
-    }
-
-    @Override
-    public void setStateWorkflow(En_CaseStateWorkflow workflow) {
-        state.setWorkflow(workflow);
-    }
-
-    @Override
-    public void setDescriptionPreviewAllowed(boolean isPreviewAllowed) {
-        description.setDisplayPreview(isPreviewAllowed);
-    }
-
-    @Override
-    public void switchToRONameDescriptionView(boolean isRO) {
-        descriptionContainer.setVisible(!isRO);
-        nameContainer.setVisible(!isRO);
-
-        if (isRO) {
-            nameRO.removeClassName(UiConstants.Styles.HIDE);
-            descriptionRO.removeClassName(UiConstants.Styles.HIDE);
-        } else {
-            nameRO.addClassName(UiConstants.Styles.HIDE);
-            descriptionRO.addClassName(UiConstants.Styles.HIDE);
-        }
-    }
-
-    @Override
-    public void setDescriptionRO(String value) {
-        descriptionRO.setInnerHTML(value);
-    }
-
-
-    @Override
-    public void setNameRO( String value, boolean isJira ) {
-        if (!isJira || !value.startsWith("CLM")) {
-            this.nameRO.setInnerHTML(value);
-        }
-        else {
-            String idCLM = value.split(" ")[0];
-            String remainingName = "&nbsp;" + value.substring(idCLM.length());
-
-            AnchorElement jiraLink = DOM.createAnchor().cast();
-
-            jiraLink.setHref(JIRA_LINK + idCLM);
-            jiraLink.setTarget("_blank");
-            jiraLink.setInnerText(idCLM);
-
-            LabelElement nameWithoutLink = DOM.createLabel().cast();
-            nameWithoutLink.setInnerHTML(remainingName);
-
-            this.nameRO.setInnerHTML("");
-            this.nameRO.appendChild(jiraLink);
-            this.nameRO.appendChild(nameWithoutLink);
-        }
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
@@ -396,82 +87,39 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility copyVisibility() {
-        return copy;
+    public HasVisibility nameAndDescriptionEditButtonVisibility() {
+        return nameAndDescriptionEditButton;
     }
 
-    @Override
-    public HasValue<PlatformOption> platform() {
-        return platform;
-    }
-
-    @Override
-    public void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter){
-        platform.setFilter(filter);
-    }
-
-    @Override
-    public HasVisibility platformVisibility() {
-        return platformContainer;
-    }
-
-    @Override
-    public Element timeElapsedHeader() {
-        return timeElapsedHeader;
-    }
-
-    @UiHandler("company")
-    public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
+    @UiHandler("copyNumber")
+    public void onCopyNumberClick(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
-            activity.onCompanyChanged();
+            activity.onCopyNumberClicked();
         }
     }
 
-    @UiHandler("saveButton")
-    public void onSaveClicked(ClickEvent event) {
+    @UiHandler("nameAndDescriptionEditButton")
+    public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
-            activity.onSaveClicked();
+            activity.onNameAndDescriptionEditClicked(this);
         }
     }
 
-    @UiHandler("cancelButton")
-    public void onCancelClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
+    @UiHandler( "number" )
+    public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
 
-    }
-
-    @UiHandler("attachmentContainer")
-    public void attachmentContainerRemove(RemoveEvent event) {
-        activity.removeAttachment(event.getAttachment());
-    }
-
-    @UiHandler("initiator")
-    public void onAddContactEvent(AddEvent event) {
-        activity.onCreateContactClicked();
-    }
-
-    @UiHandler("privacyButton")
-    public void onLocalClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onLocalClicked();
+        if ( activity != null ) {
+            activity.onFullScreenPreviewClicked();
         }
     }
 
-    @UiHandler("copy")
-    public void onCopyClick(ClickEvent event) {
+    @UiHandler("backButton")
+    public void onBackButtonClick(ClickEvent event) {
         if (activity != null) {
-            activity.onCopyClicked();
+            activity.onBackClicked();
         }
-    }
-
-    @Override
-    public void showComments(boolean isShow) {
-        if (isShow)
-            comments.removeClassName(UiConstants.Styles.HIDE);
-        else
-            comments.addClassName(UiConstants.Styles.HIDE);
     }
 
     private void ensureDebugIds() {
@@ -479,221 +127,44 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             return;
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
-        privacyButton.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
-        numberLabel.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
-        name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
-        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
-        caseMetaView.setEnsureDebugLinkId(DebugIds.ISSUE.LINKS_BUTTON);
-        caseMetaView.setEnsureDebugIdLinkContainer(DebugIds.ISSUE.LINKS_CONTAINER);
-        caseMetaView.setEnsureDebugIdLinkSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
-        caseMetaView.setEnsureDebugIdLinkTextBox(DebugIds.ISSUE.LINKS_INPUT);
-        caseMetaView.setEnsureDebugIdLinkApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
-        caseMetaView.setEnsureDebugTagId(DebugIds.ISSUE.TAGS_BUTTON);
-        caseMetaView.setEnsureDebugIdTagLabel(DebugIds.ISSUE.LABEL.TAGS);
-        caseMetaView.setEnsureDebugIdTagContainer(DebugIds.ISSUE.TAGS_CONTAINER);
-        state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
-        importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
-        platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
-        company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
-        initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
-        product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
-        manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED);
-        timeElapsedInput.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_INPUT);
-        description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
-        descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD);
-        notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
-        notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
-        notifiers.setItemContainerEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ITEM_CONTAINER);
-        notifiers.setLabelEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_LABEL);
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
-        copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
-
-        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
-        caseMetaView.setEnsureDebugIdLinkLabel(DebugIds.ISSUE.LABEL.LINKS);
-        state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
-        importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
-        platform.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PLATFORM);
-        company.ensureLabelDebugId(DebugIds.ISSUE.LABEL.COMPANY);
-        initiator.ensureLabelDebugId(DebugIds.ISSUE.LABEL.CONTACT);
-        product.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PRODUCT);
-        manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
-        timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.TIME_ELAPSED);
-        newIssueTimeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NEW_ISSUE_TIME_ELAPSED);
-        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
-        subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.SUBSCRIPTIONS);
-        notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
-        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
-        timeElapsedType.ensureLabelDebugId(DebugIds.ISSUE.LABEL.TIME_ELAPSED_TYPE);
-        notifiers.ensureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR);
+        number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
+        copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
     }
 
     @UiField
     Lang lang;
-
     @UiField
     HTMLPanel root;
-
     @UiField
-    TextBox name;
-
+    Anchor copyNumber;
     @UiField
-    MarkdownAreaWithPreview description;
-
-    @UiField
-    ToggleButton privacyButton;
-
-    @UiField
-    Anchor copy;
-
-    @UiField
-    DivElement timeElapsedHeader;
-
-    @Inject
-    @UiField(provided = true)
-    IssueStateFormSelector state;
-
-    @Inject
-    @UiField(provided = true)
-    ImportanceFormSelector importance;
-
-    @Inject
-    @UiField(provided = true)
-    TimeLabel timeElapsed;
-
-    @Inject
-    @UiField(provided = true)
-    TimeTextBox timeElapsedInput;
-
-    @Inject
-    @UiField(provided = true)
-    ElapsedTimeTypeFormSelector timeElapsedType;
-
-    @Inject
-    @UiField(provided = true)
-    CompanyFormSelector company;
-
-    @Inject
-    @UiField(provided = true)
-    PersonFormSelector initiator;
-
-    @Inject
-    @UiField(provided = true)
-    DevUnitFormSelector product;
-
-    @Inject
-    @UiField(provided = true)
-    EmployeeFormSelector manager;
-    @Inject
-    @UiField(provided = true)
-    EmployeeMultiSelector notifiers;
-    @Inject
-    @UiField(provided = true)
-    PlatformFormSelector platform;
-    @UiField
-    HTMLPanel platformContainer;
-
-    @UiField
-    Button saveButton;
-    @UiField
-    Button cancelButton;
-
-    @UiField
-    HTMLPanel commentsContainer;
-    @UiField
-    DivElement comments;
-    @Inject
-    @UiField
-    AttachmentUploader fileUploader;
-    @Inject
-    @UiField(provided = true)
-    AttachmentList attachmentContainer;
-    @UiField
-    Element subscriptions;
-    @UiField
-    HTMLPanel caseSubscriptionContainers;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
-    @UiField
-    HTMLPanel timeElapsedContainer;
-    @Inject
-    @UiField(provided = true)
-    JiraSLASelector jiraSlaSelector;
-
-    @UiField
-    LabelElement timeElapsedLabel;
-    @UiField
-    LabelElement newIssueTimeElapsedLabel;
-    @UiField
-    LabelElement descriptionLabel;
-    @UiField
-    LabelElement subscriptionsLabel;
-    @UiField
-    LabelElement notifiersLabel;
-    @UiField
-    LabelElement attachmentsLabel;
-    @UiField
-    InlineLabel numberLabel;
+    Anchor number;
     @UiField
     Element createdBy;
     @UiField
-    HTMLPanel numberContainer;
+    HTMLPanel numberPanel;
     @UiField
     Element privacyIcon;
     @UiField
-    HTMLPanel nameContainer;
+    HTMLPanel tagsContainer;
     @UiField
-    HTMLPanel timeElapsedEditContainer;
+    HTMLPanel metaEditContainer;
     @UiField
-    LabelElement nameLabel;
+    Button nameAndDescriptionEditButton;
     @UiField
-    HeadingElement nameRO;
+    HTMLPanel cardBody;
     @UiField
-    DivElement descriptionRO;
+    HTMLPanel issueInfoContainer;
     @UiField
-    HTMLPanel descriptionContainer;
-
-    private HasValue<Set<CaseTag>> tagsHasValue = new HasValue<Set<CaseTag>>() {
-        @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
-        @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
-        @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
-        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
-        @Override public void fireEvent(GwtEvent<?> event) {}
-    };
-
-    private HasValue<Set<CaseLink>> linksHasValue = new HasValue<Set<CaseLink>>() {
-        @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
-        @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
-        @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
-        @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
-        @Override public void fireEvent(GwtEvent<?> event) {}
-    };
-
-    private HasValidable nameValidator = new HasValidable() {
-        @Override
-        public void setValid(boolean isValid) {
-            if ( isValid ) {
-                nameContainer.removeStyleName("has-error");
-            } else {
-                nameContainer.addStyleName("has-error");
-            }
-        }
-
-        @Override
-        public boolean isValid() {
-            return HelperFunc.isNotEmpty(name.getValue());
-        }
-    };
-
+    Button backButton;
     @Inject
-    InitiatorModel initiatorModel;
+    @UiField(provided = true)
+    IssueNameWidget nameWidget;
+    @UiField
+    HTMLPanel linksContainer;
+
     private AbstractIssueEditActivity activity;
 
-    private final String JIRA_LINK ="https://jira.billing.ru/browse/";
 
     interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}
     private static IssueEditViewUiBinder ourUiBinder = GWT.create(IssueEditViewUiBinder.class);

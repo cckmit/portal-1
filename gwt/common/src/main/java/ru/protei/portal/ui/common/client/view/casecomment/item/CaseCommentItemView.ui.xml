@@ -1,8 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:issuelink='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
-             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:workType='urn:import:ru.protei.portal.ui.common.client.widget.casecomment.item'>
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -10,9 +8,7 @@
         <ul class="list-inline m-b-10">
             <li ui:field="date" class="date-time"/>
             <li ui:field="owner" class="name"/>
-            <li class="issue-link">
-                <issuelink:CaseMetaView ui:field="remoteLink" visible="false" enabled="false" showLabel="false"/>
-            </li>
+            <g:Anchor styleName="issue-link" ui:field="remoteLink" href="#"/>
             <i ui:field="privateComment"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>

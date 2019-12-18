@@ -1,17 +1,12 @@
 package ru.protei.portal.ui.common.client.columns;
 
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import java.util.function.Function;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -19,8 +14,18 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
  * Колонка вынесения сущности в архив
  */
 public class ArchiveClickColumn<T> extends ClickColumn<T> {
+
     public interface ArchiveHandler<T> extends AbstractColumnHandler<T> {
         void onArchiveClicked(T value);
+    }
+
+    public interface ArchiveFilter<T> {
+        boolean isArchived(T value);
+    }
+
+    public interface IconProvider {
+        String addToArchive();
+        String removeFromArchive();
     }
 
     @Inject
@@ -33,13 +38,23 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         this.lock = DOM.createAnchor().cast();
         lock.setHref("#");
         lock.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.ARCHIVE);
-        setMutableAttributes(archivedCheckFunction.apply(value));
-        setRemoveEnabled(lock);
+        String classAdd = "fa-lg " + iconProvider.addToArchive();
+        String classARemove = "fa-lg " + iconProvider.removeFromArchive();
+        if (archiveFilter != null && archiveFilter.isArchived(value)) {
+            lock.addClassName("archive-lock");
+            lock.replaceClassName(classAdd, classARemove);
+            lock.setTitle(lang.buttonFromArchive());
+        } else {
+            lock.removeClassName("archive-lock");
+            lock.replaceClassName(classARemove, classAdd);
+            lock.setTitle(lang.buttonToArchive());
+        }
+        if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
+            lock.removeClassName("link-disabled");
+        } else {
+            lock.addClassName("link-disabled");
+        }
         cell.appendChild(lock);
-    }
-
-    public void setPrivilege(En_Privilege privilege) {
-        this.privilege = privilege;
     }
 
     @Override
@@ -51,40 +66,19 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         setActionHandler(archiveHandler::onArchiveClicked);
     }
 
-    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
-        this.archivedCheckFunction = archivedCheckFunction;
+    public void setArchiveFilter(ArchiveFilter<T> archiveFilter) {
+        this.archiveFilter = archiveFilter;
     }
 
-    private void setRemoveEnabled(AnchorElement a) {
-        if (privilege == null) {
-            return;
-        }
-
-        if (policyService.hasPrivilegeFor(privilege)) {
-            a.removeClassName("link-disabled");
-        } else {
-            a.addClassName("link-disabled");
-        }
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider;
     }
 
-    private void setMutableAttributes(boolean isArchived) {
-        if (isArchived) {
-            lock.addClassName("archive-lock");
-            lock.replaceClassName("fa-lg fa fa-archive", "fa-lg fa fa-history");
-            lock.setTitle(lang.buttonFromArchive());
-        } else {
-            lock.removeClassName("archive-lock");
-            lock.replaceClassName("fa-lg fa fa-history", "fa-lg fa fa-archive");
-            lock.setTitle(lang.buttonToArchive());
-        }
-    }
-
-    @Inject
-    PolicyService policyService;
-
-    Lang lang;
-
+    private final Lang lang;
     private AnchorElement lock;
-    private En_Privilege privilege;
-    private Function<T, Boolean> archivedCheckFunction;
+    private ArchiveFilter<T> archiveFilter;
+    private IconProvider iconProvider = new IconProvider() {
+        public String addToArchive() { return "fa fa-archive"; }
+        public String removeFromArchive() { return "fa fa-history"; }
+    };
 }

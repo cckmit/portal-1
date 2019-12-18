@@ -19,6 +19,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
@@ -69,7 +70,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
-        jdbcManyRelationsHelper.fillAll(employeeRegistration);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
         }

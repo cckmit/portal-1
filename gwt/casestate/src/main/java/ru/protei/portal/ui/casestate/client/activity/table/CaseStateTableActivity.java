@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -30,6 +31,11 @@ public abstract class CaseStateTableActivity implements Activity,
 
     @Event
     public void onShow(CaseStateEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
 
@@ -87,6 +93,8 @@ public abstract class CaseStateTableActivity implements Activity,
     TableAnimation animation;
     @Inject
     CaseStateControllerAsync caseStateService;
+    @Inject
+    PolicyService policyService;
 
     @Inject
     Lang lang;

@@ -140,8 +140,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
         PopupSelectableItem item = new PopupSelectableItem();
-        item.setText( elementHtml );
-        item.setSelected( CollectionUtils.contains( getValue(), element) );
+        item.setElementHtml( elementHtml );
+        item.setSelected( isSelected( element ) );
         return item;
     }
 

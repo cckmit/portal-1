@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -23,6 +22,7 @@ public class PopupSelectableItem<T>
 {
     public PopupSelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        checkbox.setFormValue( Boolean.FALSE.toString() );
     }
 
     @Override
@@ -35,27 +35,18 @@ public class PopupSelectableItem<T>
         value = t;
     }
 
-    public void setText( String text ) {
-        this.text.setText( text );
-        this.text.setTitle( text );
-    }
-
-    public void setInfo( String info ) {
-        if (info != null) {
-            this.info.setVisible( true );
-            this.info.setText( info );
-            this.info.setTitle( info );
-        }
+    public void setTitle( String text ) {
+        checkbox.setTitle(text);
     }
 
     @Override
-    public void setElementHtml(String name ) {
-        text.getElement().setInnerHTML( name );
+    public void setElementHtml(String html ) {
+        checkbox.setHTML(html);
     }
 
     public void setSelected( Boolean isSelected ) {
         checkbox.setValue( isSelected );
-        setSelectedStyle();
+        checkbox.setFormValue( isSelected.toString() );
     }
 
     @Override
@@ -73,38 +64,8 @@ public class PopupSelectableItem<T>
         this.selectorItemHandler = selectorItemHandler;
     }
 
-    @UiHandler( "checkbox" )
-    public void onCheckboxClicked(ClickEvent event) {
-        selectorItemHandler.onSelectorItemClicked(this);
-        setSelectedStyle();
-    }
-
-    @UiHandler( {"text", "info"} )
-    public void onTextClicked( ClickEvent event ) {
-        event.preventDefault();
-        checkbox.setValue( !checkbox.getValue() );
-        if(selectorItemHandler!=null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
-    }
-
     public void setEnsureDebugId( String debugId ) {
         checkbox.ensureDebugId( debugId );
-    }
-
-    private void setSelectedStyle() {
-        if ( checkbox.getValue() ) {
-            text.addStyleName( SELECTED );
-            info.addStyleName( SELECTED );
-        } else {
-            text.removeStyleName( SELECTED );
-            info.removeStyleName( SELECTED );
-        }
-    }
-
-    @Override
-    public void setFocus( boolean isFocused ) {
-        checkbox.setFocus( isFocused );
     }
 
     @Override
@@ -119,25 +80,12 @@ public class PopupSelectableItem<T>
         KeyUpEvent.fireNativeEvent(keyUpEvent.getNativeEvent(), this);
     }
 
-    @Override
-    public void setElementWidget( Widget widget ) {
-        panel.clear();
-        panel.add(widget);
-    }
 
     private SelectorItemHandler selectorItemHandler;
     private T value;
 
     @UiField
-    HTMLPanel panel;
-    @UiField
     CheckBox checkbox;
-    @UiField
-    InlineLabel text;
-    @UiField
-    InlineLabel info;
-
-    public static final String SELECTED = "selected";
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectableItem> {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

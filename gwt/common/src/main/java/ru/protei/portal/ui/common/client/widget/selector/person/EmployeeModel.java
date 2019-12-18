@@ -84,7 +84,6 @@ public abstract class EmployeeModel implements Activity,
         employeeService.getEmployeeById(myId, new FluentCallback<PersonShortView>().withSuccess( r->currentPerson=r ) );
     }
     private List<PersonShortView> transliteration(List<PersonShortView> options) {
-        options.forEach(option -> option.setDisplayShortName(TransliterationUtils.transliterate(option.getDisplayShortName(), LocaleInfo.getCurrentLocale().getLocaleName())));
         return options;
     }
 

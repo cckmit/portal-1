@@ -10,13 +10,11 @@ import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -24,9 +22,9 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.api.struct.Result.error;
 
 /**
  * Реализация сервиса управления компаниями
@@ -193,6 +191,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Result<Company> getCompanyUnsafe(AuthToken token, Long id) {
+        return getCompany(token, id);
+    }
+
+    @Override
     public Result<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
@@ -339,10 +342,9 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
+            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds() ) );
         }
     }
 

@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.AssemblerService;
 
 import java.util.Collection;
@@ -23,39 +22,54 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     @Override
     @EventListener
-    public void onCaseObjectEvent( CaseObjectEvent event) {
-        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "onCaseObjectEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
-        assembledPrevEvent.attachCaseObjectEvent( event );
+    public void onCaseObjectCreateEvent(CaseObjectCreateEvent event) {
+        publishCreateEvent(new AssembledCaseEvent(event));
+        log.info( "onCaseObjectCreateEvent(): CaseObjectId={}", event.getCaseObjectId() );
     }
 
     @Override
     @EventListener
-    public void onCaseCommentEvent( CaseCommentEvent event) {
+    public void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event) {
+        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent(event);
+        log.info( "onCaseNameAndDescriptionEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent.getInitiatorId(), assembledPrevEvent );
+        assembledPrevEvent.attachCaseNameAndDescriptionEvent(event);
+    }
+
+    @Override
+    @EventListener
+    public void onCaseObjectMetaEvent(CaseObjectMetaEvent event) {
+        AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent(event);
+        log.info("onCaseObjectMetaEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent.getInitiatorId(), assembledPrevEvent);
+        assembledPrevEvent.attachCaseObjectMetaEvent(event);
+    }
+
+    @Override
+    @EventListener
+    public void onCaseCommentEvent(CaseCommentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "onCaseCommentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(),  assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "onCaseCommentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent.getInitiatorId(), assembledPrevEvent );
         assembledPrevEvent.attachCommentEvent( event );
     }
 
     @Override
     @EventListener
-    public void onCaseAttachmentEvent( CaseAttachmentEvent event) {
+    public void onCaseAttachmentEvent(CaseAttachmentEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "onCaseAttachmentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "onCaseAttachmentEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent.getInitiatorId(), assembledPrevEvent );
         assembledPrevEvent.attachAttachmentEvent( event );
     }
 
     @Override
     @EventListener
-    public void onCaseLinkEvent( CaseLinksEvent event) {
+    public void onCaseLinkEvent( CaseLinkEvent event) {
         AssembledCaseEvent assembledPrevEvent = getAssembledCaseEvent( event );
-        log.info( "onCaseLinkEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent, assembledPrevEvent.getInitiator() );
+        log.info( "onCaseLinkEvent(): CaseObjectId={} {} {}", assembledPrevEvent.getCaseObjectId(), assembledPrevEvent.getInitiatorId(), assembledPrevEvent );
         assembledPrevEvent.attachLinkEvent( event );
     }
 
     @Override
-    public AssembledCaseEvent getEvent(Person person, Long caseId) {
-        Tuple<Person, Long> key = new Tuple<>(person, caseId);
+    public AssembledCaseEvent getEvent(Long personId, Long caseId) {
+        Tuple<Long, Long> key = makeKey(personId, caseId);
         return assembledEventsMap.getOrDefault(key, null);
     }
 
@@ -67,9 +81,9 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Scheduled(fixedRate = 1 * SEC)
     public void checkEventsMap() {
         //Measured in ms
-        Collection<Tuple<Person, Long>> events = assembledEventsMap.values().stream()
+        Collection<Tuple<Long, Long>> events = assembledEventsMap.values().stream()
                 .filter(x -> isExpired(x))
-                .map(x -> new Tuple<>(x.getInitiator(), x.getCaseObjectId()))
+                .map(x -> makeKey(x.getInitiatorId(), x.getCaseObjectId()))
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -79,21 +93,29 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         }
     }
 
-    private void publishAndClear(Tuple<Person, Long> key) {
+    private void publishCreateEvent(AssembledCaseEvent event) {
+        assemblerService.proceed(event);
+        log.info("publishCreate event, caseId:{}", event.getCaseObjectId());
+    }
+
+    private void publishAndClear(Tuple<Long, Long> key) {
         AssembledCaseEvent personsEvent = assembledEventsMap.remove(key);
-        log.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObjectId(),
-                personsEvent.getInitiator().getDisplayName());
+        log.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObjectId(), personsEvent.getInitiatorId());
         assemblerService.proceed(personsEvent);
     }
 
     private AssembledCaseEvent getAssembledCaseEvent( AbstractCaseEvent event ) {
-        Tuple<Person, Long> key = makeEventKey(event);
+        Tuple<Long, Long> key = makeEventKey(event);
         log.info( "getAssembledCaseEvent(): Key {} for {}",  key, event);
         return assembledEventsMap.computeIfAbsent(key, k->new AssembledCaseEvent( event ));//concurrency
     }
 
-    private Tuple<Person, Long> makeEventKey(AbstractCaseEvent event) {
-        return new Tuple<>(event.getPerson(), event.getCaseObjectId());
+    private Tuple<Long, Long> makeEventKey(AbstractCaseEvent event) {
+        return makeKey(event.getPersonId(), event.getCaseObjectId());
+    }
+
+    private Tuple<Long, Long> makeKey(Long personId, Long caseId) {
+        return new Tuple<>(personId, caseId);
     }
 
     public boolean isExpired(AssembledCaseEvent event) {
@@ -111,6 +133,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Autowired
     AssemblerService assemblerService;
 
-    private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
+    private final Map<Tuple<Long, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     private static Logger log = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 }

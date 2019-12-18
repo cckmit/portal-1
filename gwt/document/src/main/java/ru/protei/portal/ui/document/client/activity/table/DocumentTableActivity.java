@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.document.client.activity.table;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -25,14 +24,15 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
 
 public abstract class DocumentTableActivity
         implements Activity, AbstractDocumentTableActivity, AbstractDocumentFilterActivity,
@@ -53,6 +53,11 @@ public abstract class DocumentTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow(DocumentEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
         view.getPagerContainer().add( pagerView.asWidget() );
@@ -80,13 +85,6 @@ public abstract class DocumentTableActivity
     }
 
     @Override
-    public void onDownloadClicked(Document value) {
-        if (value.getId() == null || value.getProjectId() == null)
-            return;
-        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
-    }
-
-    @Override
     public void onArchiveClicked(Document value) {
         if (value == null) {
             return;
@@ -99,6 +97,15 @@ public abstract class DocumentTableActivity
                             fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new DocumentEvents.ChangeModel());
                         }));
+    }
+
+    @Override
+    public void onRemoveClicked(Document value) {
+        if (value == null) {
+            return;
+        }
+        documentToRemove = value;
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentConfirmRemove()));
     }
 
     @Event
@@ -117,6 +124,34 @@ public abstract class DocumentTableActivity
             return;
         }
         fireEvent(new DocumentEvents.Create());
+    }
+
+    @Event
+    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+        if (documentToRemove == null) {
+            return;
+        }
+        documentService.removeDocument(documentToRemove, new FluentCallback<Long>()
+                .withError(throwable -> {
+                    documentToRemove = null;
+                    errorHandler.accept(throwable);
+                })
+                .withSuccess(id -> {
+                    documentToRemove = null;
+                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                }));
+    }
+
+    @Event
+    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+        documentToRemove = null;
     }
 
     @Override
@@ -239,12 +274,12 @@ public abstract class DocumentTableActivity
     DocumentControllerAsync documentService;
     @Inject
     PolicyService policyService;
-
+    @Inject
+    DefaultErrorHandler errorHandler;
 
     private Integer scrollTop;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;
-
-    private static final String DOWNLOAD_PATH = "springApi/document/";
+    private Document documentToRemove;
 }

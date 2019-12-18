@@ -50,32 +50,28 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     HasValidable nameValidator();
 
-    HasEnabled decimalNumberEnabled();
 
-    HasEnabled equipmentEnabled();
+    void decimalNumberEnabled(boolean isEnabled);
 
-    HasEnabled documentTypeEnabled();
+    void equipmentEnabled(boolean isEnabled);
 
-    HasEnabled inventoryNumberEnabled();
+    void documentTypeEnabled(boolean isEnabled);
 
+    void inventoryNumberEnabled(boolean isEnabled);
 
-    HasVisibility uploaderVisible();
-
-    HasVisibility equipmentVisible();
-
-    HasVisibility decimalNumberVisible();
-
-    HasVisibility inventoryNumberVisible();
+    void uploaderEnabled(boolean isEnabled);
 
 
-    AbstractDocumentUploader documentUploader();
+    AbstractDocumentUploader documentDocUploader();
 
+    AbstractDocumentUploader documentPdfUploader();
 
-    void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 
     void setEquipmentProjectId(Long id);
 
     void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter);
+
+    void setProjectInfo(String customerType, String productDirection, String region);
 }

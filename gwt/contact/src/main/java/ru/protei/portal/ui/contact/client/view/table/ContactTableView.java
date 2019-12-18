@@ -6,9 +6,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -43,7 +43,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
         removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
         removeClickColumn.setColumnProvider( columnProvider );
-        removeClickColumn.setPrivilege( En_Privilege.CONTACT_REMOVE );
 
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
@@ -97,7 +96,8 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.CONTACT_EDIT );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !v.isDeleted() );
 
         ClickColumn gender = new DynamicColumn<Person>(null, "column_img-35", value -> "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>");
         columns.add(gender);
@@ -134,6 +134,9 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
     private EditClickColumn<Person > editClickColumn;

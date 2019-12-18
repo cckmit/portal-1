@@ -41,7 +41,7 @@ public class PersonFormSelector
 //                    value.isFired() ? "fa fa-ban ban" : "" );
 //        } );
 
-        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getDisplayShortName() );
+        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
     protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
@@ -66,7 +66,7 @@ public class PersonFormSelector
         this.defaultValue = value;
     }
 
-//    public void setFired ( boolean value ) { this.fired = value; }
+    public void setFired ( boolean value ) { model.setFired (value); }
 //
 
 //    @Override
@@ -89,12 +89,12 @@ public class PersonFormSelector
 //        }
 //    }
 
-//    public void updateCompanies(Set<Long> companyIds) {
-////        this.companyIds = companyIds;
-//        if(model!=null){
-//            model.updateCompanies(this, companyIds, fired);
-//        }
-//    }
+    public void updateCompanies(Set<Long> companyIds) {
+//        this.companyIds = companyIds;
+        if(model!=null){
+//            model.updateCompanies(this, companyIds, fired);//TODO
+        }
+    }
 
     @Inject
     Lang lang;

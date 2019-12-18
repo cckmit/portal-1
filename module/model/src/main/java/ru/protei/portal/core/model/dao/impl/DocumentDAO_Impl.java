@@ -32,6 +32,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
+    public String getName(Long documentId) {
+        return partialGet(documentId, "name").getName();
+    }
+
+    @Override
     public boolean updateState(Document document) {
         return partialMerge(document, "state");
     }
@@ -78,8 +83,15 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             }
 
             if (CollectionUtils.isNotEmpty(query.getKeywords())) {
-                condition.append(" and document.tags in ");
-                condition.append(HelperFunc.makeInArg(query.getKeywords()));
+                condition.append(" and (");
+                condition.append(query.getKeywords()
+                        .stream()
+                        .map(tag -> " document.tags like ? ")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(")");
+                query.getKeywords().forEach(tag -> {
+                    args.add(HelperFunc.makeLikeArg(tag, true));
+                });
             }
 
             if (query.getFrom() != null) {

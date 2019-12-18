@@ -5,18 +5,21 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FormPanel;
+import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploaderdropzone.FileDropzoneUploader;
 
-public class DocumentUploader extends FileUploader implements AbstractDocumentUploader {
+public class DocumentUploader extends FileDropzoneUploader implements AbstractDocumentUploader, ru.protei.portal.ui.common.client.widget.uploaderdropzone.UploadHandler {
 
     public DocumentUploader() {
-        fileUpload.getElement().setAttribute("accept", "application/pdf");
+        setUploadHandler(this);
     }
 
-    public void click() {
-        fileUpload.click();
+    public void setFormat(En_DocumentFormat format) {
+        this.format = format;
+        setAccept(makeMimeTypes(this.format));
     }
 
     @Override
@@ -30,8 +33,16 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
+    public void submitForm(String url) {
+        super.submitForm(url + format.getFormat());
+    }
+
+    @Override
     public void resetForm() {
-        form.reset();
+        super.resetForm();
+        if (resetHandler != null) {
+            resetHandler.onFormReset();
+        }
     }
 
     @Override
@@ -40,13 +51,13 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
-    public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
-        form.removeStyleName("attachment-uploading");
-        form.reset();
-        fileUpload.setEnabled(true);
-        if (uploadHandler == null)
-            return;
-        if ("error".equals(event.getResults())) {
+    public void onChange() {}
+
+    @Override
+    public void onComplete(String result) {
+        resetForm();
+        if (uploadHandler == null) return;
+        if ("error".equals(result)) {
             uploadHandler.onError();
         } else {
             uploadHandler.onSuccess();
@@ -54,19 +65,17 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
-    public void changeHandler(ChangeEvent event) {
-    }
-
-    @Override
     public void uploadBindToDocument(Document document) {
-        if (HelperFunc.isEmpty(getFilename()) || form.getElement().hasClassName("attachment-uploading")) {
+        if (format == null) {
             return;
         }
-
-        form.addStyleName("attachment-uploading");
-        form.setAction(UPLOAD_DOCUMENT_URL);
-        form.submit();
-        fileUpload.setEnabled(false);
+        if (HelperFunc.isEmpty(getFilename())) {
+            return;
+        }
+        if (form.getElement().hasClassName("attachment-uploading")) {
+            return;
+        }
+        submitForm(UPLOAD_DOCUMENT_URL);
     }
 
     @Override
@@ -74,6 +83,20 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
         this.uploadHandler = uploadHandler;
     }
 
+    @Override
+    public void setResetHandler(ResetHandler resetHandler) {
+        this.resetHandler = resetHandler;
+    }
+
+    private String makeMimeTypes(En_DocumentFormat format) {
+        if (format == En_DocumentFormat.PDF) {
+            return En_DocumentFormat.PDF.getMimeType();
+        }
+        return En_DocumentFormat.DOCX.getMimeType() + "," + En_DocumentFormat.DOC.getMimeType();
+    }
+
+    private ResetHandler resetHandler;
     private UploadHandler uploadHandler;
-    private static final String UPLOAD_DOCUMENT_URL = GWT.getModuleBaseURL() + "springApi/uploadDocument/";
+    private En_DocumentFormat format;
+    private static final String UPLOAD_DOCUMENT_URL = GWT.getModuleBaseURL() + "springApi/upload/document/";
 }

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.casestate.client.activity.table.AbstractCaseStateTableActivity;
 import ru.protei.portal.ui.casestate.client.activity.table.AbstractCaseStateTableView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -144,9 +145,9 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
         table.addColumn(description.header, description.values);
         table.addColumn(usageInCompanies.header, usageInCompanies.values);
 
-        editClickColumn.setPrivilege( En_Privilege.CASE_STATES_EDIT );
-        table.addColumn( editClickColumn.header, editClickColumn.values );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_EDIT) );
 
+        table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
     @UiField
@@ -158,6 +159,9 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
     @UiField
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     En_CaseStateLang caseStateLang;
 

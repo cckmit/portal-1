@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.casetag;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -48,7 +49,7 @@ public class CaseTagMultiSelector extends MultipleInputSelector<EntityOption> im
         if (hasNullValue) {
             addOption(lang.tagNotSpecified(), new EntityOption(lang.tagNotSpecified(), CrmConstants.CaseTag.NOT_SPECIFIED));
         }
-        options.forEach(caseTag -> addOption(caseTag.getDisplayText(), caseTag.getInfo(), caseTag));
+        options.forEach(caseTag -> addOption(caseTag.getDisplayText() + (caseTag.getInfo() == null ? "" : " (" +  caseTag.getInfo() + ")"), caseTag));
     }
 
     @Inject

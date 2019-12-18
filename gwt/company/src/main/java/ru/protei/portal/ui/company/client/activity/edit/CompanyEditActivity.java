@@ -71,17 +71,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }
     }
 
-    @Event
-    public void onChangeModel(CaseTagEvents.ChangeModel event) {
-        if (tempCompany == null || tempCompany.getId() == null)
-            return;
-
-        companyService.getCompanyTags(tempCompany.getId(), new ShortRequestCallback<List<CaseTag>>()
-                .setOnSuccess(tags ->
-                    view.tags().setValue(new HashSet<>(tags))
-                ));
-    }
-
     @Override
     public void onSaveClicked() {
         if (validateFieldsAndGetResult() && !tempCompany.isArchived()) {
@@ -125,15 +114,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     }
                 }
         );
-    }
-
-    @Override
-    public void onAddTagClicked() {
-        CaseTag caseTag = new CaseTag();
-        caseTag.setCaseType(En_CaseType.CRM_SUPPORT);
-        caseTag.setCompanyId(tempCompany.getId());
-        caseTag.setCompanyName(tempCompany.getCname());
-        fireEvent(new CaseTagEvents.Update(caseTag, false));
     }
 
     private boolean isNew(Company company) {
@@ -182,7 +162,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.parentCompany().setValue(makeCompanyOption(company));
         view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
-        view.tags().setValue(company.getTags() == null ? new HashSet<>() : company.getTags());
         view.companySubscriptions().setValue(
                 CollectionUtils.stream(company.getSubscriptions())
                         .map(Subscription::fromCompanySubscription)
@@ -204,8 +183,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), company.getId()));
         }
-
-        view.hideTags(company.getId() == null);
     }
 
     private EntityOption makeCompanyOption(Company company) {
@@ -231,12 +208,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     private Selector.SelectorFilter<EntityOption> makeCompanyFilter(Long companyId) {
-        return new Selector.SelectorFilter<EntityOption>() {
-            @Override
-            public boolean isDisplayed(EntityOption value) {
-                if (companyId == null) return true;
-                return !companyId.equals(value.getId());
-            }
+        return value -> {
+            if (companyId == null) return true;
+            return !companyId.equals(value.getId());
         };
     }
 

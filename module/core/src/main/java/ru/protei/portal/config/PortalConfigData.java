@@ -37,6 +37,8 @@ public class PortalConfigData {
 
     private final Long maxFileSize;
 
+    private final String jiraUrl;
+
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
         smtpConfig = new SmtpConfig(wrapper);
@@ -56,6 +58,7 @@ public class PortalConfigData {
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
         maxFileSize = wrapper.getProperty("max.file.size", Long.class, DEFAULT_FILE_SIZE_MEGABYTES);
+        jiraUrl = wrapper.getProperty("jira.url",  "");
     }
 
     public CommonConfig getCommonConfig() {
@@ -123,6 +126,8 @@ public class PortalConfigData {
     }
 
     public Long getMaxFileSize() {return maxFileSize;}
+
+    public String getJiraUrl() {return jiraUrl;}
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
@@ -338,24 +343,18 @@ public class PortalConfigData {
     }
 
     public static class IntegrationConfig {
-        private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
 
-        private final boolean redminePatchAttachmentsEnabled;
+        private final boolean redminePatchEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
-            hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
 
-            redminePatchAttachmentsEnabled = properties.getProperty("integration.redmine.patch.attachments", Boolean.class, false);
-        }
-
-        public boolean isHpsmEnabled() {
-            return hpsmEnabled;
+            redminePatchEnabled = properties.getProperty("integration.redmine.patch", Boolean.class, false);
         }
 
         public boolean isRedmineEnabled() {
@@ -370,8 +369,8 @@ public class PortalConfigData {
             return jiraEnabled;
         }
 
-        public boolean isRedminePatchAttachmentsEnabled() {
-            return redminePatchAttachmentsEnabled;
+        public boolean isRedminePatchEnabled() {
+            return redminePatchEnabled;
         }
     }
 
@@ -382,9 +381,9 @@ public class PortalConfigData {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
-            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
-            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s");
-            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s");
+            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s (%3$s)");
+            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s (%3$s)");
+            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s (%3$s)");
         }
 
         public String getUrl() {
@@ -466,21 +465,15 @@ public class PortalConfigData {
 
     public static class CaseLinkConfig {
         private final String linkCrm;
-        private final String linkOldCrm;
         private final String linkYouTrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
-            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
-            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 
         public String getLinkCrm() {
             return linkCrm;
-        }
-
-        public String getLinkOldCrm() {
-            return linkOldCrm;
         }
 
         public String getLinkYouTrack() {

@@ -20,10 +20,10 @@ import java.util.Map;
 @WebAppConfiguration
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, JiraTestConfiguration.class})
 public class FieldMappingTest {
+    public static final int FIRST_MAP_ID = 1;
 
     @Autowired
     JiraStatusMapEntryDAO statusMapEntryDAO;
-
 
     @Test
     public void testStatusMapping () {
@@ -36,8 +36,8 @@ public class FieldMappingTest {
         expectedMapping.put("Nothing to change", En_CaseState.VERIFIED);
 
         expectedMapping.forEach((key,state) -> {
-            Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(1, key));
-            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(1, state));
+            Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));
+            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, state));
         });
     }
 }

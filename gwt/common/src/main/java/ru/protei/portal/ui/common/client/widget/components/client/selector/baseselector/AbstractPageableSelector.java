@@ -105,7 +105,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         return searchString == null || searchString.length() < 1;
     }
 
-    protected boolean hasNullValue = true;
+    protected boolean hasNullValue = false;
 
     protected boolean hideSelectedFromChose = false;
 
