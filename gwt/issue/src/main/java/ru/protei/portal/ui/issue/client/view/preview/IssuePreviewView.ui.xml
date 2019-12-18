@@ -1,14 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
-             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:nw='urn:import:ru.protei.portal.ui.issue.client.view.edit'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
-        <g:HTMLPanel ui:field="preview" styleName="preview card-body no-padding">
-            <div class="card card-default no-border">
+            <g:HTMLPanel ui:field="cardBody" styleName="card card-default no-border">
                 <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12"/>
@@ -26,125 +25,17 @@
                         <small ui:field="createdBy"/>
                         <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
                     </div>
-                    <h5 class="number-and-name-copy-panel no-margin">
-                        <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
-                            <i class="far fa-clone"/>
-                        </g:Anchor>
-                        <span ui:field="name" class="semi-bold"/>
-                    </h5>
 
-                    <div ui:field="metaTable" class="form-group-attached">
-                        <div class="row clearfix">
-                            <div class="col-md-3">
-                                <div class="form-group form-group-default">
-                                    <label ui:field="criticalityLabel" class="fade"><ui:text from="{lang.issueCriticality}"/></label>
-                                    <div>
-                                        <i ui:field="iconCriticality"/>
-                                        <span ui:field="criticality"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group form-group-default">
-                                    <label ui:field="stateLabel" class="fade"><ui:text from="{lang.issueState}"/></label>
-                                    <div ui:field="state"/>
-                                </div>
-                            </div>
-                            <div class="col-md-3" ui:field="productContainer">
-                                <div class="form-group form-group-default">
-                                    <label ui:field="productLabel" class="fade"><ui:text from="{lang.issueProduct}"/></label>
-                                    <span ui:field="product"/>
-                                </div>
-                            </div>
-                            <div class="col-md-3" ui:field="platformContainer">
-                                <div class="form-group form-group-default">
-                                    <label ui:field="platformLabel" class="fade"><ui:text from="{lang.issuePlatformHeader}"/></label>
-                                    <a href="#" ui:field="platform" class="full-screen-link" target="_blank"/>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row clearfix">
-                            <div class="col-md-6">
-                                <div class="form-group form-group-default">
-                                    <label ui:field="contactLabel" class="fade"><ui:text from="{lang.issueInitiator}"/></label>
-                                    <span ui:field="contact"/>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group form-group-default">
-                                    <label ui:field="managerLabel" class="fade"><ui:text from="{lang.issueManager}"/></label>
-                                    <span ui:field="manager"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <g:HTMLPanel ui:field="jiraMetaDataContainer" styleName="form-group-attached" visible="false">
-                        <div class="row clearfix">
-                            <g:HTMLPanel ui:field="jiraIssueTypeContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraIssueType}"/></label>
-                                    <span ui:field="jiraIssueType"/>
-                                </div>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraSeverityContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraSeverity}"/></label>
-                                    <span ui:field="jiraSeverity"/>
-                                </div>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraTimeOfReactionContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
-                                    <span ui:field="jiraTimeOfReaction"/>
-                                </div>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="jiraTimeOfDecisionContainer" styleName="col-md-3">
-                                <div class="form-group form-group-default b-t-none">
-                                    <label class="fade"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
-                                    <span ui:field="jiraTimeOfDecision"/>
-                                </div>
-                            </g:HTMLPanel>
-                        </div>
-                    </g:HTMLPanel>
-
-                    <div class="form-group pre-formatted-info markdown p-t-15" ui:field="info"/>
+                    <nw:IssueNameWidget ui:field="nameWidget" />
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
-                    <h5 ui:field="subscriptionsLabel"><ui:text from="{lang.companySubscription}"/></h5>
-                    <small ui:field="subscriptions"/>
+                    <g:HTMLPanel ui:field="metaContainer" styleName="issue-meta-preview"/>
 
-                    <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
-                        <h5 class="col-md-12">
-                            <span ui:field="timeElapsedLabel"><ui:text from="{lang.timeElapsed}"/></span>
-                            <timefield:TimeLabel ui:field="timeElapsed" styleName="inline m-l-5"/>
-                        </h5>
-                    </g:HTMLPanel>
-
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <h5><ui:text from="{lang.issueAttachments}"/></h5>
-                            <div class="attach attach-add">
-                                <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                    <div class="attach-add-circle">
-                                        <i class="fas fa-plus ion-plus"/>
-                                        <i class="fas fa-spin icon-verifiable"/>
-                                    </div>
-                                </fileuploader:AttachmentUploader>
-                            </div>
-                            <attachment:AttachmentList ui:field="attachmentContainer"/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <h5><ui:text from="{lang.comments}"/></h5>
-                            <g:HTMLPanel ui:field="commentsContainer"/>
-                        </div>
-                    </div>
+                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
                 </div>
-            </div>
-        </g:HTMLPanel>
+            </g:HTMLPanel>
+
         <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
             <div class="card card-transparent no-margin">
                 <div class="text-right">

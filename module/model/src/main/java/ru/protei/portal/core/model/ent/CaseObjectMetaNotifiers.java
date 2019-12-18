@@ -15,24 +15,15 @@ public class CaseObjectMetaNotifiers implements Serializable {
     @JdbcColumn(name = "MODIFIED")
     private Date modified;
 
-    // --------------------
-
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
     private Set<Person> notifiers; //may contain partially filled objects!
 
-    // --------------------
-
     public CaseObjectMetaNotifiers() {}
 
-    public CaseObjectMetaNotifiers(CaseObject caseObject) {
-        fillFromCaseObject(caseObject);
-    }
-
-    public CaseObjectMetaNotifiers fillFromCaseObject(CaseObject co) {
+    public CaseObjectMetaNotifiers(CaseObject co) {
         setId(co.getId());
         setModified(co.getModified());
         setNotifiers(co.getNotifiers());
-        return this;
     }
 
     public CaseObject collectToCaseObject(CaseObject co) {

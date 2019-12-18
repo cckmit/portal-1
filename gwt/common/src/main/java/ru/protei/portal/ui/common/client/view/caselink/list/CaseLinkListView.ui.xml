@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="collapsiblePanel" styleName="card card-default card-links">
+    <g:HTMLPanel ui:field="collapsiblePanel" styleName="card card-default card-links m-b-0">
         <div class="card-header">
             <label ui:field="headerLabel">
                 <ui:text from="{lang.linkedWith}"/>

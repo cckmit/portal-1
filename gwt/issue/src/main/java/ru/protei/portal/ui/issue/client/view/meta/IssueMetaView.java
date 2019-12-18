@@ -2,7 +2,6 @@ package ru.protei.portal.ui.issue.client.view.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -12,8 +11,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -41,6 +46,7 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -61,83 +67,72 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setCaseMeta(CaseObjectMeta caseObjectMeta) {
-        caseMeta = caseObjectMeta;
+    public HasValue<En_CaseState> state( ) {
+        return state;
+    }
 
-        state.setValue(En_CaseState.getById(caseMeta.getStateId()));
-        importance.setValue(En_ImportanceLevel.getById(caseMeta.getImpLevel()));
+    @Override
+    public  HasValue<En_ImportanceLevel> importance( ) {
+        return importance;
+    }
 
-        product.setValue(ProductShortView.fromProduct(caseMeta.getProduct()));
+    @Override
+    public void setProduct( DevUnit product ) {
+        this.product.setValue(ProductShortView.fromProduct(product));
+    }
 
-        PersonShortView managerValue = PersonShortView.fromPerson(caseMeta.getManager());
+    @Override
+    public DevUnit getProduct() {
+        return DevUnit.fromProductShortView(product.getValue());
+    }
+
+    @Override
+    public void setManager( Person manager ) {
+        PersonShortView managerValue = PersonShortView.fromPerson(manager);
         if (managerValue != null) managerValue.setName(transliteration(managerValue.getName()));
-        manager.setValue(managerValue);
+        this.manager.setValue(managerValue);
+    }
 
-        EntityOption companyValue = EntityOption.fromCompany(caseMeta.getInitiatorCompany());
+    @Override
+    public Person getManager() {
+        return Person.fromPersonShortView( manager.getValue() );
+    }
+
+    @Override
+    public void setCompany( Company company ) {
+        EntityOption companyValue = EntityOption.fromCompany(company);
         if (companyValue != null) companyValue.setDisplayText(transliteration(companyValue.getDisplayText()));
-        company.setValue(companyValue);
-
-        PersonShortView initiatorValue = caseMeta.getInitiator() == null ? null : caseMeta.getInitiator().toFullNameShortView();
-        if (initiatorValue != null) initiatorValue.setName(transliteration(initiatorValue.getName()));
-        initiator.setValue(initiatorValue);
-
-        platform.setValue(caseMeta.getPlatformId() == null ? null : new PlatformOption(caseMeta.getPlatformName(), caseMeta.getPlatformId()));
-
-        Long timeElapsedValue = caseMeta.getTimeElapsed();
-        timeElapsed.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
-        timeElapsedInput.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
+        this.company.setValue(companyValue);
     }
 
     @Override
-    public CaseObjectMeta getCaseMeta() {
-        caseMeta.setStateId(state.getValue().getId());
-        caseMeta.setImpLevel(importance.getValue().getId());
-        caseMeta.setProduct(DevUnit.fromProductShortView(product.getValue()));
-        caseMeta.setManager(Person.fromPersonShortView(manager.getValue()));
-        caseMeta.setInitiatorCompany(Company.fromEntityOption(company.getValue()));
-        caseMeta.setInitiator(Person.fromPersonShortView(initiator.getValue()));
-        caseMeta.setPlatformId(platform.getValue() == null ? null : platform.getValue().getId());
-        caseMeta.setTimeElapsed(timeElapsedInput.getTime());
-        return caseMeta;
+    public Company getCompany() {
+        return Company.fromEntityOption(company.getValue());
     }
 
     @Override
-    public void setCaseMetaNotifiers(CaseObjectMetaNotifiers caseObjectMetaNotifiers) {
-        caseMetaNotifiers = caseObjectMetaNotifiers;
-
-        notifiers.setValue(transliterateNotifiers(caseMetaNotifiers.getNotifiers()));
+    public void setCaseMetaNotifiers( Set<Person> caseObjectMetaNotifiers) {
+        notifiers.setValue(transliterateNotifiers(caseObjectMetaNotifiers));
     }
 
     @Override
-    public CaseObjectMetaNotifiers getCaseMetaNotifiers() {
-        caseMetaNotifiers.setNotifiers(notifiers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
-        return caseMetaNotifiers;
+    public Set<Person> getCaseMetaNotifiers() {
+        return notifiers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
     }
 
     @Override
     public void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira) {
-        caseMetaJira = caseObjectMetaJira;
-        if (caseObjectMetaJira == null) return;
-        jiraSlaSelector.setValue(caseMetaJira);
+        jiraSlaSelector.setValue(caseObjectMetaJira);
     }
 
     @Override
-    public CaseObjectMetaJira getCaseMetaJira() {
-        if (caseMetaJira == null) return null;
-        caseMetaJira.setSlaMapId(jiraSlaSelector.getValue().getSlaMapId());
-        caseMetaJira.setSeverity(jiraSlaSelector.getValue().getSeverity());
-        caseMetaJira.setIssueType(jiraSlaSelector.getValue().getIssueType());
-        return caseMetaJira;
+    public HasValue<CaseObjectMetaJira> jiraSlaSelector() {
+        return jiraSlaSelector;
     }
 
     @Override
     public void setStateWorkflow(En_CaseStateWorkflow workflow) {
         state.setWorkflow(workflow);
-    }
-
-    @Override
-    public void applyCompanyValueIfOneOption() {
-        company.applyValueIfOneOption();
     }
 
     @Override
@@ -166,10 +161,14 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setTimeElapsed(Long timeElapsed) {
-        CaseObjectMeta caseMeta = getCaseMeta();
-        caseMeta.setTimeElapsed(timeElapsed);
-        setCaseMeta(caseMeta);
+    public void setTimeElapsed(Long timeElapsedValue) {
+        timeElapsed.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
+        timeElapsedInput.setTime(Objects.equals(0L, timeElapsedValue) ? null : timeElapsedValue);
+    }
+
+    @Override
+    public Long getTimeElapsed() {
+        return timeElapsedInput.getTime();
     }
 
     @Override
@@ -179,16 +178,24 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public void setInitiator(Person initiator) {
-        CaseObjectMeta caseMeta = getCaseMeta();
-        caseMeta.setInitiator(initiator);
-        setCaseMeta(caseMeta);
+        PersonShortView initiatorValue = initiator == null ? null : initiator.toFullNameShortView();
+        if (initiatorValue != null) initiatorValue.setName( transliteration( initiatorValue.getName() ) );
+        this.initiator.setValue(initiatorValue);
+    }
+
+    @Override
+    public Person getInitiator() {
+        return Person.fromPersonShortView(initiator.getValue());
     }
 
     @Override
     public void setPlatform(Platform platform) {
-        CaseObjectMeta caseMeta = getCaseMeta();
-        caseMeta.setPlatformId(platform == null ? null : platform.getId());
-        setCaseMeta(caseMeta);
+        this.platform.setValue(platform == null ? null : new PlatformOption(platform.getName(), platform.getId()));
+    }
+
+    @Override
+    public Long getPlatformId() {
+        return platform.getValue() == null ? null : platform.getValue().getId();
     }
 
     @Override
@@ -237,11 +244,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public HasVisibility timeElapsedLabelVisibility() {
-        return timeElapsed;
-    }
-
-    @Override
     public HasVisibility timeElapsedContainerVisibility() {
         return timeElapsedContainer;
     }
@@ -264,24 +266,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasValue<En_TimeElapsedType> timeElapsedType() {
         return timeElapsedType;
-    }
-
-    private void triggerCaseMeta() {
-        if (activity == null) return;
-        CaseObjectMeta caseMeta = getCaseMeta();
-        activity.onCaseMetaChanged(caseMeta);
-    }
-
-    private void triggerCaseMetaNotification() {
-        if (activity == null) return;
-        CaseObjectMetaNotifiers caseMetaNotifiers = getCaseMetaNotifiers();
-        activity.onCaseMetaNotifiersChanged(caseMetaNotifiers);
-    }
-
-    private void triggerCaseMetaJira() {
-        if (activity == null) return;
-        CaseObjectMetaJira caseMetaJira = getCaseMetaJira();
-        activity.onCaseMetaJiraChanged(caseMetaJira);
     }
 
     private void initView() {
@@ -329,7 +313,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
-    private Set<PersonShortView> transliterateNotifiers(Set<Person> notifiers) {
+    private Set<PersonShortView> transliterateNotifiers(Collection<Person> notifiers) {
         return notifiers == null ? new HashSet<>() :
                 notifiers
                         .stream()
@@ -343,28 +327,27 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @UiHandler("state")
     public void onStateChanged(ValueChangeEvent<En_CaseState> event) {
-        triggerCaseMeta();
+        activity.onStateChange();
     }
 
     @UiHandler("importance")
     public void onImportanceChanged(ValueChangeEvent<En_ImportanceLevel> event) {
-        triggerCaseMeta();
+        activity.onImportanceChanged();
     }
 
     @UiHandler("product")
     public void onProductChanged(ValueChangeEvent<ProductShortView> event) {
-        triggerCaseMeta();
+        activity.onProductChanged();
     }
 
     @UiHandler("manager")
     public void onManagerChanged(ValueChangeEvent<PersonShortView> event) {
-        triggerCaseMeta();
+        activity.onManagerChanged();
     }
 
     @UiHandler("company")
     public void onCompanyChanged(ValueChangeEvent<EntityOption> event) {
         if (activity != null) activity.onCompanyChanged();
-        triggerCaseMeta();
     }
 
     @UiHandler("initiator")
@@ -375,27 +358,27 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @UiHandler("initiator")
     public void onInitiatorChanged(ValueChangeEvent<PersonShortView> event) {
-        triggerCaseMeta();
+        activity.onInitiatorChanged();
     }
 
     @UiHandler("platform")
     public void onPlatformChanged(ValueChangeEvent<PlatformOption> event) {
-        triggerCaseMeta();
+        activity.onPlatformChanged();
     }
 
     @UiHandler("timeElapsedInput")
     public void onTimeElapsedChanged(ValueChangeEvent<String> event) {
-        triggerCaseMeta();
+        activity.onTimeElapsedChanged();
     }
 
     @UiHandler("notifiers")
     public void onNotifiersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
-        triggerCaseMetaNotification();
+        activity.onCaseMetaNotifiersChanged( );
     }
 
     @UiHandler("jiraSlaSelector")
     public void onJiraSlaChanged(ValueChangeEvent<CaseObjectMetaJira> event) {
-        triggerCaseMetaJira();
+        activity.onCaseMetaJiraChanged();
     }
 
     @UiField
@@ -422,8 +405,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     PlatformFormSelector platform;
-    @UiField
-    HTMLPanel platformContainer;
     @Inject
     @UiField(provided = true)
     JiraSLASelector jiraSlaSelector;
@@ -459,9 +440,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     EmployeeMultiSelector notifiers;
 
     private AbstractIssueMetaActivity activity;
-    private CaseObjectMeta caseMeta;
-    private CaseObjectMetaNotifiers caseMetaNotifiers;
-    private CaseObjectMetaJira caseMetaJira;
 
     interface IssueMetaViewUiBinder extends UiBinder<HTMLPanel, IssueMetaView> {}
     private static IssueMetaViewUiBinder ourUiBinder = GWT.create(IssueMetaViewUiBinder.class);

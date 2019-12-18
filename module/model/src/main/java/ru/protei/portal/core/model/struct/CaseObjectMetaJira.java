@@ -7,14 +7,9 @@ import java.io.Serializable;
 public class CaseObjectMetaJira implements Serializable {
 
     private Long id;
-
-    // --------------------
-
     private String issueType;
     private String severity;
     private Long slaMapId;
-
-    // --------------------
 
     public CaseObjectMetaJira() {}
 
@@ -24,26 +19,15 @@ public class CaseObjectMetaJira implements Serializable {
         setSlaMapId(slaMapId);
     }
 
-    public CaseObjectMetaJira(CaseObject caseObject) {
-        fillFromCaseObject(caseObject);
-    }
-
-    public CaseObjectMetaJira fillFromCaseObject(CaseObject co) {
+    public CaseObjectMetaJira(CaseObject co) {
         setId(co.getId());
         CaseObjectMetaJira jira = co.getCaseObjectMetaJira();
         if (jira == null) {
-            return this;
+            return;
         }
         setIssueType(jira.getIssueType());
         setSeverity(jira.getSeverity());
         setSlaMapId(jira.getSlaMapId());
-        return this;
-    }
-
-    public CaseObject collectToCaseObject(CaseObject co) {
-        co.setId(getId());
-        co.setCaseObjectMetaJira(this);
-        return co;
     }
 
     public Long getId() {
