@@ -138,6 +138,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
             caseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
             caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
+            caseEvent.setLastCaseObject(caseObj);
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
             logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
