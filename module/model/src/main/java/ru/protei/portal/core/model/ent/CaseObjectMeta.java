@@ -84,6 +84,7 @@ public class CaseObjectMeta implements Serializable {
         if (co.getPlatformId() != null) setPlatformId(co.getPlatformId());
         if (co.getPlatformName() != null) setPlatformName(co.getPlatformName());
         if (co.getTimeElapsed() != null) setTimeElapsed(co.getTimeElapsed());
+        if (co.getExtAppType() != null) setExtAppType(co.getExtAppType());
     }
 
     public CaseObject collectToCaseObject(CaseObject co) {
@@ -103,6 +104,7 @@ public class CaseObjectMeta implements Serializable {
         if (getPlatformId() != null) co.setPlatformId(getPlatformId());
         if (getPlatformName() != null) co.setPlatformName(getPlatformName());
         if (getTimeElapsed() != null) co.setTimeElapsed(getTimeElapsed());
+        if (co.getExtAppType() != null) setExtAppType(co.getExtAppType());
         return co;
     }
 
@@ -252,5 +254,32 @@ public class CaseObjectMeta implements Serializable {
 
     public String getExtAppType() {
         return extAppType;
+    }
+
+    public void setExtAppType(String extAppType) {
+        this.extAppType = extAppType;
+    }
+
+    @Override
+    public String toString() {
+        return "CaseObjectMeta{" +
+                "id=" + id +
+                ", modified=" + modified +
+                ", stateId=" + stateId +
+                ", impLevel=" + impLevel +
+                ", initiatorId=" + initiatorId +
+                ", initiator=" + initiator +
+                ", initiatorCompanyId=" + initiatorCompanyId +
+                ", initiatorCompany=" + initiatorCompany +
+                ", productId=" + productId +
+                ", product=" + product +
+                ", managerId=" + managerId +
+                ", manager=" + manager +
+                ", platformId=" + platformId +
+                ", platformName='" + platformName + '\'' +
+                ", timeElapsed=" + timeElapsed +
+                ", privateCase=" + privateCase +
+                ", extAppType='" + extAppType + '\'' +
+                '}';
     }
 }
