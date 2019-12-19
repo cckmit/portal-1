@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.components.client.input;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -13,16 +12,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.multi.MultiValueSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.multi.MultiValueSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
-import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +32,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
-//        initHandlers();
     }
 
     public void setHeader( String label ) {
@@ -168,15 +162,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire( this, getValue() );
     }
 
-//    private void initHandlers() {
-//        itemContainer.addDomHandler( event -> {
-//            if (!isEnabled) {
-//                return;
-//            }
-//            getPopup().showNear( selectButton );
-//        }, ClickEvent.getType() );
-//    }
-
     public void setAddEnsureDebugId( String debugId ) {
         caretButton.ensureDebugId( debugId );
     }
@@ -235,7 +220,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     @UiField
     HTMLPanel label;
     @UiField
-    HTMLPanel itemContainer;
+    protected HTMLPanel itemContainer;
     @UiField
     SpanElement addIcon;
     @UiField

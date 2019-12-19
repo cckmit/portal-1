@@ -3,22 +3,14 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.input.InputPopupMultiSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Мультиселектор продуктов

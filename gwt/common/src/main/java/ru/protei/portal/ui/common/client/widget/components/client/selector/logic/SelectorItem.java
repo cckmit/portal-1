@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector;
+package ru.protei.portal.ui.common.client.widget.components.client.selector.logic;
 
 import com.google.gwt.event.dom.client.HasKeyUpHandlers;
 import com.google.gwt.user.client.TakesValue;

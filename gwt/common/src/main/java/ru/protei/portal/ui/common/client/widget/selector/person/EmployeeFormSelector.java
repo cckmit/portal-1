@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 
 /**

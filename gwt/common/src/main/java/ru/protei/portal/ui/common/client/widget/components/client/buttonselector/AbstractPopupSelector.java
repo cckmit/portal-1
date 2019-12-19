@@ -5,9 +5,9 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.*;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItemHandler;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItemHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.ItemsContainer;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopup;
@@ -157,9 +157,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public SelectorPopup getPopup() {
-        if (popup == null) {
-            setPopup( new SelectorPopupWithSearch() );
-        }
         return popup;
     }
 
@@ -173,7 +170,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
      */
     protected abstract SelectorItem makeSelectorItem( T element, String elementHtml );
 
-    protected abstract AbstractPageableSelector getSelector();//TODO упростить
+    protected abstract AbstractPageableSelector getSelector();
 
     protected abstract void onSelectionChanged();
 
@@ -197,7 +194,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
         }
     };
 
-    private SelectorPopup popup;
+    private SelectorPopup popup = new SelectorPopupWithSearch();
 
     private String emptyListText = "-- No elements --";
 

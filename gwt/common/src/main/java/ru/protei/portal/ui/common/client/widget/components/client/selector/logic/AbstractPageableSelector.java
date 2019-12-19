@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector;
+package ru.protei.portal.ui.common.client.widget.components.client.selector.logic;
 
 import ru.protei.portal.ui.common.client.widget.components.client.selector.Selector;
-//import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorFilter;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.ItemsContainer;

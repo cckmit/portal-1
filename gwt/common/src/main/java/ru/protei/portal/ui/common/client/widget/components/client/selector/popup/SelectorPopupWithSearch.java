@@ -17,8 +17,6 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.components.client.popup.BasePopupView;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
 
 import java.util.logging.Logger;
@@ -64,7 +62,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         return root;
     }
 
-//    @Override
+    @Override
     public HandlerRegistration addAddHandler( AddHandler handler) {
         return addHandler(handler, AddEvent.getType());
     }
@@ -149,6 +147,10 @@ public class SelectorPopupWithSearch extends BasePopupView
         childContainer.ensureDebugId(debugId);
     }
 
+    public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
+        this.isSearchAutoFocus = isSearchAutoFocus;
+    }
+
     private void ensureDefaultDebugIds() {
         setEnsureDebugIdAddEntryAction( DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
         setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
@@ -156,11 +158,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
-    public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
-        this.isSearchAutoFocus = isSearchAutoFocus;
-    }
 
-    HandlerRegistration scrolForPagingHandleRegistration;
     @UiField
     HTMLPanel childContainer;
 
@@ -182,6 +180,7 @@ public class SelectorPopupWithSearch extends BasePopupView
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = searchString -> { /*ignore*/ };
     private boolean isSearchAutoFocus = true;
+    private HandlerRegistration scrolForPagingHandleRegistration;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopupWithSearch> {
     }

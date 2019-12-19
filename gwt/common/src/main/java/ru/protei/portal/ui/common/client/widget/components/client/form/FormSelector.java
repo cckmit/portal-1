@@ -14,16 +14,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.single.SingleValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.single.SingleValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -36,16 +34,11 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         , HasAddHandlers
 {
 
-    @Inject
-    public void onInit() {
+    public FormSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
 
         setPopup( popup );
-    }
-
-    public void setAddButtonVisible( boolean isVisible ) {
-        popup.setAddButton( isVisible );
     }
 
     @Override
@@ -97,6 +90,10 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         popup.setAddButton( true, addButtonText );
     }
 
+    public void setAddButtonVisible( boolean isVisible ) {
+        popup.setAddButton( isVisible );
+    }
+
     @Override
     public boolean isValid(){
         return getValue() != null;
@@ -143,7 +140,7 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
 
     public void onShowPopupClicked( HTMLPanel button) {
         getPopup().getChildContainer().clear();
-        selector.fillFromBegin(this);
+        getSelector().fillFromBegin(this);
         getPopup().showNear(button);
     }
 

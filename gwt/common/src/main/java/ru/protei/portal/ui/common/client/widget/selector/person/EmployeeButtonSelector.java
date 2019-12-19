@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 
 /**
  * Селектор сотрудников домашней компании

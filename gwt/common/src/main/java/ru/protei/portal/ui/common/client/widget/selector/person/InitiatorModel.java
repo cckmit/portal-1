@@ -15,7 +15,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -32,10 +31,9 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
         myId = event.profile.getId();
     }
 
-    public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds, boolean fired) {
+    public void updateCompanies( Refreshable selector, Set<Long> companyIds, boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
-
 
             @Override
             public void onError(Throwable throwable) {
@@ -49,13 +47,16 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-                transliteration(options);
+                options = transliteration(options);
                 if(selector!=null){
-                    selector.fillOptions( options );
-                    selector.refreshValue();
+                    selector.refresh();
                 }
             }
         });
+    }
+
+    public Collection<PersonShortView> getValues() {
+        return options;
     }
 
     public static Set<Long> makeCompanyIds(Company company) {
@@ -74,15 +75,9 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
         return companyIds;
     }
 
-    public void setFired( boolean value ) {
-        log.warning(     "setFired(): Not implemented." );//TODO NotImplemented
-
-    }
-
-    private static final Logger log = Logger.getLogger( InitiatorModel.class.getName() );
-
-    private void transliteration( List<PersonShortView> options) {
+    private List<PersonShortView> transliteration( List<PersonShortView> options) {
         options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+        return options;
     }
 
     @Override
@@ -97,4 +92,5 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
     Lang lang;
     private List<PersonShortView> options;
     private Long myId;
+    private static final Logger log = Logger.getLogger( InitiatorModel.class.getName() );
 }

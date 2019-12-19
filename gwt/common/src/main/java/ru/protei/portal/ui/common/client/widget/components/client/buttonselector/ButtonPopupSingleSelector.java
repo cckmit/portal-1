@@ -14,9 +14,9 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.single.SingleValueSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.single.SingleValueSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.button.ValueButton;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -138,7 +138,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private SingleValueSelector<T> selector = new SingleValueSelector<T>();
 
     @UiField
-    ValueButton button;
+    protected ValueButton button;
 
     @UiField
     HTMLPanel root;

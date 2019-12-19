@@ -1,8 +1,8 @@
-package ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.multi;
+package ru.protei.portal.ui.common.client.widget.components.client.selector.logic.multi;
 
 import com.google.gwt.user.client.TakesValue;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectionModel;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectionModel;
 
 import java.util.*;
 

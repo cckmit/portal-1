@@ -3,19 +3,16 @@ package ru.protei.portal.ui.common.client.widget.components.client.selector.item
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItemHandler;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItemHandler;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 

@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 

@@ -1,27 +1,23 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
 
-import ru.protei.portal.ui.common.client.widget.components.client.selector.baseselector.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-//import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
-import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 
 /**
  * Селектор person
  */
 public class PersonFormSelector
-        extends FormSelector<PersonShortView>
-//        implements SelectorWithModel<PersonShortView>
+        extends FormSelector<PersonShortView>  implements Refreshable
 {
 
     @Inject
@@ -30,16 +26,6 @@ public class PersonFormSelector
         setSelectorModel( model );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
-//        setDisplayOptionCreator( value -> {
-//            if ( value == null ) {
-//                return new DisplayOption( defaultValue );
-//            }
-//
-//            return new DisplayOption(
-//                    value.getDisplayShortName(),
-//                    value.isFired() ? "not-active" : "",
-//                    value.isFired() ? "fa fa-ban ban" : "" );
-//        } );
 
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
@@ -57,52 +43,32 @@ public class PersonFormSelector
         return item;
     }
 
-//    public void fillOptions( List< PersonShortView > persons ){
-//        clearOptions();
-//        this.persons = persons;
-//    }
-
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
 
-    public void setFired ( boolean value ) { model.setFired (value); }
-//
+    public void setFired ( boolean fired ) {
+        this.fired = fired;
+    }
 
-//    @Override
-//    protected void showPopup(IsWidget relative) {
-////        if(persons != null){
-////            if (defaultValue != null) {
-////                addOption(null);
-////            }
-////
-////            persons.forEach(this::addOption);
-////            persons = null;
-////        }
-//
-//        super.showPopup(relative);
-//        if(companyIds==null){
-//            SelectorItem item = new SelectorItem();
-//            item.setName(lang.initiatorSelectACompany());
-//            item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
-//            popup.getChildContainer().add(item);
-//        }
-//    }
+    private static final Logger log = Logger.getLogger( PersonFormSelector.class.getName() );
 
-    public void updateCompanies(Set<Long> companyIds) {
-//        this.companyIds = companyIds;
-        if(model!=null){
-//            model.updateCompanies(this, companyIds, fired);//TODO
+    @Override
+    public void refresh() {
+        PersonShortView value = getValue();
+        if (value != null
+                && !contains( model.getValues(), value )) {
+            setValue( null );
         }
     }
 
-    @Inject
-    Lang lang;
+    public void updateCompanies(Set<Long> companyIds) {
+        if(model!=null){
+            model.updateCompanies(this, companyIds, fired);
+        }
+    }
 
     private InitiatorModel model;
-
     private String defaultValue;
-//    private boolean fired = false;
-//    private Set<Long> companyIds;
-//    private List<PersonShortView> persons;
+    private boolean fired = false;
 }
