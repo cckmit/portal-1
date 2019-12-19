@@ -426,6 +426,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
         caseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
+        logger.debug("NewName = ", caseEvent.getName().getNewState());
+        logger.debug("NewInfo = ", caseEvent.getInfo().getNewState());
         caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
         caseEvent.setLastCaseObject(newCase);
 
