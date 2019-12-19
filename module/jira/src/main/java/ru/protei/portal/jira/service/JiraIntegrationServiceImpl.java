@@ -269,11 +269,16 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         issue.getAttachments().forEach(attachment -> {
             if (state.hasAttachment(attachment.getSelf().toString())) {
                 logger.debug("skip attachment {} (exists)", attachment.getSelf());
+                return;
             }
-            else {
-                jiraAttachments.add(attachment);
-                state.appendAttachment(attachment.getSelf().toString());
+
+            if (CommonUtils.isTechUser(endpoint, attachment.getAuthor())) {
+                logger.debug("skip our attachment {}, it's by tech-login", attachment.getSelf());
+                return;
             }
+
+            jiraAttachments.add(attachment);
+            state.appendAttachment(attachment.getSelf().toString());
         });
 
         if (jiraAttachments.isEmpty())
