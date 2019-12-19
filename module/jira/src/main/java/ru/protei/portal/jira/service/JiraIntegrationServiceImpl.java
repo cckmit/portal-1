@@ -112,42 +112,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
             CaseObject newCase = caseObj;
-            CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldCase);
-            CaseObjectMeta newCaseMeta = new CaseObjectMeta(newCase);
-            Person person = personMapper.toProteiPerson(event.getUser());
-
-            CaseNameAndDescriptionEvent caseNameAndDescriptionEvent = new CaseNameAndDescriptionEvent(
-                    this,
-                    caseObj.getId(),
-                    new DiffResult<>(oldCase.getName(), newCase.getName()),
-                    new DiffResult<>(oldCase.getInfo(), newCase.getInfo()),
-                    person.getId(),
-                    ServiceModule.JIRA,
-                    En_ExtAppType.JIRA
-            );
-
-            CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
-                    this,
-                    ServiceModule.JIRA,
-                    person.getId(),
-                    En_ExtAppType.forCode(oldCase.getExtAppType()),
-                    oldCaseMeta,
-                    newCaseMeta
-            );
-
-            AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
-            caseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
-            caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
-            caseEvent.setLastCaseObject(caseObj);
 
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
             logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
 
-            JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
-
             caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
             caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
-//            caseObj.setName(issue.getSummary()); -- update it with priority and info
             caseObj.setLocal(0);
             caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
@@ -156,15 +126,17 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             caseObjectDAO.saveOrUpdate(caseObj);
 
-            addIssueTypeAndSeverity(jiraExtAppData, issue);
+            AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, newCase, personMapper.toProteiPerson(event.getUser()));
+
+            JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
             caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
             caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, jiraExtAppData, personMapper));
 
+            addIssueTypeAndSeverity(jiraExtAppData, issue);
+
             appData.setExtAppData(jiraExtAppData.toString());
-
             logger.debug("save case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
-
             externalCaseAppDAO.merge(appData);
 
             return caseEvent;
@@ -199,10 +171,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
-        addIssueTypeAndSeverity(jiraExtAppData, issue);
-
         caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
         caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, jiraExtAppData, personMapper));
+
+        addIssueTypeAndSeverity(jiraExtAppData, issue);
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
         appData.setExtAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
@@ -426,5 +398,37 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             jiraExtAppData.setSlaSeverity(severity);
         }
         return jiraExtAppData;
+    }
+
+    private AssembledCaseEvent generateUpdateEvent(CaseObject oldCase, CaseObject newCase, Person person) {
+
+        CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldCase);
+        CaseObjectMeta newCaseMeta = new CaseObjectMeta(newCase);
+
+        CaseNameAndDescriptionEvent caseNameAndDescriptionEvent = new CaseNameAndDescriptionEvent(
+                this,
+                newCase.getId(),
+                new DiffResult<>(oldCase.getName(), newCase.getName()),
+                new DiffResult<>(oldCase.getInfo(), newCase.getInfo()),
+                person.getId(),
+                ServiceModule.JIRA,
+                En_ExtAppType.JIRA
+        );
+
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
+                this,
+                ServiceModule.JIRA,
+                person.getId(),
+                En_ExtAppType.JIRA,
+                oldCaseMeta,
+                newCaseMeta
+        );
+
+        AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
+        caseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
+        caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
+        caseEvent.setLastCaseObject(newCase);
+
+        return caseEvent;
     }
 }
