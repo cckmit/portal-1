@@ -157,12 +157,13 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public SelectorPopup getPopup() {
+        if(popup==null) setPopup( new SelectorPopupWithSearch() );
         return popup;
     }
 
     public void setPopup(SelectorPopup popup) {
-        this.popup = popup;
         popup.setPopupHandler(this);
+        this.popup = popup;
     }
 
     /**
@@ -194,7 +195,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
         }
     };
 
-    private SelectorPopup popup = new SelectorPopupWithSearch();
+    private SelectorPopup popup;
 
     private String emptyListText = "-- No elements --";
 

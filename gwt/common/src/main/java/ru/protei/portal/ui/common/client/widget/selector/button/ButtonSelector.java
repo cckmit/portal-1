@@ -12,13 +12,16 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
  * Вид селектора
+ * @deprecated  следует использовать {@link ButtonPopupSingleSelector}
  */
+@Deprecated
 public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
 
     public ButtonSelector() {
