@@ -16,6 +16,8 @@
                     </div>
                     <h5 ui:field="name"/>
 
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+
                     <div ui:field="metaTable" class="form-group-attached">
                         <div class="row clearfix">
                             <div class="col-md-3">
@@ -75,8 +77,6 @@
                     </div>
 
                     <div class="form-group small hint-text pre-formatted-info m-t-10" ui:field="description"/>
-
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
                     <div class="row form-group">
                         <div class="col-md-12">
