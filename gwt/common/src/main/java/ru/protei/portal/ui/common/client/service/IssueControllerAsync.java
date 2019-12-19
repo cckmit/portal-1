@@ -28,4 +28,5 @@ public interface IssueControllerAsync {
     void updateIssueMetaJira( CaseObjectMetaJira caseMetaJira, AsyncCallback<CaseObjectMetaJira> async);
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
+
 }

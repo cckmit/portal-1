@@ -41,6 +41,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onShow (ProjectEvents.Edit event) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         resetView();
@@ -194,6 +199,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
 
         return true;
+    }
+
+    private boolean hasPrivileges(Long projectId) {
+        if (projectId == null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE)) {
+            return true;
+        }
+
+        if (projectId != null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

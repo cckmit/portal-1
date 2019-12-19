@@ -1,62 +1,17 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-
-import java.util.Set;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueView;
 
 /**
  * Абстракция вида превью обращения
  */
-public interface AbstractIssuePreviewView extends IsWidget {
+public interface AbstractIssuePreviewView extends IsWidget, AbstractIssueView {
 
-    void setActivity(AbstractIssuePreviewActivity activity);
+    void setActivity( AbstractIssuePreviewActivity activity );
 
-    void setPrivateIssue(boolean privateIssue);
-    void setCaseNumber(Long caseNumber);
-    void setCreatedBy(String value);
-    void setState(long value );
-    void setImportance(int value);
-    void setProduct(String value);
-
-    void setContact(String value);
-    void setManager(String value);
-    void setName(String value, String jiraUrl);
-
-    void setInfo(String value);
-
-    void setPlatformName(String value);
-    void setPlatformLink(String link);
-    void setPlatformVisibility(boolean visible);
-    void isFullScreen(boolean isFullScreen);
-
-    void setSubscriptionEmails(String value);
-    HasTime timeElapsed();
-    HasVisibility timeElapsedContainerVisibility();
-
-    HasVisibility jiraContainerVisibility();
-
-    void setJiraIssueType(String value);
-    void setJiraSeverity(String value);
-    void setJiraTimeOfReaction(String value);
-    void setJiraTimeOfDecision(String value);
-
-    HasWidgets getCommentsContainer();
-
-    HasWidgets getLinksContainer();
-
-    HasAttachments attachmentsContainer();
-
-    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
-    boolean isAttached();
+    void setFullScreen( boolean isFullScreen );
 
     HasVisibility backBtnVisibility();
-
-    HasWidgets getTagsContainer();
 }

@@ -9,4 +9,8 @@ public interface AbstractDocumentFormActivity {
     void onProjectChanged();
 
     void onDecimalNumberChanged();
+
+    void onDownloadPdf();
+
+    void onDownloadDoc();
 }

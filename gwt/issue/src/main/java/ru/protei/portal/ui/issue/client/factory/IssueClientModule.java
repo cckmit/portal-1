@@ -6,14 +6,16 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateView;
 import ru.protei.portal.ui.issue.client.activity.create.IssueCreateActivity;
-import ru.protei.portal.ui.issue.client.activity.edit.*;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
+import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
+import ru.protei.portal.ui.issue.client.activity.meta.IssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.page.IssuePage;
-import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
-import ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
@@ -37,9 +39,10 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind( CaseStateFilterProvider.class ).asEagerSingleton();
         bind( IssueTableActivity.class ).asEagerSingleton();
+        bind( AbstractIssueMetaActivity.class ).to(IssueMetaActivity.class).asEagerSingleton();
         bind( AbstractIssueTableView.class ).to(IssueTableView.class);
 
-        bind( AbstractIssuePreviewActivity.class).to(IssuePreviewActivity.class).asEagerSingleton();
+
         bind( AbstractIssuePreviewView.class ).to(IssuePreviewView.class).in(Singleton.class);
 
         bind( AbstractIssueEditActivity.class ).to( IssueEditActivity.class ).asEagerSingleton();

@@ -7,11 +7,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
@@ -49,6 +51,11 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     @Event
     public void onShow(ContractEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
 
         view.footerVisibility().setVisible(true);
@@ -138,6 +145,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private AbstractContractPreviewView view;
     @Inject
     private ContractControllerAsync contractController;
+    @Inject
+    private PolicyService policyService;
 
     private Long contractId;
 

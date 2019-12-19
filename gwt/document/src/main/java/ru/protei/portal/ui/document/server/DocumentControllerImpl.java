@@ -48,6 +48,7 @@ public class DocumentControllerImpl implements DocumentController {
 
     @Override
     public Document saveDocument(Document document) throws RequestFailedException {
+
         if (document == null) {
             log.warn("null document in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
@@ -57,22 +58,16 @@ public class DocumentControllerImpl implements DocumentController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         Result<Document> response;
+
+        FileItem pdfFile = sessionService.getFilePdf(httpRequest);
+        FileItem docFile = sessionService.getFileDoc(httpRequest);
+        sessionService.setFilePdf(httpRequest, null);
+        sessionService.setFileDoc(httpRequest, null);
+
         if (document.getId() == null) {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                log.error("file item in session was null");
-                throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
-            }
-            sessionService.setFileItem(httpRequest, null);
-            response = documentService.createDocument(token, document, fileItem);
+            response = documentService.createDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         } else {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                response = documentService.updateDocument(token, document);
-            } else {
-                sessionService.setFileItem(httpRequest, null);
-                response = documentService.updateDocumentAndContent(token, document, fileItem);
-            }
+            response = documentService.updateDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         }
 
         log.info("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
@@ -93,7 +88,7 @@ public class DocumentControllerImpl implements DocumentController {
         }
         log.info("removeDocument(): id = {}", document.getId());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId());
+        Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), token.getPersonDisplayShortName());
         log.info("removeDocument(): id = {}, status = {}", document.getId(), result.getStatus());
         return ServiceUtils.checkResultAndGetData(result);
     }

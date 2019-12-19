@@ -4,14 +4,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
-        <div class="card-body no-padding">
 
-            <div class="container-fluid padding-15 bg-white">
-                <div class="card card-transparent no-margin">
-                    <g:HTMLPanel ui:field="documentContainer"/>
-                </div>
-            </div>
-        </div>
+        <g:HTMLPanel styleName="card-body" ui:field="documentContainer"/>
 
         <div class="card-footer">
             <div class="card card-transparent no-margin">

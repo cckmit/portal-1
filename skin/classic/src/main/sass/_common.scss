@@ -1312,7 +1312,7 @@ td.info {
   font-size: 85% !important;
 }
 
-.label {
+.label:not(.tag) {
   display: inline;
   padding: .2em .6em .3em;
   font-size: 75%;
@@ -2828,13 +2828,6 @@ div.select2-container {
   margin-bottom: 0;
 }
 
-.preview-title-image_right {
-  height: 50px;
-  position: absolute;
-  right: 20px;
-  top: 20px;
-}
-
 .preview.site-folder {
 
   fieldset {
@@ -3790,6 +3783,36 @@ table {
   .type-selector-item {
     display: block;
     padding: 0;
+  }
+}
+
+// todo: remove after PORTAL-915
+.company-tags .card-links {
+  display: none;
+}
+
+.preview-title-image-container-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  img {
+    height: 50px;
+  }
+}
+
+.table-documents {
+  .document-approve-column {
+    width: 40px;
+    text-align: center;
+  }
+  .document-name-column {
+    width: 50%;
+  }
+  .document-number-column {
+    width: 18%;
+  }
+  .document-project-column {
+    width: 18%;
   }
 }
 

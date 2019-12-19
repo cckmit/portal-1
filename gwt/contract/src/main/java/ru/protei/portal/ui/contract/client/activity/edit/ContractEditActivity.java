@@ -17,10 +17,7 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContractEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -40,6 +37,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Event
     public void onShow(ContractEvents.Edit event) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
 
         if ( !policyService.hasAnyPrivilegeOf( En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT )) {
@@ -248,6 +250,18 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private ProductDirectionInfo createProductOrNull(Long id, String name) {
         return id == null ? null : new ProductDirectionInfo(id, name);
+    }
+
+    private boolean hasPrivileges(Long contractId) {
+        if (contractId == null && policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+            return true;
+        }
+
+        if (contractId != null && policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

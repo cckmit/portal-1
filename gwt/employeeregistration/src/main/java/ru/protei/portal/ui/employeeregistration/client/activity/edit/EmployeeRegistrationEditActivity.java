@@ -8,12 +8,15 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
@@ -40,6 +43,11 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
     @Event
     public void onShow(EmployeeRegistrationEvents.Create event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_CREATE)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         clearView();
 
         initDetails.parent.clear();
@@ -226,6 +234,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private AbstractEmployeeRegistrationEditView view;
     @Inject
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
+    @Inject
+    private PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
 }

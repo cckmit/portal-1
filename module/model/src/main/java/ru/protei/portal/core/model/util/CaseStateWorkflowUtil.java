@@ -31,14 +31,6 @@ public class CaseStateWorkflowUtil {
         return false;
     }
 
-    public static En_CaseStateWorkflow recognizeWorkflow(CaseObject caseObject) {
-
-        if (caseObject == null) {
-            return En_CaseStateWorkflow.NO_WORKFLOW;
-        }
-
-        return recognizeWorkflow(caseObject.getExtAppType());
-    }
 
     public static En_CaseStateWorkflow recognizeWorkflow(String extAppType) {
 

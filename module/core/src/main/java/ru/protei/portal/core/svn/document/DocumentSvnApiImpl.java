@@ -11,10 +11,14 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class DocumentSvnApiImpl implements DocumentSvnApi {
 
@@ -44,10 +48,10 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     PortalConfig config;
 
     @Override
-    public void saveDocument(Long projectId, Long documentId, InputStream inputStream) throws SVNException {
-        String fileName = getFileName(projectId, documentId);
+    public void saveDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author, InputStream inputStream) throws SVNException {
+        String fileName = getFileName(projectId, documentId, documentFormat);
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedAddCommitMessage(projectId, documentId), null);
+        ISVNEditor editor = repository.getCommitEditor(getFormattedAddCommitMessage(projectId, documentId, author), null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -75,14 +79,14 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     }
 
     @Override
-    public void updateDocument(Long projectId, Long documentId, InputStream newDocumentStream) throws SVNException, IOException {
+    public void updateDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author, InputStream newDocumentStream) throws SVNException, IOException {
         // see "File modification" at https://wiki.svnkit.com/Committing_To_A_Repository#line-264
 
-        String fileName = getFileName(projectId, documentId);
+        String fileName = getFileName(projectId, documentId, documentFormat);
 
         final InputStream oldDocumentStream;
         try {
-            oldDocumentStream = getDocument(projectId, documentId);
+            oldDocumentStream = getDocument(projectId, documentId, documentFormat);
         } catch (SVNException e) {
             log.error("updateDocument(p=" + projectId + ",d=" + documentId + "): Failed to get old document stream");
             throw e;
@@ -91,7 +95,7 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
             throw e;
         }
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedUpdateCommitMessage(projectId, documentId), null);
+        ISVNEditor editor = repository.getCommitEditor(getFormattedUpdateCommitMessage(projectId, documentId, author), null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -115,15 +119,15 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     }
 
     @Override
-    public void getDocument(Long projectId, Long documentId, OutputStream outputStream) throws SVNException {
-        repository.getFile(getFilePath(projectId, documentId), HEAD_REVISION, new SVNProperties(), outputStream);
+    public void getDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, OutputStream outputStream) throws SVNException {
+        repository.getFile(getFilePath(projectId, documentId, documentFormat), HEAD_REVISION, new SVNProperties(), outputStream);
     }
 
     @Override
-    public void removeDocument(Long projectId, Long documentId) throws SVNException {
-        String fileName = getFileName(projectId, documentId);
+    public void removeDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author) throws SVNException {
+        String fileName = getFileName(projectId, documentId, documentFormat);
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedRemoveCommitMessage(projectId, documentId), null);
+        ISVNEditor editor = repository.getCommitEditor(getFormattedRemoveCommitMessage(projectId, documentId, author), null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -140,33 +144,53 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
         log.info("removeDocument(p=" + projectId + ",d=" + documentId + "): Commit info: " + svnCommitInfo);
     }
 
-    private InputStream getDocument(Long projectId, Long documentId) throws SVNException, IOException {
+    @Override
+    public List<String> listDocuments(Long projectId, Long documentId) throws SVNException {
+        List<String> result = new ArrayList<>();
+        String path = getDirPath(projectId);
+        //noinspection rawtypes
+        Collection entries = repository.getDir(path, HEAD_REVISION, null, (Collection<SVNDirEntry>) null);
+        for (Object o : entries) {
+            SVNDirEntry entry = (SVNDirEntry) o;
+            if (entry.getKind() == SVNNodeKind.FILE) {
+                String filePath = (path.isEmpty() ? "" : path + "/") + entry.getName();
+                result.add(filePath);
+            }
+        }
+        return result;
+    }
+
+    private InputStream getDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat) throws SVNException, IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            getDocument(projectId, documentId, out);
+            getDocument(projectId, documentId, documentFormat, out);
             return new ByteArrayInputStream(out.toByteArray());
         }
     }
 
-    private static String getFilePath(Long projectId, Long documentId) {
-        return "/" + projectId + "/" + getFileName(projectId, documentId);
+    private static String getFilePath(Long projectId, Long documentId, En_DocumentFormat documentFormat) {
+        return getDirPath(projectId) + "/" + getFileName(projectId, documentId, documentFormat);
     }
 
-    private static String getFileName(Long projectId, Long documentId) {
-        return documentId + ".pdf";
+    private static String getDirPath(Long projectId) {
+        return "/" + projectId;
     }
 
-    private String getFormattedAddCommitMessage(Long projectId, Long documentId) {
+    private static String getFileName(Long projectId, Long documentId, En_DocumentFormat documentFormat) {
+        return documentId + "." + documentFormat.getFormat();
+    }
+
+    private String getFormattedAddCommitMessage(Long projectId, Long documentId, String author) {
         String commitMessage = config.data().svn().getCommitMessageAdd();
-        return String.format(commitMessage, projectId, documentId);
+        return String.format(commitMessage, projectId, documentId, author);
     }
 
-    private String getFormattedUpdateCommitMessage(Long projectId, Long documentId) {
+    private String getFormattedUpdateCommitMessage(Long projectId, Long documentId, String author) {
         String commitMessage = config.data().svn().getCommitMessageUpdate();
-        return String.format(commitMessage, projectId, documentId);
+        return String.format(commitMessage, projectId, documentId, author);
     }
 
-    private String getFormattedRemoveCommitMessage(Long projectId, Long documentId) {
+    private String getFormattedRemoveCommitMessage(Long projectId, Long documentId, String author) {
         String commitMessage = config.data().svn().getCommitMessageRemove();
-        return String.format(commitMessage, projectId, documentId);
+        return String.format(commitMessage, projectId, documentId, author);
     }
 }

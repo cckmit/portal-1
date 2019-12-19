@@ -123,7 +123,8 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Boolean> response = equipmentService.removeEquipment( token, equipmentId );
+        Result<Boolean> response = equipmentService.removeEquipment( token, equipmentId, token.getPersonDisplayShortName() );
+
         log.info( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -256,22 +257,16 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         Result<Document> response;
+
+        FileItem pdfFile = sessionService.getFilePdf(httpRequest);
+        FileItem docFile = sessionService.getFileDoc(httpRequest);
+        sessionService.setFilePdf(httpRequest, null);
+        sessionService.setFileDoc(httpRequest, null);
+
         if (document.getId() == null) {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                log.error("saveDocument: id={} | file item in session was null", id4log);
-                throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
-            }
-            sessionService.setFileItem(httpRequest, null);
-            response = documentService.createDocument(token, document, fileItem);
+            response = documentService.createDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         } else {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                response = documentService.updateDocument(token, document);
-            } else {
-                sessionService.setFileItem(httpRequest, null);
-                response = documentService.updateDocumentAndContent(token, document, fileItem);
-            }
+            response = documentService.updateDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         }
 
         log.info("saveDocument: id={} | result: {}", id4log, response.isOk() ? "ok" : response.getStatus());
