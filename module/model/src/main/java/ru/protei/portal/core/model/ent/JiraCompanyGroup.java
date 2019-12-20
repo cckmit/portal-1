@@ -12,7 +12,7 @@ public class JiraCompanyGroup {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "jira_company_name")
+    @JdbcColumn(name = Columns.JIRA_COMPANY_NAME)
     private String jiraCompanyName;
 
     @JdbcJoinedObject(localColumn = "company_id", table = "company", updateLocalColumn = true)
@@ -42,5 +42,9 @@ public class JiraCompanyGroup {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public interface Columns {
+        String JIRA_COMPANY_NAME = "jira_company_name";
     }
 }
