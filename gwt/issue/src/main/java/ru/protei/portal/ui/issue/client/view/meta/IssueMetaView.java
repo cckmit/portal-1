@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -189,8 +188,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setPlatform(Platform platform) {
-        this.platform.setValue(platform == null ? null : new PlatformOption(platform.getName(), platform.getId()));
+    public void setPlatform( PlatformOption platform) {
+        this.platform.setValue(platform);
     }
 
     @Override

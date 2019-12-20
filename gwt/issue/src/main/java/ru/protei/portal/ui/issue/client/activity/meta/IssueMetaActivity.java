@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -215,8 +216,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         }
 
-
-
         metaView.setCaseMetaNotifiers(caseMetaNotifiers.getNotifiers());
     }
 
@@ -284,6 +283,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
+        metaView.setPlatform( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()));
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {

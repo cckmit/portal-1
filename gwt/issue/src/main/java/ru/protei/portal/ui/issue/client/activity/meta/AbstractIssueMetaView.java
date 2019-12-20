@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -44,7 +43,7 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     Person getInitiator();
 
-    void setPlatform( Platform platform);
+    void setPlatform( PlatformOption platform);
 
     Long getPlatformId();
 
