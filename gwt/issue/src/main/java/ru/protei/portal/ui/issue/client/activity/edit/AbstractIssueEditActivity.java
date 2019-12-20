@@ -7,6 +7,4 @@ public interface AbstractIssueEditActivity extends AbstractIssueActivity {
     void onFullScreenPreviewClicked();
 
     void onBackClicked();
-
 }
-

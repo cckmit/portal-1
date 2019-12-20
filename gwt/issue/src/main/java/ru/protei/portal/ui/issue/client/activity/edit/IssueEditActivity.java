@@ -215,6 +215,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         initDetails.parent.add( previewView.asWidget() );
     }
 
+
     private void requestIssue( Long number, HasWidgets parent, final AbstractIssueView view ) {
         issueService.getIssue(number, new RequestCallback<CaseObject>() {
             @Override

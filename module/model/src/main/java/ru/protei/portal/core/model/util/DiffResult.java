@@ -46,6 +46,10 @@ public class DiffResult<T> implements Serializable {
         return newState != null;
     }
 
+    public boolean isEmpty() {
+        return initialState == null && newState == null;
+    }
+
     public boolean hasDifferences() {
         return initialState != null && !Objects.equals(initialState, newState);
     }

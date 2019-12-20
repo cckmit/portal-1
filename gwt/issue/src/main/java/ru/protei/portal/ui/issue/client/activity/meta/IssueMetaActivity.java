@@ -210,10 +210,19 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
         } else {
             caseMetaNotifiers.setNotifiers(null);
+
+
         }
+
+
 
         metaView.setCaseMetaNotifiers(caseMetaNotifiers.getNotifiers());
     }
+
+//    @Override
+//    public void onBackClicked() {
+//        fireEvent(new Back());
+//    }
 
     private void fillJiraView(CaseObjectMetaJira caseMetaJira) {
         metaView.jiraSlaSelectorVisibility().setVisible( caseMetaJira != null );
