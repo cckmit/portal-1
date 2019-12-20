@@ -75,7 +75,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onStateChange() {
         meta.setStateId(metaView.state().getValue().getId());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
     }
 
     @Override
@@ -93,13 +93,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onManagerChanged() {
         meta.setManager(metaView.getManager());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
     }
 
     @Override
     public void onInitiatorChanged() {
         meta.setInitiator(metaView.getInitiator());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
     }
 
     @Override
@@ -115,6 +115,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
+        onCaseMetaChanged(caseMeta, null);
+    }
+
+    private void onCaseMetaChanged(CaseObjectMeta caseMeta, Runnable runAfterUpdate) {
         if (!validateCaseMeta(caseMeta)) {
             return;
         }
@@ -123,6 +127,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
+                    if(runAfterUpdate!=null) runAfterUpdate.run();
                 }));
     }
 
@@ -194,11 +199,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             initiator = meta.getInitiator();
         } else if (Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
             initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
+            meta.setInitiator( initiator );
         }
 
         metaView.setInitiator(initiator);
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+
+        if(company!=null && initiator!=null){
+            onCaseMetaChanged( meta );
+            onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
+        }
     }
 
     @Override

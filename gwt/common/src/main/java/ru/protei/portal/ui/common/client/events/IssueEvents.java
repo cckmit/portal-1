@@ -129,5 +129,13 @@ public class IssueEvents {
         }
         public Long timeElapsed;
     }
+
+    public static class IssueStateChanged {
+        public IssueStateChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+
+        public Long issueId;
+    }
 }
 

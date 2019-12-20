@@ -14,4 +14,6 @@ public interface AbstractIssuePreviewView extends IsWidget, AbstractIssueView {
     void setFullScreen( boolean isFullScreen );
 
     HasVisibility backBtnVisibility();
+
+    boolean isAttached();
 }
