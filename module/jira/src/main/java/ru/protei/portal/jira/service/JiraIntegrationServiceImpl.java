@@ -157,7 +157,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCreatorId(caseObj.getInitiatorId());
 
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
-//        caseObj.setName(issue.getSummary()); -- update it with priority and info
         caseObj.setLocal(0);
         caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
         caseObj.setInitiatorCompany(companyDAO.get(endpoint.getCompanyId()));
@@ -426,8 +425,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
         caseEvent.attachCaseNameAndDescriptionEvent(caseNameAndDescriptionEvent);
-        logger.debug("NewName = ", caseEvent.getName().getNewState());
-        logger.debug("NewInfo = ", caseEvent.getInfo().getNewState());
         caseEvent.attachCaseObjectMetaEvent(caseObjectMetaEvent);
         caseEvent.setLastCaseObject(newCase);
 
