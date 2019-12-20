@@ -53,6 +53,7 @@ public class BootstrapService {
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
+        addNexignJiraCompany();
     }
 
     private void autoPatchDefaultRoles () {
@@ -306,6 +307,34 @@ public class BootstrapService {
         log.info("Document index full build has ended");
     }
 
+    private void addNexignJiraCompany() {
+        log.info("addNexignJiraCompany has started");
+
+        Company company = new Company();
+        company.setCreated(new Date());
+        company.setCname("Nexign - Uzbektelekom");
+        company.setInfo("NexignJira company");
+        company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
+        companyDAO.persist(company);
+
+        company = new Company();
+        company.setCreated(new Date());
+        company.setCname("Nexign - Kktcell_cyprus");
+        company.setInfo("NexignJira company");
+        company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
+        companyDAO.persist(company);
+
+        company = new Company();
+        company.setCreated(new Date());
+        company.setCname("NexignJira");
+        company.setInfo("NexignJira company");
+        company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
+        companyDAO.persist(company);
+
+        log.info("addNexignJiraCompany has ended");
+    }
+
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -345,4 +374,8 @@ public class BootstrapService {
     DocumentStorageIndex documentStorageIndex;
     @Autowired
     PortalConfig config;
+    @Autowired
+    CompanyCategoryDAO companyCategoryDAO;
+    @Autowired
+    CompanyDAO companyDAO;
 }
