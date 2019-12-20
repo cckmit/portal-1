@@ -221,7 +221,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.description().setValue(null);
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
 
-        fillMetaView();
+        fillMetaView( initCaseMeta() );
         onCompanyChanged();
 
         view.attachmentsContainer().clear();
@@ -238,9 +238,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         unlockSave();
     }
 
-    private void fillMetaView() {
-        CaseObjectMeta caseObjectMeta = initCaseMeta();
-
+    private void fillMetaView( CaseObjectMeta caseObjectMeta ) {
         issueMetaView.companyEnabled().setEnabled(true);
         issueMetaView.productEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT));
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
