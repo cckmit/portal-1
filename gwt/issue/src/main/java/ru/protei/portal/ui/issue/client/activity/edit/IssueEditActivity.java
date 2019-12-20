@@ -124,6 +124,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         }
     }
 
+    @Event
+    public void onStateChanged( IssueEvents.IssueStateChanged event ) {
+        if (editView.isAttached() || previewView.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
     @Override
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
@@ -132,14 +140,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
                     issueInfoWidget.attachmentsContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);
                     issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                    fireEvent(new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer())
-                            .withCaseType(En_CaseType.CRM_SUPPORT)
-                            .withCaseId(issue.getId())
-                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                            .withPrivateCase(issue.isPrivateCase())
-                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
+                    showComments( issue );
                 }));
     }
 
@@ -237,20 +238,24 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
                         .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT ))
                         .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT )));
 
-                fireEvent(new CaseCommentEvents.Show(issueInfoWidget.getCommentsContainer())
-                        .withCaseType(En_CaseType.CRM_SUPPORT)
-                        .withCaseId(issue.getId())
-                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                        .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                        .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                        .withPrivateCase(issue.isPrivateCase())
-                        .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
+                showComments( issue );
 
                 fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
 
                 parent.add( view.asWidget() );
             }
         });
+    }
+
+    private void showComments( CaseObject issue ) {
+        fireEvent( new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer() )
+                .withCaseType( En_CaseType.CRM_SUPPORT )
+                .withCaseId( issue.getId() )
+                .withModifyEnabled( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) )
+                .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
+                .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
+                .withPrivateCase( issue.isPrivateCase() )
+                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
     }
 
     private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
