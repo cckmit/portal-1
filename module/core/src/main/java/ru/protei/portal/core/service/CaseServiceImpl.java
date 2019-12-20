@@ -39,8 +39,7 @@ import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления обращениями
@@ -748,16 +747,15 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {
-        return caseMeta != null
-                && caseMeta.getImpLevel() != null
-                && En_ImportanceLevel.find(caseMeta.getImpLevel()) != null
-                && En_CaseState.getById(caseMeta.getStateId()) != null
-                && (caseMeta.getState().getId() == En_CaseState.CREATED.getId()
-                    || caseMeta.getState().getId() == En_CaseState.CANCELED.getId()
-                    || caseMeta.getManagerId() != null
-                )
-                && (caseMeta.getInitiatorCompanyId() != null)
-                && (caseMeta.getInitiatorId() == null || personBelongsToCompany(caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId()));
+        if (caseMeta == null) return false;
+        if (caseMeta.getImpLevel() == null) return false;
+        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
+        if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
+        if (!listOf( En_CaseState.CREATED, En_CaseState.CANCELED ).contains( caseMeta.getState() ) && caseMeta.getManagerId() == null) return false;
+        if (caseMeta.getInitiatorCompanyId() == null) return false;
+        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
+            return false;
+        return true;
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {

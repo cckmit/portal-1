@@ -185,7 +185,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public Person getInitiator() {
-        return Person.fromPersonShortView(initiator.getValue());
+        return Person.fromPersonFullNameShortView(initiator.getValue());
     }
 
     @Override
