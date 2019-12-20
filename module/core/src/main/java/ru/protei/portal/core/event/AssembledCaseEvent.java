@@ -425,7 +425,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private <T> DiffResult<T> synchronizeDiffs(DiffResult<T> source, DiffResult<T> other) {
-        if(!other.hasDifferences()) return source;
+        if(!source.isEmpty() && !other.hasDifferences()) return source;
         synchronized (source) {
             DiffResult<T> result = new DiffResult<>();
             result.setInitialState(source.hasInitialState() ? source.getInitialState() : other.getInitialState());
