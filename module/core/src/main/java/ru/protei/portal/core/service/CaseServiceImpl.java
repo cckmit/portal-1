@@ -761,7 +761,9 @@ public class CaseServiceImpl implements CaseService {
     private boolean personBelongsToCompany(Long personId, Long companyId) {
         PersonQuery personQuery = new PersonQuery();
         personQuery.setCompanyIds(Collections.singleton(companyId));
-        return personDAO.getPersons(personQuery).stream().anyMatch(person -> personId.equals(person.getId()));
+        List<Person> persons = personDAO.getPersons( personQuery );
+        log.info( "personBelongsToCompany(): companyId={} personId={} in {}", companyId, personId, toList( persons, Person::getId ) );
+        return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
