@@ -550,6 +550,11 @@ public class MainConfiguration {
         return new YoutrackHttpClientImpl();
     }
 
+    @Bean
+    public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
+        return new JiraCompanyGroupDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

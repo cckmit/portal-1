@@ -308,15 +308,36 @@ public class BootstrapService {
     }
 
     private void addNexignJiraCompany() {
+        Company companyCheck = companyDAO.getCompanyByName("NexignJira");
+        if (companyCheck != null) {
+            return;
+        }
+
         log.info("addNexignJiraCompany has started");
 
-        Company company = new Company();
+        // Nexign - Chinguitel
+        Company company = companyDAO.getCompanyByName("Nexign - Chinguitel");
+        JiraCompanyGroup jiraCompanyGroup = new JiraCompanyGroup();
+        jiraCompanyGroup.setJiraCompanyName("Nexign - Chinguitel");
+        jiraCompanyGroup.setCompany(company);
+        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
+
+
+        // Nexign - Uzbektelekom
+        company = new Company();
         company.setCreated(new Date());
         company.setCname("Nexign - Uzbektelekom");
         company.setInfo("NexignJira company");
         company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
         companyDAO.persist(company);
 
+        jiraCompanyGroup = new JiraCompanyGroup();
+        jiraCompanyGroup.setJiraCompanyName("Nexign - Uzbektelekom");
+        jiraCompanyGroup.setCompany(company);
+        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
+
+
+        // Nexign - Kktcell_cyprus
         company = new Company();
         company.setCreated(new Date());
         company.setCname("Nexign - Kktcell_cyprus");
@@ -324,12 +345,24 @@ public class BootstrapService {
         company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
         companyDAO.persist(company);
 
+        jiraCompanyGroup = new JiraCompanyGroup();
+        jiraCompanyGroup.setJiraCompanyName("Nexign - Kktcell_cyprus");
+        jiraCompanyGroup.setCompany(company);
+        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
+
+
+        // NexignJira
         company = new Company();
         company.setCreated(new Date());
         company.setCname("NexignJira");
         company.setInfo("NexignJira company");
         company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
         companyDAO.persist(company);
+
+        jiraCompanyGroup = new JiraCompanyGroup();
+        jiraCompanyGroup.setJiraCompanyName("NexignJira");
+        jiraCompanyGroup.setCompany(company);
+        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
 
         log.info("addNexignJiraCompany has ended");
     }
@@ -378,4 +411,6 @@ public class BootstrapService {
     CompanyCategoryDAO companyCategoryDAO;
     @Autowired
     CompanyDAO companyDAO;
+    @Autowired
+    JiraCompanyGroupDAO jiraCompanyGroupDAO;
 }
