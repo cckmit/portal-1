@@ -260,9 +260,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
-        issueMetaView.setManager(null);
-        issueMetaView.setProduct(null);
-        issueMetaView.setTimeElapsed(null);
+        issueMetaView.setManager(caseObjectMeta.getManager());
+        issueMetaView.setProduct(caseObjectMeta.getProduct());
+        issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
     }
 
     private CaseObjectMeta initCaseMeta() {
