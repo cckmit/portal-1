@@ -157,6 +157,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onCompanyChanged() {
         Company company = metaView.getCompany();
+        meta.setInitiatorCompany( company );
 
         metaView.initiatorUpdateCompany(company);
 

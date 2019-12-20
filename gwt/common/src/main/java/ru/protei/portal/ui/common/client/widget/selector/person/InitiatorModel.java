@@ -31,6 +31,7 @@ public abstract class InitiatorModel implements Activity {
 
     public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds, boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+        selector.clearOptions();
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
             @Override
             public void onError(Throwable throwable) {
