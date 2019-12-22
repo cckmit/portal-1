@@ -215,7 +215,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillView() {
         view.privacyVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-        view.isPrivate().setValue(false);
+        view.isPrivate().setValue(true);
 
         view.name().setValue(null);
         view.description().setValue(null);
