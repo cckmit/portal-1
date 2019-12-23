@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.forbidden;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -15,8 +16,14 @@ public abstract class ForbiddenPageActivity implements Activity, AbstractForbidd
 
     @Event
     public void onShow(ForbiddenEvents.Show event) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+
+        HasWidgets container = event.container;
+        if (container == null) {
+            container = initDetails.parent;
+        }
+
+        container.clear();
+        container.add(view.asWidget());
 
         fillView(event.msg);
     }

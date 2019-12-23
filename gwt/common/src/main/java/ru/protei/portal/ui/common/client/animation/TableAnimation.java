@@ -10,14 +10,15 @@ public class TableAnimation {
     public void showDetails() {
         tableContainer.removeStyleName( tableStyleWithoutDetails );
         tableContainer.removeStyleName( "filter-collapsed" );
-        tableContainer.addStyleName( "col-md-5 short-table-view" );
+        tableContainer.addStyleName( styleTableWithDetails );
+        tableContainer.addStyleName( "short-table-view" );
 
         detailsContainer.removeStyleName( "no-width" );
-        detailsContainer.addStyleName( "col-md-7" );
+        detailsContainer.addStyleName( styleDetails );
 
         if ( noFilter ) return;
 
-        filterContainer.removeStyleName( "col-md-3" );
+        filterContainer.removeStyleName( styleFilter );
         filterContainer.removeStyleName( "collapsed" );
         filterContainer.addStyleName( "no-display" );
     }
@@ -25,17 +26,17 @@ public class TableAnimation {
     public void closeDetails() {
         detailsContainer.clear();
 
-        tableContainer.removeStyleName( "col-md-5" );
+        tableContainer.removeStyleName( styleTableWithDetails );
         tableContainer.removeStyleName( "short-table-view" );
 
         tableContainer.addStyleName( tableStyleWithoutDetails );
 
-        detailsContainer.removeStyleName( "col-md-7" );
+        detailsContainer.removeStyleName( styleDetails );
         detailsContainer.addStyleName( "no-width" );
 
         if ( noFilter ) return;
         filterContainer.removeStyleName( "no-display" );
-        filterContainer.addStyleName( filterCollapsed ? "collapsed" : "col-md-3" );
+        filterContainer.addStyleName( filterCollapsed ? "collapsed" : styleFilter );
     }
 
     public void filterCollapse() {
@@ -45,7 +46,7 @@ public class TableAnimation {
 
         if ( noFilter ) return;
 
-        filterContainer.removeStyleName( "col-md-3" );
+        filterContainer.removeStyleName( styleFilter );
         filterContainer.addStyleName( "collapsed" );
     }
 
@@ -56,7 +57,7 @@ public class TableAnimation {
 
         if ( noFilter ) return;
         filterContainer.removeStyleName( "collapsed" );
-        filterContainer.addStyleName( "col-md-3" );
+        filterContainer.addStyleName( styleFilter );
     }
 
     public void setContainers( HTMLPanel tableContainer, HTMLPanel detailsContainer,  HTMLPanel filterContainer) {
@@ -64,14 +65,31 @@ public class TableAnimation {
         this.detailsContainer = detailsContainer;
         this.filterContainer = filterContainer;
         this.noFilter = filterContainer == null;
-
-        if ( noFilter ) {
-            tableStyleWithoutDetails = "col-md-12";
-        } else {
-            tableStyleWithoutDetails = "col-md-9";
-        }
-
+        applyTableStyleNoFilter();
     }
+
+    public void setStyles(String styleTableFull, String styleTableWithFilter, String styleFilter, String styleTableWithDetails, String styleDetails) {
+        this.styleTableFull = styleTableFull;
+        this.styleTableWithFilter = styleTableWithFilter;
+        this.styleFilter = styleFilter;
+        this.styleTableWithDetails = styleTableWithDetails;
+        this.styleDetails = styleDetails;
+        applyTableStyleNoFilter();
+    }
+
+    private void applyTableStyleNoFilter() {
+        if (noFilter) {
+            tableStyleWithoutDetails = styleTableFull;
+        } else {
+            tableStyleWithoutDetails = styleTableWithFilter;
+        }
+    }
+
+    private String styleTableFull = "col-md-12";
+    private String styleTableWithFilter = "col-md-9";
+    private String styleFilter = "col-md-3";
+    private String styleTableWithDetails = "col-md-5";
+    private String styleDetails = "col-md-7";
 
     private HTMLPanel tableContainer;
     private HTMLPanel detailsContainer;

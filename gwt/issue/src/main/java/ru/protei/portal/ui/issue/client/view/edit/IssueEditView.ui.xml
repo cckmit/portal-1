@@ -8,27 +8,35 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <g:HTMLPanel ui:field="cardBody" styleName="card-body">
             <div class="row">
-                <div class="col-lg-8 order-last order-lg-first p-l-25">
+                <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
                             <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">
                                 <i class="fa fa-arrow-left"/>
+                            </g:Button>
+                            <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
+                                <i class="fas fa-expand-arrows-alt"/>
+                            </g:Button>
+                            <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
+                                <i class="fas fa-tag"/>
+                            </g:Button>
+                            <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
+                                <i class="fas fa-link"/>
                             </g:Button>
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>
                         </div>
                     </div>
-                    <div class="row">
-                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12 m-b-5"/>
-                    </div>
+
+                    <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix"/>
 
                     <g:HTMLPanel ui:field="numberPanel">
                         <h5 class="number-copy-panel no-margin">
                             <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
                                 <i class="far fa-clone"/>
                             </g:Anchor>
-                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
+                            <span ui:field="number"/>
                         </h5>
 
                         <div class="inline pull-right">
@@ -39,9 +47,9 @@
 
                     <nw:IssueNameWidget ui:field="nameWidget" />
 
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group m-b-0"/>
 
-                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
+                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group" />
                 </div>
 
                 <g:HTMLPanel styleName="col-lg-4 order-first order-lg-last">

@@ -16,14 +16,14 @@
                 </label>
 
                 <div>
-                    <div class="attach attach-add">
+                    <g:HTMLPanel styleName="attach attach-add" ui:field="attachmentUploaderContainer">
                         <fileuploader:AttachmentUploader ui:field="fileUploader">
                             <div class="attach-add-circle">
                                 <i class="fas fa-plus ion-plus"/>
                                 <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
                             </div>
                         </fileuploader:AttachmentUploader>
-                    </div>
+                    </g:HTMLPanel>
                     <attachment:AttachmentList ui:field="attachmentContainer"/>
                 </div>
             </div>
