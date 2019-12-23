@@ -195,7 +195,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Person initiator = null;
         Profile profile = policyService.getProfile();
-        if (Objects.equals( meta.getInitiator().getCompanyId(), selectedCompanyId)) {
+        if (meta.getInitiator() != null && Objects.equals( meta.getInitiator().getCompanyId(), selectedCompanyId)) {
             initiator = meta.getInitiator();
         } else if (Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
             initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
@@ -207,7 +207,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
         if(company!=null && initiator!=null){
-            onCaseMetaChanged( meta );
             onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
         }
     }
