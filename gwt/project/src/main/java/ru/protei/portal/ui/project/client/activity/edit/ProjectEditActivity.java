@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -149,16 +148,20 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(true);
         view.showDocuments(true);
 
-        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
-                .withCaseId(project.getId())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .isVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW))
-                .readOnly(!policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
+        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
+             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                    .withCaseId(project.getId())
+                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withReadOnly(!policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
+        }
+        else {
+            view.getLinksContainer().clear();
+        }
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(project.getId())
-                .withModifyEnabled(policyService.hasAnyPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT)));
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
     }

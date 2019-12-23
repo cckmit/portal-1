@@ -24,17 +24,12 @@ public class CaseLinkEvents {
             return this;
         }
 
-        public Show readOnly() {
-            return readOnly(true);
+        public Show withReadOnly() {
+            return withReadOnly(true);
         }
 
-        public Show readOnly (boolean readOnly) {
+        public Show withReadOnly(boolean readOnly) {
             this.isEnabled = readOnly ? false : true;
-            return this;
-        }
-
-        public Show isVisible (boolean isVisible) {
-            this.isVisible = isVisible;
             return this;
         }
 
