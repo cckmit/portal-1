@@ -54,18 +54,10 @@ public class IssueEvents {
     }
 
     /**
-     * Показать превью обращения full screen
+     * Показать форму редактирования
      */
     @Url( value = "issue_preview", primary = true )
     public static class ShowFullScreen {
-
-        public ShowFullScreen() {}
-
-        public ShowFullScreen ( Long issueCaseNumber )
-        {
-            this.issueCaseNumber = issueCaseNumber;
-        }
-
         @Name( "id" )
         public Long issueCaseNumber;
     }
@@ -87,16 +79,34 @@ public class IssueEvents {
     public static class EditMeta {
         public HasWidgets parent;
 
-        public EditMeta( HasWidgets parent, CaseObjectMeta meta, CaseObjectMetaNotifiers metaNotifiers, CaseObjectMetaJira metaJira ) {
+        public EditMeta(HasWidgets parent) {
             this.parent = parent;
+        }
+
+        public EditMeta withMeta(CaseObjectMeta meta) {
             this.meta = meta;
+            return this;
+        }
+
+        public EditMeta withMetaNotifiers(CaseObjectMetaNotifiers metaNotifiers) {
             this.metaNotifiers = metaNotifiers;
+            return this;
+        }
+
+        public EditMeta withMetaJira(CaseObjectMetaJira metaJira) {
             this.metaJira = metaJira;
+            return this;
+        }
+
+        public EditMeta withReadOnly(boolean isReadOnly) {
+            this.isReadOnly = isReadOnly;
+            return this;
         }
 
         public CaseObjectMeta meta;
         public CaseObjectMetaNotifiers metaNotifiers;
         public CaseObjectMetaJira metaJira;
+        public boolean isReadOnly = false;
     }
 
 
@@ -134,7 +144,20 @@ public class IssueEvents {
         public IssueStateChanged( Long issueId ) {
             this.issueId = issueId;
         }
+        public Long issueId;
+    }
 
+    public static class IssueImportanceChanged {
+        public IssueImportanceChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueManagerChanged {
+        public IssueManagerChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
         public Long issueId;
     }
 }

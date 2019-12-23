@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
-public abstract class PopupRightAligned extends PopupPanel implements Popup {
+public abstract class PopupLeftAligned extends PopupPanel implements Popup {
 
     protected void afterShowed() { /* default impl */ }
 
@@ -58,14 +58,8 @@ public abstract class PopupRightAligned extends PopupPanel implements Popup {
 
         getRoot().getElement().getStyle().setPosition(Style.Position.RELATIVE);
         getRoot().getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        setPopupPositionAndShow((popupWidth, popupHeight) -> {
-            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
-            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
-            int popupLeft = relativeLeft - widthDiff;
-            int relativeTop = nearWidget.asWidget().getAbsoluteTop();
-            int popupTop = relativeTop + nearWidget.asWidget().getOffsetHeight();
-            setPopupPosition(popupLeft, popupTop);
-        });
+
+        showRelativeTo(nearWidget.asWidget());
 
         afterShowed();
     }

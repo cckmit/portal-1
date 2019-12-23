@@ -26,13 +26,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.client.widget.casetag.item.CaseTagSelectorItem;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.popup.PopupLeftAligned;
 import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CaseTagSelector extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
+public class CaseTagSelector extends PopupLeftAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
     @Inject
     public void onInit() {

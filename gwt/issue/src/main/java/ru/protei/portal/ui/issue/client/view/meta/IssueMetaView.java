@@ -238,6 +238,31 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public HasEnabled importanceEnabled() {
+        return importance;
+    }
+
+    @Override
+    public HasEnabled caseMetaNotifiersEnabled() {
+        return notifiers;
+    }
+
+    @Override
+    public HasEnabled initiatorEnabled() {
+        return initiator;
+    }
+
+    @Override
+    public HasEnabled platformEnabled() {
+        return platform;
+    }
+
+    @Override
+    public HasEnabled caseMetaJiraEnabled() {
+        return jiraSlaSelector;
+    }
+
+    @Override
     public HasVisibility caseSubscriptionContainer() {
         return caseSubscriptionContainers;
     }

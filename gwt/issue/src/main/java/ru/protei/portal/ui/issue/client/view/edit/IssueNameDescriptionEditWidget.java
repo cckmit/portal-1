@@ -11,10 +11,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -25,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 
 import java.util.function.Consumer;
 
@@ -36,7 +35,6 @@ public class IssueNameDescriptionEditWidget extends Composite {
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-//        description.setRenderer( ( text, consumer ) -> renderMarkupText( text, En_TextMarkup.MARKDOWN, consumer ) );//TODO
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
     }
 
@@ -46,7 +44,6 @@ public class IssueNameDescriptionEditWidget extends Composite {
 
     public void setIssueIdNameDescription( CaseNameAndDescriptionChangeRequest changeRequest, En_TextMarkup textMarkup ) {
         this.changeRequest = changeRequest;
-//        final En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
         description.setRenderer( ( text, consumer ) -> renderMarkupText( text, textMarkup, consumer ) );
         setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
         name.setValue( changeRequest.getName() );

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -68,7 +69,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Event
     public void onShow(IssueEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(init.parent));
             return;
         }
 
@@ -138,6 +139,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
+    }
+
+    @Override
+    public void onAddTagClicked(IsWidget target) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(target));
+    }
+
+    @Override
+    public void onAddLinkClicked(IsWidget target) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
     }
 
     @Override
