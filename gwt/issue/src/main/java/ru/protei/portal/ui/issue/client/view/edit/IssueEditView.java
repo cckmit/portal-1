@@ -84,6 +84,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasVisibility addTagButtonVisibility() {
+        return addTagButton;
+    }
+
+    @Override
     public HasWidgets getInfoContainer() {
         return issueInfoContainer;
     }
@@ -138,6 +143,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("addTagButton")
+    public void onAddTagButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddTagClicked(addTagButton);
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -145,6 +157,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
         showEditViewButton.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
+        addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
     }
 
     @UiField
@@ -175,6 +188,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Button showEditViewButton;
     @UiField
     Button nameAndDescriptionEditButton;
+    @UiField
+    Button addTagButton;
     @Inject
     @UiField(provided = true)
     IssueNameWidget nameWidget;

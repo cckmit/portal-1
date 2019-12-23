@@ -37,16 +37,24 @@ public abstract class   CaseTagListActivity
         event.parent.add(view.asWidget());
 
         view.getTagsContainer().clear();
-        view.addButtonVisibility().setVisible(event.isEnabledAttachOptions);
         view.setTagsAddButtonEnabled(event.isAddNewTagEnabled);
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
         view.setType(show.caseType);
+        autoHideTagsContainer();
 
         if (isCaseCreationMode()) {
             return;
         }
 
         refreshTagList();
+    }
+
+    @Event
+    public void onShowTagSelector(CaseTagEvents.ShowTagSelector event) {
+        if (show.isReadOnly) {
+            return;
+        }
+        view.showSelector(event.anchor);
     }
 
     @Event
@@ -78,52 +86,60 @@ public abstract class   CaseTagListActivity
 
     @Override
     public void onDetachClicked(AbstractCaseTagItemView itemView) {
-        if (itemView == null || !show.isEnabledAttachOptions) {
+        if (itemView == null || show.isReadOnly) {
             return;
         }
 
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Detach(show.caseId, itemView.getModelId()));
             itemView.asWidget().removeFromParent();
+            autoHideTagsContainer();
             return;
         }
 
         controller.detachTag(show.caseId, itemView.getModelId(), new FluentCallback<Void>()
-                .withSuccess(res -> itemView.asWidget().removeFromParent()));
+                .withSuccess(res -> {
+                    itemView.asWidget().removeFromParent();
+                    autoHideTagsContainer();
+                }));
     }
 
     @Override
     public void onAttachTagClicked(CaseTag value) {
-        if (value == null || !show.isEnabledAttachOptions) {
+        if (value == null || show.isReadOnly) {
             return;
         }
 
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Attach(show.caseId, value));
             makeCaseTagViewAndAddToParent(value);
+            autoHideTagsContainer();
             return;
         }
 
         controller.attachTag(show.caseId, value.getId(), new FluentCallback<Void>()
-                .withSuccess(id -> makeCaseTagViewAndAddToParent(value)));
+                .withSuccess(id -> {
+                    makeCaseTagViewAndAddToParent(value);
+                    autoHideTagsContainer();
+                }));
     }
 
     private void fillView(List<CaseTag> links) {
         view.getTagsContainer().clear();
-
+        autoHideTagsContainer();
         if (CollectionUtils.isEmpty(links)) {
             return;
         }
         links.forEach(this::makeCaseTagViewAndAddToParent);
+        autoHideTagsContainer();
     }
 
     private void makeCaseTagViewAndAddToParent(CaseTag value) {
         AbstractCaseTagItemView itemWidget = itemViewProvider.get();
         itemWidget.setActivity(this);
         itemWidget.setNameAndColor(value.getName(), value.getColor());
-        itemWidget.setEnabled(show.isEnabledAttachOptions);
+        itemWidget.setEnabled(!show.isReadOnly);
         itemWidget.setModelId(value.getId());
-
         view.getTagsContainer().add(itemWidget.asWidget());
     }
 
@@ -138,6 +154,11 @@ public abstract class   CaseTagListActivity
 
     private boolean isCaseCreationMode() {
         return show.caseId == null;
+    }
+
+    private void autoHideTagsContainer() {
+        boolean isEmpty = !view.getTagsContainer().iterator().hasNext();
+        view.getTagsContainerVisibility().setVisible(!isEmpty);
     }
 
     @Inject

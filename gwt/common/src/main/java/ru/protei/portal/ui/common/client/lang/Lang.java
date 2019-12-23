@@ -1953,4 +1953,6 @@ public interface Lang extends Messages, ContactItemLang {
     String editNameAndDescription();
 
     String openFullScreen();
+
+    String tagAdd();
 }

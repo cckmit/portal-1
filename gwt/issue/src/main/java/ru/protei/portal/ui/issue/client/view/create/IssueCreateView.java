@@ -130,6 +130,13 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         }
     }
 
+    @UiHandler("addTagButton")
+    public void onAddTagButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddTagClicked(addTagButton);
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -141,6 +148,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
+        addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
@@ -189,6 +197,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     HTMLPanel tagsContainer;
     @UiField
     HTMLPanel issueMetaViewContainer;
+    @UiField
+    Button addTagButton;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

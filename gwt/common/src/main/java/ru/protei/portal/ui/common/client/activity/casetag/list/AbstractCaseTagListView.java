@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.casetag.list;
 
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -13,9 +12,11 @@ public interface AbstractCaseTagListView extends IsWidget {
 
     void setActivity(AbstractCaseTagListActivity activity);
 
+    void showSelector(IsWidget anchor);
+
     HasWidgets getTagsContainer();
 
-    HasVisibility addButtonVisibility();
+    HasVisibility getTagsContainerVisibility();
 
     void setType(En_CaseType type);
 

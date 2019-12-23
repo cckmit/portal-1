@@ -37,6 +37,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility nameAndDescriptionEditButtonVisibility();
 
+    HasVisibility addTagButtonVisibility();
+
     boolean isAttached();
 
     String DESCRIPTION = "description";

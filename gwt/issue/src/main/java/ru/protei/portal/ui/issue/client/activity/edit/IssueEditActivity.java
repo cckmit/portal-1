@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -196,6 +197,11 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
+    public void onAddTagClicked(IsWidget anchor) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(anchor));
+    }
+
+    @Override
     public void onBackClicked() {
         fireEvent(new Back());
     }
@@ -295,6 +301,7 @@ public abstract class IssueEditActivity implements
         view.backButtonVisibility().setVisible(!modePreview);
         view.showEditViewButtonVisibility().setVisible(modePreview);
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
+        view.addTagButtonVisibility().setVisible(!readOnly);
 
         view.setBackgroundWhite(modePreview);
     }

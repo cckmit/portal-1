@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Attachment;
 
 public interface AbstractIssueEditActivity {
@@ -13,6 +14,8 @@ public interface AbstractIssueEditActivity {
     void onCopyNumberAndName();
 
     void onOpenEditViewClicked();
+
+    void onAddTagClicked(IsWidget anchor);
 
     void onBackClicked();
 }

@@ -11,9 +11,15 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first">
-                    <div class="row">
-                        <g:HTMLPanel ui:field="tagsContainer" styleName="col-md-12 m-b-5"/>
+                    <div class="btn-toolbar flex-wrap">
+                        <div class="btn-group form-group">
+                            <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
+                                <i class="fas fa-tag"/>
+                            </g:Button>
+                        </div>
                     </div>
+
+                    <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix"/>
 
                     <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
                         <g:ToggleButton ui:field="privacyButton" styleName="input-group-addon btn-danger private-btn no-shadow no-outline"/>

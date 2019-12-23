@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 
 public class CaseTagEvents {
@@ -35,7 +35,7 @@ public class CaseTagEvents {
         }
 
         public Show withReadOnly(boolean isReadOnly) {
-            this.isEnabledAttachOptions = !isReadOnly;
+            this.isReadOnly = isReadOnly;
             return this;
         }
 
@@ -46,7 +46,7 @@ public class CaseTagEvents {
         public HasWidgets parent;
         public Long caseId;
         public En_CaseType caseType;
-        public boolean isEnabledAttachOptions = true;
+        public boolean isReadOnly = false;
         public boolean isEditTagEnabled = false;
         public boolean isAddNewTagEnabled = false;
     }
@@ -87,5 +87,14 @@ public class CaseTagEvents {
 
         public Long caseId;
         public CaseTag tag;
+    }
+
+    public static class ShowTagSelector {
+        public ShowTagSelector() {}
+        public ShowTagSelector(IsWidget anchor) {
+            this.anchor = anchor;
+        }
+
+        public IsWidget anchor;
     }
 }
