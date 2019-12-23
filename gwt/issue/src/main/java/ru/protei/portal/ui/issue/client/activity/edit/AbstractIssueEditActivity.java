@@ -1,10 +1,18 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-public interface AbstractIssueEditActivity extends AbstractIssueActivity {
+import ru.protei.portal.core.model.ent.Attachment;
 
-    void onNameAndDescriptionEditClicked( AbstractIssueEditView view );
+public interface AbstractIssueEditActivity {
 
-    void onFullScreenPreviewClicked();
+    void removeAttachment( Attachment attachment );
+
+    void onNameAndDescriptionEditClicked();
+
+    void onCopyNumberClicked();
+
+    void onCopyNumberAndName();
+
+    void onOpenEditViewClicked();
 
     void onBackClicked();
 }

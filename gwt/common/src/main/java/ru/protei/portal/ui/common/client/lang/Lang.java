@@ -1951,4 +1951,6 @@ public interface Lang extends Messages, ContactItemLang {
     String backToIssues();
 
     String editNameAndDescription();
+
+    String openFullScreen();
 }

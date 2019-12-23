@@ -54,18 +54,10 @@ public class IssueEvents {
     }
 
     /**
-     * Показать превью обращения full screen
+     * Показать форму редактирования
      */
     @Url( value = "issue_preview", primary = true )
     public static class ShowFullScreen {
-
-        public ShowFullScreen() {}
-
-        public ShowFullScreen ( Long issueCaseNumber )
-        {
-            this.issueCaseNumber = issueCaseNumber;
-        }
-
         @Name( "id" )
         public Long issueCaseNumber;
     }

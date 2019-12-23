@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueActivity;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
 public class IssueInfoWidget extends Composite{
    
@@ -29,7 +29,7 @@ public class IssueInfoWidget extends Composite{
         ensureDebugIds();
     }
 
-    public void setActivity( AbstractIssueActivity activity ) {
+    public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
     }
 
@@ -94,7 +94,7 @@ public class IssueInfoWidget extends Composite{
     @UiField
     DivElement descriptionRO;
 
-    private AbstractIssueActivity activity;
+    private AbstractIssueEditActivity activity;
 
     interface IssueInfoWidgetUiBinder extends UiBinder<HTMLPanel, IssueInfoWidget> {
     }
