@@ -227,7 +227,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 return;
             }
 
-            cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
+            if (policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
+                cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
+            } else {
+                cell.setInnerHTML(project.getName());
+            }
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");

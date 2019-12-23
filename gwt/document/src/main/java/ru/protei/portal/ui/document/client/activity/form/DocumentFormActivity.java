@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -79,7 +79,7 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        fillViewProject(event.project);
+        fillViewProject(ProjectInfo.fromProject(event.project));
         onProjectChanged();
     }
 
@@ -154,8 +154,8 @@ public abstract class DocumentFormActivity
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
-    private void refreshProject(Consumer<Project> consumer) {
-        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+    private void refreshProject(Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<ProjectInfo>()
                 .withSuccess(result -> {
                     project = result;
                     consumer.accept(result);
@@ -204,7 +204,7 @@ public abstract class DocumentFormActivity
         }
     }
 
-    private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
+    private boolean isDesignationVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
             return false;
 
@@ -342,7 +342,7 @@ public abstract class DocumentFormActivity
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.keywords().setValue(document.getKeywords());
-        fillViewProject(document.getProject());
+        fillViewProject(document.getProjectInfo());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
@@ -372,12 +372,12 @@ public abstract class DocumentFormActivity
         view.documentPdfUploader().resetForm();
     }
 
-    private void fillViewProject(Project project) {
+    private void fillViewProject(ProjectInfo project) {
         view.project().setValue(project == null ? null : new EntityOption(project.getName(), project.getId()));
         fillViewProjectInfo(project);
     }
 
-    private void fillViewProjectInfo(Project project) {
+    private void fillViewProjectInfo(ProjectInfo project) {
         view.setProjectInfo(
             project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
             project == null ? "" : fetchDisplayText(project.getProductDirection()),
@@ -405,7 +405,7 @@ public abstract class DocumentFormActivity
 
     private String tag;
     private Document document;
-    private Project project;
+    private ProjectInfo project;
     private Profile authorizedProfile;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

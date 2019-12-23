@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.LocationService;
@@ -98,14 +99,14 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project getProjectInfo(Long id) throws RequestFailedException {
+    public ProjectInfo getProjectInfo(Long id) throws RequestFailedException {
         log.info("getProjectInfo(): id={}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Project> response = projectService.getProjectInfo( token, id );
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
+        Result<ProjectInfo> response = projectService.getProjectInfo(token, id);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
         }
 
         return response.getData();
@@ -163,14 +164,7 @@ public class RegionControllerImpl implements RegionController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<List<Project>> response = projectService.listProjects(token, query);
 
-        if (response.isOk()) {
-            return response.getData()
-                    .stream()
-                    .map(project -> new EntityOption(project.getName(), project.getId()))
-                    .collect(Collectors.toList());
-        }
-
-        throw new RequestFailedException(response.getStatus());
+        return ServiceUtils.checkResultAndGetData(projectService.listOptionProjects(token, query));
     }
 
     @Override

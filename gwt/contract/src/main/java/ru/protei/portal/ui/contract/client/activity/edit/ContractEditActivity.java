@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -93,7 +93,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             clearProjectSpecificFields();
             return;
         }
-        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<ProjectInfo>()
                 .withSuccess(project -> {
                     view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
                     view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));

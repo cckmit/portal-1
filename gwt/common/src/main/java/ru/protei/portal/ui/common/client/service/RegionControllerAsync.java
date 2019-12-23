@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -25,7 +26,7 @@ public interface RegionControllerAsync {
 
     void getProject(Long id, AsyncCallback<Project> callback);
 
-    void getProjectInfo(Long id, AsyncCallback<Project> callback);
+    void getProjectInfo(Long id, AsyncCallback<ProjectInfo> callback);
 
     void saveProject(Project project, AsyncCallback<Project> callback);
 
