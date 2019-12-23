@@ -202,6 +202,11 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
+    public void onAddLinkClicked(IsWidget anchor) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor));
+    }
+
+    @Override
     public void onBackClicked() {
         fireEvent(new Back());
     }
@@ -231,18 +236,24 @@ public abstract class IssueEditActivity implements
     }
 
     private void showLinks(CaseObject issue) {
+        boolean readOnly = isReadOnly();
+        view.addLinkButtonVisibility().setVisible(!readOnly);
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withReadOnly(isReadOnly()));
+                .withReadOnly(readOnly));
     }
 
     private void showTags(CaseObject issue) {
+        boolean readOnly = isReadOnly();
+        boolean addAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        boolean editAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        view.addTagButtonVisibility().setVisible(addAccess);
         fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withAddEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT))
-                .withEditEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT))
+                .withAddEnabled(addAccess)
+                .withEditEnabled(editAccess)
                 .withReadOnly(isReadOnly()));
     }
 
@@ -301,7 +312,6 @@ public abstract class IssueEditActivity implements
         view.backButtonVisibility().setVisible(!modePreview);
         view.showEditViewButtonVisibility().setVisible(modePreview);
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
-        view.addTagButtonVisibility().setVisible(!readOnly);
 
         view.setBackgroundWhite(modePreview);
     }

@@ -16,6 +16,9 @@
                             <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
                                 <i class="fas fa-tag"/>
                             </g:Button>
+                            <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
+                                <i class="fas fa-link"/>
+                            </g:Button>
                         </div>
                     </div>
 
@@ -43,7 +46,7 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group m-b-0"/>
 
                     <div class="row form-group">
                         <div class="col-md-12">

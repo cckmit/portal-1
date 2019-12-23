@@ -147,6 +147,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
+    public void onAddLinkClicked(IsWidget anchor) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor));
+    }
+
+    @Override
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))

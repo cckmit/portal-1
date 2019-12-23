@@ -1955,4 +1955,6 @@ public interface Lang extends Messages, ContactItemLang {
     String openFullScreen();
 
     String tagAdd();
+
+    String linkAdd();
 }

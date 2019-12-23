@@ -13,8 +13,6 @@ import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLink
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
 
-
-
 public class CaseLinkListView
         extends Composite
         implements AbstractCaseLinkListView {
@@ -33,6 +31,11 @@ public class CaseLinkListView
     }
 
     @Override
+    public void showSelector(IsWidget anchor) {
+        createCaseLinkPopup.resetValueAndShow(anchor.asWidget());
+    }
+
+    @Override
     public void setLinksContainerVisible(boolean isVisible) {
         if (isVisible) {
             getElement().replaceClassName("collapsed", "expanded");
@@ -47,19 +50,13 @@ public class CaseLinkListView
     }
 
     @Override
-    public void setHeader(String value) {
-        headerLabel.setInnerText(value);
+    public HasVisibility getContainerVisibility() {
+        return root;
     }
 
     @Override
-    public HasVisibility addButtonVisibility() {
-        return addLinkButton;
-    }
-
-    @UiHandler("addLinkButton")
-    public void addLinkButtonClick(ClickEvent event) {
-        event.preventDefault();
-        createCaseLinkPopup.resetValueAndShow(addLinkButton);
+    public void setHeader(String value) {
+        headerLabel.setInnerText(value);
     }
 
     @UiHandler("collapse")
@@ -70,7 +67,6 @@ public class CaseLinkListView
 
     private void initDebugIds() {
         headerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
-        addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
         linksPanel.ensureDebugId(DebugIds.ISSUE.LINKS_CONTAINER);
         collapse.ensureDebugId(DebugIds.ISSUE.LINKS_COLLAPSE_BUTTON);
 
@@ -80,7 +76,7 @@ public class CaseLinkListView
     }
 
     @UiField
-    Anchor addLinkButton;
+    HTMLPanel root;
     @UiField
     HTMLPanel linksPanel;
     @UiField

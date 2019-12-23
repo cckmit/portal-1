@@ -12,6 +12,8 @@ public interface AbstractIssueCreateActivity {
 
     void onAddTagClicked(IsWidget anchor);
 
+    void onAddLinkClicked(IsWidget anchor);
+
     void removeAttachment(Attachment attachment);
 
     void onPrivacyChanged();

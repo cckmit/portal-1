@@ -20,6 +20,9 @@
                             <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
                                 <i class="fas fa-tag"/>
                             </g:Button>
+                            <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
+                                <i class="fas fa-link"/>
+                            </g:Button>
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>
@@ -44,7 +47,7 @@
 
                     <nw:IssueNameWidget ui:field="nameWidget" />
 
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group m-b-0"/>
 
                     <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group" />
                 </div>

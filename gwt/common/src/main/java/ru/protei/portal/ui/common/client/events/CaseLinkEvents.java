@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
 
@@ -57,5 +58,14 @@ public class CaseLinkEvents {
 
         public Long caseId;
         public CaseLink caseLink;
+    }
+
+    public static class ShowLinkSelector {
+        public ShowLinkSelector() {}
+        public ShowLinkSelector(IsWidget anchor) {
+            this.anchor = anchor;
+        }
+
+        public IsWidget anchor;
     }
 }

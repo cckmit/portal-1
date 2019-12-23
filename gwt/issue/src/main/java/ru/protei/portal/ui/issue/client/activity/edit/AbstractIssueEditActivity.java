@@ -17,5 +17,7 @@ public interface AbstractIssueEditActivity {
 
     void onAddTagClicked(IsWidget anchor);
 
+    void onAddLinkClicked(IsWidget anchor);
+
     void onBackClicked();
 }

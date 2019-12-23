@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
-
 /**
  * Представление списка линков
  */
@@ -12,11 +11,13 @@ public interface AbstractCaseLinkListView extends IsWidget {
 
     void setActivity(AbstractCaseLinkListActivity activity);
 
+    void showSelector(IsWidget anchor);
+
     void setLinksContainerVisible(boolean isVisible);
 
     HasWidgets getLinksContainer();
 
-    void setHeader(String value);
+    HasVisibility getContainerVisibility();
 
-    HasVisibility addButtonVisibility();
+    void setHeader(String value);
 }
