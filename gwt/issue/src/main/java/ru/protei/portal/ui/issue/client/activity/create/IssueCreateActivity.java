@@ -155,7 +155,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         initiatorSelectorAllowAddNew(companyOption.getId());
 
-        issueMetaView.setPlatform(null);
+        issueMetaView.platform().setValue(null);
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -286,7 +286,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setProduct(issueMetaView.getProduct());
         caseObject.setManager(issueMetaView.getManager());
         caseObject.setNotifiers(caseMetaNotifiers);
-        caseObject.setPlatformId(issueMetaView.getPlatformId());
+        caseObject.setPlatformId(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
         caseObject.setAttachmentExists(!CollectionUtils.isEmpty(view.attachmentsContainer().getAll()));
         caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
 

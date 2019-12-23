@@ -188,13 +188,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setPlatform( PlatformOption platform) {
-        this.platform.setValue(platform);
-    }
-
-    @Override
-    public Long getPlatformId() {
-        return platform.getValue() == null ? null : platform.getValue().getId();
+    public HasValue< PlatformOption> platform() {
+        return platform;
     }
 
     @Override
