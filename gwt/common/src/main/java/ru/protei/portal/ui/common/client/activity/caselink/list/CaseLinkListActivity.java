@@ -39,6 +39,8 @@ public abstract class CaseLinkListActivity
 
     @Event
     public void onShow(CaseLinkEvents.Show event) {
+        if (!event.isVisible) return;
+
         this.show = event;
 
         event.parent.clear();

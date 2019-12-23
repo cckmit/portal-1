@@ -33,10 +33,16 @@ public class CaseLinkEvents {
             return this;
         }
 
+        public Show isVisible (boolean isVisible) {
+            this.isVisible = isVisible;
+            return this;
+        }
+
         public HasWidgets parent;
         public Long caseId;
         public En_CaseType caseType;
         public boolean isEnabled = true;
+        public boolean isVisible = true;
     }
 
     public static class Removed {

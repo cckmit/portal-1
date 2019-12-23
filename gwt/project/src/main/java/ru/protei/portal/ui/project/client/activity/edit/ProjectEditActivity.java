@@ -152,7 +152,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(project.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .readOnly(!policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_EDIT, En_Privilege.ISSUE_VIEW)));
+                .isVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW))
+                .readOnly(!policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
