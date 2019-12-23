@@ -34,9 +34,13 @@ public class CaseTagEvents {
             return this;
         }
 
-        public Show readOnly() {
-            this.isEnabledAttachOptions = false;
+        public Show withReadOnly(boolean isReadOnly) {
+            this.isEnabledAttachOptions = !isReadOnly;
             return this;
+        }
+
+        public Show readOnly() {
+            return withReadOnly(true);
         }
 
         public HasWidgets parent;

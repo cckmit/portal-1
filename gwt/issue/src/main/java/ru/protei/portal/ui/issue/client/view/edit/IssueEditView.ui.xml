@@ -44,7 +44,7 @@
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
 
-                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group1" />
+                    <g:HTMLPanel ui:field="issueInfoContainer" styleName="form-group" />
                 </div>
 
                 <g:HTMLPanel styleName="col-lg-4 order-first order-lg-last">

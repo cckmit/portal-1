@@ -7,9 +7,7 @@ import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -55,6 +53,10 @@ public class IssueInfoWidget extends Composite{
         descriptionRO.setInnerHTML( issueDescription );
     }
 
+    public HasVisibility attachmentUploaderVisibility() {
+        return attachmentUploaderContainer;
+    }
+
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove( RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
@@ -82,6 +84,8 @@ public class IssueInfoWidget extends Composite{
     @Inject
     @UiField
     AttachmentUploader fileUploader;
+    @UiField
+    HTMLPanel attachmentUploaderContainer;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;

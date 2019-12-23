@@ -24,9 +24,13 @@ public class CaseLinkEvents {
             return this;
         }
 
-        public Show readOnly() {
-            this.isEnabled = false;
+        public Show withReadOnly(boolean isReadOnly) {
+            this.isEnabled = !isReadOnly;
             return this;
+        }
+
+        public Show readOnly() {
+            return withReadOnly(true);
         }
 
         public HasWidgets parent;

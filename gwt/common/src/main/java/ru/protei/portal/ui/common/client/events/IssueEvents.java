@@ -79,16 +79,34 @@ public class IssueEvents {
     public static class EditMeta {
         public HasWidgets parent;
 
-        public EditMeta( HasWidgets parent, CaseObjectMeta meta, CaseObjectMetaNotifiers metaNotifiers, CaseObjectMetaJira metaJira ) {
+        public EditMeta(HasWidgets parent) {
             this.parent = parent;
+        }
+
+        public EditMeta withMeta(CaseObjectMeta meta) {
             this.meta = meta;
+            return this;
+        }
+
+        public EditMeta withMetaNotifiers(CaseObjectMetaNotifiers metaNotifiers) {
             this.metaNotifiers = metaNotifiers;
+            return this;
+        }
+
+        public EditMeta withMetaJira(CaseObjectMetaJira metaJira) {
             this.metaJira = metaJira;
+            return this;
+        }
+
+        public EditMeta withReadOnly(boolean isReadOnly) {
+            this.isReadOnly = isReadOnly;
+            return this;
         }
 
         public CaseObjectMeta meta;
         public CaseObjectMetaNotifiers metaNotifiers;
         public CaseObjectMetaJira metaJira;
+        public boolean isReadOnly = false;
     }
 
 

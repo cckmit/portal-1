@@ -50,7 +50,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         event.parent.clear();
         event.parent.add(metaView.asWidget());
 
-        this.meta = event.meta;
+        readOnly = event.isReadOnly;
+        meta = event.meta;
         caseMetaJira = event.metaJira;
         metaNotifiers = event.metaNotifiers;
 
@@ -119,6 +120,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta, Runnable runAfterUpdate) {
+
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         if (!validateCaseMeta(caseMeta)) {
             return;
         }
@@ -134,6 +141,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onCaseMetaNotifiersChanged() {
+
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         Set<Person> caseMetaNotifiers = metaView.getCaseMetaNotifiers();
 
         metaNotifiers.setNotifiers( caseMetaNotifiers );
@@ -147,6 +160,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onCaseMetaJiraChanged() {
+
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         CaseObjectMetaJira metaJira = metaView.jiraSlaSelector().getValue();
         caseMetaJira.setSlaMapId(metaJira.getSlaMapId());
         caseMetaJira.setSeverity(metaJira.getSeverity());
@@ -227,22 +246,23 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         metaView.setCaseMetaNotifiers(caseMetaNotifiers.getNotifiers());
+        metaView.caseMetaNotifiersEnabled().setEnabled(!readOnly);
     }
-
-//    @Override
-//    public void onBackClicked() {
-//        fireEvent(new Back());
-//    }
 
     private void fillJiraView(CaseObjectMetaJira caseMetaJira) {
         metaView.jiraSlaSelectorVisibility().setVisible( caseMetaJira != null );
         metaView.setCaseMetaJira( caseMetaJira );
+        metaView.caseMetaJiraEnabled().setEnabled(!readOnly);
     }
 
     private void fillView(CaseObjectMeta meta) {
-        metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(meta.isPrivateCase()) );
-        metaView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
-        metaView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+        metaView.stateEnabled().setEnabled(!readOnly);
+        metaView.importanceEnabled().setEnabled(!readOnly);
+        metaView.productEnabled().setEnabled(!readOnly && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        metaView.managerEnabled().setEnabled(!readOnly && policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
+        metaView.initiatorEnabled().setEnabled(!readOnly);
+        metaView.platformEnabled().setEnabled(!readOnly);
 
         metaView.timeElapsedHeaderVisibility().setVisible(true);
 
@@ -255,7 +275,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( meta.getState() );
-        metaView.stateEnabled().setEnabled(true);
 
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
@@ -355,7 +374,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setSubscriptionEmails(String value) {
         metaView.setSubscriptionEmails(value);
-        metaView.companyEnabled().setEnabled(isCompanyChangeAllowed( meta.isPrivateCase()));
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed( meta.isPrivateCase()));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
@@ -392,6 +411,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
+    private boolean readOnly;
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
 

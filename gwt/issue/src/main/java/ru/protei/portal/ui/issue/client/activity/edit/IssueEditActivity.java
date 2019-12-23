@@ -79,7 +79,7 @@ public abstract class IssueEditActivity implements
     public void onShow( IssueEvents.Edit event ) {
         HasWidgets container = initDetails.parent;
         Long caseNumber = event.caseNumber;
-        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+        if (!hasAccess()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
@@ -92,7 +92,7 @@ public abstract class IssueEditActivity implements
     public void onShow( IssueEvents.ShowPreview event ) {
         HasWidgets container = event.parent;
         Long caseNumber = event.issueCaseNumber;
-        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+        if (!hasAccess()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
@@ -105,7 +105,7 @@ public abstract class IssueEditActivity implements
     public void onShow( IssueEvents.ShowFullScreen event ) {
         HasWidgets container = initDetails.parent;
         Long caseNumber = event.issueCaseNumber;
-        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+        if (!hasAccess()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
@@ -132,6 +132,7 @@ public abstract class IssueEditActivity implements
 
     @Event
     public void onStateChanged( IssueEvents.IssueStateChanged event ) {
+        if (isReadOnly()) return;
         if (view.isAttached()) {
             showComments( issue );
         }
@@ -140,6 +141,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void removeAttachment(Attachment attachment) {
+        if (isReadOnly()) return;
         attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(result -> {
@@ -164,7 +166,8 @@ public abstract class IssueEditActivity implements
     @Override
     public void onNameAndDescriptionEditClicked() {
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
-        if (!isAllowedEditNameAndDescription) return;
+        boolean readOnly = isReadOnly();
+        if (!isAllowedEditNameAndDescription || readOnly) return;
         view.nameAndDescriptionEditButtonVisibility().setVisible( false );
         view.nameVisibility().setVisible(false);
 
@@ -224,7 +227,8 @@ public abstract class IssueEditActivity implements
     private void showLinks(CaseObject issue) {
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
-                .withCaseType(En_CaseType.CRM_SUPPORT));
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withReadOnly(isReadOnly()));
     }
 
     private void showTags(CaseObject issue) {
@@ -232,22 +236,23 @@ public abstract class IssueEditActivity implements
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withAddEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT))
-                .withEditEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT)));
+                .withEditEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT))
+                .withReadOnly(isReadOnly()));
     }
 
     private void showMeta(CaseObject issue) {
-        fireEvent(new IssueEvents.EditMeta(
-                view.getMetaContainer(),
-                makeMeta(issue),
-                makeMetaNotifiers(issue),
-                makeMetaJira(issue)));
+        fireEvent(new IssueEvents.EditMeta(view.getMetaContainer())
+                .withMeta(makeMeta(issue))
+                .withMetaNotifiers(makeMetaNotifiers(issue))
+                .withMetaJira(makeMetaJira(issue))
+                .withReadOnly(isReadOnly()));
     }
 
     private void showComments(CaseObject issue) {
         fireEvent( new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer() )
                 .withCaseType( En_CaseType.CRM_SUPPORT )
                 .withCaseId( issue.getId() )
-                .withModifyEnabled( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) )
+                .withModifyEnabled( hasAccess() && !isReadOnly() )
                 .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
                 .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
                 .withPrivateCase( issue.isPrivateCase() )
@@ -272,6 +277,9 @@ public abstract class IssueEditActivity implements
     }
 
     private void fillView(CaseObject issue) {
+        boolean selfIssue = isSelfIssue(issue);
+        boolean readOnly = isReadOnly();
+
         view.setCaseNumber(issue.getCaseNumber());
         view.setPrivateIssue(issue.isPrivateCase());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
@@ -281,11 +289,12 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.setDescription(issue.getInfo());
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
+        issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
         view.getInfoContainer().add( issueInfoWidget );
 
         view.backButtonVisibility().setVisible(!modePreview);
         view.showEditViewButtonVisibility().setVisible(modePreview);
-        view.nameAndDescriptionEditButtonVisibility().setVisible(isSelfIssue(issue));
+        view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
 
         view.setBackgroundWhite(modePreview);
     }
@@ -324,6 +333,14 @@ public abstract class IssueEditActivity implements
 
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private boolean hasAccess() {
+        return policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW);
+    }
+
+    private boolean isReadOnly() {
+        return !policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
     }
 
     @Inject
