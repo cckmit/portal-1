@@ -8,7 +8,7 @@ public class ForbiddenEvents {
      */
     public static class Show {
         public HasWidgets container;
-        public Show() {}
+        @Deprecated public Show() {}
         public Show(HasWidgets container) { this.container = container; }
     }
 }

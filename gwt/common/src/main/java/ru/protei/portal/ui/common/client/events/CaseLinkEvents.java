@@ -62,10 +62,10 @@ public class CaseLinkEvents {
 
     public static class ShowLinkSelector {
         public ShowLinkSelector() {}
-        public ShowLinkSelector(IsWidget anchor) {
-            this.anchor = anchor;
+        public ShowLinkSelector(IsWidget target) {
+            this.target = target;
         }
 
-        public IsWidget anchor;
+        public IsWidget target;
     }
 }

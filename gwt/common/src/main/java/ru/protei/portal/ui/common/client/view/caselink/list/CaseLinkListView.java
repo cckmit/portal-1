@@ -31,8 +31,8 @@ public class CaseLinkListView
     }
 
     @Override
-    public void showSelector(IsWidget anchor) {
-        createCaseLinkPopup.resetValueAndShow(anchor.asWidget());
+    public void showSelector(IsWidget target) {
+        createCaseLinkPopup.resetValueAndShow(target.asWidget());
     }
 
     @Override

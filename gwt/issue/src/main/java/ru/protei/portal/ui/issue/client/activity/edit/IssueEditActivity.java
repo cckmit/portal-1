@@ -79,40 +79,37 @@ public abstract class IssueEditActivity implements
     @Event
     public void onShow( IssueEvents.Edit event ) {
         HasWidgets container = initDetails.parent;
-        Long caseNumber = event.caseNumber;
         if (!hasAccess()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
         modePreview = false;
         container.clear();
-        requestIssue(caseNumber, container);
+        requestIssue(event.caseNumber, container);
     }
 
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
         HasWidgets container = event.parent;
-        Long caseNumber = event.issueCaseNumber;
         if (!hasAccess()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
         modePreview = true;
         container.clear();
-        requestIssue(caseNumber, container);
+        requestIssue(event.issueCaseNumber, container);
     }
 
     @Event
     public void onShow( IssueEvents.ShowFullScreen event ) {
         HasWidgets container = initDetails.parent;
-        Long caseNumber = event.issueCaseNumber;
         if (!hasAccess()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
         modePreview = false;
         container.clear();
-        requestIssue(caseNumber, container);
+        requestIssue(event.issueCaseNumber, container);
     }
 
     @Event
@@ -197,13 +194,13 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void onAddTagClicked(IsWidget anchor) {
-        fireEvent(new CaseTagEvents.ShowTagSelector(anchor));
+    public void onAddTagClicked(IsWidget target) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(target));
     }
 
     @Override
-    public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor));
+    public void onAddLinkClicked(IsWidget target) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
     }
 
     @Override

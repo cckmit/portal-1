@@ -8,7 +8,7 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <g:HTMLPanel ui:field="cardBody" styleName="card-body">
             <div class="row">
-                <div class="col-lg-8 order-last order-lg-first p-l-25">
+                <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
                             <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">

@@ -40,7 +40,7 @@ public abstract class   CaseTagListActivity
         view.setTagsAddButtonEnabled(event.isAddNewTagEnabled);
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
         view.setType(show.caseType);
-        autoHideTagsContainer();
+        hideOrShowIfNoTags();
 
         if (isCaseCreationMode()) {
             return;
@@ -54,7 +54,7 @@ public abstract class   CaseTagListActivity
         if (show.isReadOnly) {
             return;
         }
-        view.showSelector(event.anchor);
+        view.showSelector(event.target);
     }
 
     @Event
@@ -93,14 +93,14 @@ public abstract class   CaseTagListActivity
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Detach(show.caseId, itemView.getModelId()));
             itemView.asWidget().removeFromParent();
-            autoHideTagsContainer();
+            hideOrShowIfNoTags();
             return;
         }
 
         controller.detachTag(show.caseId, itemView.getModelId(), new FluentCallback<Void>()
                 .withSuccess(res -> {
                     itemView.asWidget().removeFromParent();
-                    autoHideTagsContainer();
+                    hideOrShowIfNoTags();
                 }));
     }
 
@@ -113,25 +113,25 @@ public abstract class   CaseTagListActivity
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Attach(show.caseId, value));
             makeCaseTagViewAndAddToParent(value);
-            autoHideTagsContainer();
+            hideOrShowIfNoTags();
             return;
         }
 
         controller.attachTag(show.caseId, value.getId(), new FluentCallback<Void>()
                 .withSuccess(id -> {
                     makeCaseTagViewAndAddToParent(value);
-                    autoHideTagsContainer();
+                    hideOrShowIfNoTags();
                 }));
     }
 
     private void fillView(List<CaseTag> links) {
         view.getTagsContainer().clear();
-        autoHideTagsContainer();
+        hideOrShowIfNoTags();
         if (CollectionUtils.isEmpty(links)) {
             return;
         }
         links.forEach(this::makeCaseTagViewAndAddToParent);
-        autoHideTagsContainer();
+        hideOrShowIfNoTags();
     }
 
     private void makeCaseTagViewAndAddToParent(CaseTag value) {
@@ -156,7 +156,7 @@ public abstract class   CaseTagListActivity
         return show.caseId == null;
     }
 
-    private void autoHideTagsContainer() {
+    private void hideOrShowIfNoTags() {
         boolean isEmpty = !view.getTagsContainer().iterator().hasNext();
         view.getTagsContainerVisibility().setVisible(!isEmpty);
     }

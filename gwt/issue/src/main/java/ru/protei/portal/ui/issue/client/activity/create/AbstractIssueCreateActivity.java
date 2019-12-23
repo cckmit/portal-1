@@ -10,9 +10,9 @@ public interface AbstractIssueCreateActivity {
 
     void onCancelClicked();
 
-    void onAddTagClicked(IsWidget anchor);
+    void onAddTagClicked(IsWidget target);
 
-    void onAddLinkClicked(IsWidget anchor);
+    void onAddLinkClicked(IsWidget target);
 
     void removeAttachment(Attachment attachment);
 

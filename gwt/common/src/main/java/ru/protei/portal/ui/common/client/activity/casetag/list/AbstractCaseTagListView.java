@@ -12,7 +12,7 @@ public interface AbstractCaseTagListView extends IsWidget {
 
     void setActivity(AbstractCaseTagListActivity activity);
 
-    void showSelector(IsWidget anchor);
+    void showSelector(IsWidget target);
 
     HasWidgets getTagsContainer();
 

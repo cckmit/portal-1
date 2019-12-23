@@ -46,7 +46,7 @@ public abstract class CaseLinkListActivity
 
         view.getLinksContainer().clear();
         view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
-        autoHideLinksContainer();
+        hideOrShowIfNoLinks();
 
         linksCount = 0;
         resetLinksContainerStateByLinksCount();
@@ -64,7 +64,7 @@ public abstract class CaseLinkListActivity
         if (!show.isEnabled) {
             return;
         }
-        view.showSelector(event.anchor);
+        view.showSelector(event.target);
     }
 
     @Override
@@ -76,14 +76,14 @@ public abstract class CaseLinkListActivity
         if (isCaseCreationMode()) {
             fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel()));
             removeLinkViewFromParentAndModifyLinksCount(itemView);
-            autoHideLinksContainer();
+            hideOrShowIfNoLinks();
             return;
         }
 
         controller.removeLink(itemView.getModel().getId(), new FluentCallback<Void>()
                 .withSuccess(res -> {
                     removeLinkViewFromParentAndModifyLinksCount(itemView);
-                    autoHideLinksContainer();
+                    hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
@@ -119,7 +119,7 @@ public abstract class CaseLinkListActivity
         linksCount = links.size();
         resetLinksContainerStateByLinksCount();
         links.forEach(this::makeCaseLinkViewAndAddToParent);
-        autoHideLinksContainer();
+        hideOrShowIfNoLinks();
     }
 
     private void addYtLink( CaseLink caseLink ) {
@@ -164,7 +164,7 @@ public abstract class CaseLinkListActivity
         if (isCaseCreationMode()) {
             fireEvent(new CaseLinkEvents.Added(show.caseId, value));
             addLinkToParentAndModifyLinksCount(value);
-            autoHideLinksContainer();
+            hideOrShowIfNoLinks();
             return;
         }
 
@@ -173,7 +173,7 @@ public abstract class CaseLinkListActivity
                 .withSuccess(id -> {
                     value.setId(id);
                     addLinkToParentAndModifyLinksCount(value);
-                    autoHideLinksContainer();
+                    hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
@@ -225,7 +225,7 @@ public abstract class CaseLinkListActivity
         return show.caseId == null;
     }
 
-    private void autoHideLinksContainer() {
+    private void hideOrShowIfNoLinks() {
         boolean isEmpty = !view.getLinksContainer().iterator().hasNext();
         view.getContainerVisibility().setVisible(!isEmpty);
     }

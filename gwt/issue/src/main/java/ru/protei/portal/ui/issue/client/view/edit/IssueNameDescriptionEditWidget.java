@@ -35,7 +35,6 @@ public class IssueNameDescriptionEditWidget extends Composite {
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-//        description.setRenderer( ( text, consumer ) -> renderMarkupText( text, En_TextMarkup.MARKDOWN, consumer ) );//TODO
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
     }
 
@@ -45,7 +44,6 @@ public class IssueNameDescriptionEditWidget extends Composite {
 
     public void setIssueIdNameDescription( CaseNameAndDescriptionChangeRequest changeRequest, En_TextMarkup textMarkup ) {
         this.changeRequest = changeRequest;
-//        final En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
         description.setRenderer( ( text, consumer ) -> renderMarkupText( text, textMarkup, consumer ) );
         setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
         name.setValue( changeRequest.getName() );

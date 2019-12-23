@@ -11,7 +11,7 @@ public interface AbstractCaseLinkListView extends IsWidget {
 
     void setActivity(AbstractCaseLinkListActivity activity);
 
-    void showSelector(IsWidget anchor);
+    void showSelector(IsWidget target);
 
     void setLinksContainerVisible(boolean isVisible);
 

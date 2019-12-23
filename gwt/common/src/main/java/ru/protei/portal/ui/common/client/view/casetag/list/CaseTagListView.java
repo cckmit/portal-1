@@ -31,8 +31,8 @@ public class CaseTagListView
     }
 
     @Override
-    public void showSelector(IsWidget anchor) {
-        caseTagSelector.showNear(anchor);
+    public void showSelector(IsWidget target) {
+        caseTagSelector.showNear(target);
     }
 
     @Override

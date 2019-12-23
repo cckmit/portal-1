@@ -69,7 +69,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Event
     public void onShow(IssueEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(init.parent));
             return;
         }
 
@@ -142,13 +142,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onAddTagClicked(IsWidget anchor) {
-        fireEvent(new CaseTagEvents.ShowTagSelector(anchor));
+    public void onAddTagClicked(IsWidget target) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(target));
     }
 
     @Override
-    public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor));
+    public void onAddLinkClicked(IsWidget target) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
     }
 
     @Override

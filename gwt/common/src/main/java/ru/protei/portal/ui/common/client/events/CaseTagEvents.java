@@ -91,10 +91,10 @@ public class CaseTagEvents {
 
     public static class ShowTagSelector {
         public ShowTagSelector() {}
-        public ShowTagSelector(IsWidget anchor) {
-            this.anchor = anchor;
+        public ShowTagSelector(IsWidget target) {
+            this.target = target;
         }
 
-        public IsWidget anchor;
+        public IsWidget target;
     }
 }
