@@ -144,7 +144,20 @@ public class IssueEvents {
         public IssueStateChanged( Long issueId ) {
             this.issueId = issueId;
         }
+        public Long issueId;
+    }
 
+    public static class IssueImportanceChanged {
+        public IssueImportanceChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueManagerChanged {
+        public IssueManagerChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
         public Long issueId;
     }
 }

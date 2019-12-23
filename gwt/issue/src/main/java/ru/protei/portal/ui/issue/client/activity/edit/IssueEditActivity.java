@@ -137,6 +137,24 @@ public abstract class IssueEditActivity implements
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
 
+    @Event
+    public void onImportanceChanged( IssueEvents.IssueImportanceChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
+    @Event
+    public void onManagerChanged( IssueEvents.IssueManagerChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
@@ -186,6 +204,7 @@ public abstract class IssueEditActivity implements
         issue.setName( changeRequest.getName() );
         issue.setInfo( changeRequest.getInfo() );
         fillView(issue);
+        fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
 
     @Override

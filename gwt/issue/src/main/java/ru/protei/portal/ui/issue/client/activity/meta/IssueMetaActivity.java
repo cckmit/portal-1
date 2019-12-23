@@ -82,7 +82,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onImportanceChanged() {
         meta.setImpLevel(metaView.importance().getValue().getId());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueImportanceChanged( meta.getId() ) ) );
     }
 
     @Override
@@ -94,7 +94,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onManagerChanged() {
         meta.setManager(metaView.getManager());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueManagerChanged( meta.getId() ) ) );
     }
 
     @Override
