@@ -16,61 +16,62 @@
 
         <div class="meta-fields">
 
-                <div class="meta-issue-importance">
-                    <issueimportance:ImportanceFormSelector ui:field="importance"
-                                                            validation="true"
-                                                            header="{lang.issueImportance}"
-                                                            mandatory="true"/>
-                </div>
-                <div class="meta-issue-state">
-                    <issuestate:IssueStateFormSelector ui:field="state"
-                                                       validation="true"
-                                                       header="{lang.issueState}"
-                                                       mandatory="true"/>
-                </div>
+            <div class="meta-issue-importance">
+                <issueimportance:ImportanceFormSelector ui:field="importance"
+                                                        validation="true"
+                                                        header="{lang.issueImportance}"
+                                                        mandatory="true"/>
+            </div>
+            <div class="meta-issue-state">
+                <issuestate:IssueStateFormSelector ui:field="state"
+                                                   validation="true"
+                                                   header="{lang.issueState}"
+                                                   mandatory="true"/>
+            </div>
 
-                <div class="meta-issue-product">
-                    <devunit:DevUnitFormSelector ui:field="product"
-                                                 validation="false"
-                                                 header="{lang.issueProduct}"
-                                                 mandatory="false"/>
-                </div>
+            <div class="meta-issue-product">
+                <devunit:DevUnitFormSelector ui:field="product"
+                                             validation="false"
+                                             header="{lang.issueProduct}"
+                                             mandatory="false"/>
+            </div>
 
-                <div class="meta-issue-manager">
-                    <person:EmployeeFormSelector ui:field="manager"
-                                                 validation="false"
-                                                 header="{lang.issueManager}"
-                                                 mandatory="false"/>
-                </div>
+            <div class="meta-issue-manager">
+                <person:EmployeeFormSelector ui:field="manager"
+                                             validation="false"
+                                             header="{lang.issueManager}"
+                                             mandatory="false"/>
+            </div>
 
-        <div class="form-group meta-issue-initiator-info ">
-            <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
-        </div>
-                <div class="meta-issue-company">
-                    <company:CompanyFormSelector ui:field="company"
-                                                 validation="false"
-                                                 header="{lang.issueCompany}"
-                                                 hasNullValue="false"
-                                                 mandatory="false"/>
-                </div>
-                <div class="meta-issue-initiator">
-                    <person:PersonFormSelector ui:field="initiator"
+            <div class="form-group meta-issue-initiator-info">
+                <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
+            </div>
+
+            <div class="meta-issue-company">
+                <company:CompanyFormSelector ui:field="company"
+                                             validation="false"
+                                             header="{lang.issueCompany}"
+                                             hasNullValue="false"
+                                             mandatory="false"/>
+            </div>
+            <div class="meta-issue-initiator">
+                <person:PersonFormSelector ui:field="initiator"
+                                           validation="false"
+                                           header="{lang.issueInitiator}"
+                                           mandatory="false"
+                                           fired="false"/>
+            </div>
+            <div class="meta-issue-platform">
+                <selector:PlatformFormSelector ui:field="platform"
                                                validation="false"
-                                               header="{lang.issueInitiator}"
-                                               mandatory="false"
-                                               fired="false"/>
-                </div>
-                <div class="meta-issue-platform">
-                    <selector:PlatformFormSelector ui:field="platform"
-                                                   validation="false"
-                                                   header="{lang.siteFolderPlatform}"
-                                                   mandatory="false"/>
-                </div>
+                                               header="{lang.siteFolderPlatform}"
+                                               mandatory="false"/>
+            </div>
         </div>
 
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>
 
-        <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
+        <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group m-b-0">
             <g:HTMLPanel ui:field="timeElapsedHeader" styleName="col-md-12">
                 <label ui:field="timeElapsedLabel">
                     <ui:text from="{lang.timeElapsed}"/>
@@ -98,7 +99,7 @@
             </g:HTMLPanel>
         </g:HTMLPanel>
 
-        <div class="row form-group">
+        <div class="row form-group m-t-10">
             <div class="col-md-12">
                 <label ui:field="subscriptionsLabel">
                     <ui:text from="{lang.companySubscription}"/>

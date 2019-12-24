@@ -62,7 +62,7 @@
 
                 <div class="col-lg-4 order-first order-lg-last">
                     <div class="card card-default">
-                        <g:HTMLPanel ui:field="issueMetaViewContainer" styleName="card-body"/>
+                        <g:HTMLPanel ui:field="issueMetaViewContainer" styleName="card-body issue-meta-edit"/>
                     </div>
                 </div>
             </div>

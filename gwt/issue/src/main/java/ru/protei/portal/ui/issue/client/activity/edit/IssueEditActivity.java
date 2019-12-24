@@ -89,7 +89,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
             return;
         }
 
-        requestIssue(event.caseNumber, initDetails.parent, editView );
+        requestIssue(event.caseNumber, initDetails.parent, editView);
         initDetails.parent.clear();
     }
 
@@ -275,13 +275,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         view.setCaseNumber(issue.getCaseNumber());
         view.setPrivateIssue(issue.isPrivateCase());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
-        view.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setNameVisible(true);
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo());
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
-        view.getInfoContainer().add( issueInfoWidget );
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add(issueInfoWidget);
 
         editView.nameAndDescriptionEditButtonVisibility().setVisible(isSelfIssue(issue));
     }
