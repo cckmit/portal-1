@@ -3791,6 +3791,7 @@ table {
   display: none;
 }
 
+.preview-title-image-right,
 .preview-title-image-container-right {
   position: absolute;
   top: 20px;
@@ -3798,6 +3799,10 @@ table {
   img {
     height: 50px;
   }
+}
+
+.preview-title-image-right {
+  height: 50px;
 }
 
 .table-documents {

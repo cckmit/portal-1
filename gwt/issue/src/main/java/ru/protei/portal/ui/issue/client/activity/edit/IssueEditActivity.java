@@ -184,25 +184,21 @@ public abstract class IssueEditActivity implements
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
         boolean readOnly = isReadOnly();
         if (!isAllowedEditNameAndDescription || readOnly) return;
-        view.nameAndDescriptionEditButtonVisibility().setVisible( false );
+        view.nameAndDescriptionEditButtonVisibility().setVisible(false);
         view.nameVisibility().setVisible(false);
 
         view.getInfoContainer().clear();
-        view.getInfoContainer().add( issueNameDescriptionEditWidget );
+        view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup );
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
     }
 
     @Override
-    public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        view.nameAndDescriptionEditButtonVisibility().setVisible( true );
-        view.nameVisibility().setVisible( true );
-        view.getInfoContainer().clear();
-        view.getInfoContainer().add( issueInfoWidget );
-        issue.setName( changeRequest.getName() );
-        issue.setInfo( changeRequest.getInfo() );
+    public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
+        issue.setName(changeRequest.getName());
+        issue.setInfo(changeRequest.getInfo());
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
@@ -316,6 +312,7 @@ public abstract class IssueEditActivity implements
         view.setCaseNumber(issue.getCaseNumber());
         view.setPrivateIssue(issue.isPrivateCase());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
+        view.nameVisibility().setVisible(true);
         view.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
@@ -323,7 +320,8 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
         issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
-        view.getInfoContainer().add( issueInfoWidget );
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add(issueInfoWidget);
 
         view.backButtonVisibility().setVisible(!modePreview);
         view.showEditViewButtonVisibility().setVisible(modePreview);

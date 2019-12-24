@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issue.client.activity.meta;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -105,7 +104,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onPlatformChanged() {
-        meta.setPlatformId(metaView.getPlatformId());
+        meta.setPlatform(metaView.platform().getValue());
         onCaseMetaChanged( meta );
     }
 
@@ -182,14 +181,20 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onCompanyChanged() {
         Company company = metaView.getCompany();
-        meta.setInitiatorCompany( company );
+        if (company.getId().equals(meta.getInitiatorCompanyId())) {
+            return;
+        }
+
+        meta.setInitiatorCompany(company);
 
         metaView.initiatorUpdateCompany(company);
+        meta.setInitiator(null);
 
         Long selectedCompanyId = company.getId();
 
-        metaView.setPlatform(null);
+        metaView.platform().setValue(null);
         metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+        meta.setPlatform(null);
 
         companyService.getCompanyWithParentCompanySubscriptions(
                 selectedCompanyId,
@@ -217,7 +222,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (meta.getInitiator() != null && Objects.equals( meta.getInitiator().getCompanyId(), selectedCompanyId)) {
             initiator = meta.getInitiator();
         } else if (Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-            initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
+            initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             meta.setInitiator( initiator );
         }
 
@@ -281,10 +286,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setTimeElapsed(meta.getTimeElapsed());
 
         metaView.setCompany(meta.getInitiatorCompany());
-        metaView.setInitiator(meta.getInitiator());
         metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
-        metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
+        metaView.setInitiator(meta.getInitiator());
 
+        metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
         metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -312,7 +317,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
-        metaView.setPlatform( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()));
+        metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
