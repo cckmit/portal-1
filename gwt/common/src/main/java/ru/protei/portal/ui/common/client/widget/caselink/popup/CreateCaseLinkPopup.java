@@ -41,7 +41,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
             }
         };
 
-        onInputText();
+        setInputTextHandler();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         }
     }
 
-    public void onInputText() {
+    public void setInputTextHandler() {
         remoteIdInput.addInputHandler(new InputHandler() {
             @Override
             public void onInput(InputEvent event) {
