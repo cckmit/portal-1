@@ -178,10 +178,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     @Override
     public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        editView.nameAndDescriptionEditButtonVisibility().setVisible( true );
-        editView.setNameVisible( true );
-        editView.getInfoContainer().clear();
-        editView.getInfoContainer().add( issueInfoWidget );
         issue.setName( changeRequest.getName() );
         issue.setInfo( changeRequest.getInfo() );
         fillView(issue, editView);
