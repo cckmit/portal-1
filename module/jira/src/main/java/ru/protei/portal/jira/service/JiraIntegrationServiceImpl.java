@@ -153,7 +153,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
 //            caseObj.setName(issue.getSummary()); -- update it with priority and info
             caseObj.setLocal(0);
-            caseObj.setInitiatorCompanyId(getInitiatorCompany(endpoint, event).getId());
 
             updateCaseState(endpoint, issue, caseObj);
             updatePriorityAndInfo(endpoint, issue, caseObj);
@@ -221,7 +220,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private Company getInitiatorCompany(JiraEndpoint endpoint, JiraHookEventData issue) {
-        String companyGroup = issue.getCompanyGroup();
+        IssueField field =  issue.getIssue().getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_COMPANY_GROUP);
+        String companyGroup = (field == null) ? null : field.getValue().toString();
         if (companyGroup != null) {
             JiraCompanyGroup jiraCompanyGroup = jiraCompanyGroupDAO.getByName(companyGroup);
             if (jiraCompanyGroup != null) {
@@ -404,7 +404,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private void updatePriorityAndInfo(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
         logger.debug("update case name, issue={}, case={}", issue.getKey(), caseObj.getCaseNumber());
-        IssueField issueCLM = issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FILED_CLM);
+        IssueField issueCLM = issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_CLM);
         caseObj.setName((issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary());
 
         // update severity

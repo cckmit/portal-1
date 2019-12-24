@@ -318,7 +318,7 @@ public class BootstrapService {
         // Nexign - Chinguitel
         Company company = companyDAO.getCompanyByName("Nexign - Chinguitel");
         JiraCompanyGroup jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("Nexign - Chinguitel");
+        jiraCompanyGroup.setJiraCompanyName("chinguitel_mr_Group");
         jiraCompanyGroup.setCompany(company);
         jiraCompanyGroupDAO.persist(jiraCompanyGroup);
 
@@ -332,7 +332,7 @@ public class BootstrapService {
         companyDAO.persist(company);
 
         jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("Nexign - Uzbektelekom");
+        jiraCompanyGroup.setJiraCompanyName("uzbektelecom_tashkent_Group");
         jiraCompanyGroup.setCompany(company);
         jiraCompanyGroupDAO.persist(jiraCompanyGroup);
 
@@ -346,7 +346,7 @@ public class BootstrapService {
         companyDAO.persist(company);
 
         jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("Nexign - Kktcell_cyprus");
+        jiraCompanyGroup.setJiraCompanyName("kktcell_cyprus_Group");
         jiraCompanyGroup.setCompany(company);
         jiraCompanyGroupDAO.persist(jiraCompanyGroup);
 
