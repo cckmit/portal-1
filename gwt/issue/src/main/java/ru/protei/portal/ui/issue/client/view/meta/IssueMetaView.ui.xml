@@ -81,7 +81,7 @@
 
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>
 
-        <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group">
+        <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group m-b-0">
             <g:HTMLPanel ui:field="timeElapsedHeader" styleName="col-md-12">
                 <label ui:field="timeElapsedLabel">
                     <ui:text from="{lang.timeElapsed}"/>
@@ -109,7 +109,7 @@
             </g:HTMLPanel>
         </g:HTMLPanel>
 
-        <div class="row form-group">
+        <div class="row form-group m-t-10">
             <div class="col-md-12">
                 <label ui:field="subscriptionsLabel">
                     <ui:text from="{lang.companySubscription}"/>

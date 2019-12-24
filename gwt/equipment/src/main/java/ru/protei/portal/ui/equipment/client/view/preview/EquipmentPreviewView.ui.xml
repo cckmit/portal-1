@@ -11,7 +11,7 @@
                         <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
                     </h4>
 
-                    <img ui:field="typeImage" src="" class="preview-title-image_right"/>
+                    <img ui:field="typeImage" src="" class="preview-title-image-right"/>
 
                     <div class="inline">
                         <small ui:field="createdBy"/>

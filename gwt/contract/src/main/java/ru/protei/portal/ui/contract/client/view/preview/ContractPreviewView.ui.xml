@@ -11,7 +11,7 @@
                         <g:Anchor href="#" ui:field="header"/>
                     </h4>
 
-                    <img ui:field="state" src="" class="preview-title-image_right"/>
+                    <img ui:field="state" src="" class="preview-title-image-right"/>
 
                     <small ui:field="type"/>
 

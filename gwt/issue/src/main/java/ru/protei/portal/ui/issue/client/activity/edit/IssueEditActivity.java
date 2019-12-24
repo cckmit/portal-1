@@ -197,10 +197,6 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        view.nameAndDescriptionEditButtonVisibility().setVisible( true );
-        view.nameVisibility().setVisible( true );
-        view.getInfoContainer().clear();
-        view.getInfoContainer().add( issueInfoWidget );
         issue.setName( changeRequest.getName() );
         issue.setInfo( changeRequest.getInfo() );
         fillView(issue);
@@ -316,14 +312,16 @@ public abstract class IssueEditActivity implements
         view.setCaseNumber(issue.getCaseNumber());
         view.setPrivateIssue(issue.isPrivateCase());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
-        view.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.nameVisibility().setVisible(true);
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo());
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
         issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
-        view.getInfoContainer().add( issueInfoWidget );
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add(issueInfoWidget);
 
         view.backButtonVisibility().setVisible(!modePreview);
         view.showEditViewButtonVisibility().setVisible(modePreview);

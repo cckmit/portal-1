@@ -29,23 +29,19 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasValue<CaseObjectMetaJira> jiraSlaSelector();
 
-    void setStateWorkflow( En_CaseStateWorkflow workflow);
+    void setStateWorkflow(En_CaseStateWorkflow workflow);
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
-    void setTimeElapsed(Long timeElapsed);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
 
-    void setInitiator( Person initiator);
-
+    void setInitiator(Person initiator);
     Person getInitiator();
 
-    void setPlatform( PlatformOption platform);
-
-    Long getPlatformId();
+    HasValue<PlatformOption> platform();
 
     HasVisibility timeElapsedHeaderVisibility();
 
@@ -70,23 +66,18 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<En_TimeElapsedType> timeElapsedType();
+    HasValue<En_CaseState> state();
+    HasValue<En_ImportanceLevel> importance();
 
-    HasValue<En_CaseState> state( );
-
-    HasValue<En_ImportanceLevel> importance(  );
-
-
-    void setProduct( DevUnit product );
-
+    void setProduct(DevUnit product);
     DevUnit getProduct();
 
-    void setManager( Person manager );
-
+    void setManager(Person manager);
     Person getManager();
 
-    void setCompany( Company company );
-
+    void setCompany(Company company);
     Company getCompany();
 
+    void setTimeElapsed(Long timeElapsed);
     Long getTimeElapsed();
 }

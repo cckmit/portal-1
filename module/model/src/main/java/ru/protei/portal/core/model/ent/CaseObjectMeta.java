@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -232,6 +232,11 @@ public class CaseObjectMeta implements Serializable {
 
     public void setPlatformId(Long platformId) {
         this.platformId = platformId;
+    }
+
+    public void setPlatform(PlatformOption platform) {
+        this.platformId = platform == null ? null : platform.getId();
+        this.platformName = platform == null ? null : platform.getDisplayText();
     }
 
     public String getPlatformName() {
