@@ -53,7 +53,6 @@ public class BootstrapService {
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
-        addNexignJiraCompany();
     }
 
     private void autoPatchDefaultRoles () {
@@ -306,67 +305,6 @@ public class BootstrapService {
 
         log.info("Document index full build has ended");
     }
-
-    private void addNexignJiraCompany() {
-        Company companyCheck = companyDAO.getCompanyByName("NexignJira");
-        if (companyCheck != null) {
-            return;
-        }
-
-        log.info("addNexignJiraCompany has started");
-
-        // Nexign - Chinguitel
-        Company company = companyDAO.getCompanyByName("Nexign - Chinguitel");
-        JiraCompanyGroup jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("chinguitel_mr_Group");
-        jiraCompanyGroup.setCompany(company);
-        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
-
-
-        // Nexign - Uzbektelekom
-        company = new Company();
-        company.setCreated(new Date());
-        company.setCname("Nexign - Uzbektelekom");
-        company.setInfo("NexignJira company");
-        company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
-        companyDAO.persist(company);
-
-        jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("uzbektelecom_tashkent_Group");
-        jiraCompanyGroup.setCompany(company);
-        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
-
-
-        // Nexign - Kktcell_cyprus
-        company = new Company();
-        company.setCreated(new Date());
-        company.setCname("Nexign - Kktcell_cyprus");
-        company.setInfo("NexignJira company");
-        company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
-        companyDAO.persist(company);
-
-        jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("kktcell_cyprus_Group");
-        jiraCompanyGroup.setCompany(company);
-        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
-
-
-        // NexignJira
-        company = new Company();
-        company.setCreated(new Date());
-        company.setCname("NexignJira");
-        company.setInfo("NexignJira company");
-        company.setCategory(companyCategoryDAO.get(1L)); // запрос по полю category name = заказчик?
-        companyDAO.persist(company);
-
-        jiraCompanyGroup = new JiraCompanyGroup();
-        jiraCompanyGroup.setJiraCompanyName("NexignJira");
-        jiraCompanyGroup.setCompany(company);
-        jiraCompanyGroupDAO.persist(jiraCompanyGroup);
-
-        log.info("addNexignJiraCompany has ended");
-    }
-
 
     @Inject
     UserRoleDAO userRoleDAO;
