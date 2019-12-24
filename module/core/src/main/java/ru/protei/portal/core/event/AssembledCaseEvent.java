@@ -283,13 +283,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isAttachedCommentNotPrivate() {
-        for (CaseComment addedComment : emptyIfNull( comments.getAddedEntries())) {
-            if(addedComment.isPrivateComment()) return false;
-        }
-        return true;
-    }
-
     public boolean isPublicCommentsChanged() {
         List<CaseComment> allEntries = new ArrayList<>();
         allEntries.addAll(emptyIfNull(comments.getAddedEntries()));
@@ -298,7 +291,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
         return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
     }
-
 
     public boolean isCaseObjectFilled() {
         return lastState != null;
