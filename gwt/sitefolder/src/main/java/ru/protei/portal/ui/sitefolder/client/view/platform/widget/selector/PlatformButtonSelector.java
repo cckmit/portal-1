@@ -30,7 +30,7 @@ public class PlatformButtonSelector extends ButtonSelector<PlatformOption> imple
 
         String name = value.getId() == null ? "" : value.getDisplayText();
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW)){
-            name = name + " <a class=\"full-screen-link\" href=\"" + LinkUtils.makeLink( Platform.class, value.getId() ) + "\" target=\"_blank\" id=\"" + DebugIds.ISSUE_PREVIEW.PLATFORM + "\"></a>";
+            name = name + " <a class=\"full-screen-link\" href=\"" + LinkUtils.makeLink( Platform.class, value.getId() ) + "\" target=\"_blank\" id=\"" + DebugIds.SITE_FOLDER.LINK.PLATFORM + "\"></a>";
         }
 
         return new DisplayOption( name );

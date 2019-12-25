@@ -258,14 +258,14 @@ public class CaseCommentListView
             return;
         }
 
-        commentsContainer.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.COMMENTS_LIST);
-        newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.USER_ICON);
-        comment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TEXT_INPUT);
-        privateComment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.PRIVACY_BUTTON);
-        send.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.SEND_BUTTON);
-        filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.FILES_UPLOAD);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED);
-        timeElapsedType.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED_TYPE);
+        commentsContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST);
+        newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON);
+        comment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT);
+        privateComment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON);
+        send.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON);
+        filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD);
+        timeElapsed.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED);
+        timeElapsedType.setEnsureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED_TYPE);
     }
 
     @UiField

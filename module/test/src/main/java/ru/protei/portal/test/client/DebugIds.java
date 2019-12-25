@@ -280,9 +280,7 @@ public class DebugIds {
         }
     }
 
-    public interface ISSUE_PREVIEW {
-        @Deprecated String FULL_SCREEN_BUTTON = DebugIds.ISSUE.SHOW_EDIT_BUTTON;
-        String PLATFORM = "issue-preview-platform-item";
+    public interface CASE_COMMENT {
 
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
@@ -305,6 +303,34 @@ public class DebugIds {
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
             String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
+        }
+    }
+
+    @Deprecated public interface ISSUE_PREVIEW {
+        @Deprecated String FULL_SCREEN_BUTTON = DebugIds.ISSUE.SHOW_EDIT_BUTTON;
+        @Deprecated String PLATFORM = DebugIds.SITE_FOLDER.LINK.PLATFORM;
+
+        @Deprecated interface COMMENT_LIST {
+            @Deprecated String COMMENTS_LIST = DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST;
+            @Deprecated String USER_ICON = DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON;
+            @Deprecated String TEXT_INPUT = DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT;
+            @Deprecated String PRIVACY_BUTTON = DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON;
+            @Deprecated String SEND_BUTTON = DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON;
+            @Deprecated String FILES_UPLOAD = DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD;
+            @Deprecated String TIME_ELAPSED = DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED;
+            @Deprecated String TIME_ELAPSED_TYPE = DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED_TYPE;
+        }
+
+        @Deprecated interface COMMENT_ITEM {
+            @Deprecated String PRIVACY_ICON = DebugIds.CASE_COMMENT.COMMENT_ITEM.PRIVACY_ICON;
+            @Deprecated String REPLY_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.REPLY_BUTTON;
+            @Deprecated String EDIT_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_BUTTON;
+            @Deprecated String REMOVE_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.REMOVE_BUTTON;
+            @Deprecated String OWNER = DebugIds.CASE_COMMENT.COMMENT_ITEM.OWNER;
+            @Deprecated String STATUS = DebugIds.CASE_COMMENT.COMMENT_ITEM.STATUS;
+            @Deprecated String TIME_ELAPSED = DebugIds.CASE_COMMENT.COMMENT_ITEM.TIME_ELAPSED;
+            @Deprecated String CREATE_DATE = DebugIds.CASE_COMMENT.COMMENT_ITEM.CREATE_DATE;
+            @Deprecated String EDIT_TIME_ELAPSED_TYPE_POPUP = DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP;
         }
     }
 
@@ -490,5 +516,12 @@ public class DebugIds {
 
     public interface COLLAPSIBLE_PANEL {
         String COLLAPSE_BUTTON = "collapsible-panel-collapse-button";
+    }
+
+    public interface SITE_FOLDER {
+
+        interface LINK {
+            String PLATFORM = "sitefolder-link-platform";
+        }
     }
 }
