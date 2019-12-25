@@ -53,6 +53,7 @@ public class TestWorkerController {
 
     @Autowired
     WebApplicationContext webApplicationContext;
+
     private static Logger logger = LoggerFactory.getLogger(TestWorkerController.class);
     private MockMvc mockMvc;
     private static String BASE_URI;
@@ -65,6 +66,8 @@ public class TestWorkerController {
     private String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
     private UserRole userRole;
     private Person person;
+    private String FIRST_PHOTO = "test1.jpg";
+    private String SECOND_PHOTO = "test2.jpg";
 
     @BeforeClass
     public static void initClass() throws Exception {
@@ -389,12 +392,11 @@ public class TestWorkerController {
 
     @Test
     public void testGetPhoto() throws Exception {
-        IdList list = new IdList();
-        list.getIds().add(new Long(1));
+        Long id = 1L;
 
-        createPhotosByIds(list.getIds());
+        createPhotosById(id);
 
-        String uri = BASE_URI + "get.photo/" + list.getIds().get(0);
+        String uri = BASE_URI + "get.photo/" + id;
 
         logger.debug("URI = " + uri);
 
@@ -406,10 +408,10 @@ public class TestWorkerController {
 
         Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, result.andReturn().getResponse().getStatus());
 
-        String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + list.getIds().get(0) + ".jpg";
+        String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
         Path sourcePhotoPath = Paths.get(sourcePhotoName);
 
-        String diffPhotoName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
+        String diffPhotoName = WSConfig.getInstance().getDirPhotos() + SECOND_PHOTO;
         Path diffPhotoPath = Paths.get(diffPhotoName);
 
         byte[] receivedPhotoBytes = result.andReturn().getResponse().getContentAsByteArray();
@@ -429,10 +431,10 @@ public class TestWorkerController {
 
         Long id = result.getData();
 
-        createPhotosByIds(Collections.singletonList(id));
+        createPhotosById(id);
 
         String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
-        String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + "test2.jpg";
+        String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + SECOND_PHOTO;
 
         Assert.assertFalse("Оld and new photo should be different", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
 
@@ -454,19 +456,15 @@ public class TestWorkerController {
         Files.deleteIfExists(Paths.get(photoByIdName));
     }
 
-    private void createPhotosByIds(List<Long> ids) throws Exception{
-        int i = 1;
-        for (Long id : ids) {
+    private void createPhotosById(Long id) throws Exception{
             String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
             Path photoByIdPath = Paths.get(photoByIdName);
 
-            String existPhotoName = WSConfig.getInstance().getDirPhotos() + "test" + i + ".jpg";
+            String existPhotoName = WSConfig.getInstance().getDirPhotos() + FIRST_PHOTO;
             Path existPhotoPath = Paths.get(existPhotoName);
 
             Files.deleteIfExists(photoByIdPath);
             Files.copy(existPhotoPath, photoByIdPath);
-            i++;
-        }
     }
 
 

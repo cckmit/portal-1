@@ -547,10 +547,8 @@ public class WorkerController {
             return;
         }
 
-        InputStream in = null;
+        try (InputStream in = Files.newInputStream(photoPath)){
 
-        try {
-            in = Files.newInputStream(photoPath);
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             IOUtils.copy(in, response.getOutputStream());
             logger.debug("getPhoto(): success result, photo path: {}", photoPath);
@@ -563,7 +561,6 @@ public class WorkerController {
             try {
                 response.getOutputStream().flush();
                 response.getOutputStream().close();
-                in.close();
                 logger.debug("getPhoto(): success closing streams");
 
             } catch (Exception e){
