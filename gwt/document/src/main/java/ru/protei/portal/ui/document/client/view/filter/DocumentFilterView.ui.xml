@@ -52,7 +52,7 @@
                     <label>
                         <ui:text from="{lang.documentType}"/>
                     </label>
-                    <doctype:DocumentTypeSelector ui:field="documentType"/>
+                    <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectorAny}"/>
                 </div>
 
                 <div class="form-group col-md-12">

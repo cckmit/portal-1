@@ -41,7 +41,6 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         initWidget(outUiBinder.createAndBindUi(this));
         dateRange.setPlaceholder(lang.selectDate());
         sortField.setType(ModuleType.DOCUMENT);
-        documentType.setDefaultValue(lang.documentTypeNotDefined());
     }
 
     @Override
