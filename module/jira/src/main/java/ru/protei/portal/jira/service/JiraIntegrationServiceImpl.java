@@ -220,7 +220,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private Company getInitiatorCompany(JiraEndpoint endpoint, JiraHookEventData issue) {
-        IssueField field =  issue.getIssue().getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_COMPANY_GROUP);
+        IssueField field =  issue.getIssue().getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME);
         String companyGroup = (field == null) ? null : field.getValue().toString();
         if (companyGroup != null) {
             JiraCompanyGroup jiraCompanyGroup = jiraCompanyGroupDAO.getByName(companyGroup);

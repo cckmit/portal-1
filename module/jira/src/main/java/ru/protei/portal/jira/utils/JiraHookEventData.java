@@ -29,8 +29,6 @@ public class JiraHookEventData {
     private Long changelogId;
     private Collection<ChangelogItem> changelogItems;
     private Comment comment;
-    private String companyGroup;
-
 
     public JiraHookEventData() {
         this (System.currentTimeMillis(), null);
@@ -82,14 +80,6 @@ public class JiraHookEventData {
         return comment;
     }
 
-    public String getCompanyGroup() {
-        return companyGroup;
-    }
-
-    public void setCompanyGroup(String companyGroup) {
-        this.companyGroup = companyGroup;
-    }
-
     public String toDebugString () {
 
         return "jira-event: " + this.eventType.name() + "/" + this.timestamp +
@@ -98,7 +88,6 @@ public class JiraHookEventData {
                 +", log-id=" + (changelogId != null ? changelogId : "-")
                 +", log-items-count=" + (changelogItems != null ? changelogItems.size() : 0)
                 +", comment=" + (comment != null ? comment.getBody() : "-")
-                +", companyGroup=" + (companyGroup != null ? companyGroup : "-")
                 + "]";
     }
 
@@ -124,8 +113,6 @@ public class JiraHookEventData {
             data.changelogId = JsonParseUtil.getOptionalLong(chLogJson, "id");
             data.changelogItems = JsonParseUtil.parseJsonArray(chLogJson.getJSONArray("items"), new ChangelogItemJsonParser());
         }
-
-        data.companyGroup = jsonObject.getString("companyGroup");
 
         return data;
     }
