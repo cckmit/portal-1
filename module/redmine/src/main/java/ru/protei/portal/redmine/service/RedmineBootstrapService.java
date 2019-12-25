@@ -3,6 +3,7 @@ package ru.protei.portal.redmine.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
@@ -17,12 +18,12 @@ public class RedmineBootstrapService {
 
     private static Logger logger = LoggerFactory.getLogger(RedmineBootstrapService.class);
 
-    @PostConstruct
+    @Scheduled(initialDelay = 180000, fixedDelay = 180000)
     public void init() {
         //updateCreationDateAttachments();
         //updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
         //updateNullIssueCreator();
-        updateCaseObjectById(159200L);
+        updateCaseObjectById(155025L);
     }
 
     private void updateCreationDateAttachments() {

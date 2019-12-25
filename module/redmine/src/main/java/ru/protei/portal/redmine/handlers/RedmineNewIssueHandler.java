@@ -5,10 +5,14 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
@@ -19,20 +23,19 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     @Override
     public void handle(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
-        logger.debug("Starting creating case object for issue id {}, user id {}, company id {}",
-                 issue.getId(), user.getId(), companyId);
-        final CaseObject object = createCaseObject(user, issue, endpoint);
-        if (object == null)
-            logger.debug("Object was not created");
-        else
-            logger.debug("Object with id {} was created, guid={}", object.getId(), object.defGUID());
+        logger.debug( "Starting creating case object for issue id {}, user id {}, company id {}", issue.getId(), user.getId(), companyId );
+        final CaseObject object = createCaseObject( user, issue, endpoint );
+        if ( object == null ) {
+            logger.debug( "Object was not created" );
+        } else {
+            logger.debug( "Object with id {} was created, guid={}", object.getId(), object.defGUID() );
+        }
     }
 
     private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
         logger.debug("Creating case object ...");
         final long companyId = endpoint.getCompanyId();
-        final CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString()
-                + "_" + companyId );
+        final CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString() + "_" + companyId );
         if (testExists != null) {
             logger.debug("issue {} is already created as case-object {}", issue.getId(), testExists.defGUID());
             return testExists;
@@ -46,16 +49,22 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
         final CaseObject obj = buildCaseObject(issue, contactPerson, endpoint);
         final long caseObjId = caseObjectDAO.insertCase(obj);
+
         final ExternalCaseAppData appData = new ExternalCaseAppData(obj);
         appData.setExtAppCaseId(issue.getId() + "_" + companyId);
         appData.setExtAppData(String.valueOf(issue.getProjectId()));
         logger.debug("create redmine-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
-
         externalCaseAppDAO.merge(appData);
 
-        commonService.processAttachments(issue, obj, contactPerson.getId(), endpoint);
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.JIRA, contactPerson.getId(), obj);
+        final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectCreateEvent);
+        caseEvent.attachCaseObjectCreateEvent(caseObjectCreateEvent);
 
-        handleComments(issue, contactPerson.getId(), obj, caseObjId, companyId);
+        caseEvent.includeCaseAttachments(commonService.processAttachments(issue, obj, contactPerson.getId(), endpoint));
+
+        assemblerService.proceed(caseEvent);
+
+        handleComments(issue, obj, caseObjId, companyId);
 
         return obj;
     }
@@ -103,7 +112,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         return obj;
     }
 
-    private void handleComments(Issue issue, Long personId, CaseObject obj, long caseObjId, long companyId) {
+    private void handleComments(Issue issue, CaseObject obj, long caseObjId, long companyId) {
         logger.debug("Processing comments ...");
 
         issue.getJournals()
@@ -113,7 +122,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
                 .filter(x -> !x.getNotes().isEmpty())
                 .map(x -> commonService.parseJournalToCaseComment(x, companyId))
                 .filter(Objects::nonNull)
-                .forEach(x -> commonService.processStoreComment(issue, personId, obj, caseObjId, x));
+                .forEach(x -> commonService.processStoreComment(issue, x.getAuthor().getId(), obj, caseObjId, x));
     }
 
     @Autowired
@@ -130,6 +139,9 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
+
+    @Autowired
+    AssemblerService assemblerService;
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 }

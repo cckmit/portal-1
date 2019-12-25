@@ -71,10 +71,10 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Issue issue, CaseObject obj, Long contactPersonId, RedmineEndpoint endpoint) {
+    public List<Attachment> processAttachments(Issue issue, CaseObject obj, Long contactPersonId, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
-        final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
+        final List<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
             logger.debug("Process attachments for case, id={}, existingAttachmentsHashCodes={}", caseObjId, existingAttachmentsHashCodes);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
@@ -108,9 +108,7 @@ public final class CommonServiceImpl implements CommonService {
             addedAttachments.forEach(attachmentDAO::saveOrUpdate);
             caseAttachments.forEach(caseAttachmentDAO::saveOrUpdate);
         }
-
-        eventPublisherService.publishEvent(new CaseAttachmentEvent(this, ServiceModule.REDMINE, contactPersonId, obj.getId(),
-                        addedAttachments, null));
+        return addedAttachments;
     }
 
     @Override
@@ -132,7 +130,7 @@ public final class CommonServiceImpl implements CommonService {
         comment.setCaseId(caseObjId);
         caseCommentDAO.saveOrUpdate(comment);
 
-        eventPublisherService.publishEvent(new CaseCommentEvent(caseService, ServiceModule.REDMINE, contactPersonId,
+        publisherService.publishEvent(new CaseCommentEvent(caseService, ServiceModule.REDMINE, contactPersonId,
                 caseObjId, false, null, comment, null));
 
         return comment;
@@ -237,7 +235,7 @@ public final class CommonServiceImpl implements CommonService {
     private AttachmentDAO attachmentDAO;
 
     @Autowired
-    private EventPublisherService eventPublisherService;
+    private EventPublisherService publisherService;
 
     @Autowired
     private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
