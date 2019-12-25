@@ -101,7 +101,6 @@ public class WorkerController {
      * @return Result<WorkerRecord>
      */
     @RequestMapping(method = RequestMethod.GET,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/get.person")
     Result<WorkerRecord> getPerson(@RequestParam(name = "id") Long id,
@@ -127,7 +126,6 @@ public class WorkerController {
      * @return Result<WorkerRecord>
      */
     @RequestMapping(method = RequestMethod.GET,
-                   consumes = MediaType.APPLICATION_XML_VALUE,
                    produces = MediaType.APPLICATION_XML_VALUE,
                    value = "/get.worker")
     Result<WorkerRecord> getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
@@ -163,7 +161,6 @@ public class WorkerController {
      * @return Result<DepartmentRecord>
      */
     @RequestMapping(method = RequestMethod.GET,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/get.department")
     Result<DepartmentRecord> getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
@@ -191,7 +188,6 @@ public class WorkerController {
      * @return Result<WorkerRecordList>
      */
     @RequestMapping(method = RequestMethod.GET,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/get.persons")
     Result<WorkerRecordList> getPersons(@RequestParam(name = "expr") String expr,
@@ -455,7 +451,6 @@ public class WorkerController {
      * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/delete.worker")
     Result<Long> deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
@@ -705,7 +700,6 @@ public class WorkerController {
      * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/delete.department")
     Result<Long> deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
@@ -748,7 +742,6 @@ public class WorkerController {
      * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/update.position")
     Result<Long> updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName")
@@ -797,7 +790,6 @@ public class WorkerController {
      * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE,
-                    consumes = MediaType.APPLICATION_XML_VALUE,
                     produces = MediaType.APPLICATION_XML_VALUE,
                     value = "/delete.position")
     Result<Long> deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode,

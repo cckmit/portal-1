@@ -624,7 +624,6 @@ public class TestWorkerController {
                 delete(uriBuilder)
                         .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
 
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
@@ -641,7 +640,6 @@ public class TestWorkerController {
                 get(uri)
                         .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
 
         Result<WorkerRecord> workerRecord = (Result<WorkerRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
@@ -687,7 +685,6 @@ public class TestWorkerController {
                 delete(uriBuilder)
                         .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
@@ -710,7 +707,6 @@ public class TestWorkerController {
                 get(uriBuilder)
                         .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
         Result<DepartmentRecord> departmentRecord = (Result<DepartmentRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
 
