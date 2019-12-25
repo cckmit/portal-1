@@ -37,10 +37,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setBackgroundWhite(boolean isWhite) {
+    public void setPreviewStyles(boolean isPreview) {
         root.removeStyleName("card-default");
         root.removeStyleName("card-transparent");
-        root.addStyleName(isWhite ? "card-default" : "card-transparent");
+        root.removeStyleName("card-fixed");
+        if (isPreview) {
+            root.addStyleName("card-default");
+            root.addStyleName("card-fixed");
+        } else {
+            root.addStyleName("card-transparent");
+        }
     }
 
     @Override
