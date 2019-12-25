@@ -143,3 +143,24 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 .checkbox input[type=checkbox] {
   display: none;
 }
+
+.profile-dropdown > a:last-child {
+  margin: 0 !important;
+  padding-top: 7px !important;
+
+}
+.dropdown-menu > li:first-child, .dropdown-menu > .dropdown-item:first-child {
+  padding-bottom: 7px;
+}
+
+.profile-dropdown > a {
+  opacity: unset !important;
+}
+
+.dropdown-menu > li:hover, .dropdown-menu > .dropdown-item:hover, .dropdown-menu > li:focus, .dropdown-menu > .dropdown-item:focus, .dropdown-menu > li:active, .dropdown-menu > .dropdown-item:active {
+  background-color: #f0f0f0;
+}
+
+.dropdown-menu > li, .dropdown-menu > .dropdown-item {
+  color: #505050;
+}
