@@ -28,7 +28,7 @@ import ru.protei.portal.jira.mapper.CachedPersonMapper;
 import ru.protei.portal.jira.mapper.PersonMapper;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
-import ru.protei.portal.jira.utils.JiraHookEventData;
+import ru.protei.portal.jira.dto.JiraHookEventData;
 
 import java.io.IOException;
 import java.io.InputStream;

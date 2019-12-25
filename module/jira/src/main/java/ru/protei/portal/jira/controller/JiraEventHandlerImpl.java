@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.jira.service.JiraIntegrationQueueService;
-import ru.protei.portal.jira.utils.JiraHookEventData;
+import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,11 +35,11 @@ public class JiraEventHandlerImpl {
             HttpServletRequest request
     ) {
 
-        logger.info("Got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
-        logger.debug("Got request from JIRA, data: {}", jsonString);
+        logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
+        logger.debug("jiraWebhook(): data={}", jsonString);
 
         if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
-            logger.info("Jira integration is disabled, no actions taken");
+            logger.info("jiraWebhook(): companyId={} | jira integration is disabled, no actions taken", companyId);
             return;
         }
 
@@ -46,17 +47,15 @@ public class JiraEventHandlerImpl {
 
         try {
 
-            JiraHookEventData eventData = JiraHookEventData.parse(jsonString);
+            JiraHookEventData eventData = JiraHookEventParser.parse(jsonString);
             if (eventData == null || eventData.getIssue() == null) {
-                logger.warn("Failed to parse data, return");
-                if (!logger.isDebugEnabled()) {
-                    logger.warn("Data: {}", jsonString);
-                }
+                logger.warn("jiraWebhook(): companyId={} | failed to parse json-data, return", companyId);
+                if (!logger.isDebugEnabled()) logger.warn("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
                 return;
             }
 
             if (!jiraIntegrationQueueService.enqueue(companyId, eventData)) {
-                logger.error("Event dropped: companyId={}, src-ip={}, host={}, query={}, eventData={}",
+                logger.error("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
                         companyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
             }
 
@@ -79,13 +78,12 @@ public class JiraEventHandlerImpl {
              */
 
         } catch (JSONException e) {
-            logger.error("Failed to parse json-data", e);
-            if (!logger.isDebugEnabled()) {
-                logger.error("Data: {}", jsonString);
-            }
+            logger.error(String.format("jiraWebhook(): companyId=%s | failed to parse json-data", companyId), e);
+            if (!logger.isDebugEnabled()) logger.warn("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
         } finally {
             long total = System.currentTimeMillis() - timeStart;
-            logger.info("Request from JIRA completed, companyId={}, src-ip={}, host={}, query={}, time={}ms", companyId, realIP, fromHost, request.getQueryString(), total);
+            logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, time={}ms | request completed",
+                    companyId, realIP, fromHost, request.getQueryString(), total);
         }
     }
 }

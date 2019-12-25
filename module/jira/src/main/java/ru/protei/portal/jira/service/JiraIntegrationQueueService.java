@@ -1,6 +1,6 @@
 package ru.protei.portal.jira.service;
 
-import ru.protei.portal.jira.utils.JiraHookEventData;
+import ru.protei.portal.jira.dto.JiraHookEventData;
 
 public interface JiraIntegrationQueueService {
 

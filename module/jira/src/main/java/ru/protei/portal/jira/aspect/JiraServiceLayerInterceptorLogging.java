@@ -9,8 +9,8 @@ import org.springframework.core.annotation.Order;
 import ru.protei.portal.core.model.struct.MethodProfile;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -82,6 +82,7 @@ public class JiraServiceLayerInterceptorLogging {
         return String.valueOf(result);
     }
 
-    private Map<String, MethodProfile> profiling = new HashMap<>();
-    private static final Logger log = getLogger("service");
+    private Map<String, MethodProfile> profiling = new ConcurrentHashMap<>();
+    public static final String SERVICE_FACADE_LOGGER_NAME = "service";
+    private static final Logger log = getLogger(SERVICE_FACADE_LOGGER_NAME);
 }

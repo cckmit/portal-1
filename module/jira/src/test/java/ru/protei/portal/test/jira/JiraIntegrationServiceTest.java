@@ -18,8 +18,9 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.service.JiraIntegrationService;
-import ru.protei.portal.jira.utils.JiraHookEventData;
-import ru.protei.portal.jira.utils.JiraHookEventType;
+import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.dict.JiraHookEventType;
+import ru.protei.portal.jira.utils.JiraHookEventParser;
 import ru.protei.portal.test.jira.config.DatabaseTestConfiguration;
 import ru.protei.portal.test.jira.config.JiraTestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -116,8 +117,8 @@ public class JiraIntegrationServiceTest {
 
     private Issue makeIssue(String jsonString) {
         try {
-            JiraHookEventData data = JiraHookEventData.parse(jsonString);
-            return data.getIssue();
+            JiraHookEventData data = JiraHookEventParser.parse(jsonString);
+            return data == null ? null : data.getIssue();
         } catch (JSONException e) {
             return null;
         }

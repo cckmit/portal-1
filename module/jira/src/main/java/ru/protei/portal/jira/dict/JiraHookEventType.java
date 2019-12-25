@@ -1,4 +1,4 @@
-package ru.protei.portal.jira.utils;
+package ru.protei.portal.jira.dict;
 
 public enum JiraHookEventType {
     COMMENT_CREATED("comment_created"),

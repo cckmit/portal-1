@@ -12,8 +12,8 @@ import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.jira.utils.JiraHookEventData;
-import ru.protei.portal.jira.utils.JiraHookEventType;
+import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.dict.JiraHookEventType;
 import ru.protei.winter.core.utils.Pair;
 
 import javax.annotation.PostConstruct;
@@ -31,36 +31,22 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
             return;
         }
 
-        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> integrationService.create(ep, event));
-        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> integrationService.updateOrCreate(ep, event));
-        handlersMap.put(JiraHookEventType.COMMENT_CREATED, (ep, event) -> null);
-        handlersMap.put(JiraHookEventType.COMMENT_UPDATED, (ep, event) -> null);
+        initHandlers();
 
-        defaultHandler = (ep, evt) -> {
-            log.info("has no handler for event {}, skip", evt.getEventType());
-            return null;
-        };
-
-        startWorker();
+        if (startWorker()) {
+            log.info("Jira queue service has started");
+        } else {
+            log.error("Jira queue service failed to start");
+        }
     }
 
     @PreDestroy
     private void destroy() {
+        log.info("Jira queue service is about to be stopped");
         isBeanDestroyed = true;
-        executor.shutdownNow();
-        if (queue.size() > 0) {
-            log.warn("Bean is going to be destroyed!");
-            for (int i = 0; i < queue.size(); i++) {
-                Pair<Long, JiraHookEventData> event = queue.peek();
-                if (event == null) {
-                    continue;
-                }
-                Long companyId = event.getA();
-                JiraHookEventData eventData = event.getB();
-                log.error("Event for jira-issue has been dropped! company={}, eventData={} ", companyId, eventData.toDebugString());
-            }
-        }
-        queue.clear();
+        stopWorker();
+        stopQueue();
+        log.info("Jira queue service has stopped");
     }
 
     @Override
@@ -93,8 +79,63 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         return isEnqueued;
     }
 
-    private void startWorker() {
-        executor.submit(new JiraIntegrationQueueWorker());
+    private void initHandlers() {
+        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> integrationService.create(ep, event));
+        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> integrationService.updateOrCreate(ep, event));
+        handlersMap.put(JiraHookEventType.COMMENT_CREATED, (ep, event) -> null);
+        handlersMap.put(JiraHookEventType.COMMENT_UPDATED, (ep, event) -> null);
+        defaultHandler = (ep, evt) -> {
+            log.info("No handler for event {}, skip", evt.getEventType());
+            return null;
+        };
+    }
+
+    private boolean startWorker() {
+        try {
+            executor.submit(new JiraIntegrationQueueWorker());
+            return true;
+        } catch (RejectedExecutionException e) {
+            log.error("Executor rejected to submit worker", e);
+            return false;
+        }
+    }
+
+    private void stopWorker() {
+        try {
+            if (!executor.awaitTermination(TIMEOUT_TERMINATE, TIMEOUT_TIME_UNIT)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    private void stopQueue() {
+        if (queue.isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < queue.size(); i++) {
+            Pair<Long, JiraHookEventData> event = queue.peek();
+            if (event == null) {
+                continue;
+            }
+            Long companyId = event.getA();
+            JiraHookEventData eventData = event.getB();
+            log.error("Event for jira-issue has been dropped! company={}, eventData={}", companyId, eventData.toDebugString());
+        }
+        queue.clear();
+    }
+
+    private void sendEvent(AssembledCaseEvent event) {
+        log.info("Send assembled event {}", event.getCaseObject().defGUID());
+        eventPublisherService.publishEvent(event);
+    }
+
+    private EntityCache<JiraEndpoint> jiraEndpointCache() {
+        if (jiraEndpointCache == null) {
+            jiraEndpointCache = new EntityCache<>(jiraEndpointDAO, TimeUnit.MINUTES.toMillis(10));
+        }
+        return jiraEndpointCache;
     }
 
     public class JiraIntegrationQueueWorker implements Runnable {
@@ -103,7 +144,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
             try {
                 while (!isBeanDestroyed && !Thread.currentThread().isInterrupted()) {
 
-                    Pair<Long, JiraHookEventData> event = queue.poll(30L, TimeUnit.SECONDS);
+                    Pair<Long, JiraHookEventData> event = queue.poll(TIMEOUT_WAIT, TIMEOUT_TIME_UNIT);
                     if (event == null) {
                         continue;
                     }
@@ -166,18 +207,6 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         private final Logger log = LoggerFactory.getLogger(JiraIntegrationQueueWorker.class);
     }
 
-    private void sendEvent(AssembledCaseEvent event) {
-        log.info("Send assembled event {}", event.getCaseObject().defGUID());
-        eventPublisherService.publishEvent(event);
-    }
-
-    private EntityCache<JiraEndpoint> jiraEndpointCache() {
-        if (jiraEndpointCache == null) {
-            jiraEndpointCache = new EntityCache<>(jiraEndpointDAO, TimeUnit.MINUTES.toMillis(10));
-        }
-        return jiraEndpointCache;
-    }
-
     @Autowired
     PortalConfig config;
     @Autowired
@@ -203,5 +232,8 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
 
     private static final int QUEUE_ALARM_THRESHOLD_PERCENT = 80;
     private static final int EVENT_SEND_DELAY_SEC = 3;
+    private static final long TIMEOUT_WAIT = 5L;
+    private static final long TIMEOUT_TERMINATE = 8L;
+    private static final TimeUnit TIMEOUT_TIME_UNIT = TimeUnit.SECONDS;
     private static final Logger log = LoggerFactory.getLogger(JiraIntegrationQueueServiceImpl.class);
 }
