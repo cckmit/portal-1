@@ -6,10 +6,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.struct.PathInfo;
 import ru.protei.portal.core.model.struct.PathItem;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -32,13 +34,16 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
 
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderAppEvents.Edit event) {
+        if (!hasPrivileges(event.appId)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.appId == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppNew()));
             Application application = new Application();
             if (event.server != null) {
                 application.setServer(event.server);
@@ -46,7 +51,6 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
             fillView(application);
             return;
         }
-        fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppEdit()));
 
         siteFolderController.getApplication(event.appId, new RequestCallback<Application>() {
             @Override
@@ -125,12 +129,26 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         return view.nameValidator().isValid() && view.serverValidator().isValid();
     }
 
+    private boolean hasPrivileges(Long appId) {
+        if (appId == null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return true;
+        }
+
+        if (appId != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     Lang lang;
     @Inject
     AbstractApplicationEditView view;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    PolicyService policyService;
 
     private Application application;
     private AppEvents.InitDetails initDetails;

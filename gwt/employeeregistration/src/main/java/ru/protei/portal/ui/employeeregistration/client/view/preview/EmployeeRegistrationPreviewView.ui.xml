@@ -1,93 +1,150 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
 >
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <div class="preview">
-            <fieldset class="header">
-                <legend><lable ui:field="header"/></legend>
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12" enabled="false"/>
+    <g:HTMLPanel styleName="preview-card card-fixed">
+        <div ui:field="preview" class="preview">
+            <div class="card card-default no-border">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="col-md-12 m-t-0 m-b-0" >
+                            <g:InlineLabel ui:field="fullName"/>
+                            <div class="inline pull-right">
+                                <small ui:field="createdBy"/>
+                            </div>
+                        </h4>
+                    </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEmployeeFullName}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="fullName"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="headOfDepartment"/>
-                </div>
+                    <h5 ui:field="name"/>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEmploymentType}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="employmentType"/>
+                    <g:HTMLPanel ui:field="linksContainer"/>
+
+                    <div class="form-group-attached">
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationState}"/>
+                                    </label>
+                                    <span ui:field="caseState"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/>
+                                    </label>
+                                    <span ui:field="headOfDepartment"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationCurators}"/>
+                                    </label>
+                                    <span ui:field="curators"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationPost}"/>
+                                    </label>
+                                    <span ui:field="position"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationEmploymentType}"/>
+                                    </label>
+                                    <span ui:field="employmentType"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationEmploymentDate}"/>
+                                    </label>
+                                    <span ui:field="employmentDate"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
+                                    </label>
+                                    <span ui:field="probationPeriod"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5><ui:text from="{lang.employeeRegistrationWorkplaceTitle}"/></h5>
+
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationWorkplace}: "/>
+                        </b>
+                        <span ui:field="workplace"/>
+                    </div>
+
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationEquipmentListPreview}: "/>
+                        </b>
+                        <span ui:field="equipmentList"/>
+                    </div>
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationOS}: "/>
+                        </b>
+                        <span ui:field="operatingSystem"/>
+                    </div>
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationAdditionalSoft}: "/>
+                        </b>
+                        <span ui:field="additionalSoft"/>
+                    </div>
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}: "/>
+                        </b>
+                        <span ui:field="phoneOfficeTypeList"/>
+                    </div>
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationComment}: "/>
+                        </b>
+                        <span ui:field="comment"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.employeeRegistrationResourceTitle}"/></h5>
+
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationResourceList}: "/>
+                        </b>
+                        <span ui:field="resourcesList"/>
+                    </div>
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.employeeRegistrationResourceOtherComment}: "/>
+                        </b>
+                        <span ui:field="resourceComment"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.comments}"/></h5>
+
+                    <g:HTMLPanel ui:field="commentContainer"/>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationWithRegistration}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="withRegistration"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationPost}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="position"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationState}"/></label>
-                    <span class="col-xs-7 col-md-7"><div ui:field="caseState"/></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
-                    <span class="col-xs-7 col-md-3" ui:field="employmentDate"/>
-                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationCreated}"/></label>
-                    <span class="col-xs-7 col-md-5" ui:field="created"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationProbationPeriod}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="probationPeriod"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationCurators}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="curators"></span>
-                </div>
-            </fieldset>
-            <fieldset class="header">
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationWorkplace}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="workplace"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEquipmentListPreview}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="equipmentList"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationOS}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="operatingSystem"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationAdditionalSoft}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="additionalSoft"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationResourceList}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="resourcesList"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationResourceOtherComment}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="resourceComment"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="phoneOfficeTypeList"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationComment}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="comment"/>
-                </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <g:HTMLPanel ui:field="commentContainer" />
-            </fieldset>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

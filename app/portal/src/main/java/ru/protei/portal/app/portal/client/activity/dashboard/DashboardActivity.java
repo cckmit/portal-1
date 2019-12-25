@@ -40,31 +40,26 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             return;
         }
 
-        fireEvent(new IssueEvents.Edit());
+        fireEvent(new IssueEvents.Create());
     }
 
     @Event
     public void onShow( DashboardEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DASHBOARD_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
         if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ) {
             fireEvent(
                     new ActionBarEvents.Add(
-                            lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DASHBOARD ) );
+                            lang.buttonCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD ) );
         }
         initWidgets();
 
-    }
-
-    @Event
-    public void onChangeIssues( IssueEvents.ChangeModel event ) {
-
-        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW ) ) {
-            return;
-        }
-
-        initWidgets();
     }
 
     private void initWidgets(){
@@ -95,8 +90,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateNewRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Arrays.asList(En_CaseState.CREATED));
-        query.setOrWithoutManager( true );
+        query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
+        query.setWithoutManager(true);
 
         return query;
     }

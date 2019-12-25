@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.makdown;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -12,9 +13,12 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.ToggleButton;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 public class MarkdownAreaWithPreview
         extends Composite
@@ -22,6 +26,12 @@ public class MarkdownAreaWithPreview
 
     public MarkdownAreaWithPreview() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+    }
+
+    private DisplayPreviewHandler displayPreviewHandler;
+
+    public interface DisplayPreviewHandler {
+        void onDisplayPreviewChanged( boolean isDisplay );
     }
 
     @Override
@@ -48,7 +58,15 @@ public class MarkdownAreaWithPreview
         return addHandler(valueChangeHandler, ValueChangeEvent.getType());
     }
 
-    public void setRenderer(HTMLRenderer renderer) {
+    public void setDisplayPreview( boolean isDisplayPreview ) {
+        this.isDisplayPreview.setValue(  isDisplayPreview );
+    }
+
+    public void setDisplayPreviewHandler( DisplayPreviewHandler displayPreviewHandler ) {
+        this.displayPreviewHandler = displayPreviewHandler;
+    }
+
+    public void setRenderer( HTMLRenderer renderer) {
         this.renderer = renderer;
     }
 
@@ -71,6 +89,18 @@ public class MarkdownAreaWithPreview
         ValueChangeEvent.fire(this, text.getValue());
     }
 
+    @UiHandler("isDisplayPreview")
+    public void onDisplayPreviewChanged( ClickEvent event ) {
+        if (displayPreviewHandler != null) {
+            displayPreviewHandler.onDisplayPreviewChanged( isDisplayPreview.getValue() );
+            previewChanged();
+        }
+    }
+
+    public void setEnsureDebugId(String debugId) {
+        text.ensureDebugId(debugId);
+    }
+
     private void scheduleChangedPreview() {
         changedPreviewTimer.cancel();
         changedPreviewTimer.schedule(PREVIEW_CHANGE_DELAY_MS);
@@ -80,12 +110,15 @@ public class MarkdownAreaWithPreview
 
         String value = text.getValue();
 
-        if (StringUtils.isBlank(value) || renderer == null) {
-            previewContainer.setVisible(false);
+        previewContainer.setVisible( !isBlank(value) && renderer != null);
+
+        if(!isDisplayPreview.getValue()) {
+            preview.setInnerHTML("");
+            return;
         }
 
         renderer.render(value, text -> {
-            if (StringUtils.isBlank(text)) {
+            if (isBlank(text)) {
                 previewContainer.setVisible(false);
                 return;
             }
@@ -100,6 +133,8 @@ public class MarkdownAreaWithPreview
     HTMLPanel previewContainer;
     @UiField
     DivElement preview;
+    @UiField
+    ToggleButton isDisplayPreview;
 
     private HTMLRenderer renderer;
 

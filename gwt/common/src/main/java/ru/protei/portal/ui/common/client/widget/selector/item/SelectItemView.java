@@ -10,6 +10,9 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import ru.protei.portal.test.client.DebugIds;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Один элемент инпут-селектора
@@ -17,6 +20,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 public class SelectItemView extends Composite implements HasEnabled {
     public SelectItemView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        setTestAttributes();
     }
 
     @Override
@@ -55,11 +59,17 @@ public class SelectItemView extends Composite implements HasEnabled {
         handler.onCloseClicked( this );
     }
 
+    private void setTestAttributes() {
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.SELECTED.ITEM);
+        close.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.SELECTED.REMOVE_BUTTON);
+    }
 
     @UiField
     DivElement text;
     @UiField
     Anchor close;
+    @UiField
+    HTMLPanel root;
 
     String curValue = null;
     CloseHandler handler;

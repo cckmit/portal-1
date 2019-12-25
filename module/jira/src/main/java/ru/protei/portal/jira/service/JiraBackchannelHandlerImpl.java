@@ -12,10 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
@@ -41,7 +43,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         }
 
         if (!event.isCoreModuleEvent()) {
-            logger.debug("event from plugin-modules, skip handling");
+            logger.debug("skip handle plugin-published event for {}", event.getCaseObject().getExtId());
             return;
         }
 
@@ -69,7 +71,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         // TODO why no check if its jira issue (by ExternalCaseAppData.extAppType)
 
-        final CommonUtils.IssueData issueData = CommonUtils.convert(extCaseData);
+        final JiraUtils.JiraIssueData issueData = CommonUtils.convert(extCaseData);
 
         final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
         if (endpoint == null) {
@@ -91,9 +93,9 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 generalUpdate(endpoint, event, issue, issueClient);
             }
 
-            if (event.getCaseComment() != null) {
-                logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
-                issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment()))
+            if (event.getAddedCaseComments() != null && event.isAttachedCommentNotPrivate()) {
+                logger.debug("add comment {} to issue {}", event.getAddedCaseComments(), issue.getKey());
+                issueClient.addComment(issue.getCommentsUri(), convertComment( CollectionUtils.last( event.getAddedCaseComments() ), event.getInitiator()))
                         .claim();
             }
 
@@ -103,8 +105,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         });
     }
 
-    private Comment convertComment (CaseComment ourComment) {
-        return Comment.valueOf(ourComment.getAuthor().getDisplayShortName() + "\r\n" + ourComment.getText());
+    private Comment convertComment (CaseComment ourComment, Person initiator) {
+        return Comment.valueOf(TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText());
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

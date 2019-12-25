@@ -22,25 +22,29 @@ public class JiraEventHandlerImpl {
     JiraIntegrationQueueService jiraIntegrationQueueService;
 
     public JiraEventHandlerImpl() {
-        logger.info("jira webhook handler installed");
+        logger.info("Jira webhook handler installed");
     }
 
     @PostMapping("/jira/{companyId}/wh")
-    public void onIssueEvent(@RequestBody String jsonString,
-                             @PathVariable("companyId") long companyId,
-                             @RequestHeader(value = "Host",required = false) String fromHost,
-                             @RequestHeader(value = "X-Real-IP", required = false)String realIP,
-                             HttpServletRequest request
-                             ) {
+    public void onIssueEvent(
+            @RequestBody String jsonString,
+            @PathVariable("companyId") long companyId,
+            @RequestHeader(value = "Host", required = false) String fromHost,
+            @RequestHeader(value = "X-Real-IP", required = false) String realIP,
+            HttpServletRequest request
+    ) {
+
+        logger.info("Got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
+        logger.debug("Got request from JIRA, data: {}", jsonString);
+
+        if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
+            logger.info("Jira integration is disabled, no actions taken");
+            return;
+        }
+
+        long timeStart = System.currentTimeMillis();
+
         try {
-
-            if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
-                logger.debug("Jira integration is disabled, nothing happens");
-                return;
-            }
-
-            logger.info("Got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
-            logger.debug("Data: {}", jsonString);
 
             JiraHookEventData eventData = JiraHookEventData.parse(jsonString);
             if (eventData == null || eventData.getIssue() == null) {
@@ -79,6 +83,9 @@ public class JiraEventHandlerImpl {
             if (!logger.isDebugEnabled()) {
                 logger.error("Data: {}", jsonString);
             }
+        } finally {
+            long total = System.currentTimeMillis() - timeStart;
+            logger.info("Request from JIRA completed, companyId={}, src-ip={}, host={}, query={}, time={}ms", companyId, realIP, fromHost, request.getQueryString(), total);
         }
     }
 }

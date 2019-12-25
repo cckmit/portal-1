@@ -16,6 +16,8 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class ProductModel implements Activity, SelectorModel<ProductShortView> {
     @Event
@@ -24,56 +26,70 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     }
 
     @Event
-    public void onProductListChanged( ProductEvents.ProductListChanged event ) {
+    public void onProductListChanged(ProductEvents.ProductListChanged event) {
         clearSubscribersOptions();
     }
+
     @Override
-    public void onSelectorLoad( SelectorWithModel<ProductShortView> selector ) {
-        if ( selector == null ) {
-            return;
-        }
-        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            requestOptions(selector, selectorToQuery.get(selector));
-        }
+    public void onSelectorLoad(SelectorWithModel<ProductShortView> selector) {
+        getOptionsFromServer(selector);
     }
+
     @Override
-    public void onSelectorUnload( SelectorWithModel<ProductShortView> selector ) {
-        if ( selector == null ) {
+    public void onSelectorUnload(SelectorWithModel<ProductShortView> selector) {
+        if (selector == null) {
             return;
         }
         selector.clearOptions();
     }
 
-    public void subscribe(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
-        updateQuery( selector, enDevUnitState, enDevUnitType );
+    public void getOptionsFromServer(SelectorWithModel<ProductShortView> selector) {
+        if (selector == null || !selector.requestByOnLoad()) {
+            return;
+        }
+        if (selector.getValues() == null || selector.getValues().isEmpty()) {
+            requestOptions(selector, selectorToQuery.get(selector));
+        }
     }
 
-    public void updateQuery( SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
-        ProductQuery query = makeQuery( enDevUnitState, enDevUnitType );
+    public void subscribe(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        updateQuery(selector, enDevUnitState, enDevUnitTypes);
+    }
+
+    public void updateQuery(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        ProductQuery query = makeQuery(enDevUnitState, enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()));
         selectorToQuery.put(selector, query);
     }
+
+    public void updateQueryAndRequest(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        updateQuery(selector, enDevUnitState, enDevUnitTypes);
+        requestOptions(selector, selectorToQuery.get(selector));
+    }
+
     private void clearSubscribersOptions() {
         for (SelectorWithModel<ProductShortView> subscriber : selectorToQuery.keySet()) {
             subscriber.clearOptions();
         }
     }
-    private void requestOptions(SelectorWithModel<ProductShortView> selector, ProductQuery query ) {
+
+    private void requestOptions(SelectorWithModel<ProductShortView> selector, ProductQuery query) {
         productService.getProductViewList(query, new RequestCallback<List<ProductShortView>>() {
             @Override
-            public void onError( Throwable throwable ) {
+            public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess( List<ProductShortView> options ) {
-                selector.fillOptions( options );
+            public void onSuccess(List<ProductShortView> options) {
+                selector.fillOptions(options);
                 selector.refreshValue();
             }
         } );
     }
-    private ProductQuery makeQuery( En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+
+    private ProductQuery makeQuery(En_DevUnitState enDevUnitState, Set<En_DevUnitType> enDevUnitTypes) {
         ProductQuery query = new ProductQuery();
-        if (enDevUnitType != null) query.addType(enDevUnitType);
+        query.addTypes(enDevUnitTypes);
         query.setSortField(En_SortField.prod_name);
         query.setSortDir(En_SortDir.ASC);
         query.setState(enDevUnitState);
@@ -82,6 +98,7 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
 
     @Inject
     Lang lang;
+
     @Inject
     ProductControllerAsync productService;
 

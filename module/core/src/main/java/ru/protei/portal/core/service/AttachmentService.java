@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -34,7 +34,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAll = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    CoreResponse<Boolean> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long attachmentId);
+    Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long attachmentId);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -44,7 +44,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAll = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    CoreResponse<Boolean> removeAttachment(AuthToken token, En_CaseType caseType, Long id);
+    Result<Boolean> removeAttachment( AuthToken token, En_CaseType caseType, Long id);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAny = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -53,7 +53,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAny = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT})
     })
-    CoreResponse<List<Attachment>> getAttachmentsByCaseId(AuthToken token, En_CaseType caseType, Long caseId);
+    Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAny = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -62,7 +62,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAny = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT})
     })
-    CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, List<Long> ids);
+    Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, List<Long> ids);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAny = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -71,9 +71,9 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAny = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT})
     })
-    CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments);
+    Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments);
 
-    CoreResponse<Long> saveAttachment(Attachment attachment);
+    Result<Long> saveAttachment( Attachment attachment);
 
-    CoreResponse<String> getAttachmentNameByExtLink(String extLink);
+    Result<String> getAttachmentNameByExtLink( String extLink);
 }

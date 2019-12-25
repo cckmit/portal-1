@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -11,6 +9,7 @@ import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Представление создания и редактирования компании
@@ -25,8 +24,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<String> legalAddress();
 
     HasValidable companyNameValidator();
-    HasValidable actualAddressValidator();
-    HasValidable legalAddressValidator();
 
     HasText webSite();
     HasText comment();
@@ -43,8 +40,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets tableContainer();
     HasWidgets siteFolderContainer();
 
-    void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter );
-
+    void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
     void setParentCompanyEnabled( boolean isEnabled );
-
 }

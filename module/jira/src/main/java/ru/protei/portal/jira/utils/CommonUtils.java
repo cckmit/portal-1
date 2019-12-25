@@ -8,19 +8,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.core.utils.JiraUtils;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
 public class CommonUtils {
-    private final static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
 
+    private final static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
 
     public static boolean isTechUser (JiraEndpoint endpoint, BasicUser user) {
         return user != null && user.getName().equals(endpoint.getServerLogin());
     }
-
 
     public static String makeExternalIssueID (JiraEndpoint endpoint, Issue issue) {
         return endpoint.getId()+ "_" + issue.getKey();
@@ -30,36 +30,8 @@ public class CommonUtils {
 //        return String.valueOf(issue.getProject().getId());
 //    }
 
-    public static String extractIssueKey (String ourStoredId) {
-        return ourStoredId.substring(ourStoredId.indexOf('_')+1);
-    }
-
-    public static String extractIssueKey (ExternalCaseAppData appData) {
-        return extractIssueKey(appData.getExtAppCaseId());
-    }
-
-    public static String extractIssueProjectId (ExternalCaseAppData appData) {
-        return appData.getExtAppData();
-    }
-
-    public static long extractEndpointId (ExternalCaseAppData appData) {
-        return Long.parseLong(appData.getExtAppCaseId().substring(0, appData.getExtAppCaseId().indexOf('_')), 10);
-    }
-
-    public static IssueData convert (ExternalCaseAppData appData) {
-        return new IssueData(extractEndpointId(appData), extractIssueKey(appData), extractIssueProjectId(appData));
-    }
-
-    public static class IssueData {
-        public long endpointId;
-        public String key;
-        public String projectId;
-
-        public IssueData(long endpointId, String key, String projectId) {
-            this.endpointId = endpointId;
-            this.key = key;
-            this.projectId = projectId;
-        }
+    public static JiraUtils.JiraIssueData convert(ExternalCaseAppData appData) {
+        return JiraUtils.convert(appData);
     }
 
     private static Map<String,URI> fakeAvatarURI_map = Collections.singletonMap(User.S48_48, safeURI("https://atlassian.com/"));

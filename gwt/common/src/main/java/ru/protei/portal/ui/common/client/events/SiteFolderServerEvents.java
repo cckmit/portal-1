@@ -18,7 +18,7 @@ public class SiteFolderServerEvents {
         public Show() {
             this(null);
         }
-        public Show(Long platformId) {
+        public Show (Long platformId) {
             this.platformId = platformId;
         }
     }

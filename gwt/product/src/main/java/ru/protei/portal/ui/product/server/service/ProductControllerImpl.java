@@ -4,20 +4,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ProductController;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 /**
  * Реализация сервиса управления продуктами
@@ -26,85 +32,89 @@ import java.util.List;
 public class ProductControllerImpl implements ProductController {
 
     @Override
-    public long getProductsCount(ProductQuery query) throws RequestFailedException{
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+    public SearchResult< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
 
-        log.debug( "getProductsCount(): query={}", query );
-        CoreResponse<Long> result = productService.count( descriptor.makeAuthToken(), query );
-        return result.isOk() ? result.getData() : 0L;
-    }
-
-    @Override
-    public List< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
-
-        log.debug( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
+        log.info( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
                 productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse < List< DevUnit > > result = productService.productList( descriptor.makeAuthToken(), productQuery );
-
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(productService.getProducts(token, productQuery));
 
    }
 
     @Override
     public DevUnit getProduct( Long productId ) throws RequestFailedException {
 
-        log.debug( "getProduct(): id={}", productId );
+        log.info( "getProduct(): id={}", productId );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse< DevUnit > response = productService.getProduct( descriptor.makeAuthToken(), productId );
+        Result< DevUnit > response = productService.getProduct( token, productId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "getProduct(): id={}", response.getData() );
+        log.info( "getProduct(): id={}", response.getData() );
 
         return response.getData();
     }
 
     @Override
-    public Boolean saveProduct( DevUnit product ) throws RequestFailedException {
+    public DevUnit saveProduct( DevUnit product ) throws RequestFailedException {
 
-        log.debug( "saveProduct(): product={}", product );
+        log.info( "saveProduct(): product={}", product );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        if ( product == null || !isNameUnique( product.getName(), product.getId() ) )
+        if ( product == null || !isNameUnique( product.getName(), product.getType(), product.getId() ) )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
-        CoreResponse response = product.getId() == null
-                ? productService.createProduct( descriptor.makeAuthToken(), product )
-                : productService.updateProduct( descriptor.makeAuthToken(), product );
+        Result<DevUnit> response = product.getId() == null
+                ? productService.createProduct( token, product )
+                : productService.updateProduct( token, product );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "saveProduct(): response.getData()={}", response.getData() );
+        log.info( "saveProduct(): response.getData()={}", response.getData() );
+
+        return response.getData();
+    }
+
+    @Override
+    public Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException {
+
+        log.info( "updateState(): productId={} | state={}", productId, state);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<En_DevUnitState> response = productService.updateState(token, productId, state);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        log.info( "updateState(): response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }
 
 
     @Override
-    public boolean isNameUnique( String name, Long excludeId ) throws RequestFailedException {
+    public boolean isNameUnique(String name, En_DevUnitType type, Long excludeId ) throws RequestFailedException {
 
-        log.debug( "isNameUnique(): name={}", name );
+        log.info( "isNameUnique(): name={}", name );
 
         if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
 
-        CoreResponse< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, excludeId );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< Boolean > response = productService.checkUniqueProductByName( token, name, type, excludeId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "isNameUnique(): response={}", response.getData() );
+        log.info( "isNameUnique(): response={}", response.getData() );
 
         return response.getData();
     }
@@ -112,12 +122,13 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public List<ProductShortView> getProductViewList( ProductQuery query ) throws RequestFailedException {
 
-        log.debug( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
+        log.info( "getProductViewList(): searchPattern={} | showDeprecated={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getState(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List<ProductShortView> > result = productService.shortViewList( getDescriptorAndCheckSession().makeAuthToken(), query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List<ProductShortView> > result = productService.shortViewList( token, query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -128,28 +139,15 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public List<ProductDirectionInfo> getProductDirectionList( ProductDirectionQuery query ) throws RequestFailedException {
 
-        log.debug( "getProductDirectionList(): query={}", query );
+        log.info( "getProductDirectionList(): query={}", query );
 
-        String[] names = new String[] {
-                "Система 112", "Call Center", "Видеонаблюдение", "Видеоаналитика"
-        };
-
-        CoreResponse< List< ProductDirectionInfo > > result = productService.productDirectionList( getDescriptorAndCheckSession().makeAuthToken(), query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result< List< ProductDirectionInfo > > result = productService.productDirectionList( token, query );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

@@ -27,8 +27,7 @@ public class CaseLink implements Serializable {
     })
     private CaseInfo caseInfo;
 
-    // not db column
-    private String link = "";
+    private YouTrackIssueInfo youTrackIssueInfo;
 
     public CaseLink() {}
 
@@ -68,20 +67,20 @@ public class CaseLink implements Serializable {
         this.remoteId = remoteId;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
     public CaseInfo getCaseInfo() {
         return caseInfo;
     }
 
     public void setCaseInfo(CaseInfo caseInfo) {
         this.caseInfo = caseInfo;
+    }
+
+    public YouTrackIssueInfo getYouTrackInfo() {
+        return youTrackIssueInfo;
+    }
+
+    public void setYouTrackIssueInfo( YouTrackIssueInfo youTrackIssueInfo ) {
+        this.youTrackIssueInfo = youTrackIssueInfo;
     }
 
     @Override
@@ -106,7 +105,7 @@ public class CaseLink implements Serializable {
     }
 
     public boolean isPrivate() {
-        return type != null && type.isForcePrivacy() && ( caseInfo != null && caseInfo.isPrivateCase() );
+        return (type != null && type.isForcePrivacy()) || ( caseInfo != null && caseInfo.isPrivateCase() );
     }
 
     @Override
@@ -116,7 +115,6 @@ public class CaseLink implements Serializable {
                 ", caseId=" + caseId +
                 ", type=" + type +
                 ", remoteId=" + remoteId +
-                ", link='" + link + '\'' +
                 '}';
     }
 }

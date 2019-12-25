@@ -14,7 +14,6 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 public abstract class NotifyActivity
         implements Activity, AbstractNotifyActivity {
 
-
     @Event
     public void onInit(NotifyEvents.Init event) {
         this.init = event;
@@ -31,7 +30,7 @@ public abstract class NotifyActivity
         AbstractNotifyView view = provider.get();
         view.setActivity(this);
 
-        view.setType( event.type.getStyle() );
+        view.setType( event.type );
         view.setMessage( event.message );
 
         animation.show(view);

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.issuefilter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -11,11 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -29,16 +26,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
@@ -54,10 +49,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         search.getElement().setPropertyString("placeholder", lang.search());
-        sortField.setType(ModuleType.ISSUE);
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
+        searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
     }
 
     @Override
@@ -83,6 +78,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public HasValue<Boolean> searchByComments() {
         return searchByComments;
+    }
+
+    @Override
+    public HasVisibility searchByCommentsWarningVisibility() {
+        return searchByCommentsWarning;
     }
 
     @Override
@@ -186,6 +186,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public void presetFilterType() {
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -196,14 +201,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         state.setValue(null);
         dateCreatedRange.setValue(null);
         dateModifiedRange.setValue(null);
-        sortField.setValue(En_SortField.creation_date);
+        sortField.setValue(En_SortField.issue_number);
         sortDir.setValue(false);
         search.setValue("");
         userFilter.setValue(null);
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
         tags.setValue(null);
-        toggleMsgSearchThreshold();
     }
 
     @Override
@@ -224,21 +228,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
-    }
-
-    @Override
-    public void toggleMsgSearchThreshold() {
-        if (searchByComments.getValue()) {
-            int actualLength = search.getValue().length();
-            if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
-                searchByCommentsWarning.setVisible(false);
-            } else {
-                searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
-                searchByCommentsWarning.setVisible(true);
-            }
-        } else if (searchByCommentsWarning.isVisible()) {
-            searchByCommentsWarning.setVisible(false);
-        }
     }
 
     @Override
@@ -294,17 +283,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Override
     public void changeUserFilterValueName(CaseFilterShortView value) {
-        userFilter.changeValueName(value );
+        //userFilter.changeValueName(value );
     }
 
     @Override
     public void addUserFilterDisplayOption(CaseFilterShortView value) {
-        userFilter.addDisplayOption(value);
-    }
-
-    @Override
-    public void addBodyStyles(String styles) {
-        body.addStyleName(styles);
+        //userFilter.addDisplayOption(value);
     }
 
     @UiHandler("userFilter")
@@ -321,7 +305,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("searchByComments")
     public void onSearchByCommentsChanged(ValueChangeEvent<Boolean> event) {
-        toggleMsgSearchThreshold();
         onFilterChanged();
     }
 
@@ -392,26 +375,69 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    public void watchForScrollOf(Widget widget) {
+        userFilter.watchForScrollOf(widget);
+        sortField.watchForScrollOf(widget);
+        products.watchForScrollOf(widget);
+        companies.watchForScrollOf(widget);
+        initiators.watchForScrollOf(widget);
+        managers.watchForScrollOf(widget);
+        commentAuthors.watchForScrollOf(widget);
+        tags.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        userFilter.stopWatchForScrollOf(widget);
+        sortField.stopWatchForScrollOf(widget);
+        products.stopWatchForScrollOf(widget);
+        companies.stopWatchForScrollOf(widget);
+        initiators.stopWatchForScrollOf(widget);
+        managers.stopWatchForScrollOf(widget);
+        commentAuthors.stopWatchForScrollOf(widget);
+        tags.stopWatchForScrollOf(widget);
+    }
+
     private void ensureDebugIds() {
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
-        dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
-        dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByCommentsWarning.ensureDebugId(DebugIds.FILTER.SEARCH_BY_WARNING_COMMENTS_LABEL);
+        dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_CREATED_RANGE_INPUT);
+        dateCreatedRange.getRelative().ensureDebugId(DebugIds.FILTER.DATE_CREATED_RANGE_BUTTON);
+        dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_MODIFIED_RANGE_INPUT);
+        dateModifiedRange.getRelative().ensureDebugId(DebugIds.FILTER.DATE_MODIFIED_RANGE_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
         companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
         companies.setClearEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_CLEAR_BUTTON);
+        companies.setItemContainerEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ITEM_CONTAINER);
+        companies.setLabelEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_LABEL);
         products.setAddEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ADD_BUTTON);
         products.setClearEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_CLEAR_BUTTON);
+        products.setItemContainerEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ITEM_CONTAINER);
+        products.setLabelEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_LABEL);
         managers.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ADD_BUTTON);
         managers.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_CLEAR_BUTTON);
+        managers.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ITEM_CONTAINER);
+        managers.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_LABEL);
         initiators.setAddEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_ADD_BUTTON);
         initiators.setClearEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_CLEAR_BUTTON);
+        initiators.setItemContainerEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_ITEM_CONTAINER);
+        initiators.setLabelEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_LABEL);
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
+        tags.setAddEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ADD_BUTTON);
+        tags.setClearEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_CLEAR_BUTTON);
+        tags.setItemContainerEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ITEM_CONTAINER);
+        tags.setLabelEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_LABEL);
+        labelCreated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_CREATED_RANGE_LABEL);
+        labelUpdated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_MODIFIED_RANGE_LABEL);
+        labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
+        labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
+        labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
+        labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
     }
 
     private void onFilterChanged() {
@@ -425,7 +451,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             timer = new Timer() {
                 @Override
                 public void run() {
-                    toggleMsgSearchThreshold();
                     onFilterChanged();
                 }
             };
@@ -443,15 +468,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField(provided = true)
     IssueFilterSelector userFilter;
     @UiField
-    HTMLPanel body;
-    @UiField
     CleanableSearchBox search;
     @UiField
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
     @UiField
-    OptionItem searchByComments;
+    CheckBox searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
@@ -485,6 +508,18 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     HTMLPanel searchPrivateContainer;
     @UiField
     ThreeStateButton searchPrivate;
+    @UiField
+    LabelElement labelCreated;
+    @UiField
+    LabelElement labelUpdated;
+    @UiField
+    LabelElement labelSortBy;
+    @UiField
+    LabelElement labelSearchPrivate;
+    @UiField
+    LabelElement labelIssueImportance;
+    @UiField
+    LabelElement labelIssueState;
     @Inject
     @UiField(provided = true)
     ImportanceBtnGroupMulti importance;

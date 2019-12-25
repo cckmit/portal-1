@@ -14,9 +14,9 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -27,7 +27,14 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
 
     @Inject
     public void onInit() {
+
         initWidget(ourUiBinder.createAndBindUi(this));
+        company.showDeprecated(false);
+    }
+
+    @Override
+    public void setPlatformIndependentProjects(Boolean platformIndependentProjects) {
+        project.setPlatformIndependentProject(platformIndependentProjects);
     }
 
     @Override
@@ -53,6 +60,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Override
     public HasValue<EntityOption> company() {
         return company;
+    }
+
+    @Override
+    public HasValue<EntityOption> project() {
+        return project;
     }
 
     @Override
@@ -88,6 +100,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Override
     public HasEnabled companyEnabled() {
         return company;
+    }
+
+    @Override
+    public HasEnabled managerEnabled() {
+        return manager;
     }
 
     @Override
@@ -162,6 +179,13 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         }
     }
 
+    @UiHandler("project")
+    public void onValueChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.refreshProjectSpecificFields();
+        }
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -187,12 +211,15 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @UiField
     Button openButton;
     @UiField
-    CollapsablePanel contactsContainer;
+    HTMLPanel contactsContainer;
     @UiField
     AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
+    @Inject
+    @UiField(provided = true)
+    ProjectButtonSelector project;
 
     private AbstractPlatformEditActivity activity;
 

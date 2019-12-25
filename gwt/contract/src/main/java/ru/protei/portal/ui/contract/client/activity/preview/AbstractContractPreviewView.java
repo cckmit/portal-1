@@ -1,9 +1,8 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
 
 public interface AbstractContractPreviewView extends IsWidget {
     void setActivity(AbstractContractPreviewActivity activity);
@@ -37,4 +36,10 @@ public interface AbstractContractPreviewView extends IsWidget {
     void setParentContract(String value);
 
     void setChildContracts(String value);
+
+    void setProject(String value, String link);
+
+    HasVisibility footerVisibility();
+
+    void isFullScreen(boolean isFullScreen);
 }

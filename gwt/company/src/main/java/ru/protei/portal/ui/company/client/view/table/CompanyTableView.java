@@ -9,26 +9,27 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DynamicColumn;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableActivity;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView;
+import ru.protei.portal.ui.company.client.activity.table.AbstractCompanyTableActivity;
+import ru.protei.portal.ui.company.client.activity.table.AbstractCompanyTableView;
 
-/**
- * Created by bondarenko on 30.10.17.
- */
-public class CompanyTableView extends Composite implements AbstractCompanyTableView{
+public class CompanyTableView extends Composite implements AbstractCompanyTableView {
+
     @Inject
-    public void onInit(EditClickColumn<Company> editClickColumn) {
-        initWidget(ourUiBinder.createAndBindUi(this));
+    public void onInit(EditClickColumn<Company> editClickColumn, ArchiveClickColumn<Company> archiveClickColumn) {
         this.editClickColumn = editClickColumn;
+        this.archiveClickColumn = archiveClickColumn;
+        initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
     }
 
@@ -40,12 +41,13 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
 
+        archiveClickColumn.setArchiveHandler(activity);
+        archiveClickColumn.setColumnProvider(columnProvider);
+
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
         category.setHandler( activity );
         category.setColumnProvider( columnProvider );
-        group.setHandler( activity );
-        group.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
@@ -82,8 +84,13 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override
@@ -102,44 +109,61 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
             table.updateRow(item);
     }
 
-    private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
-        name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
-        category = new DynamicColumn<>(
-            lang.companyCategory(),
-            "company-category",
-            company -> company.getCategory() != null? company.getCategory().getName(): ""
-        );
-        group = new DynamicColumn<>(
-                lang.companyGroup(),
-                "company-group",
-                company -> company.getCompanyGroup() != null? company.getCompanyGroup().getName(): ""
-        );
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
 
-        table.addColumn( name.header, name.values );
+    private void initTable () {
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) && !v.isArchived() );
+        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) );
+        archiveClickColumn.setArchiveFilter(Company::isArchived);
+
+        name = new DynamicColumn<>(lang.companyName(), null, this::getCompanyInfoBlock);
+
+        category = new DynamicColumn<>(null, "column_img-35", value -> {
+            if (value.getCategory() == null || value.getCategory().getId() == null) return "";
+            En_CompanyCategory category = En_CompanyCategory.findById(value.getCategory().getId());
+            return "<img src='" + "./images/company_" + category.name().toLowerCase() + ".svg" + "' title='" + value.getCategory().getName() + "'></img>";
+        });
+
         table.addColumn( category.header, category.values );
-        table.addColumn( group.header, group.values );
+        table.addColumn( name.header, name.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn( archiveClickColumn.header, archiveClickColumn.values );
     }
 
     private String getCompanyInfoBlock(Company company){
         Element companyInfo = DOM.createDiv();
 
         Element cName = DOM.createDiv();
-        cName.addClassName("company-name");
-        cName.setInnerText(company.getCname());
+        if (company.isArchived()) {
+            companyInfo.addClassName("deprecated-entity");
+
+            Element banIcon = DOM.createElement("i");
+            banIcon.addClassName("fa fa-lock m-r-5");
+            banIcon.setId(DEBUG_ID_PREFIX + DebugIds.COMPANY_TABLE.LOCK_ICON);
+
+            Element label = DOM.createLabel();
+            label.setInnerText(company.getCname());
+
+            cName.appendChild(banIcon);
+            cName.appendChild(label);
+        } else {
+            cName.setInnerText(company.getCname());
+        }
+
         companyInfo.appendChild(cName);
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
         String phones = infoFacade.allPhonesAsString();
-        String emails = infoFacade.allEmailsAsString();
         String website = infoFacade.getWebSite();
 
         if(!phones.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-phone", phones));
 
-        if(!emails.isEmpty())
-            companyInfo.appendChild(buildContactsElement("fa fa-envelope", emails));
+        if (!infoFacade.allEmailsAsString().isEmpty())
+            companyInfo.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts", true));
 
         if(website != null && !website.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-globe", buildAnchorElement(website)));
@@ -157,7 +181,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         Element icon = DOM.createElement("i");
         icon.addClassName(iconClass);
 
-        Element wrapper = DOM.createDiv();
+        Element wrapper = DOM.createElement("small");
         wrapper.addClassName("contacts");
         wrapper.appendChild(icon);
         wrapper.appendChild(element);
@@ -191,12 +215,14 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
 
     ClickColumnProvider< Company > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< Company > editClickColumn;
+    ArchiveClickColumn<Company> archiveClickColumn;
     DynamicColumn<Company> name;
     DynamicColumn<Company> category;
-    DynamicColumn<Company> group;
 
     AbstractCompanyTableActivity activity;
 

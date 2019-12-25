@@ -33,6 +33,7 @@ public class OptionItem
     @Override
     public void setValue( Boolean value ) {
         checkbox.setValue( value );
+        checkbox.setFormValue( value.toString() );
     }
 
     @Override
@@ -58,6 +59,7 @@ public class OptionItem
     @UiHandler( "checkbox" )
     public void onCheckboxClicked( ValueChangeEvent<Boolean> event ) {
         ValueChangeEvent.fire( this, event.getValue() );
+        checkbox.setFormValue( event.getValue().toString());
     }
 
     @UiHandler( "name" )

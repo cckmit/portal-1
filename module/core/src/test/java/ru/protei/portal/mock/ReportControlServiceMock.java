@@ -10,12 +10,4 @@ public class ReportControlServiceMock extends ReportControlServiceImpl {
     @Override
     public void init() {}
 
-    @Override
-    public void processNewReportsSchedule() {}
-
-    @Override
-    public void processOldReportsSchedule() {}
-
-    @Override
-    public void processHangReportsSchedule() {}
 }

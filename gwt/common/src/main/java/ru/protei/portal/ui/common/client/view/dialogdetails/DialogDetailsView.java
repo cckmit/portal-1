@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.view.dialogdetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.animation.DialogAnimation;
@@ -27,6 +27,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         add( ourUiBinder.createAndBindUi( this ) );
         setGlassEnabled( true );
         setAutoHideEnabled( false );
+        ensureDebugIds();
 
         animation.setDialog( modalDialog, this );
     }
@@ -53,6 +54,15 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         getDialogAnimation().hide();
     }
 
+    @Override
+    public HasVisibility removeButtonVisibility() {
+        return remove;
+    }
+
+    @Override
+    public HasVisibility saveButtonVisibility() {
+        return save;
+    }
 
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
@@ -63,6 +73,10 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         this.header.setInnerText(value);
     }
 
+    @Override
+    public void addStyleName(String value) {
+        this.modalDialog.addClassName(value);
+    }
 
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {
@@ -74,6 +88,12 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     public void onCancelClicked( ClickEvent event ) {
         event.preventDefault();
         fireCancelClicked();
+    }
+
+    @UiHandler( "remove" )
+    public void onRemoveClicked( ClickEvent event ) {
+        event.preventDefault();
+        fireRemoveClicked();
     }
 
     @Override
@@ -89,6 +109,15 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         }
     }
 
+    private void ensureDebugIds() {
+        modalDialog.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.MODAL_DIALOG);
+        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.NAME);
+        save.ensureDebugId(DebugIds.DIALOG_DETAILS.SAVE_BUTTON);
+        cancel.ensureDebugId(DebugIds.DIALOG_DETAILS.CANCEL_BUTTON);
+        remove.ensureDebugId(DebugIds.DIALOG_DETAILS.REMOVE_BUTTON);
+        close.ensureDebugId(DebugIds.DIALOG_DETAILS.CLOSE_BUTTON);
+    }
+
     private void fireCancelClicked() {
         if ( activity != null ) {
             activity.onCancelClicked();
@@ -101,12 +130,20 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         }
     }
 
+    private void fireRemoveClicked() {
+        if ( activity != null ) {
+            activity.onRemoveClicked();
+        }
+    }
+
     @UiField
     HTMLPanel bodyContainer;
     @UiField
     Anchor save;
     @UiField
     Anchor cancel;
+    @UiField
+    Anchor remove;
     @UiField
     HeadingElement header;
     @UiField

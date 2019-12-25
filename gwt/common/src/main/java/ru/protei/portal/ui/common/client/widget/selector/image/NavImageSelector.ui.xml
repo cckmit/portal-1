@@ -4,13 +4,11 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" ui:field="inputContainer">
-
         <g:Anchor ui:field="anchor" href="#">
-            <img ui:field="image" src=""/>
+            <img ui:field="image" src="" style="height: 1em;"/>
             <span ui:field="label"/>
-            <i class="caret-icon"/>
+            <i class="m-l-5 fas fa-angle-down"/>
         </g:Anchor>
-
     </g:HTMLPanel>
 
 </ui:UiBinder>

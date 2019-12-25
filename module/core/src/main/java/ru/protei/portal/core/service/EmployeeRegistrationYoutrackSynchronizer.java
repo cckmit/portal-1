@@ -8,21 +8,27 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
 import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+import ru.protei.winter.jdbc.annotations.JdbcManyJoinData;
+import ru.protei.winter.jdbc.annotations.JdbcOneToMany;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -49,6 +55,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private CaseObjectDAO caseObjectDAO;
 
     @Autowired
+    private CaseLinkDAO caseLinkDAO;
+
+    @Autowired
     private CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
@@ -56,9 +65,6 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private MigrationEntryDAO migrationEntryDAO;
-
-    @Autowired
-    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     private EventPublisherService publisherService;
@@ -111,35 +117,6 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 syncCronSchedule, equipmentProjectName, adminProjectName, phoneProjectName, YOUTRACK_USER_ID);
     }
 
-    private static En_CaseState toCaseState(String ytStateId) {
-        if (ytStateId == null)
-            return null;
-        switch (ytStateId) {
-            case "New":
-            case "Новый":
-                return En_CaseState.CREATED;
-            case "Done":
-            case "Выдан заказчику":
-            case "Complete":
-                return En_CaseState.DONE;
-            case "Ignore":
-                return En_CaseState.IGNORED;
-            case "Closed":
-                return En_CaseState.CLOSED;
-            case "Canceled":
-            case "Отменен":
-                return En_CaseState.CANCELED;
-            default:
-                return En_CaseState.ACTIVE;
-        }
-    }
-
-    private static En_CaseState toCaseState(List<String> ytStateIds) {
-        if (ytStateIds == null || ytStateIds.size() != 1)
-            return null;
-        return toCaseState(ytStateIds.get(0));
-    }
-
     @Transactional
     public void synchronizeAll() {
         log.debug("synchronizeAll(): start synchronization");
@@ -173,18 +150,19 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private Set<String> getUpdatedIssueIds(Date lastUpdate) {
         Set<String> issueIds = new HashSet<>();
         for (String project : YOUTRACK_PROJECTS) {
-            issueIds.addAll(youtrackService.getIssueIdsByProjectAndUpdatedAfter(project, lastUpdate));
+            issueIds.addAll(youtrackService.getIssueIdsByProjectAndUpdatedAfter(project, lastUpdate).getData());
         }
         return issueIds;
     }
 
     private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, Date lastYtSynchronization) {
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
-        jdbcManyRelationsHelper.fill(employeeRegistration, "youtrackIssues");
-
         En_CaseState oldState = employeeRegistration.getState();
 
-        Set<CaseLink> issues = employeeRegistration.getYoutrackIssues();
+        CaseLinkQuery linkQuery = new CaseLinkQuery();
+        linkQuery.setCaseId(employeeRegistration.getId());
+        linkQuery.setType(En_CaseLink.YT);
+        List<CaseLink> issues = caseLinkDAO.getListByQuery(linkQuery);
         if (CollectionUtils.isEmpty(issues))
             return;
 
@@ -205,7 +183,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         Map<CaseLink, ChangeResponse> issueToChanges = new HashMap<>();
 
         for (CaseLink caseLink : caseLinks) {
-            ChangeResponse issueChanges = youtrackService.getIssueChanges(caseLink.getRemoteId());
+            ChangeResponse issueChanges = youtrackService.getIssueChanges(caseLink.getRemoteId()).getData();
             issueToChanges.put(caseLink, issueChanges);
         }
 
@@ -227,7 +205,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private En_CaseState getGeneralState(Collection<ChangeResponse> changes) {
         List<En_CaseState> caseStates = changes.stream()
-                .map(change -> toCaseState(change.getIssue().getStateId()))
+                .map(change -> YoutrackConstansMapping.toCaseState(change.getIssue().getStateId()))
                 .collect(Collectors.toList());
 
         Predicate<En_CaseState> isDone = cs -> cs == En_CaseState.DONE || cs == En_CaseState.CLOSED;
@@ -283,7 +261,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         if (caseCommentDAO.checkExistsByRemoteIdAndRemoteLinkId(remoteId, caseLinkId))
             return null;
 
-        En_CaseState newState = toCaseState(stateChangeField.getNewValue());
+        En_CaseState newState = YoutrackConstansMapping.toCaseState(stateChangeField.getNewValue());
 
         CaseComment stateChange = new CaseComment();
         stateChange.setRemoteId(remoteId);
@@ -372,7 +350,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         List<YtAttachment> ytAttachments = new LinkedList<>();
         for (CaseLink caseLink : caseLinks) {
-            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId());
+            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId()).getData();
             ytAttachments.addAll(issueAttachments);
         }
 
@@ -380,11 +358,11 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             if (ytAttachment == null || ytAttachment.getId() == null)
                 continue;
 
-            CaseAttachment existingAttachment = CollectionUtils.find(attachementsToRemove,
+            Optional<CaseAttachment> existingAttachment = CollectionUtils.find(attachementsToRemove,
                     ca -> ytAttachment.getId().equals(ca.getRemoteId()));
 
-            if (existingAttachment != null)
-                attachementsToRemove.remove(existingAttachment);
+            if (existingAttachment.isPresent())
+                attachementsToRemove.remove(existingAttachment.get());
             else {
                 Attachment attachment = new Attachment();
                 attachment.setCreated(ytAttachment.getCreated());

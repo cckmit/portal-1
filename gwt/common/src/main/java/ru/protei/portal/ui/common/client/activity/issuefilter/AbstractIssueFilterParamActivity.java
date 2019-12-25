@@ -7,4 +7,6 @@ public interface AbstractIssueFilterParamActivity {
     void onUserFilterChanged();
 
     void onCompaniesFilterChanged();
+
+    void toggleMsgSearchThreshold();
 }

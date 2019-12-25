@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
@@ -14,19 +14,22 @@ import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -56,67 +59,56 @@ public class AccountServiceImpl implements AccountService {
     EventPublisherService publisherService;
 
     @Override
-    public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
+    public Result<SearchResult<UserLogin>> getAccounts( AuthToken token, AccountQuery query) {
+
         applyFilterByScope(token, query);
-        List< UserLogin > list = userLoginDAO.getAccounts( query );
 
-        if (list == null)
-            return new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
-        jdbcManyRelationsHelper.fill( list, "roles" );
+        SearchResult<UserLogin> sr = userLoginDAO.getSearchResult(query);
 
-        return new CoreResponse< List< UserLogin > >().success( list );
+        jdbcManyRelationsHelper.fill(sr.getResults(), "roles");
+
+        return ok( sr);
     }
 
     @Override
-    public CoreResponse< Long > count( AuthToken authToken, AccountQuery query ) {
-        applyFilterByScope(authToken, query);
-        Long count = userLoginDAO.count( query );
-
-        if ( count == null )
-            return new CoreResponse< Long >().error( En_ResultStatus.GET_DATA_ERROR );
-
-        return new CoreResponse< Long >().success( count );
-    }
-
-    @Override
-    public CoreResponse< UserLogin > getAccount( AuthToken token, long id ) {
+    public Result< UserLogin > getAccount( AuthToken token, long id ) {
         UserLogin userLogin = userLoginDAO.get( id );
 
         if ( userLogin == null ) {
-            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+            return  error( En_ResultStatus.NOT_FOUND );
         }
 
         jdbcManyRelationsHelper.fill( userLogin, "roles" );
 
-        return new CoreResponse< UserLogin >().success( userLogin );
+        return ok( userLogin );
     }
 
     @Override
-    public CoreResponse< UserLogin > getContactAccount(AuthToken authToken, long personId ) {
+    public Result< UserLogin > getContactAccount( AuthToken authToken, long personId ) {
         UserLogin userLogin = userLoginDAO.findByPersonId( personId );
 
         if ( userLogin == null ) {
-            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+            return  error( En_ResultStatus.NOT_FOUND );
         }
 
         jdbcManyRelationsHelper.fill( userLogin, "roles" );
 
-        return new CoreResponse< UserLogin >().success( userLogin );
+        return ok( userLogin );
     }
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
+    public Result< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
         if ( !isValidLogin( userLogin ) )
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
+            return error( En_ResultStatus.VALIDATION_ERROR );
 
         if ( !isUniqueLogin( userLogin.getUlogin(), userLogin.getId() ) ) {
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
+            return error( En_ResultStatus.ALREADY_EXIST );
         }
 
         if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
             log.warn("saveAccount(): Can't save account. Expected one or more Roles.");
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         userLogin.setUlogin( userLogin.getUlogin().trim() );
@@ -142,24 +134,26 @@ public class AccountServiceImpl implements AccountService {
 
             if (sendWelcomeEmail) {
 
-                userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
+                Person person = personDAO.get(userLogin.getPersonId());
+                userLogin.setPerson(person);
 
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
-                String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
-                NotificationEntry notificationEntry = NotificationEntry.email(address, userLogin.getPerson().getLocale());
-                UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry);
-
-                publisherService.publishEvent(userLoginUpdateEvent);
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                String address = HelperFunc.isNotEmpty(infoFacade.getEmail()) ? infoFacade.getEmail() : HelperFunc.isNotEmpty(infoFacade.getEmail_own()) ? infoFacade.getEmail_own() : null;
+                if (address != null) {
+                    NotificationEntry notificationEntry = NotificationEntry.email( address, person.getLocale() );
+                    UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent( userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry );
+                    publisherService.publishEvent( userLoginUpdateEvent );
+                }
             }
 
-            return new CoreResponse< UserLogin >().success( userLogin );
+            return ok( userLogin );
         }
 
-        return new CoreResponse< UserLogin >().error( En_ResultStatus.INTERNAL_ERROR );
+        return error( En_ResultStatus.INTERNAL_ERROR );
     }
 
     @Override
-    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
+    public Result<UserLogin> saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
 
         if (userLogin.getId() == null) {
             Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
@@ -170,22 +164,42 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId ) {
+    public Result< Boolean > checkUniqueLogin( String login, Long excludeId ) {
 
         if( HelperFunc.isEmpty( login ) )
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error( En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse< Boolean >().success( isUniqueLogin( login, excludeId ) );
+        return ok( isUniqueLogin( login, excludeId ) );
     }
 
     @Override
-    public CoreResponse< Boolean > removeAccount( AuthToken token, Long accountId ) {
+    public Result< Boolean > removeAccount( AuthToken token, Long accountId ) {
 
         if ( userLoginDAO.removeByKey( accountId ) ) {
-            return new CoreResponse< Boolean >().success( true );
+            return ok( true );
         }
 
-        return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
+        return error( En_ResultStatus.INTERNAL_ERROR );
+    }
+
+    @Override
+    public Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword) {
+        UserLogin userLogin = getAccount(token, loginId).getData();
+
+        Long personIdFromSession = token.getPersonId();
+
+        if (userLogin.isLDAP_Auth() || !Objects.equals(personIdFromSession, userLogin.getPersonId())) {
+            return error( En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        String md5Password = DigestUtils.md5DigestAsHex(currentPassword.getBytes());
+        if (!userLogin.getUpass().equalsIgnoreCase(md5Password)) {
+            return error( En_ResultStatus.INVALID_CURRENT_PASSWORD);
+        }
+        userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+        userLogin.setLastPwdChange(new Date());
+
+        return userLoginDAO.saveOrUpdate(userLogin) ? ok() : error( En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {
@@ -200,11 +214,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void applyFilterByScope( AuthToken token, AccountQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-
-        if ( !policyService.hasGrantAccessFor( descriptor.getLogin().getRoles(), En_Privilege.ACCOUNT_VIEW ) ) {
+        if ( !policyService.hasGrantAccessFor( token.getRoles(), En_Privilege.ACCOUNT_VIEW ) ) {
             query.setRoleIds(
-                    Optional.ofNullable( descriptor.getLogin().getRoles())
+                    Optional.ofNullable( token.getRoles())
                             .orElse( Collections.emptySet() )
                             .stream()
                             .map( UserRole::getId )

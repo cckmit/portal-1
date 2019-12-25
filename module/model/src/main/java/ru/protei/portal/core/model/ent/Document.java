@@ -1,8 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.util.List;
  * элемент раздела "Банк документов"
  */
 @JdbcEntity(table = "document")
-public class Document implements Serializable, Downloadable {
+public class Document implements Serializable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -34,6 +35,13 @@ public class Document implements Serializable, Downloadable {
      */
     @JdbcColumn(name = "inventory_number")
     private Long inventoryNumber;
+
+    /**
+     * Состояние
+     */
+    @JdbcColumn(name = "state")
+    @JdbcEnumerated(EnumType.ID)
+    private En_DocumentState state;
 
     /**
      * Вид документа
@@ -62,7 +70,7 @@ public class Document implements Serializable, Downloadable {
     @JdbcColumn(name = "project_id")
     private Long projectId;
     @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private CaseObject projectInfo;
+    private CaseObject project;
 
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
@@ -90,13 +98,7 @@ public class Document implements Serializable, Downloadable {
     @JdbcEnumerated(EnumType.ORDINAL)
     private En_DocumentExecutionType executionType;
 
-    public Document() {
-    }
-
-    @Override
-    public boolean isAllowedDownload() {
-        return true;
-    }
+    public Document(){}
 
     public Long getId() {
         return id;
@@ -178,12 +180,16 @@ public class Document implements Serializable, Downloadable {
         this.projectId = projectId;
     }
 
-    public ProjectInfo getProjectInfo() {
-        return ProjectInfo.fromCaseObject(projectInfo);
+    public CaseObject getProjectAsCaseObject() {
+        return project;
     }
 
-    public void setProjectInfo(CaseObject projectInfo) {
-        this.projectInfo = projectInfo;
+    public Project getProject() {
+        return Project.fromCaseObject(project);
+    }
+
+    public void setProject(CaseObject project) {
+        this.project = project;
     }
 
     public String getVersion() {
@@ -226,6 +232,22 @@ public class Document implements Serializable, Downloadable {
         this.executionType = executionType;
     }
 
+    public void setState(En_DocumentState state) {
+        this.state = state;
+    }
+
+    public En_DocumentState getState(){
+        return state;
+    }
+
+    public boolean isActiveUnit () {
+        return getState() == En_DocumentState.ACTIVE;
+    }
+
+    public boolean isDeprecatedUnit() {
+        return getState() == En_DocumentState.DEPRECATED;
+    }
+
     public boolean isValid() {
         // Основная проверка, дополнительные проверки обрабатываются в клиенте и сервере отдельно
         return  this.getType() != null &&
@@ -260,13 +282,14 @@ public class Document implements Serializable, Downloadable {
                 ", registrar=" + registrar +
                 ", contractor=" + contractor +
                 ", projectId=" + projectId +
-                ", projectInfo=" + projectInfo +
+                ", project=" + project +
                 ", equipment=" + equipment +
                 ", version='" + version + '\'' +
                 ", created=" + created +
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
+                ", state=" + state +
                 '}';
     }
 }

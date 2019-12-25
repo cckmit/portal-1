@@ -33,7 +33,6 @@ public class StringSelectInput
         setUnfilledInputWidth();
     }
 
-
     @Override
     public void setValue(List<String> values, boolean fireEvents) {
         if (values == null) {
@@ -84,6 +83,10 @@ public class StringSelectInput
 
     public void setFocused() {
         input.setFocus(true);
+    }
+
+    public void setPlaceholder(String placeholder) {
+        input.getElement().setPropertyString("placeholder", placeholder);
     }
 
     @UiHandler("input")
@@ -170,8 +173,8 @@ public class StringSelectInput
 
             unfilledWidth = containerRightBorder - lastItemRightBorder;
         }
-        if (unfilledWidth < 160) {
-            unfilledWidth = 160;
+        if (unfilledWidth < 180) {
+            unfilledWidth = 180;
         }
 
         input.setWidth(unfilledWidth + "px");

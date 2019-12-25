@@ -12,14 +12,16 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.popup.ColorPickerPopup;
 
-public class ColorPicker extends Composite implements HasValue<String>, ValueChangeHandler<String> {
+public class ColorPicker extends Composite implements HasEnabled, HasValue<String>, ValueChangeHandler<String> {
 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
         colorBox.getElement().setAttribute("placeholder", lang.colorHex());
     }
 
@@ -60,7 +62,25 @@ public class ColorPicker extends Composite implements HasValue<String>, ValueCha
 
     @UiHandler("colorPickerButton")
     public void colorPickerButtonClick(ClickEvent event) {
-        showPopup(colorPickerButton);
+        if(colorPickerButton.isEnabled()) {
+            showPopup(colorPickerButton);
+        }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return colorPickerButton.isEnabled() && colorBox.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean isEnabled){
+        colorPickerButton.setEnabled(isEnabled);
+        colorBox.setEnabled(isEnabled);
+    }
+
+    private void ensureDebugIds() {
+        colorPickerButton.ensureDebugId(DebugIds.COLOR_PICKER.BUTTON);
+        colorBox.ensureDebugId(DebugIds.COLOR_PICKER.INPUT);
     }
 
     private void showPopup(IsWidget relative) {

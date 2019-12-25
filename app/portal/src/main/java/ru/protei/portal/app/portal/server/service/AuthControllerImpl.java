@@ -5,18 +5,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.app.portal.client.service.AuthController;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.CompanyService;
+import ru.protei.portal.core.service.PersonService;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.session.SessionService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.app.portal.client.service.AuthController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -28,60 +30,66 @@ import java.util.*;
 public class AuthControllerImpl implements AuthController {
 
     @Override
-    public Profile authentificate(String login, String password) throws RequestFailedException {
+    public Profile authenticate( String login, String password) throws RequestFailedException {
 
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
+        AuthToken token = sessionService.getAuthToken(httpRequest);
 
-        if (descriptor != null) {
-            log.debug("authentificate: sessionDescriptior={}", descriptor);
-            return makeProfileByDescriptor(descriptor);
+        if (token != null) {
+            log.info("authentificate: token={}", token);
+            return makeProfileByAuthToken(token);
         }
 
         if (login == null && password == null) {
-            log.debug( "authentificate: neither login nor password provided" );
+            log.info( "authentificate: neither login nor password provided" );
             return null;
         }
 
-        log.debug( "authentificate: login={}", login );
+        log.info( "authentificate: login={}", login );
 
-        CoreResponse< UserSessionDescriptor > result = authService.login(
+        token = ServiceUtils.checkResultAndGetData(authService.login(
                 httpRequest.getSession().getId(),
                 login,
                 password,
                 httpRequest.getRemoteAddr(),
                 httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
-        );
-        if ( result.isError() ) {
-            throw new RequestFailedException( result.getStatus() );
-        }
+        ));
 
-        sessionService.setUserSessionDescriptor( httpRequest, result.getData() );
-        return makeProfileByDescriptor( result.getData() );
+        sessionService.setSessionLifetime(httpRequest, AuthService.DEF_APP_SESSION_LIVE_TIME);
+        sessionService.setAuthToken(httpRequest, token);
+        return makeProfileByAuthToken(token);
     }
 
     @Override
-    public void logout() {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-        if ( descriptor != null ) {
-            authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( CrmConstants.Header.USER_AGENT ) );
-            sessionService.setUserSessionDescriptor( httpRequest, null );
+    public void logout() throws RequestFailedException {
+        AuthToken token = sessionService.getAuthToken(httpRequest);
+        if (token != null) {
+            ServiceUtils.checkResult(authService.logout(
+                    token,
+                    httpRequest.getRemoteAddr(),
+                    httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
+            ));
+            sessionService.setAuthToken(httpRequest, null);
         }
     }
 
-    private Profile makeProfileByDescriptor( UserSessionDescriptor sessionDescriptor ) {
-        Profile profile = new Profile();
-        Set< UserRole > roles = sessionDescriptor.getLogin().getRoles();
-        profile.setRoles( roles );
-        profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
-        profile.setName( sessionDescriptor.getPerson().getFirstName() );
-        profile.setShortName( sessionDescriptor.getPerson().getDisplayShortName() );
-        profile.setFullName( sessionDescriptor.getPerson().getDisplayName() );
-        profile.setIsFired( sessionDescriptor.getPerson().isFired());
-        profile.setId( sessionDescriptor.getPerson().getId() );
-        profile.setPrivileges( collectPrivileges( roles ) );
-        profile.setGender( sessionDescriptor.getPerson().getGender() );
-        profile.setCompany( sessionDescriptor.getCompany() );
+    private Profile makeProfileByAuthToken(AuthToken token) throws RequestFailedException {
 
+        Person person = ServiceUtils.checkResultAndGetData(personService.getPerson(token, token.getPersonId()));
+        Company company = ServiceUtils.checkResultAndGetData(companyService.getCompanyUnsafe(token, token.getCompanyId()));
+        UserLogin userLogin = ServiceUtils.checkResultAndGetData(authService.getUserLogin(token, token.getUserLoginId()));
+
+        Profile profile = new Profile();
+        profile.setLoginId(token.getUserLoginId());
+        profile.setAuthType(En_AuthType.find(userLogin.getAuthTypeId()));
+        profile.setRoles(token.getRoles());
+        profile.setPrivileges(collectPrivileges(token.getRoles()));
+        profile.setName(person.getFirstName());
+        profile.setShortName(person.getDisplayShortName());
+        profile.setFullName(person.getDisplayName());
+        profile.setIsFired(person.isFired());
+        profile.setId(person.getId());
+        profile.setGender(person.getGender());
+        profile.setCompany(company);
         return profile;
     }
 
@@ -115,12 +123,14 @@ public class AuthControllerImpl implements AuthController {
 
     @Autowired
     HttpServletRequest httpRequest;
-
     @Autowired
     SessionService sessionService;
-
     @Autowired
-    private AuthService authService;
+    AuthService authService;
+    @Autowired
+    PersonService personService;
+    @Autowired
+    CompanyService companyService;
 
     private static final Logger log = LoggerFactory.getLogger(AuthControllerImpl.class);
 }

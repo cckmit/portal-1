@@ -1,17 +1,22 @@
 package ru.protei.portal.mock;
 
-import org.apache.commons.lang3.time.DateUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.test.service.BaseServiceTest;
+import ru.protei.winter.core.utils.Pair;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 
+import static ru.protei.portal.api.struct.Result.ok;
+
 public class AuthServiceMock implements AuthService {
+
+    private static final ThreadLocal<Pair<UserLogin, AuthToken>> authTokenThreadScoped = new ThreadLocal<>();
 
     private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
@@ -19,56 +24,41 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.COMPANY_VIEW, En_Privilege.COMPANY_EDIT, En_Privilege.COMPANY_CREATE,
             En_Privilege.CONTACT_VIEW, En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE,
     };
-    private UserSessionDescriptor descriptor;
+
+    private UserLogin stubUserLogin;
+    private AuthToken stubAuthToken;
 
     public AuthServiceMock() {
-        descriptor = new UserSessionDescriptor();
-        Person person = new Person(0L);
-        person.setFirstName("TFN");
-        person.setLastName("TLN");
-        person.setDisplayName("TEST user");
-        Company company = new Company(0L);
-        person.setCompany(company);
-        UserLogin userLogin = makeLogin(person);
-        descriptor.init(makeUserSession(userLogin, person));
-        descriptor.login(userLogin, person, company);
+        Company company = new Company( 0L );
+        Person person =  BaseServiceTest.createNewPerson( company );
+        person.setId( 0L );
+        stubUserLogin = makeLogin( person );
+        stubAuthToken = makeAuthToken( stubUserLogin );
     }
 
     @Override
-    public UserSessionDescriptor findSession(String appSessionId, String ip, String userAgent) {
-        return descriptor;
+    public Result<AuthToken> login( String appSessionID, String login, String pwd, String ip, String userAgent ) {
+        return ok( getAuthToken() );
+    }
+
+    public void makeThreadAuthToken(UserLogin userLogin) {
+        setThreadAuthToken(userLogin, makeAuthToken(userLogin));
+    }
+
+    public void resetThreadAuthToken() {
+        setThreadAuthToken(null, null);
     }
 
     @Override
-    public UserSessionDescriptor findSession(AuthToken token) {
-        return descriptor;
+    public Result<AuthToken> logout(AuthToken token, String ip, String userAgent) {
+        return ok(token);
     }
 
     @Override
-    public CoreResponse<UserSessionDescriptor> login(String appSessionID, String login, String pwd, String ip, String userAgent) {
-        return new CoreResponse<UserSessionDescriptor>().success(descriptor);
-    }
-
-    @Override
-    public boolean logout(String appSessionId, String ip, String userAgent) {
-        return true;
-    }
-
-    @Override
-    public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request) {
-        return descriptor;
-    }
-
-    private UserSession makeUserSession(UserLogin login, Person person) {
-        UserSession session = new UserSession();
-        session.setSessionId("test-session-id");
-        session.setClientIp("127.0.0.1");
-        session.setLoginId(login.getId());
-        session.setPersonId(login.getPersonId());
-        session.setCompanyId(person.getCompanyId());
-        session.setCreated(new Date());
-        session.setExpired(DateUtils.addHours(new Date(), 3));
-        return session;
+    public Result<UserLogin> getUserLogin(AuthToken token, Long userLoginId) {
+        UserLogin userLogin = getThreadUserLogin();
+        if (userLogin == null) return ok(stubUserLogin);
+        return ok(userLogin);
     }
 
     private UserLogin makeLogin(Person person) {
@@ -82,6 +72,43 @@ public class AuthServiceMock implements AuthService {
     private HashSet<UserRole> makeRoles() {
         UserRole role = new UserRole();
         role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
+        role.setScope(En_Scope.SYSTEM);
         return new HashSet<>(Arrays.asList(role));
+    }
+
+    private AuthToken makeAuthToken(UserLogin userLogin) {
+        AuthToken token = new AuthToken("test-session-id");
+        token.setIp("127.0.0.1");
+        token.setUserLoginId(userLogin.getId());
+        token.setPersonId(userLogin.getPersonId());
+        token.setPersonDisplayShortName("Test user short name");
+        token.setCompanyId(userLogin.getCompanyId());
+        token.setCompanyAndChildIds(CollectionUtils.listOf(userLogin.getCompanyId()));
+        token.setRoles(makeRoles());
+        return token;
+    }
+
+    public AuthToken getAuthToken() {
+        AuthToken authToken = getThreadAuthToken();
+        if (authToken == null) return stubAuthToken;
+        return authToken;
+    }
+
+    private static AuthToken getThreadAuthToken() {
+        Pair<UserLogin, AuthToken> pair = authTokenThreadScoped.get();
+        return pair == null ? null : pair.getB();
+    }
+
+    private static UserLogin getThreadUserLogin() {
+        Pair<UserLogin, AuthToken> pair = authTokenThreadScoped.get();
+        return pair == null ? null : pair.getA();
+    }
+
+    private static void setThreadAuthToken( UserLogin userLogin, AuthToken client ) {
+        if (userLogin == null && client == null) {
+            authTokenThreadScoped.remove();
+            return;
+        }
+        authTokenThreadScoped.set( new Pair<>(userLogin, client) );
     }
 }

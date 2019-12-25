@@ -7,24 +7,27 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
 
@@ -37,8 +40,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
-            public void onError() {
-                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError(En_FileUploadStatus status, String details) {
+                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
+                }
+                else {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+                }
             }
         });
     }
@@ -50,13 +58,16 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
+        if (!hasPrivileges(event.platformId)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformNew()));
             Platform platform = new Platform();
             if (event.company != null) {
                 platform.setCompany(event.company);
@@ -64,7 +75,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             fillView(platform);
             return;
         }
-        fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformEdit()));
 
         siteFolderController.getPlatform(event.platformId, new RequestCallback<Platform>() {
             @Override
@@ -81,7 +91,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onSaveClicked() {
-
         if (!isValid()) {
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
@@ -89,19 +98,14 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
         fillPlatform(platform);
 
-        siteFolderController.savePlatform(platform, new RequestCallback<Platform>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Platform result) {
-                fireEvent(new SiteFolderPlatformEvents.ChangeModel());
-                fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                fireEvent(new Back());
-            }
-        });
+        siteFolderController.savePlatform(platform, new FluentCallback<Platform>()
+                .withSuccess(result -> {
+                    fireEvent(new SiteFolderPlatformEvents.ChangeModel());
+                    fireEvent(new SiteFolderPlatformEvents.Changed(result));
+                    fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Override
@@ -152,13 +156,68 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 }));
     }
 
+    @Override
+    public void refreshProjectSpecificFields() {
+        if (view.project().getValue() == null) {
+            clearProjectSpecificFields();
+            return;
+        }
+        projectRequest(view.project().getValue().getId(), this::fillProjectSpecificFieldsOnRefresh);
+    }
+
+    private boolean isNew(Platform platform) {
+        return platform.getId() == null;
+    }
+
+    private void fillProjectSpecificFieldsOnRefresh(Project project) {
+        view.company().setValue(project.getContragent());
+        view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
+        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+        view.companyEnabled().setEnabled(false);
+        view.managerEnabled().setEnabled(false);
+        view.companyValidator().setValid(true);
+        fireShowCompanyContacts(project.getContragent().getId());
+    }
+
+    private void fillProjectSpecificFieldsOnLoad(Project project){
+        view.company().setValue(project.getContragent());
+        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+        view.companyEnabled().setEnabled(false);
+        view.managerEnabled().setEnabled(false);
+        view.companyValidator().setValid(true);
+        view.project().setValue(new EntityOption(project.getName(), project.getId()));
+        fireShowCompanyContacts(project.getContragent().getId());
+    }
+
+    private void projectRequest(Long projectId, Consumer<Project> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<Project>().withSuccess(consumer));
+    }
+
+    private void clearProjectSpecificFields() {
+        view.company().setValue(null);
+        view.manager().setValue(null);
+        view.name().setValue(null);
+        view.companyEnabled().setEnabled(true);
+        view.managerEnabled().setEnabled(true);
+        view.companyValidator().setValid(false);
+    }
+
     private void fillView(Platform platform) {
         this.platform = platform;
+        view.setPlatformIndependentProjects(true);
         boolean isNotNew = platform.getId() != null;
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
+        if (platform.getProjectId() != null){
+            projectRequest(platform.getProjectId(), this::fillProjectSpecificFieldsOnLoad);
+        }
+        else{
+            view.project().setValue(null);
+            clearProjectSpecificFields();
+            view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
+            view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
+            fireShowCompanyContacts(platform.getCompanyId());
+        }
         view.name().setValue(platform.getName());
-        view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
-        view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
         view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
@@ -167,13 +226,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.listContainerHeaderVisibility().setVisible(isNotNew);
         view.setCaseNumber(platform.getId());
         view.attachmentsContainer().clear();
+
         if (isNotNew) {
             view.attachmentsContainer().add(platform.getAttachments());
             fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
         }
-
-        fireShowCompanyContacts(platform.getCompanyId());
     }
+
 
     private void fireShowCompanyContacts(Long companyId) {
         if ( companyId == null ) {
@@ -186,14 +245,26 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void fillPlatform(Platform platform) {
         platform.setName(view.name().getValue());
-        platform.setCompanyId(view.company().getValue().getId());
-        platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
         platform.setParams(view.parameters().getValue());
         platform.setComment(view.comment().getValue());
+        if (view.project().getValue() == null){
+            platform.setProjectId(null);
+            platform.setCompanyId(view.company().getValue().getId());
+            platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
+        }
+        else {
+            platform.setProjectId(view.project().getValue().getId());
+            platform.setCompany(null);
+            platform.setCompanyId(null);
+            platform.setManager(null);
+        }
     }
 
     private boolean isValid() {
-        return view.nameValidator().isValid() && view.companyValidator().isValid();
+        if (view.project().getValue() != null)
+            return view.nameValidator().isValid();
+        else
+            return view.nameValidator().isValid() && view.companyValidator().isValid();
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments) {
@@ -206,6 +277,18 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         platform.getAttachments().addAll(attachments);
     }
 
+    private boolean hasPrivileges(Long platformId) {
+        if (platformId == null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return true;
+        }
+
+        if (platformId != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -216,6 +299,8 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     PolicyService policyService;
     @Inject
     AttachmentServiceAsync attachmentService;
+    @Inject
+    RegionControllerAsync regionService;
 
     private Platform platform;
     private AppEvents.InitDetails initDetails;

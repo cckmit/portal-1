@@ -3,10 +3,13 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintPhoneNumber;
+import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintWorkPhoneNumber;
 
 /**
  * Created by Mike on 09.11.2016.
@@ -33,17 +36,53 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue());
     }
 
+    public Stream<ContactItem> publicEmailsStream () {
+        return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue() && item.accessType().equals(En_ContactDataAccess.PUBLIC));
+    }
+
     public String allPhonesAsString () {
-        return allPhonesStream().map (
-                    p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
-                )
+        return allPhonesAsString(false);
+    }
+
+    public String allPhonesAsString (boolean isPrettyPrintPhoneNumber) {
+        return allPhonesStream()
+                .map(p -> {
+                    En_ContactItemType type = p.type();
+                    En_ContactDataAccess accessType = p.accessType();
+                    String comment = isNotEmpty(p.comment()) ? " (" + p.comment() + ")" : "";
+                    String number = p.value();
+                    if (isPrettyPrintPhoneNumber) {
+                        if (type == En_ContactItemType.GENERAL_PHONE && accessType == En_ContactDataAccess.PUBLIC) {
+                            number = prettyPrintWorkPhoneNumber(number);
+                        } else {
+                            number = prettyPrintPhoneNumber(number);
+                        }
+                    }
+                    return number + comment;
+                })
                 .collect( Collectors.joining( ", " ) );
     }
 
     public String publicPhonesAsString () {
-        return allPhonesStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map (
-                p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
-        )
+        return publicPhonesAsFormattedString(false);
+    }
+
+    public String publicPhonesAsFormattedString (boolean isPrettyPrintPhoneNumber) {
+        return allPhonesStream()
+                .filter(ci -> ci.accessType().equals(En_ContactDataAccess.PUBLIC))
+                .map(p -> {
+                    En_ContactItemType type = p.type();
+                    String comment = isNotEmpty(p.comment()) ? " (" + p.comment() + ")" : "";
+                    String number = p.value();
+                    if (isPrettyPrintPhoneNumber) {
+                        if (type == En_ContactItemType.GENERAL_PHONE) {
+                            number = prettyPrintWorkPhoneNumber(number);
+                        } else {
+                            number = prettyPrintPhoneNumber(number);
+                        }
+                    }
+                    return number + comment;
+                })
                 .collect( Collectors.joining( ", " ) );
     }
 
@@ -57,6 +96,12 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return emailsStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map(
                 e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
         ).collect( Collectors.joining( ", " ) );
+    }
+
+    public List<String> publicEmails () {
+        return emailsStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map(
+                e -> e.value()
+        ).collect( Collectors.toList() );
     }
 
     public String getWorkPhone() {

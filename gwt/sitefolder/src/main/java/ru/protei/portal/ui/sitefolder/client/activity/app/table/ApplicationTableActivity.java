@@ -19,13 +19,16 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractApplicationFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractApplicationFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ApplicationTableActivity implements
@@ -56,6 +59,11 @@ public abstract class ApplicationTableActivity implements
 
     @Event
     public void onShow(SiteFolderAppEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
@@ -64,7 +72,7 @@ public abstract class ApplicationTableActivity implements
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
+            fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
         }
 
         if (serverId != null) {
@@ -75,7 +83,7 @@ public abstract class ApplicationTableActivity implements
             filterView.servers().setValue(options);
         }
 
-        requestAppsCount();
+        loadTable();
     }
 
     @Event
@@ -173,21 +181,23 @@ public abstract class ApplicationTableActivity implements
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Application>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         ApplicationQuery query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
-        siteFolderController.getApplications(query, new RequestCallback<List<Application>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                asyncCallback.onFailure(throwable);
-            }
-
-            @Override
-            public void onSuccess(List<Application> result) {
-                asyncCallback.onSuccess(result);
-            }
-        });
+        siteFolderController.getApplications(query, new FluentCallback<SearchResult<Application>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
     }
 
     @Override
@@ -202,25 +212,13 @@ public abstract class ApplicationTableActivity implements
 
     @Override
     public void onFilterChanged() {
-        requestAppsCount();
+        loadTable();
     }
 
-    private void requestAppsCount() {
-        view.clearRecords();
+    private void loadTable() {
         animation.closeDetails();
-        siteFolderController.getApplicationsCount(getQuery(), new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Long result) {
-                view.setAppsCount(result);
-                pagerView.setTotalPages(view.getPageCount());
-                pagerView.setTotalCount(result);
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private ApplicationQuery getQuery() {

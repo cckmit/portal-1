@@ -21,9 +21,10 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -59,18 +60,25 @@ public abstract class EquipmentTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.EQUIPMENT ) :
+                new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.EQUIPMENT ) :
                 new ActionBarEvents.Clear()
         );
 
+        clearScroll(event);
+
         query = makeQuery();
 
-        requestTotalCount();
+        loadTable();
     }
 
     @Event
@@ -96,26 +104,7 @@ public abstract class EquipmentTableActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery();
-        requestTotalCount();
-    }
-
-    @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Equipment>> asyncCallback ) {
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        equipmentService.getEquipments( query, new RequestCallback<List<Equipment>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List<Equipment> persons ) {
-                asyncCallback.onSuccess( persons );
-            }
-        } );
+        loadTable();
     }
 
     @Override
@@ -126,6 +115,33 @@ public abstract class EquipmentTableActivity
     @Override
     public void onPageSelected(int page) {
         view.scrollTo(page);
+    }
+
+    @Override
+    public void loadData( int offset, int limit, AsyncCallback<List<Equipment>> asyncCallback ) {
+        boolean isFirstChunk = offset == 0;
+        query.setOffset(offset);
+        query.setLimit(limit);
+        equipmentService.getEquipments(query, new FluentCallback<SearchResult<Equipment>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
+                    }
+                }));
+    }
+
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private void persistScrollTopPosition() {
@@ -141,26 +157,6 @@ public abstract class EquipmentTableActivity
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
         }
-    }
-
-    private void requestTotalCount() {
-        view.clearRecords();
-        animation.closeDetails();
-
-        equipmentService.getEquipmentCount(query, new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Long count) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-                restoreScrollTopPositionOrClearSelection();
-            }
-        });
     }
 
     private void showPreview ( Equipment value ) {
@@ -179,6 +175,13 @@ public abstract class EquipmentTableActivity
         return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
                 filterView.organizationCodes().getValue(), filterView.types().getValue(),
                 filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId, equipmentId );
+    }
+
+    private void clearScroll(EquipmentEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
     }
 
     @Inject

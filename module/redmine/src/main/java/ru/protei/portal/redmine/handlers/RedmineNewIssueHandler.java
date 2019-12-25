@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
@@ -52,9 +53,9 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
         externalCaseAppDAO.merge(appData);
 
-        commonService.processAttachments(issue, obj, contactPerson, endpoint);
+        commonService.processAttachments(issue, obj, contactPerson.getId(), endpoint);
 
-        handleComments(issue, contactPerson, obj, caseObjId, companyId);
+        handleComments(issue, contactPerson.getId(), obj, caseObjId, companyId);
 
         return obj;
     }
@@ -66,9 +67,10 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         final CaseObject obj = new CaseObject();
         obj.setCreated(issue.getCreatedOn());
         obj.setModified(issue.getUpdatedOn());
+        obj.setCreator(contactPerson);
         obj.setInitiator(contactPerson);
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
-        obj.setExtAppType("redmine");
+        obj.setExtAppType(En_ExtAppType.REDMINE.getCode());
 
         logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
         String redminePriorityName = issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue();
@@ -101,7 +103,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         return obj;
     }
 
-    private void handleComments(Issue issue, Person person, CaseObject obj, long caseObjId, long companyId) {
+    private void handleComments(Issue issue, Long personId, CaseObject obj, long caseObjId, long companyId) {
         logger.debug("Processing comments ...");
 
         issue.getJournals()
@@ -109,9 +111,9 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
                 .filter(Objects::nonNull)
                 .filter(x -> x.getNotes() != null)
                 .filter(x -> !x.getNotes().isEmpty())
-                .map(x -> commonService.parseJournal(x, companyId))
+                .map(x -> commonService.parseJournalToCaseComment(x, companyId))
                 .filter(Objects::nonNull)
-                .forEach(x -> commonService.processStoreComment(issue, person, obj, caseObjId, x));
+                .forEach(x -> commonService.processStoreComment(issue, personId, obj, caseObjId, x));
     }
 
     @Autowired

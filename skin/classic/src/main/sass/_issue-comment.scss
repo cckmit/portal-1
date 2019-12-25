@@ -1,17 +1,23 @@
-@import "colors";
-
 .chats {
   margin: 0;
   padding: 12px 15px 15px;
   list-style: none;
+}
 
+.chats ul {
+  font-size: 13px;
+  line-height: 22px;
 }
 
 .chats > li {
   position: relative;
+  line-height: 14px;
+  padding: 0;
+  margin: 0;
 }
+
 .chats > li + li {
-  margin-top: 15px
+  margin-top: 5px
 }
 
 .chats > li:after, .chats > li:before {
@@ -21,7 +27,6 @@
 }
 
 .chats .name {
-  color: #333;
   font-weight: 600;
   text-decoration: none
 }
@@ -39,68 +44,71 @@
 }
 
 .chats .date-time {
-  font-size: 10px;
   display: block;
   float: right;
   color: #999;
-  margin-top: 3px
 }
 
 .chats .image {
   float: left;
   width: 40px;
   height: 40px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
   overflow: hidden
 }
 
 .chats .time-label {
   font-weight: bold;
-  color: teal;
+  color: $success_color;
   display: inline-block;
 }
 
-.chats .right .time-label {
-  float: right;
-}
-
 .chats .image img {
-  max-width: 100%
+  max-width: 100%;
+  margin-top: -3px;
 }
 
 .chats .image + .message {
-  margin-left: 60px
+  margin-left: 50px;
 }
 
 .chats .meta + .message {
-  margin-left: 60px;
+  margin-left: 50px;
 }
 
-.chats .message > span {
-  white-space: pre-wrap;
+.chats .new-message .message {
+  padding: 12px;
 }
 
 .chats .message {
-  border: 1px solid #ccd0d4;
+  border: 1px solid rgba(0,0,0,.2);
   padding: 7px 12px;
   font-size: 12px;
   position: relative;
   background: #fff;
-  white-space: normal;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
   min-height: 20px;
-  color: #000;
 
-  .input-field.time-elapsed {
-    width: 190px;
-    max-height: 31px;
-    height: 31px;
-    line-height: 31px;
-    margin-left: 5px;
+  &.private-message {
+    background-color: #fef6dd;
+    border-color: #f9d35b;
+  }
+
+  .message-input:focus {
+    background-color: transparent;
+  }
+
+  .message-text {
+    white-space: pre-wrap;
+  }
+
+  .private-btn {
+    height: 35px;
+    line-height: 35px;
   }
 }
 
@@ -110,8 +118,12 @@
   top: 10px;
   left: -14px;
   border: 7px solid transparent;
-  border-right-color: #ccd0d4;
+  border-right-color: rgba(0,0,0,.3);
   height: 0px;
+}
+
+.chats .message.private-message:after {
+  border-right-color: #fef6dd;
 }
 
 .chats .message:after {
@@ -119,52 +131,66 @@
   border-right-color: #fff
 }
 
+.chats .message.private-message:before {
+  border-right-color: #f9d35b
+}
+
 .chats {
   .message {
-    .message-input {
-      margin-top: 12px;
-      margin-bottom: 12px;
-    }
-
     .attachments {
       .visible-content {
         display: inline-block;
       }
     }
+  }
+}
 
-    .hints {
-      position: relative;
-      display: block;
-      width: 100%;
-      margin-top: 6px;
-      margin-bottom: 0;
-      color: $info_dark_color;
+.chats .left .date-time {
+  float: right;
+}
 
-      .icon {
-        position: absolute;
-        display: block;
-        box-sizing: border-box;
-        height: 14px;
-        line-height: 14px;
-        width: 14px;
-        margin: 0;
-        top: 0;
-        left: 0;
-        color: $info_dark_color;
-      }
+.chats .right .date-time {
+  float: left;
+}
 
-      .hint {
-        position: relative;
-        display: block;
-        width: calc(100% - 14px);
-        height: 14px;
-        line-height: 14px;
-        margin: 0 0 0 14px;
-        font-size: 0.9em;
-        font-weight: 900;
-        color: $info_dark_color;
-      }
+.chats .right .time-label {
+  float: right;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.drop-zone {
+  div {
+    pointer-events: none;
+    * {
+      pointer-events: auto;
     }
+  }
+}
+
+.drop-zone-active * {
+  pointer-events: none;
+}
+
+.drag-overlay {
+  background: white;
+  height: 100%;
+  width: 100%;
+  opacity: .95;
+  top: 0;
+  left: 0;
+  position: absolute;
+  padding: 0;
+  border-style: dashed;
+  border-width: thin;
+  border-color: teal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  legend {
+    color: teal;
+    width: auto;
   }
 }
 
@@ -188,15 +214,6 @@
   float: right;
 }
 
-.chats .right .date-time {
-  float: left;
-}
-
-.chats .right .issue-link {
-  float: left;
-  padding-right: 10px;
-}
-
 .chats .right .image {
   float: right;
 }
@@ -206,12 +223,12 @@
 }
 
 .chats .right .image + .message {
-  margin-right: 75px;
+  margin-right: 50px;
   margin-left: 0
 }
 
 .chats .right .meta + .message {
-  margin-right: 75px;
+  margin-right: 50px;
   margin-left: 0
 }
 
@@ -219,7 +236,7 @@
   left: auto;
   right: -14px;
   border-right-color: transparent;
-  border-left-color: #ccd0d4
+  border-left-color: #b5b5b5
 }
 
 .chats .right .message:after {
@@ -227,18 +244,32 @@
   border-left-color: #fff
 }
 
+.chats .right .message.private-message:after,
+.chats .right .message.private-message:before {
+  left: auto;
+  right: -14px;
+  border-right-color: transparent;
+  border-left-color: #f9d35b;
+}
+
+.chats .right .message.private-message:after {
+  right: -13px;
+  border-left-color: #fef6dd;
+}
+
 .chats {
   .left {
     .options {
-      right: 110px;
+      right: 155px;
     }
   }
 
   .right {
     .options {
-      left: 110px;
+      left: 155px;
     }
   }
+
   .options {
     font-size: 12px;
     display: block;
@@ -262,26 +293,23 @@
   margin: 0 -15px -15px -15px;
   background: rgba(0, 128, 128, 0.1);
 
-  .input-field {
+  .form-control {
     min-height: 100px;
   }
 }
 
 blockquote {
-  margin-left: 0;
   border-left: 2px solid #015d5d;
   padding-left: 5px;
   color: #015d5d;
+  padding: 0;
+  margin: 0;
 }
 
 .new-message {
-  .message {
-    padding-top: 0px;
-
-    textarea {
-      border: none;
-      padding: 0px;
-    }
+  textarea {
+    border: none;
+    padding: 0;
   }
 }
 
@@ -293,5 +321,35 @@ blockquote {
     margin-bottom: 10px;
     color: #686868;
     font-size: 0.9em;
+  }
+}
+
+.message-preview {
+  .show-preview-btn {
+
+    padding-left: 0;
+    padding-top: 3px;
+    min-width: 20px;
+    border: 0;
+    height: 20px;
+
+    font-size: 12px;
+    margin-top: -12px;
+    background-color: transparent;
+
+    &.btn-down:after, &.btn-up-hovering:after {
+      font-family: "Font Awesome 5 Free";
+      content: "\f06e";
+      font-size: 1.3em;
+      color: $success_color;
+      padding-left: 1.1px;
+    }
+
+    &.btn-up:after, &.btn-down-hovering:after {
+      font-family: "Font Awesome 5 Free";
+      content: "\f070";
+      font-size: 1.3em;
+      color: $master_color;
+    }
   }
 }

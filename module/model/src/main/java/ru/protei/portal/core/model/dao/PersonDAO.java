@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.net.Inet4Address;
 import java.util.Date;
@@ -17,13 +18,21 @@ import java.util.Map;
  */
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
+
     List<Person> getEmployeesAll();
 
     Person getEmployee(long id);
 
+    Person getEmployeeByOldId(long id);
+
+    SearchResult<Person> getEmployeesSearchResult(EmployeeQuery query);
+
     List<Person> getEmployees(EmployeeQuery query);
 
     boolean isEmployee(Person p);
+
+
+    SearchResult<Person> getContactsSearchResult(ContactQuery query);
 
     List<Person> getContacts(ContactQuery query);
 
@@ -33,7 +42,11 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     Person findContactByName(long companyId, String displayName);
 
+
+    SearchResult<Person> getPersonsSearchResult(PersonQuery query);
+
     List<Person> getPersons(PersonQuery query);
+
 
     @SqlConditionBuilder
     SqlCondition createContactSqlCondition(ContactQuery query);

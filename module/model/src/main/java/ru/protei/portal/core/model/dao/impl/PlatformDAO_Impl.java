@@ -25,21 +25,31 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
             }
 
             if (query.getCompanyIds() != null && !query.getCompanyIds().isEmpty()) {
-                condition.append(" and platform.company_id in ")
-                         .append(JdbcHelper.makeSqlStringCollection(query.getCompanyIds(), args, null));
+                condition.append(" and (platform.company_id in ")
+                         .append(JdbcHelper.makeSqlStringCollection(query.getCompanyIds(), args, null))
+                        .append(" or platform.project_id in (select case_object.ID from case_object left outer join platform on platform.project_id = case_object.ID where case_object.initiator_company in ")
+                        .append(JdbcHelper.makeSqlStringCollection(query.getCompanyIds(), args, null))
+                        .append("))");
             }
 
             if (query.getManagerIds() != null && !query.getManagerIds().isEmpty()) {
                 if (query.getManagerIds().remove(CrmConstants.Employee.UNDEFINED)) {
-                    condition.append(" and (platform.manager_id is null");
+                    condition.append(" and (platform.manager_id is null")
+                            .append(" and (platform.project_id is null or platform.project_id in (select case_object.ID from case_object left outer join platform on platform.project_id = case_object.ID where case_object.MANAGER is null))");
                     if (!query.getManagerIds().isEmpty()) {
                         condition.append(" or platform.manager_id in ")
-                                .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null));
+                                .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null))
+                                .append(" or platform.project_id in (select case_object.ID from case_object left outer join platform on platform.project_id = case_object.ID where case_object.MANAGER in ")
+                                .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null))
+                                .append(")");
                     }
                     condition.append(")");
                 } else {
-                    condition.append(" and platform.manager_id in ")
-                            .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null));
+                    condition.append(" and (platform.manager_id in ")
+                            .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null))
+                            .append(" or platform.project_id in (select case_object.ID from case_object left outer join platform on platform.project_id = case_object.ID where case_object.MANAGER in ")
+                            .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null))
+                            .append("))");
                 }
             }
 
@@ -58,5 +68,10 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
                 args.add(HelperFunc.makeLikeArg(query.getComment(), true));
             }
         });
+    }
+
+    @Override
+    public Platform getByProjectId(Long id) {
+        return (id == null ? null : getByCondition("project_id=?", id));
     }
 }

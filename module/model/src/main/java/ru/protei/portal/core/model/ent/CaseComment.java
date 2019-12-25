@@ -1,12 +1,12 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by michael on 19.05.16.
@@ -34,6 +34,12 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
+
+    @JdbcColumn(name="cmanager_id")
+    private Long caseManagerId;
+
+    @JdbcJoinedColumn(localColumn = "cmanager_id", table = "Person", remoteColumn = "ID", mappedColumn = "displayShortName")
+    private String caseManagerShortName;
 
     @JdbcColumn(name="reply_to")
     private Long replyTo;
@@ -148,6 +154,22 @@ public class CaseComment extends AuditableObject {
         this.caseImpLevel = caseImpLevel;
     }
 
+    public Long getCaseManagerId() {
+        return caseManagerId;
+    }
+
+    public void setCaseManagerId(Long caseManagerId) {
+        this.caseManagerId = caseManagerId;
+    }
+
+    public String getCaseManagerShortName() {
+        return caseManagerShortName;
+    }
+
+    public void setCaseManagerShortName(String caseManagerShortName) {
+        this.caseManagerShortName = caseManagerShortName;
+    }
+
     public Long getReplyTo() {
         return replyTo;
     }
@@ -258,6 +280,19 @@ public class CaseComment extends AuditableObject {
     }
 
     @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseComment that = (CaseComment) o;
+        return Objects.equals( id, that.id );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( id );
+    }
+
+    @Override
     public String toString() {
         return "CaseComment{" +
                 "id=" + id +
@@ -267,16 +302,21 @@ public class CaseComment extends AuditableObject {
                 ", author=" + author +
                 ", caseStateId=" + caseStateId +
                 ", caseImpLevel=" + caseImpLevel +
+                ", caseManagerId=" + caseManagerId +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
+                ", caseAttachments=" + caseAttachments +
                 ", timeElapsed=" + timeElapsed +
+                ", timeElapsedType=" + timeElapsedType +
                 ", remoteId='" + remoteId + '\'' +
                 ", remoteLinkId=" + remoteLinkId +
+                ", remoteLink=" + remoteLink +
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
-                ", privateComment='" + privateComment + '\'' +
+                ", privateComment=" + privateComment +
                 '}';
     }
 }

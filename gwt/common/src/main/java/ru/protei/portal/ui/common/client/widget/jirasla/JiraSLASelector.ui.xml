@@ -1,0 +1,38 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:text='urn:import:ru.protei.portal.ui.common.client.widget.selector.text'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="jira-sla-selector">
+        <label class="jira-sla-selector-header">Jira</label>
+        <div class="form-group-attached">
+            <div class="row">
+                <div class="col-md-6">
+                    <g:HTMLPanel styleName="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.jiraIssueType}"/></label>
+                        <g:TextBox ui:field="issueType" styleName="form-control" enabled="false"/>
+                    </g:HTMLPanel>
+                </div>
+                <div class="col-md-6">
+                    <text:RawTextFormSelector
+                            ui:field="severity" enabled="false" header="{lang.jiraSeverity}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <g:HTMLPanel styleName="form-group form-group-default" >
+                        <label class="fade"><ui:text from="{lang.jiraTimeOfReaction}"/></label>
+                        <g:TextBox ui:field="timeOfReaction" styleName="form-control" enabled="false"/>
+                    </g:HTMLPanel>
+                </div>
+                <div class="col-md-6">
+                    <g:HTMLPanel styleName="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.jiraTimeOfDecision}"/></label>
+                        <g:TextBox ui:field="timeOfDecision" styleName="form-control" enabled="false"/>
+                    </g:HTMLPanel>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

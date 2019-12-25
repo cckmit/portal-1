@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="card card-default card-links m-b-10 m-t-10">
+        <div class="card-header">
+            <label ui:field="headerLabel">
+                <ui:text from="{lang.linkedWith}"/>
+            </label>
+            <g:Anchor ui:field="collapse" styleName="pull-right collapse-btn p-b-0 p-t-0" href="#"/>
+        </div>
+        <g:HTMLPanel ui:field="linksPanel" styleName="card-body case-links" tag="ul"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

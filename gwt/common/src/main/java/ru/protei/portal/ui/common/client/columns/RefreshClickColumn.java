@@ -5,8 +5,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.protei.portal.core.model.ent.Refreshable;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class RefreshClickColumn<T> extends ClickColumn<T> {
 
@@ -20,24 +22,25 @@ public class RefreshClickColumn<T> extends ClickColumn<T> {
     }
 
     @Override
-    protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName("refresh");
+    protected String getColumnClassName() {
+        return "refresh";
     }
 
     @Override
+    protected void fillColumnHeader(Element columnHeader) {}
+
+    @Override
     public void fillColumnValue(Element cell, T value) {
-        if (((Refreshable) value).isAllowedRefresh()) {
-            AnchorElement a = DOM.createAnchor().cast();
-            a.setHref("#");
-            a.addClassName("fa fa-lg fa-refresh");
-            cell.appendChild(a);
-        }
+        AnchorElement a = DOM.createAnchor().cast();
+        a.setHref("#");
+        a.addClassName("fas fa-lg fa-redo");
+        a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.REFRESH);
+        cell.appendChild(a);
     }
 
     public void setRefreshHandler(RefreshHandler<T> refreshHandler) {
         setActionHandler(refreshHandler::onRefreshClicked);
     }
 
-    Lang lang;
-    RefreshHandler<T> refreshHandler;
+    private final Lang lang;
 }

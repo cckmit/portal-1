@@ -1,13 +1,16 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
+import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public abstract class ContactTableViewBase extends Composite {
@@ -25,36 +28,55 @@ public abstract class ContactTableViewBase extends Composite {
                 cell.appendChild(root);
 
                 Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML("<b>" + value.getDisplayName() + "<b>");
+                fioElement.setInnerHTML(value.getDisplayName());
                 root.appendChild(fioElement);
 
                 if (value.isFired() || value.isDeleted()) {
+                    root.addClassName("fired");
+
                     Element stateElement = DOM.createDiv();
                     stateElement.setInnerHTML( makeFiredOrDeleted(value, lang));
                     root.appendChild(stateElement);
                 }
+            }
+        };
+    }
+
+    protected ClickColumn<Person> getContactColumn(Lang lang) {
+        return new ClickColumn<Person>() {
+            @Override
+            protected void fillColumnHeader(Element element) {
+                element.setInnerText(lang.contactContactInfoTitle());
+                element.getStyle().setWidth(40, Style.Unit.PCT );
+            }
+
+            @Override
+            public void fillColumnValue(Element cell, Person value) {
+                Element root = DOM.createDiv();
+
+                if (value.isFired() || value.isDeleted()) {
+                    root.addClassName("fired");
+                }
+
+                cell.appendChild(root);
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
                 String phones = infoFacade.allPhonesAsString();
                 if (StringUtils.isNotBlank(phones)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-call", phones)
+                    root.appendChild(LabelValuePairBuilder.make().addIconValuePair("ion-android-call", phones, "contact-record")
                             .toElement());
                 }
 
-
-                String emails = infoFacade.allEmailsAsString();
-                if (StringUtils.isNotBlank(emails)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", emails)
-                            .toElement());
-                }
+                if (!infoFacade.allEmailsAsString().isEmpty())
+                    root.appendChild(EmailRender.renderToElement("ion-android-mail", infoFacade.emailsStream(), "contact-record", true));
             }
         };
     }
 
     public static String makeFiredOrDeleted(Person value, Lang lang) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<i class='fa fa-info-circle'></i> <b>");
+        sb.append("<i class='fa fa-ban text-danger'></i> <b>");
         if (value.isFired()) {
             sb.append(lang.contactFiredShort());
             if (value.isDeleted()) {
@@ -78,17 +100,14 @@ public abstract class ContactTableViewBase extends Composite {
 
             @Override
             public void fillColumnValue(Element cell, Person value) {
-                Element root = DOM.createDiv();
-                cell.appendChild(root);
+                if (value.isFired() || value.isDeleted()) cell.addClassName("fired");
 
-                Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML("<b>" + value.getCompany().getCname() + "<b>");
-                root.appendChild(fioElement);
-
-                Element posElement = DOM.createDiv();
-                posElement.addClassName("contact-position");
-                posElement.setInnerHTML(value.getPosition());
-                root.appendChild(posElement);
+                String html = "<div><div>" +  value.getCompany().getCname() + "<div>";
+                if ( value.getPosition() != null ) {
+                    html += "<small><i>" + value.getPosition() + "</i></small>";
+                }
+                html += "</div>";
+                cell.setInnerHTML(html);
             }
         };
     }

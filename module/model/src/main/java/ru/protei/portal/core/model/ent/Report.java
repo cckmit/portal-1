@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "report")
-public class Report implements Removable, Downloadable, Refreshable, Serializable {
+public class Report implements Serializable {
 
     /**
      * Уникальный идентификатор отчета
@@ -71,20 +71,8 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
     @JdbcColumn
     private String locale;
 
-    @Override
-    public boolean isAllowedRemove() {
-        return status != En_ReportStatus.PROCESS;
-    }
-
-    @Override
-    public boolean isAllowedDownload() {
-        return status == En_ReportStatus.READY;
-    }
-
-    @Override
-    public boolean isAllowedRefresh() {
-        return status == En_ReportStatus.ERROR;
-    }
+    @JdbcColumn(name = "is_restricted")
+    private boolean isRestricted;
 
     public Long getId() {
         return id;
@@ -166,6 +154,14 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
         this.locale = locale;
     }
 
+    public boolean isRestricted() {
+        return isRestricted;
+    }
+
+    public void setRestricted( boolean restricted ) {
+        this.isRestricted = restricted;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -179,6 +175,7 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
                 ", created=" + created +
                 ", modified=" + modified +
                 ", locale='" + locale + '\'' +
+                ", isRestricted=" + isRestricted +
                 '}';
     }
 }

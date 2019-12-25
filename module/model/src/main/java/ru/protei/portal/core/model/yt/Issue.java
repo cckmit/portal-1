@@ -3,9 +3,11 @@ package ru.protei.portal.core.model.yt;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.core.model.yt.fields.issue.IssueField;
 import ru.protei.portal.core.model.yt.fields.issue.StringArrayWithIdArrayIssueField;
+import ru.protei.portal.core.model.yt.fields.issue.StringIssueField;
 
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +17,9 @@ import java.util.Objects;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Issue {
+
+
+
 
     private String id;
     private String entityId;
@@ -71,12 +76,22 @@ public class Issue {
 
     public String getStateId() {
         StringArrayWithIdArrayIssueField field = getStateField();
+        return fromStringArrayField( field );
+    }
+
+    private String fromStringArrayField( StringArrayWithIdArrayIssueField field ) {
         if (field == null)
             return null;
         List<String> valueId = field.getValueId();
         if (CollectionUtils.isEmpty(valueId))
             return null;
         return valueId.get(0);
+    }
+
+    private String fromStringField( StringIssueField field ) {
+        if (field == null)
+            return null;
+        return field.getValue();
     }
 
     private StringArrayWithIdArrayIssueField getStateField() {
@@ -86,6 +101,22 @@ public class Issue {
                 getField(YtFields.equipmentStateRus),
                 getField(YtFields.acrmStateRus)
         );
+    }
+
+    public String getSummary() {
+        return fromStringField( getField( YtFields.summary ) );
+    }
+
+    public String getDescription() {
+        return fromStringField( getField( YtFields.description ) );
+    }
+
+    public String getPriority() {
+        return fromStringArrayField( getField( YtFields.priority ) );
+    }
+
+    public Long getCrmNumber() {
+        return NumberUtils.parseLong( fromStringArrayField( getField( YtFields.crmNumber ) ) );
     }
 
     @Override

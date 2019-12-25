@@ -8,11 +8,9 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setHeader(String header);
 
-    void setName(String name);
-
     void setVersion(String text);
 
-    void setCreatedDate(String created);
+    void setCreatedBy(String created);
 
     void setType(String type);
 
@@ -32,7 +30,9 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setKeyWords(String keyWords);
 
-    void setDownloadLink(String link);
+    void setDownloadLinkPdf(String link);
+
+    void setDownloadLinkDoc(String link);
 
     void setExecutionType(String executionType);
 }

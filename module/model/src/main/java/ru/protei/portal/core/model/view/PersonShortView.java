@@ -9,28 +9,33 @@ import java.io.Serializable;
  */
 public class PersonShortView implements Serializable {
     private Long id;
-    private String displayShortName;
+    private String name;
     private boolean isFired;
 
     public PersonShortView() {}
 
-    public PersonShortView( String displayShortName, Long id, boolean isFired ) {
-        this.displayShortName = displayShortName;
+    public PersonShortView(String name, Long id, boolean isFired ) {
+        this.name = name;
         this.id = id;
         this.isFired = isFired;
     }
 
-    public PersonShortView(String displayShortName, Long id) {
-        this.displayShortName = displayShortName;
+    public PersonShortView(String name, Long id) {
+        this.name = name;
         this.id = id;
     }
 
-    public String getDisplayShortName() {
-        return displayShortName;
+    public PersonShortView(EntityOption entityOption) {
+        this.name = entityOption.getDisplayText();
+        this.id = entityOption.getId();
     }
 
-    public void setDisplayShortName( String displayShortName ) {
-        this.displayShortName = displayShortName;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getId() {

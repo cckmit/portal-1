@@ -2,107 +2,92 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.model.helper.StringUtils;
 
-import java.util.Collection;
-import java.util.Collections;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
  * Created by michael on 04.05.17.
  */
-public class CaseCommentEvent extends ApplicationEvent {
+public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
-    private CaseObject newState;
-    private CaseObject oldState;
-    private CaseComment caseComment;
+    private Long caseObjectId;
+    private CaseComment newCaseComment;
     private CaseComment oldCaseComment;
-    private Person person;
+    private CaseComment removedCaseComment;
+    private Long personId;
     private ServiceModule serviceModule;
-    private Collection<Attachment> addedAttachments;
-    private Collection<Attachment> removedAttachments;
+    private boolean isEagerEvent;
 
-    public CaseCommentEvent(Object source, CaseObject caseObject, CaseComment comment, Collection<Attachment> attachments, Person currentPerson) {
-        this(ServiceModule.GENERAL, source, caseObject, null, null, comment, attachments, currentPerson);
-    }
-
-    public CaseCommentEvent(Object source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson) {
-        this(ServiceModule.GENERAL, source, newState, oldState, null, null, comment, attachments, currentPerson);
-    }
-
-    public CaseCommentEvent(
-            Object source,
-            CaseObject newState, CaseObject oldState,
-            CaseComment oldComment, Collection<Attachment> removedAttachments,
-            CaseComment comment, Collection<Attachment> addedAttachments,
-            Person currentPerson) {
-        this(ServiceModule.GENERAL, source, newState, oldState, oldComment, removedAttachments, comment, addedAttachments, currentPerson);
-    }
-
-    public CaseCommentEvent(
-            ServiceModule serviceModule,
-            Object source,
-            CaseObject caseObject,
-            CaseComment oldComment, Collection<Attachment> removedAttachments,
-            CaseComment comment, Collection<Attachment> addedAttachments,
-            Person currentPerson) {
-        this(serviceModule, source, caseObject, caseObject, oldComment, removedAttachments, comment, addedAttachments, currentPerson);
-    }
-
-    public CaseCommentEvent(
-            ServiceModule serviceModule,
-            Object source,
-            CaseObject newState, CaseObject oldState,
-            CaseComment oldComment, Collection<Attachment> removedAttachments,
-            CaseComment comment, Collection<Attachment> addedAttachments,
-            Person currentPerson) {
+    public CaseCommentEvent(Object source, ServiceModule serviceModule, Long personId, Long caseObjectId, boolean isEagerEvent,
+                            CaseComment oldCaseComment, CaseComment newCaseComment, CaseComment removedCaseComment
+                            ) {
         super(source);
-        this.newState = newState;
-        this.oldState = oldState;
-        this.caseComment = comment;
-        this.oldCaseComment = oldComment;
-        this.person = currentPerson;
         this.serviceModule = serviceModule;
-        this.removedAttachments = removedAttachments;
-        this.addedAttachments = addedAttachments;
+        this.personId = personId;
+        this.caseObjectId = caseObjectId;
+        this.isEagerEvent = isEagerEvent;
+        this.oldCaseComment = oldCaseComment;
+        this.newCaseComment = newCaseComment;
+        this.removedCaseComment = removedCaseComment;
     }
 
     public ServiceModule getServiceModule() {
         return serviceModule;
     }
 
-    public CaseObject getCaseObject() {
-        return newState != null ? newState : oldState;
+    public Long getCaseObjectId(){
+        return caseObjectId;
     }
 
-    public CaseObject getNewState() {
-        return newState;
+    @Override
+    public boolean isEagerEvent() {
+        return isEagerEvent;
     }
 
-    public CaseObject getOldState() {
-        return oldState;
-    }
-
-    public CaseComment getCaseComment() {
-        return caseComment;
+    public CaseComment getNewCaseComment() {
+        return newCaseComment;
     }
 
     public CaseComment getOldCaseComment() {
         return oldCaseComment;
     }
 
-    public Person getPerson() {
-        return person;
+    public CaseComment getRemovedCaseComment() {
+        return removedCaseComment;
     }
 
-    public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments == null? Collections.emptyList(): addedAttachments;
+    @Override
+    public Long getPersonId() {
+        return personId;
     }
 
-    public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments == null? Collections.emptyList(): removedAttachments;
+    @Override
+    public String toString() {
+        return "CaseCommentEvent{" +
+                "caseObjectId=" + caseObjectId +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", personId=" + personId +
+                ", isEagerEvent=" + isEagerEvent +
+                ", newCaseComment=" + asString( newCaseComment) +
+                ", oldCaseComment=" + asString(oldCaseComment) +
+                ", removedCaseComment=" + asString(removedCaseComment) +
+                '}';
+    }
+
+    private String asString( CaseComment caseComment ) {
+        if (caseComment == null) return "null";
+        return "{" +
+                "id=" + caseComment.getId() +
+                ", caseId=" + caseComment.getCaseId() +
+                ", privateComment=" + caseComment.isPrivateComment() +
+                ", text length='" + StringUtils.length( caseComment.getText() ) + '\'' +
+                ", timeElapsedType=" + caseComment.getTimeElapsedType() +
+                ", timeElapsed=" + caseComment.getTimeElapsed() +
+                ", remoteLink=" + caseComment.getRemoteLink() +
+                ", caseAttachments=" + toList( caseComment.getCaseAttachments(), CaseAttachment::getId ) +
+                '}';
     }
 }

@@ -12,13 +12,10 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -49,6 +46,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         });
 
         editClickColumn.setEditHandler(activity);
+        editClickColumn.setColumnProvider(columnProvider);
         table.setLoadHandler(activity);
     }
 
@@ -64,8 +62,23 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     }
 
     @Override
-    public void setRecordCount(int count) {
-        table.setTotalRecords(count);
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo(int page) {
+        table.scrollToPage(page);
     }
 
     @Override
@@ -78,8 +91,18 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         return filterContainer;
     }
 
+    @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
-        editClickColumn.setPrivilege( En_Privilege.CONTRACT_EDIT );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT) );
 
         ClickColumn<Contract> type = new ClickColumn< Contract >() {
             @Override
@@ -108,14 +131,15 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(numTypeColumn);
 
         DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
-                contract -> "<b>" + StringUtils.emptyIfNull(contract.getDirectionName()) + "</b><br/>" + StringUtils.emptyIfNull(contract.getDescription()));
+                contract -> "<b>" + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseDirectionName()) : StringUtils.emptyIfNull(contract.getDirectionName())) + "</b><br/>"
+                        + StringUtils.emptyIfNull(contract.getDescription()));
         clickColumns.add(descriptionColumn);
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",
                 contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
-                        +  "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
+                        +  "<b>" + lang.contractManager() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseManagerShortName()) : StringUtils.emptyIfNull(contract.getManagerShortName())) + "</b><br/>"
                         +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
-                        +  "<b>" + lang.contractContragent() + ":</b> " + StringUtils.emptyIfNull(contract.getContragentName()) + "</b>");
+                        +  "<b>" + lang.contractContragent() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseContragentName()) : StringUtils.emptyIfNull(contract.getContragentName())) + "</b>");
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
@@ -141,6 +165,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     private EditClickColumn<Contract> editClickColumn;
@@ -148,6 +174,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     private En_ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
+
+    @Inject
+    private PolicyService policyService;
 
     private ClickColumnProvider<Contract> columnProvider = new ClickColumnProvider<>();
     private List<ClickColumn<Contract>> clickColumns = new LinkedList<>();

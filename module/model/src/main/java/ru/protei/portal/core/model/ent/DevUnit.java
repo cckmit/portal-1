@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -9,10 +10,10 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 23.05.16.
@@ -67,6 +68,12 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @JdbcColumn(name = "history_version")
     private String historyVersion;
+
+    /**
+     * Псевдонимы для поиска
+     */
+    @JdbcColumnCollection(name = "aliases", separator = ",")
+    private List<String> aliases;
 
     public static DevUnit fromProductShortView(ProductShortView productShortView){
         if(productShortView == null)
@@ -187,6 +194,10 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return getState() == En_DevUnitState.ACTIVE;
     }
 
+    public boolean isDeprecatedUnit() {
+        return getState() == En_DevUnitState.DEPRECATED;
+    }
+
     public En_DevUnitType getType () {
         return En_DevUnitType.forId(this.typeId);
     }
@@ -214,7 +225,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @Override
     public ProductShortView toProductShortView() {
-        return new ProductShortView(this.id, this.name, this.stateId);
+        return new ProductShortView(this.id, this.name, this.stateId, CollectionUtils.isEmpty(this.aliases) ? "" : this.aliases.stream().collect(Collectors.joining(", ")));
     }
 
     public ProductDirectionInfo toProductDirectionInfo() {
@@ -235,6 +246,10 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public boolean isComponent() {
         return En_DevUnitType.COMPONENT.equals(getType());
+    }
+
+    public boolean isComplex() {
+        return En_DevUnitType.COMPLEX.equals(getType());
     }
 
 
@@ -268,6 +283,14 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public void setHistoryVersion(String historyVersion) {
         this.historyVersion = historyVersion;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
     }
 
     @Override

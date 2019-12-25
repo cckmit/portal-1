@@ -12,9 +12,10 @@ public class DocumentTypeSelector
         implements SelectorWithModel<DocumentType> {
 
     @Inject
-    void init(DocumentTypeModel documentTypeModel) {
-        documentTypeModel.subscribe(this);
-        setSearchEnabled(false);
+    void init(DocumentTypeModel model) {
+        setSelectorModel(model);
+        setSearchEnabled( true );
+        setSearchAutoFocus( true );
 
         setDisplayOptionCreator(val -> {
             if (val == null) {

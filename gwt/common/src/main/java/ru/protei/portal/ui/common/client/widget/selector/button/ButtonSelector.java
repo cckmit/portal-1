@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -28,7 +29,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     public void fillSelectorView(DisplayOption selectedValue) {
         String value = selectedValue == null ? "" : selectedValue.getName() == null ? "" : selectedValue.getName();
         button.setTitle(value);
-        text.setInnerHTML(value);
+        text.setInnerText(value);
         text.setClassName("selector-val "+ (selectedValue != null && selectedValue.getStyle() != null? selectedValue.getStyle(): ""));
         icon.setClassName(selectedValue == null ? "" : selectedValue.getIcon() == null ? "" : selectedValue.getIcon());
     }
@@ -81,6 +82,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     }
 
     public void setHeader( String header ) {
+        this.label.removeClassName("hide");
         this.label.setInnerText( header );
     }
 
@@ -102,6 +104,14 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
 
     public void setEnsureDebugId(String debugId) {
         button.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdLabel(String debugId) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
+    }
+
+    public void setAttribute(String name, String value) {
+        button.getElement().setAttribute(name, value);
     }
 
     @UiField

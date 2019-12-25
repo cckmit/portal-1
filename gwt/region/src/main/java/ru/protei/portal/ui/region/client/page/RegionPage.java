@@ -6,19 +6,20 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.RegionEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
 /**
  * Активность по работе с вкладкой "Регионы"
  */
-public abstract class RegionPage
-        implements Activity {
+public abstract class RegionPage implements Activity {
 
     @PostConstruct
     public void onInit() {
@@ -38,11 +39,6 @@ public abstract class RegionPage
     }
 
     @Event
-    public void onShowDetail( RegionEvents.Edit event ) {
-        fireSelectTab();
-    }
-
-    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;
@@ -54,11 +50,17 @@ public abstract class RegionPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( policyService.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private String ТAB;
     private RegionEvents.Show show = new RegionEvents.Show();

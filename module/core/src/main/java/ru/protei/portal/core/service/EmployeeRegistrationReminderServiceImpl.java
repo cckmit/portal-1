@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.EmployeeRegistrationDevelopmentAgendaEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEmployeeFeedbackEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationProbationCuratorsEvent;
@@ -13,16 +13,18 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.util.*;
 
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistrationReminderService {
 
     @Override
-    public CoreResponse<Boolean> notifyAboutEmployeeFeedback() {
+    public Result<Boolean> notifyAboutEmployeeFeedback() {
         List<EmployeeRegistration> probationComplete = employeeRegistrationDAO.getAfterProbationList( SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS );
         log.info( "notifyAboutEmployeeFeedback(): {}", toList( probationComplete, EmployeeRegistration::getId ) );
 
@@ -33,12 +35,12 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employeeRegistration.getPerson() ) );
         }
 
-        return new CoreResponse<Boolean>().success( true );
+        return ok(true );
     }
 
 
     @Override
-    public CoreResponse<Boolean> notifyAboutDevelopmentAgenda() {
+    public Result<Boolean> notifyAboutDevelopmentAgenda() {
         List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList( SEND_AGENDA_TO_PROBATION_END_DAYS );
         log.info( "notifyAboutDevelopmentAgenda(): {}", toList( probationExpires, EmployeeRegistration::getId ) );
 
@@ -49,11 +51,11 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employeeRegistration.getPerson() ) );
         }
 
-        return new CoreResponse<Boolean>().success( true );
+        return ok(true );
     }
 
     @Override
-    public CoreResponse<Boolean> notifyAboutProbationPeriod() {
+    public Result<Boolean> notifyAboutProbationPeriod() {
         List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList( SEND_PROBATION_EXPIRES_TO_PROBATION_END_DAYS );
         log.info( "notifyAboutProbationPeriod(): {}", toList (probationExpires, EmployeeRegistration::getId ) );
 
@@ -77,7 +79,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             addCaseComment( employeeRegistration.getId(), message.toString() );
         }
 
-        return new CoreResponse<Boolean>().success( true );
+        return ok(true );
     }
 
     private StringBuilder makeProbationComment( String headOfDepartmentName ) {
@@ -99,7 +101,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         CaseComment comment = new CaseComment(message);
         comment.setCaseId( caseId );
         comment.setOriginalAuthorName( getLangFor("reminder_system_name") );
-        CoreResponse<Long> commentId = caseCommentService.addCommentOnSentReminder(comment);
+        Result<Long> commentId = caseCommentService.addCommentOnSentReminder(comment);
 
         if (!commentId.isOk()) {
             log.warn( "addCaseComment(): Can't add case comment about {} for caseId={}",  message, caseId  );

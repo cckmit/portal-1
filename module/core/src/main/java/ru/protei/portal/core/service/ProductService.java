@@ -1,9 +1,11 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -11,6 +13,7 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -19,27 +22,28 @@ import java.util.List;
  */
 public interface ProductService {
 
-    @Privileged( En_Privilege.PRODUCT_VIEW )
-    CoreResponse<Long> count(AuthToken token, ProductQuery query);
+    @Privileged(En_Privilege.PRODUCT_VIEW)
+    Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query);
 
-    CoreResponse<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
-
-    @Privileged( En_Privilege.PRODUCT_VIEW )
-    CoreResponse<List<DevUnit>> productList( AuthToken token, ProductQuery query );
+    Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
-    CoreResponse<DevUnit> getProduct( AuthToken token, Long id );
+    Result<DevUnit> getProduct( AuthToken token, Long id );
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
     @Auditable( En_AuditType.PRODUCT_CREATE )
-    CoreResponse createProduct( AuthToken token, DevUnit product);
+    Result<DevUnit> createProduct( AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
-    CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
+    Result<DevUnit> updateProduct( AuthToken token, DevUnit product );
+
+    @Privileged( En_Privilege.PRODUCT_EDIT )
+    @Auditable( En_AuditType.PRODUCT_MODIFY )
+    Result<En_DevUnitState> updateState( AuthToken makeAuthToken, Long productId, En_DevUnitState state);
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
-    CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);
+    Result<Boolean> checkUniqueProductByName(AuthToken token, String name, En_DevUnitType type, Long id);
 
-    CoreResponse<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
+    Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
 }

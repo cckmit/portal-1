@@ -6,12 +6,14 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -30,7 +32,7 @@ public abstract class EquipmentPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT, DebugIds.SIDEBAR_MENU.EQUIPMENT ) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( new EquipmentEvents.Show( true ) ) );
         }
     }
 
@@ -56,18 +58,24 @@ public abstract class EquipmentPage
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new EquipmentEvents.Show( true ) );
     }
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
+
 
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
-    private EquipmentEvents.Show show = new EquipmentEvents.Show();
+    private Profile profile;
 }
 

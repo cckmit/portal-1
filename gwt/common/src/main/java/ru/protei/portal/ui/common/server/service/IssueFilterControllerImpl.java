@@ -4,13 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.service.IssueFilterService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.IssueFilterController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,13 +26,13 @@ import java.util.List;
 public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
-    public List< CaseFilterShortView > getIssueFilterShortViewListByCurrentUser() throws RequestFailedException {
+    public List< CaseFilterShortView > getIssueFilterShortViewList( En_CaseFilterType filterType ) throws RequestFailedException {
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        log.debug( "getIssueFilterShortViewListByCurrentUser(): accountId={} ", descriptor.getLogin().getId() );
+        log.info( "getIssueFilterShortViewList(): accountId={}, filterType={} ", token.getUserLoginId(), filterType );
 
-        CoreResponse<List<CaseFilterShortView >> response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId() );
+        Result< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( token.getUserLoginId(), filterType );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -39,11 +42,11 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
     public CaseFilter getIssueFilter( Long id ) throws RequestFailedException {
-        log.debug("getIssueFilter, id: {}", id);
+        log.info("getIssueFilter, id: {}", id);
 
-        CoreResponse<CaseFilter > response = issueFilterService.getIssueFilter( id );
+        Result<CaseFilter > response = issueFilterService.getIssueFilter( id );
 
-        log.debug("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
+        log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -52,26 +55,23 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException {
+    public CaseFilter saveIssueFilter(CaseFilter filter) throws RequestFailedException {
 
-        log.debug("saveIssueFilter, filter: {}", filter);
+        log.info("saveIssueFilter, filter: {}", filter);
 
         if (filter == null) {
             log.warn("Not null issueFilter is required");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (filter.getLoginId() == null){
-            UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-            filter.setLoginId( descriptor.getLogin().getId() );
-        }
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse<CaseFilter > response = issueFilterService.saveIssueFilter( filter );
+        Result<CaseFilter> response = issueFilterService.saveIssueFilter(token, filter);
 
-        log.debug("saveIssueFilter, result: {}", response.getStatus());
+        log.info("saveIssueFilter, result: {}", response.getStatus());
 
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
         }
 
         return response.getData();
@@ -79,26 +79,16 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
     public boolean removeIssueFilter( Long id ) throws RequestFailedException {
-        log.debug( "removeIssueFilter(): id={}", id );
+        log.info( "removeIssueFilter(): id={}", id );
 
-        CoreResponse< Boolean > response = issueFilterService.removeIssueFilter( id );
-        log.debug( "removeIssueFilter(): result={}", response.getStatus() );
+        Result< Boolean > response = issueFilterService.removeIssueFilter( id );
+        log.info( "removeIssueFilter(): result={}", response.getStatus() );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
 
         return response.getData();
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

@@ -17,22 +17,33 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     List<CaseObject> getCases( CaseQuery query );
 
-    //public Long getNextCaseNumber (En_CaseType caseType);
-
     Long insertCase (CaseObject object);
 
     CaseObject getCase(En_CaseType caseType, long number);
     Long getCaseId(En_CaseType caseType, long number);
-    Long getCaseNo(long caseId);
+
+    Long getCaseIdByNumber( long number );
+
+    Long getCaseNumberById( long caseId);
+
     CaseObject getCaseByCaseno(long caseno);
 
     CaseObject getByExternalAppCaseId (String externalApplicationCaseId);
 
-    List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers);
+    Long getAndIncrementEmailLastId( Long caseId );
 
-    boolean updateEmailLastId(Long caseId, Long emailLastId);
-    Long getEmailLastId(Long caseId);
+    List<Long> getCaseNumbersByPlatformId(Long id);
+
+    boolean updateNullCreatorByExtAppType(String extAppType);
+
+    int removeByNameLike(String name);
+
+    CaseObject getByCaseNameLike(String name);
 
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
+
+    int countByQuery(CaseQuery query);
+
+    String getExternalAppName( Long caseId );
 }

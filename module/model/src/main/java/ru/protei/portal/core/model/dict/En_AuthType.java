@@ -25,4 +25,9 @@ public enum En_AuthType {
 
         return null;
     }
+
+    public String getImageSrc() {
+        return "./images/auth_" + name().toLowerCase() + ".png";
+    }
+
 }

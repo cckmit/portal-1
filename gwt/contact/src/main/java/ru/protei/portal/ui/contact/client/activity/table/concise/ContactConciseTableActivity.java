@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -28,14 +29,18 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
     @Event
     public void onShow(ContactEvents.ShowConciseTable event) {
         event.parent.clear();
+        view.clearRecords();
         event.parent.add(view.asWidget());
 
         contactId = null;
 
-        query = makeQuery(event.companyId, false);
-        view.showEditableColumns(event.editable);
+        if (event.companyId != null) {
 
-        requestContacts();
+            query = makeQuery(event.companyId, false);
+            view.showEditableColumns(event.editable);
+
+            requestContacts();
+        }
     }
 
     @Event
@@ -98,15 +103,15 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
     private void requestContacts() {
         view.clearRecords();
 
-        contactService.getContacts(query, new RequestCallback<List<Person>>() {
+        contactService.getContacts(query, new RequestCallback<SearchResult<Person>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Person> result) {
-                view.setData(result);
+            public void onSuccess(SearchResult<Person> result) {
+                view.setData(result.getResults());
             }
         });
     }

@@ -57,7 +57,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
         if (event.documentId != null) {
             drawView();
-            fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
             equipmentController.getDocument(event.documentId, new FluentCallback<Document>()
                     .withError(throwable -> {
                         errorHandler.accept(throwable);
@@ -75,7 +74,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         }
 
         drawView();
-        fireEvent(new AppEvents.InitPanelName(lang.documentCreate()));
 
         Document document = new Document();
         document.setApproved(false);
@@ -164,7 +162,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         boolean approveMode = isNew || !document.getApproved();
 
         view.setApprovedMode(approveMode);
-        view.setCreated(isNew ? lang.documentCreate() : document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
+        view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();
@@ -199,14 +197,12 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     }
 
     private void fillDTO(Document document) {
-        boolean isNew = document.getId() == null;
-
         document.setName(view.name().getValue());
         document.setApproved(view.approved().getValue());
         document.setType(view.documentType().getValue());
         document.setVersion(view.version().getValue());
         document.setInventoryNumber(view.approved().getValue() ? view.inventoryNumber().getValue() : null);
-        document.setDecimalNumber(isNew ? view.decimalNumber().getValue() + "-" + view.documentType().getValue().getShortName() : view.decimalNumber().getValue());
+        document.setDecimalNumber(getDecimalNumberFromView(document));
         document.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         document.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         document.setAnnotation(view.annotation().getValue());
@@ -216,7 +212,10 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     private void saveDocument() {
         view.saveButtonEnabled().setEnabled(false);
         view.cancelButtonEnabled().setEnabled(false);
-        if ((document.getId() == null || !document.getApproved()) && StringUtils.isNotBlank(view.documentUploader().getFilename())) {
+        boolean isNew = document.getId() == null;
+        boolean isApproved = document.getApproved();
+        boolean isFileSet = view.documentUploader().isFileSet();
+        if ((isNew || !isApproved) && isFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
             view.documentUploader().uploadBindToDocument(document);
         } else {
@@ -226,11 +225,10 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
     private void saveUploadedDocument() {
         equipmentController.saveDocument(document, new FluentCallback<Document>()
-                .withResult(() -> {
+                .withError(throwable -> {
                     view.saveButtonEnabled().setEnabled(true);
                     view.cancelButtonEnabled().setEnabled(true);
-                })
-                .withError(throwable -> {
+                    view.documentUploader().resetForm();
                     if (throwable instanceof RequestFailedException) {
                         RequestFailedException rf = (RequestFailedException) throwable;
                         if (En_ResultStatus.ALREADY_EXIST.equals(rf.status)) {
@@ -241,6 +239,8 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     errorHandler.accept(throwable);
                 })
                 .withSuccess(doc -> {
+                    view.saveButtonEnabled().setEnabled(true);
+                    view.cancelButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.documentSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new DocumentEvents.ChangeModel());
                     fireEvent(new Back());
@@ -275,6 +275,17 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
             return lang.negativeInventoryNumber();
         }
         return null;
+    }
+
+    private String getDecimalNumberFromView(Document document) {
+        boolean isNew = document.getId() == null;
+        if (!isNew) {
+            return view.decimalNumber().getValue();
+        }
+        if (view.documentType().getValue() == null || StringUtils.isBlank(view.documentType().getValue().getShortName())) {
+            return view.decimalNumber().getValue();
+        }
+        return view.decimalNumber().getValue() + view.documentType().getValue().getShortName();
     }
 
     @Inject

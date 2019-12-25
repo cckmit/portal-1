@@ -30,8 +30,13 @@ public class PortalConfigData {
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
     private final JiraConfig jiraConfig;
+    private final EmployeeConfig employeeConfig;
+    private final LdapConfig ldapConfig;
 
     private final String loginSuffixConfig;
+    private final boolean taskSchedulerEnabled;
+
+    private final Long maxFileSize;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
@@ -47,8 +52,12 @@ public class PortalConfigData {
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
         jiraConfig = new JiraConfig(wrapper);
+        employeeConfig = new EmployeeConfig(wrapper);
+        ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
+        taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
+        maxFileSize = wrapper.getProperty("max.file.size", Long.class, DEFAULT_FILE_SIZE_MEGABYTES);
     }
 
     public CommonConfig getCommonConfig() {
@@ -106,6 +115,20 @@ public class PortalConfigData {
     public JiraConfig jiraConfig() {
         return jiraConfig;
     }
+
+    public EmployeeConfig getEmployee() {
+        return employeeConfig;
+    }
+
+    public LdapConfig getLdapConfig() {
+        return ldapConfig;
+    }
+
+    public boolean isTaskSchedulerEnabled() {
+        return taskSchedulerEnabled;
+    }
+
+    public Long getMaxFileSize() {return maxFileSize;}
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
@@ -239,15 +262,7 @@ public class PortalConfigData {
 
         public EventAssemblyConfig(PropertiesWrapper properties) throws ConfigException {
             long v = properties.getProperty("core.waiting_period", Long.class, 30L);
-
-            if (v > java.util.concurrent.TimeUnit.MINUTES.toSeconds(2)) {
-                v = java.util.concurrent.TimeUnit.MINUTES.toSeconds(2);
-            }
-            else if (v < 10 ){
-                v = 10;
-            }
-
-            logger.debug("Use event assembly period = {}", v);
+           logger.debug("Use event assembly period = {}", v);
             waitingPeriod = v;
         }
 
@@ -292,7 +307,7 @@ public class PortalConfigData {
                 throw new ConfigException(e);
             }
 
-            logger.debug("legacy config, driver={}, url={}, export={}, import={}", jdbcDriver, jdbcURL, exportEnabled, importEnabled);
+            logger.info("legacy config, driver={}, url={}, export={}, import={}", jdbcDriver, jdbcURL, exportEnabled, importEnabled);
         }
 
         public String getJdbcDriver() {
@@ -329,21 +344,18 @@ public class PortalConfigData {
     }
 
     public static class IntegrationConfig {
-        private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
 
+        private final boolean redminePatchEnabled;
+
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
-            hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
-        }
 
-
-        public boolean isHpsmEnabled() {
-            return hpsmEnabled;
+            redminePatchEnabled = properties.getProperty("integration.redmine.patch", Boolean.class, false);
         }
 
         public boolean isRedmineEnabled() {
@@ -357,6 +369,10 @@ public class PortalConfigData {
         public boolean isJiraEnabled() {
             return jiraEnabled;
         }
+
+        public boolean isRedminePatchEnabled() {
+            return redminePatchEnabled;
+        }
     }
 
     public static class SvnConfig {
@@ -366,9 +382,9 @@ public class PortalConfigData {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
-            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
-            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s");
-            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s");
+            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s (%3$s)");
+            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s (%3$s)");
+            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s (%3$s)");
         }
 
         public String getUrl() {
@@ -450,21 +466,15 @@ public class PortalConfigData {
 
     public static class CaseLinkConfig {
         private final String linkCrm;
-        private final String linkOldCrm;
         private final String linkYouTrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
-            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
-            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 
         public String getLinkCrm() {
             return linkCrm;
-        }
-
-        public String getLinkOldCrm() {
-            return linkOldCrm;
         }
 
         public String getLinkYouTrack() {
@@ -522,14 +532,47 @@ public class PortalConfigData {
 
     public static class JiraConfig {
 
+        private final String jiraUrl;
         private final int queueLimit;
 
         public JiraConfig(PropertiesWrapper properties) throws ConfigException {
+            jiraUrl = properties.getProperty("jira.url",  "");
             queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
+        }
+
+        public String getJiraUrl() {
+            return jiraUrl;
         }
 
         public int getQueueLimit() {
             return queueLimit;
         }
     }
+
+    public static class EmployeeConfig {
+
+        private final String avatarPath;
+
+        public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
+            avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars/" );
+        }
+
+        public String getAvatarPath() {
+            return avatarPath;
+        }
+    }
+
+    public static class LdapConfig {
+        private final String url;
+
+        public LdapConfig(PropertiesWrapper properties) {
+            url = properties.getProperty("ldap.url", "ldap://ldap_1.protei");
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+
+    private final static Long DEFAULT_FILE_SIZE_MEGABYTES = 10L;
 }

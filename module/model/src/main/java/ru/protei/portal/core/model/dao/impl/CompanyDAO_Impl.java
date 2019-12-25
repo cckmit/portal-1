@@ -21,11 +21,6 @@ import java.util.stream.Collectors;
 public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements CompanyDAO {
 
     @Override
-    public List<Company> getListByQuery(CompanyQuery query) {
-        return listByQuery(query);
-    }
-
-    @Override
     public Company getCompanyByName(String name) {
         return getByCondition(" cname=? ", name);
     }
@@ -41,6 +36,17 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         });
 
         return result;
+    }
+
+    @Override
+    public boolean updateState(Company tempCompany) {
+        return partialMerge(tempCompany, "is_deprecated");
+    }
+
+    @Override
+    public List<Long> getAllHomeCompanyIds() {
+        String query = "SELECT companyId FROM company_group_home";
+        return jdbcTemplate.queryForList(query, Long.class);
     }
 
     @SqlConditionBuilder
@@ -65,12 +71,16 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if(query.isSortHomeCompaniesAtBegin()){
-                condition.append( " and is_hidden = false" );
+                condition.append( " and (is_hidden is null or is_hidden = false)" );
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and cname like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+            }
+
+            if (query.getShowDeprecated() != null && !query.getShowDeprecated()) {
+                condition.append(" and is_deprecated = false");
             }
         });
     }

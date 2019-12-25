@@ -16,9 +16,9 @@ public interface AbstractIssueTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
 
-    void setIssuesCount( Long issuesCount );
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 
@@ -32,4 +32,6 @@ public interface AbstractIssueTableView extends IsWidget {
     HasWidgets getPagerContainer();
 
     void clearSelection();
+
+    boolean isAttached();
 }

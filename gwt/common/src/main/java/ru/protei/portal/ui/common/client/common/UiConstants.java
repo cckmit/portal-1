@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.client.common;
 
+import com.google.gwt.core.client.GWT;
+
 /**
  * Системные константы приложения
  */
@@ -8,30 +10,29 @@ public class UiConstants {
      * Иконки вкладок приложения
      */
     public interface TabIcons {
-        String SUB_ITEM = "fa fa-chevron-right";
-        String COMPANY = "icon icon-organization";
+        String COMPANY = "fa fa-building";
         String CONTACT = "fa fa-address-book";
-        String PRODUCT = "icon icon-product";
+        String PRODUCT = "fa fa-cubes";
         String ISSUE = "fa fa-tasks";
-        String DASHBOARD = "fa fa-dashboard";
+        String DASHBOARD = "fa fa-tachometer-alt";
         String REGION = "fa fa-globe";
         String PROJECT = "fa fa-archive";
         String EQUIPMENT = "fa fa-server";
-        String ACCOUNT = "fa fa-group";
+        String ACCOUNT = "fa fa-users-cog";
         String ROLE = "fa fa-user";
-        String OFFICIAL = "fa fa-book";
-        String DOCUMENT = "fa fa-server";
-        String DOCUMENT_TYPE = "fa fa-server";
-        String ISSUE_REPORTS = "fa fa-cloud-download";
+        String OFFICIAL = "fa fa-user-plus";
+        String DOCUMENT = "fa fa-book";
+        String DOCUMENT_TYPE = "fa fa-list-alt";
+        String ISSUE_REPORTS = "fa fa-file-download";
         String CASE_STATE = "fa fa-bookmark ";
-        String SITE_FOLDER = "fa fa-folder";
+        String SITE_FOLDER = "fa fa-briefcase"  ;
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
-        String CONTRACT = "fa fa-file-text";
+        String CONTRACT = "fa fa-file-signature";
     }
     public interface Icons {
-        String APPROVED = "fa-check-circle-o";
-        String NOT_APPROVED = "fa-file-text-o";
+        String APPROVED = "fa-clipboard-check";
+        String NOT_APPROVED = "fa-clipboard";
     }
 
     public interface ActionBarIcons {
@@ -62,11 +63,7 @@ public class UiConstants {
         String SITE_FOLDER_APP = "site_folder_app";
         String EMPLOYEE_REGISTRATION = "employee_registration";
         String CONTRACT = "contract";
-    }
-
-    public interface UserIcon {
-        String MALE = "./images/user-icon-m.svg";
-        String FEMALE = "./images/user-icon-f.svg";
+        String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
     }
 
     public interface Styles {
@@ -82,4 +79,7 @@ public class UiConstants {
      */
     public static final String LOGIN_PAGE = "login";
     public static final String UNDEFINED_ENTRY = "undefined";
+    public static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
+    public static final String LINKS_PANEL_VISIBILITY = "case-link-panel-body";
+    public static final String ISSUE_CREATE_PREVIEW_DISPLAYED = "issue_create_is_preview_displayed";
 }

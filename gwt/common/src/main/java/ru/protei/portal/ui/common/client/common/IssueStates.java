@@ -17,26 +17,31 @@ public abstract class IssueStates implements Activity{
     @Event
     public void onInit( AuthEvents.Init event ) {
 
-        states = new ArrayList<>(11);
+        states = new ArrayList<>(14);
         states.add(En_CaseState.CREATED);
         states.add(En_CaseState.OPENED);
         states.add(En_CaseState.ACTIVE);
         states.add(En_CaseState.INFO_REQUEST);
+        states.add(En_CaseState.NX_REQUEST);
+        states.add(En_CaseState.CUST_REQUEST);
         states.add(En_CaseState.WORKAROUND);
         states.add(En_CaseState.TEST_LOCAL);
         states.add(En_CaseState.CUST_PENDING);
         states.add(En_CaseState.DONE);
         states.add(En_CaseState.TEST_CUST);
+        states.add(En_CaseState.PAUSED);
         states.add(En_CaseState.VERIFIED);
         states.add(En_CaseState.CANCELED);
 
-        activeStates = new ArrayList<>(8);
+        activeStates = new ArrayList<>(10);
         activeStates.add(En_CaseState.CREATED);
         activeStates.add(En_CaseState.OPENED);
         activeStates.add(En_CaseState.ACTIVE);
         activeStates.add(En_CaseState.TEST_LOCAL);
         activeStates.add(En_CaseState.WORKAROUND);
         activeStates.add(En_CaseState.INFO_REQUEST);
+        activeStates.add(En_CaseState.NX_REQUEST);
+        activeStates.add(En_CaseState.CUST_REQUEST);
         activeStates.add(En_CaseState.CUST_PENDING);
         activeStates.add(En_CaseState.TEST_CUST);
 

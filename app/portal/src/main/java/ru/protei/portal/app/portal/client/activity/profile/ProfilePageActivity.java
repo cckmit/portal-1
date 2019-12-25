@@ -4,19 +4,23 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.PasswordUtils;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.REMEMBER_ME_PREFIX;
 
 /**
  * Активность превью контакта
@@ -44,35 +48,51 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
     }
 
     @Override
-    public void onSaveSubscriptionClicked() {
-        companyService.updateSelfCompanySubscription( view.companySubscription().getValue().stream()
-                .map(Subscription::toCompanySubscription)
-                .collect(Collectors.toList()),
-                new RequestCallback<List<CompanySubscription>>() {
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( List<CompanySubscription> subscriptions ) {
-                policyService.getUserCompany().setSubscriptions( subscriptions );
-                fireEvent( new NotifyEvents.Show( lang.companySubscriptionUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS ) );
-            }
-        });
+    public void onChangePasswordButtonClicked() {
+        view.passwordContainerVisibility().setVisible(!view.passwordContainerVisibility().isVisible());
+        view.changePasswordButtonVisibility().setVisible(false);
     }
 
-    private void fillView( Profile value ) {
-        view.setName( value.getFullName() );
-        view.setIcon( UserIconUtils.getGenderIcon(value.getGender() ) );
-        if ( value.getCompany() != null ) {
-            view.setCompany( value.getCompany().getCname() );
-            view.companySubscription().setValue( value.getCompany().getSubscriptions().stream()
-                    .map( Subscription::fromCompanySubscription )
-                    .collect(Collectors.toList())
-            );
+    @Override
+    public void onSavePasswordButtonClicked() {
+        if (profile.getAuthType() != En_AuthType.LOCAL) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
         }
 
-        view.companySubscriptionEnabled().setEnabled(policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
-        view.saveButtonVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
+        if (!isConfirmValidate()) {
+            fireEvent(new NotifyEvents.Show(lang.errEditProfile(), NotifyEvents.NotifyType.ERROR));
+        } else if (!HelperFunc.isEmpty(view.currentPassword().getValue())) {
+            accountService.updateAccountPassword(profile.getLoginId(), view.currentPassword().getValue(), view.newPassword().getValue(), new FluentCallback<Void>()
+                    .withSuccess(res -> {
+                        if (storage.contains(REMEMBER_ME_PREFIX + "login")) {
+                            storage.set(REMEMBER_ME_PREFIX + "pwd", PasswordUtils.encrypt(view.newPassword().getValue()));
+                        }
+
+                        fireEvent(new NotifyEvents.Show(lang.passwordUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+                        view.changePasswordButtonVisibility().setVisible(isAvailableChangePassword());
+                        view.passwordContainerVisibility().setVisible(false);
+                    }));
+        }
+    }
+
+    private boolean isConfirmValidate() {
+        return !HelperFunc.isEmpty(view.currentPassword().getValue()) &&
+                !HelperFunc.isEmpty(view.newPassword().getValue()) &&
+                Objects.equals(view.newPassword().getValue(), view.confirmPassword().getValue());
+    }
+
+    private void fillView(Profile value ) {
+        this.profile = value;
+        view.setName( value.getFullName() );
+        view.setIcon( AvatarUtils.getAvatarUrl(value) );
+        view.setCompany( value.getCompany() == null ? "" : value.getCompany().getCname() );
+        view.changePasswordButtonVisibility().setVisible(isAvailableChangePassword());
+        view.passwordContainerVisibility().setVisible(false);
+    }
+
+    private boolean isAvailableChangePassword() {
+        return profile.getAuthType() == En_AuthType.LOCAL;
     }
 
     @Inject
@@ -80,10 +100,14 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
     @Inject
     AbstractProfilePageView view;
     @Inject
-    CompanyControllerAsync companyService;
-
-    @Inject
     PolicyService policyService;
 
+    @Inject
+    AccountControllerAsync accountService;
+
+    @Inject
+    LocalStorageService storage;
+
+    private Profile profile;
     private AppEvents.InitDetails initDetails;
 }

@@ -20,20 +20,6 @@ public class RoleEvents {
     }
 
     /**
-     * Показать таблицу ролей
-     */
-    public static class ShowTable {
-
-        public ShowTable ( HasWidgets parent, Long companyId) {
-            this.parent = parent;
-            this.companyId = companyId;
-        }
-
-        public HasWidgets parent;
-        public Long companyId;
-    }
-
-    /**
      * Показать превью роли
      */
     public static class ShowPreview {

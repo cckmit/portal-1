@@ -5,4 +5,6 @@ public interface AbstractEmployeeRegistrationEditActivity {
     void onSaveClicked();
 
     void onCancelClicked();
+
+    void validateLimitedFields();
 }

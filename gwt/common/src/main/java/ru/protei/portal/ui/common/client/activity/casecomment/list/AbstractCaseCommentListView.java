@@ -38,10 +38,6 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void clearTimeElapsed();
 
-    HasVisibility timeElapsedVisibility();
-
-    HasVisibility timeElapsedTypeVisibility();
-
     void setUserIcon(String icon);
 
     HasEnabled sendEnabled();
@@ -55,4 +51,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
     HasValue<Boolean> privateComment();
 
     void setTextMarkupLabel(String label);
+
+    boolean isDisplayPreview();
+
+    void setTimeElapsedVisibility(boolean visible);
 }

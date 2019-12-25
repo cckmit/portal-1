@@ -2,7 +2,7 @@ package ru.protei.portal.ui.project.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 /**
@@ -16,11 +16,13 @@ public interface AbstractProjectTableView extends IsWidget {
     HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
 
-    void addRow( ProjectInfo row );
+    void addRow( Project row );
 
     void addSeparator( String text );
 
-    void updateRow( ProjectInfo project );
+    void updateRow( Project project );
 
-    void selectRow(ProjectInfo project);
+    void selectRow(Project project);
+
+    void clearSelection();
 }

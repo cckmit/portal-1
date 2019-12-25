@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.ContractDateOneDayRemainingEvent;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.ContractDateDAO;
@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,10 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.api.struct.Result.ok;
+
 public class ContractReminderServiceImpl implements ContractReminderService {
 
     @Override
-    public CoreResponse<Integer> notifyAboutDates() {
+    public Result<Integer> notifyAboutDates() {
         log.info("notifyAboutDates(): start");
 
         LocalDateTime tomorrowStart = makeTomorrowWithTime(0, 0, 0);
@@ -38,7 +41,7 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         List<ContractDate> contractDates = contractDateDAO.getNotifyBetweenDates(convertLocalDateTimeToDate(tomorrowStart), convertLocalDateTimeToDate(tomorrowEnd));
         if (CollectionUtils.isEmpty(contractDates)) {
             log.info("notifyAboutDates(): contractDates is empty for tomorrow");
-            return new CoreResponse<Integer>().success(0);
+            return ok(0);
         }
 
         int notificationSentAmount = 0;
@@ -65,7 +68,7 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         }
 
         log.info("notifyAboutDates(): done {} notification(s)", notificationSentAmount);
-        return new CoreResponse<Integer>().success(notificationSentAmount);
+        return ok(notificationSentAmount);
     }
 
     private LocalDateTime makeTomorrowWithTime(int hour, int min, int sec) {

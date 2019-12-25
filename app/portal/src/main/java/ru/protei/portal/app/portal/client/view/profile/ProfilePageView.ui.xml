@@ -1,37 +1,63 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list">
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="main-content">
-        <div class="panel panel-default">
-            <div class="body">
-                <div class="profile-section">
-                    <div class="profile-left">
-                        <div class="profile-image">
-                            <img src="./images/user-icon-m.svg" ui:field="icon"/>
-                        </div>
-                    </div>
-                    <div class="profile-right">
-                        <h4>
-                            <g:InlineLabel ui:field="name"/>
-                            <small ui:field="company"/>
-                        </h4>
-                        <div class="grid grid-indent">
-                            <div class="col-xs-12">
-                                <h4 class="title">
-                                    <ui:text from="{lang.companySubscription}"/>
-                                </h4>
-                                <list:SubscriptionList ui:field="subscriptions"/>
+    <g:HTMLPanel>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="profile-image">
+                                <img src="./images/user-icon-m.svg" ui:field="icon"/>
                             </div>
+
+                        </div>
+                        <div class="col-md-10">
+                            <h4>
+                                <b><g:InlineLabel ui:field="name"/></b>
+                                <small ui:field="company"/>
+                            </h4>
+
+                            <g:Button ui:field="changePasswordButton" styleName="btn btn-success"
+                                      text="{lang.buttonChangePassword}"/>
+
+                            <g:HTMLPanel ui:field="passwordContainer" visible="false" styleName="row">
+                                <div class="col-md-12">
+                                    <h4 ui:field="changePasswordLabel" class="title">
+                                        <ui:text from="{lang.accountPasswordChange}"/>
+                                    </h4>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label ui:field="currentPasswordLabel">
+                                        <ui:text from="{lang.accountCurrentPassword}"/>
+                                    </label>
+                                    <g:PasswordTextBox ui:field="currentPassword" styleName="form-control"/>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label ui:field="newPasswordLabel">
+                                        <ui:text from="{lang.accountNewPassword}"/>
+                                    </label>
+                                    <g:PasswordTextBox ui:field="newPassword" styleName="form-control"/>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label ui:field="confirmPasswordLabel">
+                                        <ui:text from="{lang.accountConfirmPassword}"/>
+                                    </label>
+                                    <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>
+                                </div>
+                                <div class="col-md-12">
+                                    <g:Button ui:field="savePasswordButton" styleName="btn btn-success"
+                                              text="{lang.buttonSave}"/>
+                                </div>
+                            </g:HTMLPanel>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-            </div>
         </div>
+
     </g:HTMLPanel>
 </ui:UiBinder>

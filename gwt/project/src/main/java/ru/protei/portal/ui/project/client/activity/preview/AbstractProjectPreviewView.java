@@ -1,14 +1,8 @@
 package ru.protei.portal.ui.project.client.activity.preview;
 
-import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
-
-import java.util.Set;
+import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 
 /**
  * Абстракция вида проекта
@@ -17,25 +11,38 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setActivity( AbstractProjectPreviewActivity activity );
 
-    void watchForScroll( boolean isWatch );
-    void setHeader( String value );
-    void setCreationDate( String value );
-    HasValue<En_RegionState> state();
-    HasValue<ProductDirectionInfo> direction();
-    HasValue<Set<PersonProjectMemberView>> team();
-    HasText details();
-    HasValue<EntityOption> region();
-    HasValue<Set<ProductShortView>> products();
-    HasValue<EntityOption> company();
-    HasValue<En_CustomerType> customerType();
+    void setName(String value);
 
-    void showFullScreen(boolean value );
+    void setCreatedBy(String value );
 
-    HasVisibility removeBtnVisibility();
+    void setHeader(String name );
 
-    void setName( String name );
-    String getName();
+    void setState( long value );
+
+    void setDirection( String value );
+
+    void setTeam( String value );
+
+    void setDescription( String value );
+
+    void setRegion( String value );
+
+    void setProduct(String value );
+
+    void setCompany( String value );
+
+    void setCustomerType( String value );
+
+    void setContract(String value, String link);
+
+    void setPlatform(String value, String link);
+
+    void isFullScreen(boolean isFullScreen);
+
+    HasVisibility backButtonVisibility();
 
     HasWidgets getCommentsContainer();
     HasWidgets getDocumentsContainer();
+
+
 }

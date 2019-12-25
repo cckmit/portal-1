@@ -53,8 +53,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     }
 
     @Override
-    public void setRecordCount(int count) {
-        table.setTotalRecords(count);
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override
@@ -116,7 +121,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
                     cell.setInnerText("");
                     return;
                 }
-                cell.setInnerText(value.getHeadOfDepartment().getDisplayShortName());
+                cell.setInnerText(value.getHeadOfDepartment().getName());
             }
         };
 

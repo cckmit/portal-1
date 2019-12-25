@@ -1,12 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="btn-selector" ui:field="inputContainer">
-        <label ui:field="label"/>
-        <g:Button ui:field="button" styleName="btn btn-white">
+    <g:HTMLPanel styleName="dropdown-selector" ui:field="inputContainer">
+        <label ui:field="label" class="hide"/>
+        <g:Button ui:field="button" styleName="btn btn-default btn-block dropdown-toggle">
             <i ui:field="icon"/>
             <span ui:field="text" class="selector-val"></span>
-            <span class="caret"></span>
         </g:Button>
     </g:HTMLPanel>
 

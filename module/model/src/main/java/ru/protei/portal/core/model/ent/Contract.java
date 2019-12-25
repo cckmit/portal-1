@@ -42,14 +42,23 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "P")
     private Long managerId;
+
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+    })
+    private String managerShortName;
+
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "CO")
+    private Long caseManagerId;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
     }, mappedColumn = "displayShortName")
-    private String managerShortName;
+    private String caseManagerShortName;
 
     /**
      * Куратор договора
@@ -66,26 +75,45 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Контрагент (компания)
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "P")
     private Long contragentId;
 
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
     }, mappedColumn = "cname")
     private String contragentName;
 
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
+    private Long caseContragentId;
+
+    //    TODO: refactor
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
+    }, mappedColumn = "cname")
+    private String caseContragentName;
+
     /**
      * Направление
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "P")
     private Long directionId;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
+    }, mappedColumn = "UNIT_NAME")
+    private String directionName;
+
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
+    private Long caseDirectionId;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
     }, mappedColumn = "UNIT_NAME")
-    private String directionName;
+    private String caseDirectionName;
 
     /**
      * Текущее состояние договора
@@ -149,6 +177,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcOneToMany(table = "Contract", localColumn = "id", remoteColumn = "parent_contract_id")
     private List<Contract> childContracts;
 
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
+    private String projectName;
 
     @Override
     public String getAuditType() {
@@ -348,6 +381,71 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return childContracts;
     }
 
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public Long getCaseDirectionId() {
+        return caseDirectionId;
+    }
+
+    public String getCaseDirectionName() {
+        return caseDirectionName;
+    }
+
+    public Long getCaseContragentId() {
+        return caseContragentId;
+    }
+
+    public String getCaseContragentName() {
+        return caseContragentName;
+    }
+
+    public Long getCaseManagerId() {
+        return caseManagerId;
+    }
+
+    public String getCaseManagerShortName() {
+        return caseManagerShortName;
+    }
+
+    public void setCaseManagerId( Long caseManagerId ) {
+        this.caseManagerId = caseManagerId;
+    }
+
+    public void setCaseContragentId( Long caseContragentId ) {
+        this.caseContragentId = caseContragentId;
+    }
+
+    public void setCaseDirectionId( Long caseDirectionId ) {
+        this.caseDirectionId = caseDirectionId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof Contract && id.equals(((Contract) obj).getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
     @Override
     public String toString() {
         return "Contract{" +
@@ -377,6 +475,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", parentContractId=" + parentContractId +
                 ", parentContractNumber='" + parentContractNumber + '\'' +
                 ", childContracts=" + childContracts +
+                ", projectId=" + projectId +
+                ", projectName=" + projectName +
                 '}';
     }
 

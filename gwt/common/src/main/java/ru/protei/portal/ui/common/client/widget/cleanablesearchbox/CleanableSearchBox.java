@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.cleanablesearchbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -10,11 +13,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.test.client.DebugIds;
 
 public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled {
 
     public CleanableSearchBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -36,6 +41,10 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
 
     public void setPlaceholder(String value) {
         textBox.getElement().setAttribute("placeholder", value);
+    }
+
+    public void setStyle(String style) {
+        textBox.addStyleName( style );
     }
 
     @Override
@@ -111,11 +120,36 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         textBoxAction.ensureDebugId(debugId);
     }
 
+    public void setAddon(String addon) {
+        this.addonText.setInnerText(addon);
+        this.addon.removeClassName("hide");
+        this.textBox.removeStyleName("rounded-left-3");
+    }
+
+    public void setAddonIcon(String icon) {
+        this.addonIcon.setClassName(icon);
+        this.addon.removeClassName("hide");
+        this.textBox.removeStyleName("rounded-left-3");
+    }
+
+    private void ensureDebugIds() {
+        textBox.getElement().setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CLEANABLE_SEARCH_BOX.SEARCH_INPUT);
+    }
+
     @UiField
     TextBox textBox;
 
     @UiField
     Anchor textBoxAction;
+
+    @UiField
+    DivElement addon;
+
+    @UiField
+    Element addonIcon;
+    @UiField
+    SpanElement addonText;
+
 
     private boolean enabled = true;
 

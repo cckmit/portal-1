@@ -4,16 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.UserRoleQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.UserRoleService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RoleController;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +28,12 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public List<UserRole> getRoles( UserRoleQuery query ) throws RequestFailedException {
-        log.debug( "getRoles(): searchPattern={} ",
+        log.info( "getRoles(): searchPattern={} ",
                 query.getSearchString() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse<List<UserRole>> response = roleService.userRoleList( descriptor.makeAuthToken(), query );
+        Result<List<UserRole>> response = roleService.userRoleList( token, query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -42,13 +43,13 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public UserRole getRole(Long id) throws RequestFailedException {
-        log.debug("get role, id: {}", id);
+        log.info("get role, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse<UserRole> response = roleService.getUserRole( descriptor.makeAuthToken(), id );
+        Result<UserRole> response = roleService.getUserRole( token, id );
 
-        log.debug("get role, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+        log.info("get role, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         return response.getData();
     }
@@ -60,16 +61,16 @@ public class RoleControllerImpl implements RoleController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        log.debug("store role, id: {} ", HelperFunc.nvl(role.getId(), "new"));
+        log.info("store role, id: {} ", HelperFunc.nvl(role.getId(), "new"));
 
-        CoreResponse<UserRole> response = roleService.saveUserRole( descriptor.makeAuthToken(), role );
+        Result<UserRole> response = roleService.saveUserRole( token, role );
 
-        log.debug("store role, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.info("store role, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("store role, applied id: {}", response.getData().getId());
+            log.info("store role, applied id: {}", response.getData().getId());
             return response.getData();
         }
 
@@ -78,12 +79,12 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public List< EntityOption > getRolesOptionList( UserRoleQuery query ) throws RequestFailedException {
-        log.debug( "getRolesOptionList(): searchPattern={} ",
+        log.info( "getRolesOptionList(): searchPattern={} ",
                 query.getSearchString() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse<List<EntityOption>> response = roleService.userRoleOptionList( descriptor.makeAuthToken(), query );
+        Result<List<EntityOption>> response = roleService.userRoleOptionList( token, query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -93,28 +94,18 @@ public class RoleControllerImpl implements RoleController {
 
     @Override
     public boolean removeRole( Long id ) throws RequestFailedException {
-        log.debug( "removeRole(): id={}", id );
+        log.info( "removeRole(): id={}", id );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse< Boolean > response = roleService.removeRole( descriptor.makeAuthToken(), id );
-        log.debug( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
+        Result< Boolean > response = roleService.removeRole( token, id );
+        log.info( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
             return response.getData();
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

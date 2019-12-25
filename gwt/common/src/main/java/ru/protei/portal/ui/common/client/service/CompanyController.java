@@ -2,13 +2,11 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -19,17 +17,11 @@ import java.util.List;
 public interface CompanyController extends RemoteService {
 
     /**
-     * Получение кол-ва компаний
-     * @param query запрос
-     */
-    long getCompaniesCount(CompanyQuery query) throws RequestFailedException;
-
-    /**
      * Получение списка компаний
      * @param query запрос
      * @return список компаний
      */
-    List<Company> getCompanies( CompanyQuery query ) throws RequestFailedException;
+    SearchResult<Company> getCompanies(CompanyQuery query ) throws RequestFailedException;
 
     /**
      * Получение списка групп компаний
@@ -44,6 +36,8 @@ public interface CompanyController extends RemoteService {
      * @return результат сохранения
      */
     Boolean saveCompany ( Company company ) throws RequestFailedException;
+
+    Boolean updateState(Long id, boolean isArchived) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия компании
@@ -87,13 +81,6 @@ public interface CompanyController extends RemoteService {
     List< EntityOption > getCategoryOptionList() throws RequestFailedException;
 
     /**
-     * Обновить адреса подписок своей компании
-     *
-     * @param value
-     */
-    List<CompanySubscription> updateSelfCompanySubscription( List< CompanySubscription > value ) throws RequestFailedException;
-
-    /**
      * Получение список рассылок по компании
      *
      * @param companyId
@@ -107,4 +94,5 @@ public interface CompanyController extends RemoteService {
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
+    List<Long> getAllHomeCompanyIds() throws RequestFailedException;
 }

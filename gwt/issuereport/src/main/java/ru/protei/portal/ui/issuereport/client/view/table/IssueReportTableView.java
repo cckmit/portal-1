@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.RefreshClickColumn;
@@ -44,13 +45,13 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     }
 
     @Override
-    public void setReportsCount(Long issuesCount) {
-        table.setTotalRecords(issuesCount.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override
@@ -79,6 +80,9 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         numberColumn = new NumberColumn(lang, reportStatusLang);
         infoColumn = new InfoColumn(lang, reportTypeLang);
         filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, caseStateLang);
+        refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR);
+        removeClickColumn.setDisplayPredicate(v -> v.getStatus() != En_ReportStatus.PROCESS);
+        downloadClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.READY);
 
         table.addColumn(numberColumn.header, numberColumn.values);
         table.addColumn(infoColumn.header, infoColumn.values);
@@ -94,8 +98,6 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     Lang lang;
     @UiField
     InfiniteTableWidget<Report> table;
-    @UiField
-    HTMLPanel tableContainer;
     @UiField
     HTMLPanel pagerContainer;
 

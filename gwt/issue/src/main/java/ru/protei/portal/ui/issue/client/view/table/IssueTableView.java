@@ -11,6 +11,7 @@ import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -64,6 +65,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
     }
 
     @Override
@@ -71,7 +73,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
-
 
     @Override
     public void hideElements() {
@@ -102,16 +103,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     @Override
-    public void setIssuesCount( Long issuesCount ) {
-        table.setTotalRecords( issuesCount.intValue() );
-    }
-
-    @Override
-    public int getPageSize() {
-        return table.getPageSize();
-    }
-
-    @Override
     public int getPageCount() {
         return table.getPageCount();
     }
@@ -127,9 +118,19 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
             table.updateRow(item);
     }
 
+    @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
-        editClickColumn.setPrivilege( En_Privilege.ISSUE_EDIT );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) );
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
@@ -165,7 +166,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Inject
     En_CaseStateLang caseStateLang;
-
+    @Inject
+    PolicyService policyService;
     @Inject
     Separator separator;
 

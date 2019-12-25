@@ -38,13 +38,13 @@ public class ReportCaseImpl implements ReportCase {
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
 
-        Long count = caseObjectDAO.count(report.getCaseQuery());
+        int count = caseObjectDAO.countByQuery(report.getCaseQuery());
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
-        if (count == null || count < 1) {
+        if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
+            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -57,7 +57,7 @@ public class ReportCaseImpl implements ReportCase {
 
         log.debug("writeReport : reportId={} has {} case objects to procees", report.getId(), count);
 
-        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
+        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted());
 
         int sheetNumber = writer.createSheet();
 
@@ -70,10 +70,10 @@ public class ReportCaseImpl implements ReportCase {
         }
     }
 
-    private boolean writeReport(ReportWriter<CaseObjectComments> writer, int sheetNumber, Report report, Long count) {
+    private boolean writeReport(ReportWriter<CaseObjectComments> writer, int sheetNumber, Report report, int count) {
 
         final int step = config.data().reportConfig().getChunkSize();
-        final int limit = count.intValue();
+        final int limit = count;
         int offset = 0;
 
         while (offset < limit) {

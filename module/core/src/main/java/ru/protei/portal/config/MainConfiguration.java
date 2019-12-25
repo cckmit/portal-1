@@ -1,20 +1,29 @@
 package ru.protei.portal.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
-import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.controller.document.DocumentStorageIndex;
-import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
+import ru.protei.portal.core.index.document.DocumentStorageIndex;
+import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
@@ -23,17 +32,27 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.AccountService;
+import ru.protei.portal.core.service.AccountServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
-import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.core.service.user.AuthServiceImpl;
-import ru.protei.portal.core.service.user.LDAPAuthProvider;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.auth.AuthServiceImpl;
+import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.schedule.PortalScheduleTasks;
+import ru.protei.portal.schedule.PortalScheduleTasksImpl;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
 import ru.protei.portal.tools.migrate.export.DummyExportDataService;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
@@ -49,18 +68,23 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
+import ru.protei.winter.jdbc.config.JdbcConfig;
+import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
+import java.util.concurrent.*;
 
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @EnableScheduling
+@EnableAsync
 @PropertySource("classpath:spring.properties")
 public class MainConfiguration {
 
+    @Autowired
+    JdbcConfig jdbcConfig;
     @Inject
     private JdbcObjectMapperRegistrator objectMapperRegistrator;
 
@@ -76,6 +100,18 @@ public class MainConfiguration {
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
         return new PortalConfig("portal.properties");
+    }
+
+    /**
+     * Запуск фоновых задач
+     */
+    @Bean(name = BACKGROUND_TASKS)
+    public Executor threadPoolTaskExecutor() {
+        JdbcConfigData.JdbcConnectionParam connectionParam = CollectionUtils.getFirst( jdbcConfig.data().getConnections() );
+        int maxDbConnectionPoolSize = 50; //взять из winter.properties
+        if (connectionParam != null)
+            maxDbConnectionPoolSize = connectionParam.getMaxPoolSize();
+        return new BackgroundTaskThreadPoolTaskExecutor( maxDbConnectionPoolSize );
     }
 
     @Bean
@@ -110,7 +146,7 @@ public class MainConfiguration {
 
     @Bean(name = "portalScheduler")
     public PortalScheduleTasks getPortalScheduleTasks() {
-        return new PortalScheduleTasks();
+        return new PortalScheduleTasksImpl();
     }
 
     @Bean
@@ -228,6 +264,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
+    }
+
+    @Bean
     public CaseShortViewDAO getCaseShortDAO() {
         return new CaseShortViewDAO_Impl();
     }
@@ -235,11 +281,6 @@ public class MainConfiguration {
     @Bean
     public AuditObjectDAO getAuditDAO() {
         return new AuditObjectDAO_Impl();
-    }
-
-    @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
     }
 
     @Bean
@@ -266,7 +307,6 @@ public class MainConfiguration {
     public WorkerEntryDAO getWorkerEntryDAO() {
         return new WorkerEntryDAO_Impl();
     }
-
 
     @Bean
     public CompanyGroupDAO getCompanyGroupDAO() {
@@ -389,6 +429,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
+        return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
     public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }
@@ -485,6 +530,26 @@ public class MainConfiguration {
         return new CaseStateWorkflowDAO_Impl();
     }
 
+    @Bean
+    public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
+        return  new WorkerEntryShortViewDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackRestClient getYoutrackRestDAO() {
+        return new YoutrackRestClientImpl();
+    }
+
+    @Bean
+    public YoutrackApiClient getYoutrackApiDAO() {
+        return new YoutrackApiClientImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -495,16 +560,6 @@ public class MainConfiguration {
     @Bean
     public AuthService getAuthService() {
         return new AuthServiceImpl();
-    }
-
-    @Bean
-    public AuthInterceptor getAuthInterceptor() {
-        return new AuthInterceptor();
-    }
-
-    @Bean
-    public CaseControlService getCaseControlService() {
-        return new CaseControlServiceImpl();
     }
 
     @Bean
@@ -613,8 +668,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public EventExpirationControl getEventExpirationControl() {
-        return new EventExpirationControl();
+    public AssemblerService getAssemblerService() {
+        return new AssemblerServiceImpl();
     }
 
     @Bean
@@ -658,8 +713,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public DocumentSvnService getDocumentSvnService() {
-        return new DocumentSvnServiceImpl();
+    public DocumentSvnApi getDocumentSvnApi() {
+        return new DocumentSvnApiImpl();
     }
 
     @Bean
@@ -722,6 +777,11 @@ public class MainConfiguration {
         return new CaseStateWorkflowServiceImpl();
     }
 
+    @Bean
+    public SLAService getSLAService() {
+        return new SLAServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {
@@ -760,4 +820,7 @@ public class MainConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
+    public static final String BACKGROUND_TASKS = "backgroundTasks";
+
+    private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

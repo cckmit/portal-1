@@ -3,25 +3,27 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -53,123 +55,96 @@ public class CompanyServiceImpl implements CompanyService {
     AuthService authService;
 
     @Override
-    public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
+    public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
-        Long count = companyDAO.count(query);
-        if (count == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
+        SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
 
-        return new CoreResponse<Long>().success(count);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<Long> countGroups(CompanyGroupQuery query) {
-        return new CoreResponse<Long>().success(companyGroupDAO.count(query));
-    }
-
-
-    @Override
-    public CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query) {
+    public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
         List<Company> list = getCompanyList(token, query);
 
 
         if (list == null)
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         List<EntityOption> result = list.stream()
                 .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
                 .map(Company::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
-    @Override
-    public CoreResponse<List<Company>> companyList( AuthToken token, CompanyQuery query ) {
-
-        List<Company> list = getCompanyList(token, query);
-
-        if (list == null)
-            return new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        return new CoreResponse<List<Company>>().success(list);
-    }
 
     @Override
-    public CoreResponse<CompanyGroup> createGroup(String name, String info) {
-
-        CompanyGroup group = new CompanyGroup();
-        group.setCreated(new Date());
-        group.setInfo(info);
-        group.setName(name);
-
-        if (companyGroupDAO.persist(group) != null) {
-            return new CoreResponse<CompanyGroup>().success(group);
-        }
-
-        return createUndefinedError();
-    }
-
-    @Override
-    public CoreResponse< Boolean > updateCompanySubscriptions( Long companyId, List< CompanySubscription > subscriptions ) {
+    public Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
         if ( companyId == null ) {
-            return new CoreResponse<Boolean>().error( En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        boolean result = updateCompanySubscription(companyId, subscriptions);
-        return new CoreResponse<Boolean>().success( result );
-    }
-
-    @Override
-    public CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
-        if ( companyId == null ) {
-            return new CoreResponse<List<CompanySubscription>>().error( En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         List<CompanySubscription> result = companySubscriptionDAO.listByCompanyId(companyId);
-        return new CoreResponse<List<CompanySubscription>>().success( result );
+        return ok(result );
     }
 
     @Override
-    public CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
+    public Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
         if ( companyId == null ) {
-            return new CoreResponse<List<CompanySubscription>>().error( En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Company company = companyDAO.get( companyId );
         if (company == null || company.getParentCompanyId() == null) return getCompanySubscriptions( companyId );
 
         List<CompanySubscription> result = companySubscriptionDAO.listByCompanyIds( new HashSet<>( Arrays.asList( companyId, company.getParentCompanyId() ) ) );
-        return new CoreResponse<List<CompanySubscription>>().success( result );
+        return ok(result );
     }
-
-    private <T> CoreResponse<T> createUndefinedError() {
-        return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
-    }
-
 
     @Override
-    public CoreResponse<List<EntityOption>> groupOptionList() {
+    public Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
+        if (companyId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Company company = companyDAO.get(companyId);
+
+        if (company == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        company.setArchived(isDeprecated);
+
+        if (companyDAO.updateState(company)) {
+            return ok();
+        } else {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
+    @Override
+    public Result<List<EntityOption>> groupOptionList() {
         List<CompanyGroup> list = companyGroupDAO.getListByQuery(new CompanyGroupQuery(null, En_SortField.group_name, En_SortDir.ASC));
 
         if (list == null)
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         List<EntityOption> result = list.stream().map(CompanyGroup::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query) {
-        return new CoreResponse<List<CompanyGroup>>().success(
+    public Result<List<CompanyGroup>> groupList( CompanyGroupQuery query) {
+        return Result.ok(
                 companyGroupDAO.getListByQuery(query)
         );
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial) {
+    public Result<List<EntityOption>> categoryOptionList( boolean hasOfficial) {
 
         List<CompanyCategory> list;
 
@@ -180,24 +155,24 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         if (list == null)
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<Company> getCompany( AuthToken token, Long id ) {
+    public Result<Company> getCompany( AuthToken token, Long id ) {
 
         if (id == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Company company = companyDAO.get(id);
 
         if (company == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
         jdbcManyRelationsHelper.fillAll( company );
 
@@ -208,62 +183,72 @@ public class CompanyServiceImpl implements CompanyService {
             }
         }
 
-        return new CoreResponse<Company>().success(company);
+        return ok(company);
     }
 
     @Override
-    public CoreResponse<Company> createCompany( AuthToken token, Company company ) {
+    public Result<Company> getCompanyUnsafe(AuthToken token, Long id) {
+        return getCompany(token, id);
+    }
+
+    @Override
+    public Result<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         company.setCreated(new Date());
         Long companyId = companyDAO.persist(company);
 
         if (companyId == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
         }
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
-        return new CoreResponse<Company>().success(company);
+        return ok(company);
     }
 
     @Override
-    public CoreResponse<Company> updateCompany( AuthToken token, Company company ) {
+    public Result<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Boolean result = companyDAO.merge(company);
 
         if ( !result )
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
-        return new CoreResponse<Company>().success(company);
+        return ok(company);
     }
 
     @Override
-    public CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId) {
+    public Result<Boolean> isCompanyNameExists( String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse<Boolean>().success(checkCompanyExists(name, excludeId));
+        return ok(checkCompanyExists(name, excludeId));
     }
 
     @Override
-    public CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId) {
+    public Result<Boolean> isGroupNameExists( String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
+        return ok(checkGroupExists(name, excludeId));
     }
 
-    private boolean updateCompanySubscription( Long companyId, List<CompanySubscription> companySubscriptions ) {
+    @Override
+    public Result<List<Long>> getAllHomeCompanyIds(AuthToken token) {
+        return ok(companyDAO.getAllHomeCompanyIds());
+    }
+
+    private boolean updateCompanySubscription(Long companyId, List<CompanySubscription> companySubscriptions ) {
         log.info( "binding update to linked company subscription for companyId = {}", companyId );
 
         List<Long> toRemoveNumberIds = companySubscriptionDAO.listIdsByCompanyId( companyId );
@@ -316,23 +301,9 @@ public class CompanyServiceImpl implements CompanyService {
                 && !checkCompanyExists(company.getCname(), company.getId());
     }
 
-    private boolean isValidContactInfo (Company company) {
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
-
-        return HelperFunc.isNotEmpty(infoFacade.getLegalAddress()) &&
-                HelperFunc.isNotEmpty(infoFacade.getFactAddress());
-    }
-
-    private boolean isValidGroup(CompanyGroup group) {
-        return group != null &&
-                group.getName() != null && !group.getName().trim().isEmpty() &&
-                !checkGroupExists(group.getName(), group.getId());
-    }
-
     private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
         applyFilterByScope( token, query );
-
-        return companyDAO.getListByQuery( query );
+        return companyDAO.listByQuery(query);
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {
@@ -367,18 +338,16 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        Set< UserRole > roles = token.getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
+            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds() ) );
         }
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
-        if(companyIds==null) return new ArrayList<Long>(allowedCompaniesIds);
+        if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
         ArrayList allowedCompanies = new ArrayList( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
-        return allowedCompanies;
+        return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }
-
 }

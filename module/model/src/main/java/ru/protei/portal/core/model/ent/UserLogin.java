@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by michael on 16.06.16.
  */
 @JdbcEntity(table = "user_login")
-public class UserLogin extends AuditableObject implements Removable {
+public class UserLogin extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -37,8 +37,31 @@ public class UserLogin extends AuditableObject implements Removable {
     @JdbcColumn(name = "personId")
     private Long personId;
 
-    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "p")
-    private Person person;
+    @JdbcJoinedColumn( mappedColumn = "displayname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String displayName;
+
+    @JdbcJoinedColumn( mappedColumn = "displayShortName", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String displayShortName;
+
+    @JdbcJoinedColumn( mappedColumn = "isfired", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private boolean isFired;
+
+    @JdbcJoinedColumn( mappedColumn = "company_id", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private Long companyId;
+
+    @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
+    })
+    private String companyName;
 
     @JdbcColumn(name = "authType")
     private int authTypeId;
@@ -115,6 +138,26 @@ public class UserLogin extends AuditableObject implements Removable {
         this.personId = personId;
     }
 
+    public String getDisplayName () { return displayName; }
+
+    public void setDisplayName ( String displayName ) { this.displayName = displayName; }
+
+    public String getDisplayShortName() { return displayShortName; }
+
+    public void setDisplayShortName(String displayShortName) { this.displayShortName = displayShortName; }
+
+    public boolean isFired () { return isFired; }
+
+    public void setFired ( boolean fired ) { isFired = fired; }
+
+    public Long getCompanyId () { return companyId; }
+
+    public void setCompanyId ( Long companyId ) { this.companyId = companyId; }
+
+    public String getCompanyName () { return companyName; }
+
+    public void setCompanyName ( String companyName ) { this.companyName = companyName; }
+
     public int getAuthTypeId() {
         return authTypeId;
     }
@@ -135,14 +178,6 @@ public class UserLogin extends AuditableObject implements Removable {
         return this.authTypeId == En_AuthType.LDAP.getId();
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson( Person person ) {
-        this.person = person;
-    }
-
     public Set< UserRole > getRoles() {
         return roles;
     }
@@ -151,28 +186,52 @@ public class UserLogin extends AuditableObject implements Removable {
         this.roles = roles;
     }
 
+    public void setPerson(Person person) {
+        if (person == null)
+            return;
+
+        personId = person.getId();
+        displayName = person.getDisplayName();
+
+        if (person.getCompanyId() == null || person.getCompany() == null)
+            return;
+
+        companyId = person.getCompanyId();
+        companyName = person.getCompany().getCname();
+    }
+
     @Override
     public String getAuditType() {
         return "UserLogin";
     }
 
     @Override
-    public boolean isAllowedRemove() {
-        return !isLDAP_Auth();
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof UserLogin && id.equals(((UserLogin) obj).getId());
+        }
+        return false;
     }
 
     @Override
-    public String toString() {
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString () {
         return "UserLogin{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
-                ", upass='" + upass + '\'' +
                 ", created=" + created +
                 ", lastPwdChange=" + lastPwdChange +
                 ", pwdExpired=" + pwdExpired +
                 ", adminStateId=" + adminStateId +
                 ", personId=" + personId +
-                ", person=" + person +
+                ", displayName='" + displayName + '\'' +
+                ", isFired=" + isFired +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
                 ", authTypeId=" + authTypeId +
                 ", info='" + info + '\'' +
                 ", roles=" + roles +

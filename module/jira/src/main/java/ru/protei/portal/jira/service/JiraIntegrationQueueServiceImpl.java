@@ -10,7 +10,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
-import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
@@ -27,7 +27,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     public void init() {
 
         if (!config.data().integrationConfig().isJiraEnabled()) {
-            log.debug("Jira integration is disabled, queue service not started");
+            log.info("Jira integration is disabled, queue service not started");
             return;
         }
 

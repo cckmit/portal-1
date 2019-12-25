@@ -8,28 +8,26 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface SiteFolderControllerAsync {
 
-    void getPlatformsCount(PlatformQuery query, AsyncCallback<Long> async);
+    void getPlatforms(PlatformQuery query, AsyncCallback<SearchResult<Platform>> async);
 
-    void getServersCount(ServerQuery query, AsyncCallback<Long> async);
+    void getServers(ServerQuery query, AsyncCallback<SearchResult<Server>> async);
 
-    void getApplicationsCount(ApplicationQuery query, AsyncCallback<Long> async);
+    void getApplications(ApplicationQuery query, AsyncCallback<SearchResult<Application>> async);
 
-    void getPlatforms(PlatformQuery query, AsyncCallback<List<Platform>> async);
+    void getServersWithAppsNames(ServerQuery query, AsyncCallback<SearchResult<Server>> async);
 
-    void getServers(ServerQuery query, AsyncCallback<List<Server>> async);
-
-    void getApplications(ApplicationQuery query, AsyncCallback<List<Application>> async);
-
-    void getServersWithAppsNames(ServerQuery query, AsyncCallback<List<Server>> async);
 
     void getServersOptionList(ServerQuery query, AsyncCallback<List<EntityOption>> async);
 
-    void getPlatformsOptionList(PlatformQuery query, AsyncCallback<List<EntityOption>> async);
+    void getPlatformsOptionList(PlatformQuery query, AsyncCallback<List<PlatformOption>> async);
+
 
     void getPlatform(long id, AsyncCallback<Platform> async);
 
@@ -42,6 +40,7 @@ public interface SiteFolderControllerAsync {
     void saveServer(Server server, Long serverIdOfAppsToBeCloned, AsyncCallback<Server> async);
 
     void saveApplication(Application application, AsyncCallback<Application> async);
+
 
     void removePlatform(long id, AsyncCallback<Boolean> async);
 

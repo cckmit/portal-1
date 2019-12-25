@@ -1,13 +1,11 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
-
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 
@@ -15,32 +13,39 @@ public class CaseObjectSqlBuilder {
 
     public SqlCondition caseCommonQuery (CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1 and deleted = 0");
+            condition.append("deleted = 0");
 
             // TODO merge ids to use queries simultaneously
             if ( query.getId() != null ) {
                 condition.append( " and case_object.id=?" );
                 args.add( query.getId() );
-            } else if (CollectionUtils.isNotEmpty(query.getMemberIds())) {
-                condition.append(" and case_object.id in (select case_id from case_member where member_id in (")
-                        .append(StringUtils.join(query.getMemberIds(), ","))
-                        .append("))");
+            } else if (query.getMemberId() != null) {
+                condition.append(" and (case_object.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
+                condition.append(" or case_object.creator = ").append(query.getMemberId()).append(")");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
-                boolean notSpecified = query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED);
-                if (!query.getCaseTagsIds().isEmpty()) {
-                    condition.append(" and case_object.id")
-                            .append(notSpecified ? " not in" : " in")
-                            .append(" (select case_id from case_object_tag where tag_id in (")
-                            .append(StringUtils.join(query.getCaseTagsIds(), ","))
-                            .append("))");
+                if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
+                    if (query.isCustomerSearch()) {
+                        condition.append(" and (case_object.id not in (select case_id from case_object_tag where case_object_tag.tag_id in")
+                                .append(" (select case_tag.id from case_tag where case_tag.company_id in " + HelperFunc.makeInArg(query.getCompanyIds(), false) + "))");
+                    } else {
+                        condition.append(" and (case_object.id not in (select case_id from case_object_tag)");
+                    }
+                    if (!query.getCaseTagsIds().isEmpty()) {
+                        condition.append(" or case_object.id in")
+                                .append(" (select case_id from case_object_tag where tag_id in " + HelperFunc.makeInArg(query.getCaseTagsIds(), false) + ")");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and case_object.id in")
+                            .append(" (select case_id from case_object_tag where tag_id in " + HelperFunc.makeInArg(query.getCaseTagsIds(), false) + ")");
                 }
             }
 
             if ( !query.isAllowViewPrivate() ) {
-                condition.append( " and private_flag=?" );
+                condition.append( " and case_object.private_flag=?" );
                 args.add( 0 );
             } else if (query.isViewPrivate() != null) {
-                condition.append( " and private_flag=?" );
+                condition.append( " and case_object.private_flag=?" );
                 args.add( query.isViewPrivate() ? 1 : 0 );
             }
 
@@ -50,50 +55,55 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getCaseNumbers() != null && !query.getCaseNumbers().isEmpty() ) {
-                condition.append(" and caseno in (")
-                        .append(query.getCaseNumbers().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(","))
-                        )
-                        .append(")");
+                condition.append(" and caseno in " + HelperFunc.makeInArg(query.getCaseNumbers(), false));
             }
 
             if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
-                condition.append(" and initiator_company in (" + query.getCompanyIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                condition.append(" and initiator_company in " + HelperFunc.makeInArg(query.getCompanyIds(), false));
             }
 
             if ( query.getInitiatorIds() != null && !query.getInitiatorIds().isEmpty() ) {
-                condition.append(" and initiator in (")
-                        .append(query.getInitiatorIds().stream().map(Object::toString).collect(Collectors.joining(",")))
-                        .append(")");
+                condition.append(" and initiator in " + HelperFunc.makeInArg(query.getInitiatorIds(), false));
             }
 
-            if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
-                if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
-                    condition.append(" and (product_id is null");
-                    if (!query.getProductIds().isEmpty()) {
-                        condition.append(" or product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+            if (CollectionUtils.isNotEmpty(query.getProductIds())) {
+                if (query.getType() != null && query.getType().equals(En_CaseType.PROJECT)) {
+                    if (!query.getProductIds().remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
+                        condition.append(" and case_object.id in")
+                                .append(" (select project_id from project_to_product where product_id in " + HelperFunc.makeInArg(query.getProductIds(), false) + ")");
                     }
-                    condition.append(")");
                 } else {
-                    condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                    if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
+                        condition.append(" and (product_id is null");
+                        if (!query.getProductIds().isEmpty()) {
+                            condition.append(" or product_id in " + HelperFunc.makeInArg(query.getProductIds(), false));
+                        }
+                        condition.append(")");
+                    } else {
+                        condition.append(" and product_id in " + HelperFunc.makeInArg(query.getProductIds(), false));
+                    }
                 }
+            }
+
+            if ( query.getLocationIds() != null && !query.getLocationIds().isEmpty() ) {
+                condition.append(" and case_object.id in (SELECT case_location.case_id FROM case_location " +
+                        "WHERE case_location.location_id in " + HelperFunc.makeInArg(query.getLocationIds(), false) + ")");
+            }
+            else if ( query.getDistrictIds() != null && !query.getDistrictIds().isEmpty() ) {
+                condition.append(" and case_object.id in (SELECT case_location.case_id FROM case_location " +
+                        "WHERE case_location.location_id in (SELECT location.id FROM location WHERE location.parent_id in " + HelperFunc.makeInArg(query.getDistrictIds(), false) + "))");
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                condition.append(" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
-
-                if ( query.isOrWithoutManager() ) {
-                    condition.append(" or manager is null" );
-                }
+                condition.append(" and manager in " + HelperFunc.makeInArg(query.getManagerIds(), false));
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
-                condition.append(" and state in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                condition.append(" and state in " + HelperFunc.makeInArg(query.getStateIds(), false));
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
-                condition.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                condition.append(" and importance in " + HelperFunc.makeInArg(query.getImportanceIds(), false));
             }
 
             if ( query.getCreatedFrom() != null ) {
@@ -153,6 +163,29 @@ public class CaseObjectSqlBuilder {
                 }
 
                 condition.append(")");
+            }
+
+            if (query.getLocal() != null) {
+                condition.append( " and case_object.islocal = ?" );
+                args.add(query.getLocal());
+            }
+
+            if (query.getContractIndependentProject() != null && query.getContractIndependentProject()) {
+                condition.append(" and case_object.id NOT IN (SELECT contract.project_id FROM contract WHERE contract.project_id IS NOT NULL)");
+            }
+
+            if (query.getPlatformIndependentProject() != null && query.getPlatformIndependentProject()) {
+                condition.append(" and case_object.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
+            }
+
+            if (query.getProductDirectionId() != null) {
+                condition
+                        .append(" and product_id = ")
+                        .append(query.getProductDirectionId());
+            }
+
+            if (query.isWithoutManager() != null && query.isWithoutManager()) {
+                condition.append(" and manager IS NULL");
             }
         });
     }

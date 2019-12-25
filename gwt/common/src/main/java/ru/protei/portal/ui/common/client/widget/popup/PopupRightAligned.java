@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
-public abstract class PopupRightAligned extends PopupPanel {
+public abstract class PopupRightAligned extends PopupPanel implements Popup {
 
     protected void afterShowed() { /* default impl */ }
 
@@ -52,6 +52,7 @@ public abstract class PopupRightAligned extends PopupPanel {
         }
     }
 
+    @Override
     public void showNear(IsWidget nearWidget) {
         this.relative = nearWidget;
 

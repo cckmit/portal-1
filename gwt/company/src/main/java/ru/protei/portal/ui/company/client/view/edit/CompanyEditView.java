@@ -13,16 +13,16 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 
 import java.util.List;
 
@@ -36,6 +36,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         parentCompany.setDefaultValue(lang.selectIssueCompany());
         parentCompany.showOnlyParentCompanies(true);
+        parentCompany.showDeprecated(false);
     }
 
     @Override
@@ -64,17 +65,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValidable actualAddressValidator() {
-        return actualAddress;
-    }
-
-    @Override
     public HasValue<String> legalAddress() {
-        return legalAddress;
-    }
-
-    @Override
-    public HasValidable legalAddressValidator() {
         return legalAddress;
     }
 
@@ -120,7 +111,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Override
     public HasWidgets tableContainer() {
-        return tableContainer;
+        return contactsContainer;
     }
 
     @Override
@@ -172,17 +163,17 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     Element verifiableIcon;
 
     @UiField
-    ValidableTextArea actualAddress;
+    AutoResizeTextArea actualAddress;
 
     @UiField
-    ValidableTextArea legalAddress;
+    AutoResizeTextArea legalAddress;
 
     @UiField
     TextArea comment;
 
     @UiField
     TextBox webSite;
-    
+
     @Inject
     @UiField( provided = true )
     CompanySelector parentCompany;
@@ -198,7 +189,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CategoryButtonSelector companyCategory;
 
     @UiField
-    HTMLPanel tableContainer;
+    HTMLPanel contactsContainer;
 
     @UiField
     HTMLPanel siteFolderContainer;
@@ -210,7 +201,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField( provided = true )
     SubscriptionList subscriptions;
-
 
     Timer timer = new Timer() {
         @Override

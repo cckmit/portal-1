@@ -11,17 +11,23 @@ import org.springframework.web.bind.annotation.*;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.query.WorkerEntryQuery;
-import ru.protei.portal.core.model.struct.*;
-import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
-import ru.protei.portal.tools.migrate.HelperService;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.utils.SessionIdGen;
+import ru.protei.portal.tools.migrate.HelperService;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.Inet4Address;
 import java.text.ParseException;
@@ -31,11 +37,21 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
+
 @RestController
 @RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private SessionIdGen sidGen;
 
     @Autowired
     private PersonDAO personDAO;
@@ -76,85 +92,103 @@ public class WorkerController {
     /**
      * Получить данные о физическом лице
      * @param id идентификатор физического лица на портале
-     * @return WorkerRecord
+     * @return Result<WorkerRecord>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
-    WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
+    Result<WorkerRecord> getPerson(@RequestParam(name = "id") Long id,
+                           HttpServletRequest request,
+                           HttpServletResponse response) {
 
         logger.debug("getPerson(): id={}", id);
 
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
         try {
-            return new WorkerRecord(personDAO.get(id));
+            return ok(new WorkerRecord(personDAO.get(id)));
         } catch (Throwable e) {
             logger.error("error while get worker", e);
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-        return null;
     }
 
     /**
      * Получить данные о сотруднике
      * @param id идентификатор сотрудника в 1С
      * @param companyCode код компании
-     * @return WorkerRecord
+     * @return Result<WorkerRecord>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
+    Result<WorkerRecord> getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
+                           HttpServletRequest request,
+                           HttpServletResponse response) {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
             return withHomeCompany(companyCode,
                     item -> {
                         WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
                         EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
-                        return new WorkerRecord(entry, registration);
+                        return  ok(new WorkerRecord(entry, registration));
                     });
 
-        } catch (Throwable e) {
-            logger.error("error while get worker", e.getMessage());
+        } catch (NullPointerException e){
+            logger.error("error while get worker", En_ErrorCode.UNKNOWN_WOR.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS,  En_ErrorCode.UNKNOWN_WOR.getMessage());
         }
-        return null;
+        catch (Throwable e) {
+            logger.error("error while get worker", e.toString());
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.toString());
+        }
     }
 
     /**
      * Получить данные об отделе
      * @param id идентификатор отдела в 1С
      * @param companyCode код компании
-     * @return DepartmentRecord
+     * @return Result<DepartmentRecord>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
+    Result<DepartmentRecord> getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
         logger.debug("getDepartment(): id={}, companyCode={}", id, companyCode);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
 
             return withHomeCompany(companyCode,
-                    item -> new DepartmentRecord(companyDepartmentDAO.getByExternalId(id, item.getCompanyId())));
+                    item -> ok(new DepartmentRecord(companyDepartmentDAO.getByExternalId(id, item.getCompanyId()))));
 
         } catch (Exception e) {
             logger.error("error while get department", e);
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-
-        return null;
     }
 
     /**
      * Получить список физических лиц
      * @param expr строка для поиска с использованием шаблонных символов
-     * @return WorkerRecordList
+     * @return Result<WorkerRecordList>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
-    WorkerRecordList getPersons(@RequestParam(name = "expr") String expr) {
+    Result<WorkerRecordList> getPersons(@RequestParam(name = "expr") String expr,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
 
         logger.debug("getPersons(): expr={}", expr);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         WorkerRecordList persons = new WorkerRecordList();
 
         try {
 
-            EmployeeQuery query = new EmployeeQuery(null, null,
-                    Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
+            EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
 
             personDAO.getEmployees(query).forEach(
                     p -> persons.append(new WorkerRecord(p))
@@ -162,29 +196,34 @@ public class WorkerController {
 
         } catch (Exception e) {
             logger.error("error while get persons", e);
+            return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
-        return persons;
+        return ok(persons);
     }
 
     /**
      * Добавить сотрудника
      * @param rec данные о сотруднике
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
-    ServiceResult addWorker(@RequestBody WorkerRecord rec) {
+    Result<Long> addWorker(@RequestBody WorkerRecord rec,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
 
         logger.debug("addWorker(): rec={}", rec);
 
-        ServiceResult isValid = isValidWorkerRecord(rec);
-        if (!isValid.isSuccess()) {
-            logger.debug("error result: {}", isValid.getErrInfo());
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValid = isValidWorkerRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: {}", isValid.getMessage());
             return isValid;
         }
 
         if (rec.isDeleted() || rec.isFired()) {
             logger.debug("error result: {}", En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
-            return ServiceResult.failResult(En_ErrorCode.DELETED_OR_FIRED_RECORD.getCode(), En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.DELETED_OR_FIRED_RECORD.getMessage());
         }
 
         try {
@@ -265,7 +304,7 @@ public class WorkerController {
 
 
                     logger.debug("success result, workerRowId={}", worker.getId());
-                    return ServiceResult.successResult(person.getId());
+                    return ok(person.getId());
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -274,145 +313,52 @@ public class WorkerController {
 
         } catch (Exception e) {
             logger.error("error while add worker's record", e);
+            //return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_CREATE.getCode(), En_ErrorCode.NOT_CREATE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_CREATE.getMessage());
     }
 
     /**
      * Обновить сотрудника
      * @param rec данные о сотруднике
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
-    ServiceResult updateWorker(@RequestBody WorkerRecord rec) {
+    Result<Long> updateWorker(@RequestBody WorkerRecord rec,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
 
         logger.debug("updateWorker(): rec={}", rec);
 
-        ServiceResult isValid = isValidWorkerRecord(rec);
-        if (!isValid.isSuccess()) {
-            logger.debug("error result: {}", isValid.getErrInfo());
-            return isValid;
-        }
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        try {
-
-            OperationData operationData = new OperationData(rec)
-                    .requireHomeItem()
-                    .requireDepartment(null)
-                    .requirePerson(null)
-                    .requireWorker(null)
-                    .requireAccount(null)
-                    .requireRegistration(null);
-
-            if (!operationData.isValid())
-                return operationData.failResult();
-
-            return transactionTemplate.execute(transactionStatus -> {
-
-                try {
-
-                    Person person = operationData.person();
-                    WorkerEntry worker = operationData.worker();
-                    UserLogin userLogin = operationData.account();
-                    EmployeeRegistration employeeRegistration = operationData.registration();
-
-                    convert(rec, person);
-
-                    if (rec.isFired() || rec.isDeleted()) {
-
-                        workerEntryDAO.remove(worker);
-
-                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            person.setFired(rec.isFired());
-                            person.setDeleted(rec.isDeleted());
-                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
-
-                            if(userLogin != null) {
-                                if (person.isDeleted()) {
-                                    removeAccount(userLogin);
-                                } else {
-                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                    saveAccount(userLogin);
-                                }
-                            }
-                        }
-
-                        mergePerson(person);
-
-                        if (WSConfig.getInstance().isEnableMigration()) {
-                            Workers workers = new Workers(person.getId());
-                            String departmentName = workers.requireWorkers().getAnyDepartment("");
-                            String positionName = workers.requireWorkers().getAnyPosition("");
-                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
-                        }
-
-                        logger.debug("success result, workerRowId={}", worker.getId());
-                        return ServiceResult.successResult(person.getId());
-                    }
-
-                    mergePerson(person);
-
-                    if (userLogin == null) userLogin = createLDAPAccount(person);
-                    if (userLogin != null) {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin);
-                    }
-
-                    if (employeeRegistration != null) {
-                        checkRegistrationByPerson(person.getId());
-                        employeeRegistration.setPerson(person);
-                        mergeEmployeeRegistration(employeeRegistration);
-                    }
-
-                    WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
-
-                    worker.setDepartmentId(operationData.department().getId());
-                    worker.setPositionId(position.getId());
-                    worker.setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
-                    worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
-                    worker.setActiveFlag(rec.getActive());
-
-                    mergeWorker(worker);
-
-                    if (WSConfig.getInstance().isEnableMigration()) {
-                        Workers workers = new Workers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
-                        migrationManager.saveExternalEmployee(person, departmentName, positionName);
-                    }
-
-                    logger.debug("success result, workerRowId={}", worker.getId());
-                    return ServiceResult.successResult(person.getId());
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-        } catch (Exception e) {
-            logger.error("error while update worker's record", e);
-        }
-
-        return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getCode(), null);
+        return update(rec);
     }
 
     /**
      * Обновить сотрудников
      * @param list список сотрудников
-     * @return ServiceResultList
+     * @return ResultList
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
-    ServiceResultList updateWorkers(@RequestBody WorkerRecordList list) {
+    ResultList updateWorkers(@RequestBody WorkerRecordList list,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
 
         logger.debug("updateWorkers(): list={}", list);
 
-        ServiceResultList results = new ServiceResultList();
+        ResultList results = new ResultList();
+
+        if (!checkAuth(request, response))  {
+            results.append(error(En_ResultStatus.INVALID_LOGIN_OR_PWD));
+            return results;
+        };
 
         try {
 
             list.getWorkerRecords().forEach(
-                    p -> results.append(updateWorker(p))
+                    p -> results.append(update(p))
             );
 
         } catch (Exception e) {
@@ -422,15 +368,67 @@ public class WorkerController {
     }
 
     /**
+     * Обновить даты увольнения
+     * @param list список сотрудников
+     * @return ResultList
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.dates")
+    ResultList updateFireDates(@RequestBody WorkerRecordList list,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+
+        logger.debug("updateFireDates(): list={}", list);
+
+        ResultList results = new ResultList();
+
+        if (!checkAuth(request, response))  {
+            results.append(error(En_ResultStatus.INVALID_LOGIN_OR_PWD));
+            return results;
+        };
+
+        try {
+
+            list.getWorkerRecords().forEach(
+                    p -> results.append(updateDate(p))
+            );
+
+        } catch (Exception e) {
+            logger.error("error while update fire dates", e);
+        }
+        return results;
+    }
+
+    /**
+     * Обновить дату увольнения
+     * @param rec данные о сотруднике
+     * @return Result<Long>
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.date")
+    Result<Long> updateFireDate(@RequestBody WorkerRecord rec,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
+
+        logger.debug("updateFireDate(): rec={}", rec);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        return updateDate(rec);
+    }
+
+    /**
      * Удалить сотрудника
      * @param externalId идентификатор сотрудника в 1С
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
-    ServiceResult deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
+    Result<Long> deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
 
         logger.debug("deleteWorker(): externalId={}, companyCode={}", externalId, companyCode);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
 
@@ -466,7 +464,7 @@ public class WorkerController {
                         }
                     }
                     logger.debug("success result, workerRowId={}", worker.getId());
-                    return ServiceResult.successResult(worker.getId());
+                    return ok(worker.getId());
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -477,22 +475,26 @@ public class WorkerController {
             logger.error("error while remove worker's record", e);
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
     /**
      * Обновить фотографию сотрудника
      * @param photo фоторгафия
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    ServiceResult updatePhoto(@RequestBody Photo photo) {
+    Result<Long> updatePhoto(@RequestBody Photo photo,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
 
         logger.debug("updatePhoto(): photo={}", photo);
 
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
         if (HelperFunc.isEmpty(photo.getContent())) {
             logger.debug("error result: {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_PHOTO_CONTENT.getCode(), En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage(), photo.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
         }
 
         try {
@@ -511,25 +513,29 @@ public class WorkerController {
                 makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
 
                 logger.debug("success result, personId={}", photo.getId());
-                return ServiceResult.successResult(photo.getId());
+                return ok(photo.getId());
             }
 
         } catch (Exception e) {
             logger.error("error while update photo", e);
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 
     /**
      * Получить фотографии сотрудников
      * @param list список идентификаторов физических лиц
-     * @return PhotoList
+     * @return Result<PhotoList>
      */
     @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
-    PhotoList getPhotos(@RequestBody IdList list) {
+    Result<PhotoList> getPhotos(@RequestBody IdList list,
+                        HttpServletRequest request,
+                        HttpServletResponse response) {
 
         logger.debug("getPhotos(): list={}", list);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         Base64InputStream in = null;
         PhotoList photos = new PhotoList();
@@ -565,22 +571,26 @@ public class WorkerController {
         }
 
         logger.debug("result, size of photo's list {}", photos.getPhotos().size());
-        return photos;
+        return ok(photos);
     }
 
     /**
      * Создать/обновить отдел
      * @param rec данные об отделе
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
-    ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
+    Result<Long> updateDepartment(@RequestBody DepartmentRecord rec,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
         logger.debug("updateDepartment(): rec={}", rec);
 
-        ServiceResult isValid = isValidDepartmentRecord(rec);
-        if (!isValid.isSuccess()) {
-            logger.debug("error result: " + isValid.getErrInfo());
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValid = isValidDepartmentRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: " + isValid.getMessage());
             return isValid;
         }
 
@@ -611,25 +621,29 @@ public class WorkerController {
             }
 
             logger.debug("success result, departmentRowId={}", department.getId());
-            return ServiceResult.successResult(department.getId());
+            return ok(department.getId());
 
         } catch (Exception e) {
             logger.error("error while update department's record", e);
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 
     /**
      * Удалить отдел
      * @param externalId идентификатор отдела в 1С
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
-    ServiceResult deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
+    Result<Long> deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
         logger.debug("deleteDepartment(): externalId={}, companyCode={}", externalId, companyCode);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
 
@@ -646,13 +660,13 @@ public class WorkerController {
             removeDepartment(department);
 
             logger.debug("success result, departmentRowId={}", department.getId());
-            return ServiceResult.successResult(department.getId());
+            return ok(department.getId());
 
         } catch (Exception e) {
             logger.error("error while remove department's record", e);
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
     /**
@@ -660,16 +674,21 @@ public class WorkerController {
      * @param oldName наименование должности
      * @param newName новое наименование должности
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
-    ServiceResult updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName") String newName, @RequestParam(name = "companyCode") String companyCode) {
+    Result<Long> updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName")
+            String newName, @RequestParam(name = "companyCode") String companyCode,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
 
         logger.debug("updatePosition(): oldName={}, newName={}, companyCode={}", oldName, newName, companyCode);
 
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
         if (HelperFunc.isEmpty(oldName) || HelperFunc.isEmpty(newName)) {
             logger.debug("error result: " + En_ErrorCode.EMPTY_POS.getMessage());
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), null);
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_POS.getMessage());
         }
 
         try {
@@ -688,25 +707,29 @@ public class WorkerController {
             mergePosition(position);
 
             logger.debug("success result, positionRowId={}", position.getId());
-            return ServiceResult.successResult(position.getId());
+            return ok(position.getId());
 
         } catch (Exception e) {
             logger.error("error while update position's record", e);
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 
     /**
      * Удалить должность
      * @param name наименование должности
      * @param companyCode код компании
-     * @return ServiceResult
+     * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
-    ServiceResult deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode) {
+    Result<Long> deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
 
         logger.debug("deletePosition(): name={}, companyCode={}", name, companyCode);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
 
@@ -722,13 +745,13 @@ public class WorkerController {
             removePosition(position);
 
             logger.debug("success result, positionRowId={}", position.getId());
-            return ServiceResult.successResult(position.getId());
+            return ok(position.getId());
 
         } catch (Exception e) {
             logger.error("error while remove position's record", e);
         }
 
-        return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
     private <R> R withHomeCompany(String companyCode, Function<CompanyHomeGroupItem, R> func) throws Exception {
@@ -736,63 +759,63 @@ public class WorkerController {
         return item == null ? null : func.apply(item);
     }
 
-    private ServiceResult isValidWorkerRecord(WorkerRecord rec) {
+    private Result<Long> isValidWorkerRecord(WorkerRecord rec) {
 
         if (HelperFunc.isEmpty(rec.getCompanyCode())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_COMP_CODE.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getDepartmentId())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_ID.getCode(), En_ErrorCode.EMPTY_DEP_ID.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_DEP_ID.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getPositionName())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_POS.getCode(), En_ErrorCode.EMPTY_POS.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_POS.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getWorkerId())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_WOR_ID.getCode(), En_ErrorCode.EMPTY_WOR_ID.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_WOR_ID.getMessage());
         }
 
         if (!rec.getWorkerId().trim().matches("^\\S{1,30}$")) {
-            return ServiceResult.failResult(En_ErrorCode.INV_FORMAT_WOR_CODE.getCode(), En_ErrorCode.INV_FORMAT_WOR_CODE.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.INV_FORMAT_WOR_CODE.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getFirstName())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_FIRST_NAME.getCode(), En_ErrorCode.EMPTY_FIRST_NAME.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_FIRST_NAME.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getLastName())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_LAST_NAME.getCode(), En_ErrorCode.EMPTY_LAST_NAME.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_LAST_NAME.getMessage());
         }
 
         if (HelperFunc.isNotEmpty(rec.getIpAddress()) &&
                 !rec.getIpAddress().trim().matches("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$")) {
-            return ServiceResult.failResult(En_ErrorCode.INV_FORMAT_IP.getCode(), En_ErrorCode.INV_FORMAT_IP.getMessage(), rec.getId());
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.INV_FORMAT_IP.getMessage());
         }
 
-        return ServiceResult.successResult(rec.getId());
+        return ok(rec.getId());
     }
 
-    private ServiceResult isValidDepartmentRecord(DepartmentRecord rec) {
+    private Result<Long> isValidDepartmentRecord(DepartmentRecord rec) {
 
         if (HelperFunc.isEmpty(rec.getCompanyCode())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_COMP_CODE.getCode(), En_ErrorCode.EMPTY_COMP_CODE.getMessage(), null);
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_COMP_CODE.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getDepartmentId())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_ID.getCode(), En_ErrorCode.EMPTY_DEP_ID.getMessage(), null);
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_DEP_ID.getMessage());
         }
 
         if (!rec.getDepartmentId().trim().matches("^\\S{1,30}$")) {
-            return ServiceResult.failResult(En_ErrorCode.INV_FORMAT_DEP_CODE.getCode(), En_ErrorCode.INV_FORMAT_DEP_CODE.getMessage(), null);
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.INV_FORMAT_DEP_CODE.getMessage());
         }
 
         if (HelperFunc.isEmpty(rec.getDepartmentName())) {
-            return ServiceResult.failResult(En_ErrorCode.EMPTY_DEP_NAME.getCode(), En_ErrorCode.EMPTY_DEP_NAME.getMessage(), null);
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_DEP_NAME.getMessage());
         }
 
-        return ServiceResult.successResult(null);
+        return ok(null);
     }
 
     private void convert(WorkerRecord rec, Person person) throws ParseException {
@@ -811,9 +834,9 @@ public class WorkerController {
         person.setInfo(HelperFunc.isEmpty(rec.getInfo()) ? null : rec.getInfo().trim());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
-        contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : rec.getPhoneWork().trim());
-        contactInfoFacade.setMobilePhone(HelperFunc.isEmpty(rec.getPhoneMobile()) ? null : rec.getPhoneMobile().trim());
-        contactInfoFacade.setHomePhone(HelperFunc.isEmpty(rec.getPhoneHome()) ? null : rec.getPhoneHome().trim());
+        contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : normalizePhoneNumber(rec.getPhoneWork().trim()));
+        contactInfoFacade.setMobilePhone(HelperFunc.isEmpty(rec.getPhoneMobile()) ? null : normalizePhoneNumber(rec.getPhoneMobile().trim()));
+        contactInfoFacade.setHomePhone(HelperFunc.isEmpty(rec.getPhoneHome()) ? null : normalizePhoneNumber(rec.getPhoneHome().trim()));
         contactInfoFacade.setLegalAddress(HelperFunc.isEmpty(rec.getAddress()) ? null : rec.getAddress().trim());
         contactInfoFacade.setHomeAddress(HelperFunc.isEmpty(rec.getAddressHome()) ? null : rec.getAddressHome().trim());
         contactInfoFacade.setEmail(HelperFunc.isEmpty(rec.getEmail()) ? null : rec.getEmail().trim());
@@ -840,7 +863,7 @@ public class WorkerController {
     private UserLogin createLDAPAccount(Person person) throws Exception {
 
         ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
-        if (!email.isEmpty()) {
+        if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
             String login = email.value().substring(0, email.value().indexOf("@"));
             if (!userLoginDAO.isUnique(login.trim())) {
                 logger.debug("error: Login already exist.");
@@ -1146,10 +1169,10 @@ public class WorkerController {
             return lastError == null;
         }
 
-        public ServiceResult failResult() {
+        public Result failResult() {
             if (lastError != null) {
                 logger.debug("error result: {}", lastError.getMessage());
-                return ServiceResult.failResult(lastError.getCode(), lastError.getMessage(), record.getPersonId());
+                return error(En_ResultStatus.INCORRECT_PARAMS, lastError.getMessage());
             }
 
             return null;
@@ -1311,5 +1334,227 @@ public class WorkerController {
         private WorkerEntry getFirstEntry() {
             return workers == null ? null : workers.stream().findFirst().orElse(null);
         }
+    }
+
+    private boolean checkAuth (HttpServletRequest request, HttpServletResponse response){
+        Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
+        if (authTokenAPIResult.isError()){
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        AuthToken token = authTokenAPIResult.getData();
+
+        Result<UserLogin> userLoginResult = authService.getUserLogin(token, token.getUserLoginId());
+        if (userLoginResult.isError()) {
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        if (!userLoginResult.getData().getUlogin().equals("ws_api")) {
+            try {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private Result<Long> update(WorkerRecord rec){
+        Result<Long> isValid = isValidWorkerRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: {}", isValid.getMessage());
+            return isValid;
+        }
+
+        try {
+
+            OperationData operationData = new OperationData(rec)
+                    .requireHomeItem()
+                    .requireDepartment(null)
+                    .requirePerson(null)
+                    .requireWorker(null)
+                    .requireAccount(null)
+                    .requireRegistration(null);
+
+            if (!operationData.isValid())
+                return operationData.failResult();
+
+            return transactionTemplate.execute(transactionStatus -> {
+
+                try {
+
+                    Person person = operationData.person();
+                    WorkerEntry worker = operationData.worker();
+                    UserLogin userLogin = operationData.account();
+                    EmployeeRegistration employeeRegistration = operationData.registration();
+
+                    convert(rec, person);
+
+                    if (rec.isFired() || rec.isDeleted()) {
+
+                        workerEntryDAO.remove(worker);
+
+                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                            person.setFired(rec.isFired(), HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null);
+                            person.setDeleted(rec.isDeleted());
+                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+
+                            if(userLogin != null) {
+                                if (person.isDeleted()) {
+                                    removeAccount(userLogin);
+                                } else {
+                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                    saveAccount(userLogin);
+                                }
+                            }
+                        }
+
+                        mergePerson(person);
+
+                        if (WSConfig.getInstance().isEnableMigration()) {
+                            Workers workers = new Workers(person.getId());
+                            String departmentName = workers.requireWorkers().getAnyDepartment("");
+                            String positionName = workers.requireWorkers().getAnyPosition("");
+                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
+                        }
+
+                        logger.debug("success result, workerRowId={}", worker.getId());
+                        return ok(person.getId());
+                    }
+
+                    mergePerson(person);
+
+                    if (userLogin == null) userLogin = createLDAPAccount(person);
+                    if (userLogin != null) {
+                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                        saveAccount(userLogin);
+                    }
+
+                    if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
+                        employeeRegistration.setPerson(person);
+                        mergeEmployeeRegistration(employeeRegistration);
+                    }
+
+                    WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
+
+                    worker.setDepartmentId(operationData.department().getId());
+                    worker.setPositionId(position.getId());
+                    worker.setHireDate(HelperFunc.isNotEmpty(rec.getHireDate()) ? HelperService.DATE.parse(rec.getHireDate()) : null);
+                    worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
+                    worker.setActiveFlag(rec.getActive());
+
+                    mergeWorker(worker);
+
+                    if (WSConfig.getInstance().isEnableMigration()) {
+                        Workers workers = new Workers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
+                        migrationManager.saveExternalEmployee(person, departmentName, positionName);
+                    }
+
+                    logger.debug("success result, workerRowId={}", worker.getId());
+                    return ok(person.getId());
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        } catch (Exception e) {
+            logger.error("error while update worker's record", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
+    private Result<Long> updateDate(WorkerRecord rec){
+        Result<Long> isValid = isValidWorkerRecord(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: {}", isValid.getMessage());
+            return isValid;
+        }
+
+        try {
+
+            OperationData operationData = new OperationData(rec)
+                    .requirePerson(null);
+
+            if (!operationData.isValid()){
+                try {
+                    return transactionTemplate.execute(transactionStatus -> {
+                        try{
+                            Date newDate = HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null;
+                            Date birthday =  HelperFunc.isNotEmpty(rec.getBirthday()) ? HelperService.DATE.parse(rec.getBirthday()) : null;
+
+                            if (newDate == null) return ok();
+                            if (birthday == null) return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_BIRTHDAY.getMessage());
+
+                            List<Person> personList = personDAO.getListByCondition(
+                                    "person.isdeleted=false and person.isfired=true and person.lastname=? and person.firstname=? and person.birthday=?",
+                                    rec.getLastName(), rec.getFirstName(), rec.getBirthday());
+
+                            if (personList.isEmpty()) return ok();
+
+                            for (Person person : personList) {
+                                if (person.getFireDate() == null || person.getFireDate().before(newDate)) {
+                                    person.setFired(newDate);
+                                    mergePerson(person);
+                                    logger.debug("success result, personId={}", person.getId());
+                                    return ok(person.getId());
+                                }
+                            }
+                            return ok();
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+                } catch (Exception e){
+                    logger.error("error while update worker's record", e);
+                }
+            }
+            else {
+
+
+                return transactionTemplate.execute(transactionStatus -> {
+
+                    try {
+
+                        Person person = operationData.person();
+
+                        if (person.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
+                            Date currentDate = person.getFireDate();
+                            Date newDate = HelperService.DATE.parse(rec.getFireDate());
+
+                            if (currentDate == null || currentDate.before(newDate)) {
+                                person.setFired(newDate);
+                                mergePerson(person);
+                            }
+                        }
+
+                        logger.debug("success result, personId={}", person.getId());
+                        return ok(person.getId());
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+
+        } catch (Exception e) {
+            logger.error("error while update worker's record", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 }

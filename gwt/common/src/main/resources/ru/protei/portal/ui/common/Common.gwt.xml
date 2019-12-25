@@ -14,6 +14,7 @@
     <inherits name="ru.brainworm.factory.widget.dataset.Dataset"/>
 
     <inherits name="ru.protei.winter.web.common.Common"/>
+    <inherits name="com.googlecode.gwt.crypto.Crypto"/>
 
     <extend-property name="locale" values="ru" />
     <extend-property name="locale" values="en" />

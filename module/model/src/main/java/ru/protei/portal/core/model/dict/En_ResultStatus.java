@@ -118,5 +118,32 @@ public enum En_ResultStatus {
     /**
      * запрещено создавать приватные сообщения
      */
-    PROHIBITED_PRIVATE_COMMENT
+    PROHIBITED_PRIVATE_COMMENT,
+
+    /**
+     * запрещено менять статус обращения с verified на не verified
+     */
+    INVALID_CASE_UPDATE_CASE_IS_CLOSED,
+
+    /**
+     * неверный текущий пароль при изменении пароля
+     */
+    INVALID_CURRENT_PASSWORD,
+
+    AUTH_FAILURE,
+
+    /**
+     * Редактирование названия или описания чужих обращений запрещено
+     */
+    NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION,
+
+    /**
+     * Изменение компании у площадки запрещено
+     */
+    NOT_ALLOWED_CHANGE_PLATFORM_COMPANY,
+
+    /**
+     * Изменение компании у проекта запрещено
+     */
+    NOT_ALLOWED_CHANGE_PROJECT_COMPANY
 }

@@ -14,18 +14,19 @@ import java.util.List;
 public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> implements SelectorWithModel<PersonShortView> {
 
     @Inject
-    public void init( EmployeeModel employeeModel ) {
-        setSelectorModel( employeeModel );
-        setSearchEnabled( true );
-        setSearchAutoFocus( true );
+    public void init(EmployeeModel employeeModel) {
+        setSelectorModel(employeeModel);
+        setSearchEnabled(true);
+        setSearchAutoFocus(true);
+        setFilter(personView -> !personView.isFired());
 
-        setDisplayOptionCreator( value -> {
-            if ( value == null ) {
-                return new DisplayOption( defaultValue );
+        setDisplayOptionCreator(value -> {
+            if (value == null) {
+                return new DisplayOption(defaultValue);
             }
 
             return new DisplayOption(
-                    value.getDisplayShortName(),
+                    value.getName(),
                     value.isFired() ? "not-active" : "",
                     value.isFired() ? "fa fa-ban ban" : "");
         } );
@@ -39,10 +40,10 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
             addOption(null);
         }
 
-        persons.forEach( this :: addOption );
+        persons.forEach(this :: addOption);
     }
 
-    public void setDefaultValue( String value ) {
+    public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
 

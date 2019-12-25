@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewActivity;
@@ -17,7 +18,8 @@ import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePrev
  */
 public class EmployeePreviewView extends Composite implements AbstractEmployeePreviewView {
 
-    public EmployeePreviewView() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -32,8 +34,13 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public void setIP( String value ) {
-        this.ip.setInnerText( value );
+    public void setName( String name ) {
+        this.employeeName.setInnerText(name);
+    }
+
+    @Override
+    public void setIP( String ip ) {
+        this.ip.setInnerText( ip );
     }
 
     @Override
@@ -42,13 +49,22 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @UiField
+    HTMLPanel rootWrapper;
+
+    @UiField
     SpanElement id;
 
     @UiField
-    SpanElement ip;
+    HTMLPanel positionsContainer;
 
     @UiField
-    HTMLPanel positionsContainer;
+    HTMLPanel employeeNameBlock;
+
+    @UiField
+    SpanElement employeeName;
+
+    @UiField
+    SpanElement ip;
 
     @Inject
     @UiField

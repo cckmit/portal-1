@@ -1,19 +1,16 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.FieldSetElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
+
 
 /**
  * Представление превью компании
@@ -23,20 +20,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
+        ensureDebugIds();
     }
 
     @Override
@@ -66,7 +50,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
 
     @Override
     public void setEmail( String value ) {
-        this.email.setInnerText( value );
+        this.email.setInnerHTML( value );
     }
 
     @Override
@@ -80,41 +64,28 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
-    public void setCategory ( String value ) { this.category.setInnerText( value ); }
-
-    @Override
-    public void setParentCompany( String value ) {
-        this.parentCompany.setInnerText( value );
+    public void setCategory ( String value ) {
+        this.categoryImage.setSrc( value );
     }
 
     @Override
-    public void setChildrenCompanies( String value ) {
-        this.childrenCompanies.setInnerText( value );
+    public void setCompanyLinksMessage(String value ) {
+        this.companyLinksMessage.setText( value );
     }
 
     @Override
     public void setInfo( String value ) {
-        this.info.setInnerText( value );
-    }
-
-    @Override
-    public void setGroupVisible( boolean value ) {
-//        groupContainer.setVisible( value );
+        this.info.setText( value );
     }
 
     @Override
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
-            rootWrapper.addStyleName("preview-wrapper");
-            contacts.setClassName("header");
-            comments.setClassName("header");
+            rootWrapper.addStyleName("preview-card");
         }else {
-            rootWrapper.removeStyleName("preview-wrapper");
-            contacts.setClassName("contacts");
-            comments.setClassName("comments");
+            rootWrapper.removeStyleName("preview-card");
         }
 
-        companyNameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -129,8 +100,27 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public HasVisibility getContactsContainerVisibility() {
+        return contactsContainer;
+    }
+
+    @Override
+    public HasVisibility getSiteFolderContainerVisibility() {
+        return siteFolderContainer;
+    }
+
+    @Override
     public void setSubscriptionEmails(String value) {
-        subscription.setInnerText(value);
+        subscription.setText(value);
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
+        subscription.ensureDebugId(DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
+        contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
     }
 
     @UiField
@@ -140,38 +130,29 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     SpanElement email;
     @UiField
-    SpanElement category;
-    @UiField
-    SpanElement parentCompany;
-    @UiField
-    SpanElement childrenCompanies;
+    InlineLabel companyLinksMessage;
     @UiField
     SpanElement addressDejure;
     @UiField
     SpanElement addressFact;
     @UiField
-    SpanElement info;
+    Label info;
     @UiField
-    HTMLPanel groupContainer;
-    @UiField
-    FieldSetElement contacts;
-    @UiField
-    HTMLPanel companyNameBlock;
-    @UiField
-    SpanElement companyName;
+    HeadingElement companyName;
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    FieldSetElement comments;
-    @UiField
     HTMLPanel contactsContainer;
+    @UiField
+    InlineLabel subscription;
+    @UiField
+    ImageElement categoryImage;
     @UiField
     HTMLPanel siteFolderContainer;
     @UiField
-    SpanElement subscription;
-
-    @Inject
-    FixedPositioner positioner;
+    SpanElement subscriptionLabel;
+    @UiField
+    HeadingElement contactsHeader;
 
     AbstractCompanyPreviewActivity activity;
 

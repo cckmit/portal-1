@@ -6,14 +6,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.Order;
-import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.MethodProfile;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -21,32 +20,45 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Журналирование
  */
 @Aspect
-@Order(1)
+@Order(0)//Оборачивает прочие - первым вызывается, последним отдает результат.
 public class ServiceLayerInterceptorLogging {
 
-    private static final Logger log = getLogger("service");
+    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
+    private void methodWithResult() {}
 
-    HashMap<String, MethodProfile> profiling = new HashMap<>();
+    @Pointcut("within(ru.protei.portal.core.service.*)")
+    private void inServiceFacade() {}
 
-    @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
-    private void coreResponseMethod() {}
+    @Pointcut("within(ru.protei.portal.core.service.auth.*)")
+    public void authServiceMethod() {
+    }
 
-    @Pointcut("within(ru.protei.portal.core.service..*)")
-    private void inServiceLayer() {}
-
-    @Around("coreResponseMethod() && inServiceLayer()")
-    public Object serviceMethodLogging(ProceedingJoinPoint pjp) throws Throwable {
-        String threadName = Thread.currentThread().getName();
+    @Around("methodWithResult() && authServiceMethod()")
+    public Object authorizeServiceLogging(ProceedingJoinPoint pjp) throws Throwable {
         String methodName = pjp.getSignature().toShortString();
+        log.info("calling : {} : <secure>", methodName);
+
+        return invokeMethod( methodName, pjp);
+    }
+
+    @Around("inServiceFacade()")
+    public Object serviceFacadeLogging(ProceedingJoinPoint pjp) throws Throwable {
+        String methodName = pjp.getSignature().toShortString();
+        log.info("calling : {} args: {}", methodName, pjp.getArgs());
+
+        return invokeMethod( methodName, pjp);
+    }
+
+    private Object invokeMethod( final String methodName, ProceedingJoinPoint pjp )throws Throwable {
+        String threadName = Thread.currentThread().getName();
         Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " " + methodName);
 
-        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
+        Object result = null;
         long currentTimeMillis = System.currentTimeMillis();
 
-        CoreResponse result = ERROR_RESPONSE;
         try {
 
-            result = (CoreResponse) pjp.proceed();
+            result = pjp.proceed();
 
         } finally {
             Long executionTime = System.currentTimeMillis() - currentTimeMillis;
@@ -57,7 +69,7 @@ public class ServiceLayerInterceptorLogging {
                 profiling.put(methodName, profile);
             }
             profile.updateTime(executionTime);
-            log.debug("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
+            log.info("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
                     methodName, profile.invokeCount, executionTime, profile.average, profile.maxTime, profile.minTime,
                     makeResultAsString(result));
 
@@ -67,32 +79,72 @@ public class ServiceLayerInterceptorLogging {
         return result;
     }
 
-    private String makeResultAsString( CoreResponse result ) {
+    private String makeResultAsString( Object result ) {
         if ( result == null ) {
             return "Result is null.";
         }
-        Object resultObject = result.getData();
+
+        if (result instanceof Result) {
+            Result resultObject = ((Result) result);
+            return resultObject.getStatus() + " " + makeStringFromObject( resultObject.getData() );
+        }
+
+        return makeStringFromObject( result );
+    }
+
+    private String makeStringFromObject( Object resultObject ) {
         if ( resultObject == null ) {
-            return makeStatusString( result ) + " ResultObject is null.";
+            return "ResultObject is null.";
+        }
+
+        if ( resultObject instanceof Long) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
+        if ( resultObject instanceof Integer) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
+        }
+
+        if ( resultObject instanceof Boolean) {
+            log.trace( "ResultObject: {}", resultObject );
+            return String.valueOf( resultObject );
         }
 
         if ( resultObject instanceof Collection<?>) {
             log.trace( "ResultObject: {}", resultObject );
-            return makeStatusString( result ) + " collection size=" + ((Collection) resultObject).size();
+            return "collection size=" + ((Collection) resultObject).size();
+        }
+
+        if ( resultObject instanceof Set<?>) {
+            log.trace( "ResultObject: {}", resultObject );
+            return "set size=" + ((Set) resultObject).size();
         }
 
         if ( resultObject instanceof Map<?, ?>) {
             log.trace( "ResultObject: {}", resultObject );
-            return makeStatusString( result ) + " map size=" + ((Map) resultObject).size();
+            return "map size=" + ((Map) resultObject).size();
         }
-        return String.valueOf( resultObject );
+
+        if ( resultObject instanceof SearchResult) {
+            log.trace( "ResultObject: {}", ((SearchResult) resultObject).getResults() );
+            return "SearchResult total=" + ((SearchResult) resultObject).getTotalCount();
+        }
+
+        if ( resultObject instanceof AuditableObject) {
+            log.trace( "ResultObject: {}", resultObject );
+            return resultObject.getClass().getSimpleName()+ " id=" + ((AuditableObject) resultObject).getId();
+        }
+
+        log.trace( "ResultObject: {}", resultObject );
+        return resultObject.getClass().getSimpleName();
     }
 
-    private Serializable makeStatusString(CoreResponse result ) {
-        return result == null ? "Result is null." : result.getStatus();
-    }
 
-      private static final CoreResponse<Object> ERROR_RESPONSE = new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
+    Map<String, MethodProfile> profiling = new ConcurrentHashMap<>();
+    public static final String SERVICE_FACADE_LOGGER_NAME = "service";
+    private static final Logger log = getLogger( SERVICE_FACADE_LOGGER_NAME );
 
 }
 

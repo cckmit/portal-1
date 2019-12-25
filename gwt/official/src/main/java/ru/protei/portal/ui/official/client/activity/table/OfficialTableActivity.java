@@ -73,7 +73,7 @@ public abstract class OfficialTableActivity
         init.parent.add(view.asWidget());
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_EDIT) ?
-                new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.OFFICIAL) :
+                new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.OFFICIAL) :
                 new ActionBarEvents.Clear()
         );
         requestTotalCount();

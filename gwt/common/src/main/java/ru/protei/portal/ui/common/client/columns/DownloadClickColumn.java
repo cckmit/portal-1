@@ -1,16 +1,17 @@
 package ru.protei.portal.ui.common.client.columns;
 
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Downloadable;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
+public class DownloadClickColumn<T> extends ClickColumn<T> {
 
     public interface DownloadHandler<T> extends AbstractColumnHandler<T> {
         void onDownloadClicked(T value);
@@ -22,45 +23,43 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
     }
 
     @Override
-    protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName("download");
+    protected String getColumnClassName() {
+        return "download";
     }
 
     @Override
-    public void fillColumnValue(Element cell, T value) {
-        if (!value.isAllowedDownload())
-            return;
+    protected void fillColumnHeader(Element columnHeader) {}
 
+    @Override
+    public void fillColumnValue(Element cell, T value) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
-        a.addClassName("fa fa-lg fa-cloud-download");
+        if ( imageUrl == null ) {
+            a.addClassName("fa fa-lg fa-cloud-download-alt");
+        } else {
+            ImageElement img = DOM.createImg().cast();
+            img.setSrc(imageUrl);
+            img.setHeight(40);
+            a.appendChild(img);
+        }
         a.setTitle(lang.download());
-        setDownloadEnabled(a);
+        a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.DOWNLOAD);
+        if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
+            a.removeClassName("link-disabled");
+        } else {
+            a.addClassName("link-disabled");
+        }
         cell.appendChild(a);
-    }
-
-    public void setPrivilege(En_Privilege privilege) {
-        this.privilege = privilege;
     }
 
     public void setDownloadHandler(DownloadHandler<T> downloadHandler) {
         setActionHandler(downloadHandler::onDownloadClicked);
     }
 
-    private void setDownloadEnabled(AnchorElement a) {
-        if (privilege == null) {
-            return;
-        }
-        if (policyService.hasPrivilegeFor(privilege)) {
-            a.removeClassName("link-disabled");
-        } else {
-            a.addClassName("link-disabled");
-        }
+    public void setDownloadCustomImage(String url) {
+        this.imageUrl = url;
     }
 
-    @Inject
-    PolicyService policyService;
-
-    Lang lang;
-    En_Privilege privilege;
+    private Lang lang;
+    private String imageUrl;
 }

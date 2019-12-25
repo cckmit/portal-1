@@ -9,6 +9,7 @@ public class DisplayOption {
     private String style;
     private String icon;
     private String imageSrc;
+    private String externalLink;
 
     public DisplayOption() {}
 
@@ -16,15 +17,15 @@ public class DisplayOption {
         this.name = name;
     }
 
-    public DisplayOption( String name, String style, String icon ) {
-        this.icon = icon;
-        this.name = name;
-        this.style = style;
-    }
-
     public DisplayOption( String name, String imageSrc ) {
         this.name = name;
         this.imageSrc = imageSrc;
+    }
+
+    public DisplayOption( String name, String style, String icon ) {
+        this.name = name;
+        this.style = style;
+        this.icon = icon;
     }
 
     public String getName() {
@@ -47,7 +48,15 @@ public class DisplayOption {
         return style;
     }
 
-    public void setStyle( String style ) {
+    public String getExternalLink() {
+        return externalLink;
+    }
+
+    public void setExternalLink(String externalLink) {
+        this.externalLink = externalLink;
+    }
+
+    public void setStyle(String style ) {
         this.style = style;
     }
 

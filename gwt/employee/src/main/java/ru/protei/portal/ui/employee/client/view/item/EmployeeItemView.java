@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,6 +37,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @Override
     public void setName( String name ) {
         this.name.setInnerText( name );
+        this.name.setTitle( name );
     }
 
     @Override
@@ -53,8 +54,14 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @Override
     public void setEmail( String value ) {
-        emailContainer.setVisible( value != null && !value.isEmpty() );
-        email.setInnerText( value == null ? "" : value );
+        emailContainer.setVisible(!value.isEmpty());
+        emails.setInnerHTML(value);
+    }
+
+    @Override
+    public void setDepartmentParent(String value) {
+        departmentParentContainer.setVisible( value != null && !value.isEmpty() );
+        departmentParent.setInnerText( value == null ? "" : value );
     }
 
     @Override
@@ -70,6 +77,20 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setIP(String value) {
+        ipContainer.setVisible( value != null && !value.isEmpty() );
+        ip.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
+    public void setFireDate(String value) {
+        employeeContainer.addClassName("fired");
+        name.setInnerHTML("<i class='fa fa-ban text-danger'></i> " + this.name.getInnerText());
+        fireDateContainer.setVisible(true);
+        fireDate.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setPhoto( String url ) {
         photo.setUrl( url );
     }
@@ -79,11 +100,15 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         return previewContainer;
     }
 
+
     @UiField
     HeadingElement name;
 
     @UiField
     HTMLPanel birthdayContainer;
+
+    @UiField
+    HTMLPanel fireDateContainer;
 
     @UiField
     HTMLPanel phoneContainer;
@@ -92,19 +117,25 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     HTMLPanel emailContainer;
 
     @UiField
+    HTMLPanel departmentParentContainer;
+
+    @UiField
     HTMLPanel departmentContainer;
 
     @UiField
     HTMLPanel positionContainer;
 
     @UiField
+    HTMLPanel ipContainer;
+
+    @UiField
     SpanElement birthday;
 
     @UiField
-    SpanElement phone;
+    SpanElement fireDate;
 
     @UiField
-    AnchorElement email;
+    SpanElement phone;
 
     @UiField
     Image photo;
@@ -113,13 +144,26 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     SpanElement department;
 
     @UiField
+    SpanElement departmentParent;
+
+    @UiField
     SpanElement position;
+
+    @UiField
+    SpanElement ip;
 
     @UiField
     HTMLPanel previewContainer;
 
     @UiField
+    DivElement employeeContainer;
+
+    @UiField
     Anchor preview;
+
+    @UiField
+    SpanElement emails;
+
 
     AbstractEmployeeItemActivity activity;
 

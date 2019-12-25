@@ -1,19 +1,18 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.view.EmployeeDetailView;
-import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.portal.core.model.view.*;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -21,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.Result.ok;
 
 
 /**
@@ -44,6 +45,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     EmployeeShortViewDAO employeeShortViewDAO;
 
     @Autowired
+    WorkerEntryShortViewDAO workerEntryShortViewDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
@@ -63,16 +67,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse< Person > getEmployee( Long id ) {
+    public Result< Person > getEmployee( Long id ) {
         Person person = personDAO.getEmployee(id);
         if ( person == null ) {
-            return new CoreResponse<Person>().success(person);
+            return ok(person);
         }
 
         // RESET PRIVACY INFO
         person.setPassportInfo(null);
 
-        return new CoreResponse<Person>().success(person);
+        return ok(person);
     }
 
     public EmployeeDetailView getEmployeeProfile(Long id){
@@ -90,31 +94,36 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<PersonShortView>> shortViewList(EmployeeQuery query) {
+    public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
         List<Person> list = personDAO.getEmployees(query);
 
-        if (list == null)
-            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        if (list == null) {
+            return Result.error( En_ResultStatus.GET_DATA_ERROR);
+        }
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
-        return new CoreResponse<List<PersonShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
-    public CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
-        List<EmployeeShortView> list = employeeShortViewDAO.getEmployees(query);
+    public Result<SearchResult<EmployeeShortView>> employeeList( AuthToken token, EmployeeQuery query) {
 
-        if (list == null)
-            new CoreResponse<List<EmployeeShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        List<EmployeeShortView> results = sr.getResults();
 
-        jdbcManyRelationsHelper.fill(list, "workerEntries");
-
-        return new CoreResponse<List<EmployeeShortView>>().success(list);
+        if (CollectionUtils.isNotEmpty(results)) {
+            List<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toList());
+            List<WorkerEntryShortView> workerEntries = workerEntryShortViewDAO.listByPersonIds(employeeIds);
+            results.forEach(employee ->
+                employee.setWorkerEntries(workerEntries.stream().filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId())).collect(Collectors.toList()))
+             );
+        }
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<List<WorkerView>> list(String param) {
+    public Result<List<WorkerView>> list( String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
         Company our_comp = companyDAO.get(1L);
@@ -127,7 +136,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .stream().map(p -> new WorkerView(p, our_comp))
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<WorkerView>>().success(result, result.size());
+        return ok(result);
     }
 
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){

@@ -4,9 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -27,7 +27,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
 public class CaseStateServiceTest {
 
     public static final AuthToken TEST_AUTH_TOKEN = null;
@@ -77,7 +77,7 @@ public class CaseStateServiceTest {
 
     @Test
     public void getCaseStateFromServiceTest() throws Exception {
-        CoreResponse<List<CaseState>> response = caseStateService.caseStateList(TEST_AUTH_TOKEN);
+        Result<List<CaseState>> response = caseStateService.caseStateList(TEST_AUTH_TOKEN);
 
         if (response.isError()) {
             fail("Expected list of CaseState");
@@ -150,12 +150,12 @@ public class CaseStateServiceTest {
     }
 
 
-    public static void checkResult(CoreResponse result) {
+    public static void checkResult( Result result) {
         assertNotNull("Expected result", result);
         assertTrue("Expected ok result", result.isOk());
     }
 
-    public static <T> T checkResultAndGetData(CoreResponse<T> result)  {
+    public static <T> T checkResultAndGetData( Result<T> result)  {
         checkResult(result);
         return result.getData();
     }

@@ -17,10 +17,10 @@ public interface AuthController extends RemoteService {
      * @param password    пароль
      * @return профиль пользователя
      */
-    Profile authentificate(String login, String password) throws RequestFailedException;
+    Profile authenticate( String login, String password) throws RequestFailedException;
 
     /**
      * Выход пользователя
      */
-    void logout();
+    void logout() throws RequestFailedException;
 }

@@ -13,12 +13,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
-import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableView;
@@ -59,13 +59,13 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     }
 
     @Override
-    public void setPlatformsCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override
@@ -100,9 +100,14 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         return pagerContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
-        editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
-        removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
         columns.add(nameColumn);
         columns.add(managerColumn);
@@ -129,6 +134,9 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     Lang lang;
 
     @Inject
+    PolicyService policyService;
+
+    @Inject
     private EditClickColumn<Platform> editClickColumn;
     @Inject
     private RemoveClickColumn<Platform> removeClickColumn;
@@ -149,7 +157,13 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         }
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+            if (value.getProjectId() != null) {
+                cell.setInnerText(value.getCaseManagerShortName() == null ? "" : value.getCaseManagerShortName());
+            }
+            else {
+                cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+            }
+
         }
     };
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {
@@ -163,7 +177,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
             cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " + lang.amountShort());
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref("#");
-            a.addClassName("fa fa-share cell-inline-icon");
+            a.addClassName("m-l-5 fa fa-share cell-inline-icon");
             a.setTitle(lang.siteFolderServers());
             cell.appendChild(a);
         }

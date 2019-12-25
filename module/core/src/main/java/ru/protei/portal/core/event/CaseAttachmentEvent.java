@@ -3,49 +3,70 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.Collection;
-import java.util.Collections;
 
-public class CaseAttachmentEvent extends ApplicationEvent {
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
+public class CaseAttachmentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private final ServiceModule serviceModule;
-    private CaseObject caseObject;
-    private Collection<Attachment> addedAttachments;
-    private Collection<Attachment> removedAttachments;
-    private Person person;
+    private DiffCollectionResult<Attachment> attachments = new DiffCollectionResult<>();
+    private Long personId;
+    private Long caseObjectId;
 
-    public CaseAttachmentEvent(ServiceModule module, Object source, CaseObject caseObject,
-                               Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments,
-                               Person person) {
+    public CaseAttachmentEvent(
+            Object source, ServiceModule serviceModule,
+            Long personId,
+            Long caseObjectId,
+            Collection<Attachment> addedAttachments,
+            Collection<Attachment> removedAttachments
+    ) {
         super(source);
-        this.serviceModule = module;
-        this.caseObject = caseObject;
-        this.addedAttachments = addedAttachments;
-        this.removedAttachments = removedAttachments;
-        this.person = person;
+        this.serviceModule = serviceModule;
+        this.personId = personId;
+        this.caseObjectId = caseObjectId;
+
+        attachments.putAddedEntries( addedAttachments );
+        attachments.putRemovedEntries( removedAttachments  );
     }
 
-    public CaseObject getCaseObject() {
-        return caseObject;
+    public DiffCollectionResult<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments == null? Collections.emptyList(): addedAttachments;
+    @Override
+    public Long getPersonId() {
+        return personId;
     }
 
-    public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments == null? Collections.emptyList(): removedAttachments;
+    @Override
+    public Long getCaseObjectId() {
+        return caseObjectId;
     }
 
-    public Person getPerson() {
-        return person;
+    @Override
+    public boolean isEagerEvent() {
+        return false;
     }
 
     public ServiceModule getServiceModule() {
         return serviceModule;
+    }
+
+    public CaseComment getCaseComment() { return null; }
+
+    @Override
+    public String toString() {
+        return "CaseAttachmentEvent{" +
+                "caseObjectId=" + caseObjectId +
+                ", isEagerEvent=" + isEagerEvent() +
+                ", personId=" + personId +
+//                ", oldAttachments=" + toList(oldAttachments, Attachment::getId) +
+                ", addedAttachments=" + toList(attachments.getAddedEntries(), Attachment::getId) +
+                ", removedAttachments=" + toList(attachments.getRemovedEntries(), Attachment::getId )+
+                '}';
     }
 }

@@ -2,16 +2,13 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-
-import java.util.List;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
  * Сервис управления контактами
@@ -19,19 +16,19 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/IssueController" )
 public interface IssueController extends RemoteService {
 
-    List<CaseShortView> getIssues( CaseQuery query ) throws RequestFailedException;
+    SearchResult<CaseShortView> getIssues(CaseQuery query) throws RequestFailedException;
 
     CaseObject getIssue( long id ) throws RequestFailedException;
 
-    CaseObject saveIssue( CaseObject p ) throws RequestFailedException;
+    void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
-    /**
-     * Получение списка статусов
-     * @return список статусов
-     */
-    List<En_CaseState> getStateList() throws RequestFailedException;
+    CaseObjectMeta updateIssueMeta( CaseObjectMeta caseMeta ) throws RequestFailedException;
 
-    long getIssuesCount( CaseQuery query ) throws RequestFailedException;
+    CaseObjectMetaNotifiers updateIssueMetaNotifiers( CaseObjectMetaNotifiers caseMetaNotifiers ) throws RequestFailedException;
+
+    CaseObjectMetaJira updateIssueMetaJira( CaseObjectMetaJira caseMetaJira ) throws RequestFailedException;
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
+
+    Long createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
 }

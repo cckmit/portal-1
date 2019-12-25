@@ -1,0 +1,123 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
+             xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label><ui:text from="{lang.filters}"/></label>
+                <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="m-b-0 m-t-15"/>
+                <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="local-search-options-container">
+                    <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
+                    <g:CheckBox ui:field="searchByComments" styleName="checkbox" text="{lang.searchByComments}"/>
+                </g:HTMLPanel>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label ui:field="labelCreated"><ui:text from="{lang.created}"/></label>
+                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            </div>
+            <div ui:field="modifiedRangeContainer" class="form-group col-md-4">
+                <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
+                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            </div>
+            <div ui:field="sortByContainer" class="form-group col-md-4">
+                <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
+                <div class="control-group">
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
+                    <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <person:EmployeeMultiSelector ui:field="commentAuthors"
+                                          header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
+                                          addStyleNames="form-group col-md-4"/>
+
+            <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                                                          header="{lang.issueProduct}"
+                                                          addStyleNames="form-group col-md-4"/>
+
+            <companyselector:CompanyMultiSelector ui:field="companies"
+                                                  header="{lang.issueCompany}"
+                                                  addStyleNames="form-group col-md-4"/>
+
+            <person:InitiatorMultiSelector ui:field="initiators"
+                                           header="{lang.issueInitiator}"
+                                           addStyleNames="form-group col-md-4"/>
+
+            <person:EmployeeMultiSelector ui:field="managers"
+                                          header="{lang.issueManager}"
+                                          addStyleNames="form-group col-md-4"/>
+
+            <casetag:CaseTagMultiSelector ui:field="tags"
+                                          caseType="CRM_SUPPORT"
+                                          header="{lang.tags}"
+                                          addStyleNames="form-group col-md-4"/>
+
+            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4">
+                <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
+                <threestate:ThreeStateButton ui:field="searchPrivate"/>
+            </g:HTMLPanel>
+        </div>
+
+        <div class="row">
+
+            <div ui:field="importanceContainer" class="form-group col-md-4">
+                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
+                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+            </div>
+
+            <div ui:field="stateContainer" class="form-group col-md-8">
+                <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
+                <issuestate:IssueStatesOptionList ui:field="state"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div ui:field="filterNameContainer" class="form-group col-md-12 user-filter-name">
+                <label class="bold"><ui:text from="{lang.issueFilterName}"/></label>
+                <div class="input-group">
+                    <g:TextBox ui:field="filterName" styleName="form-control"/>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
+                        <span class="fa fa-check"/>
+                    </g:Anchor>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="cancelBtn">
+                        <span class="fa fa-times"/>
+                    </g:Anchor>
+                </div>
+            </div>
+
+            <div class="col-md-12 m-t-15 text-right">
+                <g:Button ui:field="createBtn" styleName="btn btn-white btn-sm" text="{lang.buttonCreate}"/>
+                <g:Button ui:field="editBtn" styleName="btn btn-white btn-sm" text="{lang.buttonModify}"/>
+                <g:Button ui:field="resetBtn" styleName="btn btn-white btn-sm" text="{lang.buttonReset}"/>
+                <g:Button ui:field="removeBtn" styleName="btn btn-white btn-sm" text="{lang.buttonRemove}"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

@@ -8,17 +8,21 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
@@ -47,6 +51,10 @@ public abstract class EquipmentEditActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         view.setVisibilitySettingsForCreated(event.id != null);
 
@@ -113,7 +121,7 @@ public abstract class EquipmentEditActivity
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
                 })
         );
     }
@@ -176,17 +184,17 @@ public abstract class EquipmentEditActivity
         if ( equipment.getManagerId() != null ) {
             manager = new PersonShortView();
             manager.setId( equipment.getManagerId() );
-            manager.setDisplayShortName( equipment.getManagerShortName() );
+            manager.setName( equipment.getManagerShortName() );
         }
         view.manager().setValue( manager );
 
-        ProjectInfo info = null;
+        Project info = null;
         if (equipment.getProjectId() != null) {
-            info = new ProjectInfo();
+            info = new Project();
             info.setId(equipment.getProjectId());
             info.setName(equipment.getProjectName());
         }
-        view.project().setValue( info );
+        view.project().setValue( info == null ? null : new EntityOption(info.getName(), info.getId()));
 
         view.createDocumentButtonEnabled().setEnabled(!isCreate);
         view.documentsVisibility().setVisible(!isCreate);
@@ -212,15 +220,31 @@ public abstract class EquipmentEditActivity
             equipment.setManagerShortName(null);
         } else {
             equipment.setManagerId(view.manager().getValue().getId());
-            equipment.setManagerShortName(view.manager().getValue().getDisplayShortName());
+            equipment.setManagerShortName(view.manager().getValue().getName());
         }
         if (view.project().getValue() == null) {
             equipment.setProjectId(null);
             equipment.setProjectName(null);
         } else {
             equipment.setProjectId(view.project().getValue().getId());
-            equipment.setProjectName(view.project().getValue().getName());
+            equipment.setProjectName(view.project().getValue().getDisplayText());
         }
+    }
+
+    private boolean isNew(Equipment equipment) {
+        return equipment.getId() == null;
+    }
+
+    private boolean hasPrivileges(Long equipmentId) {
+        if (equipmentId == null && policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_CREATE)) {
+            return true;
+        }
+
+        if (equipmentId != null && policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject
@@ -236,6 +260,8 @@ public abstract class EquipmentEditActivity
     EquipmentControllerAsync equipmentService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
 }

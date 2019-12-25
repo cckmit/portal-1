@@ -83,7 +83,22 @@ textarea.input-field[disabled]{
   padding: 0 15px 15px 15px;
 }
 
-.panel.footer-fixable .footer {
+.panel.footer-fixable-bottom .footer {
+  position: absolute;
+  padding: 8px 5px;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  background-color: #ededed;
+  border-top: 1px solid #dadada;
+}
+
+.panel .under-button {
+  text-align: right;
+  padding: 0 0 15px 15px;
+}
+
+.panel.card-with-fixable-footer .footer {
   position: sticky;
   position: -webkit-sticky;
   bottom: 0;
@@ -119,4 +134,12 @@ textarea.input-field[disabled]{
     margin: 1px 1px 1px 5px;
     float: right;
   }
+}
+
+.input-group {
+  width: 100%;
+}
+
+.input-group-addon-fix {
+  width: 15px !important;
 }

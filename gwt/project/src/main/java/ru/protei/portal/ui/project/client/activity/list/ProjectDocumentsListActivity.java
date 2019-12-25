@@ -9,13 +9,17 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemActivity;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +29,7 @@ import java.util.function.Consumer;
 
 public abstract class ProjectDocumentsListActivity implements Activity, AbstractProjectDocumentsListItemActivity {
 
-    private static final String DOWNLOAD_PATH = "springApi/document/";
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 
     @PostConstruct
     public void init() { ; }
@@ -35,13 +39,16 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        isModifyEnabled = event.isModifyEnabled;
+
         view.documentsContainer().clear();
 
         if (event.projectId == null) {
             handleDocuments(new ArrayList<>());
             return;
         }
-        documentController.getProjectDocuments(event.projectId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        documentController.getProjectDocuments(event.projectId, new FluentCallback<SearchResult<Document>>()
+                .withSuccess(documents -> handleDocuments(documents.getResults())));
     }
 
 
@@ -70,7 +77,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
             return;
         }
 
-        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
+        Window.open(DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId() + "/pdf", value.getName(), "");
     }
 
     private void handleDocuments(List<Document> documents) {
@@ -84,11 +91,21 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         AbstractProjectDocumentsListItemView itemView = itemFactory.get();
         itemView.setActivity(this);
         itemView.setApproved(document.getApproved());
-        itemView.setDecimalNumber(document.getDecimalNumber());
-        itemView.setInfo((document.getInventoryNumber() == null ? "" : document.getInventoryNumber() + " ") + document.getName());
-        itemView.setDocumentType(document.getType().getName());
-        itemView.setCreated(document.getCreated());
-        itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT));
+        itemView.setDecimalNumber(StringUtils.emptyIfNull(document.getDecimalNumber()));
+        StringBuilder infoBuilder = new StringBuilder();
+        if ( document.getInventoryNumber() != null ) {
+            infoBuilder.append(document.getInventoryNumber()).append(" ");
+        }
+        infoBuilder.append(document.getName())
+                .append(", ")
+                .append(document.getType().getName().toLowerCase())
+                .append(" ")
+                .append(lang.from().toLowerCase())
+                .append(" ")
+                .append(DateFormatter.formatDateOnly(document.getCreated()));
+
+        itemView.setInfo(infoBuilder.toString());
+        itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && isModifyEnabled);
         return itemView;
     }
 
@@ -96,6 +113,8 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         view.documentsContainer().add(itemView.asWidget());
     }
 
+    @Inject
+    Lang lang;
     @Inject
     DocumentControllerAsync documentController;
     @Inject
@@ -105,6 +124,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
     @Inject
     Provider<AbstractProjectDocumentsListItemView> itemFactory;
 
+    private boolean isModifyEnabled;
     private Map<AbstractProjectDocumentsListItemView, Document> itemViewToModel = new HashMap<>();
     private Consumer<Document> fillViewer = document -> {
         AbstractProjectDocumentsListItemView itemView = makeItemView(document);

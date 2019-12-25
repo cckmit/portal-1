@@ -15,7 +15,7 @@ import java.util.Objects;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person extends AuditableObject implements PersonShortViewSupport, Removable {
+public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -64,12 +64,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
-//    @JdbcColumn(name="address")
-//    private String address;
-//
-//    @JdbcColumn(name="address_home")
-//    private String addressHome;
-
     @JdbcColumn(name="passportinfo")
     private String passportInfo;
 
@@ -82,16 +76,14 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     @JdbcColumn(name = "isfired")
     private boolean isFired;
 
+    @JdbcColumn(name = "firedate")
+    private Date fireDate;
+
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
 
     @JdbcColumn(name = "old_id")
     private Long oldId;
-
-/*
-    @JdbcColumn(name = "updated")
-    private Date updated;
-*/
 
     @JdbcColumn(name = "relations")
     private String relations;
@@ -105,7 +97,18 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
         Person person = new Person();
         person.setId( personShortView.getId());
-        person.setDisplayShortName( personShortView.getDisplayShortName());
+        person.setDisplayShortName( personShortView.getName());
+        person.setFired( personShortView.isFired());
+        return person;
+    }
+
+    public static Person fromPersonFullNameShortView(PersonShortView personShortView) {
+        if(personShortView == null)
+            return null;
+
+        Person person = new Person();
+        person.setId( personShortView.getId());
+        person.setDisplayName( personShortView.getName());
         person.setFired( personShortView.isFired());
         return person;
     }
@@ -235,24 +238,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.contactInfo = contactInfo;
     }
 
-
-
-//    public String getAddress() {
-//        return address;
-//    }
-//
-//    public void setAddress(String address) {
-//        this.address = address;
-//    }
-//
-//    public String getAddressHome() {
-//        return addressHome;
-//    }
-//
-//    public void setAddressHome(String addressHome) {
-//        this.addressHome = addressHome;
-//    }
-
     public String getPassportInfo() {
         return passportInfo;
     }
@@ -279,6 +264,20 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     public boolean isFired() {
         return isFired;
+    }
+
+    public void setFired(boolean isFired, Date fireDate) {
+        this.isFired = isFired;
+        this.fireDate = fireDate;
+    }
+
+    public void setFired(Date fireDate) {
+        this.isFired = true;
+        this.fireDate = fireDate;
+    }
+
+    public Date getFireDate() {
+        return fireDate;
     }
 
     public void setFired(boolean isFired) {
@@ -318,16 +317,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         return "Person";
     }
 
-/*
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-*/
-
     @Override
     public PersonShortView toShortNameShortView() {
         return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
@@ -339,8 +328,16 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Person && Objects.equals(id, ((Person)obj).getId());
+    public int hashCode() {
+        return Objects.hash( id );
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals( id, person.id );
     }
 
     public String getRelations() {
@@ -369,11 +366,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         if (contactInfo != null) {
             contactInfo.getItems().removeIf( (info)-> !info.isItemOf(En_ContactItemType.EMAIL) );
         };
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return !isDeleted;
     }
 
     @Override

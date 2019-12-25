@@ -15,7 +15,6 @@ public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> imp
 
     @Inject
     public void init( DistrictModel model ) {
-        model.subscribe( this );
         setSelectorModel(model);
     }
 
@@ -33,7 +32,7 @@ public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> imp
         }
 
         for ( DistrictInfo district : options ) {
-            addBtn( district.shortName, district, "btn btn-white" );
+            addBtn( district.shortName, district, "btn btn-default" );
         }
     }
 

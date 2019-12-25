@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -56,13 +57,13 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     @Override
-    public void setServersCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override
@@ -97,14 +98,14 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         return pagerContainer;
     }
 
-
     private void initTable() {
-        copyClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_CREATE);
-        editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
-        removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
+        copyClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE) );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
         columns.add(nameColumn);
         columns.add(platformColumn);
+        columns.add(ip);
         columns.add(appsColumn);
         columns.add(accessParams);
         columns.add(copyClickColumn);
@@ -130,6 +131,9 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     Lang lang;
 
     @Inject
+    PolicyService policyService;
+
+    @Inject
     private CopyClickColumn<Server> copyClickColumn;
     @Inject
     private EditClickColumn<Server> editClickColumn;
@@ -145,6 +149,20 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             cell.setInnerText(value.getName());
         }
     };
+
+    private ClickColumn<Server> ip = new ClickColumn<Server>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.addClassName("column-hidable");
+            columnHeader.setInnerText(lang.siteFolderIP());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Server value) {
+            cell.addClassName("column-hidable");
+            cell.setInnerText(value.getIp());
+        }
+    };
+
     private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {

@@ -51,6 +51,11 @@ public enum En_SortField {
     person_position ("displayPosition"),
 
     /**
+     * person IP address
+     */
+    employee_ip("ipAddress"),
+
+    /**
      * issue number
      */
     issue_number ("caseno"),
@@ -108,7 +113,12 @@ public enum En_SortField {
     /**
      * author id
      */
-    author_id("author_id");
+    author_id("author_id"),
+
+    /**
+     * project name
+     */
+    project_name("CASE_NAME");
 
     private String fieldName;
     private String bundleKey;

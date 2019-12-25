@@ -11,7 +11,7 @@
         <p class="lead" ui:field="description"></p>
         <g:HTMLPanel styleName="sa-button-container" ui:field="baseActionContainer">
             <g:Button ui:field="confirmButton" styleName="btn btn-danger" text="{lang.buttonYes}" />
-            <g:Button ui:field="cancelButton" styleName="btn btn-white" text="{lang.buttonNo}" />
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonNo}" />
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

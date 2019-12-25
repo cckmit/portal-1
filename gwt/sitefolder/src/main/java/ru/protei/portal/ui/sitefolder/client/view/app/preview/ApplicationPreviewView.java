@@ -8,14 +8,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.inject.Inject;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PathInfo;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.AbstractApplicationPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.AbstractApplicationPreviewView;
-
-import java.util.stream.Collectors;
 
 public class ApplicationPreviewView extends Composite implements AbstractApplicationPreviewView {
 
@@ -29,20 +27,8 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
-    @Override
     public void setName(String value) {
-        name.setInnerText(value);
+        name.setText(value);
     }
 
     @Override
@@ -57,7 +43,7 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
 
     @Override
     public void setComment(String value) {
-        comment.setInnerText(value);
+        comment.setText(value);
     }
 
     @Override
@@ -73,18 +59,15 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     }
 
     @UiField
-    SpanElement name;
+    InlineLabel name;
     @UiField
-    SpanElement comment;
+    Label comment;
     @UiField
     SpanElement paths;
     @UiField
     SpanElement server;
     @UiField
     SpanElement component;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractApplicationPreviewActivity activity;
 

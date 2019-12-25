@@ -32,8 +32,8 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView( EmployeeShortView employee ) {
-
         view.setID( employee.getId().toString() );
+        view.setName( employee.getDisplayName() );
         view.setIP( employee.getIpAddress() );
 
         view.getPositionsContainer().clear();
@@ -50,7 +50,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         itemView.setDepartment( workerEntry.getDepartmentName() );
         itemView.setPosition( workerEntry.getPositionName() );
-        //itemView.showMainInfo( workerEntry.isMain() );
 
         return itemView;
     }

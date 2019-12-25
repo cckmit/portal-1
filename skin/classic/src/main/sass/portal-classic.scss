@@ -1,92 +1,188 @@
-@import "colors";
-@import "style";
 @import "common";
 @import "plate-list";
-@import "preview";
-@import "app";
-@import "button";
-@import "form";
 @import "issue-comment";
 @import "attachment";
 @import "region";
 @import "confirm";
-@import "auth";
 @import "color-palette";
-//@import "select2";
-//@import "select2-bootstrap";
+@import "spinners";
+@import "display-table";
+@import "dropzone";
+@import "pages";
 
+/**
+ * Overrides
+ */
 
-/**** RANGE PICKER ****/
-.date {
-  .form-control {
-    @extend .input-field;
-    min-height: auto;
-    border-radius: 0;
-    background-clip: initial;
-    -webkit-background-clip: initial;
-  }
-
-  .btn-default {
-    @extend .btn-white;
-  }
+body,
+h1,h2,h3,h4,h5,h6 {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.input-group[class*="col-"] {
-  float: none;
-  padding-right: 0;
-  padding-left: 0;
+p {
+  line-height: 18px;
 }
 
-.input-group {
-  position: relative;
-  display: table;
-  border-collapse: separate;
+.btn.disabled, .btn[disabled] {
+  pointer-events: none;
+}
 
-  .form-control,
-  .input-field {
-    width: 100%;
-    margin-bottom: 0;
+.page-sidebar {
+  .sidebar-header {
+    color: white !important;
+    font-size: 24px;
+    text-transform: uppercase;
+    padding-left: 20px;
   }
-
-  .input-group-btn,
-  .input-group-addon,
-  .form-control,
-  .input-field {
-    display: table-cell;
+  .sidebar-menu .menu-items {
+    margin-top: 10px !important;
+    -ms-overflow-style: none;  // IE 10+
+    scrollbar-width: none;  // Firefox
+    &::-webkit-scrollbar {
+      display: none;  // Safari and Chrome
+    }
+    & li {
+      & a {
+        padding-left: 15px !important;
+        width: 100% !important;
+      }
+    }
   }
-
-  .input-group-btn,
-  .input-group-addon {
-    width: 1%;
-    white-space: nowrap;
-    vertical-align: middle;
-    position: relative;
-  }
-
-  .input-group-btn .btn {
-    border-left: 0;
-    max-height: 30px;
-  }
-
-  .input-group-addon {
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1;
+  .app-version {
+    color: #788195 !important;
+    width: 100% !important;
+    position: fixed;
+    bottom: 0;
+    line-height: 30px;
     text-align: center;
-    background-color: #eee;
-    border: 1px solid #ccc;
+    font-size: 13px !important;
+  }
+}
+
+.header {
+  .brand {
+    font-size: 24px;
+    color: #257ac0;
+    left: 16px;
+    text-transform: uppercase;
+  }
+}
+
+.form-group-default div.cs-select {
+  max-width: none !important;
+}
+
+.form-control {
+  padding-left: 17px;
+  color: #5e5e5e;
+  border: 1px solid #dcdcdc;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+}
+
+.input-group-text {
+  border-radius: 3px;
+}
+
+.rounded-right-3 {
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.rounded-left-3 {
+  border-top-left-radius: 3px !important;
+  border-bottom-left-radius: 3px !important;
+}
+
+.btn-xs, .btn-group-xs > .btn {
+  font-size: 12px !important;
+}
+
+.form-group-attached .disabled label {
+  color: #b2b2b2;
+  opacity: 1;
+}
+
+.login-wrapper {
+  background-color: #257ac07a !important;
+
+  .login-container-wrapper {
+    padding: 100px 60px 0;
   }
 
-  .input-group-addon:first-child {
-    border-right: 0;
+  .icon {
+    top: 85px;
+    right: 70px;
+    position: absolute;
+    opacity: .05;
+    font-size: 5em;
   }
 
-  .input-group-addon:last-child {
-    border-left: 0;
+  .brand {
+    span {
+      font-size: 34px;
+      font-weight: 600;
+      margin-left: 10px;
+      color: #257ac0;
+      text-transform: uppercase;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 50px;
+      vertical-align: middle;
+    }
   }
 }
 
 .inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >* {
   color: inherit;
+}
+
+.checkbox input[type=checkbox]:checked+label::after {
+  font-family: "Font Awesome 5 Free", serif;
+  font-weight: 900;
+}
+
+.full-screen-link{
+  position: relative;
+}
+
+.card-fixed {
+  position: sticky !important;
+  top: calc(60px + 1rem) !important;
+}
+
+div.select2-container ul.select2-choices li.select2-search-choice a.select2-search-choice-close {
+  font-weight: 900;
+}
+
+.card .card-body > .row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+blockquote::before {
+  content: '';
+}
+
+.locale-selector {
+  list-style: none;
+}
+
+div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+.form-group-default.form-group-default-selectFx .cs-wrapper .cs-placeholder {
+  text-overflow: ellipsis;
+}
+
+.bootstrap-tagsinput .tag [data-role=remove]:after {
+  font-family: "Font Awesome 5 Free", serif;
+  content: "\f00d";
+}
+
+.btn-cons-toolbar {
+  min-width: 60px;
+  font-size: 14px !important;
 }

@@ -1,16 +1,20 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="dashboard main-content grid">
-        <section class="dashboard-active-records col-sm-12 col-lg-12">
-            <g:HTMLPanel ui:field="activeRecordsContainer"/>
-        </section>
-        <section class="dashboard-new-records col-sm-12 col-lg-6">
-            <g:HTMLPanel ui:field="newRecordsContainer"/>
-        </section>
-        <section class="dashboard-completed-records col-sm-12 col-lg-6">
-            <g:HTMLPanel ui:field="inactiveRecordsContainer"/>
-        </section>
+    <g:HTMLPanel styleName="p-3">
+        <div class="card-body no-padding dashboard">
+            <div class="row">
+                <section class="dashboard-active-records col-md-12">
+                    <g:HTMLPanel ui:field="activeRecordsContainer"/>
+                </section>
+                <section class="dashboard-new-records col-md-12 col-lg-6">
+                    <g:HTMLPanel ui:field="newRecordsContainer"/>
+                </section>
+                <section class="dashboard-completed-records col-md-12 col-lg-6">
+                    <g:HTMLPanel ui:field="inactiveRecordsContainer"/>
+                </section>
+            </div>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,15 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @JdbcEntity(table = "case_tag")
-public class CaseTag implements Serializable, EntityOptionSupport {
+public class CaseTag implements Serializable {
 
     @JdbcId(name="id" , idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -23,6 +21,18 @@ public class CaseTag implements Serializable, EntityOptionSupport {
 
     @JdbcColumn(name = "color")
     private String color;
+
+    @JdbcColumn(name = "company_id")
+    private Long companyId;
+
+    @JdbcJoinedColumn(localColumn = "company_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
+    private String companyName;
+
+    @JdbcColumn(name = "person_id")
+    private Long personId;
+
+    @JdbcJoinedColumn(localColumn = "person_id", table = "person", remoteColumn = "id", mappedColumn = "displayname")
+    private String personName;
 
     public CaseTag() {}
 
@@ -58,6 +68,38 @@ public class CaseTag implements Serializable, EntityOptionSupport {
         this.color = color;
     }
 
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public Long getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Long personId) {
+        this.personId = personId;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,18 +120,8 @@ public class CaseTag implements Serializable, EntityOptionSupport {
                 ", caseType=" + caseType +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", companyName='" + companyName + '\'' +
                 '}';
-    }
-
-    @Override
-    public EntityOption toEntityOption() {
-        return new EntityOption(getName(), getId());
-    }
-
-    public static CaseTag fromEntityOption(EntityOption entityOption) {
-        CaseTag caseTag = new CaseTag();
-        caseTag.setId(entityOption.getId());
-        caseTag.setName(entityOption.getDisplayText());
-        return caseTag;
     }
 }

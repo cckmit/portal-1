@@ -3,6 +3,7 @@ package ru.protei.portal.api.model;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -38,6 +39,7 @@ public class WorkerRecord {
 
     private boolean isDeleted;
     private boolean isFired;
+    private String fireDate;
 
     private String workerId;
     private String departmentId;
@@ -231,13 +233,21 @@ public class WorkerRecord {
         this.isDeleted = isDeleted;
     }
 
-    @XmlElement(name = "fired")
     public boolean isFired() {
         return isFired;
     }
 
     public void setFired(boolean isFired) {
         this.isFired = isFired;
+    }
+
+    @XmlElement(name = "fire-date")
+    public String getFireDate() { return fireDate; }
+
+
+    public void setFireDate(String fireDate) {
+        this.fireDate = fireDate;
+        this.isFired = HelperFunc.isNotEmpty(fireDate);
     }
 
     @XmlElement(name = "worker-id")
@@ -322,6 +332,7 @@ public class WorkerRecord {
         setEmail (contactInfoFacade.getEmail ());
         setEmailOwn (contactInfoFacade.getEmail_own ());
         setFax (contactInfoFacade.getFax ());
+        setFireDate(p.getFireDate() == null ? null : HelperService.DATE.format(p.getFireDate()));
         setFired(p.isFired());
         setDeleted (p.isDeleted ());
     }
@@ -360,6 +371,7 @@ public class WorkerRecord {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
+                ", fireDate='" + fireDate + '\'' +
                 ", workerId='" + workerId + '\'' +
                 ", departmentId='" + departmentId + '\'' +
                 ", registrationId=" + registrationId +

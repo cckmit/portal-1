@@ -39,15 +39,25 @@ public abstract class DocumentTypeTableActivity
 
     @Event
     public void onShow(DocumentTypeEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_CREATE) ?
-                new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.DOCUMENT_TYPE) :
+                new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DOCUMENT_TYPE) :
                 new ActionBarEvents.Clear()
         );
 
         requestDocumentTypes();
+    }
+
+    @Event
+    public void onClosePreview(DocumentTypeEvents.ClosePreview event) {
+        animation.closeDetails();
     }
 
     @Event
@@ -56,21 +66,8 @@ public abstract class DocumentTypeTableActivity
             return;
         }
 
-        if ( !policyService.hasPrivilegeFor( En_Privilege.DOCUMENT_TYPE_CREATE ) ) {
-            return;
-        }
-
-        DocumentType newType = new DocumentType();
-        newType.setName(lang.documentNameNew());
-        documentTypeService.saveDocumentType( newType, new RequestCallback<DocumentType>(){
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( DocumentType type ) {
-                updateListAndSelect( type );
-            }
-        });
+        animation.showDetails();
+        fireEvent(new DocumentTypeEvents.ShowPreview(view.getPreviewContainer(), null));
     }
 
     @Event
@@ -80,6 +77,11 @@ public abstract class DocumentTypeTableActivity
 
     @Event
     public void onChanged(DocumentTypeEvents.Changed event) {
+        if ( event.needRefreshList ) {
+            updateListAndSelect(event.doctype);
+            return;
+        }
+
         view.updateRow(event.doctype);
     }
 
@@ -150,7 +152,6 @@ public abstract class DocumentTypeTableActivity
     @Inject
     AbstractDocumentTypeFilterView filterView;
 
-    private Long forRemoveId;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 }

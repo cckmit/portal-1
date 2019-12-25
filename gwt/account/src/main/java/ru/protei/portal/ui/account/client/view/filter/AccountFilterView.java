@@ -2,7 +2,6 @@ package ru.protei.portal.ui.account.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -18,7 +17,6 @@ import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterA
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.account.client.widget.role.RoleMultiSelector;
 import ru.protei.portal.ui.account.client.widget.type.AuthTypeBtnGroupMulti;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -31,21 +29,10 @@ import java.util.Set;
  * Абстракция вида фильтра учетных записей
  */
 public class AccountFilterView extends Composite implements AbstractAccountFilterView {
+
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
     }
 
     @Override
@@ -139,7 +126,7 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
-        timer.schedule( 300 );
+        timer.schedule( 400 );
     }
 
     Timer timer = new Timer() {
@@ -178,9 +165,6 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     @Inject
     @UiField( provided = true )
     CompanySelector company;
-
-    @Inject
-    FixedPositioner positioner;
     
     AbstractAccountFilterActivity activity;
 

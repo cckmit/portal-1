@@ -1,36 +1,23 @@
 package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
-import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
-
-import java.util.Set;
 
 /**
  * Вид превью проекта
@@ -40,20 +27,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        watchForScroll(false);
-    }
-
-    @Override
-    public void watchForScroll(boolean isWatch) {
-        if(isWatch)
-            positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-        else
-            positioner.ignore(this);
+        ensureDebugIds();
     }
 
     @Override
@@ -62,78 +36,47 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setName( String name ) {
-        this.projectName.setValue( name );
+    public void setHeader(String value ) { this.header.setText( value ); }
+
+    @Override
+    public void setName(String value) { this.name.setInnerText( value ); }
+
+    @Override
+    public void setCreatedBy(String value ) { this.createdBy.setInnerHTML( value ); }
+
+    @Override
+    public void setState( long value) {
+        En_RegionState regionState = En_RegionState.forId( value );
+        this.iconState.setClassName(regionStateLang.getStateIcon( regionState )+ " fa-lg");
+        this.state.setInnerText( regionStateLang.getStateName( regionState ) );
     }
 
     @Override
-    public String getName() {
-        return projectName.getValue();
+    public void setDirection( String value ) { this.projectDirection.setInnerText( value ); }
+
+    @Override
+    public void setDescription( String value ) { this.description.setInnerText( value ); }
+
+    @Override
+    public void setRegion( String value ) { this.projectRegion.setInnerText( value ); }
+
+    @Override
+    public void setProduct(String value ) {
+        this.product.setText( value );
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
+    public void setCompany( String value ) { this.company.setInnerText( value ); }
 
     @Override
-    public void setCreationDate( String value ) {
-        this.creationDate.setInnerText( value );
-    }
+    public void setCustomerType( String value ) { this.customerType.setInnerText( value );}
 
     @Override
-    public HasValue<En_RegionState> state() {
-        return projectState;
-    }
+    public void setTeam( String value ) { this.team.setInnerHTML( value ); }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return projectDirection;
-    }
-
-    @Override
-    public HasValue<Set<PersonProjectMemberView>> team() {
-        return team;
-    }
-
-    @Override
-    public HasText details() {
-        return details;
-    }
-
-    @Override
-    public HasValue< EntityOption > region() {
-        return projectRegion;
-    }
-
-    @Override
-    public HasValue<Set<ProductShortView>> products() {
-        return products;
-    }
-
-    @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
-
-    @Override
-    public HasValue<En_CustomerType> customerType() {
-        return customerType;
-    }
-
-    @Override
-    public void showFullScreen( boolean value ) {
-        this.fullScreenBtn.setVisible( !value );
-        if ( value ) {
-            this.preview.addStyleName( "col-xs-12 col-lg-6" );
-        } else {
-            this.preview.removeStyleName( "col-xs-12 col-lg-6" );
-        }
-    }
-
-    @Override
-    public HasVisibility removeBtnVisibility() {
-        return removeBtn;
+    public HasVisibility backButtonVisibility() {
+        return backButtonContainer;
     }
 
     @Override
@@ -146,131 +89,118 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return documents;
     }
 
-    @UiHandler( "fullScreenBtn" )
+    @Override
+    public void setContract(String value, String link) {
+        contract.setText(value);
+        contract.setHref(link);
+    }
+
+    @Override
+    public void setPlatform(String value, String link) {
+        platform.setText(value);
+        platform.setHref(link);
+    }
+
+    @Override
+    public void isFullScreen(boolean isFullScreen) {
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onFullScreenPreviewClicked();
         }
     }
 
-    @UiHandler( "removeBtn" )
-    public void onRemoveBtnClicked (ClickEvent event) {
+    @UiHandler( "backButton" )
+    public void onGoToProjectClicked ( ClickEvent event) {
+        if ( activity != null ) {
+            activity.onGoToProjectClicked();
+        }
+    }
+
+    @UiHandler("product")
+    public void onProductLinkClicked(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
-            activity.onRemoveClicked();
+            activity.onProductLinkClicked();
         }
     }
 
-    @UiHandler( {"projectName", "details"} )
-    public void onNameChanged( KeyUpEvent event ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "projectDirection" )
-    public void onDirectionChanged( ValueChangeEvent<ProductDirectionInfo> event ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "team" )
-    public void onDeployManagersChanged( ValueChangeEvent<Set<PersonProjectMemberView>> value ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "projectState" )
-    public void onStateChanged( ValueChangeEvent<En_RegionState> event ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( {"projectRegion", "company"} )
-    public void onRegionOrCompanyChanged( ValueChangeEvent<EntityOption> event ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "products" )
-    public void onProductsChanged( ValueChangeEvent<Set<ProductShortView>> event ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "customerType" )
-    public void onCustomerTypeChanged( ValueChangeEvent<En_CustomerType> event ) {
-        fireProjectChanged();
-    }
-
-    private void fireProjectChanged() {
-        projectChanged.cancel();
-        projectChanged.schedule( 500 );
-    }
-
-    private Timer projectChanged = new Timer() {
-        @Override
-        public void run() {
-            activity.onProjectChanged();
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
         }
-    };
+
+        header.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
+        header.ensureDebugId(DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
+        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DATE_CREATED_LABEL);
+        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.NAME_LABEL);
+        description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.INFO_LABEL);
+        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.STATE_LABEL);
+        projectRegion.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.REGION_LABEL);
+        projectDirection.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DIRECTION_LABEL);
+        customerType.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CUSTOMER_TYPE_LABEL);
+        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.COMPANY_LABEL);
+        team.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TEAM_LABEL);
+        product.ensureDebugId(DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
+        documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
+        commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
+        contract.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
+        platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
+    }
 
     @UiField
     HTMLPanel preview;
-
     @UiField
-    Button fullScreenBtn;
-
+    Button backButton;
     @UiField
-    Button removeBtn;
-
+    Element createdBy;
     @UiField
-    Element header;
-
+    Anchor header;
     @UiField
-    LabelElement creationDate;
-
-    @Inject
-    @UiField(provided = true)
-    TeamSelector team;
-
+    Anchor contract;
     @UiField
-    TextArea details;
+    Anchor platform;
+    @UiField
+    DivElement description;
+    @UiField
+    SpanElement projectRegion;
+    @UiField
+    SpanElement projectDirection;
+    @UiField
+    SpanElement company;
+    @UiField
+    SpanElement customerType;
+    @UiField
+    Element iconState;
+    @UiField
+    SpanElement state;
+    @UiField
+    Anchor product;
+    @UiField
+    DivElement team;
+    @UiField
+    HTMLPanel documents;
+    @UiField
+    HTMLPanel commentsContainer;
+    @UiField
+    HTMLPanel previewWrapperContainer;
 
     @Inject
     @UiField
     Lang lang;
-
     @UiField
-    HTMLPanel commentsContainer;
-
+    HeadingElement name;
     @UiField
-    TextBox projectName;
-
+    HTMLPanel backButtonContainer;
     @Inject
-    @UiField( provided = true )
-    ProductDirectionButtonSelector projectDirection;
-
-    @Inject
-    @UiField( provided = true )
-    RegionStateIconSelector projectState;
-
-    @Inject
-    @UiField( provided = true )
-    RegionButtonSelector projectRegion;
-
-    @Inject
-    FixedPositioner positioner;
-
-    @Inject
-    @UiField(provided = true)
-    CompanySelector company;
-
-    @Inject
-    @UiField(provided = true)
-    DevUnitMultiSelector products;
-
-    @Inject
-    @UiField(provided = true)
-    CustomerTypeSelector customerType;
-
-    @UiField
-    HTMLPanel documents;
+    En_RegionStateLang regionStateLang;
 
     AbstractProjectPreviewActivity activity;
 
-    interface IssuePreviewViewUiBinder extends UiBinder<HTMLPanel, ProjectPreviewView> {}
-    private static IssuePreviewViewUiBinder ourUiBinder = GWT.create( IssuePreviewViewUiBinder.class );
+    interface ProjectPreviewViewUiBinder extends UiBinder<HTMLPanel, ProjectPreviewView> {}
+    private static ProjectPreviewViewUiBinder ourUiBinder = GWT.create( ProjectPreviewViewUiBinder.class );
 }

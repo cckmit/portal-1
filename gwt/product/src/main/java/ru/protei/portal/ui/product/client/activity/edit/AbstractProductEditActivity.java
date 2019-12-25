@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import ru.protei.portal.core.model.dict.En_DevUnitType;
+
 import java.util.function.Consumer;
 
 /**
@@ -13,7 +15,9 @@ public interface AbstractProductEditActivity {
 
     void onNameChanged ();
 
-    void onStateChanged ();
-
     void renderMarkdownText(String text, Consumer<String> consumer);
+
+    void onDisplayPreviewChanged( String key, boolean isDisplay );
+
+    void onTypeChanged(En_DevUnitType type);
 }

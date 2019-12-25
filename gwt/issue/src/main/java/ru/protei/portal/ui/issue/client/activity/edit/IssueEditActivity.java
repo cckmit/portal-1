@@ -1,57 +1,74 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HTMLHelper;
-import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
+import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
-/**
- * Активность создания и редактирования обращения
- */
-public abstract class IssueEditActivity implements AbstractIssueEditActivity, Activity {
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
+public abstract class IssueEditActivity implements
+        AbstractIssueEditActivity,
+        AbstractIssueNameDescriptionEditWidgetActivity,
+        Activity
+{
 
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
+        issueNameDescriptionEditWidget.setActivity( this );
+        issueInfoWidget.setActivity( this );
+
+        AttachmentUploader.FileUploadHandler uploadHandler = new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
-                addAttachmentsToCase(Collections.singleton(attachment));
+            public void onSuccess( Attachment attachment ) {
+                addAttachmentsToCase( Collections.singleton( attachment ) );
             }
+
             @Override
-            public void onError() {
-                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError( En_FileUploadStatus status, String details ) {
+                fireEvent( new NotifyEvents.Show( En_FileUploadStatus.SIZE_EXCEED_ERROR.equals( status ) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR ) );
             }
-        });
+        };
+
+        issueInfoWidget.setFileUploadHandler( uploadHandler );
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
     }
 
     @Event
@@ -61,23 +78,38 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onShow( IssueEvents.Edit event ) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
-
-        if (event.id == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
-            if (issue != null) {
-                initialRestoredView(issue);
-            } else {
-                CaseObject caseObject = new CaseObject();
-                initNewIssue(caseObject);
-                initialView(caseObject);
-            }
-        } else {
-            fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
-            requestIssue(event.id, this::initialView);
+        HasWidgets container = initDetails.parent;
+        if (!hasAccess()) {
+            fireEvent(new ForbiddenEvents.Show(container));
+            return;
         }
+        modePreview = false;
+        container.clear();
+        requestIssue(event.caseNumber, container);
+    }
 
+    @Event
+    public void onShow( IssueEvents.ShowPreview event ) {
+        HasWidgets container = event.parent;
+        if (!hasAccess()) {
+            fireEvent(new ForbiddenEvents.Show(container));
+            return;
+        }
+        modePreview = true;
+        container.clear();
+        requestIssue(event.issueCaseNumber, container);
+    }
+
+    @Event
+    public void onShow( IssueEvents.ShowFullScreen event ) {
+        HasWidgets container = initDetails.parent;
+        if (!hasAccess()) {
+            fireEvent(new ForbiddenEvents.Show(container));
+            return;
+        }
+        modePreview = false;
+        container.clear();
+        requestIssue(event.issueCaseNumber, container);
     }
 
     @Event
@@ -88,415 +120,283 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Event
-    public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
-        view.timeElapsedLabel().setTime(event.timeElapsed);
-        view.timeElapsedInput().setTime(event.timeElapsed);
-    }
-
-    @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
         if(view.isAttached() && issue.getId().equals(event.issueId)) {
-            event.attachments.forEach(view.attachmentsContainer()::remove);
+            event.attachments.forEach( issueInfoWidget.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
         }
     }
 
     @Event
-    public void onFillPerson(PersonEvents.PersonCreated event) {
-        if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && issue != null && event.person != null) {
-            issue.setInitiator(event.person);
-            issue.setInitiatorId(event.person.getId());
-            if (issue.getInitiator() != null) {
-                view.initiator().setValue(issue.getInitiator().toFullNameShortView());
-            }
+    public void onStateChanged( IssueEvents.IssueStateChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
         }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
 
-    @Override
-    public void onSaveClicked() {
-        if(!validateView()){
-            return;
+    @Event
+    public void onImportanceChanged( IssueEvents.IssueImportanceChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
         }
-
-        fillIssueObject(issue);
-
-        view.saveEnabled().setEnabled(false);
-
-        fireEvent(new CaseCommentEvents.ValidateComment(isValid -> {
-            if (!isValid) {
-                fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
-                view.saveEnabled().setEnabled(true);
-                return;
-            }
-            issueService.saveIssue(issue, new FluentCallback<CaseObject>()
-                    .withResult(() -> {
-                        view.saveEnabled().setEnabled(true);
-                    })
-                    .withError(throwable -> {
-                        fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-                    })
-                    .withSuccess(caseObject -> {
-                        fireEvent(new CaseCommentEvents.RemoveDraft(caseObject.getId()));
-
-                        if (isNew(issue)) {
-                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            fireEvent(new IssueEvents.ChangeModel());
-                            fireEvent(new IssueEvents.Show());
-                            return;
-                        }
-                        fireEvent(new CaseCommentEvents.SaveComment(caseObject.getId(), new CaseCommentEvents.SaveComment.SaveCommentCompleteHandler() {
-                            @Override
-                            public void onError(Throwable throwable, String message) {
-                                fireEvent(new NotifyEvents.Show(message != null ? message : lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
-                            }
-                            @Override
-                            public void onSuccess() {
-                                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                                fireEvent(new IssueEvents.ChangeModel());
-                                fireEvent(new Back());
-                            }
-                        }));
-                    }));
-        }));
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
 
-    @Override
-    public void onCancelClicked() {
-        fireEvent(new Back());
+    @Event
+    public void onManagerChanged( IssueEvents.IssueManagerChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-            }
-            @Override
-            public void onSuccess(Boolean result) {
-                if(!result){
-                    onError(null);
-                    return;
-                }
-
-                view.attachmentsContainer().remove(attachment);
-                issue.getAttachments().remove(attachment);
-                issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                if (!isNew(issue)) {
-                    fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
-                            .withCaseType(En_CaseType.CRM_SUPPORT)
-                            .withCaseId(issue.getId())
-                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                            .withPrivateCase(issue.isPrivateCase())
-                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                            .build());
-                }
-            }
-        });
+        if (isReadOnly()) return;
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(result -> {
+                    issueInfoWidget.attachmentsContainer().remove(attachment);
+                    issue.getAttachments().remove(attachment);
+                    issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+                    showComments( issue );
+                }));
     }
 
     @Override
-    public void onCompanyChanged() {
-        Company companyOption = Company.fromEntityOption(view.company().getValue());
+    public void onCopyNumberClicked() {
+        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(issue.getCaseNumber()));
 
-        view.initiatorState().setEnabled(companyOption != null);
-        view.initiatorUpdateCompany(companyOption);
-
-        if ( companyOption == null ) {
-            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
-            view.initiator().setValue(null);
+        if (isCopied) {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
         } else {
-            Long selectedCompanyId = companyOption.getId();
-            companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
-                    .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
-
-            companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
-                    .setOnSuccess(caseStates -> {
-                        view.setStateFilter(caseStateFilter.makeFilter(caseStates));
-                        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-                    }));
-
-            Profile profile = policyService.getProfile();
-            PersonShortView initiator = null;
-            if ( issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
-                initiator = PersonShortView.fromPerson(issue.getInitiator());
-            } else if ( profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-                initiator = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
-            }
-            view.initiator().setValue(initiator);
-        }
-
-        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-    }
-
-    @Override
-    public void onCreateContactClicked() {
-        if (view.company().getValue() != null) {
-            fillIssueObject(issue);
-            fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         }
     }
 
     @Override
-    public void onLocalClicked() {
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
+    public void onNameAndDescriptionEditClicked() {
+        boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
+        boolean readOnly = isReadOnly();
+        if (!isAllowedEditNameAndDescription || readOnly) return;
+        view.nameAndDescriptionEditButtonVisibility().setVisible( false );
+        view.nameVisibility().setVisible(false);
+
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add( issueNameDescriptionEditWidget );
+
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        issueNameDescriptionEditWidget.setIssueIdNameDescription(
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup );
     }
 
     @Override
-    public void renderMarkupText(String text, Consumer<String> consumer) {
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
-        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
-        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
-                .withError(throwable -> consumer.accept(null))
-                .withSuccess(consumer));
+    public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
+        issue.setName( changeRequest.getName() );
+        issue.setInfo( changeRequest.getInfo() );
+        fillView(issue);
+        fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
 
-    private void initialView(CaseObject issue){
-        this.issue = issue;
-        fillView(this.issue, false);
+    @Override
+    public void onOpenEditViewClicked() {
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
     }
 
-    private void initialRestoredView(CaseObject issue){
-        this.issue = issue;
-        fillView(this.issue, true);
+    @Override
+    public void onAddTagClicked(IsWidget target) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(target));
     }
 
-    private void requestIssue(Long number, Consumer<CaseObject> successAction){
-        issueService.getIssue(number, new RequestCallback<CaseObject>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(CaseObject issue) {
-                successAction.accept(issue);
-            }
-        });
+    @Override
+    public void onAddLinkClicked(IsWidget target) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
     }
 
-    private void initNewIssue(CaseObject caseObject) {
-        boolean isPrivacyVisible = policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW);
-        caseObject.setPrivateCase(isPrivacyVisible ? true : false);
+    @Override
+    public void onBackClicked() {
+        fireEvent(new Back());
     }
 
-    private void fillView(CaseObject issue, boolean isRestoredIssue) {
-        view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
-        view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
-        view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
-        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW) );
+    @Override
+    public void onCopyNumberAndName() {
+        boolean isCopied = ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() );
 
-        view.attachmentsContainer().clear();
+        if (isCopied) {
+            fireEvent( new NotifyEvents.Show( lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS ) );
+        } else {
+            fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
+        }
+    }
+
+    private void requestIssue(Long number, HasWidgets container) {
+        issueController.getIssue(number, new FluentCallback<CaseObject>()
+                .withSuccess(issue -> {
+                    IssueEditActivity.this.issue = issue;
+                    fillView(issue);
+                    showLinks(issue);
+                    showTags(issue);
+                    showMeta(issue);
+                    showComments(issue);
+                    attachToContainer(container);
+                }));
+    }
+
+    private void showLinks(CaseObject issue) {
+        boolean readOnly = isReadOnly();
+        view.addLinkButtonVisibility().setVisible(!readOnly);
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withReadOnly(readOnly));
+    }
+
+    private void showTags(CaseObject issue) {
+        boolean readOnly = isReadOnly();
+        boolean addAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        boolean editAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        view.addTagButtonVisibility().setVisible(addAccess);
+        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withAddEnabled(addAccess)
+                .withEditEnabled(editAccess)
+                .withReadOnly(isReadOnly()));
+    }
+
+    private void showMeta(CaseObject issue) {
+        fireEvent(new IssueEvents.EditMeta(view.getMetaContainer())
+                .withMeta(makeMeta(issue))
+                .withMetaNotifiers(makeMetaNotifiers(issue))
+                .withMetaJira(makeMetaJira(issue))
+                .withReadOnly(isReadOnly()));
+    }
+
+    private void showComments(CaseObject issue) {
+        fireEvent( new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer() )
+                .withCaseType( En_CaseType.CRM_SUPPORT )
+                .withCaseId( issue.getId() )
+                .withModifyEnabled( hasAccess() && !isReadOnly() )
+                .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
+                .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
+                .withPrivateCase( issue.isPrivateCase() )
+                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+    }
+
+    private void attachToContainer(HasWidgets container) {
+        container.add(view.asWidget());
+    }
+
+    private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
+        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) return null;
+        return new CaseObjectMetaJira(issue);
+    }
+
+    private CaseObjectMetaNotifiers makeMetaNotifiers( CaseObject issue ) {
+        return new CaseObjectMetaNotifiers(issue);
+    }
+
+    private CaseObjectMeta makeMeta( CaseObject issue ) {
+        return new CaseObjectMeta(issue);
+    }
+
+    private void fillView(CaseObject issue) {
+        boolean selfIssue = isSelfIssue(issue);
+        boolean readOnly = isReadOnly();
+
         view.setCaseNumber(issue.getCaseNumber());
+        view.setPrivateIssue(issue.isPrivateCase());
+        view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
+        view.nameVisibility().setVisible(true);
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
-        if (isNew(issue)) {
-            view.showComments(false);
-            view.getCommentsContainer().clear();
-        } else {
-            view.showComments(true);
-            view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
-                    .withCaseType(En_CaseType.CRM_SUPPORT)
-                    .withCaseId(issue.getId())
-                    .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                    .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                    .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                    .withPrivateCase(issue.isPrivateCase())
-                    .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
-                    .build());
-        }
+        issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
+        issueInfoWidget.setDescription(issue.getInfo());
+        issueInfoWidget.attachmentsContainer().clear();
+        issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
+        issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add(issueInfoWidget);
 
-        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
-            view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
-                    issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
-            view.caseSubscriptionContainer().setVisible(true);
-        } else {
-            view.caseSubscriptionContainer().setVisible(false);
-        }
+        view.backButtonVisibility().setVisible(!modePreview);
+        view.showEditViewButtonVisibility().setVisible(modePreview);
+        view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
 
-        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
-        view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
-        view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
-
-        view.name().setValue(issue.getName());
-
-        view.numberVisibility().setVisible( !isNew(issue) );
-        view.number().setValue( isNew(issue) ? null : issue.getCaseNumber().intValue() );
-
-        view.isLocal().setValue(issue.isPrivateCase());
-
-        view.description().setValue(issue.getInfo());
-
-        view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
-        view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
-        view.stateEnabled().setEnabled(!isNew(issue) || policyService.personBelongsToHomeCompany());
-        view.importance().setValue(isNew(issue) && !isRestoredIssue ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
-
-        boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
-        view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
-        if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue)) {
-                boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
-                view.timeElapsedLabel().setTime(null);
-                if ( !isRestoredIssue ) {
-                    view.timeElapsedInput().setTime(0L);
-                }
-                view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
-                view.timeElapsedInputVisibility().setVisible(timeElapsedEditAllowed);
-                view.setTimeElapseTypeVisibility(true);
-                view.timeElapsedType().setValue( En_TimeElapsedType.NONE );
-            } else {
-                Long timeElapsed = issue.getTimeElapsed();
-                view.timeElapsedLabel().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
-                view.timeElapsedInput().setTime(timeElapsed);
-                view.timeElapsedLabelVisibility().setVisible(true);
-                view.timeElapsedInputVisibility().setVisible(false);
-                view.setTimeElapseTypeVisibility(false);
-            }
-        }
-
-        if (isNew(issue) && !isRestoredIssue) {
-            view.applyCompanyValueIfOneOption();
-        } else {
-            Company initiatorCompany = issue.getInitiatorCompany();
-            if ( initiatorCompany == null ) {
-                initiatorCompany = policyService.getUserCompany();
-            }
-            view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
-        }
-
-        view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
-        view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
-        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
-        view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
-
-        view.saveEnabled().setEnabled(true);
+        view.setBackgroundWhite(modePreview);
     }
 
-    private void fillIssueObject(CaseObject issue){
-        issue.setName(view.name().getValue());
-        issue.setPrivateCase( view.isLocal().getValue() );
-        issue.setInfo(view.description().getValue());
+    private String makeName( String issueName, String jiraUrl, String extAppType ) {
+        issueName = (issueName == null ? "" : issueName);
+        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
 
-        issue.setStateId(view.state().getValue().getId());
-        issue.setImpLevel(view.importance().getValue().getId());
+        if (jiraUrl.isEmpty() || !issueName.startsWith( "CLM" )) {
+            return issueName;
+        } else {
+            String idCLM = issueName.split( " " )[0];
+            String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
 
-        issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
-        issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));
-        issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
-        issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
-        issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
-        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
-        issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
-
-        if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
-            issue.setTimeElapsed(view.timeElapsedInput().getTime());
-            En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
-            issue.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
+          return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
+                    + "<label>"+remainingName+"</label>";
         }
-    }
-
-    private boolean validateView() {
-        if(view.company().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        if (isStateWithRestrictions(view.state().getValue())) {
-            if (view.manager().getValue() == null) {
-                fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
-                return false;
-            }
-            if (view.product().getValue() == null) {
-                fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
-                return false;
-            }
-        }
-
-        boolean isFieldsValid = view.nameValidator().isValid() &&
-                view.stateValidator().isValid() &&
-                view.importanceValidator().isValid() &&
-                view.companyValidator().isValid();
-
-        if(!isFieldsValid) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        return true;
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
-        view.attachmentsContainer().add(attachments);
-        if(issue.getAttachments() == null || issue.getAttachments().isEmpty())
+        if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
             issue.setAttachments(new ArrayList<>());
 
+        if (isEmpty(attachments)) {
+            return;
+        }
+
+        issueInfoWidget.attachmentsContainer().add(attachments);
         issue.getAttachments().addAll(attachments);
         issue.setAttachmentExists(true);
     }
 
-    private boolean isNew(CaseObject issue) {
-        return issue.getId() == null;
+    private boolean isSelfIssue(CaseObject issue) {
+        return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
     }
 
-    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
-        this.subscriptionsList = subscriptionsList;
-        this.subscriptionsListEmptyMessage = emptyMessage;
-        return subscriptionsList == null || subscriptionsList.isEmpty()
-                ? subscriptionsListEmptyMessage
-                : subscriptionsList.stream()
-                .map(CompanySubscription::getEmail)
-                .filter(mail -> !view.isLocal().getValue() || CompanySubscription.isProteiRecipient(mail))
-                .collect(Collectors.joining(", "));
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
-    private boolean isCompanyChangeAllowed(CaseObject issue) {
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT) &&
-                (issue.getId() == null || subscriptionsList == null || subscriptionsList.isEmpty() || view.isLocal().getValue())
-        ) {
-            return true;
-        }
-
-        if (isNew( issue )) return true;
-
-        return subscriptionsList == null || subscriptionsList.stream()
-                .map(CompanySubscription::getEmail)
-                .allMatch(CompanySubscription::isProteiRecipient);
+    private boolean hasAccess() {
+        return policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW);
     }
 
-    private void setSubscriptionEmails(String value) {
-        view.setSubscriptionEmails(value);
-        view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
-    }
-
-    private boolean isStateWithRestrictions(En_CaseState caseState) {
-        return !En_CaseState.CREATED.equals(caseState) &&
-                !En_CaseState.CANCELED.equals(caseState);
+    private boolean isReadOnly() {
+        return !policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
     }
 
     @Inject
     AbstractIssueEditView view;
+
     @Inject
-    IssueControllerAsync issueService;
+    IssueControllerAsync issueController;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentServiceAsync attachmentController;
+
     @Inject
     Lang lang;
     @Inject
     PolicyService policyService;
-    @Inject
-    CompanyControllerAsync companyService;
-    @Inject
-    CaseStateFilterProvider caseStateFilter;
-    @Inject
-    TextRenderControllerAsync textRenderController;
 
-    private List<CompanySubscription> subscriptionsList;
-    private String subscriptionsListEmptyMessage;
-    private AppEvents.InitDetails initDetails;
+    @Inject
+    IssueNameDescriptionEditWidget issueNameDescriptionEditWidget;
+    @Inject
+    IssueInfoWidget issueInfoWidget;
+
     @ContextAware
     CaseObject issue;
+    private boolean modePreview;
+    private Profile authProfile;
+    private AppEvents.InitDetails initDetails;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

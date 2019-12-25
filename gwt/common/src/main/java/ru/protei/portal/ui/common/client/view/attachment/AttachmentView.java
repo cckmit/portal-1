@@ -9,11 +9,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.Date;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Created by bondarenko on 28.12.16.
@@ -21,8 +24,9 @@ import java.util.Date;
 public class AttachmentView extends Composite implements AbstractAttachmentView {
     public AttachmentView() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setTestAttributes();
         picture.addLoadHandler(event -> {
-            thumbs.removeClassName("icon-verifiable");
+            thumbs.removeClassName("fas fa-circle-notch icon-verifiable");
         });
     }
 
@@ -75,6 +79,14 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
             activity.onShowPreview(
                 new Image(picture.getUrl())
             );
+    }
+
+    private void setTestAttributes() {
+        showPreviewButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.SHOW);
+        deleteButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.DELETE);
+        downloadButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.DOWNLOAD);
+        fileName.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.NAME);
+        fileSize.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.SIZE);
     }
 
     @UiField

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.documenttype.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,10 +11,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterActivity;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterView;
@@ -94,18 +91,6 @@ public class DocumentTypeFilterView extends Composite implements AbstractDocumen
         fireChangeTimer();
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule(300);
@@ -135,9 +120,6 @@ public class DocumentTypeFilterView extends Composite implements AbstractDocumen
     @Inject
     @UiField(provided = true)
     DocumentCategoryBtnGroupMulti documentCategories;
-
-    @Inject
-    FixedPositioner positioner;
 
     AbstractDocumentTypeFilterActivity activity;
 

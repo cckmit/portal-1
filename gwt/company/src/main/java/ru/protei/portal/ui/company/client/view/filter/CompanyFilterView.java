@@ -12,14 +12,12 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
 import ru.protei.portal.ui.company.client.widget.category.btngroup.CategoryBtnGroupMulti;
-import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 
 import java.util.Set;
 
@@ -34,21 +32,12 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
-    @Override
     public void setActivity( AbstractCompanyFilterActivity activity ) {
         this.activity = activity;
     }
+
+    @Override
+    public HasValue<Boolean> showDeprecated() { return showDeprecated; }
 
     @Override
     public HasValue<Set< EntityOption >> categories() {
@@ -80,6 +69,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
 
     @Override
     public void resetFilter() {
+        showDeprecated.setValue(false);
         categories.setValue(null);
         sortField.setValue( En_SortField.comp_name );
         sortDir.setValue(true);
@@ -89,6 +79,13 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @UiHandler( "categories" )
     public void onCompanyCategorySelected( ValueChangeEvent< Set< EntityOption> > event ) {
         if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler("showDeprecated")
+    public void onShowDeprecatedClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onFilterChanged();
         }
     }
@@ -130,6 +127,9 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         }
     };
 
+    @UiField
+    CheckBox showDeprecated;
+
     @Inject
     @UiField( provided = true )
     CategoryBtnGroupMulti categories;
@@ -150,9 +150,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
 
 
     AbstractCompanyFilterActivity activity;

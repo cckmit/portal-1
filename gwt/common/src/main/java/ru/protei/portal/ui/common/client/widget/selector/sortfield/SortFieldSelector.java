@@ -36,9 +36,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.comp_name );
                 break;
             case ISSUE:
-                addOption( En_SortField.creation_date );
-                addOption( En_SortField.last_update );
                 addOption( En_SortField.issue_number );
+                addOption( En_SortField.last_update );
                 break;
             case EQUIPMENT:
                 addOption( En_SortField.name );
@@ -71,6 +70,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case EMPLOYEE:
                 addOption( En_SortField.person_full_name );
                 addOption( En_SortField.birthday );
+                addOption( En_SortField.employee_ip);
                 break;
             case EMPLOYEE_REGISTRATION:
                 addOption(En_SortField.creation_date);
@@ -78,11 +78,18 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case CONTRACT:
                 addOption(En_SortField.creation_date);
                 break;
+            case PROJECT:
+                addOption( En_SortField.project_name );
+                addOption( En_SortField.issue_number );
+                break;
+            case REGION:
+                addOption( En_SortField.name );
+                break;
         }
     }
 
-    private ModuleType type;
-
     @Inject
     private En_SortFieldLang sortFieldLang;
+
+    private ModuleType type;
 }

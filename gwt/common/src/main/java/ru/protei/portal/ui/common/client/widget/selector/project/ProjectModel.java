@@ -1,26 +1,24 @@
 package ru.protei.portal.ui.common.client.widget.selector.project;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.List;
 
-public abstract class ProjectModel implements Activity {
+public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> {
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        this.profile = event.profile;
-        refreshOptions();
+        clear();
     }
 
     @Event
@@ -28,44 +26,42 @@ public abstract class ProjectModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( SelectorWithModel<ProjectInfo> documentTypeSelector) {
-        subscribers.add(documentTypeSelector);
-        documentTypeSelector.fillOptions(list);
+    @Override
+    protected void refreshOptions() {
+        regionService.getProjectsEntityOptionList(projectQuery, new FluentCallback<List<EntityOption>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(this::notifySubscribers)
+        );
     }
 
-    private void notifySubscribers() {
-        subscribers.forEach(selector -> {
-            selector.fillOptions(list);
-            selector.refreshValue();
-        });
+    void setContractIndependentProject(Boolean contractIndependentProject) {
+        this.projectQuery = makeContractQuery(contractIndependentProject);
+        refreshOptions();
     }
 
-    private void refreshOptions() {
-        regionService.getProjectsList(new RequestCallback<List<ProjectInfo>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
+    void setPlatformIndependentProject(Boolean platformIndependentProject) {
+        this.projectQuery = makePlatformQuery(platformIndependentProject);
+        refreshOptions();
+    }
 
-            @Override
-            public void onSuccess(List<ProjectInfo> result) {
-                list.clear();
-                list.addAll(result);
+    private ProjectQuery makeContractQuery(Boolean contractIndependentProject) {
+        ProjectQuery projectQuery = new ProjectQuery();
+        projectQuery.setContractIndependentProject(contractIndependentProject);
 
-                notifySubscribers();
-            }
-        });
+        return projectQuery;
+    }
+
+    private ProjectQuery makePlatformQuery(Boolean platformIndependentProject) {
+        ProjectQuery projectQuery = new ProjectQuery();
+        projectQuery.setPlatformIndependentProject(platformIndependentProject);
+
+        return projectQuery;
     }
 
     @Inject
     RegionControllerAsync regionService;
-
-
     @Inject
     Lang lang;
 
-    private Profile profile;
-    private List<ProjectInfo> list = new LinkedList<>();
-
-    List<SelectorWithModel<ProjectInfo>> subscribers = new LinkedList<>();
+    private ProjectQuery projectQuery = new ProjectQuery();
 }

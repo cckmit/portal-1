@@ -29,6 +29,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     }
 
     public void setHeader( String label ) {
+        this.label.removeStyleName("hide");
         this.label.getElement().setInnerText( label == null ? "" : label );
     }
 
@@ -91,7 +92,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         setAddName(null, text);
     }
 
-    public void setAddName( String icon, String text ) {
+    public void setAddName(String icon, String text) {
         if (icon != null) {
             addIcon.setClassName("fa " + icon);
         } else {
@@ -113,6 +114,15 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         }
         clear.setInnerText(text);
         clear.setClassName("");
+    }
+
+    public void setButtonStyle(String style) {
+        if (style != null) {
+            caretButton.removeStyleName("bg-white no-border");
+            clearButton.removeStyleName("bg-white no-border");
+            caretButton.addStyleName(style);
+            clearButton.addStyleName(style);
+        }
     }
 
     private void clearValues(boolean fireEvents) {
@@ -157,6 +167,14 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
     public void setClearEnsureDebugId(String debugId) {
         clearButton.ensureDebugId(debugId);
+    }
+
+    public void setItemContainerEnsureDebugId(String debugId) {
+        itemContainer.ensureDebugId(debugId);
+    }
+
+    public void setLabelEnsureDebugId(String debugId) {
+        label.ensureDebugId(debugId);
     }
 
     @UiField

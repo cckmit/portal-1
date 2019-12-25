@@ -6,14 +6,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.PortalConfigTestConfiguration;
+import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {
+        PortalConfigTestConfiguration.class, RendererTestConfiguration.class
+})
 public class JiraWikiMarkupRendererTest {
 
     @Test
@@ -184,13 +185,11 @@ public class JiraWikiMarkupRendererTest {
                 "<th class='confluenceTh'>heading 1</th>\n" +
                 "<th class='confluenceTh'>heading 2</th>\n" +
                 "<th class='confluenceTh'>heading 3</th>\n" +
-                "<th class='confluenceTh'><br/></th>\n" +
                 "</tr>\n" +
                 "<tr>\n" +
                 "<td class='confluenceTd'>col A1</td>\n" +
                 "<td class='confluenceTd'>col A2</td>\n" +
                 "<td class='confluenceTd'>col A3</td>\n" +
-                "<td class='confluenceTd'><br/></td>\n" +
                 "</tr>\n" +
                 "<tr>\n" +
                 "<td class='confluenceTd'>col B1</td>\n" +

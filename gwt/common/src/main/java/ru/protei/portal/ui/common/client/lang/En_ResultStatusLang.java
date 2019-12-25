@@ -50,6 +50,11 @@ public class En_ResultStatusLang {
             case INVENTORY_NUMBER_ALREADY_EXIST: return lang.errInventoryNumberAlreadyExist();
             case DECIMAL_NUMBER_ALREADY_EXIST: return lang.errDecimalNumberAlreadyExist();
             case PROHIBITED_PRIVATE_COMMENT: return lang.errIssueCommentProhibitedPrivate();
+            case INVALID_CASE_UPDATE_CASE_IS_CLOSED: return lang.errInvalidCaseUpdateCaseIsClosed();
+            case INVALID_CURRENT_PASSWORD: return lang.errInvalidCurrentPassword();
+            case NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION: return lang.errNotAllowedChangeIssueNameOrDescription();
+            case NOT_ALLOWED_CHANGE_PLATFORM_COMPANY: return lang.errSavePlatformConnectedIssuesExist();
+            case NOT_ALLOWED_CHANGE_PROJECT_COMPANY: return lang.errSaveProjectCannotChangeCompany();
             default: return lang.errUnknownResult();
         }
     }

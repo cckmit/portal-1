@@ -2,19 +2,24 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -25,6 +30,8 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     CaseTypeDAO caseTypeDAO;
     @Autowired
+    PersonDAO personDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PortalConfig portalConfig;
@@ -34,37 +41,26 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
 
     @Override
-    public CoreResponse<Integer> count(AuthToken token, ContractQuery query) {
+    public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
+            query.setManagerIds(CollectionUtils.singleValueList(token.getPersonId()));
         }
-        return new CoreResponse<Integer>().success(contractDAO.countByQuery(query));
+        SearchResult<Contract> sr = contractDAO.getSearchResult(query);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query) {
-        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
-        }
-        List<Contract> list = contractDAO.getListByQuery(query);
-        if (list == null) {
-            return new CoreResponse<List<Contract>>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
-        return new CoreResponse<List<Contract>>().success(list);
-    }
-
-    @Override
-    public CoreResponse<Contract> getContract(AuthToken token, Long id) {
+    public Result<Contract> getContract( AuthToken token, Long id) {
 
         Contract contract;
         if (hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
             contract = contractDAO.get(id);
         } else {
-            contract = contractDAO.getByIdAndManagerId(id, getCurrentPerson(token).getId());
+            contract = contractDAO.getByIdAndManagerId(id, token.getPersonId());
         }
 
         if (contract == null) {
-            return new CoreResponse<Contract>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (contract.getParentContractId() != null) {
@@ -77,60 +73,60 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
 
-        return new CoreResponse<Contract>().success(contract);
+        return ok(contract);
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> createContract(AuthToken token, Contract contract) {
+    public Result<Long> createContract( AuthToken token, Contract contract) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_CREATE)) {
-            return new CoreResponse<Long>().error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         if (contract == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
 
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
 
         contract.setId(id);
         Long contractId = contractDAO.persist(contract);
 
         if (contractId == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
 
-        return new CoreResponse<Long>().success(id);
+        return ok(id);
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> updateContract(AuthToken token, Contract contract) {
+    public Result<Long> updateContract( AuthToken token, Contract contract) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_EDIT)) {
-            return new CoreResponse<Long>().error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         if (contract == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = caseObjectDAO.get(contract.getId());
-        if ( caseObject == null ) {
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_FOUND);
+        if (caseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
         }
         fillCaseObjectFromContract(caseObject, contract);
         caseObjectDAO.merge(caseObject);
         contractDAO.merge(contract);
         jdbcManyRelationsHelper.persist(contract, "contractDates");
 
-        return new CoreResponse<Long>().success(contract.getId());
+        return ok(contract.getId());
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
-        if ( caseObject == null ) {
+        if (caseObject == null) {
             caseObject = new CaseObject();
             caseObject.setCaseType(En_CaseType.CONTRACT);
             caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CONTRACT));
@@ -142,22 +138,16 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
         caseObject.setStateId(contract.getState().getId());
-        caseObject.setManagerId(contract.getManagerId());
+        caseObject.setManagerId(contract.getCaseManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
-        caseObject.setInitiatorCompanyId(contract.getContragentId());
-        caseObject.setProductId(contract.getDirectionId());
+        caseObject.setInitiatorCompanyId(contract.getCaseContragentId());
+        caseObject.setProductId(contract.getCaseDirectionId());
 
         return caseObject;
     }
 
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
-    }
-
-    private Person getCurrentPerson(AuthToken token) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        return descriptor.getLogin().getPerson();
     }
 }

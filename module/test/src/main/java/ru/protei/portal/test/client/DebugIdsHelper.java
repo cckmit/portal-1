@@ -115,7 +115,24 @@ public class DebugIdsHelper {
             if (id == 34) {
                 return DebugIds.ISSUE_STATE.CUST_PENDING;
             }
+            if (id == 35) {
+                return DebugIds.ISSUE_STATE.NX_REQUEST;
+            }
+            if (id == 36) {
+                return DebugIds.ISSUE_STATE.CUST_REQUEST;
+            }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
+    public static final class LOCALE_BUTTON {
+        public static String byLocale(String locale) {
+            if (locale.equals("en")) {
+                return DebugIds.LOCALE_BUTTON.EN;
+            }
+            if (locale.equals("ru")) {
+                return DebugIds.LOCALE_BUTTON.RU;
+            }
+            return DebugIds.LOCALE_BUTTON.DEFAULT + locale;
         }
     }
 }

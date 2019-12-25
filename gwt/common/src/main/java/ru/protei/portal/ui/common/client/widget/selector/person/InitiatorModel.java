@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -7,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -27,29 +29,9 @@ public abstract class InitiatorModel implements Activity {
         myId = event.profile.getId();
     }
 
-    public void subscribe( SelectorWithModel<PersonShortView> selector) {
-        subscribers.add(selector);
-        selector.fillOptions(list);
-    }
-
-    public void updateCompanies(Set<Long> companyIds, boolean fired) {
-        refreshOptions(companyIds, fired);
-    }
-
-    public Collection getList() {
-        return new ArrayList(list);
-    }
-
-    private void notifySubscribers() {
-        for (SelectorWithModel<PersonShortView> selector : subscribers) {
-            selector.fillOptions(list);
-            selector.refreshValue();
-        }
-    }
-
-    private void refreshOptions(Set<Long> companyIds, boolean fired) {
-
+    public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds, boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+        selector.clearOptions();
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
             @Override
             public void onError(Throwable throwable) {
@@ -62,9 +44,9 @@ public abstract class InitiatorModel implements Activity {
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-                list.clear();
-                list.addAll(options);
-                notifySubscribers();
+                transliteration(options);
+                selector.fillOptions(options);
+                selector.refreshValue();
             }
         });
     }
@@ -85,16 +67,14 @@ public abstract class InitiatorModel implements Activity {
         return companyIds;
     }
 
+    private void transliteration(List<PersonShortView> options) {
+        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+    }
+
     @Inject
     PersonControllerAsync personService;
-
     @Inject
     Lang lang;
 
-    private List<PersonShortView> list = new ArrayList<>();
-
-    List<SelectorWithModel<PersonShortView>> subscribers = new ArrayList<>();
-
     private Long myId;
-
 }

@@ -19,6 +19,7 @@
         <project.winter.version>3.0-SNAPSHOT</project.winter.version>
         <project.slf4j.version>1.7.24</project.slf4j.version>
         <project.log4j.version>2.8.2</project.log4j.version>
+        <project.jetty.version>9.4.6.v20170531</project.jetty.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -34,7 +35,6 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
-                <module>module/hpsm</module>
                 <module>module/ws-api</module>
                 <module>module/redmine</module>
                 <module>module/jira</module>
@@ -72,13 +72,29 @@
             <modules>
                 <module>module/model</module>
                 <module>module/core</module>
-                <module>module/hpsm</module>
+<!--                <module>module/hpsm</module>-->
                 <module>module/ws-api</module>
                 <module>module/jira</module>
                 <module>module/redmine</module>
             </modules>
         </profile>
 
+        <profile>
+            <id>ws-api</id>
+            <modules>
+                <module>module/model</module>
+                <module>module/core</module>
+                <module>module/ws-api</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>debug-ids</id>
+
+            <modules>
+                <module>module/test</module>
+            </modules>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -88,7 +104,6 @@
             <version>3.4</version>
         </dependency>
     </dependencies>
-
 
     <repositories>
         <repository>
@@ -111,5 +126,4 @@
             <url>https://repo.protei.ru/repository/ext-snapshot-local</url>
         </repository>
     </distributionManagement>
-
 </project>

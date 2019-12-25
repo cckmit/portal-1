@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -20,6 +17,9 @@ public class CaseStateMatrix {
     @JdbcColumn(name="CASE_STATE")
     private Long caseStateId;
 
+    @JdbcJoinedObject(localColumn = "CASE_STATE", table = "case_state", remoteColumn = "id")
+    private CaseState caseState;
+
     @JdbcColumn(name="view_order")
     private int viewOrder;
 
@@ -31,6 +31,7 @@ public class CaseStateMatrix {
 
     @JdbcColumn(name="info")
     private String info;
+
 
 
     public CaseStateMatrix() {
@@ -58,6 +59,14 @@ public class CaseStateMatrix {
 
     public void setCaseStateId(Long caseStateId) {
         this.caseStateId = caseStateId;
+    }
+
+    public CaseState getCaseState() {
+        return caseState;
+    }
+
+    public void setCaseState(CaseState caseState) {
+        this.caseState = caseState;
     }
 
     public int getViewOrder() {

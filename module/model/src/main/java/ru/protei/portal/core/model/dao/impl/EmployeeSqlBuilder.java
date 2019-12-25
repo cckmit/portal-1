@@ -4,13 +4,10 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
-
-import java.util.stream.Collectors;
 
 public class EmployeeSqlBuilder {
 
-    public SqlCondition createSqlCondition( EmployeeQuery query) {
+    public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
@@ -29,18 +26,50 @@ public class EmployeeSqlBuilder {
                 args.add(En_Gender.UNDEFINED.getCode());
             }
 
-            if (!CollectionUtils.isEmpty(query.getHomeCompanies())) {
-                condition.append(" and WE.companyId in (")
-                        .append(query.getHomeCompanies().stream().map(option -> option.getId().toString()).collect( Collectors.joining(",")))
-                        .append(")");
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                if (query.getSearchString().trim().contains(" ")){
+                    condition.append(" and Person.displayname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                }
+                else {
+                    condition.append(" and (Person.lastname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                    condition.append(" or Person.firstname like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                }
             }
 
-            if ( HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ? or JSON_EXTRACT(Person.contactInfo, '$.items[*].v') like ? or Person.ipaddress like ?)");
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
-                args.add(likeArg);
+            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'GENERAL_PHONE' and info.v like ?");
+                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'MOBILE_PHONE' and info.v like ?");
+                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getIpAddress())) {
+                condition.append(" and Person.ipaddress like ?");
+                args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getEmail())) {
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
+                args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getDepartment())) {
+                String helper = HelperFunc.makeLikeArg(query.getDepartment().trim(), true);
+
+                condition
+                        .append(" and Person.id in (")
+                        .append("select personId from company_dep cd " +
+                                "left join company_dep cd2 on cd.parent_dep = cd2.id " +
+                                "inner join worker_entry we on cd.id = we.dep_id")
+                        .append(" where cd.dep_name like ? or cd2.dep_name like ?)");
+                args.add(helper);
+                args.add(helper);
             }
         });
     }

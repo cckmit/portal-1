@@ -2,8 +2,10 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.Project;
 
 /**
  * События для вкладки с проектами
@@ -12,22 +14,27 @@ public class ProjectEvents {
 
     @Url( value = "projects", primary = true )
     public static class Show {
+        @Omit
+        public Boolean clearScroll = false;
         public Show () {}
+        public Show (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
+        }
     }
 
     /**
-     * Показать превью обращения
+     * Показать превью проекта
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, Long issueId )
+        public ShowPreview ( HasWidgets parent, Long projectId )
         {
             this.parent = parent;
-            this.issueId = issueId;
+            this.projectId = projectId;
         }
 
         public HasWidgets parent;
-        public Long issueId;
+        public Long projectId;
 
     }
 
@@ -41,11 +48,11 @@ public class ProjectEvents {
 
         public ShowFullScreen ( Long id )
         {
-            this.issueId = id;
+            this.projectId = id;
         }
 
         @Name( "id" )
-        public Long issueId;
+        public Long projectId;
     }
 
     @Url( value = "project", primary = false )
@@ -56,10 +63,6 @@ public class ProjectEvents {
         public Edit() { this.id = null; }
         public Edit ( Long id ) {
             this.id = id;
-        }
-
-        public static Edit byId (Long id) {
-            return new Edit(id);
         }
     }
 
@@ -76,15 +79,12 @@ public class ProjectEvents {
     /**
      * Изменение проекта
      */
-    public static class Changed {
-        public Changed() {
-        }
+    public static class ChangeProject {
+        public Long id;
 
-        public Changed( ProjectInfo project ) {
-            this.project = project;
+        public ChangeProject(Long projectId){
+            id = projectId;
         }
-
-        public ProjectInfo project;
     }
 
     public static class ShowProjectDocuments {
@@ -92,10 +92,66 @@ public class ProjectEvents {
         public ShowProjectDocuments(HasWidgets parent, Long projectId) {
             this.parent = parent;
             this.projectId = projectId;
+            this.isModifyEnabled = true;
+        }
+
+        public ShowProjectDocuments(HasWidgets parent, Long projectId, boolean isModifyEnabled) {
+            this.parent = parent;
+            this.projectId = projectId;
+            this.isModifyEnabled = isModifyEnabled;
         }
 
         public Long projectId;
         public HasWidgets parent;
+        public boolean isModifyEnabled;
+    }
+
+    /**
+     * Показать форму поиска
+     */
+    public static class Search {
+        public Search(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+
+    /**
+     * Создать проект
+     */
+    public static class QuickCreate {
+        public QuickCreate(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+
+    public static class Created {}
+
+    /**
+     * Установить проект
+     */
+    public static class Set {
+
+        public Set(Project project) {
+            this.project = project;
+        }
+
+        public Project project;
+    }
+
+    /**
+     * Показать таблицу проектов
+     */
+    public static class ShowDetailedTable {
+
+        public ShowDetailedTable( HasWidgets parent, ProjectQuery query ) {
+            this.parent = parent;
+            this.query = query;
+        }
+
+        public HasWidgets parent;
+        public ProjectQuery query;
     }
 }
 

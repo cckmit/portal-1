@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Сокращенное представление Person
  */
-@JdbcEntity(table = "Person")
+@JdbcEntity(selectSql = "person.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info")
 public class EmployeeShortView implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -24,6 +24,12 @@ public class EmployeeShortView implements Serializable {
 
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
+
+    @JdbcColumn(name="isfired")
+    private boolean isFired;
+
+    @JdbcColumn(name="firedate")
+    private Date fireDate;
 
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
@@ -77,5 +83,21 @@ public class EmployeeShortView implements Serializable {
 
     public void setWorkerEntries(List<WorkerEntryShortView> workerEntries) {
         this.workerEntries = workerEntries;
+    }
+
+    public boolean isFired() {
+        return isFired;
+    }
+
+    public void setFired(boolean fired) {
+        isFired = fired;
+    }
+
+    public Date getFireDate() {
+        return fireDate;
+    }
+
+    public void setFireDate(Date fireDate) {
+        this.fireDate = fireDate;
     }
 }

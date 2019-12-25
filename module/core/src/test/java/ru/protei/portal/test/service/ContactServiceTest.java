@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
@@ -17,15 +17,14 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.service.ContactService;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
-
-import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
 public class ContactServiceTest extends BaseServiceTest {
 
     @Test
@@ -38,7 +37,7 @@ public class ContactServiceTest extends BaseServiceTest {
 
         Assert.assertNotNull(person.getId());
 
-        CoreResponse<Person> response = service.getContact(getAuthToken(), person.getId());
+        Result<Person> response = service.getContact(getAuthToken(), person.getId());
 
         Assert.assertTrue(response.isOk());
         Assert.assertNotNull(response.getData());
@@ -58,15 +57,16 @@ public class ContactServiceTest extends BaseServiceTest {
         Assert.assertNotNull(person.getId());
 
         ContactQuery query = new ContactQuery((Long) null, null, person.getDisplayName(), En_SortField.person_full_name, En_SortDir.ASC);
-        CoreResponse<List<Person>> result = service.contactList(getAuthToken(), query);
+        Result<SearchResult<Person>> result = service.getContactsSearchResult(getAuthToken(), query);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
-        Assert.assertTrue(result.getData().size() > 0);
+        Assert.assertNotNull(result.getData().getResults());
+        Assert.assertTrue(result.getData().getResults().size() > 0);
 
         for (Person p : result.getData()) {
-            CoreResponse<Person> x = service.getContact(getAuthToken(), p.getId());
+            Result<Person> x = service.getContact(getAuthToken(), p.getId());
             Assert.assertTrue(x.isOk());
             Assert.assertEquals(p.getId(), x.getData().getId());
             Assert.assertEquals(p.getDisplayName(), x.getData().getDisplayName());

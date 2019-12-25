@@ -6,8 +6,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author michael
@@ -59,6 +59,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
     private List<CaseState> caseStates;
+
+    @JdbcColumn(name = "is_deprecated")
+    private boolean isArchived;
 
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -217,6 +220,31 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         isHidden = hideden;
     }
 
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(Boolean deleted) {
+        isArchived = deleted;
+    }
+
+    public Collection<Long> getCompanyAndChildIds() {
+        ArrayList<Long> ids = new ArrayList<>();
+        ids.add(getId());
+        if (getChildCompanies() != null) {
+            ids.addAll(getChildCompanies().stream().map(Company::getId).collect(Collectors.toList()));
+        }
+        return ids;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (id != null) {
+            return obj instanceof Company && id.equals(((Company) obj).getId());
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return "Company{" +
@@ -224,17 +252,18 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", category=" + category +
                 ", groupId=" + groupId +
                 ", companyGroup=" + companyGroup +
-                ", parentCompanyId=" + parentCompanyId+
-                ", parentCompanyName=" + parentCompanyName+
+                ", parentCompanyId=" + parentCompanyId +
+                ", parentCompanyName='" + parentCompanyName + '\'' +
+                ", childCompanies=" + childCompanies +
                 ", cname='" + cname + '\'' +
                 ", contactInfo=" + contactInfo +
                 ", info='" + info + '\'' +
                 ", created=" + created +
+                ", oldId=" + oldId +
+                ", isHidden=" + isHidden +
                 ", subscriptions=" + subscriptions +
-                ", oldID=" + String.valueOf(oldId) +
                 ", caseStates=" + caseStates +
-                ", childCompanies=" + childCompanies +
+                ", isArchived=" + isArchived +
                 '}';
     }
-
 }

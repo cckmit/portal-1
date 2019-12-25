@@ -10,7 +10,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
@@ -18,6 +17,7 @@ import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemActivity;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public abstract class EquipmentDocumentsListActivity implements Activity, AbstractEquipmentDocumentsListActivity, AbstractEquipmentDocumentsListItemActivity {
 
-    private static final String DOWNLOAD_PATH = "springApi/document/";
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 
     @PostConstruct
     public void init() {
@@ -55,7 +55,8 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
             return;
         }
 
-        equipmentController.getDocuments(event.equipmentId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        equipmentController.getDocuments(event.equipmentId, new FluentCallback<SearchResult<Document>>()
+                .withSuccess(documents -> handleDocuments(documents.getResults())));
     }
 
     @Override
@@ -83,7 +84,7 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
             return;
         }
 
-        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
+        Window.open(DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId() + "/pdf", value.getName(), "");
     }
 
     private void handleDocuments(List<Document> documents) {

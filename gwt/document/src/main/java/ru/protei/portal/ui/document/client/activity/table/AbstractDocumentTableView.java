@@ -2,7 +2,9 @@ package ru.protei.portal.ui.document.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -11,9 +13,9 @@ public interface AbstractDocumentTableView extends IsWidget {
 
     void clearRecords();
 
-    void setRecordCount(int count);
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 
@@ -26,4 +28,6 @@ public interface AbstractDocumentTableView extends IsWidget {
     HasWidgets getPreviewContainer();
 
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

@@ -3,7 +3,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" styleName="employee">
-        <div class="header-block">
+        <div class="header-block" ui:field="employeeContainer">
             <h2 class="name" ui:field="name"></h2>
             <p class="controls">
                 <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
@@ -21,17 +21,32 @@
                 <i class="fa fa-phone"/>
                 <span ui:field="phone"/>
             </g:HTMLPanel>
+            <g:HTMLPanel ui:field="ipContainer" styleName="contacts ip" visible="false">
+                <b>IP</b>
+                <span ui:field="ip"></span>
+            </g:HTMLPanel>
             <g:HTMLPanel ui:field="emailContainer" styleName="contacts email">
                 <i class="fa fa-envelope"/>
-                <a href="#" ui:field="email"/>
+                <span ui:field="emails"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="departmentParentContainer" styleName="contacts department" visible="false">
+                <i class="fa fa-sitemap"/>
+                <span ui:field="departmentParent"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="departmentContainer" styleName="contacts department" visible="false">
-                <i class="fa fa-sitemap"/>
+                <i class="fa fa-th-large"/>
                 <span ui:field="department"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="positionContainer" styleName="contacts position" visible="false">
                 <i class="fa fa-street-view"></i>
                 <span ui:field="position"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="fireDateContainer" styleName="contacts position" visible="false">
+                <i class="fa fa-info-circle"></i>
+                <b>
+                    <span><ui:text from="{lang.employeeFired}"/></span>
+                    <span ui:field="fireDate"/>
+                </b>
             </g:HTMLPanel>
         </div>
 

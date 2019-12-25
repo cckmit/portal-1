@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -7,7 +9,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -21,7 +24,6 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterV
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -49,17 +51,23 @@ public abstract class ProjectTableActivity
 
     @Event
     public void onShow( ProjectEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
-        this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
-            new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PROJECT ) :
+            new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.PROJECT ) :
             new ActionBarEvents.Clear()
         );
 
         projectIdForRemove = null;
+
+        clearScroll(event);
+
         requestProjects( null );
     }
 
@@ -69,39 +77,12 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        regionService.createNewProject(new FluentCallback<Long>()
-                .withSuccess(projectId -> {
-                    updateListAndSelect(projectId);
-                    fireEvent(new ProjectEvents.ChangeModel());
-                })
-        );
+        fireEvent(new ProjectEvents.Edit());
     }
 
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
-    }
-
-    @Event
-    public void onChanged( ProjectEvents.Changed event ) {
-        view.updateRow( event.project );
-
-        if ( currentValue == null ) {
-            return;
-        }
-
-        // если выбрали регион в первый раз
-        if ( currentValue.getRegion() == null ) {
-            if ( event.project.getRegion() != null ) {
-                requestProjects( currentValue );
-                return;
-            }
-        }
-
-        // если выбрали регион взамен выбранному ранее
-        if ( !Objects.equals(currentValue.getRegion(), event.project.getRegion() ) ) {
-            requestProjects( currentValue );
-        }
     }
 
     @Event
@@ -116,12 +97,14 @@ public abstract class ProjectTableActivity
         }
 
         regionService.removeProject(projectIdForRemove, new FluentCallback<Boolean>()
-                .withResult(() -> {
+                .withError(t -> {
                     projectIdForRemove = null;
                 })
                 .withSuccess(result -> {
-                    fireEvent(new ProjectEvents.Show());
+                    projectIdForRemove = null;
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(new ProjectEvents.Show());
                 })
         );
     }
@@ -134,19 +117,27 @@ public abstract class ProjectTableActivity
         projectIdForRemove = null;
     }
 
+    @Event
+    public void onChangeRow( ProjectEvents.ChangeProject event ) {
+        regionService.getProject(event.id, new FluentCallback<Project>()
+                .withSuccess(result -> {
+                    view.updateRow(result);
+                }));
+    }
+
     @Override
-    public void onItemClicked( ProjectInfo value ) {
+    public void onItemClicked( Project value ) {
         showPreview( value );
     }
 
     @Override
-    public void onEditClicked( ProjectInfo value ) {
-        //fireEvent(new ProjectEvents.Edit(value.getId()));
-        showPreview( value );
+    public void onEditClicked( Project value ) {
+        persistScrollTopPosition();
+        fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
     @Override
-    public void onRemoveClicked(ProjectInfo value) {
+    public void onRemoveClicked(Project value) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
             return;
         }
@@ -164,64 +155,63 @@ public abstract class ProjectTableActivity
         requestProjects( null );
     }
 
-    private void requestProjects( ProjectInfo rowToSelect ) {
+    private void requestProjects( Project rowToSelect ) {
         if ( rowToSelect == null ) {
             view.clearRecords();
             animation.closeDetails();
         }
 
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
+        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<Project>>>() {
                 @Override
                 public void onError( Throwable throwable ) {
                     fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
                 }
 
                 @Override
-                public void onSuccess( Map<String, List<ProjectInfo>> result ) {
+                public void onSuccess( Map<String, List<Project>> result ) {
                     fillRows( result );
                     if ( rowToSelect != null ) {
                         view.updateRow( rowToSelect );
                     }
+                    restoreScrollTopPositionOrClearSelection();
                 }
             } );
     }
 
-    private void updateListAndSelect( Long projectId ) {
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Map<String, List<ProjectInfo>> result ) {
-                view.clearRecords();
-                fillRows( result );
-                ProjectInfo info = new ProjectInfo();
-                info.setId( projectId );
-                onItemClicked( info );
-            }
-        } );
-    }
-
-    private void fillRows( Map<String, List<ProjectInfo>> result ) {
+    private void fillRows( Map<String, List<Project>> result ) {
         view.clearRecords();
-        for ( Map.Entry<String, List<ProjectInfo>> entry : result.entrySet() ) {
+        for ( Map.Entry<String, List<Project>> entry : result.entrySet() ) {
             view.addSeparator( entry.getKey() );
 
-            for ( ProjectInfo projectInfo : entry.getValue() ) {
-                view.addRow( projectInfo );
+            for ( Project project : entry.getValue() ) {
+                view.addRow(project);
             }
         }
     }
 
-    private void showPreview ( ProjectInfo value ) {
+    private void showPreview ( Project value ) {
         currentValue = value;
         if ( value == null ) {
             animation.closeDetails();
         } else {
             animation.showDetails();
             fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+        }
+    }
+
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
         }
     }
 
@@ -245,6 +235,13 @@ public abstract class ProjectTableActivity
         return query;
     }
 
+    private void clearScroll(ProjectEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -258,9 +255,10 @@ public abstract class ProjectTableActivity
     @Inject
     PolicyService policyService;
 
-    ProjectInfo currentValue = null;
+    Project currentValue = null;
     private Long projectIdForRemove = null;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
+    private Integer scrollTop;
 }

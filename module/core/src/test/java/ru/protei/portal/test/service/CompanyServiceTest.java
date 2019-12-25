@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
-import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
@@ -20,61 +20,47 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {
+        CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
 public class CompanyServiceTest extends BaseServiceTest {
 
     @Test
     public void testGetCompanyList () {
 
-        CoreResponse<List<Company>> result = companyService.companyList(getAuthToken(), new CompanyQuery());
+        Result<SearchResult<Company>> result = companyService.getCompanies(getAuthToken(), new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());
+        Assert.assertNotNull(result.getData().getResults());
     }
 
-//    @Test
-//    public void testCompanyGroups () {
-//
-//        try {
-//            CompanyService service = ctx.getBean(CompanyService.class);
-//
-//            CoreResponse<CompanyGroup> resp = service.createGroup("Test-Group", "A group for test");
-//
-//            Assert.assertTrue(resp.isOk());
-//            Assert.assertNotNull(resp.getData());
-//
-//            CompanyGroup testGroup = resp.getData();
-//            Company proteiCompany = service.getCompany( 1L ).getData();
-//
-//            service.updateCompany(proteiCompany, testGroup);
-//
-//            Assert.assertNotNull(proteiCompany);
-//
-//            proteiCompany = service.getCompany( 1L ).getData();
-//
-//            Assert.assertNotNull(proteiCompany.getCompanyGroup());
-////            Assert.assertTrue(proteiCompany.getGroups().size() > 0);
-//
-//            System.out.println(proteiCompany.getCompanyGroup().getName());
-//        }
-//        finally {
-//            ctx.getBean(CompanyGroupItemDAO.class).removeByCondition("company_id=?", 1L);
-//        }
-//    }
+    @Test
+    public void createdCompanyIsNotArchived () {
+        Company company = createNewCustomerCompany();
+        Assert.assertEquals("Expected company created by createNewCustomerCompany() is not archived", company.isArchived(), false);
+    }
+
+    @Test
+    public void newCompanyIsNotArchived () {
+        Assert.assertEquals("Expected new company is not archived", new Company().isArchived(), false);
+    }
+
 
     @Test
     public void testCompanies () {
 
         Long companyId = null;
+        Long companyGroupId = null;
 
         try {
 
@@ -94,10 +80,11 @@ public class CompanyServiceTest extends BaseServiceTest {
             group.setCreated(new Date());
             group.setName("test");
             group.setInfo("test");
-            companyGroupDAO.persist(group);
+
+            companyGroupId = companyGroupDAO.persist( group );
             company.setGroupId(group.getId());
 
-            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
+            Result<Company> response = companyService.createCompany(getAuthToken(), company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
             log.info("Company id = {}", company.getId());
@@ -124,6 +111,42 @@ public class CompanyServiceTest extends BaseServiceTest {
                 companyGroupItemDAO.getCompanyToGroupLinks(companyId, null)
                         .forEach(item -> companyGroupItemDAO.remove(item));
             }
+            if (companyId != null) {
+                companyDAO.removeByCondition("id=?", companyId);
+            }
+            if(companyGroupId!=null){
+                companyGroupDAO.removeByKey( companyGroupId );
+            }
+        }
+    }
+
+    @Test
+    public void testCompanyUpdateState() {
+        Long companyId = null;
+
+        try {
+            Company company = new Company();
+            company.setCreated(new Date());
+            company.setCname("Тестовая компания " + new Date().getTime());
+
+            Result<Company> response = companyService.createCompany(getAuthToken(), company);
+            Company companyFromService = response.getData();
+            companyId = companyFromService.getId();
+
+            boolean startState = companyFromService.isArchived();
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), !startState);
+
+            boolean endState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertNotEquals(startState, endState);
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), !endState);
+
+            boolean changedEndState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertEquals(startState, changedEndState);
+        } finally {
             if (companyId != null) {
                 companyDAO.removeByCondition("id=?", companyId);
             }

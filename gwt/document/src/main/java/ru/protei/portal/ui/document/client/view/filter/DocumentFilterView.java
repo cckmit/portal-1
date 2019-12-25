@@ -15,19 +15,20 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
-import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -56,9 +57,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         organizationCode.setValue(null);
         dateRange.setValue(null);
         documentType.setValue(null);
-        approved.setValue(null);
+        approved.setValue(true);
         keywords.setValue(new LinkedList<>());
         sortDir.setValue(false);
+        showDeprecated.setValue(false);
+        projects.setValue(null);
     }
 
     @Override
@@ -79,6 +82,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> projects() {
+        return projects;
     }
 
     @Override
@@ -107,6 +115,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @Override
+    public HasValue<Boolean> showDeprecated() { return showDeprecated; }
+
+    @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
     }
@@ -118,6 +129,13 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
             if (activity != null) {
                 activity.onFilterChanged();
             }
+        }
+    }
+
+    @UiHandler( "showDeprecated" )
+    public void onShowDeprecatedClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
         }
     }
 
@@ -138,6 +156,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiHandler("manager")
     public void onManagerSelected(ValueChangeEvent<PersonShortView> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("projects")
+    public void onProjectsChanged(ValueChangeEvent<Set<EntityOption>> event) {
         fireChangeTimer();
     }
 
@@ -171,18 +194,6 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         fireChangeTimer();
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule(300);
@@ -199,6 +210,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiField
     Button resetBtn;
+
+    @UiField
+    CheckBox showDeprecated;
 
     @Inject
     @UiField
@@ -241,7 +255,8 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     StringSelectInput keywords;
 
     @Inject
-    FixedPositioner positioner;
+    @UiField(provided = true)
+    ProjectMultiSelector projects;
 
     AbstractDocumentFilterActivity activity;
 

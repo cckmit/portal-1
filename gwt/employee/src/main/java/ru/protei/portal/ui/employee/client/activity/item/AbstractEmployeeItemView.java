@@ -2,7 +2,6 @@ package ru.protei.portal.ui.employee.client.activity.item;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-
 /**
  * Представление сотрудника
  */
@@ -20,9 +19,15 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
+    void setDepartmentParent( String value);
+
     void setDepartment( String value );
 
     void setPosition( String value );
+
+    void setIP( String value );
+
+    void setFireDate (String value );
 
     HasWidgets getPreviewContainer();
 }

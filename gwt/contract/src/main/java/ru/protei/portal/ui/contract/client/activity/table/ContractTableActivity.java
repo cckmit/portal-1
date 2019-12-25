@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.contract.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -11,18 +13,20 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -30,12 +34,13 @@ import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getCompani
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getManagersIdList;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
-        AbstractContractFilterActivity, Activity {
+        AbstractContractFilterActivity, AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void init() {
         view.setActivity(this);
         view.setAnimation(animation);
+        pagerView.setActivity(this);
         filterView.setActivity(this);
         view.getFilterContainer().add(filterView.asWidget());
     }
@@ -52,16 +57,23 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     @Event(Type.FILL_CONTENT)
     public void onShow(ContractEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE) ?
-                new ActionBarEvents.Add(lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTRACT) :
+                new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.CONTRACT) :
                 new ActionBarEvents.Clear()
         );
 
-        filterView.resetFilter();
-        requestContractsCount(makeQuery());
+        clearScroll(event);
+
+        loadTable();
     }
 
     @Event
@@ -79,23 +91,51 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     @Override
     public void onEditClicked(Contract value) {
+        persistScrollTopPosition();
         fireEvent(new ContractEvents.Edit(value.getId()));
     }
 
     @Override
     public void onFilterChanged() {
-        requestContractsCount(makeQuery());
+        loadTable();
     }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Contract>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         ContractQuery query = makeQuery();
         query.setOffset(offset);
         query.setLimit(limit);
+        contractService.getContracts(query, new FluentCallback<SearchResult<Contract>>()
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
+                    }
+                }));
+    }
 
-        contractService.getContracts(query, new FluentCallback<List<Contract>>()
-                .withError(throwable -> errorHandler.accept(throwable))
-                .withSuccess(asyncCallback::onSuccess));
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
+    }
+
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private ContractQuery makeQuery() {
@@ -122,15 +162,28 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         }
     }
 
-    private void requestContractsCount(ContractQuery query) {
-        view.clearRecords();
-        animation.closeDetails();
-
-        contractService.getContractCount(query, new FluentCallback<Integer>()
-                .withError(throwable -> errorHandler.accept(throwable))
-                .withSuccess(count -> view.setRecordCount(count)));
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
     }
 
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearScroll(ContractEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
+    }
 
     @Inject
     private Lang lang;
@@ -146,6 +199,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private ContractControllerAsync contractService;
     @Inject
     private DefaultErrorHandler errorHandler;
+    @Inject
+    AbstractPagerView pagerView;
 
+    private Integer scrollTop;
     private AppEvents.InitDetails init;
 }

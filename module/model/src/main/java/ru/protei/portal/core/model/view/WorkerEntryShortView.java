@@ -10,14 +10,23 @@ import java.io.Serializable;
 @JdbcEntity(table = "worker_entry")
 public class WorkerEntryShortView implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name="personId")
+    @JdbcColumn
     private Long personId;
+
+    @JdbcColumn
+    private Long companyId;
 
     @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
+
+    @JdbcJoinedColumn(mappedColumn = "dep_name", joinPath = {
+            @JdbcJoinPath(localColumn = "dep_id", table = "company_dep", remoteColumn = "id"),
+            @JdbcJoinPath(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id")
+    })
+    private String departmentParentName;
 
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_name")
     private String departmentName;
@@ -52,6 +61,14 @@ public class WorkerEntryShortView implements Serializable {
         this.companyName = companyName;
     }
 
+    public String getDepartmentParentName() {
+        return departmentParentName;
+    }
+
+    public void setDepartmentParentName(String departmentParentName) {
+        this.departmentParentName = departmentParentName;
+    }
+
     public String getDepartmentName() {
         return departmentName;
     }
@@ -74,6 +91,14 @@ public class WorkerEntryShortView implements Serializable {
 
     public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public boolean isMain() {

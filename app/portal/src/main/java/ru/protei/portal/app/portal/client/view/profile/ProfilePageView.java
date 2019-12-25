@@ -1,22 +1,21 @@
 package ru.protei.portal.app.portal.client.view.profile;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
-
-import java.util.List;
+import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Вид превью контакта
@@ -26,28 +25,12 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
+        ensureDebugIds();
     }
 
     @Override
     public void setActivity(AbstractProfilePageActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public HasValue<List<Subscription>> companySubscription() {
-        return subscriptions;
     }
 
     @Override
@@ -61,8 +44,23 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public HasVisibility saveButtonVisibility() {
-        return saveButton;
+    public HasValue<String> currentPassword() {
+        return currentPassword;
+    }
+
+    @Override
+    public HasValue<String> newPassword() {
+        return newPassword;
+    }
+
+    @Override
+    public HasValue<String> confirmPassword() {
+        return confirmPassword;
+    }
+
+    @Override
+    public HasVisibility passwordContainerVisibility() {
+        return passwordContainer;
     }
 
     @Override
@@ -71,34 +69,70 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public HasEnabled companySubscriptionEnabled() {
-        return subscriptions;
+    public HasVisibility changePasswordButtonVisibility() {
+        return changePasswordButton;
     }
 
-    @UiHandler( "saveButton" )
-    public void onButtonClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onSaveSubscriptionClicked();
+    @UiHandler("changePasswordButton")
+    public void onChangePasswordButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onChangePasswordButtonClicked();
         }
     }
 
+    @UiHandler("savePasswordButton")
+    public void onSavePasswordButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onSavePasswordButtonClicked();
+        }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        name.ensureDebugId(DebugIds.PROFILE.NAME);
+        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.COMPANY);
+        changePasswordButton.ensureDebugId(DebugIds.PROFILE.CHANGE_PASSWORD_BUTTON);
+        changePasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CHANGE_PASSWORD);
+        currentPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CURRENT_PASSWORD);
+        currentPassword.ensureDebugId(DebugIds.PROFILE.CURRENT_PASSWORD_INPUT);
+        newPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.NEW_PASSWORD);
+        newPassword.ensureDebugId(DebugIds.PROFILE.NEW_PASSWORD_INPUT);
+        confirmPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CONFIRM_PASSWORD);
+        confirmPassword.ensureDebugId(DebugIds.PROFILE.CONFIRM_PASSWORD_INPUT);
+        savePasswordButton.ensureDebugId(DebugIds.PROFILE.SAVE_PASSWORD_BUTTON);
+    }
+
+    @UiField
+    Button changePasswordButton;
+    @UiField
+    Button savePasswordButton;
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    @UiField(provided = true)
-    SubscriptionList subscriptions;
     @UiField
     InlineLabel name;
-    @UiField
-    Button saveButton;
     @UiField
     Element company;
     @UiField
     ImageElement icon;
-
-    @Inject
-    FixedPositioner positioner;
+    @UiField
+    HTMLPanel passwordContainer;
+    @UiField
+    PasswordTextBox currentPassword;
+    @UiField
+    PasswordTextBox newPassword;
+    @UiField
+    PasswordTextBox confirmPassword;
+    @UiField
+    LabelElement currentPasswordLabel;
+    @UiField
+    LabelElement newPasswordLabel;
+    @UiField
+    LabelElement confirmPasswordLabel;
+    @UiField
+    HeadingElement changePasswordLabel;
 
     AbstractProfilePageActivity activity;
 

@@ -1,16 +1,22 @@
 package ru.protei.portal.ui.issuereport.client.view.create;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
-import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
+import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
+import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilter;
+import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
+
+import java.util.List;
 
 public class IssueReportCreateView extends Composite implements AbstractIssueReportCreateView {
 
@@ -35,20 +41,41 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public void resetFilter() {
+    public AbstractIssueFilter getIssueFilter() {
+        return issueFilter;
+    }
+
+    @Override
+    public void reset() {
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
         name.setValue(null);
     }
 
     @Override
-    public HasWidgets getReportContainer() {
-        return reportContainer;
+    public void fillReportTypes(List<En_ReportType> options) {
+        reportType.fillOptions(options);
+        reportType.setEnabled(options.size() > 1);
     }
 
     @UiHandler("reportType")
-    public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
+    public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
+        issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
         if (activity != null) {
-            activity.onReportTypeSelected();
+            activity.onReportTypeChanged();
+        }
+    }
+
+    @UiHandler("createButton")
+    public void createButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveClicked();
+        }
+    }
+
+    @UiHandler("cancelButton")
+    public void cancelButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
         }
     }
 
@@ -57,9 +84,13 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     ReportTypeButtonSelector reportType;
     @UiField
     TextBox name;
-
+    @Inject
+    @UiField(provided = true)
+    IssueFilter issueFilter;
     @UiField
-    HTMLPanel reportContainer;
+    Button createButton;
+    @UiField
+    Button cancelButton;
 
     private AbstractIssueReportCreateActivity activity;
 

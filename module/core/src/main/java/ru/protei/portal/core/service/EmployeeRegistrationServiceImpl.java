@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
@@ -12,18 +12,19 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -59,53 +60,44 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     @Override
-    public CoreResponse<Integer> count(AuthToken token, EmployeeRegistrationQuery query) {
-        return new CoreResponse<Integer>().success(employeeRegistrationDAO.countByQuery(query));
+    public Result<SearchResult<EmployeeRegistration>> getEmployeeRegistrations( AuthToken token, EmployeeRegistrationQuery query) {
+        SearchResult<EmployeeRegistration> sr = employeeRegistrationDAO.getSearchResult(query);
+        return ok(sr);
     }
 
     @Override
-    public CoreResponse<List<EmployeeRegistration>> employeeRegistrationList(AuthToken token, EmployeeRegistrationQuery query) {
-        List<EmployeeRegistration> list = employeeRegistrationDAO.getListByQuery(query);
-        if (list == null) {
-            return new CoreResponse<List<EmployeeRegistration>>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
-        return new CoreResponse<List<EmployeeRegistration>>().success(list);
-    }
-
-    @Override
-    public CoreResponse<EmployeeRegistration> getEmployeeRegistration(AuthToken token, Long id) {
+    public Result<EmployeeRegistration> getEmployeeRegistration( AuthToken token, Long id) {
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
-            return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
-        jdbcManyRelationsHelper.fillAll(employeeRegistration);
+            return error(En_ResultStatus.NOT_FOUND);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
         }
-        return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
+        return ok(employeeRegistration);
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration) {
+    public Result<Long> createEmployeeRegistration( AuthToken token, EmployeeRegistration employeeRegistration) {
         if (employeeRegistration == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = createCaseObjectFromEmployeeRegistration(employeeRegistration);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
 
         if (employeeRegistrationId == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         // Заполнить связанные поля
         employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
 
         if(employeeRegistration == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
 
@@ -115,7 +107,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return new CoreResponse<Long>().success(id);
+        return ok(id);
     }
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
@@ -148,8 +140,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
         ).toString();
 
-        String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private void createPhoneYoutrackIssueIfNeeded( EmployeeRegistration employeeRegistration) {
@@ -158,21 +151,35 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
 
-        boolean needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE);
+        String needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
+                "\n Требуется установить новый телефон." : "";
+        String needConfigure = "\n Необходима " + (contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
+                "настройка" : "перенастройка"
+        ) + " офисной телефонии";
+        String needCommunication =
+                contains(resourceList, En_PhoneOfficeType.INTERNATIONAL) ||
+                contains(resourceList, En_PhoneOfficeType.LONG_DISTANCE) ?
+                join("\n", "Необходимо включить связь: ",
+                        join(removeItem(resourceList, En_PhoneOfficeType.OFFICE), r -> getPhoneOfficeTypeName(r), ", ")
+                ).toString() : "";
+
+        String description = join( makeCommonDescriptionString( employeeRegistration ),
+                needPhone,
+                needConfigure,
+                needCommunication
+        ).toString();
 
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
 
-        String configure = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )
-                ? "перенастройка": "настройка";
+        youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
+    }
 
-        String description = join( makeCommonDescriptionString( employeeRegistration ),
-                needPhone ? "\n Требуется установить новый телефон." : "",
-                "\n", "Необходима ", configure, " офисной телефонии",
-                "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
-        ).toString();
-
-        String issueId = youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+    private Collection<En_PhoneOfficeType> removeItem(Collection<En_PhoneOfficeType> resourceList, En_PhoneOfficeType removedItem) {
+        List<En_PhoneOfficeType> result = new ArrayList<>(resourceList);
+        result.remove(removedItem);
+        return result;
     }
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
@@ -189,8 +196,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 
-        String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
-        saveCaseLink(employeeRegistration.getId(), issueId);
+        youtrackService.createIssue( EQUIPMENT_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private Set<En_EmployeeEquipment> getEquipmentsListFurniture(Set<En_EmployeeEquipment> employeeRegistration) {
@@ -285,6 +293,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "международную";
             case LONG_DISTANCE:
                 return "междугороднюю";
+            case OFFICE:
+                return "офисную";
 
         }
         return "";

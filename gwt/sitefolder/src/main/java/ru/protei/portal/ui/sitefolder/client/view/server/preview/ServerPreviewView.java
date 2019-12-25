@@ -6,11 +6,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractServerPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractServerPreviewView;
 
@@ -26,20 +22,8 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore(this);
-    }
-
-    @Override
     public void setName(String value) {
-        name.setInnerText(value);
+        name.setText(value);
     }
 
     @Override
@@ -59,7 +43,7 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
 
     @Override
     public void setComment(String value) {
-        comment.setInnerText(value);
+        comment.setText(value);
     }
 
     @UiHandler("openAppsButton")
@@ -70,7 +54,7 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     }
 
     @UiField
-    SpanElement name;
+    InlineLabel name;
     @UiField
     SpanElement platform;
     @UiField
@@ -78,12 +62,9 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     @UiField
     SpanElement parameters;
     @UiField
-    SpanElement comment;
+    Label comment;
     @UiField
     Button openAppsButton;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractServerPreviewActivity activity;
 

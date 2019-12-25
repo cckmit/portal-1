@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -27,4 +28,9 @@ public interface CaseCommentController extends RemoteService {
      * Удаляет все вложения из БД и Cloud которые привязаны к комментарию
      */
     void removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException;
+
+    /**
+     * Изменение типа работ
+     */
+    Boolean updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type) throws RequestFailedException;
 }

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,9 +13,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
@@ -37,13 +37,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     protected void onAttach() {
         super.onAttach();
-        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+        issueFilterParamView.watchForScrollOf(root);
     }
 
     @Override
     protected void onDetach() {
         super.onDetach();
-        positioner.ignore(this);
+        issueFilterParamView.stopWatchForScrollOf(root);
     }
 
     @Override
@@ -64,6 +64,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         createBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
+    }
+
+    @Override
+    public HasEnabled createEnabled() {
+        return createBtn;
     }
 
     @Override
@@ -199,11 +204,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     private void ensureDebugIds() {
+        labelFilters.setId(DebugIds.FILTER.FILTERS_LABEL);
         filterCollapseBtn.ensureDebugId(DebugIds.FILTER.COLLAPSE_BUTTON);
         filterRestoreBtn.ensureDebugId(DebugIds.FILTER.RESTORE_BUTTON);
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
         okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
+        createBtn.ensureDebugId(DebugIds.FILTER.CREATE_BUTTON);
         saveBtn.ensureDebugId(DebugIds.FILTER.SAVE_BUTTON);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
         removeBtn.ensureDebugId(DebugIds.FILTER.REMOVE_BUTTON);
@@ -220,10 +227,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField
     Lang lang;
 
+    @UiField
+    HTMLPanel root;
     @Inject
     @UiField(provided = true)
     IssueFilterParamView issueFilterParamView;
-
     @UiField
     Button resetBtn;
     @UiField
@@ -244,10 +252,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Anchor filterRestoreBtn;
     @UiField
     Anchor filterCollapseBtn;
-
-
-    @Inject
-    FixedPositioner positioner;
+    @UiField
+    LabelElement labelFilters;
 
     private AbstractIssueFilterActivity activity;
 

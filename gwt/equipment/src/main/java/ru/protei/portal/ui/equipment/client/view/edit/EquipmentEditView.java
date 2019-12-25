@@ -8,14 +8,17 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -34,6 +37,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        linkedEquipment.setModel(equipmentModelProvider.get());
     }
 
     @Override
@@ -111,7 +115,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue<ProjectInfo> project() {
+    public HasValue<EntityOption> project() {
         return project;
     }
 
@@ -156,20 +160,19 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public void setVisibilitySettingsForCreated(boolean isVisible) {
         if (!isVisible) {
-            projectBox.removeStyleName("col-xs-5");
-            projectBox.addStyleName("col-xs-7");
-            managerBox.removeStyleName("col-xs-4");
-            managerBox.addStyleName("col-xs-5");
+            projectBox.removeStyleName("col-md-4");
+            projectBox.addStyleName("col-md-8");
         }
         else {
-            projectBox.removeStyleName("col-xs-7");
-            projectBox.addStyleName("col-xs-5");
-            managerBox.removeStyleName("col-xs-5");
-            managerBox.addStyleName("col-xs-4");
+            projectBox.removeStyleName("col-md-8");
+            projectBox.addStyleName("col-md-4");
         }
         date.setVisible(isVisible);
         dateTextBox.setEnabled(false);
     }
+
+    @Inject
+    Provider<EquipmentModel> equipmentModelProvider;
 
     @Inject
     @UiField
@@ -191,7 +194,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EquipmentTypeBtnGroup type;
     @Inject
     @UiField(provided = true)
-    EquipmentSelector linkedEquipment;
+    EquipmentButtonSelector linkedEquipment;
     @Inject
     @UiField(provided = true)
     MultipleDecimalNumberInput numbers;

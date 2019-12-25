@@ -1,11 +1,12 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class CollectionUtils {
@@ -75,12 +76,16 @@ public class CollectionUtils {
         }
     }
 
-    public static <T> T find(Collection<T> col, Predicate<T> predicate) {
-        return col.stream().filter(predicate).findAny().orElse(null);
+    public static <T> Optional<T> find(Collection<T> col, Predicate<T> predicate) {
+        return stream(col).filter(predicate).findAny();
     }
 
     public static <T> int size(Collection<T> col) {
         return col == null ? 0 : col.size();
+    }
+
+    public static int size(Map<?,?> map) {
+        return map == null ? 0 : map.size();
     }
 
     public static <R, T> Set<R> toSet( Iterable<T> iterable, Function<? super T, ? extends R> mapper ) {
@@ -107,6 +112,18 @@ public class CollectionUtils {
         return result;
     }
 
+    public static <T> List<T> filterToList( Iterable<T> iterable, Predicate<? super T> predicate ) {
+        List<T> result = new ArrayList<>();
+        if(predicate ==null) return result;
+
+        transform( iterable, result, ( t, rConsumer ) -> {
+            if(predicate.test( t )){
+                rConsumer.accept( t );
+            }
+        } );
+        return result;
+    }
+
     public static <T, K, U> Map<K, U> toMap( final Iterable<T> iterable,
                                              Function<? super T, ? extends K> keyMapper,
                                              Function<? super T, ? extends U> valueMapper ) {
@@ -127,5 +144,113 @@ public class CollectionUtils {
         List<T> list = new ArrayList<>();
         list.add(value);
         return list;
+    }
+
+    public static <T> List<T> listOf(T... elements){
+        if(elements == null) return new ArrayList<>();
+        return new ArrayList<>( Arrays.asList( elements ));
+    }
+
+    public static <T> List<T> listOf(Collection<T> elements){
+        if(elements == null) return new ArrayList<>();
+        return new ArrayList<>( elements );
+    }
+
+    public static <T> Set<T> setOf(T... elements){
+        if(elements == null) return new HashSet<>();
+        return new HashSet<>( Arrays.asList( elements ));
+    }
+
+    public static <T> Set<T> setOf(Collection<T> elements){
+        if(elements == null) return new HashSet<>();
+        return new HashSet<>( elements );
+    }
+
+    public static <T> T findPreviousElement(Set<T> set, T element) {
+        T prevEl = null;
+        for (T el : set) {
+            if (Objects.equals(el, element)) {
+                return prevEl;
+            }
+            prevEl = el;
+        }
+        return prevEl;
+    }
+
+    public static <T> T findNextElement(Set<T> set, T element) {
+        boolean shouldReturn = false;
+        for (T el : set) {
+            if (shouldReturn) {
+                return el;
+            }
+            if (Objects.equals(el, element)) {
+                shouldReturn = true;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Сравнение двух коллекций
+     *
+     * @param <T>    тип элементов, хранящихся в сравниваемых коллекциях
+     * @param first  первая коллекция ("старая")
+     * @param second вторая коллекция ("новая")
+     * @return результат сравнения двух коллекций
+     */
+    public static <T> DiffCollectionResult<T> diffCollection(Collection<T> first, Collection<T> second) {
+        return diffCollection( first, second, null );
+    }
+
+    /**
+     * Сравнение двух коллекций
+     *
+     * @param <T>    тип элементов, хранящихся в сравниваемых коллекциях
+     * @param first  первая коллекция ("старая")
+     * @param second вторая коллекция ("новая")
+     * @param comparator сравнение елементов на измененность
+     * @return результат сравнения двух коллекций
+     */
+    public static <T> DiffCollectionResult<T> diffCollection(Collection<T> first, Collection<T> second, Comparator<T> comparator) {
+        DiffCollectionResult<T> result = new DiffCollectionResult<T>();
+        if (first == null) {
+            if (second != null) {
+                for (T entry : second) {
+                    result.putAddedEntry(entry);
+                }
+            }
+            return result;
+        } else if (second == null) {
+            for (T entry : first) {
+                result.putRemovedEntry(entry);
+            }
+            return result;
+        }
+        for (T entry : first) {
+            T s = getSame( second, entry );
+            if (s == null) {
+                result.putRemovedEntry( entry );
+                continue;
+            }
+            if (comparator == null || comparator.compare( entry, s ) == 0) {
+                result.putSameEntry( entry );
+            } else {
+                result.putChangedEntry( entry, s );
+            }
+        }
+        for (T entry : second) {
+            if (!first.contains(entry)) {
+                result.putAddedEntry(entry);
+            }
+        }
+        return result;
+    }
+
+    private static <T> T getSame( Collection<T> second, T entry ) {
+        for (T t : second) {
+            if(Objects.equals( entry, t )) return t;
+        }
+
+        return null;
     }
 }

@@ -3,7 +3,7 @@
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client"
              xmlns:importance='urn:import:ru.protei.portal.app.portal.client.widget.importance.btngroup'
              xmlns:searchbtn='urn:import:ru.protei.portal.ui.common.client.widget.searchbtn'
-             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
+             xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -12,12 +12,12 @@
             <span ui:field="sectionName"/>
             <span ui:field="count" class="dashboard-total-count"/>
             <g:Button ui:field="fastOpen" styleName="btn dashboard-btn">
-                <i class="fa fa-lg fa-external-link"/>
+                <i class="fas fa-external-link-alt"/>
             </g:Button>
             <div class="rightSide">
                 <searchbtn:SearchButton ui:field="search" styleName="dashboard-search-btn" placeholder="{lang.issueNumber}"/>
-                <person:PersonButtonViewerSelector ui:field="initiatorsBtn" styleName="dashboard-btn" defaultValue="{lang.withoutContact}"/>
-                <importance:CustomImportanceBtnGroupMulti ui:field="importance"/>
+                <company:CompanyButtonViewerSelector ui:field="companiesBtn" styleName="dashboard-btn" defaultValue="{lang.dashboardSelectCompany}"/>
+                <importance:CustomImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-sm"/>
             </div>
         </div>
         <div ui:field="loader" class="Loader"/>

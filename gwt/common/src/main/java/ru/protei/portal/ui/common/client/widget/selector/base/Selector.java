@@ -8,10 +8,10 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.common.ScrollWatcher;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -34,16 +34,15 @@ public abstract class Selector<T>
         extends Composite
         implements HasValue<T>,
         ClickHandler, ValueChangeHandler<String>,
-        Window.ScrollHandler,
         HasSelectorChangeValHandlers,
         HasAddHandlers,
         SelectorWithModel<T>
 {
 
     public interface SelectorFilter<T> {
+
         boolean isDisplayed( T value );
     }
-
     public Collection<T> getValues() {
         return itemToDisplayOptionModel.keySet();
     }
@@ -111,6 +110,14 @@ public abstract class Selector<T>
         this.addButtonText = addButtonText;
     }
 
+    public void watchForScrollOf(Widget widget) {
+        scrollWatcher.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        scrollWatcher.stopWatchForScrollOf(widget);
+    }
+
     @Override
     public void fillOptions( List<T> options ) {
         clearOptions();
@@ -140,8 +147,6 @@ public abstract class Selector<T>
         } else {
             itemToDisplayOptionModel.put(value, option);
         }
-
-
 
         popup.getChildContainer().add(itemView.asWidget());
     }
@@ -187,6 +192,10 @@ public abstract class Selector<T>
         onSearchChanged(event.getValue());
     }
 
+    public void setHideNullValue(boolean isHideNullValue) {
+        this.isHideNullValue = isHideNullValue;
+    }
+
     protected void onSearchChanged( String searchString ) {
         String searchText = searchString.toLowerCase();
 
@@ -195,7 +204,7 @@ public abstract class Selector<T>
 
         popup.getChildContainer().clear();
 
-        if (searchText.isEmpty() && nullItemView != null) {
+        if (searchText.isEmpty() && nullItemView != null && !isHideNullValue) {
             popup.getChildContainer().add(nullItemView);
         }
 
@@ -228,9 +237,7 @@ public abstract class Selector<T>
         }
     }
 
-
-    @Override
-    public void onWindowScroll(Window.ScrollEvent event) {
+    private void onScroll() {
         if (popup.isAttached()) {
             popup.showNear(relative);
         }
@@ -253,7 +260,7 @@ public abstract class Selector<T>
 
     @Override
     protected void onLoad() {
-        scrollRegistration = Window.addWindowScrollHandler(this);
+        scrollWatcher.startWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorLoad(this);
         }
@@ -261,12 +268,11 @@ public abstract class Selector<T>
 
     @Override
     protected void onUnload() {
-        scrollRegistration.removeHandler();
+        scrollWatcher.stopWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorUnload(this);
         }
     }
-
 
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
@@ -356,6 +362,7 @@ public abstract class Selector<T>
         nextSelectorItem.setFocus(true);
     }
 
+
     @Inject
     protected SelectorPopup popup;
     @Inject
@@ -376,6 +383,7 @@ public abstract class Selector<T>
     };
 
     protected boolean hasNullValue = true;
+    private boolean isHideNullValue = false;
     private boolean autoSelectFirst = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;
@@ -389,10 +397,10 @@ public abstract class Selector<T>
 
     private SelectorModel<T> selectorModel;
 
-    private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
     protected SelectorFilter<T> filter = null;
+    private final ScrollWatcher scrollWatcher = new ScrollWatcher(this::onScroll);
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.query;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.jdbc.JdbcSort;
@@ -22,6 +23,17 @@ public class SqlConditionBuilderTest {
         assertEquals( "TRUE", condition.getSqlCondition() );
         assertNotNull( condition.getSqlParameters() );
         assertEquals( 0, condition.getSqlParameters().size() );
+    }
+
+    @Test
+    public void forUpdate() throws Exception {
+        String sql = "SELECT email_last_id FROM case_object WHERE id = ? FOR UPDATE";
+        Object[] args = new Object[]{441016};
+
+        Query query = query().
+        select( "email_last_id" ).from( "case_object").where("id" ).equal( 441016 ).asQuery().forUpdate();
+        assertEquals( sql, query.asCondition().getSqlCondition() );
+        assertArrayEquals( args,  query.asCondition().getSqlParameters().toArray() );
     }
 
     @Test

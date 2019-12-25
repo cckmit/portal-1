@@ -35,6 +35,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonCreate();
 
+    String buttonChangePassword();
+
     String errNoMatchesFound();
 
     String errGetList();
@@ -51,13 +53,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String description();
 
-    String productToArchive();
+    String buttonToArchive();
 
     String productName();
 
     String msgObjectSaved();
 
-    String productFromArchive();
+    String msgStatusChanged();
+
+    String buttonFromArchive();
 
     String errEmptyName();
 
@@ -209,6 +213,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactSocialNet();
 
+    String goToContacts();
+
     String workAddress();
 
     String homeAddress();
@@ -335,6 +341,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String canceledCaseState();
 
+    String requestNXCaseState();
+
+    String requestCustomerCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -373,6 +383,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueComment();
 
+    String errEditTimeElapsedType();
+
     String selectCompanyGroup();
 
     String activeRecords();
@@ -383,9 +395,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
+    String dashboardSelectCompany();
+
     String issueCommentChangeStatusTo();
 
     String issueCommentChangeImportanceTo();
+
+    String issueCommentChangeManagerTo();
 
     String errNotRemoved();
 
@@ -559,6 +575,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uploadFileError();
 
+    String uploadFileSizeExceed();
+
     String uploadFileSuccess();
 
     String removeFileError();
@@ -571,13 +589,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountPassword();
 
+    String accountCurrentPassword();
+
+    String accountNewPassword();
+
     String accountPasswordNotDefinied();
 
     String errEditContactLogin();
 
+    String errEditProfile();
+
     String accountLoginInfo();
 
     String accountConfirmPassword();
+
+    String accountPasswordChange();
 
     String accountPasswordsNotMatch();
 
@@ -771,11 +797,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueNameHeader();
 
+    String issuePlatformHeader();
+
     String noChanges();
 
     String roleRemoveConfirmMessage();
 
     String issueCompanySubscriptionNotDefined();
+
+    String issueCompanySubscriptionBasedOnPrivacyNotDefined();
 
     String issueCompanySubscriptionNeedSelectCompany();
 
@@ -793,6 +823,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentCommonHeader();
 
+    String documentProjectHeader();
+
+    String documentCreateHeader();
+
     String documentName();
 
     String documentType();
@@ -803,9 +837,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentContent();
 
+    String documentChangeStateConfirmMessage();
+
+    String documentShowDeprecated();
+
     String addKeyword();
 
     String keywordInputPlaceholder();
+
+    String aliasInputPlaceholder();
 
     String inventoryNumber();
 
@@ -1015,10 +1055,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkCrmShort();
 
-    String caseLinkOldCrm();
-
-    String caseLinkOldCrmShort();
-
     String caseLinkYouTrack();
 
     String caseLinkYouTrackShort();
@@ -1083,6 +1119,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderParamsLocal();
 
+    String siteFolderProject();
+
     String siteFolderComment();
 
     String siteFolderIP();
@@ -1104,6 +1142,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderPlatformNotRemoved();
 
     String siteFolderPlatformNotSaved();
+
+    String siteFolderPlatformSaved();
 
     String siteFolderPlatformName();
 
@@ -1245,6 +1285,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectManager();
 
+    String selectPlatform();
+
     String employees();
 
     String privilegeCategoryEmployee();
@@ -1260,6 +1302,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeCompany();
 
     String employeeMainPosition();
+
+    String employeeFired();
+
+    String employeeShowFired();
 
     String initiatorSelectACompany();
     String serverAccessParamsColumn();
@@ -1400,6 +1446,34 @@ public interface Lang extends Messages, ContactItemLang {
 
     String decimalNumbersRequired();
 
+    String proteiTitleShort();
+
+    String authDescription();
+
+    String proteiTitleFull();
+
+    String authTitle();
+
+    String companyMainInfoTitle();
+
+    String companyContactInfoTitle();
+
+    String companyContactsHeader();
+
+    String contactMainInfoTitle();
+
+    String contactContactInfoTitle();
+
+    String contactAccountTitle();
+
+    String contactAccountHint();
+
+    String projectCreateBy();
+
+    String accountFor();
+
+    String accountRolesNotFound();
+
     String projectRemoveConfirmMessage(String name);
 
     String projectRemoveSucceeded();
@@ -1443,6 +1517,8 @@ public interface Lang extends Messages, ContactItemLang {
     String type();
 
     String goToIssues();
+
+    String goToPlatforms();
 
     String employeeWithoutManager();
 
@@ -1560,6 +1636,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyDirection();
 
+    String contractValidationEmptyState();
+
+    String contractValidationEmptyDateSigning();
+
+    String contractValidationEmptyDateValid();
+
     String period();
 
     String reportMissingProduct();
@@ -1574,19 +1656,23 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
-    String proteiTitleFull();
-
-    String authTitle();
-
-    String proteiTitleShort();
-
-    String authDescription();
-
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
 
     String employeeRegistrationValidationCurators();
+
+    String employeeRegistrationValidationHeadOfDepartmentAsCurator();
+
+    String employeeRegistrationPositionExceed(int num);
+
+    String employeeRegistrationWorkplaceExceed(int num);
+
+    String employeeRegistrationOperatingSystemExceed(int num);
+
+    String employeeRegistrationAdditionalSoftLengthExceed(int num);
+
+    String employeeRegistrationResourceCommentLengthExceed(int num);
 
     String employeeRegistrationValidationProbationPeriod();
 
@@ -1599,6 +1685,8 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedType();
 
     String issueCommentElapsedTimeTypeLabel();
+
+    String issueCommentElapsedTimeTypeChange();
 
     String selectValue();
 
@@ -1620,9 +1708,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagCreate();
 
+    String tagEdit();
+
     String tagName();
 
     String tagColor();
+
+    String tagCompany();
 
     String commentEmpty();
 
@@ -1639,4 +1731,230 @@ public interface Lang extends Messages, ContactItemLang {
     String textJiraWikiMarkupSupport();
 
     String tagNotSpecified();
+
+    String employeeRegistrationMainInfoTitle();
+
+    String employeeRegistrationWorkplaceTitle();
+
+    String employeeRegistrationResourceTitle();
+
+    String employeeRegistrationResourceHint();
+
+    String employeeRegistrationWorkplaceHint();
+
+    String createBy(String author, String date);
+
+    String companyIsAPartOfCompany(String name);
+
+    String companyIsAHeadOfCompany(String names);
+
+    String in();
+
+    String roleMainTitle();
+
+    String rolePrivilegesHint();
+
+    String caseStateDescription();
+
+    String documentWorkGroupHeader();
+
+    String tagAuthor();
+
+    String tagInfo();
+
+    String employeeEmployeeFullNameColumnHeader();
+
+    String employeeWorkPhoneColumnHeader();
+
+    String employeeMobilePhoneColumnHeader();
+
+    String employeeIPAddressColumnHeader();
+
+    String employeeEmailColumnHeader();
+
+    String employeeDepartmentColumnHeader();
+
+    String privateComment();
+
+    String commentPreviewIsDisplay();
+
+    String timeElapsedTypeSoftInstall();
+
+    String timeElapsedTypeSoftUpdate();
+
+    String timeElapsedTypeSoftConfig();
+
+    String timeElapsedTypeTesting();
+
+    String timeElapsedTypeConsultation();
+
+    String timeElapsedTypeMeeting();
+
+    String timeElapsedTypeDiscussionOfImprovements();
+
+    String timeElapsedTypeLogAnalysis();
+
+    String timeElapsedTypeSolveProblems();
+
+    String newProject();
+
+    String projectEdit();
+
+    String goToProjects();
+
+    String errInvalidCaseUpdateCaseIsClosed();
+
+    String buttonSettings();
+
+    String commentSetPrivate();
+
+    String employeeRegistrationCuratorsHint();
+
+    String logoutHotKey();
+
+    String documentSearchProject();
+
+    String buttonSearch();
+
+    String buttonClose();
+
+    String projectName();
+
+    String buttonCreateProject();
+    String buttonCreateProduct();
+
+    String inputProjectName();
+    String selectCustomerType();
+
+    String errFilterParameterRequired();
+
+    String firstHundredRecords();
+
+    String issueCopyNumber();
+
+    String errCopyToClipboard();
+
+    String issueCopiedToClipboard();
+
+    String crmPrefix();
+
+    String errInvalidCurrentPassword();
+
+    String errSaveProjectNeedSelectRegion();
+
+    String errSaveProjectNeedSelectDirection();
+
+    String errSaveProjectNeedSelectCustomerType();
+
+    String errSaveProjectNeedSelectCompany();
+
+    String passwordUpdatedSuccessful();
+
+    String issueLinkIncorrectYouTrackCaseNotFound( String p0 );
+
+    String dropFilesHere();
+
+    String productChangeStateConfirmMessage();
+
+    String complexName();
+
+    String devUnitComplex();
+
+    String complexesAndProducts();
+
+    String componentDescription();
+
+    String complexDescription();
+
+    String jiraIssueType();
+
+    String jiraSeverity();
+
+    String jiraTimeOfReaction();
+
+    String jiraTimeOfDecision();
+
+    String contractProject();
+
+    String contractProjectNotDefined();
+
+    String errSaveIssueNeedSelectPlatform();
+
+    String contractProjectHint();
+
+    String goToProducts();
+
+    String goToContracts();
+
+    String contract();
+
+    String buttonBack();
+
+    String buttonForward();
+
+    String projectSearch();
+
+    String projectCreate();
+
+    String projectSiteFolder();
+
+    String issueInitiatorInfo();
+
+    String errNotAllowedChangeIssueNameOrDescription();
+
+    String timeElapsedInfo();
+
+    String phoneOfficeTypeOffice();
+
+    String productAliases();
+
+    String productSearchNameOrAlias();
+
+    String documentSearchNameOrDesignation();
+
+    String errSavePlatformConnectedIssuesExist();
+
+    String errSaveProjectCannotChangeCompany();
+
+    String sendEmailWarning();
+
+    String errAccessDenied();
+
+    String caseLinkSuccessfulCreated();
+
+    String caseLinkSuccessfulRemoved();
+
+    String issueCopyNumberAndName();
+
+    String documentConfirmRemove();
+
+    String documentRemoved();
+
+    String documentProjectCustomerType();
+
+    String documentProjectProductDirection();
+
+    String documentProjectRegion();
+
+    String documentSectionProject();
+
+    String documentSectionEquipment();
+
+    String documentSectionInfo();
+
+    String fileDropzoneLabel();
+
+    String documentFileDoc();
+
+    String documentFilePdf();
+
+    String backToIssues();
+
+    String editNameAndDescription();
+
+    String openFullScreen();
+
+    String tagAdd();
+
+    String linkAdd();
 }

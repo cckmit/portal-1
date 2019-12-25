@@ -30,6 +30,11 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
+    public boolean updateState(DevUnit newState) {
+        return partialMerge(newState, "UNIT_STATE");
+    }
+
+    @Override
     public Map<Long, Long> getProductOldToNewMap() {
         Map<Long,Long> result = new HashMap<>();
         getListByCondition("UTYPE_ID=? and old_id is not null", En_DevUnitType.PRODUCT.getId())
@@ -43,8 +48,10 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
             condition.append("1=1");
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and UNIT_NAME like ?");
-                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                String arg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                condition.append(" and (UNIT_NAME like ? or ALIASES like ?)");
+                args.add(arg);
+                args.add(arg);
             }
 
             if (query.getState() != null) {

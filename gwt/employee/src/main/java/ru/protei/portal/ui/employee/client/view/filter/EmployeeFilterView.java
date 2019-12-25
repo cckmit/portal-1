@@ -10,7 +10,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -25,19 +24,6 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        positioner.watch( this, FixedPositioner.NAVBAR_TOP_OFFSET );
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        positioner.ignore( this );
     }
 
     @Override
@@ -61,16 +47,59 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue< String > workPhone() {
+        return workPhone;
+    }
+
+    @Override
+    public HasValue< String > mobilePhone() {
+        return mobilePhone;
+    }
+
+    @Override
+    public HasValue< String > ipAddress() {
+        return ipAddress;
+    }
+
+    @Override
+    public HasValue< String > email() {
+        return email;
+    }
+
+    @Override
+    public HasValue< String > departmentParent() {
+        return department;
+    }
+
+    @Override
+    public HasValue<Boolean> showFired() {
+        return showFired;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setValue( "" );
+        workPhone.setValue( "" );
+        mobilePhone.setValue( "" );
+        ipAddress.setValue( "" );
+        email.setValue( "" );
+        department.setValue( "" );
+        showFired.setValue(false);
     }
 
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
             resetFilter();
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "showFired" )
+    public void onShowFireClicked( ClickEvent event ) {
+        if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
@@ -87,6 +116,33 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent< String > event ) {
+        sortField.setValue(En_SortField.person_full_name);
+        fireChangeTimer();
+    }
+
+    @UiHandler( "workPhone" )
+    public void onWorkPhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "mobilePhone" )
+    public void onMobilePhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "ipAddress" )
+    public void onIPAddressChanged( ValueChangeEvent< String > event ) {
+        sortField.setValue(En_SortField.employee_ip);
+        fireChangeTimer();
+    }
+
+    @UiHandler( "email" )
+    public void onEmailChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("department")
+    public void onDepartmentChanged( ValueChangeEvent< String > event ) {
         fireChangeTimer();
     }
 
@@ -107,14 +163,29 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     CleanableSearchBox search;
 
     @UiField
+    CleanableSearchBox workPhone;
+
+    @UiField
+    CleanableSearchBox mobilePhone;
+
+    @UiField
+    CleanableSearchBox ipAddress;
+
+    @UiField
+    CleanableSearchBox email;
+
+    @UiField
+    CleanableSearchBox department;
+
+    @UiField
     Button resetBtn;
+
+    @UiField
+    CheckBox showFired;
 
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    FixedPositioner positioner;
 
     private AbstractEmployeeFilterActivity activity;
 

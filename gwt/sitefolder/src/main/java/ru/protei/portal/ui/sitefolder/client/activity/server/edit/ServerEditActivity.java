@@ -30,6 +30,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Edit event) {
+        if (!hasPrivileges(event.serverId)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -38,7 +42,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.serverId == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerNew()));
 
             if (event.serverIdToBeCloned != null) {
                 requestServer(event.serverIdToBeCloned, server -> {
@@ -56,7 +59,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
             fillView(server);
             return;
         }
-        fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerEdit()));
 
         requestServer(event.serverId, this::fillView);
     }
@@ -121,7 +123,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.setCompanyId(server.getPlatform() == null ? null : server.getPlatform().getCompanyId());
         view.name().setValue(server.getName());
-        view.platform().setValue(server.getPlatform() == null ? null : server.getPlatform().toEntityOption());
+        view.platform().setValue(server.getPlatform() == null ? null : server.getPlatform().toPlatformOption());
         view.ip().setValue(server.getIp());
         view.parameters().setValue(server.getParams());
         view.comment().setValue(server.getComment());
@@ -144,6 +146,18 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
     private boolean isValid() {
         return view.nameValidator().isValid() && view.platformValidator().isValid();
+    }
+
+    private boolean hasPrivileges(Long serverId) {
+        if (serverId == null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return true;
+        }
+
+        if (serverId != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

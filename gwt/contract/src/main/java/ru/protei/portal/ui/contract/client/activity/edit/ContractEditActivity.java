@@ -13,14 +13,14 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContractEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
@@ -37,11 +37,17 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Event
     public void onShow(ContractEvents.Edit event) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
 
         if ( !policyService.hasAnyPrivilegeOf( En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT )) {
             return;
         }
+
         initDetails.parent.add(view.asWidget());
 
         if(event.id == null) {
@@ -81,6 +87,33 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
     }
 
+    @Override
+    public void refreshProjectSpecificFields() {
+        if (view.project().getValue() == null) {
+            clearProjectSpecificFields();
+            return;
+        }
+        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
+                .withSuccess(project -> {
+                    view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+                    view.contragent().setValue(project.getContragent() == null ? null : project.getContragent());
+                    view.directionEnabled().setEnabled(false);
+                    view.managerEnabled().setEnabled(false);
+                    view.contragentEnabled().setEnabled(false);
+                })
+        );
+    }
+
+    private void clearProjectSpecificFields() {
+        view.direction().setValue(null);
+        view.manager().setValue(null);
+        view.contragent().setValue(null);
+        view.directionEnabled().setEnabled(true);
+        view.managerEnabled().setEnabled(true);
+        view.contragentEnabled().setEnabled(true);
+    }
+
     private void requestData(Long id){
         contractService.getContract(id, new FluentCallback<Contract>()
                 .withSuccess(this::fillView));
@@ -88,6 +121,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void fillView(Contract value) {
         this.contract = value;
+
+        view.setContractIndependentProjects(true);
 
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {
@@ -100,18 +135,22 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
         view.cost().setValue(new CostWithCurrency(contract.getCost(), contract.getCurrency()));
         view.description().setValue(contract.getDescription());
-
-        view.contragent().setValue(createOptionOrNull(contract.getContragentId(), contract.getContragentName()));
-        view.manager().setValue(createPersonOrNull(contract.getManagerId(), contract.getManagerShortName()));
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
-        view.direction().setValue(createProductOrNull(contract.getDirectionId(), contract.getDirectionName()));
-
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValid().setValue(contract.getDateValid());
         view.contractDates().setValue(contract.getContractDates());
 
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
+
+        view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
+        refreshProjectSpecificFields();
+
+        if (view.project().getValue() == null) {
+            view.contragent().setValue(createOptionOrNull(contract.getCaseContragentId(), contract.getCaseContragentName()));
+            view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
+            view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
+        }
     }
 
     private void fillDto() {
@@ -121,18 +160,25 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setCost(view.cost().getValue().getCost());
         contract.setCurrency(view.cost().getValue().getCurrency());
         contract.setDescription(view.description().getValue());
-
-        contract.setContragentId(getOptionIdOrNull(view.contragent().getValue()));
-        contract.setManagerId(getPersonIdOrNull(view.manager().getValue()));
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
-        contract.setDirectionId(getProductIdOrNull(view.direction().getValue()));
-
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValid().getValue());
         contract.setContractDates(view.contractDates().getValue());
 
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
+
+        contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
+
+        if (contract.getProjectId() == null) {
+            contract.setCaseContragentId(getOptionIdOrNull(view.contragent().getValue()));
+            contract.setCaseManagerId(getPersonIdOrNull(view.manager().getValue()));
+            contract.setCaseDirectionId(getProductIdOrNull(view.direction().getValue()));
+        } else {
+            contract.setCaseContragentId(null);
+            contract.setCaseManagerId(null);
+            contract.setCaseDirectionId(null);
+        }
     }
 
     private void showValidationError() {
@@ -149,7 +195,16 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getContractType() == null)
             return lang.contractValidationEmptyType();
 
-        if (contract.getDirectionId() == null)
+        if (contract.getStateId() == null)
+            return lang.contractValidationEmptyState();
+
+        if (contract.getDateSigning() == null)
+            return lang.contractValidationEmptyDateSigning();
+
+        if (contract.getDateValid() == null)
+            return lang.contractValidationEmptyDateValid();
+
+        if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
             return lang.contractValidationEmptyDirection();
 
         return null;
@@ -158,13 +213,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void saveContract() {
         view.saveEnabled().setEnabled(false);
         contractService.saveContract(contract, new FluentCallback<Long>()
-                .withResult(() -> {
+                .withError(t -> {
                     view.saveEnabled().setEnabled(true);
                 })
                 .withSuccess(value -> {
+                    view.saveEnabled().setEnabled(true);
                     fireEvent(new ContractEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(isNew(contract) ? new ContractEvents.Show(true) : new Back());
                 }));
+    }
+
+    private boolean isNew(Contract contract) {
+        return contract.getId() == null;
     }
 
     private Long getOptionIdOrNull(EntityOption option) {
@@ -191,6 +252,18 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         return id == null ? null : new ProductDirectionInfo(id, name);
     }
 
+    private boolean hasPrivileges(Long contractId) {
+        if (contractId == null && policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+            return true;
+        }
+
+        if (contractId != null && policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -199,6 +272,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private ContractControllerAsync contractService;
     @Inject
     PolicyService policyService;
+    @Inject
+    RegionControllerAsync regionService;
 
     private Contract contract;
     private AppEvents.InitDetails initDetails;

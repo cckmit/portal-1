@@ -5,9 +5,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Колонка редактирования контакта.
@@ -19,50 +20,36 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
     }
 
     @Inject
-    public EditClickColumn( Lang lang ) {
+    public EditClickColumn(Lang lang) {
         this.lang = lang;
     }
 
     @Override
-    protected void fillColumnHeader( Element element ) {
-        element.addClassName( "edit" );
+    protected String getColumnClassName() {
+        return "edit";
     }
 
     @Override
+    protected void fillColumnHeader( Element element ) {}
+
+    @Override
     public void fillColumnValue( Element cell, T value ) {
-        cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
-        a.addClassName( "fa-2x ion-compose" );
+        a.addClassName( "far fa-edit fa-lg" );
         a.setTitle( lang.edit() );
-        setEditEnabled( a );
-        cell.appendChild( a );
-    }
-
-    public void setPrivilege( En_Privilege privilege ) {
-        this.privilege = privilege;
-    }
-
-    public void setEditHandler( EditHandler< T > editHandler ) {
-        setActionHandler(editHandler::onEditClicked);
-    }
-
-    private void setEditEnabled( AnchorElement a ) {
-
-        if ( privilege == null ) {
-            return;
-        }
-
-        if ( policyService.hasPrivilegeFor( privilege ) ) {
+        a.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.EDIT );
+        if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
             a.removeClassName( "link-disabled" );
         } else {
             a.addClassName( "link-disabled" );
         }
+        cell.appendChild( a );
     }
 
-    @Inject
-    PolicyService policyService;
+    public void setEditHandler( EditHandler< T > editHandler ) {
+        setActionHandler( editHandler::onEditClicked );
+    }
 
-    Lang lang;
-    En_Privilege privilege;
+    private final Lang lang;
 }

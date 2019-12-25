@@ -13,6 +13,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.*;
 
@@ -21,7 +22,7 @@ import java.util.*;
  */
 public class OptionList<T>
         extends Composite
-        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>, HasEnabled
+        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>, HasEnabled, SelectorWithModel<T>
 {
     public OptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -58,6 +59,7 @@ public class OptionList<T>
 
     public void setHeader( String header ) {
         this.header.setInnerText( header == null ? "" : header );
+        this.header.removeClassName("hide");
     }
 
 
@@ -91,13 +93,35 @@ public class OptionList<T>
         addOption( name, value, null );
     }
 
-    public void clearOptions() {
-        container.clear();
+    @Override
+    public void fillOptions(List<T> options) {
+        clearOptions();
+        for (T option : options) {
+            addOption(option.toString(), option);
+        }
     }
 
-    public void reset() {
-        clearOptions();
-        selected.clear();
+    @Override
+    public void refreshValue() {
+        setValue(selected);
+    }
+
+    @Override
+    protected void onLoad() {
+        if (selectorModel != null) {
+            selectorModel.onSelectorLoad(this);
+        }
+    }
+
+    @Override
+    protected void onUnload() {
+        if (selectorModel != null) {
+            selectorModel.onSelectorUnload(this);
+        }
+    }
+
+    public void clearOptions() {
+        container.clear();
         itemViewToModel.clear();
         itemToViewModel.clear();
         itemToNameModel.clear();

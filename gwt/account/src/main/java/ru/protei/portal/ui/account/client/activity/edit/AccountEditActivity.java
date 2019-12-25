@@ -5,13 +5,16 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
@@ -36,12 +39,15 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Event
     public void onShow( AccountEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         if( event.id == null ) {
-            this.fireEvent( new AppEvents.InitPanelName( lang.accountNew() ) );
             initialView( new UserLogin() );
         } else {
             requestAccount( event.id, this::initialView );
@@ -77,7 +83,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
             @Override
             public void onSuccess( UserLogin userLogin ) {
-                fireEvent( new Back() );
+                fireEvent( isNew( account ) ? new AccountEvents.Show( true ) : new Back() );
             }
         } );
     }
@@ -111,6 +117,10 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         fireEvent( new Back() );
     }
 
+    private boolean isNew(UserLogin userLogin) {
+        return userLogin.getId() == null;
+    }
+
     private void requestAccount( Long id, Consumer< UserLogin > successAction ) {
         accountService.getAccount(  id, new RequestCallback< UserLogin >() {
             @Override
@@ -118,7 +128,6 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
             @Override
             public void onSuccess( UserLogin userLogin ) {
-                fireEvent( new AppEvents.InitPanelName( lang.editContactHeader( userLogin.getUlogin() ) ) );
                 successAction.accept( userLogin );
             }
         } );
@@ -131,7 +140,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     private UserLogin applyChangesLogin() {
         account.setUlogin( view.login().getValue() );
         account.setPersonId( view.person().getValue().getId() );
-        account.setInfo( view.person().getValue().getDisplayShortName() );
+        account.setInfo( view.person().getValue().getName() );
         if ( !HelperFunc.isEmpty( view.password().getText() ) ) {
             account.setUpass( view.password().getText() );
         }
@@ -147,9 +156,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     private void fillView( UserLogin userLogin ) {
         view.login().setValue( userLogin.getUlogin() );
-        view.company().setValue( userLogin.getPerson() == null ? null : EntityOption.fromCompany( userLogin.getPerson().getCompany() ) );
-        view.setCompaniesForInitiator( userLogin.getPerson() == null ? null : InitiatorModel.makeCompanyIds(userLogin.getPerson().getCompany() ));
-        view.person().setValue( PersonShortView.fromPerson( userLogin.getPerson() ) );
+        view.company().setValue( new EntityOption(userLogin.getCompanyName(), userLogin.getCompanyId()) );
+        view.setCompaniesForInitiator( InitiatorModel.makeCompanyIds(userLogin.getCompanyId() ));
+        view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         view.password().setText( "" );
         view.confirmPassword().setText( "" );
         view.roles().setValue( userLogin.getRoles() );
@@ -183,6 +192,18 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
                 !view.roles().getValue().isEmpty();
     }
 
+    private boolean hasPrivileges(Long accountId) {
+        if (accountId == null && policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_CREATE)) {
+            return true;
+        }
+
+        if (accountId != null && policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     AbstractAccountEditView view;
 
@@ -191,6 +212,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Inject
     AccountControllerAsync accountService;
+
+    @Inject
+    PolicyService policyService;
 
     private UserLogin account;
     private AppEvents.InitDetails initDetails;

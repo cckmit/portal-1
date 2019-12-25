@@ -29,25 +29,20 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
 
     @Override
     public void setName(String name) {
-        this.nameValue = name;
         if (HelperFunc.isNotEmpty(name)) {
             this.name.setInnerHTML("<b>" + name + "</b>");
+        } else {
+            this.name.addClassName("hide");
         }
     }
 
     @Override
     public void setParameters(String parameters) {
-        String value = "";
-        if (HelperFunc.isNotEmpty(nameValue)) {
-            value += "<b>" + nameValue + "</b>";
-        }
         if (HelperFunc.isNotEmpty(parameters)) {
-            if (HelperFunc.isNotEmpty(value)) {
-                value += " - ";
-            }
-            value += parameters;
+            this.param.setInnerText(parameters);
+        } else {
+            this.param.addClassName("hide");
         }
-        this.name.setInnerHTML(value);
     }
 
     @Override
@@ -93,6 +88,8 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     SpanElement apps;
     @UiField
     SpanElement comment;
+    @UiField
+    SpanElement param;
 
     private String nameValue = null;
     private AbstractServerDetailedListItemActivity activity;

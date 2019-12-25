@@ -8,9 +8,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.ImagePasteTextArea;
 
 public class AutoResizeTextArea extends ImagePasteTextArea implements KeyUpHandler, HasAddHandlers {
@@ -89,6 +87,10 @@ public class AutoResizeTextArea extends ImagePasteTextArea implements KeyUpHandl
     public void setText(String text) {
         super.setText(text);
         requestResize();
+    }
+
+    public HandlerRegistration addInputHandler (InputHandler handler) {
+        return addDomHandler(handler, InputEvent.getType());
     }
 
     public void setPlaceholder(String placeholder ) {

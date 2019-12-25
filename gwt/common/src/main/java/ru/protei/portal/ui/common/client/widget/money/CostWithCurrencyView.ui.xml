@@ -2,8 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:currency='urn:import:ru.protei.portal.ui.common.client.widget.selector.currency'>
 
-    <g:HTMLPanel styleName="input-group">
-        <g:LongBox ui:field="cost" styleName="input-field"/>
+    <g:HTMLPanel ui:field="root" styleName="input-group">
+        <g:LongBox ui:field="cost" styleName="form-control"/>
         <currency:CurrencyButtonSelector ui:field="currency" styleName="input-group-btn"/>
     </g:HTMLPanel>
 

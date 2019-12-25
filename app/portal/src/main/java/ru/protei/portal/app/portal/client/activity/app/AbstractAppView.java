@@ -1,5 +1,6 @@
 package ru.protei.portal.app.portal.client.activity.app;
 
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -11,7 +12,7 @@ import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 public interface AbstractAppView extends IsWidget {
     void setActivity( AbstractAppActivity activity );
 
-    void setUser( String username, String company, String iconSrc );
+    void setUser( String username, String company, String photo );
 
     void setAppVersion(String appVersion);
 
@@ -24,4 +25,6 @@ public interface AbstractAppView extends IsWidget {
     HasWidgets getActionBarContainer();
 
     HasValue<LocaleImage> locale();
+
+    void setLogoByLocale(String locale);
 }

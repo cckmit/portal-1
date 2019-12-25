@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -30,7 +31,7 @@ public abstract class CompanyPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.COMPANY_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.COMPANY, DebugIds.SIDEBAR_MENU.COMPANY ) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( new CompanyEvents.Show( true ) ) );
         }
     }
 
@@ -51,18 +52,22 @@ public abstract class CompanyPage
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent( new CompanyEvents.Show( true ) );
     }
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        fireEvent( new MenuEvents.Select( ТAB ) );
+        if (policyService.hasPrivilegeFor(En_Privilege.COMPANY_VIEW )) {
+            fireEvent( new MenuEvents.Select( ТAB ) );
+        }
     }
 
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String ТAB;
-    private CompanyEvents.Show show = new CompanyEvents.Show();
 }
 

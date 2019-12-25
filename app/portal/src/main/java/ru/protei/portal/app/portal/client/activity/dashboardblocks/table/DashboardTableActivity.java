@@ -7,13 +7,14 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,14 +39,14 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         view.setSectionName(event.sectionName);
         view.getSearch().setValue(model.query.getSearchCasenoString());
         view.toggleSearchIndicator(model.query.getSearchCasenoString() != null && !model.query.getSearchCasenoString().isEmpty());
-        view.toggleInitiatorsIndicator(model.query.getInitiatorIds() != null && model.query.getInitiatorIds().size() > 0);
+        view.toggleInitiatorsIndicator(model.query.getCompanyIds() != null && model.query.getCompanyIds().size() > 0);
 
         updateSection(model);
     }
 
     @Override
     public void onItemClicked( CaseShortView value ) {
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
     }
 
     @Override
@@ -80,7 +81,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             CaseQuery query = new CaseQuery(viewToModel.get(view).query);
             query.setCreatedFrom(null);
             query.setCreatedTo(null);
-            fireEvent(new IssueEvents.Show(query));
+            fireEvent(new IssueEvents.Show(query, true));
         }
     }
 
@@ -99,15 +100,15 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     }
 
     @Override
-    public void onInitiatorSelected(AbstractDashboardTableView view, PersonShortView person) {
+    public void onCompanySelected(AbstractDashboardTableView view, EntityOption company) {
         DashboardTableModel model = viewToModel.get(view);
 
         if (model == null) {
             return;
         }
 
-        model.query.setInitiatorIds(person == null ? null : Collections.singletonList(person.getId()));
-        view.toggleInitiatorsIndicator(person != null);
+        model.query.setCompanyIds(company == null ? null : Collections.singletonList(company.getId()));
+        view.toggleInitiatorsIndicator(company != null);
 
         updateSection(model);
     }
@@ -115,7 +116,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
         applyDaysLimitIfNeeded(model);
-        updateRecordsCount(model);
         requestRecords(model);
     }
 
@@ -123,18 +123,19 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         if(model.isLoaderShow)
             model.view.showLoader(true);
 
-        issueService.getIssues( model.query, new RequestCallback<List<CaseShortView>>() {
+        issueService.getIssues( model.query, new RequestCallback<SearchResult<CaseShortView>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List<CaseShortView> caseObjects ) {
-                model.view.putRecords(caseObjects);
-                model.view.putPersons(caseObjects.stream()
-                        .filter(caseObject -> caseObject.getInitiatorId() != null && caseObject.getInitiatorShortName() != null)
-                        .map(caseObject -> new PersonShortView(caseObject.getInitiatorShortName(), caseObject.getInitiatorId(), false))
+            public void onSuccess( SearchResult<CaseShortView> searchResult ) {
+                model.view.setRecordsCount(searchResult.getTotalCount());
+                model.view.putRecords(searchResult.getResults());
+                model.view.putCompanies(searchResult.getResults().stream()
+                        .filter(caseObject -> caseObject.getInitiatorCompanyId() != null && caseObject.getInitiatorCompanyName() != null)
+                        .map(caseObject -> new EntityOption(caseObject.getInitiatorCompanyName(), caseObject.getInitiatorCompanyId()))
                         .distinct()
                         .collect(Collectors.toList())
                 );
@@ -152,20 +153,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             table.setEnsureDebugId(debugId);
         }
         return table;
-    }
-
-    private void updateRecordsCount(DashboardTableModel model){
-        issueService.getIssuesCount(model.query, new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(Long aLong) {
-                model.view.setRecordsCount(aLong.intValue());
-            }
-        });
     }
 
     private void applyDaysLimitIfNeeded(DashboardTableModel model) {

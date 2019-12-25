@@ -13,8 +13,6 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setHeader( String value );
 
-    void setName( String value );
-
     void setNameBySldWrks( String value );
 
     void setComment( String value );
@@ -29,17 +27,15 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setManager( String value );
 
-    void setCopyBtnEnabledStyle( boolean isEnabled );
+    void setCopyBtnEnabledStyle(boolean isEnabled );
 
     void setRemoveBtnEnabledStyle( boolean isEnabled );
 
-    void setCreatedDate(String created);
-
-    void showFullScreen( boolean value );
+    void setCreatedBy(String created);
 
     HasWidgets documents();
 
     void setLinkedEquipmentExternalLink(String s);
 
-    HasVisibility linkedEquipmentLinkVisibility();
+    void isFullScreen(boolean isFullScreen);
 }

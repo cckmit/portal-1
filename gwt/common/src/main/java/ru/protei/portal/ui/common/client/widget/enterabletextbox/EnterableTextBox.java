@@ -9,7 +9,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.InputHandler;
 
 public class EnterableTextBox extends Composite implements HasValue<String>, HasEnabled {
 
@@ -67,6 +68,10 @@ public class EnterableTextBox extends Composite implements HasValue<String>, Has
 
     public HandlerRegistration addChangeHandler(ChangeHandler handler) {
         return addDomHandler(handler, ChangeEvent.getType());
+    }
+
+    public HandlerRegistration addInputHandler (InputHandler handler) {
+        return addDomHandler(handler, InputEvent.getType());
     }
 
     public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {

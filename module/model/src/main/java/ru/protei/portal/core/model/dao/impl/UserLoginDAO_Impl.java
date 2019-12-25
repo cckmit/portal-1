@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
@@ -47,11 +48,18 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
     }
 
     @Override
-    public List< UserLogin > getAccounts( AccountQuery query) {
-        return listByQuery( query );
+    public SearchResult<UserLogin> getSearchResult(AccountQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
-    private List< UserLogin > listByQuery( AccountQuery query ) {
+    @Override
+    public int removeByPersonId(Long id) {
+        return removeByCondition("personId = ?", id);
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(AccountQuery query) {
+
         SqlCondition where = createSqlCondition( query );
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -80,27 +88,8 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
                 query,
                 query.getSortField() == En_SortField.person_full_name ? "p" : null // p: alias for UserLogin.person
         ));
-        return getList( parameters );
-    }
 
-    @Override
-    public Long count( AccountQuery query ) {
-        String join = "";
-        boolean distinct = false;
-
-        if ( StringUtils.isNotEmpty( query.getSearchString() )
-                || query.getCompanyId() != null ) {
-            join += " LEFT JOIN person ON user_login.personId = person.id";
-            distinct = true;
-        }
-        if ( query.getRoleIds() != null ) {
-            join += " LEFT JOIN login_role_item LR ON user_login.id = LR.login_id";
-            distinct = true;
-        }
-
-        SqlCondition where = createSqlCondition( query );
-
-        return (long) getObjectsCount( where.condition, where.args, join, distinct );
+        return parameters;
     }
 
     @SqlConditionBuilder

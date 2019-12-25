@@ -7,16 +7,28 @@ import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentV
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
-import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
-import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateView;
-import ru.protei.portal.ui.common.client.activity.casetag.CaseTagCreateActivity;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
+import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
+import ru.protei.portal.ui.common.client.activity.caselink.list.CaseLinkListActivity;
+import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditView;
+import ru.protei.portal.ui.common.client.activity.casetag.edit.CaseTagEditActivity;
+import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemView;
+import ru.protei.portal.ui.common.client.activity.casetag.list.AbstractCaseTagListView;
+import ru.protei.portal.ui.common.client.activity.casetag.list.CaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageActivity;
+import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
+import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.loading.AbstractLoadingActivity;
+import ru.protei.portal.ui.common.client.activity.loading.AbstractLoadingView;
+import ru.protei.portal.ui.common.client.activity.loading.LoadingActivity;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -26,35 +38,35 @@ import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItem
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
-import ru.protei.portal.ui.common.client.view.casetag.CaseTagCreateView;
+import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
+import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
+import ru.protei.portal.ui.common.client.view.casetag.edit.CaseTagEditView;
+import ru.protei.portal.ui.common.client.view.casetag.item.CaseTagItemView;
+import ru.protei.portal.ui.common.client.view.casetag.list.CaseTagListView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
+import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
+import ru.protei.portal.ui.common.client.view.loading.LoadingView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
+import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
-import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.view.report.caseobjects.AbstractCaseObjectsReportView;
-import ru.protei.portal.ui.common.client.view.report.caseobjects.CaseObjectsReportView;
-import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeElapsedReportView;
-import ru.protei.portal.ui.common.client.view.report.timeelapsed.TimeElapsedReportView;
-import ru.protei.portal.ui.common.client.view.report.timeresolution.AbstractResolutionTimeReportView;
-import ru.protei.portal.ui.common.client.view.report.timeresolution.ResolutionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -68,13 +80,16 @@ import ru.protei.winter.web.common.client.view.section.SectionItemView;
  * Описание классов фабрики
  */
 public class CommonClientModule extends AbstractGinModule {
+
     @Override
     protected void configure() {
-        bind( FixedPositioner.class ).asEagerSingleton();
         bind( ActionBarActivity.class ).asEagerSingleton();
         bind( AbstractSectionItemView.class ).to( SectionItemView.class );
 
         bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class );
+
+        bind( ForbiddenPageActivity.class ).asEagerSingleton();
+        bind( AbstractForbiddenPageView.class ).to(ForbiddenPageView.class).in( Singleton.class );
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );
@@ -87,6 +102,8 @@ public class CommonClientModule extends AbstractGinModule {
         bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
+
+        bind( HomeCompanyService.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
@@ -109,8 +126,21 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseCommentListView.class ).to( CaseCommentListView.class ).in( Singleton.class );
         bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
 
-        bind( CaseTagCreateActivity.class ).asEagerSingleton();
-        bind( AbstractCaseTagCreateView.class ).to( CaseTagCreateView.class ).in( Singleton.class );
+        bind( CaseLinkListActivity.class ).asEagerSingleton();
+        bind( AbstractCaseLinkItemView.class ).to( CaseLinkItemView.class );
+        bind( AbstractCaseLinkListView.class ).to( CaseLinkListView.class ).in( Singleton.class );
+
+        bind( CaseTagListActivity.class ).asEagerSingleton();
+        bind( AbstractCaseTagItemView.class ).to( CaseTagItemView.class );
+        bind( AbstractCaseTagListView.class ).to( CaseTagListView.class ).in( Singleton.class );
+        bind( CaseTagEditActivity.class ).asEagerSingleton();
+        bind( AbstractCaseTagEditView.class ).to( CaseTagEditView.class ).in( Singleton.class );
+
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( CustomerTypeModel.class ).asEagerSingleton();
+
+        bind( LoadingActivity.class ).asEagerSingleton();
+        bind( AbstractLoadingView.class ).to( LoadingView.class );
 
         // Models
         bind( InitiatorModel.class ).asEagerSingleton();
@@ -125,10 +155,6 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
-        bind( AbstractResolutionTimeReportView.class ).to( ResolutionTimeReportView.class ).in( Singleton.class );
-        bind( AbstractTimeElapsedReportView.class ).to( TimeElapsedReportView.class ).in( Singleton.class );
-        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
-        bind( AbstractCaseObjectsReportView.class ).to( CaseObjectsReportView.class ).in( Singleton.class );
     }
 }
 

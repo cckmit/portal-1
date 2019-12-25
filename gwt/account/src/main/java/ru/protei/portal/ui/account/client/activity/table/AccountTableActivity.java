@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.account.client.activity.table;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -11,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -21,12 +23,17 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 
 /**
  * Активность создания и редактирования учетной записи
@@ -48,24 +55,29 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
+    public void onAuthSuccess ( AuthEvents.Success event ) {
         filterView.resetFilter();
     }
 
-    @Event(Type.FILL_CONTENT)
+    @Event( Type.FILL_CONTENT )
     public void onShow( AccountEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
-        this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ACCOUNT ) :
+                new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ACCOUNT ) :
                 new ActionBarEvents.Clear()
         );
 
-        requestTotalCount();
+        clearScroll( event );
+
+        requestAccounts( this.page );
     }
 
     @Event
@@ -112,6 +124,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onEditClicked( UserLogin value ) {
+        persistScrollTopPosition();
         fireEvent( new AccountEvents.Edit( value.getId() ) );
     }
 
@@ -125,60 +138,43 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestTotalCount();
+        this.page = 0;
+        requestAccounts( this.page );
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback< List< UserLogin > > asyncCallback ) {
-        AccountQuery query = makeQuery();
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        accountService.getAccounts( query, new RequestCallback< List< UserLogin > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List< UserLogin > logins ) {
-                asyncCallback.onSuccess( logins );
-            }
-        } );
+    public void onPageSelected( int page ) {
+        this.page = page;
+        requestAccounts( this.page );
     }
 
-    @Override
-    public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page);
-    }
-
-    @Override
-    public void onPageSelected(int page) {
-        view.scrollTo(page);
-    }
-
-    private void requestTotalCount() {
+    private void requestAccounts( int page ) {
         view.clearRecords();
         animation.closeDetails();
 
-        accountService.getAccountsCount( makeQuery(), new RequestCallback< Long >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
+        boolean isFirstChunk = page == 0;
+        marker = new Date().getTime();
 
-            @Override
-            public void onSuccess( Long count ) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        AccountQuery query = makeQuery();
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
+
+        accountService.getAccounts( query, new FluentCallback< SearchResult< UserLogin > >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
+                    if ( marker == m ) {
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                        }
+                        pagerView.setCurrentPage( page );
+                        view.addRecords( r.getResults() );
+                        restoreScrollTopPositionOrClearSelection();
+                    }
+                } )
+                .withErrorMessage( lang.errGetList() ) );
     }
 
     private void showPreview ( UserLogin value ) {
-
         if ( value == null ) {
             animation.closeDetails();
         } else {
@@ -209,6 +205,30 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         );
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearScroll(AccountEvents.Show event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+            this.page = 0;
+        }
+    }
+
     @Inject
     Lang lang;
 
@@ -235,4 +255,10 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private AppEvents.InitDetails init;
 
     private static String CREATE_ACTION;
+
+    private long marker;
+
+    private Integer scrollTop;
+
+    private int page = 0;
 }

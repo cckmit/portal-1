@@ -7,10 +7,13 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.RoleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -35,6 +38,11 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
 
     @Event
     public void onShow( RoleEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
@@ -113,6 +121,18 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
         view.defaultForContact().setValue(role.isDefaultForContact());
     }
 
+    private boolean hasPrivileges(Long roleId) {
+        if (roleId == null && policyService.hasPrivilegeFor(En_Privilege.ROLE_CREATE)) {
+            return true;
+        }
+
+        if (roleId != null && policyService.hasPrivilegeFor(En_Privilege.ROLE_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     AbstractRoleEditView view;
 
@@ -121,6 +141,9 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
 
     @Inject
     RoleControllerAsync roleService;
+
+    @Inject
+    PolicyService policyService;
 
     private UserRole role;
     private AppEvents.InitDetails initDetails;

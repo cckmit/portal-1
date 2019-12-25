@@ -15,10 +15,12 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.table.concise.AbstractContactConciseTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.concise.AbstractContactConciseTableView;
@@ -50,7 +52,6 @@ public class ContactConciseTableView extends Composite implements AbstractContac
         removeClickColumn.setHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
         removeClickColumn.setColumnProvider(columnProvider);
-        removeClickColumn.setPrivilege(En_Privilege.CONTACT_REMOVE);
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
@@ -78,7 +79,8 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
     private void initTable() {
 
-        editClickColumn.setPrivilege(En_Privilege.CONTACT_EDIT);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !v.isDeleted() );
 
         columns.add(fio);
         columns.add(email);
@@ -101,6 +103,9 @@ public class ContactConciseTableView extends Composite implements AbstractContac
     @UiField
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     ClickColumn<Person> fio = new ClickColumn<Person>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
@@ -110,13 +115,14 @@ public class ContactConciseTableView extends Composite implements AbstractContac
         @Override
         public void fillColumnValue(Element cell, Person value) {
             Element fioElement = DOM.createDiv();
-            fioElement.setInnerHTML("<b>" + value.getDisplayName() + "<b>");
+            fioElement.setInnerHTML(value.getDisplayName());
             cell.appendChild(fioElement);
 
-            Element posElement = DOM.createDiv();
-            posElement.addClassName("contact-position");
-            posElement.setInnerHTML(value.getPosition());
-            cell.appendChild(posElement);
+            if ( value.getPosition() != null ) {
+                Element posElement = DOM.createDiv();
+                posElement.setInnerHTML("<small><i>" + value.getPosition() + "</i></small>");
+                cell.appendChild(posElement);
+            }
 
             if (value.isFired() || value.isDeleted()) {
                 Element stateElement = DOM.createDiv();
@@ -135,9 +141,10 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
         @Override
         public void fillColumnValue(Element cell, Person value) {
+
             PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-            String emails = infoFacade.allEmailsAsString();
+            String emails = EmailRender.renderToHtml(infoFacade.emailsStream());
             if (StringUtils.isNotBlank(emails)) {
                 com.google.gwt.dom.client.Element label = DOM.createLabel();
                 label.setInnerHTML(emails);

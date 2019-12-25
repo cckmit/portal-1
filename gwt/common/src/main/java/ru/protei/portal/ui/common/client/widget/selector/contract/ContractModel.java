@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,18 +25,18 @@ public abstract class ContractModel extends LifecycleSelectorModel<EntityOption>
     }
 
     @Event
-    public void onCompanyListChanged(ContractEvents.ChangeModel event) {
+    public void onContractListChanged(ContractEvents.ChangeModel event) {
         refreshOptions();
     }
 
     @Override
     protected void refreshOptions() {
-        contractController.getContracts(new ContractQuery(), new FluentCallback<List<Contract>>()
+        contractController.getContracts(new ContractQuery(), new FluentCallback<SearchResult<Contract>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(contracts -> {
-                    notifySubscribers(contracts.stream()
+                    notifySubscribers(contracts.getResults().stream()
                             .map(Contract::toEntityOption)
                             .collect(Collectors.toList()));
                 })

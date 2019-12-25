@@ -14,7 +14,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
-import ru.protei.portal.ui.common.client.activity.attachment.AttachmentType;
+import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
@@ -164,9 +164,10 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
             AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
             if (category == AttachmentType.AttachmentCategory.IMAGE) {
                 view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
+                view.asWidget().addStyleName("attach-image");
             }else {
                 view.setPicture(category.picture);
-                view.asWidget().addStyleName("attach-hide-preview");
+                view.asWidget().addStyleName("attach-file");
             }
         }else
             view.asWidget().addStyleName("attach-minimize");

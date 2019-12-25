@@ -7,22 +7,15 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
-import ru.protei.portal.ui.common.client.events.EquipmentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -52,18 +45,21 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         }
 
         fillView( event.equipment );
-
-        view.showFullScreen(false);
+        view.isFullScreen(false);
     }
 
     @Event
     public void onShowFullScreen( EquipmentEvents.ShowFullScreen event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
         fillView( event.equipmentId );
-
-        view.showFullScreen(true);
+        view.isFullScreen(true);
     }
 
     @Event
@@ -104,19 +100,23 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     private void fillView( Equipment value ) {
         this.equipment = value;
 
-        view.setHeader( "#" + value.getId() );
-        view.setName( value.getName() );
-        view.setCreatedDate(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
+        view.setHeader( value.getName() + " (#" + value.getId() + ")");
+        view.setCreatedBy(lang.createBy(value.getAuthorShortName(), DateFormatter.formatDateTime(value.getCreated())));
+
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
-        view.setType( typeLang.getName( value.getType() ) );
+        String typeImage = null;
+        if ( value.getType() != null ) {
+            typeImage = "./images/eq_" + value.getType().name().toLowerCase() + ".png";
+        }
+        view.setType( typeImage );
+
         view.setProject( value.getProjectName() );
         view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
         boolean isLinkedEqPresent = value.getLinkedEquipmentId() != null;
-        view.linkedEquipmentLinkVisibility().setVisible(isLinkedEqPresent);
         if ( isLinkedEqPresent ) {
             view.setLinkedEquipmentExternalLink(GWT.getHostPageBaseURL() + "#equipment_preview:id=" + value.getLinkedEquipmentId() );
         }

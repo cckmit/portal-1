@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.helper;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class StringUtils {
@@ -13,6 +12,10 @@ public class StringUtils {
      */
     public static boolean isEmpty( String string ) {
         return null == string || string.isEmpty();
+    }
+
+    public static boolean isEmpty( CharSequence cs ) {
+        return null == cs || cs.length() < 1;
     }
 
     /**
@@ -89,8 +92,11 @@ public class StringUtils {
         }
 
         while (iterator.hasNext()) {
-            buf.append( delimiter );
-            T obj = iterator.next();if (obj != null) {
+            T obj = iterator.next();
+            if (obj != null) {
+                if(buf.length() > 0) {
+                    buf.append( delimiter );
+                }
                 buf.append( mapper.apply( obj ) );
             }
         }
@@ -119,7 +125,8 @@ public class StringUtils {
         return null == string ? null : string.trim();
     }
 
-    public static int length(String string) {
+    public static int length(CharSequence string) {
         return null == string ? 0 : string.length();
     }
+
 }

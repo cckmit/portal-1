@@ -10,14 +10,15 @@
                     <g:Button ui:field="close" styleName="close">×</g:Button>
                     <h4 class="modal-title" ui:field="header"></h4>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <g:HTMLPanel ui:field="bodyContainer" styleName='col-xs-12' />
-                    </div>
-                </div>
+
+                <g:HTMLPanel ui:field="bodyContainer" styleName="modal-body" />
+
                 <div class="modal-footer">
-                    <g:Anchor href='#' ui:field="save" styleName="btn btn-primary"><ui:text from="{lang.buttonSave}"/></g:Anchor>
-                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-white"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                    <div class="remove-button">
+                        <g:Anchor href='#' ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Anchor>
+                    </div>
+                    <g:Anchor href='#' ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></g:Anchor>
+                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
                 </div>
             </div>
         </div>

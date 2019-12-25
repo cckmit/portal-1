@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -111,7 +112,7 @@ public class CaseObject extends AuditableObject {
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
-    @JdbcColumn(name = "EXT_APP")
+    @JdbcColumn(name = Columns.EXT_APP)
     private String extAppType;
 
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
@@ -123,14 +124,26 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> products;
 
-    @JdbcManyToMany(linkTable = "case_object_tag", localLinkColumn = "case_id", remoteLinkColumn = "tag_id")
-    private Set<CaseTag> tags;
+    @JdbcColumn(name = "platform_id")
+    private Long platformId;
+
+    @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
+    private String platformName;
 
     // not db column
-    private List<CaseLink> links;
+    private Long contractId;
+
+    // not db column
+    private String contractNumber;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
+
+    // not db column
+    private CaseObjectMetaJira caseObjectMetaJira;
+
+    // not db column
+    private String jiraUrl;
 
     public CaseObject() {
 
@@ -367,7 +380,6 @@ public class CaseObject extends AuditableObject {
         return initiatorCompany;
     }
 
-
     public En_CaseType getCaseType () {
         return En_CaseType.find(this.typeId);
     }
@@ -446,14 +458,6 @@ public class CaseObject extends AuditableObject {
         this.timeElapsed = timeElapsed;
     }
 
-    public List<CaseLink> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<CaseLink> links) {
-        this.links = links;
-    }
-
     public Set<DevUnit> getProducts() {
         return products;
     }
@@ -470,17 +474,61 @@ public class CaseObject extends AuditableObject {
         this.timeElapsedType = timeElapsedType;
     }
 
-    public Set<CaseTag> getTags() {
-        return tags;
+    public CaseObjectMetaJira getCaseObjectMetaJira() {
+        return caseObjectMetaJira;
     }
 
-    public void setTags(Set<CaseTag> tags) {
-        this.tags = tags;
+    public void setCaseObjectMetaJira(CaseObjectMetaJira caseObjectMetaJira) {
+        this.caseObjectMetaJira = caseObjectMetaJira;
+    }
+
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
+    }
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+    }
+
+    public String getJiraUrl() {
+        return jiraUrl;
+    }
+
+    public void setJiraUrl(String jiraUrl) {
+        this.jiraUrl = jiraUrl;
     }
 
     @Override
     public String getAuditType() {
         return "CaseObject";
+    }
+
+    public interface Columns {
+        String EXT_APP = "EXT_APP";
     }
 
     @Override
@@ -513,11 +561,19 @@ public class CaseObject extends AuditableObject {
                 ", creatorInfo='" + creatorInfo + '\'' +
                 ", deleted=" + deleted +
                 ", privateCase=" + privateCase +
+                ", isAttachmentExists=" + isAttachmentExists +
+                ", attachments=" + attachments +
                 ", locations=" + locations +
                 ", members=" + members +
-                ", links=" + links +
+                ", extAppType='" + extAppType + '\'' +
+                ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
-                ", tags=" + tags +
+                ", products=" + products +
+                ", timeElapsedType=" + timeElapsedType +
+                ", jiraMetaData=" + caseObjectMetaJira +
+                ", platformId=" + platformId +
+                ", platformName=" + platformName +
+                ", timeElapsedType=" + timeElapsedType +
                 '}';
     }
 }

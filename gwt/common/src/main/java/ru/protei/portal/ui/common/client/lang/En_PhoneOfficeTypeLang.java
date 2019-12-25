@@ -14,6 +14,8 @@ public class En_PhoneOfficeTypeLang {
                 return lang.phoneOfficeTypeLongDistance();
             case INTERNATIONAL:
                 return lang.phoneOfficeTypeInternational();
+            case OFFICE:
+                return lang.phoneOfficeTypeOffice();
         }
         return lang.unknownField();
     }
