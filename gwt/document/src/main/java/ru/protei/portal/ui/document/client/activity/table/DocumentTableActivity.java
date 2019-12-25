@@ -225,6 +225,7 @@ public abstract class DocumentTableActivity
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
                 filterView.organizationCodes().getValue(),
+                filterView.documentCategory().getValue(),
                 filterView.documentType().getValue(),
                 (interval == null ? null : interval.from),
                 (interval == null ? null : interval.to),

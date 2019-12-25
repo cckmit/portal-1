@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
@@ -19,6 +20,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -55,6 +57,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         sortField.setValue(En_SortField.name);
         organizationCode.setValue(null);
         dateRange.setValue(null);
+        documentCategory.setValue(null);
         documentType.setValue(null);
         approved.setValue(true);
         keywords.setValue(new LinkedList<>());
@@ -96,6 +99,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
+    }
+
+    @Override
+    public HasValue<En_DocumentCategory> documentCategory() {
+        return documentCategory;
     }
 
     @Override
@@ -160,6 +168,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiHandler("projects")
     public void onProjectsChanged(ValueChangeEvent<Set<EntityOption>> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("documentCategory")
+    public void onDocumentCategorySelected(ValueChangeEvent<En_DocumentCategory> event) {
         fireChangeTimer();
     }
 
@@ -241,6 +254,10 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiField
     ToggleButton sortDir;
+
+    @Inject
+    @UiField(provided = true)
+    DocumentCategorySelector documentCategory;
 
     @Inject
     @UiField(provided = true)

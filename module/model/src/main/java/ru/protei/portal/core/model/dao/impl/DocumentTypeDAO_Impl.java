@@ -6,14 +6,20 @@ import ru.protei.portal.core.model.dao.DocumentTypeDAO;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentTypeQuery;
-import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class DocumentTypeDAO_Impl extends PortalBaseJdbcDAO<DocumentType> implements DocumentTypeDAO {
+
+    @Override
+    public String makeSelectIdByCategoryQuery() {
+        String tableName = getTableName();
+        String idColumnName = tableName + "." + getIdColumnName();
+        String categoryColumnName = tableName + ".document_category";
+        return "select " + idColumnName + " from " + tableName + " where " + categoryColumnName + " = ?";
+    }
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(DocumentTypeQuery query) {

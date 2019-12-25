@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DocumentDAO;
+import ru.protei.portal.core.model.dao.DocumentTypeDAO;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 
 public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements DocumentDAO {
     private static final String JOINS = " LEFT JOIN case_object CO ON CO.id = document.project_id ";
+
+    @Autowired
+    DocumentTypeDAO documentTypeDAO;
 
     @Override
     public SearchResult<Document> getSearchResult(DocumentQuery query) {
@@ -107,6 +112,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             if (query.getDocumentType() != null) {
                 condition.append(" and document.type_id=?");
                 args.add(query.getDocumentType().getId());
+            }
+
+            if (query.getDocumentCategory() != null) {
+                condition.append(" and document.type_id in (").append(documentTypeDAO.makeSelectIdByCategoryQuery()).append(")");
+                args.add(query.getDocumentCategory().name());
             }
 
             if (query.getManagerId() != null) {
