@@ -33,7 +33,7 @@ public interface AbstractDocumentFilterView extends IsWidget {
 
     HasValue<DateInterval> dateRange();
 
-    HasValue<En_DocumentCategory> documentCategory();
+    HasValue<Set<En_DocumentCategory>> documentCategory();
 
     HasValue<DocumentType> documentType();
 

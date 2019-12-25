@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategoryMultiSelector;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -102,7 +102,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @Override
-    public HasValue<En_DocumentCategory> documentCategory() {
+    public HasValue<Set<En_DocumentCategory>> documentCategory() {
         return documentCategory;
     }
 
@@ -172,7 +172,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @UiHandler("documentCategory")
-    public void onDocumentCategorySelected(ValueChangeEvent<En_DocumentCategory> event) {
+    public void onDocumentCategorySelected(ValueChangeEvent<Set<En_DocumentCategory>> event) {
         fireChangeTimer();
     }
 
@@ -257,7 +257,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @Inject
     @UiField(provided = true)
-    DocumentCategorySelector documentCategory;
+    DocumentCategoryMultiSelector documentCategory;
 
     @Inject
     @UiField(provided = true)

@@ -10,7 +10,7 @@ import java.util.Set;
 public class DocumentQuery extends BaseQuery {
     private Set<En_OrganizationCode> organizationCodes;
     private Long managerId;
-    private En_DocumentCategory documentCategory;
+    private Set<En_DocumentCategory> documentCategories;
     private DocumentType documentType;
     private Date from, to;
     private List<String> keywords;
@@ -27,7 +27,7 @@ public class DocumentQuery extends BaseQuery {
 
     public DocumentQuery(
             String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes,
-            En_DocumentCategory documentCategory, DocumentType documentType,
+            Set<En_DocumentCategory> documentCategories, DocumentType documentType,
             Date from, Date to, List<String> keywords, Long managerId, String inTextQuery, Boolean isApproved,
             En_DocumentState state, List<Long> projectIds
     ) {
@@ -36,7 +36,7 @@ public class DocumentQuery extends BaseQuery {
         this.from = from;
         this.to = to;
         this.keywords = keywords;
-        this.documentCategory = documentCategory;
+        this.documentCategories = documentCategories;
         this.documentType = documentType;
         this.managerId = managerId;
         this.inTextQuery = inTextQuery;
@@ -65,12 +65,12 @@ public class DocumentQuery extends BaseQuery {
         this.organizationCodes = organizationCodes;
     }
 
-    public En_DocumentCategory getDocumentCategory() {
-        return documentCategory;
+    public Set<En_DocumentCategory> getDocumentCategories() {
+        return documentCategories;
     }
 
-    public void setDocumentCategory(En_DocumentCategory documentCategory) {
-        this.documentCategory = documentCategory;
+    public void setDocumentCategories(Set<En_DocumentCategory> documentCategories) {
+        this.documentCategories = documentCategories;
     }
 
     public DocumentType getDocumentType() {
