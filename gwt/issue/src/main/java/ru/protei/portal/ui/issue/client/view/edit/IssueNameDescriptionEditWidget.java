@@ -123,6 +123,8 @@ public class IssueNameDescriptionEditWidget extends Composite {
         description.setEnsureDebugId( DebugIds.ISSUE.DESCRIPTION_INPUT );
         nameLabel.setId( DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME );
         descriptionLabel.setId( DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO );
+        saveNameAndDescriptionButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_ACCEPT);
+        cancelNameAndDescriptionButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_REJECT);
     }
 
     @UiField

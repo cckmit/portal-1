@@ -221,6 +221,11 @@ public class DebugIds {
     }
 
     public interface ISSUE {
+        String BACK_BUTTON = "issue-back-button";
+        String SHOW_EDIT_BUTTON = "issue-show-edit-button";
+        String LINKS_BUTTON = "issue-links-button";
+        String TAGS_BUTTON = "issue-tags-button";
+        String EDIT_NAME_AND_DESC_BUTTON = "issue-edit-name-and-desc-button";
         String PRIVACY_BUTTON = "issue-privacy-button";
         String PRIVACY_ICON = "issue-privacy-icon";
         String PRIVACY_ICON_PRIVATE = "issue-privacy-icon-private";
@@ -228,7 +233,6 @@ public class DebugIds {
         String NUMBER_INPUT = "issue-number-input";
         String NAME_INPUT = "issue-name-input";
         String NAME_FIELD = "issue-name-field";
-        String LINKS_BUTTON = "issue-links-button";
         String LINKS_CONTAINER = "issue-links-container";
         String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
         String LINKS_INPUT = "issue-links-input";
@@ -242,7 +246,6 @@ public class DebugIds {
         String LINK_NUMBER = "issue-link-number";
         String LINK_DESCRIPTION = "issue-link-description";
         String LINK_ELEMENT = "issue-link-element";
-        String TAGS_BUTTON = "issue-tags-button";
         String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
@@ -267,6 +270,8 @@ public class DebugIds {
         String COPY_NUMBER_BUTTON = "issue-copy-number-button";
         String COPY_NUMBER_AND_NAME_BUTTON = "issue-copy-number-and-name-button";
         String NOTIFIERS_SELECTOR = "issue-subscriptions-selector";
+        String EDIT_NAME_AND_DESC_ACCEPT = "issue-edit-name-and-desc-accept";
+        String EDIT_NAME_AND_DESC_REJECT = "issue-edit-name-and-desc-reject";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -290,27 +295,8 @@ public class DebugIds {
     }
 
     public interface ISSUE_PREVIEW {
-        String PRIVACY_ICON = "issue-preview-privacy-icon";
-        String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
-        @Deprecated String TITLE_LABEL = "issue-preview-title-label";
-        @Deprecated String LINKS_CONTAINER = "issue-preview-links-container";
-        String DATE_CREATED = "issue-preview-date-created-item";
-        String IMPORTANCE = "issue-preview-importance-item";
-        String PRODUCT = "issue-preview-product-item";
-        String STATE = "issue-preview-state-item";
-        String TIME_ELAPSED = "issue-preview-time-elapsed-item";
-        @Deprecated String COMPANY_LABEL = "issue-preview-company-label";
-        String CONTACT = "issue-preview-contact-item";
-        @Deprecated String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
-        String MANAGER = "issue-preview-manager-item";
-        String SUBSCRIPTION = "issue-preview-subscription-item";
-        String NAME = "issue-preview-name-item";
+        @Deprecated String FULL_SCREEN_BUTTON = DebugIds.ISSUE.SHOW_EDIT_BUTTON;
         String PLATFORM = "issue-preview-platform-item";
-        String INFO = "issue-preview-info-item";
-        String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
-        String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
-        String COPY_NUMBER_BUTTON = "issue-preview-copy-number-button";
-        String COPY_NUMBER_AND_NAME_BUTTON = "issue-preview-copy-number-and-name-button";
 
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
@@ -333,17 +319,6 @@ public class DebugIds {
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
             String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
-        }
-
-        interface LABEL {
-            String PRODUCT = "issue-preview-product-label";
-            String STATE = "issue-preview-state-label";
-            String CONTACT = "issue-preview-contact-label";
-            String MANAGER = "issue-preview-manager-label";
-            String SUBSCRIPTION = "issue-preview-subscription-label";
-            String PLATFORM = "issue-preview-platform-label";
-            String IMPORTANCE = "issue-preview-importance-label";
-            String TIME_ELAPSED = "issue-preview-time-elapsed-label";
         }
     }
 
