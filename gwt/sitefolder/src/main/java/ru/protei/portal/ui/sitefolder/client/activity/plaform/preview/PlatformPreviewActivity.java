@@ -41,9 +41,10 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
-
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+
+        platformId = event.platformId;
 
         platformRequest(event.platformId, this::fillView);
         view.footerContainerVisibility().setVisible(true);
