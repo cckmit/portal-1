@@ -75,6 +75,7 @@ public class DebugIds {
         String ROLE = "sidebar-menu-role";
         String SITE_FOLDER = "sidebar-menu-site-folder";
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
+        String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
         @Deprecated String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
         @Deprecated String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";

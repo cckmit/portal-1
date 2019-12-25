@@ -28,7 +28,7 @@ public abstract class CaseStatePage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.CASE_STATES_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CASE_STATE, DebugIds.SIDEBAR_MENU.CASE_STATE ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CASE_STATE, ТAB, DebugIds.SIDEBAR_MENU.CASE_STATE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

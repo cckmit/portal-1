@@ -29,7 +29,7 @@ public abstract class RegionPage implements Activity {
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.REGION_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.REGION, DebugIds.SIDEBAR_MENU.REGION ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.REGION, ТAB, DebugIds.SIDEBAR_MENU.REGION ) );
         }
     }
 

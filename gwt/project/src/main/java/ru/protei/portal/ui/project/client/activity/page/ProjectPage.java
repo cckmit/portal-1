@@ -31,7 +31,7 @@ public abstract class ProjectPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.PROJECT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PROJECT, DebugIds.SIDEBAR_MENU.PROJECT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PROJECT, ТAB, DebugIds.SIDEBAR_MENU.PROJECT ) );
             fireEvent( new AppEvents.InitPage( new ProjectEvents.Show( true ) ) );
         }
     }

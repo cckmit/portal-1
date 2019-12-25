@@ -31,7 +31,7 @@ public abstract class RolePage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.ROLE_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ROLE, DebugIds.SIDEBAR_MENU.ROLE ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ROLE, ТAB, DebugIds.SIDEBAR_MENU.ROLE ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }
