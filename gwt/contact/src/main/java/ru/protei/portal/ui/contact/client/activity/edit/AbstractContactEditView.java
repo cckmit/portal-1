@@ -90,4 +90,10 @@ public interface AbstractContactEditView extends IsWidget {
     HasValidable workEmailValidator();
 
     HasValidable personalEmailValidator();
+
+    void setFirstNameMaxSize(int size);
+
+    void setSecondNameMaxSize(int size);
+
+    void setLastNameMaxSize(int size);
 }

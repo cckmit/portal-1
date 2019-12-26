@@ -250,6 +250,21 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return sendWelcomeEmailWarning;
     }
 
+    @Override
+    public void setFirstNameMaxSize(int size) {
+        firstName.setMaxLength(size);
+    }
+
+    @Override
+    public void setSecondNameMaxSize(int size) {
+        secondName.setMaxLength(size);
+    }
+
+    @Override
+    public void setLastNameMaxSize(int size) {
+        lastName.setMaxLength(size);
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -313,7 +328,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     ValidableTextBox lastName;
 
     @UiField
-    TextBox secondName;
+    ValidableTextBox secondName;
 
     @UiField
     TextBox displayName;

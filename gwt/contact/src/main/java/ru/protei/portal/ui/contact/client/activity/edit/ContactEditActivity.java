@@ -319,6 +319,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(false);
 
         view.showInfo(userLogin.getId() != null);
+
+        view.setFirstNameMaxSize(FIRST_NAME_SIZE);
+        view.setSecondNameMaxSize(SECOND_NAME_SIZE);
+        view.setLastNameMaxSize(LAST_NAME_SIZE);
     }
 
     private boolean passwordNotDefined() {
@@ -374,4 +378,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
     private String origin;
+
+    private static final int FIRST_NAME_SIZE = 80;
+    private static final int SECOND_NAME_SIZE = 80;
+    private static final int LAST_NAME_SIZE = 80;
 }
