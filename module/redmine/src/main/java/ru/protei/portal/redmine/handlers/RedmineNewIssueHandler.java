@@ -5,6 +5,7 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dao.*;
@@ -18,7 +19,7 @@ import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.Objects;
 
-public final class RedmineNewIssueHandler implements RedmineEventHandler {
+public class RedmineNewIssueHandler implements RedmineEventHandler {
 
     @Override
     public void handle(User user, Issue issue, RedmineEndpoint endpoint) {
@@ -32,7 +33,8 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         }
     }
 
-    private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
+    @Transactional
+    protected CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
         logger.debug("Creating case object ...");
         final long companyId = endpoint.getCompanyId();
         final CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString() + "_" + companyId );
@@ -61,7 +63,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
         commonService.processAttachments(issue, obj, endpoint);
 
-        handleComments(issue, obj, caseObjId, companyId);
+        handleComments(issue, caseObjId, companyId);
 
         return obj;
     }
@@ -109,7 +111,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         return obj;
     }
 
-    private void handleComments(Issue issue, CaseObject obj, long caseObjId, long companyId) {
+    private void handleComments(Issue issue, long caseObjId, long companyId) {
         logger.debug("Processing comments ...");
 
         issue.getJournals()
