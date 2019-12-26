@@ -97,6 +97,10 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         icon.setId( ensureDebugId + ICON_SUFFIX );
     }
 
+    public void setSectionTitle(String sectionTitle) {
+        this.anchor.setTitle(sectionTitle);
+    }
+
     @UiHandler("anchor")
     public void onAnchorClicked( ClickEvent event ) {
         if ( anchor.getHref().endsWith("#") ) {

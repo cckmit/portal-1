@@ -2,59 +2,47 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-<parent>
-    <groupId>ru.protei</groupId>
-    <artifactId>portal4</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
-</parent>
-
-<artifactId>portal4.ui.contract</artifactId>
-<version>1.0-SNAPSHOT</version>
-
-<dependencies>
-    <dependency>
+    <parent>
         <groupId>ru.protei</groupId>
-        <artifactId>portal4.ui.common</artifactId>
+        <artifactId>portal4</artifactId>
         <version>1.0-SNAPSHOT</version>
-    </dependency>
-</dependencies>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
-<build>
-    <resources>
-        <resource>
-            <directory>src/main/java</directory>
-            <includes>
-                <include>*.ui.xml</include>
-                <include>**/*.ui.xml</include>
+    <artifactId>portal4.ui.contract</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-                <include>*.java</include>
-                <include>**/*.java</include>
-            </includes>
-        </resource>
+    <dependencies>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
-        <resource>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>*.gwt.xml</include>
-                <include>**/*.gwt.xml</include>
-            </includes>
-        </resource>
-    </resources>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>*.ui.xml</include>
+                    <include>**/*.ui.xml</include>
 
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
-            <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
+                    <include>*.java</include>
+                    <include>**/*.java</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.gwt.xml</include>
+                    <include>**/*.gwt.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
 </project>
