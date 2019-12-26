@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
+import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
  * Активность создания и редактирования контактного лица
@@ -108,6 +109,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
+        if (!validateSaveButton()) {
+            return;
+        }
+
         if (!validate()) {
             return;
         }
@@ -209,7 +214,40 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
     }
 
-    private boolean isNew( Person person) {
+    @Override
+    public void validateLimitedFields() {
+        if (view.firstName().getValue() != null) {
+            view.firstNameErrorLabelVisibility().setVisible(view.firstName().getValue().length() > FIRST_NAME_SIZE);
+        }
+
+        if (view.lastName().getValue() != null) {
+            view.lastNameErrorLabelVisibility().setVisible(view.lastName().getValue().length() > LAST_NAME_SIZE);
+        }
+
+        if (view.secondName().getText() != null) {
+            view.secondNameErrorLabelVisibility().setVisible(view.secondName().getText().length() > SECOND_NAME_SIZE);
+        }
+
+        view.saveEnabled().setEnabled(validateSaveButton());
+    }
+
+    private boolean validateSaveButton() {
+        if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isNew(Person person) {
         return person.getId() == null;
     }
 
@@ -320,9 +358,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         view.showInfo(userLogin.getId() != null);
 
-        view.setFirstNameMaxSize(FIRST_NAME_SIZE);
-        view.setSecondNameMaxSize(SECOND_NAME_SIZE);
-        view.setLastNameMaxSize(LAST_NAME_SIZE);
+        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel().getText(), FIRST_NAME_SIZE));
+        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel().getText(), SECOND_NAME_SIZE));
+        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel().getText(), LAST_NAME_SIZE));
     }
 
     private boolean passwordNotDefined() {
@@ -378,8 +416,4 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
     private String origin;
-
-    private static final int FIRST_NAME_SIZE = 80;
-    private static final int SECOND_NAME_SIZE = 80;
-    private static final int LAST_NAME_SIZE = 80;
 }

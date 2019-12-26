@@ -1957,4 +1957,6 @@ public interface Lang extends Messages, ContactItemLang {
     String tagAdd();
 
     String linkAdd();
+
+    String contactFieldLengthExceed(String fieldName, int symbolsCount);
 }

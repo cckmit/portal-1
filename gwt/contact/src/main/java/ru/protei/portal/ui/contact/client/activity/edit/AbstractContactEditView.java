@@ -91,9 +91,23 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasValidable personalEmailValidator();
 
-    void setFirstNameMaxSize(int size);
+    HasVisibility firstNameErrorLabelVisibility();
 
-    void setSecondNameMaxSize(int size);
+    HasVisibility secondNameErrorLabelVisibility();
 
-    void setLastNameMaxSize(int size);
+    HasVisibility lastNameErrorLabelVisibility();
+
+    HasText firstNameErrorLabel();
+
+    HasText secondNameErrorLabel();
+
+    HasText lastNameErrorLabel();
+
+    HasEnabled saveEnabled();
+
+    HasText firstNameLabel();
+
+    HasText secondNameLabel();
+
+    HasText lastNameLabel();
 }
