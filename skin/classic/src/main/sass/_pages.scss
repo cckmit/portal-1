@@ -164,3 +164,7 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 .dropdown-menu > li, .dropdown-menu > .dropdown-item {
   color: #505050;
 }
+
+.radio input[type=radio] {
+  -moz-margin-start: -14px;
+}
