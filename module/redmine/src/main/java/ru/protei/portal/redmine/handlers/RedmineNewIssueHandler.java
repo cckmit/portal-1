@@ -6,13 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.AssemblerService;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
@@ -23,12 +23,12 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     @Override
     public void handle(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
-        logger.debug( "Starting creating case object for issue id {}, user id {}, company id {}", issue.getId(), user.getId(), companyId );
-        final CaseObject object = createCaseObject( user, issue, endpoint );
-        if ( object == null ) {
-            logger.debug( "Object was not created" );
+        logger.debug("Starting creating case object for issue id {}, user id {}, company id {}", issue.getId(), user.getId(), companyId);
+        final CaseObject object = createCaseObject(user, issue, endpoint);
+        if (object == null) {
+            logger.debug("Object was not created");
         } else {
-            logger.debug( "Object with id {} was created, guid={}", object.getId(), object.defGUID() );
+            logger.debug("Object with id {} was created, guid={}", object.getId(), object.defGUID());
         }
     }
 
@@ -49,6 +49,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
 
         final CaseObject obj = buildCaseObject(issue, contactPerson, endpoint);
         final long caseObjId = caseObjectDAO.insertCase(obj);
+        commonService.createAndStoreStateComment(issue.getCreatedOn(), contactPerson.getId(), obj.getStateId(), caseObjId);
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(obj);
         appData.setExtAppCaseId(issue.getId() + "_" + companyId);
@@ -56,13 +57,9 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         logger.debug("create redmine-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
         externalCaseAppDAO.merge(appData);
 
-        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.JIRA, contactPerson.getId(), obj);
-        final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectCreateEvent);
-        caseEvent.attachCaseObjectCreateEvent(caseObjectCreateEvent);
+        publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
-        caseEvent.includeCaseAttachments(commonService.processAttachments(issue, obj, contactPerson.getId(), endpoint));
-
-        assemblerService.proceed(caseEvent);
+        commonService.processAttachments(issue, obj, endpoint);
 
         handleComments(issue, obj, caseObjId, companyId);
 
@@ -81,24 +78,24 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
         obj.setExtAppType(En_ExtAppType.REDMINE.getCode());
 
-        logger.debug("Trying to get portal priority level id matching with redmine: {}", issue.getPriorityId());
+        logger.debug("Trying to get portal priority level id matching with redmine {}", issue.getPriorityId());
         String redminePriorityName = issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID).getValue();
         if (redminePriorityName == null || redminePriorityName.isEmpty())
             redminePriorityName = RedmineUtils.REDMINE_BASIC_PRIORITY;
         final RedminePriorityMapEntry redminePriorityMapEntry =
                 priorityMapEntryDAO.getByRedminePriorityName(redminePriorityName, priorityMapId);
         if (redminePriorityMapEntry != null) {
-            logger.debug("Found priority level id: {}", redminePriorityMapEntry.getLocalPriorityId());
+            logger.debug("Found priority level id {}", redminePriorityMapEntry.getLocalPriorityId());
             obj.setImpLevel(redminePriorityMapEntry.getLocalPriorityId());
         } else
             logger.debug("Priority level not found, setting default");
 
 
-        logger.debug("Trying to get portal status id matching with redmine: {}", issue.getStatusId());
+        logger.debug("Trying to get portal status id matching with redmine {}", issue.getStatusId());
         final RedmineToCrmEntry redmineStatusMapEntry =
                 statusMapEntryDAO.getLocalStatus(statusMapId, issue.getStatusId());
         if (redmineStatusMapEntry != null) {
-            logger.debug("Found status id: {}", redmineStatusMapEntry.getLocalStatusId());
+            logger.debug("Found status id {}", redmineStatusMapEntry.getLocalStatusId());
             obj.setStateId(redmineStatusMapEntry.getLocalStatusId());
         } else {
             logger.debug("Object status was not found");
@@ -118,11 +115,10 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(x -> x.getNotes() != null)
-                .filter(x -> !x.getNotes().isEmpty())
+                .filter(x -> StringUtils.isNotEmpty(x.getNotes()))
                 .map(x -> commonService.parseJournalToCaseComment(x, companyId))
                 .filter(Objects::nonNull)
-                .forEach(x -> commonService.processStoreComment(issue, x.getAuthor().getId(), obj, caseObjId, x));
+                .forEach(x -> commonService.processStoreComment(x.getAuthor().getId(), caseObjId, x));
     }
 
     @Autowired
@@ -141,7 +137,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
 
     @Autowired
-    AssemblerService assemblerService;
+    private EventPublisherService publisherService;
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
 }

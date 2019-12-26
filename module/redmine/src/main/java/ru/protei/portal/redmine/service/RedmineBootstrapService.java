@@ -18,12 +18,12 @@ public class RedmineBootstrapService {
 
     private static Logger logger = LoggerFactory.getLogger(RedmineBootstrapService.class);
 
-    @Scheduled(initialDelay = 180000, fixedDelay = 180000)
+    @Scheduled(initialDelay = 100000, fixedDelay = 180000)
     public void init() {
         //updateCreationDateAttachments();
         //updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
         //updateNullIssueCreator();
-        updateCaseObjectById(155025L);
+        updateCaseObjectById(152767L);
     }
 
     private void updateCreationDateAttachments() {

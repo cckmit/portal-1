@@ -69,10 +69,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.info = synchronizeDiffs(this.info, event.getInfo());
     }
 
-    public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
+    public void attachCaseObjectMetaEvent(CaseObjectMetaEvent event) {
         lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent || event.isEagerEvent();
-        initMetaState = event.getOldState();
+        initMetaState = initMetaState == null ? event.getOldState() : initMetaState;
         lastMetaState = event.getNewState();
         initiatorId = event.getPersonId();
         serviceModule = event.getServiceModule();
