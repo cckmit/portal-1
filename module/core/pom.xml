@@ -147,16 +147,20 @@
             <version>4.0.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>spring-core</artifactId>
                     <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>spring-beans</artifactId>
-                    <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-context</artifactId>
                     <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -180,14 +184,6 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl-over-slf4j</artifactId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-beanutils</artifactId>
-                    <groupId>commons-beanutils</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -206,24 +202,31 @@
             <groupId>ru.protei</groupId>
             <artifactId>sql.tools</artifactId>
             <version>1.0.11-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${project.spring.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.23</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
             <version>${project.spring.version}</version>
         </dependency>
         <dependency>
@@ -232,14 +235,12 @@
             <version>${project.spring.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${project.junit.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -252,6 +253,12 @@
             <artifactId>json-path-assert</artifactId>
             <version>2.4.0</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -259,6 +266,12 @@
             <artifactId>json-path</artifactId>
             <version>2.4.0</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -266,13 +279,6 @@
             <artifactId>mail</artifactId>
             <version>1.4</version>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                    <version>2.2.4</version>
-                </dependency>
-                -->
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
@@ -283,13 +289,6 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                    <version>2.2.4</version>
-                </dependency>
-                -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -314,12 +313,6 @@
             <groupId>org.tmatesoft.svnkit</groupId>
             <artifactId>svnkit</artifactId>
             <version>1.9.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>trilead-ssh2</artifactId>
-                    <groupId>com.trilead</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -348,20 +341,8 @@
             <version>8.0.5</version>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>xercesImpl</artifactId>
-                    <groupId>xerces</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -384,6 +365,12 @@
             <artifactId>wix-embedded-mysql</artifactId>
             <version>4.1.2</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

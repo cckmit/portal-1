@@ -73,12 +73,24 @@
             <version>4.0.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>spring-context-support</artifactId>
                     <groupId>org.springframework</groupId>
+                    <artifactId>spring-context-support</artifactId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-tx</artifactId>
                     <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

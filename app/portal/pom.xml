@@ -32,11 +32,6 @@
             <artifactId>portal4.ui.common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>ru.protei</groupId>-->
-<!--            <artifactId>portal4.hpsm</artifactId>-->
-<!--            <version>1.0.5.2</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.redmine</artifactId>
@@ -46,12 +41,30 @@
                     <artifactId>spring-tx</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.jira</artifactId>
             <version>1.0.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
@@ -128,25 +141,21 @@
             <artifactId>portal4.ui.sitefolder</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.employee</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.employeeregistration</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.contract</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.skin.classic</artifactId>
@@ -165,13 +174,34 @@
             <version>${project.spring.version}</version>
         </dependency>
 
-
         <!-- gwt dev dependency -->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <scope>provided</scope>
             <version>${project.gwt.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.htmlunit</groupId>
+                    <artifactId>htmlunit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>jta</groupId>

@@ -34,21 +34,45 @@
             <groupId>ru.brainworm</groupId>
             <artifactId>factory.generator.injector</artifactId>
             <version>${project.factory.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-lang3</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ru.brainworm</groupId>
             <artifactId>factory.core.datetimepicker</artifactId>
             <version>${project.factory.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-lang3</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ru.brainworm</groupId>
             <artifactId>factory.widget.table</artifactId>
             <version>${project.factory.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-lang3</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ru.brainworm</groupId>
             <artifactId>factory.widget.dataset</artifactId>
             <version>${project.factory.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-lang3</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- winter-web dependency -->
@@ -72,19 +96,15 @@
             <version>4.0.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>javax.servlet-api</artifactId>
-                    <groupId>javax.servlet</groupId>
+                    <artifactId>cglib-nodep</artifactId>
+                    <groupId>cglib</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-aop</artifactId>
-                    <groupId>org.springframework</groupId>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
                 </exclusion>
                 <exclusion>
                     <artifactId>spring-beans</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-context</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
@@ -92,68 +112,8 @@
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-context-support</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>cglib-nodep</artifactId>
-                    <groupId>cglib</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>trilead-ssh2</artifactId>
-                    <groupId>com.trilead</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-beanutils</artifactId>
-                    <groupId>commons-beanutils</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>trilead-ssh2</artifactId>
-                    <groupId>com.trilead</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-io</artifactId>
-                    <groupId>commons-io</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jna</artifactId>
-                    <groupId>net.java.dev.jna</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-lang3</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>xercesImpl</artifactId>
-                    <groupId>xerces</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -203,12 +163,8 @@
                     <groupId>commons-logging</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>commons-lang3</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
