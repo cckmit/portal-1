@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
@@ -250,6 +251,71 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return sendWelcomeEmailWarning;
     }
 
+    @Override
+    public HasVisibility firstNameErrorLabelVisibility() {
+        return firstNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility secondNameErrorLabelVisibility() {
+        return secondNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility lastNameErrorLabelVisibility() {
+        return lastNameErrorLabel;
+    }
+
+    @Override
+    public HasText firstNameErrorLabel() {
+        return firstNameErrorLabel;
+    }
+
+    @Override
+    public HasText secondNameErrorLabel() {
+        return secondNameErrorLabel;
+    }
+
+    @Override
+    public HasText lastNameErrorLabel() {
+        return lastNameErrorLabel;
+    }
+
+    @Override
+    public HasEnabled saveEnabled() {
+        return saveButton;
+    }
+
+    @Override
+    public HasText firstNameLabel() {
+        return firstNameLabel;
+    }
+
+    @Override
+    public HasText secondNameLabel() {
+        return secondNameLabel;
+    }
+
+    @Override
+    public HasText lastNameLabel() {
+        return lastNameLabel;
+    }
+
+    @Override
+    public HasText personalEmailLabel() {
+        return personalEmailLabel;
+    }
+
+    @Override
+    public HasText workEmailLabel() {
+        return workEmailLabel;
+    }
+
+    @Override
+    public HasText loginLabel() {
+        return loginLabel;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -297,6 +363,26 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     }
 
+    @UiHandler("firstName")
+    public void onFirstNameChanged(InputEvent event) {
+        resetTimer();
+    }
+
+    @UiHandler("secondName")
+    public void onSecondNameChanged(InputEvent event) {
+        resetTimer();
+    }
+
+    @UiHandler("lastName")
+    public void onLastNameChanged(InputEvent event) {
+        resetTimer();
+    }
+
+    private void resetTimer() {
+        limitedFieldsValidationTimer.cancel();
+        limitedFieldsValidationTimer.schedule(200);
+    }
+
     @UiField
     Button saveButton;
 
@@ -313,7 +399,25 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     ValidableTextBox lastName;
 
     @UiField
-    TextBox secondName;
+    ValidableTextBox secondName;
+
+    @UiField
+    Label firstNameErrorLabel;
+
+    @UiField
+    Label lastNameErrorLabel;
+
+    @UiField
+    Label secondNameErrorLabel;
+
+    @UiField
+    Label firstNameLabel;
+
+    @UiField
+    Label lastNameLabel;
+
+    @UiField
+    Label secondNameLabel;
 
     @UiField
     TextBox displayName;
@@ -351,6 +455,15 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     TextArea homeAddress;
+
+    @UiField
+    Label personalEmailLabel;
+
+    @UiField
+    Label workEmailLabel;
+
+    @UiField
+    Label loginLabel;
 
     @UiField
     TextBox displayPosition;
@@ -416,6 +529,15 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         public void run() {
             if ( activity != null ) {
                 activity.onChangeSendWelcomeEmail();
+            }
+        }
+    };
+
+    private Timer limitedFieldsValidationTimer = new Timer() {
+        @Override
+        public void run() {
+            if (activity != null) {
+                activity.validateLimitedFields();
             }
         }
     };

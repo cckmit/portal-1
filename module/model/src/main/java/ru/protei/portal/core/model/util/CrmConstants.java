@@ -52,4 +52,10 @@ public class CrmConstants {
         long HOUR = 60 * MINUTE;
         long DAY = 24 * HOUR;
     }
+
+    public interface ContactConstants {
+        int FIRST_NAME_SIZE = 80;
+        int SECOND_NAME_SIZE = 80;
+        int LAST_NAME_SIZE = 80;
+    }
 }

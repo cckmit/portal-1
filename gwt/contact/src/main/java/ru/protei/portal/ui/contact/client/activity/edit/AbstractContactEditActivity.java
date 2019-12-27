@@ -10,4 +10,5 @@ public interface AbstractContactEditActivity {
     void onChangeContactLogin();
     void onChangeContactPassword();
     void onChangeSendWelcomeEmail();
+    void validateLimitedFields();
 }
