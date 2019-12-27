@@ -72,6 +72,11 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         return filterContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         ClickColumn<EmployeeRegistration> state = new ClickColumn<EmployeeRegistration>() {
             @Override

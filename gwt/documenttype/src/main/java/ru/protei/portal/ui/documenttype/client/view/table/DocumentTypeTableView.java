@@ -49,6 +49,11 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
     }
 
     @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
+    @Override
     public void addRow(DocumentType row) {
         table.addRow(row);
     }

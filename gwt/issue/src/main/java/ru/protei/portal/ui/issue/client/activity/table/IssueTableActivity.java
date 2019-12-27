@@ -125,6 +125,8 @@ public abstract class IssueTableActivity
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new IssueEvents.Create());
     }
 

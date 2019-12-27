@@ -89,6 +89,8 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new SiteFolderPlatformEvents.Edit());
     }
 

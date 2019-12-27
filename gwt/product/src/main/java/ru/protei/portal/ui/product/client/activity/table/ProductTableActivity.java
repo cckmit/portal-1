@@ -84,6 +84,8 @@ public abstract class ProductTableActivity implements
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new ProductEvents.Edit(null));
     }
 

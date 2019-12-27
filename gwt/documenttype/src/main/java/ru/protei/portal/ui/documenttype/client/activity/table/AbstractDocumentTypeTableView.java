@@ -11,6 +11,8 @@ public interface AbstractDocumentTypeTableView extends IsWidget {
 
     void clearRecords();
 
+    void clearSelection();
+
     void addRow(DocumentType row);
 
     void updateRow(DocumentType project);

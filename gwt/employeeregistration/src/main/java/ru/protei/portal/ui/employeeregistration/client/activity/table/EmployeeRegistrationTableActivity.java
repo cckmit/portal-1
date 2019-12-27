@@ -63,6 +63,9 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         if (!UiConstants.ActionBarIdentity.EMPLOYEE_REGISTRATION.equals(event.identity)) {
             return;
         }
+
+        view.clearSelection();
+
         fireEvent(new EmployeeRegistrationEvents.Create());
     }
 

@@ -87,6 +87,8 @@ public abstract class EquipmentTableActivity
             return;
         }
 
+        view.clearSelection();
+
         fireEvent( new EquipmentEvents.Edit( null ) );
     }
 
