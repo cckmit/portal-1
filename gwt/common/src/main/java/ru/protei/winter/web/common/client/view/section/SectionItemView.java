@@ -69,6 +69,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     @Override
+    public void setSectionTitle( String s ) {
+        // not implemented
+    }
+
+    @Override
     public void setSubMenuVisible(boolean isVisible) {
         if (isVisible != subSection.isVisible()) {
             subSection.setVisible(isVisible);
