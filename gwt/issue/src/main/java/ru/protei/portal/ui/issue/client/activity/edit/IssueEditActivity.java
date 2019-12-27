@@ -252,6 +252,7 @@ public abstract class IssueEditActivity implements
         view.addLinkButtonVisibility().setVisible(!readOnly);
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
+                .withCaseNumber(issue.getCaseNumber())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withReadOnly(readOnly));
     }

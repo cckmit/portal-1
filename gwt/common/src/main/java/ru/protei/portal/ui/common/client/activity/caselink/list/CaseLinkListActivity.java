@@ -15,12 +15,14 @@ import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLink
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -91,6 +93,11 @@ public abstract class CaseLinkListActivity
     @Override
     public void onAddLinkClicked(CaseLink value) {
         if (value == null || !show.isEnabled) {
+            return;
+        }
+
+        if (Objects.equals(value.getRemoteId(), String.valueOf(show.caseNumber))) {
+            showError(lang.errUnableLinkIssueToItself());
             return;
         }
 
