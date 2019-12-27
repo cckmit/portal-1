@@ -1959,4 +1959,6 @@ public interface Lang extends Messages, ContactItemLang {
     String linkAdd();
 
     String contactFieldLengthExceed(String fieldName, int symbolsCount);
+
+    String errorFieldHasInvalidValue(String fieldName);
 }

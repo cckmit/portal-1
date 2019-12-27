@@ -2,10 +2,8 @@ package ru.protei.portal.ui.contact.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -19,7 +17,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
@@ -304,6 +301,21 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return lastNameLabel;
     }
 
+    @Override
+    public HasText personalEmailLabel() {
+        return personalEmailLabel;
+    }
+
+    @Override
+    public HasText workEmailLabel() {
+        return workEmailLabel;
+    }
+
+    @Override
+    public HasText loginLabel() {
+        return loginLabel;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -443,6 +455,15 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     TextArea homeAddress;
+
+    @UiField
+    Label personalEmailLabel;
+
+    @UiField
+    Label workEmailLabel;
+
+    @UiField
+    Label loginLabel;
 
     @UiField
     TextBox displayPosition;

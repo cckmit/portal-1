@@ -110,10 +110,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Override
     public void onSaveClicked() {
         if (!validateSaveButton()) {
+            view.saveEnabled().setEnabled(false);
             return;
         }
 
-        if (!validate()) {
+        String errorMsg = validate();
+
+        if (errorMsg != null) {
+            fireErrorMessage(errorMsg);
             return;
         }
 
@@ -298,13 +302,44 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return account;
     }
 
-    private boolean validate() {
-        return view.companyValidator().isValid() &&
-                view.firstNameValidator().isValid() &&
-                view.lastNameValidator().isValid() &&
-                view.isValidLogin() &&
-                (view.workEmail().getText().isEmpty() || view.workEmailValidator().isValid()) &&
-                (view.personalEmail().getText().isEmpty() || view.personalEmailValidator().isValid());
+    private String validate() {
+        if (!view.companyValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.firstNameValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.lastNameValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.isValidLogin()) {
+            return lang.errorFieldHasInvalidValue(view.loginLabel().getText());
+        }
+
+        if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.workEmailLabel().getText());
+        }
+
+        if (!view.personalEmail().getText().isEmpty() && !view.personalEmailValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.personalEmailLabel().getText());
+        }
+
+        if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.firstNameLabel().getText());
+        }
+
+        if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.lastNameLabel().getText());
+        }
+
+        if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.secondNameLabel().getText());
+        }
+
+        return null;
     }
 
     private void initialView(Person person, UserLogin userLogin){

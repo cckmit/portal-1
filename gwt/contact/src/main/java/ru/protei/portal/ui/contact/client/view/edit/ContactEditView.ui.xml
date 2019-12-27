@@ -130,17 +130,13 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <label>
-                                    <ui:text from="{lang.workEmail}"/>
-                                </label>
+                                <g:Label ui:field="workEmailLabel" text="{lang.workEmail}"/>
                                 <validatefield:ValidableTextBox ui:field="workEmail"
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <label class="">
-                                    <ui:text from="{lang.personalEmail}"/>
-                                </label>
+                                <g:Label ui:field="personalEmailLabel" text="{lang.personalEmail}"/>
                                 <validatefield:ValidableTextBox ui:field="personalEmail"
                                                                 notNull="false"
                                                                 styleName="form-control"/>
@@ -214,7 +210,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-4">
-                                <label><ui:text from="{lang.accountLogin}"/></label>
+                                <g:Label ui:field="loginLabel" text="{lang.accountLogin}"/>
                                 <div class="verifiable">
                                     <i ui:field="verifiableIcon"/>
                                 </div>

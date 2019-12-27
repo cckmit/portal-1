@@ -110,4 +110,10 @@ public interface AbstractContactEditView extends IsWidget {
     HasText secondNameLabel();
 
     HasText lastNameLabel();
+
+    HasText personalEmailLabel();
+
+    HasText workEmailLabel();
+
+    HasText loginLabel();
 }
