@@ -157,6 +157,12 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
             activity.onCancelClicked();
         }
     }
+    @UiHandler("backButton")
+    public void onBackButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
+    }
 
     @Override
     public void showComments(boolean isShow) {
@@ -247,6 +253,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     HTMLPanel linksContainer;
     @UiField
     Button addLinkButton;
+    @UiField
+    Button backButton;
 
     @UiField
     Button saveButton;
