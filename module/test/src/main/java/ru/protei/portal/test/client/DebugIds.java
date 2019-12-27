@@ -385,6 +385,7 @@ public class DebugIds {
         String DIRECTION_SELECTOR = "project-direction-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
+        String LINKS_BUTTON = "project-links-button";
 /*        String TEAM_SELECTOR = "project-team-selector";
         String PRODUCTS_SELECTOR = "project-products-selector";
         String DOCUMENTS_CONTAINER = "project-documents-container";*/

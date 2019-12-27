@@ -23,6 +23,12 @@
                     <label><ui:text from="{lang.projectName}"/></label>
                     <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
                 </div>
+
+                <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar m-l-15" title="{lang.linkAdd}">
+                    <i class="fas fa-link"/>
+                </g:Button>
+
+                <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12"/>
             </div>
 
             <div class="row">

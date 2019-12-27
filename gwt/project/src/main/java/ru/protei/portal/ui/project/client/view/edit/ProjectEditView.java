@@ -134,6 +134,16 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return saveButton;
     }
 
+    @Override
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
+    }
+
+    @Override
+    public HasVisibility addLinkButtonVisibility() {
+        return addLinkButton;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -164,6 +174,13 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
             documents.addClassName(UiConstants.Styles.HIDE);
     }
 
+    @UiHandler("addLinkButton")
+    public void onAddLinkButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddLinkClicked(addLinkButton);
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -178,6 +195,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
+        addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
     }
 
     @UiField
@@ -225,6 +243,10 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     DivElement documents;
     @UiField
     HTMLPanel documentsContainer;
+    @UiField
+    HTMLPanel linksContainer;
+    @UiField
+    Button addLinkButton;
 
     @UiField
     Button saveButton;
