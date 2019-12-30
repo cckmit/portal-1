@@ -327,7 +327,7 @@ public abstract class IssueEditActivity implements
         view.showEditViewButtonVisibility().setVisible(modePreview);
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
 
-        view.setBackgroundWhite(modePreview);
+        view.setPreviewStyles(modePreview);
     }
 
     private String makeName( String issueName, String jiraUrl, String extAppType ) {
