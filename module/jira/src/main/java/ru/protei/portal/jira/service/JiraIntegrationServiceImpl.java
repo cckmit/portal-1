@@ -367,7 +367,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return our;
     }
 
-
     private void updateCaseState(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
         logger.debug("update case state, issue={}, jira-status = {}, current case state = {}", issue.getKey(), issue.getStatus().getName(), caseObj.getState());
 
