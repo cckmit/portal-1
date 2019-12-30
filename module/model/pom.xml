@@ -13,11 +13,6 @@
     <artifactId>portal4.model</artifactId>
     <version>4.0.0</version>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
 
@@ -183,6 +178,14 @@
                     <artifactId>commons-net</artifactId>
                     <groupId>commons-net</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>commons-net</artifactId>
+                    <groupId>commons-net</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -237,6 +240,10 @@
                 <exclusion>
                     <artifactId>spring-context-support</artifactId>
                     <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

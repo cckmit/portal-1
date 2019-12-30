@@ -73,24 +73,103 @@
             <version>4.0.0</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context-support</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
                     <artifactId>spring-tx</artifactId>
+                    <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
+                    <artifactId>atlassian-renderer</artifactId>
+                    <groupId>com.atlassian.renderer</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>jmc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jxls-poi</artifactId>
+                    <groupId>org.jxls</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sybase.jdbc3</groupId>
+                    <artifactId>jconn3</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>jtds.protei</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>sql.tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.freemarker</groupId>
+                    <artifactId>freemarker</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-fileupload</artifactId>
+                    <groupId>commons-fileupload</groupId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.pdfbox</groupId>
+                    <artifactId>pdfbox</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queryparser</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-analyzers-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.tmatesoft.svnkit</groupId>
+                    <artifactId>svnkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark-ext-gfm-tables</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark-ext-autolink</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.renderer</groupId>
+                    <artifactId>atlassian-renderer</artifactId>                </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.juniversalchardet</groupId>
+                    <artifactId>juniversalchardet</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jsch.agentproxy.svnkit-trilead-ssh2</artifactId>
+                    <groupId>com.jcraft</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
