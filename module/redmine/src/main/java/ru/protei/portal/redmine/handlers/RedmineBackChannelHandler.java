@@ -83,8 +83,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
 
         logger.debug("Updating comments");
-        if (event.isCommentAttached() && event.isAttachedCommentNotPrivate() ) {
-            updateComments( issue, event.getInitiator(), event.getAddedCaseComments() );
+        if (event.isCommentAttached()) {
+            updateComments(issue, event.getInitiator(), event.getAddedCaseComments());
         }
         logger.debug("Finished updating of comments");
 
@@ -130,10 +130,10 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
     }
 
-    private void updateComments( Issue issue, Person initiator, List<CaseComment> addedCaseComments ) {
-        CaseComment comment = CollectionUtils.last( addedCaseComments );
-        if (!comment.getText().isEmpty()) {
-            issue.setNotes( RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText() );
+    private void updateComments(Issue issue, Person initiator, List<CaseComment> addedCaseComments) {
+        CaseComment comment = CollectionUtils.last(addedCaseComments);
+        if (!comment.getText().isEmpty() && !comment.isPrivateComment()) {
+            issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText());
         }
     }
 
