@@ -956,13 +956,21 @@ label.bordered:after {
   transition: all 0.5s;
 }
 
+.preview-container .card {
+  overflow-y: auto;
+  box-sizing: border-box;
+  max-height: calc(100vh - 130px); // 80px = main-header (60px) + top offset (15px) + bottom offset (55px)
+  z-index: 0;
+  right: 0;
+  position: relative;
+}
 
 .preview-wrapper,
 .preview-card,
 .filter-container .card {
   overflow-y: auto;
   box-sizing: border-box;
-  max-height: calc(100vh - 110px); // 80px = main-header (60px) + top offset (15px) + bottom offset (35px)
+  max-height: calc(100vh - 130px); // 80px = main-header (60px) + top offset (15px) + bottom offset (55px)
   z-index: 0;
   right: 0;
   position: relative;

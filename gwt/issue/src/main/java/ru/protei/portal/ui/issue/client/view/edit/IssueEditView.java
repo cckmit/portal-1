@@ -37,10 +37,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setBackgroundWhite(boolean isWhite) {
+    public void setPreviewStyles(boolean isPreview) {
         root.removeStyleName("card-default");
         root.removeStyleName("card-transparent");
-        root.addStyleName(isWhite ? "card-default" : "card-transparent");
+        root.removeStyleName("card-fixed");
+        if (isPreview) {
+            root.addStyleName("card-default");
+            root.addStyleName("card-fixed");
+        } else {
+            root.addStyleName("card-transparent");
+        }
     }
 
     @Override
@@ -167,10 +173,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             return;
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
-        showEditViewButton.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
+        backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
+        showEditViewButton.ensureDebugId(DebugIds.ISSUE.SHOW_EDIT_BUTTON);
         addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
     }
 
     @UiField

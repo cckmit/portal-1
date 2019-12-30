@@ -11,7 +11,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setActivity(AbstractIssueEditActivity activity);
 
-    void setBackgroundWhite(boolean isWhite);
+    void setPreviewStyles(boolean isPreview);
 
     void setCaseNumber(Long caseNumber);
 

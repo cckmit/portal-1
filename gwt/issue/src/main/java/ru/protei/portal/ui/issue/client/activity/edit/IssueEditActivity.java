@@ -184,21 +184,21 @@ public abstract class IssueEditActivity implements
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
         boolean readOnly = isReadOnly();
         if (!isAllowedEditNameAndDescription || readOnly) return;
-        view.nameAndDescriptionEditButtonVisibility().setVisible( false );
+        view.nameAndDescriptionEditButtonVisibility().setVisible(false);
         view.nameVisibility().setVisible(false);
 
         view.getInfoContainer().clear();
-        view.getInfoContainer().add( issueNameDescriptionEditWidget );
+        view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup );
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
     }
 
     @Override
-    public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        issue.setName( changeRequest.getName() );
-        issue.setInfo( changeRequest.getInfo() );
+    public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
+        issue.setName(changeRequest.getName());
+        issue.setInfo(changeRequest.getInfo());
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
@@ -327,7 +327,7 @@ public abstract class IssueEditActivity implements
         view.showEditViewButtonVisibility().setVisible(modePreview);
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
 
-        view.setBackgroundWhite(modePreview);
+        view.setPreviewStyles(modePreview);
     }
 
     private String makeName( String issueName, String jiraUrl, String extAppType ) {
