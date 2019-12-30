@@ -79,10 +79,6 @@
                     <groupId>com.atlassian.renderer</groupId>
                 </exclusion>
                 <exclusion>
-                    <groupId>ru.protei</groupId>
-                    <artifactId>jmc</artifactId>
-                </exclusion>
-                <exclusion>
                     <artifactId>jxls-poi</artifactId>
                     <groupId>org.jxls</groupId>
                 </exclusion>
@@ -93,10 +89,6 @@
                 <exclusion>
                     <groupId>ru.protei</groupId>
                     <artifactId>jtds.protei</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ru.protei</groupId>
-                    <artifactId>sql.tools</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.freemarker</groupId>
@@ -152,7 +144,8 @@
                 </exclusion>
                 <exclusion>
                     <groupId>com.atlassian.renderer</groupId>
-                    <artifactId>atlassian-renderer</artifactId>                </exclusion>
+                    <artifactId>atlassian-renderer</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>com.googlecode.juniversalchardet</groupId>
                     <artifactId>juniversalchardet</artifactId>
@@ -192,10 +185,6 @@
                 <exclusion>
                     <artifactId>guava</artifactId>
                     <groupId>com.google.guava</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -206,10 +206,6 @@
                     <artifactId>jconn3</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>ru.protei</groupId>
-                    <artifactId>jtds.protei</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.freemarker</groupId>
                     <artifactId>freemarker</artifactId>
                 </exclusion>
