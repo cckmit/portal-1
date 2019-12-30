@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.view.edit;
+package ru.protei.portal.ui.issue.client.activity.edit;
 
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;

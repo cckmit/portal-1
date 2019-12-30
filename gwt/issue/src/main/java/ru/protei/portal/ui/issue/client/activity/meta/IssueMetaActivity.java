@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issue.client.activity.meta;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -49,7 +49,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         event.parent.clear();
         event.parent.add(metaView.asWidget());
 
-        this.meta = event.meta;
+        readOnly = event.isReadOnly;
+        meta = event.meta;
         caseMetaJira = event.metaJira;
         metaNotifiers = event.metaNotifiers;
 
@@ -74,13 +75,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onStateChange() {
         meta.setStateId(metaView.state().getValue().getId());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
     }
 
     @Override
     public void onImportanceChanged() {
         meta.setImpLevel(metaView.importance().getValue().getId());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueImportanceChanged( meta.getId() ) ) );
     }
 
     @Override
@@ -92,18 +93,18 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onManagerChanged() {
         meta.setManager(metaView.getManager());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueManagerChanged( meta.getId() ) ) );
     }
 
     @Override
     public void onInitiatorChanged() {
         meta.setInitiator(metaView.getInitiator());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
     }
 
     @Override
     public void onPlatformChanged() {
-        meta.setPlatformId(metaView.getPlatformId());
+        meta.setPlatform(metaView.platform().getValue());
         onCaseMetaChanged( meta );
     }
 
@@ -114,6 +115,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
+        onCaseMetaChanged(caseMeta, null);
+    }
+
+    private void onCaseMetaChanged(CaseObjectMeta caseMeta, Runnable runAfterUpdate) {
+
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         if (!validateCaseMeta(caseMeta)) {
             return;
         }
@@ -122,12 +133,19 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
+                    if(runAfterUpdate!=null) runAfterUpdate.run();
                 }));
     }
 
 
     @Override
     public void onCaseMetaNotifiersChanged() {
+
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         Set<Person> caseMetaNotifiers = metaView.getCaseMetaNotifiers();
 
         metaNotifiers.setNotifiers( caseMetaNotifiers );
@@ -141,6 +159,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onCaseMetaJiraChanged() {
+
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         CaseObjectMetaJira metaJira = metaView.jiraSlaSelector().getValue();
         caseMetaJira.setSlaMapId(metaJira.getSlaMapId());
         caseMetaJira.setSeverity(metaJira.getSeverity());
@@ -157,13 +181,20 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onCompanyChanged() {
         Company company = metaView.getCompany();
+        if (company.getId().equals(meta.getInitiatorCompanyId())) {
+            return;
+        }
+
+        meta.setInitiatorCompany(company);
 
         metaView.initiatorUpdateCompany(company);
+        meta.setInitiator(null);
 
         Long selectedCompanyId = company.getId();
 
-        metaView.setPlatform(null);
+        metaView.platform().setValue(null);
         metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
+        meta.setPlatform(null);
 
         companyService.getCompanyWithParentCompanySubscriptions(
                 selectedCompanyId,
@@ -188,15 +219,20 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Person initiator = null;
         Profile profile = policyService.getProfile();
-        if (Objects.equals( meta.getInitiator().getCompanyId(), selectedCompanyId)) {
+        if (meta.getInitiator() != null && Objects.equals( meta.getInitiator().getCompanyId(), selectedCompanyId)) {
             initiator = meta.getInitiator();
         } else if (Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
-            initiator = Person.fromPersonShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
+            initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
+            meta.setInitiator( initiator );
         }
 
         metaView.setInitiator(initiator);
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+
+        if(company!=null && initiator!=null){
+            onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
+        }
     }
 
     @Override
@@ -210,20 +246,28 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
         } else {
             caseMetaNotifiers.setNotifiers(null);
+
+
         }
 
         metaView.setCaseMetaNotifiers(caseMetaNotifiers.getNotifiers());
+        metaView.caseMetaNotifiersEnabled().setEnabled(!readOnly);
     }
 
     private void fillJiraView(CaseObjectMetaJira caseMetaJira) {
         metaView.jiraSlaSelectorVisibility().setVisible( caseMetaJira != null );
         metaView.setCaseMetaJira( caseMetaJira );
+        metaView.caseMetaJiraEnabled().setEnabled(!readOnly);
     }
 
     private void fillView(CaseObjectMeta meta) {
-        metaView.companyEnabled().setEnabled( isCompanyChangeAllowed(meta.isPrivateCase()) );
-        metaView.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
-        metaView.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+        metaView.stateEnabled().setEnabled(!readOnly);
+        metaView.importanceEnabled().setEnabled(!readOnly);
+        metaView.productEnabled().setEnabled(!readOnly && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        metaView.managerEnabled().setEnabled(!readOnly && policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
+        metaView.initiatorEnabled().setEnabled(!readOnly);
+        metaView.platformEnabled().setEnabled(!readOnly);
 
         metaView.timeElapsedHeaderVisibility().setVisible(true);
 
@@ -236,17 +280,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( meta.getState() );
-        metaView.stateEnabled().setEnabled(true);
 
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
         metaView.setTimeElapsed(meta.getTimeElapsed());
 
         metaView.setCompany(meta.getInitiatorCompany());
-        metaView.setInitiator(meta.getInitiator());
         metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
-        metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
+        metaView.setInitiator(meta.getInitiator());
 
+        metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
         metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -274,6 +317,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
+        metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
@@ -335,7 +379,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setSubscriptionEmails(String value) {
         metaView.setSubscriptionEmails(value);
-        metaView.companyEnabled().setEnabled(isCompanyChangeAllowed( meta.isPrivateCase()));
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed( meta.isPrivateCase()));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
@@ -372,6 +416,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
+    private boolean readOnly;
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
 

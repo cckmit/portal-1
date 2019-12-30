@@ -93,10 +93,12 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 generalUpdate(endpoint, event, issue, issueClient);
             }
 
-            if (event.getAddedCaseComments() != null && event.isAttachedCommentNotPrivate()) {
-                logger.debug("add comment {} to issue {}", event.getAddedCaseComments(), issue.getKey());
-                issueClient.addComment(issue.getCommentsUri(), convertComment( CollectionUtils.last( event.getAddedCaseComments() ), event.getInitiator()))
-                        .claim();
+            if (event.isCommentAttached()) {
+                event.getAddedCaseComments().forEach(comment -> {
+                    if (!comment.isPrivateComment()) {
+                        logger.debug("add comment {} to issue {}", comment.getId(), issue.getKey());
+                        issueClient.addComment(issue.getCommentsUri(), convertComment(comment, event.getInitiator())).claim();
+                    }});
             }
 
             if (event.getAddedAttachments() != null) {

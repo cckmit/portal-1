@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -188,17 +187,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public Person getInitiator() {
-        return Person.fromPersonShortView(initiator.getValue());
+        return Person.fromPersonFullNameShortView(initiator.getValue());
     }
 
     @Override
-    public void setPlatform(Platform platform) {
-        this.platform.setValue(platform == null ? null : new PlatformOption(platform.getName(), platform.getId()));
-    }
-
-    @Override
-    public Long getPlatformId() {
-        return platform.getValue() == null ? null : platform.getValue().getId();
+    public HasValue< PlatformOption> platform() {
+        return platform;
     }
 
     @Override
@@ -239,6 +233,31 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasEnabled stateEnabled() {
         return state;
+    }
+
+    @Override
+    public HasEnabled importanceEnabled() {
+        return importance;
+    }
+
+    @Override
+    public HasEnabled caseMetaNotifiersEnabled() {
+        return notifiers;
+    }
+
+    @Override
+    public HasEnabled initiatorEnabled() {
+        return initiator;
+    }
+
+    @Override
+    public HasEnabled platformEnabled() {
+        return platform;
+    }
+
+    @Override
+    public HasEnabled caseMetaJiraEnabled() {
+        return jiraSlaSelector;
     }
 
     @Override

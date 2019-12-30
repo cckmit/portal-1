@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueActivity;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
 public class IssueNameWidget extends Composite  {
 
@@ -26,7 +26,7 @@ public class IssueNameWidget extends Composite  {
         ensureDebugIds();
     }
 
-    public void setActivity( AbstractIssueActivity activity ) {
+    public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
     }
 
@@ -59,7 +59,7 @@ public class IssueNameWidget extends Composite  {
     @UiField
     LabelElement nameRO;
 
-    private AbstractIssueActivity activity;
+    private AbstractIssueEditActivity activity;
 
     interface IssueNameWidgetUiBinder extends UiBinder<HTMLPanel, IssueNameWidget> {
     }

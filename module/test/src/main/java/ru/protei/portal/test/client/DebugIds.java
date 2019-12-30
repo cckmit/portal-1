@@ -76,9 +76,6 @@ public class DebugIds {
         String SITE_FOLDER = "sidebar-menu-site-folder";
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String CONTRACT = "sidebar-menu-contract";
-        @Deprecated String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
-        @Deprecated String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";
-        @Deprecated String SITE_FOLDER_APPS = "sidebar-menu-site-folder-apps";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -116,7 +113,6 @@ public class DebugIds {
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
-        @Deprecated String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
         String DATE_RANGE_SELECTOR = "filter-date-range-selector";
         String DATE_CREATED_RANGE_INPUT = "filter-date-created-range-input";
         String DATE_CREATED_RANGE_LABEL = "filter-date-created-range-label";
@@ -151,7 +147,6 @@ public class DebugIds {
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
 
-        @Deprecated String REPORT_BUTTON = "filter-report-button";
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
         String RESET_BUTTON = "filter-reset-button";
@@ -221,28 +216,23 @@ public class DebugIds {
     }
 
     public interface ISSUE {
+        String BACK_BUTTON = "issue-back-button";
+        String SHOW_EDIT_BUTTON = "issue-show-edit-button";
+        String LINKS_BUTTON = "issue-links-button";
+        String TAGS_BUTTON = "issue-tags-button";
+        String EDIT_NAME_AND_DESC_BUTTON = "issue-edit-name-and-desc-button";
         String PRIVACY_BUTTON = "issue-privacy-button";
         String PRIVACY_ICON = "issue-privacy-icon";
         String PRIVACY_ICON_PRIVATE = "issue-privacy-icon-private";
         String PRIVACY_ICON_PUBLIC = "issue-privacy-icon-public";
-        String NUMBER_INPUT = "issue-number-input";
         String NAME_INPUT = "issue-name-input";
         String NAME_FIELD = "issue-name-field";
-        String LINKS_BUTTON = "issue-links-button";
         String LINKS_CONTAINER = "issue-links-container";
         String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
         String LINKS_INPUT = "issue-links-input";
         String LINKS_APPLY_BUTTON = "issue-links-apply-button";
         String LINKS_COLLAPSE_BUTTON = "issue-links-collapse-button";
-        @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
-        @Deprecated String LINK_INFO_CONTAINER = "issue-link-info-container";
         String LINK_REMOVE_BUTTON = "issue-link-remove-button";
-        String LINK_STATE = "issue-link-state";
-        @Deprecated String LINK_IMPORTANCE_ICON = "issue-link-importance-icon";
-        String LINK_NUMBER = "issue-link-number";
-        String LINK_DESCRIPTION = "issue-link-description";
-        String LINK_ELEMENT = "issue-link-element";
-        String TAGS_BUTTON = "issue-tags-button";
         String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
@@ -267,6 +257,8 @@ public class DebugIds {
         String COPY_NUMBER_BUTTON = "issue-copy-number-button";
         String COPY_NUMBER_AND_NAME_BUTTON = "issue-copy-number-and-name-button";
         String NOTIFIERS_SELECTOR = "issue-subscriptions-selector";
+        String EDIT_NAME_AND_DESC_ACCEPT = "issue-edit-name-and-desc-accept";
+        String EDIT_NAME_AND_DESC_REJECT = "issue-edit-name-and-desc-reject";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -284,33 +276,11 @@ public class DebugIds {
             String SUBSCRIPTIONS = "issue-label-subscriptions";
             String NOTIFIERS = "issue-label-notifiers";
             String ATTACHMENTS = "issue-label-attachments";
-            @Deprecated String TAGS = "issue-label-tags";
             String TIME_ELAPSED_TYPE = "issue-label-time-elapsed-type";
         }
     }
 
-    public interface ISSUE_PREVIEW {
-        String PRIVACY_ICON = "issue-preview-privacy-icon";
-        String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
-        @Deprecated String TITLE_LABEL = "issue-preview-title-label";
-        @Deprecated String LINKS_CONTAINER = "issue-preview-links-container";
-        String DATE_CREATED = "issue-preview-date-created-item";
-        String IMPORTANCE = "issue-preview-importance-item";
-        String PRODUCT = "issue-preview-product-item";
-        String STATE = "issue-preview-state-item";
-        String TIME_ELAPSED = "issue-preview-time-elapsed-item";
-        @Deprecated String COMPANY_LABEL = "issue-preview-company-label";
-        String CONTACT = "issue-preview-contact-item";
-        @Deprecated String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
-        String MANAGER = "issue-preview-manager-item";
-        String SUBSCRIPTION = "issue-preview-subscription-item";
-        String NAME = "issue-preview-name-item";
-        String PLATFORM = "issue-preview-platform-item";
-        String INFO = "issue-preview-info-item";
-        String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
-        String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
-        String COPY_NUMBER_BUTTON = "issue-preview-copy-number-button";
-        String COPY_NUMBER_AND_NAME_BUTTON = "issue-preview-copy-number-and-name-button";
+    public interface CASE_COMMENT {
 
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
@@ -334,45 +304,33 @@ public class DebugIds {
             String CREATE_DATE = "issue-preview-comment-item-create-date";
             String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
         }
-
-        interface LABEL {
-            String PRODUCT = "issue-preview-product-label";
-            String STATE = "issue-preview-state-label";
-            String CONTACT = "issue-preview-contact-label";
-            String MANAGER = "issue-preview-manager-label";
-            String SUBSCRIPTION = "issue-preview-subscription-label";
-            String PLATFORM = "issue-preview-platform-label";
-            String IMPORTANCE = "issue-preview-importance-label";
-            String TIME_ELAPSED = "issue-preview-time-elapsed-label";
-        }
     }
 
-    public interface DOCUMENT_EDIT {
-        String COMMON_TAB = "document-edit-common-tab";
-        String SEARCH_PROJECT_TAB = "document-edit-search-project-tab";
-        String CREATE_PROJECT_TAB = "document-edit-create-project-tab";
-        String CREATE_PRODUCT_TAB = "document-edit-create-product-tab";
+    @Deprecated public interface ISSUE_PREVIEW {
+        @Deprecated String FULL_SCREEN_BUTTON = DebugIds.ISSUE.SHOW_EDIT_BUTTON;
+        @Deprecated String PLATFORM = DebugIds.SITE_FOLDER.LINK.PLATFORM;
 
-        interface COMMENT_LIST {
-            String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
-            String USER_ICON = "issue-preview-comment-list-user-icon";
-            String TEXT_INPUT = "issue-preview-comment-list-text-input";
-            String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
-            String SEND_BUTTON = "issue-preview-comment-list-send-button";
-            String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
-            String TIME_ELAPSED = "issue-preview-comment-list-time-elapsed";
-            String TIME_ELAPSED_TYPE = "issue-preview-comment-list-time-elapsed-type";
+        @Deprecated interface COMMENT_LIST {
+            @Deprecated String COMMENTS_LIST = DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST;
+            @Deprecated String USER_ICON = DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON;
+            @Deprecated String TEXT_INPUT = DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT;
+            @Deprecated String PRIVACY_BUTTON = DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON;
+            @Deprecated String SEND_BUTTON = DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON;
+            @Deprecated String FILES_UPLOAD = DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD;
+            @Deprecated String TIME_ELAPSED = DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED;
+            @Deprecated String TIME_ELAPSED_TYPE = DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED_TYPE;
         }
 
-        interface COMMENT_ITEM {
-            String PRIVACY_ICON = "issue-preview-comment-item-privacy-icon";
-            String REPLY_BUTTON = "issue-preview-comment-item-reply-button";
-            String EDIT_BUTTON = "issue-preview-comment-item-edit-button";
-            String REMOVE_BUTTON = "issue-preview-comment-item-remove-button";
-            String OWNER = "issue-preview-comment-item-owner";
-            String STATUS = "issue-preview-comment-item-status";
-            String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
-            String CREATE_DATE = "issue-preview-comment-item-create-date";
+        @Deprecated interface COMMENT_ITEM {
+            @Deprecated String PRIVACY_ICON = DebugIds.CASE_COMMENT.COMMENT_ITEM.PRIVACY_ICON;
+            @Deprecated String REPLY_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.REPLY_BUTTON;
+            @Deprecated String EDIT_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_BUTTON;
+            @Deprecated String REMOVE_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.REMOVE_BUTTON;
+            @Deprecated String OWNER = DebugIds.CASE_COMMENT.COMMENT_ITEM.OWNER;
+            @Deprecated String STATUS = DebugIds.CASE_COMMENT.COMMENT_ITEM.STATUS;
+            @Deprecated String TIME_ELAPSED = DebugIds.CASE_COMMENT.COMMENT_ITEM.TIME_ELAPSED;
+            @Deprecated String CREATE_DATE = DebugIds.CASE_COMMENT.COMMENT_ITEM.CREATE_DATE;
+            @Deprecated String EDIT_TIME_ELAPSED_TYPE_POPUP = DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP;
         }
     }
 
@@ -385,15 +343,10 @@ public class DebugIds {
         String DIRECTION_SELECTOR = "project-direction-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
-/*        String TEAM_SELECTOR = "project-team-selector";
-        String PRODUCTS_SELECTOR = "project-products-selector";
-        String DOCUMENTS_CONTAINER = "project-documents-container";*/
+        String LINKS_BUTTON = "project-links-button";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
-
-        interface LABEL {
-        }
     }
 
     public interface PROJECT_PREVIEW {
@@ -413,29 +366,10 @@ public class DebugIds {
         String COMMENTS_CONTAINER = "project-preview-comments-container";
         String CONTRACT_LABEL = "project-preview-contract-label";
         String PLATFORM_LABEL = "project-preview-platform-label";
-        String TO_CONTRACT_BUTTON = "project-preview-to-contract-button";
-    }
-
-    public interface REGION_STATE {
-        String DEFAULT = "region-state-";
-        String UNKNOWN = "region-state-unknown";
-        String MARKETING = "region-state-marketing";
-        String PRESALE = "region-state-presale";
-        String PROJECTING = "region-state-projecting";
-        String DEVELOPMENT = "region-state-development";
-        String DEPLOYMENT = "region-state-deployment";
-        String TESTING = "region-state-testing";
-        String SUPPORT = "region-state-support";
-        String FINISHED = "region-state-finished";
-        String CANCELED = "region-state-canceled";
     }
 
     public interface COMPANY_TABLE {
         String LOCK_ICON = "company-table-lock-icon";
-    }
-
-    public interface COMPANY_ITEM {
-        String LOCK_ICON = "company-item-lock-icon";
     }
 
     public interface COMPANY_PREVIEW {
@@ -443,7 +377,6 @@ public class DebugIds {
         String SUBSCRIPTION = "company-preview-subscription-item";
 
         interface LABEL {
-            @Deprecated String TAGS = "company-preview-tags-label";
             String SUBSCRIPTION = "company-preview-label-subscription-label";
             String CONTACT_INFO = "company-preview-contact-info-label";
         }
@@ -584,5 +517,12 @@ public class DebugIds {
 
     public interface COLLAPSIBLE_PANEL {
         String COLLAPSE_BUTTON = "collapsible-panel-collapse-button";
+    }
+
+    public interface SITE_FOLDER {
+
+        interface LINK {
+            String PLATFORM = "sitefolder-link-platform";
+        }
     }
 }

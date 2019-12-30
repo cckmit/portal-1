@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -28,10 +29,6 @@ import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
-import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
-import ru.protei.portal.ui.issue.client.view.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
@@ -43,18 +40,15 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
-/**
- * Активность создания и редактирования обращения
- */
-public abstract class IssueEditActivity implements AbstractIssueEditActivity,
-        AbstractIssuePreviewActivity,
+public abstract class IssueEditActivity implements
+        AbstractIssueEditActivity,
         AbstractIssueNameDescriptionEditWidgetActivity,
-        Activity {
+        Activity
+{
 
     @PostConstruct
     public void onInit() {
-        editView.setActivity( this );
-        previewView.setActivity( this );
+        view.setActivity( this );
         issueNameDescriptionEditWidget.setActivity( this );
         issueInfoWidget.setActivity( this );
 
@@ -85,70 +79,93 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     @Event
     public void onShow( IssueEvents.Edit event ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show());
+        HasWidgets container = initDetails.parent;
+        if (!hasAccess()) {
+            fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
-
-        sp.start( "on show" );
-        sp.push();
-
-        requestIssue(event.caseNumber, initDetails.parent, editView );
-        initDetails.parent.clear();
-        sp.check( "on show clear" );
+        modePreview = false;
+        container.clear();
+        requestIssue(event.caseNumber, container);
     }
 
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
-        sp.start( "on ShowPreview" );
-        sp.push();
-        requestIssue( event.issueCaseNumber, event.parent, previewView);
-        event.parent.clear();
-        sp.check( "on ShowPreview clear" );
-
-        previewView.backBtnVisibility().setVisible(false);
-        previewView.setFullScreen(false);
-        sp.check( "on ShowPreview setFullScreen" );
+        HasWidgets container = event.parent;
+        if (!hasAccess()) {
+            fireEvent(new ForbiddenEvents.Show(container));
+            return;
+        }
+        modePreview = true;
+        container.clear();
+        requestIssue(event.issueCaseNumber, container);
     }
 
     @Event
     public void onShow( IssueEvents.ShowFullScreen event ) {
-        displayFullScreen();
-        requestIssue(event.issueCaseNumber, initDetails.parent, previewView);
+        HasWidgets container = initDetails.parent;
+        if (!hasAccess()) {
+            fireEvent(new ForbiddenEvents.Show(container));
+            return;
+        }
+        modePreview = false;
+        container.clear();
+        requestIssue(event.issueCaseNumber, container);
     }
 
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(editView.isAttached() && issue.getId().equals(event.issueId)) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
         }
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
-        if(editView.isAttached() && issue.getId().equals(event.issueId)) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             event.attachments.forEach( issueInfoWidget.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
         }
     }
 
+    @Event
+    public void onStateChanged( IssueEvents.IssueStateChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
+    @Event
+    public void onImportanceChanged( IssueEvents.IssueImportanceChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
+    @Event
+    public void onManagerChanged( IssueEvents.IssueManagerChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            showComments( issue );
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
+        if (isReadOnly()) return;
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(result -> {
                     issueInfoWidget.attachmentsContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);
                     issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                    fireEvent(new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer())
-                            .withCaseType(En_CaseType.CRM_SUPPORT)
-                            .withCaseId(issue.getId())
-                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                            .withPrivateCase(issue.isPrivateCase())
-                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
+                    showComments( issue );
                 }));
     }
 
@@ -164,40 +181,42 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
     }
 
     @Override
-    public void onGoToIssuesClicked() {
-        fireEvent(new IssueEvents.Show());
-    }
-
-
-    @Override
-    public void onNameAndDescriptionEditClicked( AbstractIssueEditView view) {
+    public void onNameAndDescriptionEditClicked() {
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
-        if (!isAllowedEditNameAndDescription) return;
-        view.nameAndDescriptionEditButtonVisibility().setVisible( false );
-        view.setNameVisible(false);
+        boolean readOnly = isReadOnly();
+        if (!isAllowedEditNameAndDescription || readOnly) return;
+        view.nameAndDescriptionEditButtonVisibility().setVisible(false);
+        view.nameVisibility().setVisible(false);
 
-        editView.getInfoContainer().clear();
-        editView.getInfoContainer().add( issueNameDescriptionEditWidget );
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup );
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
     }
 
     @Override
-    public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        editView.nameAndDescriptionEditButtonVisibility().setVisible( true );
-        editView.setNameVisible( true );
-        editView.getInfoContainer().clear();
-        editView.getInfoContainer().add( issueInfoWidget );
-        issue.setName( changeRequest.getName() );
-        issue.setInfo( changeRequest.getInfo() );
-        fillView(issue, editView);
+    public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
+        issue.setName(changeRequest.getName());
+        issue.setInfo(changeRequest.getInfo());
+        fillView(issue);
+        fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
 
     @Override
-    public void onFullScreenPreviewClicked() {
-        displayFullScreen();
+    public void onOpenEditViewClicked() {
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
+    }
+
+    @Override
+    public void onAddTagClicked(IsWidget target) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(target));
+    }
+
+    @Override
+    public void onAddLinkClicked(IsWidget target) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
     }
 
     @Override
@@ -216,62 +235,62 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         }
     }
 
-    private void displayFullScreen() {
-        initDetails.parent.clear();
-
-        previewView.backBtnVisibility().setVisible(true);
-        previewView.setFullScreen(true);
-        initDetails.parent.add( previewView.asWidget() );
+    private void requestIssue(Long number, HasWidgets container) {
+        issueController.getIssue(number, new FluentCallback<CaseObject>()
+                .withSuccess(issue -> {
+                    IssueEditActivity.this.issue = issue;
+                    fillView(issue);
+                    showLinks(issue);
+                    showTags(issue);
+                    showMeta(issue);
+                    showComments(issue);
+                    attachToContainer(container);
+                }));
     }
 
-    private void requestIssue( Long number, HasWidgets parent, final AbstractIssueView view ) {
+    private void showLinks(CaseObject issue) {
+        boolean readOnly = isReadOnly();
+        view.addLinkButtonVisibility().setVisible(!readOnly);
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withReadOnly(readOnly));
+    }
 
-        issueService.getIssue(number, new RequestCallback<CaseObject>() {
-            @Override
-            public void onError(Throwable throwable) {}
+    private void showTags(CaseObject issue) {
+        boolean readOnly = isReadOnly();
+        boolean addAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        boolean editAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        view.addTagButtonVisibility().setVisible(addAccess);
+        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
+                .withCaseId(issue.getId())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withAddEnabled(addAccess)
+                .withEditEnabled(editAccess)
+                .withReadOnly(isReadOnly()));
+    }
 
-            @Override
-            public void onSuccess(CaseObject issue) {
-                sp.check( "requestIssue - request time" );
-                IssueEditActivity.this.issue = issue;
+    private void showMeta(CaseObject issue) {
+        fireEvent(new IssueEvents.EditMeta(view.getMetaContainer())
+                .withMeta(makeMeta(issue))
+                .withMetaNotifiers(makeMetaNotifiers(issue))
+                .withMetaJira(makeMetaJira(issue))
+                .withReadOnly(isReadOnly()));
+    }
 
-                fillView(issue, view);
+    private void showComments(CaseObject issue) {
+        fireEvent( new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer() )
+                .withCaseType( En_CaseType.CRM_SUPPORT )
+                .withCaseId( issue.getId() )
+                .withModifyEnabled( hasAccess() && !isReadOnly() )
+                .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
+                .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
+                .withPrivateCase( issue.isPrivateCase() )
+                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+    }
 
-                sp.check( "fillView" );
-
-                fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
-                        .withCaseId(issue.getId())
-                        .withCaseType(En_CaseType.CRM_SUPPORT));
-
-                sp.check( "CaseLinkEvents" );
-
-                fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
-                        .withCaseId(issue.getId())
-                        .withCaseType(En_CaseType.CRM_SUPPORT)
-                        .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT ))
-                        .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT )));
-
-                sp.check( "CaseTagEvents" );
-
-                fireEvent(new CaseCommentEvents.Show(issueInfoWidget.getCommentsContainer())
-                        .withCaseType(En_CaseType.CRM_SUPPORT)
-                        .withCaseId(issue.getId())
-                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
-                        .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                        .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
-                        .withPrivateCase(issue.isPrivateCase())
-                        .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue)));
-
-                sp.check( "CaseCommentEvents" );
-                fireEvent( new IssueEvents.EditMeta( view.getMetaContainer(), makeMeta( issue ), makeMetaNotifiers( issue ), makeMetaJira( issue ) ) );
-
-                sp.check( "IssueEvents" );
-                parent.add( view.asWidget() );
-                sp.check( " parent.add( view.asWidget() )" );
-                sp.pop();
-                sp.stop( "done" );
-            }
-        });
+    private void attachToContainer(HasWidgets container) {
+        container.add(view.asWidget());
     }
 
     private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
@@ -287,19 +306,29 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         return new CaseObjectMeta(issue);
     }
 
-    private void fillView(CaseObject issue, AbstractIssueView view) {
+    private void fillView(CaseObject issue) {
+        boolean selfIssue = isSelfIssue(issue);
+        boolean readOnly = isReadOnly();
+
         view.setCaseNumber(issue.getCaseNumber());
         view.setPrivateIssue(issue.isPrivateCase());
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
-        view.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.nameVisibility().setVisible(true);
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo());
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
-        view.getInfoContainer().add( issueInfoWidget );
+        issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
+        view.getInfoContainer().clear();
+        view.getInfoContainer().add(issueInfoWidget);
 
-        editView.nameAndDescriptionEditButtonVisibility().setVisible(isSelfIssue(issue));
+        view.backButtonVisibility().setVisible(!modePreview);
+        view.showEditViewButtonVisibility().setVisible(modePreview);
+        view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
+
+        view.setPreviewStyles(modePreview);
     }
 
     private String makeName( String issueName, String jiraUrl, String extAppType ) {
@@ -338,15 +367,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
-    @Inject
-    AbstractIssueEditView editView;
-    @Inject
-    AbstractIssuePreviewView previewView;
+    private boolean hasAccess() {
+        return policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW);
+    }
+
+    private boolean isReadOnly() {
+        return !policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
+    }
 
     @Inject
-    IssueControllerAsync issueService;
+    AbstractIssueEditView view;
+
     @Inject
-    AttachmentServiceAsync attachmentService;
+    IssueControllerAsync issueController;
+    @Inject
+    AttachmentServiceAsync attachmentController;
 
     @Inject
     Lang lang;
@@ -360,16 +395,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity,
 
     @ContextAware
     CaseObject issue;
-
-    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
-        @Override
-        public void append( String message, double currentTime ) {
-            log.info("Profile IssueEditActivity: "+ message+" "+currentTime);
-
-        }
-    } );
+    private boolean modePreview;
     private Profile authProfile;
-
     private AppEvents.InitDetails initDetails;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());

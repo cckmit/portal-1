@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -68,7 +69,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Event
     public void onShow(IssueEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(init.parent));
             return;
         }
 
@@ -141,6 +142,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
+    public void onAddTagClicked(IsWidget target) {
+        fireEvent(new CaseTagEvents.ShowTagSelector(target));
+    }
+
+    @Override
+    public void onAddLinkClicked(IsWidget target) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
+    }
+
+    @Override
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
@@ -155,7 +166,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         initiatorSelectorAllowAddNew(companyOption.getId());
 
-        issueMetaView.setPlatform(null);
+        issueMetaView.platform().setValue(null);
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -215,13 +226,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillView() {
         view.privacyVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-        view.isPrivate().setValue(false);
+        view.isPrivate().setValue(true);
 
         view.name().setValue(null);
         view.description().setValue(null);
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
 
-        fillMetaView();
+        fillMetaView( initCaseMeta() );
         onCompanyChanged();
 
         view.attachmentsContainer().clear();
@@ -238,9 +249,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         unlockSave();
     }
 
-    private void fillMetaView() {
-        CaseObjectMeta caseObjectMeta = initCaseMeta();
-
+    private void fillMetaView( CaseObjectMeta caseObjectMeta ) {
         issueMetaView.companyEnabled().setEnabled(true);
         issueMetaView.productEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT));
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
@@ -260,7 +269,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
-
+        issueMetaView.setManager(caseObjectMeta.getManager());
+        issueMetaView.setProduct(caseObjectMeta.getProduct());
+        issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
     }
 
     private CaseObjectMeta initCaseMeta() {
@@ -286,7 +297,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setProduct(issueMetaView.getProduct());
         caseObject.setManager(issueMetaView.getManager());
         caseObject.setNotifiers(caseMetaNotifiers);
-        caseObject.setPlatformId(issueMetaView.getPlatformId());
+        caseObject.setPlatformId(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
         caseObject.setAttachmentExists(!CollectionUtils.isEmpty(view.attachmentsContainer().getAll()));
         caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
 

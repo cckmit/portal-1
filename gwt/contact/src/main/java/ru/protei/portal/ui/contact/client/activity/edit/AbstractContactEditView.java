@@ -90,4 +90,30 @@ public interface AbstractContactEditView extends IsWidget {
     HasValidable workEmailValidator();
 
     HasValidable personalEmailValidator();
+
+    HasVisibility firstNameErrorLabelVisibility();
+
+    HasVisibility secondNameErrorLabelVisibility();
+
+    HasVisibility lastNameErrorLabelVisibility();
+
+    HasText firstNameErrorLabel();
+
+    HasText secondNameErrorLabel();
+
+    HasText lastNameErrorLabel();
+
+    HasEnabled saveEnabled();
+
+    HasText firstNameLabel();
+
+    HasText secondNameLabel();
+
+    HasText lastNameLabel();
+
+    HasText personalEmailLabel();
+
+    HasText workEmailLabel();
+
+    HasText loginLabel();
 }

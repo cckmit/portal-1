@@ -7,9 +7,7 @@ import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -19,7 +17,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueActivity;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
 public class IssueInfoWidget extends Composite{
    
@@ -29,7 +27,7 @@ public class IssueInfoWidget extends Composite{
         ensureDebugIds();
     }
 
-    public void setActivity( AbstractIssueActivity activity ) {
+    public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
     }
 
@@ -53,6 +51,10 @@ public class IssueInfoWidget extends Composite{
 
     public void setDescription( String issueDescription ) {
         descriptionRO.setInnerHTML( issueDescription );
+    }
+
+    public HasVisibility attachmentUploaderVisibility() {
+        return attachmentUploaderContainer;
     }
 
     @UiHandler("attachmentContainer")
@@ -82,6 +84,8 @@ public class IssueInfoWidget extends Composite{
     @Inject
     @UiField
     AttachmentUploader fileUploader;
+    @UiField
+    HTMLPanel attachmentUploaderContainer;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;
@@ -94,7 +98,7 @@ public class IssueInfoWidget extends Composite{
     @UiField
     DivElement descriptionRO;
 
-    private AbstractIssueActivity activity;
+    private AbstractIssueEditActivity activity;
 
     interface IssueInfoWidgetUiBinder extends UiBinder<HTMLPanel, IssueInfoWidget> {
     }

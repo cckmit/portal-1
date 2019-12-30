@@ -69,6 +69,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
     }
 
     @Override

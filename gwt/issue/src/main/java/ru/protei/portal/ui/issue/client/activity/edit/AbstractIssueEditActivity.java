@@ -1,12 +1,23 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-public interface AbstractIssueEditActivity extends AbstractIssueActivity {
+import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Attachment;
 
-    void onNameAndDescriptionEditClicked( AbstractIssueEditView view );
+public interface AbstractIssueEditActivity {
 
-    void onFullScreenPreviewClicked();
+    void removeAttachment( Attachment attachment );
+
+    void onNameAndDescriptionEditClicked();
+
+    void onCopyNumberClicked();
+
+    void onCopyNumberAndName();
+
+    void onOpenEditViewClicked();
+
+    void onAddTagClicked(IsWidget target);
+
+    void onAddLinkClicked(IsWidget target);
 
     void onBackClicked();
-
 }
-

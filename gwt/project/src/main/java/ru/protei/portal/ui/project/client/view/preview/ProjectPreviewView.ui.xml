@@ -16,7 +16,9 @@
                     </div>
                     <h5 ui:field="name"/>
 
-                    <div class="form-group-attached">
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group"/>
+
+                    <div ui:field="metaTable" class="form-group-attached">
                         <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">

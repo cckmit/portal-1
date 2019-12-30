@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
+import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
  * Активность создания и редактирования контактного лица
@@ -108,7 +109,15 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (!validate()) {
+        if (!validateSaveButton()) {
+            view.saveEnabled().setEnabled(false);
+            return;
+        }
+
+        String errorMsg = validate();
+
+        if (errorMsg != null) {
+            fireErrorMessage(errorMsg);
             return;
         }
 
@@ -209,7 +218,40 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
     }
 
-    private boolean isNew( Person person) {
+    @Override
+    public void validateLimitedFields() {
+        if (view.firstName().getValue() != null) {
+            view.firstNameErrorLabelVisibility().setVisible(view.firstName().getValue().length() > FIRST_NAME_SIZE);
+        }
+
+        if (view.lastName().getValue() != null) {
+            view.lastNameErrorLabelVisibility().setVisible(view.lastName().getValue().length() > LAST_NAME_SIZE);
+        }
+
+        if (view.secondName().getText() != null) {
+            view.secondNameErrorLabelVisibility().setVisible(view.secondName().getText().length() > SECOND_NAME_SIZE);
+        }
+
+        view.saveEnabled().setEnabled(validateSaveButton());
+    }
+
+    private boolean validateSaveButton() {
+        if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isNew(Person person) {
         return person.getId() == null;
     }
 
@@ -260,13 +302,44 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return account;
     }
 
-    private boolean validate() {
-        return view.companyValidator().isValid() &&
-                view.firstNameValidator().isValid() &&
-                view.lastNameValidator().isValid() &&
-                view.isValidLogin() &&
-                (view.workEmail().getText().isEmpty() || view.workEmailValidator().isValid()) &&
-                (view.personalEmail().getText().isEmpty() || view.personalEmailValidator().isValid());
+    private String validate() {
+        if (!view.companyValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.firstNameValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.lastNameValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.isValidLogin()) {
+            return lang.errorFieldHasInvalidValue(view.loginLabel().getText());
+        }
+
+        if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.workEmailLabel().getText());
+        }
+
+        if (!view.personalEmail().getText().isEmpty() && !view.personalEmailValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.personalEmailLabel().getText());
+        }
+
+        if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.firstNameLabel().getText());
+        }
+
+        if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.lastNameLabel().getText());
+        }
+
+        if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.secondNameLabel().getText());
+        }
+
+        return null;
     }
 
     private void initialView(Person person, UserLogin userLogin){
@@ -319,6 +392,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(false);
 
         view.showInfo(userLogin.getId() != null);
+
+        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel().getText(), FIRST_NAME_SIZE));
+        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel().getText(), SECOND_NAME_SIZE));
+        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel().getText(), LAST_NAME_SIZE));
     }
 
     private boolean passwordNotDefined() {

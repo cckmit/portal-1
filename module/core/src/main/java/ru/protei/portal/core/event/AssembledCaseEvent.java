@@ -69,10 +69,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         this.info = synchronizeDiffs(this.info, event.getInfo());
     }
 
-    public void attachCaseObjectMetaEvent( CaseObjectMetaEvent event ) {
+    public void attachCaseObjectMetaEvent(CaseObjectMetaEvent event) {
         lastUpdated = currentTimeMillis();
         isEagerEvent = isEagerEvent || event.isEagerEvent();
-        initMetaState = event.getOldState();
+        initMetaState = initMetaState == null ? event.getOldState() : initMetaState;
         lastMetaState = event.getNewState();
         initiatorId = event.getPersonId();
         serviceModule = event.getServiceModule();
@@ -283,13 +283,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 
-    public boolean isAttachedCommentNotPrivate() {
-        for (CaseComment addedComment : emptyIfNull( comments.getAddedEntries())) {
-            if(addedComment.isPrivateComment()) return false;
-        }
-        return true;
-    }
-
     public boolean isPublicCommentsChanged() {
         List<CaseComment> allEntries = new ArrayList<>();
         allEntries.addAll(emptyIfNull(comments.getAddedEntries()));
@@ -298,7 +291,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
         return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
     }
-
 
     public boolean isCaseObjectFilled() {
         return lastState != null;
@@ -425,7 +417,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     private <T> DiffResult<T> synchronizeDiffs(DiffResult<T> source, DiffResult<T> other) {
-        if(!other.hasDifferences()) return source;
+        if(!source.isEmpty() && !other.hasDifferences()) return source;
         synchronized (source) {
             DiffResult<T> result = new DiffResult<>();
             result.setInitialState(source.hasInitialState() ? source.getInitialState() : other.getInitialState());

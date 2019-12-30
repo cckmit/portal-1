@@ -32,4 +32,6 @@ public interface AbstractIssueTableView extends IsWidget {
     HasWidgets getPagerContainer();
 
     void clearSelection();
+
+    boolean isAttached();
 }

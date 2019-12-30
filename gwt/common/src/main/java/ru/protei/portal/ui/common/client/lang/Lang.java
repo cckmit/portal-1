@@ -1951,4 +1951,14 @@ public interface Lang extends Messages, ContactItemLang {
     String backToIssues();
 
     String editNameAndDescription();
+
+    String openFullScreen();
+
+    String tagAdd();
+
+    String linkAdd();
+
+    String contactFieldLengthExceed(String fieldName, int symbolsCount);
+
+    String errorFieldHasInvalidValue(String fieldName);
 }

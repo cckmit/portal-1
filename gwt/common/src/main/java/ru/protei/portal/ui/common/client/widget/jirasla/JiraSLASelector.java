@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility {
+public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility, HasEnabled {
 
     @Inject
     public void init() {
@@ -52,6 +52,17 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         if (fireEvents) {
             fireChanged();
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        severity.setEnabled(enabled && severityShouldBeEnabled);
     }
 
     @Override
@@ -98,6 +109,7 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         issueType.setEnabled(false);
         severity.fillOptions(Collections.emptyList());
         severity.setEnabled(false);
+        severityShouldBeEnabled = false;
     }
 
     private void renderViewIssueType(String currentIssueType) {
@@ -108,13 +120,15 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
     private void renderViewSeverity(String currentIssueType, String currentSeverity) {
         boolean isSeverityEditable = En_JiraSLAIssueType.byPortal().contains(En_JiraSLAIssueType.forIssueType(currentIssueType));
         if (!isSeverityEditable) {
+            severityShouldBeEnabled = false;
             severity.setEnabled(false);
             severity.setValue("");
         } else {
+            severityShouldBeEnabled = true;
             severity.setDisplayOptionCreator(makeSeverityDisplayOptionCreator(cache, currentIssueType));
             severity.fillOptions(collectSeverities(cache, currentIssueType));
             severity.setValue(currentSeverity);
-            severity.setEnabled(true);
+            severity.setEnabled(enabled && severityShouldBeEnabled);
         }
     }
 
@@ -213,6 +227,8 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
 
     private CaseObjectMetaJira value;
     private List<JiraSLAMapEntry> cache;
+    private boolean severityShouldBeEnabled = false;
+    private boolean enabled = true;
 
     private WorkTimeFormatter workTimeFormatter;
     interface JiraSLASelectorUiBinder extends UiBinder<HTMLPanel, JiraSLASelector> {}

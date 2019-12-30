@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -30,23 +29,19 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasValue<CaseObjectMetaJira> jiraSlaSelector();
 
-    void setStateWorkflow( En_CaseStateWorkflow workflow);
+    void setStateWorkflow(En_CaseStateWorkflow workflow);
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
-    void setTimeElapsed(Long timeElapsed);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
 
-    void setInitiator( Person initiator);
-
+    void setInitiator(Person initiator);
     Person getInitiator();
 
-    void setPlatform( Platform platform);
-
-    Long getPlatformId();
+    HasValue<PlatformOption> platform();
 
     HasVisibility timeElapsedHeaderVisibility();
 
@@ -54,10 +49,15 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasValidable importanceValidator();
     HasValidable companyValidator();
 
-    HasEnabled companyEnabled();
+    HasEnabled stateEnabled();
+    HasEnabled importanceEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
-    HasEnabled stateEnabled();
+    HasEnabled companyEnabled();
+    HasEnabled initiatorEnabled();
+    HasEnabled platformEnabled();
+    HasEnabled caseMetaNotifiersEnabled();
+    HasEnabled caseMetaJiraEnabled();
 
     HasVisibility caseSubscriptionContainer();
     HasVisibility timeElapsedContainerVisibility();
@@ -66,23 +66,18 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<En_TimeElapsedType> timeElapsedType();
+    HasValue<En_CaseState> state();
+    HasValue<En_ImportanceLevel> importance();
 
-    HasValue<En_CaseState> state( );
-
-    HasValue<En_ImportanceLevel> importance(  );
-
-
-    void setProduct( DevUnit product );
-
+    void setProduct(DevUnit product);
     DevUnit getProduct();
 
-    void setManager( Person manager );
-
+    void setManager(Person manager);
     Person getManager();
 
-    void setCompany( Company company );
-
+    void setCompany(Company company);
     Company getCompany();
 
+    void setTimeElapsed(Long timeElapsed);
     Long getTimeElapsed();
 }

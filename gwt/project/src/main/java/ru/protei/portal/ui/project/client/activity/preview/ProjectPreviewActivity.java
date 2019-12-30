@@ -131,10 +131,20 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+            fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                    .withCaseId(project.getId())
+                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .readOnly());
+        }
+        else {
+            view.getLinksContainer().clear();
+        }
+
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT)));
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

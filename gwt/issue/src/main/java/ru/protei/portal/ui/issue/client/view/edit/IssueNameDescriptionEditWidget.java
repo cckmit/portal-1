@@ -11,10 +11,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -25,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 
 import java.util.function.Consumer;
 
@@ -124,6 +123,8 @@ public class IssueNameDescriptionEditWidget extends Composite {
         description.setEnsureDebugId( DebugIds.ISSUE.DESCRIPTION_INPUT );
         nameLabel.setId( DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME );
         descriptionLabel.setId( DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO );
+        saveNameAndDescriptionButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_ACCEPT);
+        cancelNameAndDescriptionButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_REJECT);
     }
 
     @UiField

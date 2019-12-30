@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.view.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -36,18 +37,26 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setPreviewStyles(boolean isPreview) {
+        root.removeStyleName("card-default");
+        root.removeStyleName("card-transparent");
+        root.removeStyleName("card-fixed");
+        if (isPreview) {
+            root.addStyleName("card-default");
+            root.addStyleName("card-fixed");
+        } else {
+            root.addStyleName("card-transparent");
+        }
+    }
+
+    @Override
     public void setCaseNumber( Long caseNumber ) {
-        number.setText( lang.crmPrefix() + caseNumber );
+        number.setInnerText(lang.crmPrefix() + caseNumber);
     }
 
     @Override
     public void setName( String issueName ) {
         nameWidget.setName( issueName );
-    }
-
-    @Override
-    public void setNameVisible( boolean isNameVisible ) {
-        nameWidget.setVisible( isNameVisible );
     }
 
     @Override
@@ -58,6 +67,36 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasWidgets getLinksContainer() {
         return linksContainer;
+    }
+
+    @Override
+    public HasVisibility nameVisibility() {
+        return nameWidget;
+    }
+
+    @Override
+    public HasVisibility backButtonVisibility() {
+        return backButton;
+    }
+
+    @Override
+    public HasVisibility showEditViewButtonVisibility() {
+        return showEditViewButton;
+    }
+
+    @Override
+    public HasVisibility nameAndDescriptionEditButtonVisibility() {
+        return nameAndDescriptionEditButton;
+    }
+
+    @Override
+    public HasVisibility addTagButtonVisibility() {
+        return addTagButton;
+    }
+
+    @Override
+    public HasVisibility addLinkButtonVisibility() {
+        return addLinkButton;
     }
 
     @Override
@@ -86,11 +125,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         this.createdBy.setInnerHTML( value );
     }
 
-    @Override
-    public HasVisibility nameAndDescriptionEditButtonVisibility() {
-        return nameAndDescriptionEditButton;
-    }
-
     @UiHandler("copyNumber")
     public void onCopyNumberClick(ClickEvent event) {
         event.preventDefault();
@@ -102,16 +136,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
-            activity.onNameAndDescriptionEditClicked(this);
-        }
-    }
-
-    @UiHandler( "number" )
-    public void onFullScreenClicked ( ClickEvent event) {
-        event.preventDefault();
-
-        if ( activity != null ) {
-            activity.onFullScreenPreviewClicked();
+            activity.onNameAndDescriptionEditClicked();
         }
     }
 
@@ -122,13 +147,38 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("showEditViewButton")
+    public void onShowEditViewModeButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onOpenEditViewClicked();
+        }
+    }
+
+    @UiHandler("addTagButton")
+    public void onAddTagButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddTagClicked(addTagButton);
+        }
+    }
+
+    @UiHandler("addLinkButton")
+    public void onAddLinkButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddLinkClicked(addLinkButton);
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
-        number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
+        backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
+        showEditViewButton.ensureDebugId(DebugIds.ISSUE.SHOW_EDIT_BUTTON);
+        addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
+        addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
     }
 
     @UiField
@@ -138,7 +188,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Anchor copyNumber;
     @UiField
-    Anchor number;
+    SpanElement number;
     @UiField
     Element createdBy;
     @UiField
@@ -150,13 +200,19 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel metaEditContainer;
     @UiField
-    Button nameAndDescriptionEditButton;
-    @UiField
     HTMLPanel cardBody;
     @UiField
     HTMLPanel issueInfoContainer;
     @UiField
     Button backButton;
+    @UiField
+    Button showEditViewButton;
+    @UiField
+    Button nameAndDescriptionEditButton;
+    @UiField
+    Button addTagButton;
+    @UiField
+    Button addLinkButton;
     @Inject
     @UiField(provided = true)
     IssueNameWidget nameWidget;
