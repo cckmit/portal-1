@@ -15,6 +15,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.components.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
@@ -123,7 +124,7 @@ public class SelectorPopupWithSearch extends BasePopupView
     @Override
     public void setNoElements(boolean isSearchResultEmpty, String noElementsMessage) {
         message.setVisible(isSearchResultEmpty);
-        message.setText(isSearchResultEmpty ? (noElementsMessage == null ? "- Список пуст -" : noElementsMessage) : "");
+        message.setText(isSearchResultEmpty ? (noElementsMessage == null ? lang.searchNoMatchesFound() : noElementsMessage) : "");
     }
 
     public void clearSearchField() {
@@ -184,6 +185,8 @@ public class SelectorPopupWithSearch extends BasePopupView
     HTMLPanel loading;
     @UiField
     HTMLPanel dropdown;
+    @UiField
+    Lang lang;
 
     public static final String HIDE = "hide";
 

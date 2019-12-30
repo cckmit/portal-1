@@ -11,7 +11,7 @@
                     <span ui:field="addIcon" class="hide"/>
                     <span ui:field="add" class="caret"/>
                 </g:Button>
-                <g:Button ui:field="clearButton" styleName="btn btn-flat bg-white no-border">
+                <g:Button ui:field="clearButton" visible="false" styleName="btn btn-flat bg-white no-border">
                     <span ui:field="clearIcon" class="hide"/>
                     <span ui:field="clear" class="fa fa-times"/>
                 </g:Button>

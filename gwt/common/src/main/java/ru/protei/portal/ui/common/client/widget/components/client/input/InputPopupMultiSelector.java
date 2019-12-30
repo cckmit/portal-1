@@ -25,7 +25,6 @@ import java.util.Set;
 
 /**
  * Cелектор c выпадающим списком, множественный выбор
- * (с интегрированной логикой)
  */
 public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         implements HasValue<Set<T>>, HasEnabled, HasVisibility {
@@ -111,12 +110,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         showValue( value );
         getPopup().showNear( itemContainer );
         ValueChangeEvent.fire( this, value );
-    }
-
-    public void stopWatchForScrollOf( Widget widget ) {
-    }
-
-    public void watchForScrollOf( Widget widget ) {
     }
 
     public boolean isEmpty() {

@@ -201,6 +201,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     protected abstract void onSelectionChanged();
 
     protected void checkNoElements() {
+        if (emptyListText == null) return;
         Iterator<Widget> it = getPopup().getChildContainer().iterator();
         getPopup().setNoElements( !it.hasNext(), emptyListText );
     }
@@ -222,12 +223,13 @@ public abstract class AbstractPopupSelector<T> extends Composite
             clearPopup();
             getSelector().setSearchString(searchString);
             getSelector().fillFromBegin(AbstractPopupSelector.this);
+            checkNoElements();
         }
     };
 
     private SelectorPopup popup;
 
-    private String emptyListText = "-- No elements --";
+    private String emptyListText = null;
 
     public static final String DISABLED = "disabled";
     private Runnable popupUnloadHandler;

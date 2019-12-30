@@ -113,8 +113,8 @@ public abstract class ComplexPanel extends Panel implements IndexedPanel.ForIsWi
   SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
     @Override
     public void append( String message, double currentTime ) {
-      if(currentTime < 5) return;
-      if (currentTime < 11) {
+      if(currentTime < 11) return;
+      if (currentTime < 21) {
         log.info( "Profile "+message + " " + currentTime + " " + ComplexPanel.this.getClass().getSimpleName() + " " + getStyleName());
         return;
       }

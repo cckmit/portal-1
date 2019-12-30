@@ -25,6 +25,9 @@ public class MultiValueSelector<T> extends AbstractPageableSelector<T>
     @Override
     public void setValue(Set<T> value) {
         selectionModel.clear();
+        if (value == null) {
+            return;
+        }
         for (T t : value) {
             selectionModel.select(t);
         }

@@ -392,22 +392,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     public void watchForScrollOf(Widget widget) {
         userFilter.watchForScrollOf(widget);
         sortField.watchForScrollOf(widget);
-        products.watchForScrollOf(widget);
-        companies.watchForScrollOf(widget);
-        initiators.watchForScrollOf(widget);
-        managers.watchForScrollOf(widget);
-        commentAuthors.watchForScrollOf(widget);
         tags.watchForScrollOf(widget);
     }
 
     public void stopWatchForScrollOf(Widget widget) {
         userFilter.stopWatchForScrollOf(widget);
         sortField.stopWatchForScrollOf(widget);
-        products.stopWatchForScrollOf(widget);
-        companies.stopWatchForScrollOf(widget);
-        initiators.stopWatchForScrollOf(widget);
-        managers.stopWatchForScrollOf(widget);
-        commentAuthors.stopWatchForScrollOf(widget);
         tags.stopWatchForScrollOf(widget);
     }
 
