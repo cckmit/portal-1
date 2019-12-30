@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.components.client.selector.logic;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.Selector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.SelectorModel;
@@ -23,7 +25,9 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
     public void fillFromBegin(ItemsContainer<T> itemsContainer) {
         fromIndex = 0;
         if (hasNullValue) {
-            itemsContainer.fill(null, makeElementHtml(null));
+            if (!(hideSelectedFromChose && getSelectionModel().isEmpty())) {
+                itemsContainer.fill(null, makeElementHtml(null));
+            }
         }
         fromIndex = fillElements(itemsContainer, fromIndex, pageSize);
     }
@@ -73,6 +77,11 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
     }
 
     private int fillElements(ItemsContainer<T> container, int from, int limit) {
+        RegExp ignoreCasePattern = null;
+        if(!isEmpty(searchString)){
+            ignoreCasePattern = ignoreCasePattern( searchString );
+        }
+
         for (int i = 0; i < limit; ) {
 
             T element = selectorModel.get(from);
@@ -88,7 +97,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
             String elementName = makeElementName(element);
             if (elementName != null
                     && !isEmpty(searchString)
-                    && !elementName.contains(searchString)) {
+                    && !contains(elementName, ignoreCasePattern)) {
                 continue;
             }
 
@@ -98,6 +107,22 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         }
 
         return from;
+    }
+
+    private static boolean contains( String string, RegExp pattern ) {
+        if ( string == null || pattern == null ) {
+            return false;
+        }
+        MatchResult m = pattern.exec( string );
+
+        return (m != null && m.getGroupCount() > 0);
+    }
+
+    private static RegExp ignoreCasePattern( String patternString ) {
+        if ( patternString == null ) {
+            return null;
+        }
+        return RegExp.compile( RegExp.quote( patternString ), "i" );
     }
 
     private boolean isEmpty(String searchString) {

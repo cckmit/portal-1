@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.multi.MultiValueSelector;
@@ -30,6 +31,7 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     public ButtonPopupMultiSelector() {
         initWidget(bsUiBinder.createAndBindUi(this));
+        setEmptyListText(  lang.searchNoMatchesFound() );
     }
 
     @Override
@@ -70,6 +72,10 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         } else {
             root.addStyleName(DISABLED);
         }
+    }
+
+    public void setButtonDebugId(String debugId) {
+        button.ensureDebugId(debugId);
     }
 
     @UiHandler("button")
@@ -118,6 +124,9 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     @UiField
     HTMLPanel root;
+
+    @UiField
+    Lang lang;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupMultiSelector> {
     }

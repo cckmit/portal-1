@@ -424,8 +424,8 @@ sp.start( "onAttach" );
   SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
     @Override
     public void append( String message, double currentTime ) {
-      if(currentTime < 5) return;
-      if (currentTime < 11) {
+      if(currentTime < 11) return;
+      if (currentTime < 21) {
         log.info( "Profile "+message + " " + currentTime + " " + Widget.this.getClass().getSimpleName() + " " + getStyleName());
         return;
       }

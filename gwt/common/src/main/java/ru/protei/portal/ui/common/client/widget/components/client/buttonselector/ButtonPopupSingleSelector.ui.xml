@@ -2,6 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:button3="urn:import:ru.protei.portal.ui.common.client.widget.components.client.selector.button">
 
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
     <g:HTMLPanel ui:field="root" styleName="dropdown-selector">
         <label ui:field="label" class="hide"/>
         <button3:ValueButton ui:field="button" styleName="form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>

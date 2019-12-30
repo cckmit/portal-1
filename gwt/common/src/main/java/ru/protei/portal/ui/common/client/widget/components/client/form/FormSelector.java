@@ -80,18 +80,12 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @Override
-    public HandlerRegistration addAddHandler( AddHandler handler ) {
-        return popup.addAddHandler( handler );
-    }
-
     public void setAddButtonText(String addButtonText){
-        this.addButtonText = addButtonText;
         popup.setAddButton( true, addButtonText );
     }
 
     public void setAddButtonVisible( boolean isVisible ) {
-        popup.setAddButton( isVisible );
+        setAddButtonVisibility( isVisible );
     }
 
     @Override
@@ -192,7 +186,7 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
     }
     private SingleValueSelector<T> selector = new SingleValueSelector<T>();
     private boolean isValidable;
-    private String addButtonText;
+
 
     private static final String ERROR_STYLENAME ="has-error";
     private static final String REQUIRED_STYLENAME ="required";

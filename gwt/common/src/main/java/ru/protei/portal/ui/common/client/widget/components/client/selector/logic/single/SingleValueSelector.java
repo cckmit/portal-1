@@ -13,6 +13,7 @@ public class SingleValueSelector<T> extends AbstractPageableSelector<T>
 
     @Override
     public void setValue(T value) {
+        selectionModel.clear();
         selectionModel.select(value);
     }
 

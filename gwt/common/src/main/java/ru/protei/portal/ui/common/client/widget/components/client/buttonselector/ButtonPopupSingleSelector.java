@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.single.SingleValueSelector;
@@ -30,6 +31,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     public ButtonPopupSingleSelector() {
         initWidget(bsUiBinder.createAndBindUi(this));
+        setEmptyListText(  lang.searchNoMatchesFound() );
     }
 
     @Override
@@ -107,6 +109,18 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.label.setInnerText( header );
     }
 
+    public void setButtonDebugId( String debugId ) {
+        button.ensureDebugId( debugId );
+    }
+
+    public void setDisplayStyle( String style ) {
+        button.setStyleName( style );
+    }
+
+    public boolean isEmpty() {
+        return selector.getSelectionModel().isEmpty();
+    }
+
     @Override
     protected void onSelectionChanged() {
         T value = selector.getValue();
@@ -115,9 +129,6 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire(this, value);
     }
 
-    public boolean isEmpty() {
-        return selector.getSelectionModel().isEmpty();
-    }
 
     protected void showValue(T value) {
         this.button.setValue(selector.makeElementName(value));
@@ -144,6 +155,9 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     HTMLPanel root;
     @UiField
     LabelElement label;
+    @UiField
+    Lang lang;
+
     private static final String ERROR_STYLENAME ="has-error";
     private boolean isValidable;
 

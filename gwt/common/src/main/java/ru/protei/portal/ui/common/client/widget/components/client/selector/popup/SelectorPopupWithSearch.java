@@ -36,6 +36,26 @@ public class SelectorPopupWithSearch extends BasePopupView
     }
 
     @Override
+    protected UIObject getPositionRoot() {
+        return root;
+    }
+
+    @Override
+    public HasWidgets getChildContainer() {
+        return childContainer;
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler( AddHandler handler) {
+        return addHandler(handler, AddEvent.getType());
+    }
+
+    @Override
+    public void setSearchHandler(SearchHandler searchHandler) {
+        this.searchHandler = searchHandler;
+    }
+
+    @Override
     public void showNear( UIObject view ) {
         super.showNear( view );
         search.setFocus( isSearchAutoFocus );
@@ -57,22 +77,9 @@ public class SelectorPopupWithSearch extends BasePopupView
         }, ScrollEvent.getType() );
     }
 
-    @Override
-    protected UIObject getPositionRoot() {
-        return root;
-    }
 
-    @Override
-    public HandlerRegistration addAddHandler( AddHandler handler) {
-        return addHandler(handler, AddEvent.getType());
-    }
 
-    @Override
-    public HasWidgets getChildContainer() {
-        return childContainer;
-    }
-
-    @Override
+   @Override
     public void showLoading(boolean isLoading) {
         loading.setVisible(isLoading);
     }
@@ -88,10 +95,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         this.popupHandler = popupHandler;
     }
 
-    @Override
-    public void setSearchHandler(SearchHandler searchHandler) {
-        this.searchHandler = searchHandler;
-    }
+
 
     public void setAddButton(boolean addVisible) {
         if (addVisible) {
@@ -124,6 +128,10 @@ public class SelectorPopupWithSearch extends BasePopupView
 
     public void clearSearchField() {
             search.setValue( "" );
+    }
+
+    public void setAddButtonVisibility(boolean isVisible) {
+        addButton.setVisible( isVisible );
     }
 
     public String getSearchString() {
@@ -176,6 +184,8 @@ public class SelectorPopupWithSearch extends BasePopupView
     HTMLPanel loading;
     @UiField
     HTMLPanel dropdown;
+
+    public static final String HIDE = "hide";
 
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = searchString -> { /*ignore*/ };

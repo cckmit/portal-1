@@ -1,9 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.*;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
@@ -38,8 +41,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
         getPopup().showLoading(false);
         if (!isAttached()) return;
         getSelector().fillContinue(this);
-        Iterator<Widget> it = getPopup().getChildContainer().iterator();
-        getPopup().setNoElements(!it.hasNext(), emptyListText);
+        checkNoElements();
     }
 
     @Override
@@ -56,8 +58,14 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     @Override
+    public void setSelectorModel(SelectorModel<T> selectorModel) {
+        this.getSelector().setSelectorModel(selectorModel);
+    }
+
+    @Override
     public void onPopupUnload(SelectorPopup selectorPopup) {
-            clearPopup();
+        clearPopup();
+        if (popupUnloadHandler != null) popupUnloadHandler.run();
     }
 
     @Override
@@ -85,9 +93,8 @@ public abstract class AbstractPopupSelector<T> extends Composite
         searchHandler.onSearch(searchString);
     }
 
-    @Override
-    public void setSelectorModel(SelectorModel<T> selectorModel) {
-        getSelector().setSelectorModel(selectorModel);
+    public void setPageSize(int pageSize) {
+        getSelector().setPageSize(pageSize);
     }
 
     public boolean isSelected(T element){
@@ -120,12 +127,8 @@ public abstract class AbstractPopupSelector<T> extends Composite
         };
     }
 
-    public void setSearchAutoFocus(boolean isSearchAutoFocus){//TODO
+    public void setSearchAutoFocus(boolean isSearchAutoFocus){
         if(getPopup() instanceof SelectorPopupWithSearch) ((SelectorPopupWithSearch) getPopup()).setSearchAutoFocus(isSearchAutoFocus);
-    }
-
-    public void setPageSize(int pageSize) {
-        getSelector().setPageSize(pageSize);
     }
 
     public void setHasNullValue(boolean hasNullValue) {
@@ -148,6 +151,15 @@ public abstract class AbstractPopupSelector<T> extends Composite
         getSelector().setFilter(selectorFilter);
     }
 
+    public HandlerRegistration addAddHandler( AddHandler addhandler ) {
+        getPopup().addAddHandler( addhandler );
+        return addHandler( addhandler, AddEvent.getType() );
+    }
+
+    public void setAddButtonVisibility(boolean isVisible) {
+        getPopup().setAddButtonVisibility(isVisible);
+    }
+
     public void setSearchEnabled(boolean isSearchEnabled) {
         if (isSearchEnabled) {
             getPopup().setSearchHandler(this);
@@ -157,13 +169,20 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public SelectorPopup getPopup() {
-        if(popup==null) setPopup( new SelectorPopupWithSearch() );
+        if (popup == null) {
+            setPopup( new SelectorPopupWithSearch() );
+            setSearchEnabled( true );
+        }
         return popup;
     }
 
     public void setPopup(SelectorPopup popup) {
-        popup.setPopupHandler(this);
         this.popup = popup;
+        popup.setPopupHandler(this);
+    }
+
+    public void setPopupUnloadHandler( Runnable popupUnloadHandler ){
+        this.popupUnloadHandler = popupUnloadHandler;
     }
 
     /**
@@ -171,9 +190,20 @@ public abstract class AbstractPopupSelector<T> extends Composite
      */
     protected abstract SelectorItem makeSelectorItem( T element, String elementHtml );
 
+    /**
+     * Логинка селектора
+     */
     protected abstract AbstractPageableSelector getSelector();
 
+    /**
+     * При изменении выбранных значений
+     */
     protected abstract void onSelectionChanged();
+
+    protected void checkNoElements() {
+        Iterator<Widget> it = getPopup().getChildContainer().iterator();
+        getPopup().setNoElements( !it.hasNext(), emptyListText );
+    }
 
     private void clearPopup() {
         getPopup().getChildContainer().clear();
@@ -200,4 +230,5 @@ public abstract class AbstractPopupSelector<T> extends Composite
     private String emptyListText = "-- No elements --";
 
     public static final String DISABLED = "disabled";
+    private Runnable popupUnloadHandler;
 }
