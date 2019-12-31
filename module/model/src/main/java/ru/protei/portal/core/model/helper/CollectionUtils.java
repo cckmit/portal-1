@@ -23,6 +23,18 @@ public class CollectionUtils {
         return (null == iterable || !iterable.iterator().hasNext());
     }
 
+    public static <T> T get( List<T> col, int elementIndex ) {
+        if(col==null) return null;
+        if(col.size() <= elementIndex )return null;
+        return col.get(elementIndex);
+    }
+
+    public static <T> T get( T[] col, int elementIndex ) {
+        if(col==null) return null;
+        if(col.length <= elementIndex )return null;
+        return col[elementIndex];
+    }
+
     public static <T> T getFirst( Iterable<T> iterable ) {
         return isEmpty( iterable ) ? null : iterable.iterator().next();
     }

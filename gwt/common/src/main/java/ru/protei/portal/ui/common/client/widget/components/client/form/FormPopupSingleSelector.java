@@ -39,6 +39,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         initHandler();
 
         setPopup( popup );
+        setSearchEnabled( true );
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
@@ -170,6 +171,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.text.setInnerHTML(selector.makeElementHtml(value));
     }
 
+    @Override
     protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
