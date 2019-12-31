@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
+package ru.protei.portal.ui.common.client.widget.components.client.button;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
@@ -30,7 +31,10 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     public ButtonPopupMultiSelector() {
         initWidget(bsUiBinder.createAndBindUi(this));
-        setEmptyListText(  lang.searchNoMatchesFound() );
+        setEmptyListText( lang.emptySelectorList() );
+        setEmptySearchText( lang.searchNoMatchesFound() );
+        setSearchAutoFocus( true );
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
     }
 
     @Override

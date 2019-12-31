@@ -12,8 +12,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.button.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.multi.MultiValueSelector;
@@ -34,6 +35,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         initWidget( bsUiBinder.createAndBindUi( this ) );
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
+        setEmptyListText( lang.emptySelectorList() );
+        setEmptySearchText( lang.searchNoMatchesFound() );
     }
 
     public void setHeader( String label ) {
@@ -227,7 +230,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     SpanElement clear;
     @UiField
     Button clearButton;
-
+    @UiField
+    Lang lang;
 
     @Inject
     Provider<SelectItemView> itemViewProvider;

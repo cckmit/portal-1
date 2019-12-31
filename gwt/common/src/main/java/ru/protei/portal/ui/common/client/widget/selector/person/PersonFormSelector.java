@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
 
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
@@ -16,7 +16,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
  * Селектор person
  */
 public class PersonFormSelector
-        extends FormSingleSelector<PersonShortView> implements Refreshable
+        extends FormPopupSingleSelector<PersonShortView> implements Refreshable
 {
 
     @Inject

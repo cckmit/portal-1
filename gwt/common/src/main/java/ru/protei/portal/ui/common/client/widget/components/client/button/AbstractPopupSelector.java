@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
+package ru.protei.portal.ui.common.client.widget.components.client.button;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,6 +19,8 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.searc
 
 import java.util.Iterator;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+
 /**
  * Селектор c выпадающим списком
  */
@@ -33,7 +35,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     @Override
     public void onLoadingStart() {
         getPopup().showLoading(true);
-        getPopup().setNoElements(false, emptyListText);
+        getPopup().setNoElements(false, null);
     }
 
     @Override
@@ -64,13 +66,14 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     @Override
     public void onPopupUnload(SelectorPopup selectorPopup) {
-        clearPopup();
+        clearPopupItems();
+        getPopup().setNoElements(false, null);
         if (popupUnloadHandler != null) popupUnloadHandler.run();
     }
 
     @Override
     public void onUnload() {
-        clearPopup();
+        clearPopupItems();
         if (getPopup() instanceof SelectorPopupWithSearch) {
             ((SelectorPopupWithSearch) getPopup()).clearSearchField();
             getSelector().setSearchString(null);
@@ -120,7 +123,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
         searchHandler = new SearchHandler() {
             @Override
             public void onSearch(String searchString) {
-                clearPopup();
+                clearPopupItems();
                 selectorModel.setSearchString(searchString);
                 getSelector().fillFromBegin(AbstractPopupSelector.this);
                 checkNoElements();
@@ -146,6 +149,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public void setEmptyListText(String emptyListText) {
         this.emptyListText = emptyListText;
+    }
+
+    public void setEmptySearchText(String emptySearchText) {
+        this.emptySearchText = emptySearchText;
     }
 
     public void setFilter( ru.protei.portal.ui.common.client.widget.selector.base.Selector.SelectorFilter<T> selectorFilter) {
@@ -206,10 +213,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     protected void checkNoElements() {
         Iterator<Widget> it = getPopup().getChildContainer().iterator();
-        getPopup().setNoElements( !it.hasNext(), emptyListText );
+        getPopup().setNoElements( !it.hasNext(), isEmpty(getSelector().getSearchString()) ? emptyListText : emptySearchText  );
     }
 
-    private void clearPopup() {
+    private void clearPopupItems() {
         getPopup().getChildContainer().clear();
     }
 
@@ -224,7 +231,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     private SearchHandler searchHandler = new SearchHandler() {
         @Override
         public void onSearch(String searchString) {
-            clearPopup();
+            clearPopupItems();
             getSelector().setSearchString(searchString);
             getSelector().fillFromBegin(AbstractPopupSelector.this);
             checkNoElements();
@@ -234,6 +241,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     private SelectorPopup popup;
 
     private String emptyListText = null;
+    private String emptySearchText = emptyListText;
 
     public static final String DISABLED = "disabled";
     private Runnable popupUnloadHandler;

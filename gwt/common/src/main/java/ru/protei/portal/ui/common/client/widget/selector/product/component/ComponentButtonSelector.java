@@ -2,16 +2,9 @@ package ru.protei.portal.ui.common.client.widget.selector.product.component;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
-
-import java.util.List;
 
 public class ComponentButtonSelector extends ButtonPopupSingleSelector<ProductShortView>
 {

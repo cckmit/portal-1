@@ -2,12 +2,12 @@ package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
 
 /**
  * Селектор списка компаний
  */
-public class CompanyFormSelector extends FormSingleSelector<EntityOption> {
+public class CompanyFormSelector extends FormPopupSingleSelector<EntityOption> {
 
     @Inject
     public void init( CompanyModel companyModel ) {

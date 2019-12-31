@@ -1,9 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.company;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
 
 import java.util.logging.Logger;
 

@@ -2,14 +2,14 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 
 /**
  * Селектор сотрудников домашней компании
  */
-public class EmployeeFormSelector extends FormSingleSelector<PersonShortView>
+public class EmployeeFormSelector extends FormPopupSingleSelector<PersonShortView>
 {
 
     @Inject

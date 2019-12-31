@@ -76,7 +76,11 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         this.searchString = searchString;
     }
 
-    private int fillElements(ItemsContainer<T> container, int from, int limit) {
+    public String getSearchString() {
+        return searchString;
+    }
+
+    private int fillElements( ItemsContainer<T> container, int from, int limit) {
         RegExp ignoreCasePattern = null;
         if(!isEmpty(searchString)){
             ignoreCasePattern = ignoreCasePattern( searchString );
@@ -125,8 +129,8 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         return RegExp.compile( RegExp.quote( patternString ), "i" );
     }
 
-    private boolean isEmpty(String searchString) {
-        return searchString == null || searchString.length() < 1;
+    private boolean isEmpty(String string) {
+        return string == null || string.length() < 1;
     }
 
     protected boolean hasNullValue = false;

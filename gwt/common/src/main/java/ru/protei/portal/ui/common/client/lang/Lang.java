@@ -1963,4 +1963,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errorFieldHasInvalidValue(String fieldName);
 
     String searchNoMatchesFound();
+
+    String emptySelectorList();
 }

@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 /**
  * Button селектор с продуктами
  */
-public class DevUnitFormSelector extends FormSingleSelector<ProductShortView>
+public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortView>
 {
 
     @Inject

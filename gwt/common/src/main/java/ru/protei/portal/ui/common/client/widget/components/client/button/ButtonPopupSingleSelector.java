@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.components.client.buttonselector;
+package ru.protei.portal.ui.common.client.widget.components.client.button;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
@@ -32,7 +32,8 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     public ButtonPopupSingleSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
-        setEmptyListText( lang.searchNoMatchesFound() );
+        setEmptyListText( lang.emptySelectorList() );
+        setEmptySearchText( lang.searchNoMatchesFound() );
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
     }

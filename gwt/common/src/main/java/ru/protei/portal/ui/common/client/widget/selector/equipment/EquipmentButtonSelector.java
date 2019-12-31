@@ -2,11 +2,10 @@ package ru.protei.portal.ui.common.client.widget.selector.equipment;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
 
 import java.util.Set;
 import java.util.stream.Collectors;

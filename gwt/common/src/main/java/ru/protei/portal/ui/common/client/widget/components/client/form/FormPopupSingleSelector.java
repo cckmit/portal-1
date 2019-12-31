@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.button.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
@@ -30,18 +30,19 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 /**
  * Вид селектора
  */
-public class FormSingleSelector<T> extends AbstractPopupSelector<T>
+public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         implements HasValidable, HasValue<T>, HasEnabled, HasVisibility, HasAddHandlers
 {
 
-    public FormSingleSelector() {
+    public FormPopupSingleSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
 
         setPopup( popup );
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
-        setEmptyListText( lang.searchNoMatchesFound() );
+        setEmptyListText( lang.emptySelectorList() );
+        setEmptySearchText( lang.searchNoMatchesFound() );
     }
 
     @Override
@@ -198,7 +199,7 @@ public class FormSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
     SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
-    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormSingleSelector> { }
+    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
     private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
 
 }
