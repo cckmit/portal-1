@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.yt.AttachmentResponse;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -28,17 +29,20 @@ import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_CREATED;
 /**
  * Created by admin on 15/11/2017.
  */
+@Deprecated
 public class YoutrackRestClientImpl implements YoutrackRestClient {
 
     @Override
     public Result<ChangeResponse> getIssueChanges( String issueId ) {
-        return client.read( getBaseUrl() + "/issue/" + issueId + "/changes", ChangeResponse.class );
+        return error(En_ResultStatus.NOT_AVAILABLE);
+//        return client.read( getBaseUrl() + "/issue/" + issueId + "/changes", ChangeResponse.class );
     }
 
     @Override
     public Result<List<YtAttachment>> getIssueAttachments( String issueId ) {
-        return client.read( getBaseUrl() + "/issue/" + issueId + "/attachment", AttachmentResponse.class )
-                .map( ar -> ar.getAttachments() );
+        return error(En_ResultStatus.NOT_AVAILABLE);
+//        return client.read( getBaseUrl() + "/issue/" + issueId + "/attachment", AttachmentResponse.class )
+//                .map( ar -> ar.getAttachments() );
     }
 
     @Override
@@ -65,51 +69,31 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
 
     @Override
     public Result<List<Issue>> getIssuesByProjectAndUpdated( String projectId, Date updatedAfter ) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl( getBaseUrl() + "/issue/byproject/" + projectId )
-                .queryParam( "with", "id" )
-                .queryParam( "max", MAX_ISSUES_IN_RESPONSE );
-
-        if (updatedAfter != null)
-            builder.queryParam( "updatedAfter", updatedAfter.getTime() );
-
-        String uri = builder.build()
-                .encode()
-                .toUriString();
-
-        return client.read( uri, Issue[].class ).map( Arrays::asList );
-    }
-
-    @Deprecated
-    @Override
-    public Result<String> removeCrmNumber( String issueId ) {
-        return client.update( makeYoutrackCommand( issueId, YtFields.crmNumber, YtFields.crmNumberEmptyValue ), String.class );
-    }
-
-    @Deprecated
-    @Override
-    public Result<String> setCrmNumber( String issueId, Long caseNumber ) {
-        return client.update( makeYoutrackCommand( issueId, YtFields.crmNumber, String.valueOf( caseNumber ) ), String.class );
+        return error(En_ResultStatus.NOT_AVAILABLE);
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl( getBaseUrl() + "/issue/byproject/" + projectId )
+//                .queryParam( "with", "id" )
+//                .queryParam( "max", MAX_ISSUES_IN_RESPONSE );
+//
+//        if (updatedAfter != null)
+//            builder.queryParam( "updatedAfter", updatedAfter.getTime() );
+//
+//        String uri = builder.build()
+//                .encode()
+//                .toUriString();
+//
+//        return client.read( uri, Issue[].class ).map( Arrays::asList );
     }
 
     @Deprecated
     @Override
     public Result<Issue> getIssue( String issueId ) {
-        return client.read( getBaseUrl() + "/issue/" + issueId, Issue.class );
+        return error(En_ResultStatus.NOT_AVAILABLE);
+//        return client.read( getBaseUrl() + "/issue/" + issueId, Issue.class );
     }
 
     private String getBaseUrl() {
        return portalConfig.data().youtrack().getApiBaseUrl() + "/rest";
     }
-
-    private String makeYoutrackCommand( String issueId, String fieldname, String fieldValue ) {
-        return UriComponentsBuilder.fromHttpUrl( getBaseUrl() + "/issue/" + issueId + "/execute" )
-                .queryParam( "command", fieldname + " " + fieldValue )
-                .build()
-                .encode()
-                .toUriString();
-    }
-
-
 
     @Autowired
     private PortalConfig portalConfig;

@@ -14,6 +14,7 @@ import java.util.Objects;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class Change {
 
     private List<ChangeField> field;

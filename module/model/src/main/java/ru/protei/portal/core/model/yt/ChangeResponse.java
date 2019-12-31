@@ -8,6 +8,7 @@ import java.util.List;
  * Created by admin on 15/11/2017.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class ChangeResponse {
     private Issue issue;
 

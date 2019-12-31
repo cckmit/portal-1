@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class Comment {
     private String id;
     private String author;

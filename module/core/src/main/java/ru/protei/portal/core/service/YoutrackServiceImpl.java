@@ -10,10 +10,13 @@ import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
-import ru.protei.portal.core.model.yt.api.IssueApi;
+import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
+import ru.protei.portal.core.model.yt.api.issue.YtIssue;
+import ru.protei.portal.core.model.yt.fields.YtFields;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,25 +66,33 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public Result<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber ) {
-        if (issueId == null || caseNumber == null) {
-            log.warn( "setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
-            return error( En_ResultStatus.INCORRECT_PARAMS );
+    public Result<YtIssue> setIssueCrmNumberIfDifferent(String ytIssueId, Long caseNumber) {
+        if (ytIssueId == null || caseNumber == null) {
+            log.warn("setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", ytIssueId, caseNumber);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return apiDao.getIssue( issueId ).flatMap( issue ->
-                replaceCrmNumberIfDifferent( issue, issue.getCrmNumber(), caseNumber ) );
+        return apiDao.getIssue(ytIssueId)
+                .flatMap(issue -> {
+                    YtIssueCustomField field = issue.getField(YtFields.crmNumber);
+                    Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
+                    return replaceCrmNumberIfDifferent(issue.idReadable, crmNumber, caseNumber);
+                });
     }
 
     @Override
-    public Result<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
-        if (issueId == null || caseNumber == null) {
-            log.warn( "removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber  );
-            return error( En_ResultStatus.INCORRECT_PARAMS );
+    public Result<YtIssue> removeIssueCrmNumberIfSame(String ytIssueId, Long caseNumber) {
+        if (ytIssueId == null || caseNumber == null) {
+            log.warn("removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", ytIssueId, caseNumber);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return apiDao.getIssue( issueId ).flatMap( issue ->
-                removeCrmNumberIfSame( issue, issue.getCrmNumber(), caseNumber ) );
+        return apiDao.getIssue(ytIssueId)
+                .flatMap(issue -> {
+                    YtIssueCustomField field = issue.getField(YtFields.crmNumber);
+                    Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
+                    return removeCrmNumberIfSame(issue.idReadable, crmNumber, caseNumber);
+                });
     }
 
     @Async(BACKGROUND_TASKS)
@@ -97,18 +108,18 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
     }
 
-    private Result<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {
-        if (Objects.equals( crmNumber, caseNumber )) {
-            return apiDao.removeCrmNumber( issue );
+    private Result<YtIssue> removeCrmNumberIfSame(String ytIssueId, Long crmNumber, Long caseNumber) {
+        if (Objects.equals(crmNumber, caseNumber)) {
+            return apiDao.removeCrmNumber(ytIssueId);
         }
         return ok();
     }
 
-    private Result<String> replaceCrmNumberIfDifferent( IssueApi issue, Long crmNumber, Long caseNumber ) {
-        if (Objects.equals( crmNumber, caseNumber )) {
+    private Result<YtIssue> replaceCrmNumberIfDifferent(String ytIssueId, Long crmNumber, Long caseNumber) {
+        if (Objects.equals(crmNumber, caseNumber)) {
             return ok();
         }
-        return apiDao.setCrmNumber( issue, caseNumber );
+        return apiDao.setCrmNumber(ytIssueId, caseNumber);
     }
 
     private YouTrackIssueInfo convertToInfo( Issue issue ) {

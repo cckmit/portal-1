@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class AttachmentResponse {
     @JsonProperty("fileUrl")
     private List<YtAttachment> attachments;

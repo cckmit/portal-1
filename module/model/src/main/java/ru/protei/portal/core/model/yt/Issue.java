@@ -16,6 +16,7 @@ import java.util.Objects;
  * Created by admin on 15/11/2017.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class Issue {
 
 

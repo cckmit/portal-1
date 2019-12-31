@@ -1,0 +1,14 @@
+package ru.protei.portal.core.client.youtrack.mapper;
+
+import ru.protei.portal.core.model.yt.api.YtDto;
+
+import java.util.Map;
+
+public interface YtDtoFieldsMapper {
+
+    YtDtoFieldsMapper setup();
+
+    <T extends YtDto> String getFields(Class<T> clazz);
+
+    Map<String, Class<? extends YtDto>> getEntityNameClassMap();
+}

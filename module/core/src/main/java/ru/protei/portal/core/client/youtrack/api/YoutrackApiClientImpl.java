@@ -5,46 +5,48 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.client.youtrack.api.builder.IssueQueryBuilder;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
-import ru.protei.portal.core.model.yt.api.IssueApi;
-import ru.protei.portal.core.model.yt.api.issue.IssueCustomField;
+import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
+import ru.protei.portal.core.model.yt.api.customfield.issue.YtSimpleIssueCustomField;
+import ru.protei.portal.core.model.yt.api.issue.YtIssue;
+import ru.protei.portal.core.model.yt.fields.YtFields;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 
-import static ru.protei.portal.core.model.helper.StringUtils.join;
-
-/**
- *  Api youtrack
- */
 public class YoutrackApiClientImpl implements YoutrackApiClient {
 
     @Override
-    public Result<String> removeCrmNumber( IssueApi issue ) {
-        log.info( "removeCrmNumber(): {}", issue );
-        String url = IssueQueryBuilder.create( getBaseUrl(), issue.id ).build();
-        String body = makeChangeCustomField( issue.getCrmNumberField(), null );
-        return client.update( url, String.class, body );
+    public Result<YtIssue> getIssue(String issueId) {
+        log.info("getIssue(): issueId={}", issueId);
+        String url = new YoutrackUrlProvider(getBaseUrl()).issue(issueId);
+        return client.read(url, YtIssue.class);
     }
 
     @Override
-    public Result<String> setCrmNumber( IssueApi issue, Long caseNumber ) {
-        log.info( "setCrmNumber(): caseNumber {}, issue {} ", caseNumber, issue );
-        String url = IssueQueryBuilder.create( getBaseUrl(), issue.id ).build();
-        String body = makeChangeCustomField( issue.getCrmNumberField(), String.valueOf( caseNumber ) );
-        return client.update( url, String.class, body );
+    public Result<YtIssue> setCrmNumber(String issueId, Long caseNumber) {
+        log.info("setCrmNumber(): issueId={}, caseNumber={}", issueId, caseNumber);
+        YtIssue issue = new YtIssue();
+        issue.customFields = new ArrayList<>();
+        issue.customFields.add(makeCrmNumberCustomField(caseNumber));
+        String url = new YoutrackUrlProvider(getBaseUrl()).issue(issueId);
+        return client.save(url, YtIssue.class, issue);
     }
 
     @Override
-    public Result<IssueApi> getIssue( String issueId ) {
-        log.info( "getIssue(): {}", issueId );
-        String url = IssueQueryBuilder.create( getBaseUrl(), issueId ).preset().
-                idAndCustomFieldsDefaults().build();
-        return client.read( url, IssueApi.class );
+    public Result<YtIssue> removeCrmNumber(String issueId) {
+        log.info("removeCrmNumber(): issueId={}", issueId);
+        YtIssue issue = new YtIssue();
+        issue.customFields = new ArrayList<>();
+        issue.customFields.add(makeCrmNumberCustomField(null));
+        String url = new YoutrackUrlProvider(getBaseUrl()).issue(issueId);
+        return client.save(url, YtIssue.class, issue, "value");
     }
 
-    private static String makeChangeCustomField( IssueCustomField customField, String value ) {
-        return join( "{ \"customFields\": [ {\"id\":\"", customField.id, "\",\"$type\":\"", customField.$type, "\",\"value\":", value, "} ] }" ).toString();
+    private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
+        YtSimpleIssueCustomField cf = new YtSimpleIssueCustomField();
+        cf.name = YtFields.crmNumber;
+        cf.value = caseNumber == null ? null : String.valueOf(caseNumber);
+        return cf;
     }
 
     private String getBaseUrl() {
@@ -55,7 +57,6 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
     private PortalConfig portalConfig;
     @Autowired
     private YoutrackHttpClient client;
-
 
     private final static Logger log = LoggerFactory.getLogger( YoutrackApiClientImpl.class );
 }

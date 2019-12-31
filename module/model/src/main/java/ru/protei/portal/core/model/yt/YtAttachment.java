@@ -8,6 +8,7 @@ import java.util.Date;
  * Created by admin on 22/11/2017.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class YtAttachment {
     private String id;
     private String value;

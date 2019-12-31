@@ -5,7 +5,7 @@ import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
-import ru.protei.portal.core.model.yt.api.IssueApi;
+import ru.protei.portal.core.model.yt.api.issue.YtIssue;
 
 import java.util.Date;
 import java.util.List;
@@ -46,17 +46,4 @@ public interface YoutrackRestClient {
      */
     @Deprecated
     Result<List<Issue>> getIssuesByProjectAndUpdated( String projectId, Date updatedAfter );
-
-    /**
-     * @deprecated Переход на {@link YoutrackApiClient#removeCrmNumber(IssueApi)}
-     *
-     */
-    @Deprecated
-    Result<String> removeCrmNumber( String issueId );
-
-    /**
-     * @deprecated Переход на {@link YoutrackApiClient#setCrmNumber(IssueApi, Long)}
-     */
-    @Deprecated
-    Result<String> setCrmNumber( String issueId, Long caseNumber );
 }
