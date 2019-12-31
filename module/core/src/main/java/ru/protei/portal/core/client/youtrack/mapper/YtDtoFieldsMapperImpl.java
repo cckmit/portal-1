@@ -36,11 +36,20 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
     }
 
     @Override
-    public <T extends YtDto> String getFields(Class<T> clazz) {
+    public <T> String getFields(Class<T> clazz) {
         if (dto2fields == null || dto2fields.isEmpty()) {
             setup();
         }
-        return dto2fields.get(clazz);
+        if (TypeUtils.isAssignable(clazz, YtDto.class)) {
+            return dto2fields.get(clazz);
+        }
+        if (clazz.isArray()) {
+            Class<?> componentType = clazz.getComponentType();
+            if (TypeUtils.isAssignable(componentType, YtDto.class)) {
+                return dto2fields.get(componentType);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -103,6 +112,12 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
                     if (TypeUtils.isAssignable(genericType, YtDto.class)) {
                         return (Class<T>) genericType;
                     }
+                }
+            }
+            if (fieldType.isArray()) {
+                Class<?> componentType = fieldType.getComponentType();
+                if (TypeUtils.isAssignable(componentType, YtDto.class)) {
+                    return (Class<T>) componentType;
                 }
             }
             return null;

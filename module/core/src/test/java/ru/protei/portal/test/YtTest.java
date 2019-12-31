@@ -19,12 +19,17 @@ import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.yt.api.customfield.issue.YtSimpleIssueCustomField;
 import ru.protei.portal.core.model.yt.api.customfield.issue.YtStateIssueCustomField;
 import ru.protei.portal.core.model.yt.api.issue.YtIssue;
+import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
+import ru.protei.portal.core.model.yt.api.project.YtProject;
 import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -101,6 +106,36 @@ public class YtTest { // TODO remove
         YtIssue issue = result.getData();
         System.out.println(issue);
     }
+
+    @Test
+    public void testGetAttachments() {
+        Result<List<YtIssueAttachment>> result = apiClient.getIssueAttachments("PG-230");
+        List<YtIssueAttachment> attachments = result.getData();
+        System.out.println(attachments);
+    }
+
+    @Test
+    public void testGetProjects() {
+        Result<List<YtProject>> result = apiClient.getProjectsByName("PG");
+        List<YtProject> projects = result.getData();
+        System.out.println(projects);
+    }
+
+    @Test
+    public void testCreateIssue() {
+        Result<YtIssue> result = apiClient.createIssue("PG", "Test issue to check new YT api - created by api", "Issue that have been created by portal-youtrack api\n:)");
+        YtIssue issue = result.getData();
+        System.out.println(issue);
+    }
+
+    @Test
+    public void testGetIssuesByProjectAndUpdated() throws ParseException {
+        Result<List<YtIssue>> result = apiClient.getIssuesByProjectAndUpdated("PG", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2019-12-28 14:43:25"));
+        List<YtIssue> issues = result.getData();
+        System.out.println(issues);
+    }
+
+
 
     private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
         YtSimpleIssueCustomField cf = new YtSimpleIssueCustomField();

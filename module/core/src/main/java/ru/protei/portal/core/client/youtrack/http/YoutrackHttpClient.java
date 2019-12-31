@@ -10,17 +10,19 @@ import java.util.function.BiFunction;
 
 public interface YoutrackHttpClient {
 
-    <RES extends YtDto> Result<RES> read(String url, Class<RES> clazz);
+    <RES> Result<RES> read(String url, Class<RES> clazz);
 
-    <RES extends YtDto> Result<RES> read(String url, String fields, Class<RES> clazz);
+    <RES> Result<RES> read(String url, String query, Class<RES> clazz);
 
-    <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, Class<RES> clazz, REQ dto);
+    <RES> Result<RES> read(String url, String fields, String query, Class<RES> clazz);
 
-    <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields);
+    <REQ extends YtDto, RES> Result<RES> save(String url, Class<RES> clazz, REQ dto);
 
-    <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto);
+    <REQ extends YtDto, RES> Result<RES> save(String url, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields);
 
-    <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields);
+    <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto);
+
+    <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields);
 
     <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler);
 }

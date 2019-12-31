@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.yt.api.YtDto;
 import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
+import ru.protei.portal.core.model.yt.api.project.YtProject;
 import ru.protei.portal.core.model.yt.api.user.YtUser;
 import ru.protei.portal.core.model.yt.fields.YtFields;
 
@@ -19,6 +20,7 @@ public class YtIssue extends YtDto {
     public String description;
     public YtUser reporter;
     public YtUser updater;
+    public YtProject project;
     public List<YtIssueCustomField> customFields;
     public List<YtIssueComment> comments;
 
@@ -39,6 +41,7 @@ public class YtIssue extends YtDto {
                 ", description='" + description + '\'' +
                 ", reporter=" + reporter +
                 ", updater=" + updater +
+                ", project=" + project +
                 ", customFields=" + customFields +
                 ", comments=" + comments +
                 '}';

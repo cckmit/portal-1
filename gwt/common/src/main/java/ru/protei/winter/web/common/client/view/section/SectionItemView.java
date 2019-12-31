@@ -92,6 +92,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     @Override
+    public void setSectionTitle(String s) {
+        // not implemented
+    }
+
+    @Override
     public void setEnsureDebugId( String ensureDebugId ) {
         anchor.ensureDebugId( ensureDebugId );
         icon.setId( ensureDebugId + ICON_SUFFIX );

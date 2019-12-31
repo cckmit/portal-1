@@ -23,12 +23,9 @@ import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
-import ru.protei.portal.core.model.yt.YtAttachment;
+import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.jdbc.annotations.JdbcManyJoinData;
-import ru.protei.winter.jdbc.annotations.JdbcOneToMany;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -348,27 +345,29 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, Collection<CaseLink> caseLinks) {
         List<CaseAttachment> attachementsToRemove = caseAttachmentDAO.getListByCaseId(employeeRegistration.getId());
 
-        List<YtAttachment> ytAttachments = new LinkedList<>();
+        List<YtIssueAttachment> ytAttachments = new LinkedList<>();
         for (CaseLink caseLink : caseLinks) {
-            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId()).getData();
+            List<YtIssueAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId()).getData();
             ytAttachments.addAll(issueAttachments);
         }
 
-        for (YtAttachment ytAttachment : ytAttachments) {
-            if (ytAttachment == null || ytAttachment.getId() == null)
+        for (YtIssueAttachment ytAttachment : ytAttachments) {
+            if (ytAttachment == null || ytAttachment.id == null)
                 continue;
 
-            Optional<CaseAttachment> existingAttachment = CollectionUtils.find(attachementsToRemove,
-                    ca -> ytAttachment.getId().equals(ca.getRemoteId()));
+            Optional<CaseAttachment> existingAttachment = CollectionUtils.find(
+                    attachementsToRemove,
+                    ca -> Objects.equals(ytAttachment.id, ca.getRemoteId())
+            );
 
             if (existingAttachment.isPresent())
                 attachementsToRemove.remove(existingAttachment.get());
             else {
                 Attachment attachment = new Attachment();
-                attachment.setCreated(ytAttachment.getCreated());
+                attachment.setCreated(new Date(ytAttachment.created));
                 attachment.setCreatorId(YOUTRACK_USER_ID);
-                attachment.setFileName(ytAttachment.getName());
-                attachment.setExtLink(ytAttachment.getUrl());
+                attachment.setFileName(ytAttachment.name);
+                attachment.setExtLink(ytAttachment.url);
 
                 Long attachmentId = attachmentDAO.persist(attachment);
                 if (attachmentId == null) {
@@ -377,7 +376,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 }
 
                 CaseAttachment ca = new CaseAttachment(employeeRegistration.getId(), attachmentId);
-                ca.setRemoteId(ytAttachment.getId());
+                ca.setRemoteId(ytAttachment.id);
                 caseAttachmentDAO.persist(ca);
                 log.debug("parseAndUpdateAttachments(): create new attachment: YT: {}, PORTAL attachment: {} case attachment: {}", ytAttachment, attachment, ca);
             }

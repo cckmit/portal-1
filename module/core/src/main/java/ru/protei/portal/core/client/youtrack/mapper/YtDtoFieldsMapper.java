@@ -8,7 +8,7 @@ public interface YtDtoFieldsMapper {
 
     YtDtoFieldsMapper setup();
 
-    <T extends YtDto> String getFields(Class<T> clazz);
+    <T> String getFields(Class<T> clazz);
 
     Map<String, Class<? extends YtDto>> getEntityNameClassMap();
 }

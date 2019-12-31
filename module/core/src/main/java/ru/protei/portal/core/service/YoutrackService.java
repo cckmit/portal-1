@@ -4,8 +4,8 @@ import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.yt.ChangeResponse;
-import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.api.issue.YtIssue;
+import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
 
 import java.util.Date;
 import java.util.List;
@@ -14,13 +14,14 @@ import java.util.Set;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public interface YoutrackService {
-    Result<List<YtAttachment>> getIssueAttachments( String issueId);
+
+    Result<List<YtIssueAttachment>> getIssueAttachments(String issueId);
 
     Result<ChangeResponse> getIssueChanges( String issueId);
 
-    Result<String> createIssue( String project, String summary, String description);
+    Result<String> createIssue( String projectName, String summary, String description);
 
-    Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectId, Date updatedAfter);
+    Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectName, Date updatedAfter);
 
     Result<YouTrackIssueInfo> getIssueInfo( String issueId );
 

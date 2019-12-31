@@ -19,6 +19,8 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.yt.api.YtDto;
 
 import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,36 +41,41 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     }
 
     @Override
-    public <RES extends YtDto> Result<RES> read(String url, Class<RES> clazz) {
-        String fields = fieldsMapper.getFields(clazz);
-        return read(url, fields, clazz);
+    public <RES> Result<RES> read(String url, Class<RES> clazz) {
+        return read(url, "", clazz);
     }
 
     @Override
-    public <RES extends YtDto> Result<RES> read(String url, String fields, Class<RES> clazz) {
-        String path = buildUrl(url, fields, "");
+    public <RES> Result<RES> read(String url, String query, Class<RES> clazz) {
+        String fields = fieldsMapper.getFields(clazz);
+        return read(url, fields, query, clazz);
+    }
+
+    @Override
+    public <RES> Result<RES> read(String url, String fields, String query, Class<RES> clazz) {
+        String path = buildUrl(url, fields, query);
         return execute((client, headers) -> client.exchange(path, HttpMethod.GET, new HttpEntity<>(headers), clazz))
                 .map(ResponseEntity::getBody);
     }
 
     @Override
-    public <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, Class<RES> clazz, REQ dto) {
+    public <REQ extends YtDto, RES> Result<RES> save(String url, Class<RES> clazz, REQ dto) {
         return save(url, clazz, dto, new String[0]);
     }
 
     @Override
-    public <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
+    public <REQ extends YtDto, RES> Result<RES> save(String url, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
         String fields = fieldsMapper.getFields(clazz);
         return save(url, fields, clazz, dto, dtoForceIncludeFields);
     }
 
     @Override
-    public <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto) {
+    public <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto) {
         return save(url, fields, clazz, dto, new String[0]);
     }
 
     @Override
-    public <REQ extends YtDto, RES extends YtDto> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
+    public <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
         try {
             String path = buildUrl(url, fields, "");
             String body = serializeDto(dto, dtoForceIncludeFields);
@@ -119,8 +126,16 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
 
     private String buildUrl(String base, String fields, String query) {
         List<String> queryList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(fields)) queryList.add("fields=" + fields);
-        if (StringUtils.isNotEmpty(query)) queryList.add("query=" + query);
+        try {
+            if (StringUtils.isNotEmpty(fields)) queryList.add("fields=" + URLEncoder.encode(fields, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            log.warn("Unable to append fields to url", e);
+        }
+        try {
+            if (StringUtils.isNotEmpty(query)) queryList.add("query=" + URLEncoder.encode(query, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            log.warn("Unable to append query to url", e);
+        }
         String url = base;
         if (CollectionUtils.isNotEmpty(queryList)) {
             url += "?" + String.join("&", queryList);

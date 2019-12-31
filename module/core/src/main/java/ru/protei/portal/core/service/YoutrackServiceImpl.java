@@ -5,20 +5,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.yt.ChangeResponse;
-import ru.protei.portal.core.model.yt.Issue;
-import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.yt.api.issue.YtIssue;
+import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.yt.fields.YtFields;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
@@ -38,31 +41,34 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public Result<List<YtAttachment>> getIssueAttachments( String issueId ) {
-        return restDao.getIssueAttachments( issueId );
+    public Result<List<YtIssueAttachment>> getIssueAttachments(String issueId) {
+        return apiDao.getIssueAttachments(issueId);
     }
 
     @Override
-    public Result<String> createIssue( String project, String summary, String description ) {
-        return restDao.createIssue( project, summary, description );
+    public Result<String> createIssue(String projectName, String summary, String description) {
+        return apiDao.createIssue( projectName, summary, description )
+                .map(ytIssue -> ytIssue.idReadable);
     }
 
     @Override
-    public Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectId, Date updatedAfter ) {
-        return restDao.getIssuesByProjectAndUpdated( projectId, updatedAfter )
-                .map( issues -> stream( issues ).map( Issue::getId )
-                        .collect( Collectors.toSet() ) );
+    public Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter(String projectName, Date updatedAfter) {
+        return apiDao.getIssuesByProjectAndUpdated(projectName, updatedAfter)
+                .map(issues -> stream(issues)
+                        .map(issue -> issue.idReadable)
+                        .collect(Collectors.toSet())
+                );
     }
 
     @Override
     public Result<YouTrackIssueInfo> getIssueInfo( String issueId ) {
         if (issueId == null) {
-            log.warn( "getYoutrackIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
-            return error( En_ResultStatus.INCORRECT_PARAMS );
+            log.warn("getYoutrackIssueInfo(): Can't get issue info. Argument issueId is mandatory");
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return restDao.getIssue( issueId ).map(
-                this::convertToInfo );
+        return apiDao.getIssue(issueId)
+                .map(this::convertToInfo);
     }
 
     @Override
@@ -122,20 +128,45 @@ public class YoutrackServiceImpl implements YoutrackService {
         return apiDao.setCrmNumber(ytIssueId, caseNumber);
     }
 
-    private YouTrackIssueInfo convertToInfo( Issue issue ) {
+    private YouTrackIssueInfo convertToInfo(YtIssue issue) {
         if (issue == null) return null;
         YouTrackIssueInfo issueInfo = new YouTrackIssueInfo();
-        issueInfo.setId( issue.getId() );
-        issueInfo.setSummary( issue.getSummary() );
-        issueInfo.setDescription( issue.getDescription() );
-        issueInfo.setState( YoutrackConstansMapping.toCaseState( issue.getStateId() ) );
-        issueInfo.setImportance( YoutrackConstansMapping.toCaseImportance( issue.getPriority() ) );
+        issueInfo.setId(issue.idReadable);
+        issueInfo.setSummary(issue.summary);
+        issueInfo.setDescription(issue.description);
+        issueInfo.setState(YoutrackConstansMapping.toCaseState(getIssueState(issue)));
+        issueInfo.setImportance(YoutrackConstansMapping.toCaseImportance(getIssuePriority(issue)));
         return issueInfo;
     }
 
+    private String getIssuePriority(YtIssue issue) {
+        YtIssueCustomField field = issue.getField(YtFields.priority);
+        if (field == null) {
+            return null;
+        }
+        return field.getValue();
+    }
+
+    private String getIssueState(YtIssue issue) {
+        YtIssueCustomField field = getIssueStateField(issue);
+        if (field == null) {
+            return null;
+        }
+        return field.getValue();
+    }
+
+    private YtIssueCustomField getIssueStateField(YtIssue issue) {
+        return HelperFunc.nvlt(
+            issue.getField(YtFields.stateEng),
+            issue.getField(YtFields.stateRus),
+            issue.getField(YtFields.equipmentStateRus),
+            issue.getField(YtFields.acrmStateRus)
+        );
+    }
+
+    @Deprecated
     @Autowired
     YoutrackRestClient restDao;
-
     @Autowired
     YoutrackApiClient apiDao;
 
