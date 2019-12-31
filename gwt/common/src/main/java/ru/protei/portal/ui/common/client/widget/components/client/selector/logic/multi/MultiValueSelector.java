@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.components.client.selector.logi
 
 import com.google.gwt.user.client.TakesValue;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectionModel;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.Selection;
 
 import java.util.*;
 
@@ -14,60 +14,56 @@ public class MultiValueSelector<T> extends AbstractPageableSelector<T>
         implements TakesValue<Set<T>> {
 
     @Override
-    public SelectionModel<T> getSelectionModel() {
-        return selectionModel;
-    }
-
-    public void setSelectionModel(MultiSelectionModel<T> selectionModel) {
-        this.selectionModel = selectionModel;
+    public Selection<T> getSelection() {
+        return selection;
     }
 
     @Override
     public void setValue(Set<T> value) {
-        selectionModel.clear();
+        selection.clear();
         if (value == null) {
             return;
         }
         for (T t : value) {
-            selectionModel.select(t);
+            selection.select(t);
         }
     }
 
     @Override
     public Set<T> getValue() {
-        return selectionModel.get();
+        return selection.get();
     }
 
-    private MultiSelectionModel<T> selectionModel = new MultiSelectionModel<T>() {
-        protected List<T> selectedOption = new ArrayList<>();
+    private MultiSelection<T> selection = new MultiSelection<T>() {
+        protected List<T> options = new ArrayList<>();
 
         @Override
         public void select(T value) {
-            if (selectedOption.contains(value)) {
-                selectedOption.remove(value);
+            if (options.contains(value)) {
+                options.remove(value);
             } else {
-                selectedOption.add(value);
+                options.add(value);
             }
         }
 
         @Override
         public Set<T> get() {
-            return new HashSet<>( selectedOption );
+            return new HashSet<>( options );
         }
 
         @Override
         public boolean isSelected(T option) {
-            return option != null && selectedOption.contains(option);
+            return option != null && options.contains(option);
         }
 
         @Override
         public boolean isEmpty() {
-            return selectedOption.isEmpty();
+            return options.isEmpty();
         }
 
         @Override
         public void clear() {
-            selectedOption.clear();
+            options.clear();
         }
     };
 

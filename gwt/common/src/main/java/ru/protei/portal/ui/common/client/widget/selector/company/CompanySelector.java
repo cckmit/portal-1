@@ -17,11 +17,6 @@ public class CompanySelector
     @Inject
     public void init( CompanyModel companyModel ) {
         setAsyncSelectorModel( companyModel );
-
-        setSearchEnabled( true );
-        setSearchAutoFocus( true );
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
-
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getDisplayText() );
     }
 

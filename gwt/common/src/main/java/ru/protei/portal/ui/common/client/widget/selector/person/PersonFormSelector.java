@@ -2,8 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormSingleSelector;
 
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
@@ -17,16 +16,13 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
  * Селектор person
  */
 public class PersonFormSelector
-        extends FormSelector<PersonShortView>  implements Refreshable
+        extends FormSingleSelector<PersonShortView> implements Refreshable
 {
 
     @Inject
     public void init( InitiatorModel model ) {
         this.model = model;
         setSelectorModel( model );
-        setSearchEnabled( true );
-        setSearchAutoFocus( true );
-
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 

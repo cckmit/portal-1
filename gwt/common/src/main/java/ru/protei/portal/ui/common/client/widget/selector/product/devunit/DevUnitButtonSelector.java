@@ -14,19 +14,14 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 /**
  * Button селектор с продуктами
  */
-public class DevUnitButtonSelector
-        extends ButtonPopupSingleSelector<ProductShortView>
+public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShortView>
 {
 
     @Inject
     public void init(ProductModel model) {
         this.model = model;
-
         model.setUnitState(En_DevUnitState.ACTIVE);
         setAsyncSelectorModel(model);
-        setSearchEnabled(true);
-        setSearchAutoFocus(true);
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
 
         setSelectorItemRenderer( value -> value == null ? defaultValue :
                 value.getName() + ( HelperFunc.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")") );

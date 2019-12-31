@@ -2,59 +2,58 @@ package ru.protei.portal.ui.common.client.widget.components.client.selector.logi
 
 import com.google.gwt.user.client.TakesValue;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectionModel;
+import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.Selection;
 
 
 /**
  * Логика селектора с единичным выбором
  */
-public class SingleValueSelector<T> extends AbstractPageableSelector<T>
-        implements TakesValue<T> {
+public class SingleValueSelector<T> extends AbstractPageableSelector<T> implements TakesValue<T> {
 
     @Override
     public void setValue(T value) {
-        selectionModel.clear();
-        selectionModel.select(value);
+        selection.clear();
+        selection.select(value);
     }
 
     @Override
     public T getValue() {
-        return selectionModel.get();
+        return selection.get();
     }
 
-    private SingleSelectionModel<T> selectionModel = new SingleSelectionModel<T>() {
-        protected T selectedOption = null;
+    private SingleSelection<T> selection = new SingleSelection<T>() {
+        protected T options = null;
 
 
         @Override
         public void select(T value) {
-            selectedOption = value;
+            options = value;
         }
 
         @Override
         public T get() {
-            return selectedOption;
+            return options;
         }
 
         @Override
         public boolean isSelected(T option) {
-            return option == selectedOption || option != null && option.equals(selectedOption);
+            return option == options || option != null && option.equals( options );
         }
 
         @Override
         public boolean isEmpty() {
-            return selectedOption == null;
+            return options == null;
         }
 
         @Override
         public void clear() {
-            selectedOption = null;
+            options = null;
         }
     };
 
     @Override
-    public SelectionModel<T> getSelectionModel() {
-        return selectionModel;
+    public Selection<T> getSelection() {
+        return selection;
     }
 }
 

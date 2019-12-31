@@ -15,8 +15,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 /**
  * Мультиселектор продуктов
  */
-public class DevUnitMultiSelector
-        extends InputPopupMultiSelector<ProductShortView>
+public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortView>
 {
 
     @Inject
@@ -25,7 +24,6 @@ public class DevUnitMultiSelector
         setAsyncSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
 
         setSelectorItemRenderer( option -> option == null ? lang.productWithout() :
                 (option.getName() + (HelperFunc.isEmpty( option.getAliases() ) ? "" : " (" + option.getAliases() + ")")) );

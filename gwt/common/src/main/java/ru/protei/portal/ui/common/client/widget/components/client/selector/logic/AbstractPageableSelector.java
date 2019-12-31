@@ -25,7 +25,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
     public void fillFromBegin(ItemsContainer<T> itemsContainer) {
         fromIndex = 0;
         if (hasNullValue) {
-            if (!(hideSelectedFromChose && getSelectionModel().isEmpty())) {
+            if (!(hideSelectedFromChose && getSelection().isEmpty())) {
                 itemsContainer.fill(null, makeElementHtml(null));
             }
         }
@@ -42,7 +42,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         this.pageSize = pageSize;
     }
 
-    public abstract SelectionModel<T> getSelectionModel();
+    public abstract Selection<T> getSelection();
 
     public void setHasNullValue(boolean hasNullValue) {
         this.hasNullValue = hasNullValue;
@@ -88,7 +88,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
             if (element == null) break;
             from++;
 
-            if (hideSelectedFromChose && getSelectionModel().isSelected(element)) {
+            if (hideSelectedFromChose && getSelection().isSelected(element)) {
                 continue;
             }
             if (filter != null && !filter.isDisplayed(element)) {

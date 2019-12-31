@@ -8,5 +8,4 @@
         <button3:ValueButton ui:field="button" styleName="form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
     </g:HTMLPanel>
 
-
 </ui:UiBinder>

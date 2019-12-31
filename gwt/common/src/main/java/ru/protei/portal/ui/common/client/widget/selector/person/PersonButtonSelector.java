@@ -26,8 +26,6 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Inject
     public void init(InitiatorModel model) {
         this.model = model;
-        setSearchEnabled( true );
-        setSearchAutoFocus( true );
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 

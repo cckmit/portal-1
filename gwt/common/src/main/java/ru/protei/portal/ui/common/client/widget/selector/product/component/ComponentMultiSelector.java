@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ComponentMultiSelector
-        extends InputPopupMultiSelector<ProductShortView>
+public class ComponentMultiSelector extends InputPopupMultiSelector<ProductShortView>
 {
 
     @Inject
@@ -25,7 +24,6 @@ public class ComponentMultiSelector
         setAsyncSelectorModel( model );
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setSelectorItemRenderer( option -> option.getName() );
     }
 

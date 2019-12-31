@@ -28,7 +28,6 @@ import java.util.Set;
 public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         implements HasValue<Set<T>>, HasEnabled, HasVisibility {
 
-
     public ButtonPopupMultiSelector() {
         initWidget(bsUiBinder.createAndBindUi(this));
         setEmptyListText(  lang.searchNoMatchesFound() );
@@ -93,7 +92,7 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     public boolean isEmpty() {
-        return selector.getSelectionModel().isEmpty();
+        return selector.getSelection().isEmpty();
     }
 
     protected void showValue(Set<T> values) {

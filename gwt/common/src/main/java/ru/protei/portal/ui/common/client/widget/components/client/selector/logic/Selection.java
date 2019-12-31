@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.components.client.selector.logic;
 
-public interface SelectionModel<T>{
+public interface Selection<T>{
     void select( T value );
 
     boolean isSelected( T t );

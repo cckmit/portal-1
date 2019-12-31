@@ -20,7 +20,6 @@ public class EmployeeMultiSelector
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setFilter(personView -> !personView.isFired());
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setSelectorItemRenderer( p -> p == null ? lang.employeeWithoutManager() : p.getName() );
     }
 

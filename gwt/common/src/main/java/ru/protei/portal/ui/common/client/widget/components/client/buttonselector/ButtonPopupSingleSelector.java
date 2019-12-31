@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
@@ -23,15 +24,17 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.item.
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
- * Cелектор c выпадающим списком, одиночный выбор
+ * Cелектор c одиночным выбором, выпадающим списком, выбранные значения отображаются в кнопке.
  */
 public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         implements HasValidable, HasValue<T>, HasEnabled, HasVisibility
 {
 
     public ButtonPopupSingleSelector() {
-        initWidget(bsUiBinder.createAndBindUi(this));
-        setEmptyListText(  lang.searchNoMatchesFound() );
+        initWidget( bsUiBinder.createAndBindUi( this ) );
+        setEmptyListText( lang.searchNoMatchesFound() );
+        setSearchAutoFocus( true );
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
     }
 
     @Override
@@ -118,7 +121,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public boolean isEmpty() {
-        return selector.getSelectionModel().isEmpty();
+        return selector.getSelection().isEmpty();
     }
 
     @Override

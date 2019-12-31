@@ -13,8 +13,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 import java.util.List;
 
-public class ComponentButtonSelector
-        extends ButtonPopupSingleSelector<ProductShortView>
+public class ComponentButtonSelector extends ButtonPopupSingleSelector<ProductShortView>
 {
 
     @Inject
@@ -22,8 +21,7 @@ public class ComponentButtonSelector
         model.setUnitTypes( En_DevUnitType.COMPONENT );
         setAsyncSelectorModel(model);
         setHasNullValue(true);
-        setSearchAutoFocus(true);
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
+
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 

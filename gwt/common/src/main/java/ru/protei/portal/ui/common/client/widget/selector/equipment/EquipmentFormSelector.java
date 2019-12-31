@@ -17,7 +17,7 @@ public class EquipmentFormSelector extends FormSelector<EquipmentShortView> impl
 
     @Inject
     public void init(Lang lang) {
-        setSearchEnabled( true );
+
         setSearchAutoFocus(true);
         setDisplayOptionCreator( value -> {
             StringBuilder sb = new StringBuilder();

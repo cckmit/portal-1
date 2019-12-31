@@ -14,17 +14,12 @@ import java.util.stream.Collectors;
 /**
  * Виджет связанных устройств
  */
-public class EquipmentButtonSelector
-        extends ButtonPopupSingleSelector< EquipmentShortView >
-{
+public class EquipmentButtonSelector extends ButtonPopupSingleSelector<EquipmentShortView> {
 
     @Inject
     public void init(EquipmentModel model, Lang lang) {
         this.model = model;
         setAsyncSelectorModel(model);
-        setSearchEnabled( true );
-        setSearchAutoFocus(true);
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setSelectorItemRenderer( value -> {
             StringBuilder sb = new StringBuilder();
             if ( value == null ) {

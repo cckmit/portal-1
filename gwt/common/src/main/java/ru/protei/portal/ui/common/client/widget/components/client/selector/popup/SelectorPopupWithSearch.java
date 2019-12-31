@@ -15,7 +15,6 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.components.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
@@ -52,8 +51,14 @@ public class SelectorPopupWithSearch extends BasePopupView
     }
 
     @Override
-    public void setSearchHandler(SearchHandler searchHandler) {
-        this.searchHandler = searchHandler;
+    public void setSearchHandler( SearchHandler searchHandler ) {
+        if (searchHandler != null) {
+            this.searchHandler = searchHandler;
+            search.setVisible( true );
+        } else {
+            this.searchHandler = ignoreSearch;
+            search.setVisible( false );
+        }
     }
 
     @Override
@@ -64,7 +69,6 @@ public class SelectorPopupWithSearch extends BasePopupView
 
     @Override
     protected void onLoad() {
-
         scrolForPagingHandleRegistration = dropdown.addDomHandler( new ScrollHandler() {
             @Override
             public void onScroll( ScrollEvent scrollEvent ) {
@@ -77,8 +81,6 @@ public class SelectorPopupWithSearch extends BasePopupView
             }
         }, ScrollEvent.getType() );
     }
-
-
 
    @Override
     public void showLoading(boolean isLoading) {
@@ -95,8 +97,6 @@ public class SelectorPopupWithSearch extends BasePopupView
     public void setPopupHandler(PopupHandler popupHandler) {
         this.popupHandler = popupHandler;
     }
-
-
 
     public void setAddButton(boolean addVisible) {
         if (addVisible) {
@@ -123,8 +123,8 @@ public class SelectorPopupWithSearch extends BasePopupView
 
     @Override
     public void setNoElements(boolean isSearchResultEmpty, String noElementsMessage) {
-        message.setVisible(isSearchResultEmpty);
-        message.setText(isSearchResultEmpty ? (noElementsMessage == null ? lang.searchNoMatchesFound() : noElementsMessage) : "");
+        message.setVisible(isSearchResultEmpty && noElementsMessage != null);
+        message.setText( noElementsMessage == null ? "" : noElementsMessage );
     }
 
     public void clearSearchField() {
@@ -167,7 +167,6 @@ public class SelectorPopupWithSearch extends BasePopupView
         setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
-
     @UiField
     HTMLPanel childContainer;
 
@@ -185,13 +184,10 @@ public class SelectorPopupWithSearch extends BasePopupView
     HTMLPanel loading;
     @UiField
     HTMLPanel dropdown;
-    @UiField
-    Lang lang;
 
-    public static final String HIDE = "hide";
-
+    private static final SearchHandler ignoreSearch = searchString -> { /*ignore search*/ };
     private PopupHandler popupHandler;
-    private SearchHandler searchHandler = searchString -> { /*ignore*/ };
+    private SearchHandler searchHandler = ignoreSearch;
     private boolean isSearchAutoFocus = true;
     private HandlerRegistration scrolForPagingHandleRegistration;
 

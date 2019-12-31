@@ -1,27 +1,21 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormSelector;
+import ru.protei.portal.ui.common.client.widget.components.client.form.FormSingleSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 
 /**
  * Селектор сотрудников домашней компании
  */
-public class EmployeeFormSelector
-            extends FormSelector<PersonShortView>
+public class EmployeeFormSelector extends FormSingleSelector<PersonShortView>
 {
 
     @Inject
     public void init(EmployeeModel employeeModel) {
         setAsyncSelectorModel(employeeModel);
-        setSearchEnabled(true);
-        setSearchAutoFocus(true);
         setFilter(personView -> !personView.isFired());
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
-
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 

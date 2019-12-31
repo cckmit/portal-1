@@ -10,18 +10,13 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.logic
 /**
  * Селектор сотрудников домашней компании
  */
-public class EmployeeButtonSelector
-        extends ButtonPopupSingleSelector<PersonShortView>
+public class EmployeeButtonSelector extends ButtonPopupSingleSelector<PersonShortView>
 {
 
     @Inject
     public void init(EmployeeModel employeeModel) {
         setAsyncSelectorModel(employeeModel);
-        setSearchEnabled(true);
-        setSearchAutoFocus(true);
         setFilter(personView -> !personView.isFired());
-        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
-
         setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 

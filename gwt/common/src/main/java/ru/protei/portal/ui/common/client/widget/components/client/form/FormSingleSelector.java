@@ -14,9 +14,10 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
@@ -29,16 +30,18 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 /**
  * Вид селектора
  */
-public class FormSelector<T> extends AbstractPopupSelector<T>
-        implements HasValidable, HasValue<T>, HasEnabled, HasVisibility
-        , HasAddHandlers
+public class FormSingleSelector<T> extends AbstractPopupSelector<T>
+        implements HasValidable, HasValue<T>, HasEnabled, HasVisibility, HasAddHandlers
 {
 
-    public FormSelector() {
+    public FormSingleSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
 
         setPopup( popup );
+        setSearchAutoFocus( true );
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
+        setEmptyListText( lang.searchNoMatchesFound() );
     }
 
     @Override
@@ -179,6 +182,8 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
     LabelElement label;
     @UiField
     SpanElement text;
+    @UiField
+    Lang lang;
 
     @Override
     protected AbstractPageableSelector getSelector() {
@@ -193,7 +198,7 @@ public class FormSelector<T> extends AbstractPopupSelector<T>
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
     SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
-    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormSelector> { }
+    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormSingleSelector> { }
     private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
 
 }

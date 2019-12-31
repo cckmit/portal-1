@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.widget.components.client.buttonselector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
@@ -31,6 +32,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
+        setSearchAutoFocus( true );
+        setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
     }
 
     public void setHeader( String label ) {
@@ -98,7 +101,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
         itemContainer.clear();
         itemViews.clear();
-        getSelector().getSelectionModel().clear();
+        getSelector().getSelection().clear();
         clearButton.setVisible( false );
 
         ValueChangeEvent.fire( this, getValue() );
@@ -113,7 +116,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     public boolean isEmpty() {
-        return getSelector().getSelectionModel().isEmpty();
+        return getSelector().getSelection().isEmpty();
     }
 
     protected void showValue( Set<T> values ) {
@@ -150,8 +153,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     private void removeItem( SelectItemView itemView, T item ) {
         itemContainer.remove( itemView );
         itemViews.remove( itemView );
-
-        getSelector().getSelectionModel().select( item );
+        getSelector().getSelection().select( item );
+        clearButton.setVisible( !isEmpty() );
         ValueChangeEvent.fire( this, getValue() );
     }
 

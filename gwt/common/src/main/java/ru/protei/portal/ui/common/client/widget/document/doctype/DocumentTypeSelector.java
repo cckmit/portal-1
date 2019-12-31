@@ -14,7 +14,7 @@ public class DocumentTypeSelector
     @Inject
     void init(DocumentTypeModel model) {
         setSelectorModel(model);
-        setSearchEnabled( true );
+
         setSearchAutoFocus( true );
 
         setDisplayOptionCreator(val -> {

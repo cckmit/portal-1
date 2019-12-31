@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.widget.components.client.selector.searc
 import java.util.Iterator;
 
 /**
- * селектор c выпадающим списком
+ * Селектор c выпадающим списком
  */
 public abstract class AbstractPopupSelector<T> extends Composite
         implements Selector<T>,
@@ -47,7 +47,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     @Override
     public void onSelectorItemClicked(SelectorItem<T> selectorItem) {
         T value = selectorItem.getValue();
-        getSelector().getSelectionModel().select(value);
+        getSelector().getSelection().select(value);
 
         onSelectionChanged();
     }
@@ -98,7 +98,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public boolean isSelected(T element){
-        return getSelector().getSelectionModel().isSelected( element );
+        return getSelector().getSelection().isSelected( element );
     }
 
     public void setAsyncSelectorModel(final AsyncSelectorModel<T> selectorModel) {
@@ -123,6 +123,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
                 clearPopup();
                 selectorModel.setSearchString(searchString);
                 getSelector().fillFromBegin(AbstractPopupSelector.this);
+                checkNoElements();
             }
         };
     }
@@ -181,6 +182,9 @@ public abstract class AbstractPopupSelector<T> extends Composite
         popup.setPopupHandler(this);
     }
 
+    /**
+     * Выполнить после сокрытия попапа
+     */
     public void setPopupUnloadHandler( Runnable popupUnloadHandler ){
         this.popupUnloadHandler = popupUnloadHandler;
     }
@@ -201,7 +205,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
     protected abstract void onSelectionChanged();
 
     protected void checkNoElements() {
-        if (emptyListText == null) return;
         Iterator<Widget> it = getPopup().getChildContainer().iterator();
         getPopup().setNoElements( !it.hasNext(), emptyListText );
     }
@@ -217,6 +220,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
         return itemView;
     }
 
+    // Переопределяется в AsyncSearchSelectorModel
     private SearchHandler searchHandler = new SearchHandler() {
         @Override
         public void onSearch(String searchString) {
