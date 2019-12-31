@@ -32,8 +32,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -185,6 +184,32 @@ public class TestPortalApiController extends BaseServiceTest {
         caseCommentDAO.removeByCaseIds(Collections.singletonList(caseObjectFromDb.getId()));
         caseObjectDAO.removeByKey(caseObjectFromDb.getId());
         authService.resetThreadAuthToken();
+    }
+
+    @Test
+    public void testGetCaseListByCompanyId() throws Exception {
+        ResultActions accept = mockMvc.perform(
+                post("/api/casesByCompanyId/1")
+                        .header("authorization", "Basic "
+                                + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes())));
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(COUNT_OF_ISSUES)));
+    }
+
+    @Test
+    public void testGetCaseListByCompanyIdEmptyResult() throws Exception {
+        ResultActions accept = mockMvc.perform(
+                post("/api/casesByCompanyId/2")
+                        .header("authorization", "Basic "
+                                + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes())));
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", empty()));
     }
 
     @AfterClass
