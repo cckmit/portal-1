@@ -19,6 +19,8 @@ public interface CaseShortViewDAO extends PortalBaseDAO<CaseShortView> {
 
     CaseShortView getCase(Long caseNo);
 
+    List<CaseShortView> getListByCompanyId(Long companyId);
+
     @SqlConditionBuilder
     SqlCondition caseQueryCondition( CaseQuery query );
 }

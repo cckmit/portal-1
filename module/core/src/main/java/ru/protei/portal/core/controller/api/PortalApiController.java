@@ -219,6 +219,33 @@ public class PortalApiController {
                         youtrackId, oldCaseNumber, result ) );
     }
 
+    @PostMapping(value = "/casesByCompanyId/{companyId}")
+    public Result<List<CaseShortView>> getCaseList(
+            @PathVariable(value = "companyId") Long companyId,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API | casesByCompanyId(): companyId={}", companyId);
+
+        try {
+            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
+            }
+
+            AuthToken authToken = authTokenAPIResult.getData();
+
+            return caseService.getCaseObjectsByCompanyId(authToken, companyId);
+
+        } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+        }
+    }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());

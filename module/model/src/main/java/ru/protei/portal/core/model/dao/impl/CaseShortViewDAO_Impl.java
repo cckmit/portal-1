@@ -47,6 +47,11 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         return getByCondition("case_object.caseno=?", caseNo);
     }
 
+    @Override
+    public List<CaseShortView> getListByCompanyId(Long companyId) {
+        return getListByCondition("case_object.initiator_company = ?", companyId);
+    }
+
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);

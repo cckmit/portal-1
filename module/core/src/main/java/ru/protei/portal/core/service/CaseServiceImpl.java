@@ -584,6 +584,11 @@ public class CaseServiceImpl implements CaseService {
         return ok(caseNumber);
     }
 
+    @Override
+    public Result<List<CaseShortView>> getCaseObjectsByCompanyId(AuthToken token, Long companyId) {
+        return ok(caseShortViewDAO.getListByCompanyId(companyId));
+    }
+
     private Long createAndPersistStateMessage(Long authorId, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
