@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
@@ -271,7 +268,8 @@ public class PortalApiController {
         CaseCommentQuery query = new CaseCommentQuery();
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
-        // optional
+        query.setSortField(En_SortField.creation_date);
+        query.setSortDir(En_SortDir.DESC);
         query.setCaseObjectIds(Collections.singletonList(apiQuery.getCaseId()));
         return query;
     }

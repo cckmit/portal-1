@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
@@ -46,7 +47,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, query.getCaseObjectIds().get(0)); // TODO запил, выпилить
+        List<Long> caseIds = query.getCaseObjectIds();
+        if (isEmpty(caseIds) || 1 < caseIds.size()) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case ID");
+        }
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseIds.get(0));
         if (checkAccessStatus != null) {
             return error(checkAccessStatus);
         }
