@@ -87,13 +87,15 @@ public abstract class EquipmentTableActivity
             return;
         }
 
-        view.clearSelection();
+        if (selectedEquipment != null) view.removeSelection(selectedEquipment);
 
         fireEvent( new EquipmentEvents.Edit( null ) );
     }
 
     @Override
     public void onItemClicked ( Equipment value ) {
+        if (selectedEquipment != null) view.removeSelection(selectedEquipment);
+        selectedEquipment = value;
         showPreview( value );
     }
 
@@ -203,6 +205,7 @@ public abstract class EquipmentTableActivity
     @Inject
     AbstractPagerView pagerView;
 
+    private Equipment selectedEquipment;
     private AppEvents.InitDetails init;
     private EquipmentQuery query;
     private Integer scrollTop;
