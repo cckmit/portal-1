@@ -22,5 +22,7 @@ public interface YoutrackApiClient {
 
     Result<List<YtProject>> getProjectsByName(String projectName);
 
+    Result<YtProject> getProjectByName(String projectName);
+
     Result<List<YtIssue>> getIssuesByProjectAndUpdated(String projectName, Date updatedAfter);
 }

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class YoutrackApiClientImpl implements YoutrackApiClient {
 
@@ -28,25 +29,13 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
     public Result<YtIssue> createIssue(String projectName, String summary, String description) {
         log.info("createIssue(): projectName={}, summary={}, description={}", projectName, summary, description);
 
-        Result<List<YtProject>> result = getProjectsByName(projectName);
+        Result<YtProject> result = getProjectByName(projectName);
         if (result.isError()) {
-            log.info("createIssue(): projectName={}, summary={}, description={} | failed to get projects", projectName, summary, description);
+            log.info("createIssue(): projectName={}, summary={}, description={} | failed to get project", projectName, summary, description);
             return error(result.getStatus(), result.getMessage());
         }
 
-        List<YtProject> projects = result.getData();
-        if (projects.size() != 1) {
-            log.info("createIssue(): projectName={}, summary={}, description={} | unable to find project", projectName, summary, description);
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        YtProject project = new YtProject();
-        project.id = projects.get(0).id;
-
-        YtIssue issue = new YtIssue();
-        issue.project = project;
-        issue.summary = summary;
-        issue.description = description;
+        YtIssue issue = makeNewBasicIssue(result.getData().id, summary, description);
 
         String url = new YoutrackUrlProvider(getBaseUrl()).issues();
         return client.save(url, YtIssue.class, issue);
@@ -96,12 +85,35 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
     }
 
     @Override
+    public Result<YtProject> getProjectByName(String projectName) {
+        log.info("getProjectByName(): projectName={}", projectName);
+        return getProjectsByName(projectName)
+                .flatMap(projects -> {
+                    if (projects.size() == 1) {
+                        return ok(projects.get(0));
+                    }
+                    log.info("getProjectByName(): projectName={} | found more/less than one project : {}", projectName, projects.size());
+                    return error(En_ResultStatus.INCORRECT_PARAMS);
+                });
+    }
+
+    @Override
     public Result<List<YtIssue>> getIssuesByProjectAndUpdated(String projectName, Date updatedAfter) {
         log.info("getIssuesByProjectAndUpdated(): projectName={}, updatedAfter={}", projectName, updatedAfter);
         String url = new YoutrackUrlProvider(getBaseUrl()).issues();
         String query = String.format("project: %s updated: %s .. *", projectName, dateToYtString(updatedAfter));
         return client.read(url, query, YtIssue[].class)
                 .map(Arrays::asList);
+    }
+
+    private YtIssue makeNewBasicIssue(String projectId /* id, not name! */, String summary, String description) {
+        YtProject project = new YtProject();
+        project.id = projectId;
+        YtIssue issue = new YtIssue();
+        issue.project = project;
+        issue.summary = summary;
+        issue.description = description;
+        return issue;
     }
 
     private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
