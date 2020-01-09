@@ -2,10 +2,10 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
 
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 
 import java.util.Set;
 import java.util.logging.Logger;
@@ -22,8 +22,8 @@ public class PersonFormSelector
     @Inject
     public void init( InitiatorModel model ) {
         this.model = model;
-        setSelectorModel( model );
-        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
+        setModel( model );
+        setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
     protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
@@ -39,9 +39,9 @@ public class PersonFormSelector
         return item;
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
-    }
+//    public void setDefaultValue( String value ) {
+//        this.defaultValue = value;
+//    }
 
     public void setFired ( boolean fired ) {
         this.fired = fired;
@@ -65,6 +65,6 @@ public class PersonFormSelector
     }
 
     private InitiatorModel model;
-    private String defaultValue;
+//    private String defaultValue;
     private boolean fired = false;
 }

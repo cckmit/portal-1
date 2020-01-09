@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.selector.base.MultipleSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ import java.util.List;
 
 /**
  * Абстрактный селектор с полем ввода
+ * @deprecated  следует использовать {@link InputPopupMultiSelector}
  */
+@Deprecated
 public class MultipleInputSelector<T> extends MultipleSelector<T> implements HasEnabled {
 
     public MultipleInputSelector() {

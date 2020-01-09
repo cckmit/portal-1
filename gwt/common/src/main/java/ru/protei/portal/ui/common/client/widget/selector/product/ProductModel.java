@@ -15,10 +15,10 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
-import ru.protei.portal.ui.common.client.widget.components.client.cache.SelectorDataCache;
-import ru.protei.portal.ui.common.client.widget.components.client.cache.SelectorDataCacheLoadHandler;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Arrays;

@@ -7,18 +7,16 @@ import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.impl.HtmlSelectorItemRenderer;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
 
 public class PlatformFormSelector extends FormPopupSingleSelector<PlatformOption> {
 
     @Inject
     void init(PlatformModel model) {
-        setAsyncSelectorModel( model );
+        setAsyncModel( model );
         setHasNullValue( true );
 
-        setSelectorItemRenderer(value -> makeView( value ) );
+        setItemRenderer( value -> makeView( value ) );
     }
 
     private String makeView( PlatformOption platformOption ) {
@@ -31,12 +29,12 @@ public class PlatformFormSelector extends FormPopupSingleSelector<PlatformOption
 
     }
 
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+//    public void setDefaultValue(String defaultValue) {
+//        this.defaultValue = defaultValue;
+//    }
 
     @Inject
     PolicyService policyService;
 
-    private String defaultValue = null;
+//    private String defaultValue = null;
 }

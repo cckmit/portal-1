@@ -4,9 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -28,13 +25,11 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
@@ -43,9 +38,6 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -71,7 +63,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Override
     public void setCompaniesModel( AsyncSelectorModel<EntityOption> model ) {
-        companies.setAsyncSelectorModel( model );
+        companies.setAsyncModel( model );
     }
 
     @Override

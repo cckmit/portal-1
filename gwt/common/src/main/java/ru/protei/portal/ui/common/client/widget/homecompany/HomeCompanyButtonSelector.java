@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.homecompany;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.selector.button.ButtonPopupSingleSelector;
 
 public class HomeCompanyButtonSelector
          extends ButtonPopupSingleSelector<EntityOption>
@@ -12,9 +12,9 @@ public class HomeCompanyButtonSelector
     @Inject
     public void init(HomeCompanyModel homeCompanyModel, Lang lang) {
         this.model = homeCompanyModel;
-        setAsyncSelectorModel(homeCompanyModel);
+        setAsyncModel(homeCompanyModel);
         setSearchEnabled(false);
-        setSelectorItemRenderer(value ->value == null ? lang.selectValue() : value.getDisplayText());
+        setItemRenderer( value ->value == null ? lang.selectValue() : value.getDisplayText());
     }
 
     public void setReverseOrder(boolean reverseOrder) {

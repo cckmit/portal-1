@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +18,8 @@ public class EquipmentButtonSelector extends ButtonPopupSingleSelector<Equipment
     @Inject
     public void init(EquipmentModel model, Lang lang) {
         this.model = model;
-        setAsyncSelectorModel(model);
-        setSelectorItemRenderer( value -> {
+        setAsyncModel(model);
+        setItemRenderer( value -> {
             StringBuilder sb = new StringBuilder();
             if ( value == null ) {
                 sb.append( lang.equipmentPrimaryUseNotDefinied() );

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.Collection;
@@ -19,18 +19,17 @@ import java.util.stream.Collectors;
 /**
  * Селектор сотрудников
  */
-public class InitiatorMultiSelector
-        extends InputPopupMultiSelector<PersonShortView> implements Refreshable
+public class InitiatorMultiSelector extends InputPopupMultiSelector<PersonShortView> implements Refreshable
 {
     @Inject
     public void init(InitiatorModel model, Lang lang) {
         this.model = model;
         this.lang = lang;
-        setSelectorModel( model );
+        setModel( model );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
 
-        setSelectorItemRenderer( person -> person.getName() );
+        setItemRenderer( person -> person.getName() );
     }
 
     @Override

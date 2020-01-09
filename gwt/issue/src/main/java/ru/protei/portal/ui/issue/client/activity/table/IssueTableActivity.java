@@ -10,16 +10,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.ui.common.client.util.DataCache;
-import ru.brainworm.factory.widget.table.client.InfiniteLoadHandler;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -33,7 +29,6 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
@@ -41,9 +36,6 @@ import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
@@ -52,11 +44,9 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Активность таблицы обращений

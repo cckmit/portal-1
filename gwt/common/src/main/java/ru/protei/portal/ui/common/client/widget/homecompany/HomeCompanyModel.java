@@ -7,7 +7,8 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
@@ -18,8 +19,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 /**
  * Модель домашних компаний
  */
-public abstract class HomeCompanyModel implements Activity,
-        ru.protei.portal.ui.common.client.widget.components.client.selector.AsyncSelectorModel<EntityOption> {
+public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<EntityOption> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {

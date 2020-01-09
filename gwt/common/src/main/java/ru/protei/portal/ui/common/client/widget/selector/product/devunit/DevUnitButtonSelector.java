@@ -5,9 +5,9 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.button.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
@@ -20,9 +20,9 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
     public void init(ProductModel model) {
         this.model = model;
         model.setUnitState(En_DevUnitState.ACTIVE);
-        setAsyncSelectorModel(model);
+        setAsyncModel(model);
 
-        setSelectorItemRenderer( value -> value == null ? defaultValue :
+        setItemRenderer( value -> value == null ? defaultValue :
                 value.getName() + ( HelperFunc.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")") );
     }
 
@@ -44,9 +44,9 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
         }
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-    private String defaultValue = null;
+//    public void setDefaultValue(String value) {
+//        this.defaultValue = value;
+//    }
+//    private String defaultValue = null;
     protected ProductModel model;
 }

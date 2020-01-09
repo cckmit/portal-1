@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.company.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -38,7 +37,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         initWidget( ourUiBinder.createAndBindUi( this ) );
         parentCompany.setDefaultValue(lang.selectIssueCompany());
         companyModel.showOnlyParentCompanies(true);
-        parentCompany.setAsyncSelectorModel(companyModel);
+        parentCompany.setAsyncModel(companyModel);
     }
 
     @Override

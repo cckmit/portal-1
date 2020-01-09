@@ -7,22 +7,16 @@ import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.impl.HtmlSelectorItemRenderer;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-
-import java.util.List;
+import ru.protei.portal.ui.common.client.selector.button.ButtonPopupSingleSelector;
 
 public class PlatformButtonSelector extends ButtonPopupSingleSelector<PlatformOption> {
 
     @Inject
     void init(PlatformModel model) {
-        setAsyncSelectorModel(model);
+        setAsyncModel(model);
         setHasNullValue(true);
 
-        setSelectorItemRenderer(value -> makeView( value ) );
+        setItemRenderer( value -> makeView( value ) );
     }
 
     private String makeView( PlatformOption platformOption ) {
@@ -38,9 +32,9 @@ public class PlatformButtonSelector extends ButtonPopupSingleSelector<PlatformOp
     @Inject
     PolicyService policyService;
 
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    private String defaultValue = null;
+//    public void setDefaultValue(String defaultValue) {
+//        this.defaultValue = defaultValue;
+//    }
+//
+//    private String defaultValue = null;
 }

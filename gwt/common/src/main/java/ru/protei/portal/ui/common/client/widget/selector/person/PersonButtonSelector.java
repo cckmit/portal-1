@@ -6,9 +6,9 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.selector.button.ButtonPopupSingleSelector;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 
 import java.util.Set;
 import java.util.logging.Logger;
@@ -26,7 +26,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Inject
     public void init(InitiatorModel model) {
         this.model = model;
-        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
+        setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
     @Override
@@ -40,9 +40,9 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
         return item;
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
-    }
+//    public void setDefaultValue( String value ) {
+//        this.defaultValue = value;
+//    }
 
     public void setFired ( boolean value ) { this.fired = value; }
 
@@ -81,7 +81,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
     private InitiatorModel model;
 
-    private String defaultValue;
+//    private String defaultValue;
     private boolean fired = false;
     private Set<Long> companyIds;
 

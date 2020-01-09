@@ -12,7 +12,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.widget.components.client.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;

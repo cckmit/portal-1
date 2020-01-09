@@ -2,9 +2,9 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 
 /**
  * Селектор сотрудников домашней компании
@@ -14,9 +14,9 @@ public class EmployeeFormSelector extends FormPopupSingleSelector<PersonShortVie
 
     @Inject
     public void init(EmployeeModel employeeModel) {
-        setAsyncSelectorModel(employeeModel);
+        setAsyncModel(employeeModel);
         setFilter(personView -> !personView.isFired());
-        setSelectorItemRenderer( value -> value == null ? defaultValue : value.getName() );
+        setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
     @Override
@@ -30,9 +30,9 @@ public class EmployeeFormSelector extends FormPopupSingleSelector<PersonShortVie
         return item;
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-
-    private String defaultValue = null;
+//    public void setDefaultValue(String value) {
+//        this.defaultValue = value;
+//    }
+//
+//    private String defaultValue = null;
 }

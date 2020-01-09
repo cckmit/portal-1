@@ -1,10 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.components.client.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.selector.input.InputPopupMultiSelector;
 
 /**
  * Селектор сотрудников
@@ -16,11 +15,11 @@ public class EmployeeMultiSelector
     @Inject
     public void init(EmployeeModel model, Lang lang) {
         this.model = model;
-        setAsyncSelectorModel( model);
+        setAsyncModel( model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setFilter(personView -> !personView.isFired());
-        setSelectorItemRenderer( p -> p == null ? lang.employeeWithoutManager() : p.getName() );
+        setItemRenderer( p -> p == null ? lang.employeeWithoutManager() : p.getName() );
     }
 
     @Override

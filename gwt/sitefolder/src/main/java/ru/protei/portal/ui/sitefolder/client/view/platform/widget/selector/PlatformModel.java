@@ -10,8 +10,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.impl.BaseSelectorModel;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;

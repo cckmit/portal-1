@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.components.client.form.FormPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.logic.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
@@ -18,9 +18,9 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
     @Inject
     public void init(ProductModel model) {
         model.setUnitState(En_DevUnitState.ACTIVE);
-        setAsyncSelectorModel(model);
+        setAsyncModel(model);
 
-        setSelectorItemRenderer( value -> value == null ? defaultValue :
+        setItemRenderer( value -> value == null ? defaultValue :
                 value.getName() + (StringUtils.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")") );
 
     }
@@ -36,8 +36,8 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
         return item;
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-    private String defaultValue = null;
+//    public void setDefaultValue(String value) {
+//        this.defaultValue = value;
+//    }
+//    private String defaultValue = null;
 }

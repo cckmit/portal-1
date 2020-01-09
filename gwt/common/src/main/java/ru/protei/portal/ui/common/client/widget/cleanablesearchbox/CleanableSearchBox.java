@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.InputEvent;
-import ru.protei.portal.ui.common.client.widget.components.client.selector.search.SearchHandler;
 import ru.protei.portal.ui.common.client.events.InputHandler;
 
 public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled {

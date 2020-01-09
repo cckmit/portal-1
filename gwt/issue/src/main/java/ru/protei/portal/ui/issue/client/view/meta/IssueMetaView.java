@@ -57,7 +57,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        company.setAsyncSelectorModel( companyModel );
+        company.setAsyncModel( companyModel );
         initView();
 
         ensureDebugIds();
