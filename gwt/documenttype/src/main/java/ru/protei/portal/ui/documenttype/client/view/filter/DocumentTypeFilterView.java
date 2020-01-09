@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterActivity;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterView;
-import ru.protei.portal.ui.documenttype.client.widget.DocumentCategoryBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategoryBtnGroupMulti;
 
 import java.util.Set;
 
