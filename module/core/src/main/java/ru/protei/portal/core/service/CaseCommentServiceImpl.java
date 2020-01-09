@@ -45,6 +45,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
+    public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, query.getCaseObjectIds().get(0)); // TODO запил, выпилить
+        if (checkAccessStatus != null) {
+            return error(checkAccessStatus);
+        }
+        applyFilterByScope(token, query);
+        return getList(query);
+    }
+
+    @Override
     @Transactional
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
