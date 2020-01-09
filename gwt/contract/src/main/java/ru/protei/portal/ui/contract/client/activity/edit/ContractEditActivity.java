@@ -253,11 +253,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private boolean hasPrivileges(Long contractId) {
-        if (contractId == null && policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+        if (contractId == null && policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE)) {
             return true;
         }
 
-        if (contractId != null && policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+        if (contractId != null && policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT)) {
             return true;
         }
 
