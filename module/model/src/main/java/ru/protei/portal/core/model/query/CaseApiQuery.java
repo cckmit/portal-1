@@ -13,6 +13,8 @@ public class CaseApiQuery extends BaseQuery {
 
     private List<Long> managerIds;
 
+    private List<Long> companyIds;
+
     private List<String> states;
 
     @JsonIgnore
@@ -51,6 +53,9 @@ public class CaseApiQuery extends BaseQuery {
     public List<Long> getManagerIds() { return managerIds; }
     public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
 
+    public List<Long> getCompanyIds() { return companyIds;}
+    public void setCompanyIds(List<Long> companyIds) { this.companyIds = companyIds; }
+
     public boolean isAllowViewPrivate() {
         return allowViewPrivate;
     }
@@ -62,6 +67,7 @@ public class CaseApiQuery extends BaseQuery {
     public String toString() {
         return "CaseApiQuery{" +
                 "managerIds=" + managerIds +
+                ", companyIds=" + companyIds +
                 ", states=" + states +
                 ", type=" + type +
                 ", allowViewPrivate=" + allowViewPrivate +

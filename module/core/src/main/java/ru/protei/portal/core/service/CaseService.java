@@ -85,7 +85,4 @@ public interface CaseService {
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
 
-    @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<List<CaseShortView>> getCaseObjectsByCompanyId( AuthToken token, Long companyId);
-
 }

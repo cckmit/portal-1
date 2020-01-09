@@ -186,32 +186,6 @@ public class TestPortalApiController extends BaseServiceTest {
         authService.resetThreadAuthToken();
     }
 
-    @Test
-    public void testGetCaseListByCompanyId() throws Exception {
-        ResultActions accept = mockMvc.perform(
-                post("/api/casesByCompanyId/1")
-                        .header("authorization", "Basic "
-                                + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes())));
-
-        accept
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(COUNT_OF_ISSUES)));
-    }
-
-    @Test
-    public void testGetCaseListByCompanyIdEmptyResult() throws Exception {
-        ResultActions accept = mockMvc.perform(
-                post("/api/casesByCompanyId/2")
-                        .header("authorization", "Basic "
-                                + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes())));
-
-        accept
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", empty()));
-    }
-
     @AfterClass
     public static void destroy() {
         caseCommentDAO.removeByCaseIds(issuesIds);
