@@ -87,7 +87,8 @@ public abstract class EquipmentTableActivity
             return;
         }
 
-        if (selectedEquipment != null) view.removeSelection(selectedEquipment);
+        view.clearSelection();
+        selectedEquipment = null;
 
         fireEvent( new EquipmentEvents.Edit( null ) );
     }
@@ -101,6 +102,7 @@ public abstract class EquipmentTableActivity
 
     @Override
     public void onEditClicked(Equipment value ) {
+        selectedEquipment = value;
         persistScrollTopPosition();
         fireEvent(EquipmentEvents.Edit.byId(value.getId()));
     }
