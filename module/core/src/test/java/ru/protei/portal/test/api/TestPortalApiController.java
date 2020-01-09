@@ -186,6 +186,34 @@ public class TestPortalApiController extends BaseServiceTest {
         authService.resetThreadAuthToken();
     }
 
+    @Test
+    public void testGetCaseListByCompanyId() throws Exception {
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setLimit(3);
+        caseApiQuery.setCompanyIds(Collections.singletonList(1L));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(3)));
+    }
+
+    @Test
+    public void testGetCaseListByCompanyIdEmptyResult() throws Exception {
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setLimit(3);
+        caseApiQuery.setCompanyIds(Collections.singletonList(2L));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", empty()));
+    }
+
     @AfterClass
     public static void destroy() {
         caseCommentDAO.removeByCaseIds(issuesIds);
