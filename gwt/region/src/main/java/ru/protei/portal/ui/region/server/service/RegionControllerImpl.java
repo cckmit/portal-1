@@ -136,20 +136,6 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public long createNewProject() throws RequestFailedException {
-        log.info( "createNewProject()" );
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result< Long > response = projectService.createProject( token, token.getPersonId() );
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-
-        return response.getData();
-    }
-
-    @Override
     public List<Project> getProjectsList(ProjectQuery query) throws RequestFailedException {
         log.info("getProjectsList(): query={}", query);
 

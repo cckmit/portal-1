@@ -69,13 +69,6 @@ public interface ProjectService {
     @Auditable(En_AuditType.PROJECT_CREATE)
     Result<Project> createProject(AuthToken token, Project project);
 
-    /**
-     * Создает новый проект
-     * @param creatorId
-     */
-    @Privileged(En_Privilege.PROJECT_CREATE)
-    Result<Long> createProject(AuthToken token, Long creatorId);
-
     @Privileged(En_Privilege.PROJECT_REMOVE)
     @Auditable(En_AuditType.PROJECT_REMOVE)
     Result<Boolean> removeProject(AuthToken token, Long projectId);

@@ -31,8 +31,6 @@ public interface RegionController extends RemoteService {
 
     Project saveProject(Project project) throws RequestFailedException;
 
-    long createNewProject() throws RequestFailedException;
-
     List<Project> getProjectsList(ProjectQuery query) throws RequestFailedException;
 
     List<EntityOption> getProjectsEntityOptionList(ProjectQuery query) throws RequestFailedException;

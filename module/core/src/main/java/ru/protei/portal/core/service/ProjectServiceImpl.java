@@ -253,23 +253,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    @Transactional
-    public Result< Long > createProject( AuthToken token, Long creatorId ) {
-
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseNumber( caseTypeDAO.generateNextId(En_CaseType.PROJECT) );
-        caseObject.setTypeId( En_CaseType.PROJECT.getId() );
-        caseObject.setCreated( new Date() );
-        caseObject.setName( "Новый проект" );
-        caseObject.setInfo( "" );
-        caseObject.setStateId( En_RegionState.UNKNOWN.getId() );
-        caseObject.setCreatorId( creatorId );
-
-        Long newId = caseObjectDAO.persist( caseObject );
-        return ok(newId );
-    }
-
-    @Override
     public Result<Boolean> removeProject( AuthToken token, Long projectId) {
 
         CaseObject caseObject = caseObjectDAO.get(projectId);
