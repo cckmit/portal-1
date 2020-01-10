@@ -4,9 +4,6 @@ import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueStateChange;
-import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
-import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
-import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
 
 import java.util.Date;
 import java.util.List;
@@ -15,10 +12,6 @@ import java.util.Set;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public interface YoutrackService {
-
-    Result<List<YtIssueAttachment>> getIssueAttachments(String issueId);
-
-    Result<List<YtActivityItem>> getIssueCustomFieldsChanges(String issueId);
 
     Result<List<YouTrackIssueStateChange>> getIssueStateChanges(String issueId);
 

@@ -12,14 +12,13 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.yt.YtFieldNames;
 import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
 import ru.protei.portal.core.model.yt.dto.activity.customfield.YtCustomFieldActivityItem;
 import ru.protei.portal.core.model.yt.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.yt.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
-import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.yt.YtFieldNames;
 import ru.protei.winter.core.utils.Pair;
 
 import java.util.*;
@@ -31,22 +30,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
-/**
- * Created by admin on 15/11/2017.
- */
 public class YoutrackServiceImpl implements YoutrackService {
-
-    @Override
-    public Result<List<YtActivityItem>> getIssueCustomFieldsChanges(String issueId) {
-        return apiDao.getIssueActivityChanges(issueId, YtActivityCategory.CustomFieldCategory)
-                .map(ytActivityItems -> {
-                    ytActivityItems.sort(Comparator.comparing(
-                        ytActivityItem -> ytActivityItem.timestamp,
-                        Comparator.nullsFirst(Long::compareTo)
-                    ));
-                    return ytActivityItems;
-                });
-    }
 
     @Override
     public Result<List<YouTrackIssueStateChange>> getIssueStateChanges(String issueId) {
@@ -74,11 +58,6 @@ public class YoutrackServiceImpl implements YoutrackService {
                         })
                         .collect(Collectors.toList())
                 );
-    }
-
-    @Override
-    public Result<List<YtIssueAttachment>> getIssueAttachments(String issueId) {
-        return apiDao.getIssueAttachments(issueId);
     }
 
     @Override
@@ -150,6 +129,17 @@ public class YoutrackServiceImpl implements YoutrackService {
         for (String youtrackId : emptyIfNull( added)) {
             setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
         }
+    }
+
+    private Result<List<YtActivityItem>> getIssueCustomFieldsChanges(String issueId) {
+        return apiDao.getIssueActivityChanges(issueId, YtActivityCategory.CustomFieldCategory)
+                .map(ytActivityItems -> {
+                    ytActivityItems.sort(Comparator.comparing(
+                            ytActivityItem -> ytActivityItem.timestamp,
+                            Comparator.nullsFirst(Long::compareTo)
+                    ));
+                    return ytActivityItems;
+                });
     }
 
     private Result<YtIssue> removeCrmNumberIfSame(String ytIssueId, Long crmNumber, Long caseNumber) {

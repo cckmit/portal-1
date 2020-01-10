@@ -73,7 +73,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
     private <T extends YtDto> Map<String, Object> buildFieldMapOfClass(Field rootField, Class<T> rootClazz, BuildFieldsContext context) {
         // Map<String, Map<String, Map<String, Map<String, ...>>>>
-        Map<String, Object> tokens = new HashMap<>();
+        Map<String, Object> fieldTree = new HashMap<>();
 
         context.pushClass(rootClazz);
 
@@ -82,15 +82,15 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         for (Field field : fields) {
             String fieldName = getFieldName(field);
             Map<String, Object> fieldMapOld;
-            if (tokens.get(fieldName) instanceof Map) {
+            if (fieldTree.get(fieldName) instanceof Map) {
                 //noinspection unchecked
-                fieldMapOld = (Map<String, Object>) tokens.get(fieldName);
+                fieldMapOld = (Map<String, Object>) fieldTree.get(fieldName);
             } else {
                 fieldMapOld = new HashMap<>();
             }
             Class<T> clazz = getClassAssignableFromYtDto(field);
             if (clazz == null) {
-                tokens.put(fieldName, fieldMapOld);
+                fieldTree.put(fieldName, fieldMapOld);
                 continue;
             }
             if (context.hasClass(clazz)) {
@@ -99,11 +99,11 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
             }
             Map<String, Object> fieldMap = buildFieldMapOfClass(field, clazz, context);
             Map<String, Object> joinedMap = joinMaps(fieldMapOld, fieldMap);
-            tokens.put(fieldName, joinedMap);
+            fieldTree.put(fieldName, joinedMap);
         }
 
         context.removeClass(rootClazz);
-        return tokens;
+        return fieldTree;
     }
 
     private <T extends YtDto> List<Field> getFieldsOfGivenAndSuperAndSubClasses(Field rootField, Class<T> rootClazz, BuildFieldsContext context) {
