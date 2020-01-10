@@ -3833,3 +3833,19 @@ table {
 .site-folder .table {
   word-break: break-word;
 }
+
+.employee-registration .table {
+  word-break: break-word;
+
+  .number {
+    min-width: 95px;
+  }
+
+  .employment-date{
+    min-width: 85px;
+  }
+
+  .head-of-department{
+    min-width: 130px;
+  }
+}
