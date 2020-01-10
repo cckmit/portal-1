@@ -42,10 +42,6 @@
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
@@ -56,10 +52,6 @@
             <artifactId>portal4.jira</artifactId>
             <version>1.0.0.0</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-beans</artifactId>
@@ -202,11 +194,6 @@
                     <groupId>org.ow2.asm</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>jta</groupId>
-            <artifactId>jta</artifactId>
-            <version>1.0.1b</version>
         </dependency>
     </dependencies>
 

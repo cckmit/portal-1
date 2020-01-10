@@ -77,10 +77,6 @@
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>atlassian-renderer</artifactId>
                     <groupId>com.atlassian.renderer</groupId>
                 </exclusion>
@@ -158,7 +154,8 @@
                 </exclusion>
                 <exclusion>
                     <groupId>com.atlassian.renderer</groupId>
-                    <artifactId>atlassian-renderer</artifactId>                </exclusion>
+                    <artifactId>atlassian-renderer</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>com.googlecode.juniversalchardet</groupId>
                     <artifactId>juniversalchardet</artifactId>

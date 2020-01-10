@@ -71,10 +71,6 @@
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>atlassian-renderer</artifactId>
                     <groupId>com.atlassian.renderer</groupId>
                 </exclusion>
@@ -190,13 +186,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.atlassian.fugue</groupId>
-            <artifactId>fugue</artifactId>
-            <version>4.7.2</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
-
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${project.junit.version}</version>
@@ -225,10 +214,6 @@
                 <exclusion>
                     <artifactId>jna-platform</artifactId>
                     <groupId>net.java.dev.jna</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
                 </exclusion>
                 <exclusion>
                     <artifactId>commons-lang3</artifactId>
