@@ -9,6 +9,7 @@
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:group='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:projects='urn:import:ru.protei.portal.ui.common.client.widget.selector.project'
+             xmlns:doccategory='urn:import:ru.protei.portal.ui.common.client.widget.document.doccategory'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -49,10 +50,13 @@
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.documentType}"/>
-                    </label>
-                    <doctype:DocumentTypeSelector ui:field="documentType"/>
+                    <label><ui:text from="{lang.documentCategory}"/></label>
+                    <doccategory:DocumentCategoryMultiSelector ui:field="documentCategory"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.documentType}"/></label>
+                    <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectorAny}"/>
                 </div>
 
                 <div class="form-group col-md-12">

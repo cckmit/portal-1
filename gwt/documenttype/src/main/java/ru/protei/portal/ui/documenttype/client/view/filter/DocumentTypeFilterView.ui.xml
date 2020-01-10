@@ -1,8 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
-             xmlns:widget="urn:import:ru.protei.portal.ui.documenttype.client.widget"
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:doccategory="urn:import:ru.protei.portal.ui.common.client.widget.document.doccategory">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -23,7 +23,7 @@
                     <label>
                         <ui:text from="{lang.documentCategory}"/>
                     </label>
-                    <widget:DocumentCategoryBtnGroupMulti ui:field="documentCategories"/>
+                    <doccategory:DocumentCategoryBtnGroupMulti ui:field="documentCategories"/>
                 </div>
             </div>
         </div>

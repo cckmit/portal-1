@@ -24,6 +24,10 @@ public class DocumentCategorySelector extends ButtonSelector<En_DocumentCategory
             return new DisplayOption(lang.getDocumentCategoryName(val));
         });
 
+        fillOptions();
+    }
+
+    private void fillOptions() {
         fillOptions(Arrays.asList(En_DocumentCategory.values()));
     }
 
@@ -39,6 +43,7 @@ public class DocumentCategorySelector extends ButtonSelector<En_DocumentCategory
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+        fillOptions();
     }
 
     private String defaultValue = null;

@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
+import ru.protei.portal.core.model.query.CaseCommentApiQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
@@ -32,8 +33,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +47,8 @@ public class TestPortalApiController extends BaseServiceTest {
     private static final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
     private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
     private static final int COUNT_OF_PRIVATE_ISSUES = 5;
-    private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER;
+    private static final int COUNT_OF_MESSAGE_ISSUES = 1;
+    private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER + COUNT_OF_MESSAGE_ISSUES;
     private static final List<Long> issuesIds = new ArrayList<>();
     private static final En_Privilege[] PRIVILEGES = new En_Privilege[]{En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE};
     private static final String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
@@ -101,6 +102,7 @@ public class TestPortalApiController extends BaseServiceTest {
         createAndPersistSomeIssues(company.getId());
         createAndPersistSomeIssuesWithManager(person, company.getId());
         createAndPersistSomePrivateIssues(company.getId());
+        createAndPersistIssueForComments(person, company.getId());
 
         log.debug("issues={} | issues_with_manager={} | issues_without_manager={} | private_issues={}",
                 COUNT_OF_ISSUES,
@@ -187,6 +189,75 @@ public class TestPortalApiController extends BaseServiceTest {
         authService.resetThreadAuthToken();
     }
 
+    @Test
+    public void testGetCaseListByCompanyId() throws Exception {
+        final int LIMIT = 3;
+
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setLimit(LIMIT);
+        caseApiQuery.setCompanyIds(Collections.singletonList(1L));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(LIMIT)));
+    }
+
+    @Test
+    public void testGetCaseListByCompanyIdEmptyResult() throws Exception {
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setCompanyIds(Collections.singletonList(companyDAO.getMaxId() + 1));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", empty()));
+    }
+
+    @Test
+    public void testGetCaseCommentsListByCaseId() throws Exception {
+        final int COMMENTS_COUNT = 3;
+
+        CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
+        caseCommentApiQuery.setCaseId(caseObjectDAO.getByCaseNameLike(ISSUES_PREFIX + "testGetCaseCommentsListByCaseId").getId());
+
+        ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(COMMENTS_COUNT)));
+    }
+
+    @Test
+    public void testGetCaseCommentsListByCaseIdEmptyResult() throws Exception {
+        CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
+        caseCommentApiQuery.setCaseId(caseObjectDAO.getMaxId() + 1);
+
+        ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", empty()));
+    }
+
+    @Test
+    public void testGetCaseCommentsListByCaseIdError() throws Exception {
+        CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
+        caseCommentApiQuery.setCaseId(null);
+
+        ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+    }
+
     @AfterClass
     public static void destroy() {
         caseCommentDAO.removeByCaseIds(issuesIds);
@@ -267,6 +338,22 @@ public class TestPortalApiController extends BaseServiceTest {
             caseObject.setInitiatorCompanyId(companyId);
             issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
         }
+    }
+
+    private static void createAndPersistIssueForComments(Person manager, Long companyId ) {
+        CaseObject caseObject = createNewCaseObject(manager);
+        caseObject.setName(ISSUES_PREFIX + "testGetCaseCommentsListByCaseId");
+        caseObject.setInitiator(manager);
+        caseObject.setInitiatorCompanyId(companyId);
+        issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
+
+        CaseComment caseComment = new CaseComment();
+        caseComment.setCaseId(caseObject.getId());
+        caseComment.setCreated(new Date((new Date()).getTime() + 1000));
+        caseComment.setAuthorId(manager.getId());
+        caseComment.setText("testGetCaseCommentsListByCaseId. text comment. private");
+        caseComment.setPrivateComment(true);
+        caseCommentDAO.persist(caseComment);
     }
 
     private static void createAndPersistSomePrivateIssues(Long companyId) {

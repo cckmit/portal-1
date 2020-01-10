@@ -1,13 +1,13 @@
 package ru.protei.portal.api.controller;
 
-import org.apache.commons.codec.binary.Base64InputStream;
-import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
@@ -28,9 +28,15 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Inet4Address;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +48,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
-@RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
+@RequestMapping(value = "/api/worker")
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
@@ -94,7 +100,9 @@ public class WorkerController {
      * @param id идентификатор физического лица на портале
      * @return Result<WorkerRecord>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.person")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.person")
     Result<WorkerRecord> getPerson(@RequestParam(name = "id") Long id,
                            HttpServletRequest request,
                            HttpServletResponse response) {
@@ -117,7 +125,9 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<WorkerRecord>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
+    @RequestMapping(method = RequestMethod.GET,
+                   produces = MediaType.APPLICATION_XML_VALUE,
+                   value = "/get.worker")
     Result<WorkerRecord> getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
                            HttpServletRequest request,
                            HttpServletResponse response) {
@@ -150,7 +160,9 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<DepartmentRecord>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.department")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.department")
     Result<DepartmentRecord> getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
@@ -175,7 +187,9 @@ public class WorkerController {
      * @param expr строка для поиска с использованием шаблонных символов
      * @return Result<WorkerRecordList>
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/get.persons")
     Result<WorkerRecordList> getPersons(@RequestParam(name = "expr") String expr,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
@@ -206,7 +220,10 @@ public class WorkerController {
      * @param rec данные о сотруднике
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
+    @RequestMapping(method = RequestMethod.POST,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/add.worker")
     Result<Long> addWorker(@RequestBody WorkerRecord rec,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -324,7 +341,10 @@ public class WorkerController {
      * @param rec данные о сотруднике
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.worker")
     Result<Long> updateWorker(@RequestBody WorkerRecord rec,
                                HttpServletRequest request,
                                HttpServletResponse response) {
@@ -341,7 +361,10 @@ public class WorkerController {
      * @param list список сотрудников
      * @return ResultList
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.workers")
     ResultList updateWorkers(@RequestBody WorkerRecordList list,
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
@@ -372,7 +395,10 @@ public class WorkerController {
      * @param list список сотрудников
      * @return ResultList
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.dates")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.fire.dates")
     ResultList updateFireDates(@RequestBody WorkerRecordList list,
                              HttpServletRequest request,
                              HttpServletResponse response) {
@@ -403,7 +429,10 @@ public class WorkerController {
      * @param rec данные о сотруднике
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.fire.date")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.fire.date")
     Result<Long> updateFireDate(@RequestBody WorkerRecord rec,
                               HttpServletRequest request,
                               HttpServletResponse response) {
@@ -421,7 +450,9 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
+    @RequestMapping(method = RequestMethod.DELETE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/delete.worker")
     Result<Long> deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
                                HttpServletRequest request,
                                HttpServletResponse response) {
@@ -479,99 +510,128 @@ public class WorkerController {
     }
 
     /**
-     * Обновить фотографию сотрудника
-     * @param photo фоторгафия
-     * @return Result<Long>
+     * Получить фотографию сотрудника
+     * @param id идентификатор физического лица
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    Result<Long> updatePhoto(@RequestBody Photo photo,
-                              HttpServletRequest request,
-                              HttpServletResponse response) {
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = MediaType.IMAGE_JPEG_VALUE,
+                    value = "/get.photo/{id}")
+    public void getPhoto (@PathVariable("id") Long id,
+                          HttpServletResponse response,
+                          HttpServletRequest request)  {
 
-        logger.debug("updatePhoto(): photo={}", photo);
+        logger.debug("getPhoto(): id = {}", id);
 
-        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
-
-        if (HelperFunc.isEmpty(photo.getContent())) {
-            logger.debug("error result: {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
+        if (!checkAuth(request, response)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            logger.debug("getPhoto(): 403 FORBIDDEN. Bad password or login");
+            return;
         }
 
-        try {
+        if (id == null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.debug("getPhoto(): 400 BAD_REQUEST. id is null");
+            return;
+        }
 
-            OperationData operationData = new OperationData(null, photo.getId(), null, null)
-                    .requirePerson(null);
+        Path photoPath = Paths.get(makeFileName(id));
 
-            if (!operationData.isValid())
-                return operationData.failResult();
+        if (!Files.exists(photoPath)){
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            logger.debug("getPhoto(): 404 NOT_FOUND. Photo not found");
+            return;
+        }
 
-            try (Base64OutputStream out = new Base64OutputStream(new FileOutputStream(makeFileName(photo.getId())), false)) {
+        try (InputStream in = Files.newInputStream(photoPath)){
 
-                out.write(photo.getContent().getBytes());
-                out.flush();
-
-                makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
-
-                logger.debug("success result, personId={}", photo.getId());
-                return ok(photo.getId());
-            }
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            IOUtils.copy(in, response.getOutputStream());
+            logger.debug("getPhoto(): success result, photo path: {}", photoPath);
 
         } catch (Exception e) {
-            logger.error("error while update photo", e);
-        }
+            logger.error("getPhoto(): error while getting photo", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+        } finally {
+            try {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+                logger.debug("getPhoto(): success closing streams");
+
+            } catch (Exception e){
+                logger.error("getPhoto(): can't close stream");
+            }
+        }
     }
 
     /**
-     * Получить фотографии сотрудников
-     * @param list список идентификаторов физических лиц
-     * @return Result<PhotoList>
+     * Обновить фотографию сотрудника
+     * @param id идентификатор физического лица
+     * @param photoBytes - фотография в виде байтового массива в теле запроса
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
-    Result<PhotoList> getPhotos(@RequestBody IdList list,
-                        HttpServletRequest request,
-                        HttpServletResponse response) {
 
-        logger.debug("getPhotos(): list={}", list);
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.IMAGE_JPEG_VALUE,
+                    value = "/update.photo/{id}")
+    public void updatePhoto (@PathVariable("id") Long id, @RequestBody byte[] photoBytes,
+                          HttpServletResponse response,
+                          HttpServletRequest request)  {
 
-        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+        logger.debug("updatePhoto(): id = {}", id);
 
-        Base64InputStream in = null;
-        PhotoList photos = new PhotoList();
+        if (!checkAuth(request, response)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            logger.debug("updatePhoto(): 403 FORBIDDEN. Bad password or login");
+            return;
+        }
+
+        if (id == null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.debug("updatePhoto(): 400 BAD_REQUEST. id is null");
+            return;
+        }
+
+        if (photoBytes == null || photoBytes.length == 0) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.debug("updatePhoto(): 400 BAD_REQUEST. {}", En_ErrorCode.EMPTY_PHOTO_CONTENT.getMessage());
+        }
 
         try {
 
-            for (Long id : list.getIds()) {
+            OperationData operationData = new OperationData(null, id, null, null)
+                    .requirePerson(null);
 
-                File file = new File(makeFileName(id));
-                if (file.exists()) {
-
-                    in = new Base64InputStream(new FileInputStream(file), true);
-                    StringWriter sw = new StringWriter();
-                    IOUtils.copy(in, sw);
-
-                    Photo photo = new Photo();
-                    photo.setId(id);
-                    photo.setContent(sw.toString());
-                    photos.getPhotos().add(photo);
-
-                    logger.debug("file exists, photo={}", photo);
-
-                    IOUtils.closeQuietly(in);
-                } else {
-                    logger.debug("file doesn't exist");
-                }
+            if (!operationData.isValid()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                logger.debug("updatePhoto(): 404 NOT_FOUND. Person not found");
+                return;
             }
 
-        } catch (Exception e) {
-            logger.error("error while get photos", e);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
+            Files.write(Paths.get(makeFileName(id)), photoBytes);
 
-        logger.debug("result, size of photo's list {}", photos.getPhotos().size());
-        return ok(photos);
+            String base64Photo = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(makeFileName(id))));
+            Photo photo = new Photo();
+            photo.setId(id);
+            photo.setContent(base64Photo);
+
+            makeAudit(photo, En_AuditType.PHOTO_UPLOAD);
+
+            logger.debug("updatePhoto(): success result, personId={}", photo.getId());
+
+        } catch (Exception e) {
+            logger.error("updatePhoto(): error while updating photo", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        } finally {
+            try {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+                logger.debug("updatePhoto(): success closing response stream");
+
+            } catch (Exception e){
+                logger.error("updatePhoto(): can't close stream");
+            }
+        }
     }
 
     /**
@@ -579,7 +639,10 @@ public class WorkerController {
      * @param rec данные об отделе
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
+    @RequestMapping(method = RequestMethod.PUT,
+                    consumes = MediaType.APPLICATION_XML_VALUE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.department")
     Result<Long> updateDepartment(@RequestBody DepartmentRecord rec,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
@@ -636,7 +699,9 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
+    @RequestMapping(method = RequestMethod.DELETE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/delete.department")
     Result<Long> deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
@@ -676,7 +741,9 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
+    @RequestMapping(method = RequestMethod.PUT,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/update.position")
     Result<Long> updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName")
             String newName, @RequestParam(name = "companyCode") String companyCode,
                                  HttpServletRequest request,
@@ -722,7 +789,9 @@ public class WorkerController {
      * @param companyCode код компании
      * @return Result<Long>
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
+    @RequestMapping(method = RequestMethod.DELETE,
+                    produces = MediaType.APPLICATION_XML_VALUE,
+                    value = "/delete.position")
     Result<Long> deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode,
                                  HttpServletRequest request,
                                  HttpServletResponse response) {
