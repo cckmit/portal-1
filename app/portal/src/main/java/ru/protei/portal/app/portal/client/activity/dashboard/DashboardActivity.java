@@ -3,6 +3,7 @@ package ru.protei.portal.app.portal.client.activity.dashboard;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.test.client.DebugIds;
@@ -43,7 +44,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new IssueEvents.Create());
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( DashboardEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DASHBOARD_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -53,11 +54,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        if ( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ) {
-            fireEvent(
-                    new ActionBarEvents.Add(
-                            lang.buttonCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD ) );
-        }
+        fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
+                new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.ISSUE ) :
+                new ActionBarEvents.Clear()
+        );
+
         initWidgets();
 
     }
