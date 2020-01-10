@@ -176,6 +176,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setStateMandatory(boolean mandatory) {
+        state.setMandatory(mandatory);
+    }
+
+    @Override
+    public void setImportanceMandatory(boolean mandatory) {
+        importance.setMandatory(mandatory);
+    }
+
+    @Override
     public void setInitiator(Person initiator) {
         PersonShortView initiatorValue = initiator == null ? null : initiator.toFullNameShortView();
         if (initiatorValue != null) initiatorValue.setName( transliteration( initiatorValue.getName() ) );

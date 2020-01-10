@@ -38,6 +38,10 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
 
+    void setStateMandatory(boolean mandatory);
+
+    void setImportanceMandatory(boolean mandatory);
+
     void setInitiator(Person initiator);
     Person getInitiator();
 
