@@ -19,9 +19,9 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
@@ -47,16 +46,22 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        List<Long> caseIds = query.getCaseObjectIds();
-        if (isEmpty(caseIds) || 1 < caseIds.size()) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case ID");
+        List<CaseComment> result = new ArrayList<>();
+        for (Long caseId : query.getCaseObjectIds()) {
+            En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseId);
+            if (checkAccessStatus != null) {
+                return error(checkAccessStatus);
+            }
+            applyFilterByScope(token, query);
+            Result<List<CaseComment>> partialResult = getList(query);
+            if (partialResult.isOk()) {
+                result.addAll(partialResult.getData());
+            } else {
+                return partialResult;
+            }
         }
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseIds.get(0));
-        if (checkAccessStatus != null) {
-            return error(checkAccessStatus);
-        }
-        applyFilterByScope(token, query);
-        return getList(query);
+
+        return ok(result);
     }
 
     @Override

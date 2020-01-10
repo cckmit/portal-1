@@ -230,24 +230,17 @@ public class PortalApiController {
 
         log.info("API | getCaseCommentList(): query={}", query);
 
-        try {
-            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+        Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
 
-            if (authTokenAPIResult.isError()) {
-                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
-            }
-
-            AuthToken authToken = authTokenAPIResult.getData();
-
-            return caseCommentService.getCaseCommentList(authToken, En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query));
-
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+        if (authTokenAPIResult.isError()) {
+            return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
         }
+
+        if (query.getCaseId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case ID");
+        }
+
+        return caseCommentService.getCaseCommentList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

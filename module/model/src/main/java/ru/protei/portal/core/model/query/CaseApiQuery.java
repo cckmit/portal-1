@@ -67,13 +67,13 @@ public class CaseApiQuery extends BaseQuery {
     public String toString() {
         return "CaseApiQuery{" +
                 "managerIds=" + managerIds +
-                ", companyIds=" + companyIds +
                 ", states=" + states +
                 ", type=" + type +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +
                 ", createdFrom='" + createdFrom + '\'' +
                 ", createdTo='" + createdTo + '\'' +
+                ", companyIds=" + companyIds +
                 '}';
     }
 }

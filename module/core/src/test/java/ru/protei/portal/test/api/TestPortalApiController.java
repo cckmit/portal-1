@@ -191,8 +191,10 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void testGetCaseListByCompanyId() throws Exception {
+        final int LIMIT = 3;
+
         CaseApiQuery caseApiQuery = new CaseApiQuery();
-        caseApiQuery.setLimit(3);
+        caseApiQuery.setLimit(LIMIT);
         caseApiQuery.setCompanyIds(Collections.singletonList(1L));
 
         ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
@@ -200,7 +202,7 @@ public class TestPortalApiController extends BaseServiceTest {
         accept
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(3)));
+                .andExpect(jsonPath("$.data", hasSize(LIMIT)));
     }
 
     @Test
@@ -218,6 +220,8 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void testGetCaseCommentsListByCaseId() throws Exception {
+        final int COMMENTS_COUNT = 3;
+
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
         caseCommentApiQuery.setCaseId(caseObjectDAO.getByCaseNameLike(ISSUES_PREFIX + "testGetCaseCommentsListByCaseId").getId());
 
@@ -226,7 +230,7 @@ public class TestPortalApiController extends BaseServiceTest {
         accept
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(3)));
+                .andExpect(jsonPath("$.data", hasSize(COMMENTS_COUNT)));
     }
 
     @Test
@@ -240,6 +244,18 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data", empty()));
+    }
+
+    @Test
+    public void testGetCaseCommentsListByCaseIdError() throws Exception {
+        CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
+        caseCommentApiQuery.setCaseId(null);
+
+        ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
     @AfterClass
