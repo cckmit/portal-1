@@ -1,5 +1,6 @@
 package ru.protei.portal.app.portal.client.activity.dashboard;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -55,7 +56,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         initDetails.parent.add( view.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
-                new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.ISSUE ) :
+                new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD ) :
                 new ActionBarEvents.Clear()
         );
 
