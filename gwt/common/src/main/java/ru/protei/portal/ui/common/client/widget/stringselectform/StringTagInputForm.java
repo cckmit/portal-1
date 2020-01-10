@@ -1,12 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.stringselectform;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.HasKeyUpHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -74,7 +70,7 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
         if (isOnlyUnique && value.contains(text)) return;
         value.add(text);
         ValueChangeEvent.fire(this, value);
-        render();
+        render(true);
     }
 
     private void removeValue(String text) {
@@ -90,11 +86,15 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
     private void render(boolean setFocus) {
         items.clear();
         value.forEach(text -> items.add(makeItem(text)));
-        items.add(makeInput(setFocus));
+
+        TextBox input = makeInput();
+        items.add(input);
+        input.setFocus(setFocus);
     }
 
-    private TextBox makeInput(boolean setFocus) {
+    private TextBox makeInput() {
         TextBox input = new TextBox();
+        input.ensureDebugId("123");
         input.getElement().setAttribute("size", "1");
         if (StringUtils.isNotEmpty(placeholder)) {
             input.getElement().setAttribute("placeholder", placeholder);
@@ -104,10 +104,6 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
                 addValue(input.getText());
             }
         });
-        input.addBlurHandler(event -> {
-            addValue(input.getText());
-        });
-        input.setFocus(setFocus);
         return input;
     }
 
