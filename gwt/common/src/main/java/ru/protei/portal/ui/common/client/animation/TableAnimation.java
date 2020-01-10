@@ -29,14 +29,13 @@ public class TableAnimation {
         tableContainer.removeStyleName( styleTableWithDetails );
         tableContainer.removeStyleName( "short-table-view" );
 
-        tableContainer.addStyleName( tableStyleWithoutDetails );
-
         detailsContainer.removeStyleName( styleDetails );
         detailsContainer.addStyleName( "no-width" );
 
         if ( noFilter ) return;
         filterContainer.removeStyleName( "no-display" );
         filterContainer.addStyleName( filterCollapsed ? "collapsed" : styleFilter );
+        tableContainer.addStyleName( filterCollapsed ? "filter-collapsed" : tableStyleWithoutDetails );
     }
 
     public void filterCollapse() {
