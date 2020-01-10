@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.selector.logic;
+package ru.protei.portal.ui.common.client.selector.pageable;
 
 /**
  * Механизм предоставления списка выбора.

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
 public class PlatformFormSelector extends FormPopupSingleSelector<PlatformOption> {
 

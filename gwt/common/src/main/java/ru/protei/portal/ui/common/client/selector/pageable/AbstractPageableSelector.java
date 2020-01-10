@@ -3,9 +3,6 @@ package ru.protei.portal.ui.common.client.selector.pageable;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import ru.protei.portal.ui.common.client.selector.selection.Selection;
-import ru.protei.portal.ui.common.client.selector.logic.Selector;
-import ru.protei.portal.ui.common.client.selector.logic.SelectorItemRenderer;
-import ru.protei.portal.ui.common.client.selector.logic.SelectorModel;
 
 /**
  * Селектор с постраничным отображение списка доступных значений

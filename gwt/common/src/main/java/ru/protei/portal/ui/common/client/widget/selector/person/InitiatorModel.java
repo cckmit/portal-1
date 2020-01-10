@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
-import ru.protei.portal.ui.common.client.selector.logic.SelectorModel;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;

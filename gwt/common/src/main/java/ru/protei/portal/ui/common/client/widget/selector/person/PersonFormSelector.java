@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
@@ -15,8 +15,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 /**
  * Селектор person
  */
-public class PersonFormSelector
-        extends FormPopupSingleSelector<PersonShortView> implements Refreshable
+public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView> implements Refreshable
 {
 
     @Inject
@@ -38,10 +37,6 @@ public class PersonFormSelector
         item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );
         return item;
     }
-
-//    public void setDefaultValue( String value ) {
-//        this.defaultValue = value;
-//    }
 
     public void setFired ( boolean fired ) {
         this.fired = fired;
@@ -65,6 +60,6 @@ public class PersonFormSelector
     }
 
     private InitiatorModel model;
-//    private String defaultValue;
+
     private boolean fired = false;
 }

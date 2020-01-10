@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.selector.logic.SelectorModel;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 
 import java.util.ArrayList;
 import java.util.Collection;

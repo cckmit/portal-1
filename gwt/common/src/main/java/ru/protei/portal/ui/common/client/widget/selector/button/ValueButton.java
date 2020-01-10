@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.selector.button.button;
+package ru.protei.portal.ui.common.client.widget.selector.button;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;

@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.homecompany;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
 public class HomeCompanyMultiSelector
         extends InputPopupMultiSelector<EntityOption>

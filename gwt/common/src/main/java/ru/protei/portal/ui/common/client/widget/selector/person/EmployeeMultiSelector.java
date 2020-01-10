@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
 /**
  * Селектор сотрудников

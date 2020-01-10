@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.selector.form.FormPopupSingleSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
@@ -36,8 +36,4 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
         return item;
     }
 
-//    public void setDefaultValue(String value) {
-//        this.defaultValue = value;
-//    }
-//    private String defaultValue = null;
 }

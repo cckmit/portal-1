@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.selector.logic.SelectorItemRenderer;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 //import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 //import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;

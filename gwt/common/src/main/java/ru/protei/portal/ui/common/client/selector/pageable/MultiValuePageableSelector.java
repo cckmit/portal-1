@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.selector;
+package ru.protei.portal.ui.common.client.selector.pageable;
 
 import com.google.gwt.user.client.TakesValue;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;

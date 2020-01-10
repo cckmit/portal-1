@@ -18,8 +18,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
-import ru.protei.portal.ui.common.client.selector.MultiValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.button.button.ValueButton;
+import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ValueButton;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 
 import java.util.Set;
