@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.*;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.*;
 
 /**
  * Created by michael on 19.05.16.
