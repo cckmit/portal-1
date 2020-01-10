@@ -18,8 +18,8 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.winter.core.utils.Pair;
 
 import javax.annotation.PostConstruct;
 import java.util.*;

@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.ent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.winter.core.utils.Pair;
+import ru.protei.portal.core.model.struct.Pair;
 
 import java.io.Serializable;
 import java.util.List;

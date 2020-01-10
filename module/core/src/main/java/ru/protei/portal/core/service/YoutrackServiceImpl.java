@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.yt.YtFieldNames;
 import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
@@ -19,7 +20,6 @@ import ru.protei.portal.core.model.yt.dto.activity.customfield.YtCustomFieldActi
 import ru.protei.portal.core.model.yt.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.yt.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
-import ru.protei.winter.core.utils.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -189,7 +189,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                     attachment.setMimeType(ytIssueAttachment.mimeType);
                     CaseAttachment caseAttachment = new CaseAttachment();
                     caseAttachment.setRemoteId(ytIssueAttachment.id);
-                    return Pair.create(attachment, caseAttachment);
+                    return Pair.of(attachment, caseAttachment);
                 })
                 .collect(Collectors.toList())
         );
