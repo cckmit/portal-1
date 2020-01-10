@@ -1,9 +1,11 @@
 package ru.protei.portal.core.client.youtrack.api;
 
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.yt.api.issue.YtIssue;
-import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.yt.api.project.YtProject;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
+import ru.protei.portal.core.model.yt.dto.project.YtProject;
 
 import java.util.Date;
 import java.util.List;
@@ -25,4 +27,6 @@ public interface YoutrackApiClient {
     Result<YtProject> getProjectByName(String projectName);
 
     Result<List<YtIssue>> getIssuesByProjectAndUpdated(String projectName, Date updatedAfter);
+
+    Result<List<YtActivityItem>> getIssueActivityChanges(String issueId, YtActivityCategory...activityCategories);
 }

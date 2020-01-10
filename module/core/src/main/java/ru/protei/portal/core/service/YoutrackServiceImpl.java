@@ -5,23 +5,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
-import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
-import ru.protei.portal.core.model.yt.ChangeResponse;
-import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
-import ru.protei.portal.core.model.yt.api.issue.YtIssue;
-import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.yt.fields.YtFields;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.yt.dto.activity.customfield.YtCustomFieldActivityItem;
+import ru.protei.portal.core.model.yt.dto.bundleelemenet.YtStateBundleElement;
+import ru.protei.portal.core.model.yt.dto.customfield.issue.YtIssueCustomField;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
+import ru.protei.portal.core.model.yt.YtFieldNames;
+import ru.protei.winter.core.utils.Pair;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
@@ -36,8 +37,43 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
-    public Result<ChangeResponse> getIssueChanges( String issueId ) {
-        return restDao.getIssueChanges( issueId );
+    public Result<List<YtActivityItem>> getIssueCustomFieldsChanges(String issueId) {
+        return apiDao.getIssueActivityChanges(issueId, YtActivityCategory.CustomFieldCategory)
+                .map(ytActivityItems -> {
+                    ytActivityItems.sort(Comparator.comparing(
+                        ytActivityItem -> ytActivityItem.timestamp,
+                        Comparator.nullsFirst(Long::compareTo)
+                    ));
+                    return ytActivityItems;
+                });
+    }
+
+    @Override
+    public Result<List<YouTrackIssueStateChange>> getIssueStateChanges(String issueId) {
+        return getIssueCustomFieldsChanges(issueId)
+                .map(ytActivityItems -> CollectionUtils.stream(ytActivityItems)
+                        .filter(ytActivityItem -> ytActivityItem.field != null)
+                        .filter(ytActivityItem -> issueStateFieldNames().contains(ytActivityItem.field.name))
+                        .filter(ytActivityItem -> ytActivityItem instanceof YtCustomFieldActivityItem)
+                        .map(ytActivityItem -> (YtCustomFieldActivityItem) ytActivityItem)
+                        .filter(ytCustomFieldActivityItem -> CollectionUtils.isEmpty(ytCustomFieldActivityItem.added) || ytCustomFieldActivityItem.added.get(0) instanceof YtStateBundleElement)
+                        .map(ytCustomFieldActivityItem -> {
+                            YtStateBundleElement added = CollectionUtils.isEmpty(ytCustomFieldActivityItem.added)
+                                    ? null
+                                    : (YtStateBundleElement) ytCustomFieldActivityItem.added.get(0);
+                            YtStateBundleElement removed = CollectionUtils.isEmpty(ytCustomFieldActivityItem.removed)
+                                    ? null
+                                    : (YtStateBundleElement) ytCustomFieldActivityItem.removed.get(0);
+                            YouTrackIssueStateChange issueStateChange = new YouTrackIssueStateChange();
+                            issueStateChange.setAdded(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
+                            issueStateChange.setRemoved(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
+                            issueStateChange.setTimestamp(ytCustomFieldActivityItem.timestamp);
+                            issueStateChange.setAuthorLogin(ytCustomFieldActivityItem.author != null ? ytCustomFieldActivityItem.author.login : null);
+                            issueStateChange.setAuthorFullName(ytCustomFieldActivityItem.author != null ? ytCustomFieldActivityItem.author.fullName : null);
+                            return issueStateChange;
+                        })
+                        .collect(Collectors.toList())
+                );
     }
 
     @Override
@@ -72,7 +108,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public Result<YtIssue> setIssueCrmNumberIfDifferent(String ytIssueId, Long caseNumber) {
+    public Result<YouTrackIssueInfo> setIssueCrmNumberIfDifferent(String ytIssueId, Long caseNumber) {
         if (ytIssueId == null || caseNumber == null) {
             log.warn("setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", ytIssueId, caseNumber);
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -80,14 +116,15 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         return apiDao.getIssue(ytIssueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getField(YtFields.crmNumber);
+                    YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     return replaceCrmNumberIfDifferent(issue.idReadable, crmNumber, caseNumber);
-                });
+                })
+                .map(this::convertToInfo);
     }
 
     @Override
-    public Result<YtIssue> removeIssueCrmNumberIfSame(String ytIssueId, Long caseNumber) {
+    public Result<YouTrackIssueInfo> removeIssueCrmNumberIfSame(String ytIssueId, Long caseNumber) {
         if (ytIssueId == null || caseNumber == null) {
             log.warn("removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", ytIssueId, caseNumber);
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -95,10 +132,11 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         return apiDao.getIssue(ytIssueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getField(YtFields.crmNumber);
+                    YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     return removeCrmNumberIfSame(issue.idReadable, crmNumber, caseNumber);
-                });
+                })
+                .map(this::convertToInfo);
     }
 
     @Async(BACKGROUND_TASKS)
@@ -136,11 +174,40 @@ public class YoutrackServiceImpl implements YoutrackService {
         issueInfo.setDescription(issue.description);
         issueInfo.setState(YoutrackConstansMapping.toCaseState(getIssueState(issue)));
         issueInfo.setImportance(YoutrackConstansMapping.toCaseImportance(getIssuePriority(issue)));
+        issueInfo.setComments(CollectionUtils.stream(issue.comments)
+                .map(ytIssueComment -> {
+                    CaseComment caseComment = new CaseComment();
+                    caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
+                    caseComment.setCreated(new Date(ytIssueComment.created));
+                    caseComment.setUpdated(new Date(ytIssueComment.updated));
+                    caseComment.setRemoteId(ytIssueComment.id);
+                    caseComment.setOriginalAuthorName(ytIssueComment.author != null ? ytIssueComment.author.fullName : null);
+                    caseComment.setOriginalAuthorFullName(ytIssueComment.author != null ? ytIssueComment.author.fullName : null);
+                    caseComment.setText(ytIssueComment.text);
+                    caseComment.setDeleted(ytIssueComment.deleted);
+                    return caseComment;
+                })
+                .collect(Collectors.toList())
+        );
+        issueInfo.setAttachments(CollectionUtils.stream(issue.attachments)
+                .map(ytIssueAttachment -> {
+                    Attachment attachment = new Attachment();
+                    attachment.setCreated(new Date(ytIssueAttachment.created));
+                    attachment.setCreatorId(config.data().youtrack().getYoutrackUserId());
+                    attachment.setFileName(ytIssueAttachment.name);
+                    attachment.setExtLink(ytIssueAttachment.url);
+                    attachment.setMimeType(ytIssueAttachment.mimeType);
+                    CaseAttachment caseAttachment = new CaseAttachment();
+                    caseAttachment.setRemoteId(ytIssueAttachment.id);
+                    return Pair.create(attachment, caseAttachment);
+                })
+                .collect(Collectors.toList())
+        );
         return issueInfo;
     }
 
     private String getIssuePriority(YtIssue issue) {
-        YtIssueCustomField field = issue.getField(YtFields.priority);
+        YtIssueCustomField field = issue.getField(YtFieldNames.priority);
         if (field == null) {
             return null;
         }
@@ -156,19 +223,28 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     private YtIssueCustomField getIssueStateField(YtIssue issue) {
-        return HelperFunc.nvlt(
-            issue.getField(YtFields.stateEng),
-            issue.getField(YtFields.stateRus),
-            issue.getField(YtFields.equipmentStateRus),
-            issue.getField(YtFields.acrmStateRus)
+        for (String stateFieldName : issueStateFieldNames()) {
+            YtIssueCustomField issueCustomField = issue.getField(stateFieldName);
+            if (issueCustomField != null) {
+                return issueCustomField;
+            }
+        }
+        return null;
+    }
+
+    private List<String> issueStateFieldNames() {
+        return Arrays.asList(
+                YtFieldNames.stateEng,
+                YtFieldNames.stateRus,
+                YtFieldNames.equipmentStateRus,
+                YtFieldNames.acrmStateRus
         );
     }
 
-    @Deprecated
-    @Autowired
-    YoutrackRestClient restDao;
     @Autowired
     YoutrackApiClient apiDao;
+    @Autowired
+    PortalConfig config;
 
     private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
 

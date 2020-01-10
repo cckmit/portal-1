@@ -1,11 +1,13 @@
 package ru.protei.portal.core.client.youtrack.mapper;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.Reflections;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.yt.api.YtDto;
+import ru.protei.portal.core.model.yt.annotation.YtDtoFieldSubclassesSpecifier;
+import ru.protei.portal.core.model.yt.dto.YtDto;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
@@ -61,40 +63,71 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
     }
 
     private <T extends YtDto> String buildFieldsOfClass(Class<T> clazz, BuildFieldsContext context) {
-        context.pushClass(clazz);
-        Set<String> tokens = new HashSet<>();
-        Field[] fields = FieldUtils.getAllFields(clazz);
-        Set<Class<? extends T>> subclasses = getSubclasses(clazz, context);
-        for (Field field : fields) {
-            String token = buildFieldsOfClassField(field, context);
-            if (StringUtils.isNotEmpty(token)) {
-                tokens.add(token);
-            }
-        }
-        for (Class<? extends T> subclass : subclasses) {
-            Field[] subfields = subclass.getFields();
-            for (Field field : subfields) {
-                String token = buildFieldsOfClassField(field, context);
-                if (StringUtils.isNotEmpty(token)) {
-                    tokens.add(token);
-                }
-            }
-        }
-        return String.join(",", tokens);
+        Map<String, Object> map = buildFieldMapOfClass(clazz, context);
+        return map2string(map);
     }
 
-    private <T extends YtDto> String buildFieldsOfClassField(Field field, BuildFieldsContext context) {
-        String fieldName = getFieldName(field);
-        Class<T> ytDtoClass = getClassAssignableFromYtDto(field);
-        if (ytDtoClass != null) {
-            if (context.hasClass(ytDtoClass)) {
-                // no recursions are welcome here
-                return "";
+    private <T extends YtDto> Map<String, Object> buildFieldMapOfClass(Class<T> rootClazz, BuildFieldsContext context) {
+        return buildFieldMapOfClass(null, rootClazz, context);
+    }
+
+    private <T extends YtDto> Map<String, Object> buildFieldMapOfClass(Field rootField, Class<T> rootClazz, BuildFieldsContext context) {
+        // Map<String, Map<String, Map<String, Map<String, ...>>>>
+        Map<String, Object> tokens = new HashMap<>();
+
+        context.pushClass(rootClazz);
+
+        List<Field> fields = getFieldsOfGivenAndSuperAndSubClasses(rootField, rootClazz, context);
+
+        for (Field field : fields) {
+            String fieldName = getFieldName(field);
+            Map<String, Object> fieldMapOld;
+            if (tokens.get(fieldName) instanceof Map) {
+                //noinspection unchecked
+                fieldMapOld = (Map<String, Object>) tokens.get(fieldName);
+            } else {
+                fieldMapOld = new HashMap<>();
             }
-            String query = buildFieldsOfClass(ytDtoClass, context);
-            return fieldName + "(" + query + ")";
+            Class<T> clazz = getClassAssignableFromYtDto(field);
+            if (clazz == null) {
+                tokens.put(fieldName, fieldMapOld);
+                continue;
+            }
+            if (context.hasClass(clazz)) {
+                // no recursions are welcome here
+                continue;
+            }
+            Map<String, Object> fieldMap = buildFieldMapOfClass(field, clazz, context);
+            Map<String, Object> joinedMap = joinMaps(fieldMapOld, fieldMap);
+            tokens.put(fieldName, joinedMap);
         }
-        return fieldName;
+
+        context.removeClass(rootClazz);
+        return tokens;
+    }
+
+    private <T extends YtDto> List<Field> getFieldsOfGivenAndSuperAndSubClasses(Field rootField, Class<T> rootClazz, BuildFieldsContext context) {
+        List<Field> fields = FieldUtils.getAllFieldsList(rootClazz);
+        List<Class<? extends YtDto>> subclasses = new ArrayList<>();
+        if (rootClazz == YtDto.class && rootField != null) {
+            YtDtoFieldSubclassesSpecifier specifier = rootField.getAnnotation(YtDtoFieldSubclassesSpecifier.class);
+            if (specifier == null) {
+                throw new IllegalStateException(String.format("Field [%s] has no YtDtoFieldSpecifier annotation", rootField));
+            }
+            subclasses.addAll(Arrays.asList(specifier.value()));
+        } else {
+            YtDtoFieldSubclassesSpecifier specifier = rootField != null ? rootField.getAnnotation(YtDtoFieldSubclassesSpecifier.class) : null;
+            if (specifier != null) {
+                subclasses.addAll(Arrays.asList(specifier.value()));
+            } else {
+                subclasses.addAll(getSubclasses(rootClazz, context));
+            }
+        }
+        for (Class<? extends YtDto> subclass : subclasses) {
+            List<Field> subfields = Arrays.asList(subclass.getFields());
+            fields.addAll(subfields);
+        }
+        return fields;
     }
 
     @SuppressWarnings("unchecked")
@@ -131,7 +164,10 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
     }
 
     private String getFieldName(Field field) {
-        // TODO json annotations
+        JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
+        if (jsonProperty != null && StringUtils.isNotEmpty(jsonProperty.value())) {
+            return jsonProperty.value();
+        }
         return field.getName();
     }
 
@@ -148,6 +184,38 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         return new Reflections(ClassUtils.getPackageCanonicalName(YtDto.class));
     }
 
+    private Map<String, Object> joinMaps(Map<String, Object> map1, Map<String, Object> map2) {
+        Map<String, Object> result = new HashMap<>(map1);
+        map2.forEach((key, map) -> {
+            Object v = result.get(key);
+            if (v instanceof Map) {
+                //noinspection unchecked
+                result.put(key, joinMaps((Map<String, Object>) v, (Map<String, Object>) map));
+            } else {
+                result.put(key, map);
+            }
+        });
+        return result;
+    }
+
+    private String map2string(Map<String, Object> map) {
+        Collection<String> tokens = new ArrayList<>();
+        map.forEach((token, subTokens) -> {
+            if (subTokens instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> subMap = (Map<String, Object>) subTokens;
+                if (subMap.isEmpty()) {
+                    tokens.add(token);
+                } else {
+                    tokens.add(token + "(" + map2string(subMap) + ")");
+                }
+            } else {
+                tokens.add(token);
+            }
+        });
+        return String.join(",", tokens);
+    }
+
     private Map<Class<? extends YtDto>, String> dto2fields;
     private Map<String, Class<? extends YtDto>> entity2dto;
 
@@ -159,6 +227,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
             this.classStack = new ArrayList<>();
         }
         public void pushClass(Class<?> clazz) { classStack.add(clazz); }
+        public void removeClass(Class<?> clazz) { classStack.remove(clazz); }
         public boolean hasClass(Class<?> clazz) { return classStack.contains(clazz); }
     }
 }

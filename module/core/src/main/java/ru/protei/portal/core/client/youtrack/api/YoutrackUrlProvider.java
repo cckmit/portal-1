@@ -14,5 +14,11 @@ public class YoutrackUrlProvider {
 
     public String issueAttachment(String issueId, String attachmentId) { return baseUrl + "/issues/" + issueId + "/attachments/" + attachmentId; }
 
+    public String issueActivities(String issueId) { return baseUrl + "/issues/" + issueId + "/activities"; }
+
+    public String issueActivity(String issueId, String itemId) { return baseUrl + "/issues/" + issueId + "/activities/" + itemId; }
+
     public String projects() { return baseUrl + "/admin/projects"; }
+
+    public String project(String projectId) { return baseUrl + "/admin/projects/" + projectId; }
 }

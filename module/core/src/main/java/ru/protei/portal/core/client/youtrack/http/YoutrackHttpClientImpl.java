@@ -16,14 +16,12 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.yt.api.YtDto;
+import ru.protei.portal.core.model.yt.dto.YtDto;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -47,13 +45,27 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
 
     @Override
     public <RES> Result<RES> read(String url, String query, Class<RES> clazz) {
+        Map<String, String> params = new HashMap<>();
+        params.put("query", query);
+        return read(url, params, clazz);
+    }
+
+    @Override
+    public <RES> Result<RES> read(String url, Map<String, String> params, Class<RES> clazz) {
         String fields = fieldsMapper.getFields(clazz);
-        return read(url, fields, query, clazz);
+        return read(url, fields, params, clazz);
     }
 
     @Override
     public <RES> Result<RES> read(String url, String fields, String query, Class<RES> clazz) {
-        String path = buildUrl(url, fields, query);
+        Map<String, String> params = new HashMap<>();
+        params.put("query", query);
+        return read(url, fields, params, clazz);
+    }
+
+    @Override
+    public <RES> Result<RES> read(String url, String fields, Map<String, String> params, Class<RES> clazz) {
+        String path = buildUrl(url, fields, params);
         return execute((client, headers) -> client.exchange(path, HttpMethod.GET, new HttpEntity<>(headers), clazz))
                 .map(ResponseEntity::getBody);
     }
@@ -77,7 +89,7 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     @Override
     public <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
         try {
-            String path = buildUrl(url, fields, "");
+            String path = buildUrl(url, fields);
             String body = serializeDto(dto, dtoForceIncludeFields);
             return execute((client, headers) -> client.postForEntity(path, new HttpEntity<>(body, headers), clazz))
                     .map(ResponseEntity::getBody);
@@ -124,23 +136,38 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         this.authHeaders = authHeaders;
     }
 
-    private String buildUrl(String base, String fields, String query) {
+    private String buildUrl(String base, String fields) {
+        return buildUrl(base, fields, null);
+    }
+
+    private String buildUrl(String base, String fields, Map<String, String> params) {
         List<String> queryList = new ArrayList<>();
-        try {
-            if (StringUtils.isNotEmpty(fields)) queryList.add("fields=" + URLEncoder.encode(fields, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Unable to append fields to url", e);
+        if (StringUtils.isNotEmpty(fields)) {
+            queryList.add("fields=" + urlEncode(fields));
         }
-        try {
-            if (StringUtils.isNotEmpty(query)) queryList.add("query=" + URLEncoder.encode(query, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Unable to append query to url", e);
+        if (params != null) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
+                    queryList.add(key + "=" + urlEncode(value));
+                }
+            }
         }
         String url = base;
         if (CollectionUtils.isNotEmpty(queryList)) {
             url += "?" + String.join("&", queryList);
         }
         return url;
+    }
+
+    private String urlEncode(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.warn("urlEncode(): Failed to urlencode (" + value + ")", e);
+            return value;
+        }
     }
 
     private RestTemplate makeClient(RestTemplateResponseErrorHandler errorHandler) {

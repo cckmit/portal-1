@@ -9,28 +9,28 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.*;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.api.YoutrackUrlProvider;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
-import ru.protei.portal.core.model.yt.api.YtDto;
-import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
-import ru.protei.portal.core.model.yt.api.customfield.issue.YtSimpleIssueCustomField;
-import ru.protei.portal.core.model.yt.api.customfield.issue.YtStateIssueCustomField;
-import ru.protei.portal.core.model.yt.api.issue.YtIssue;
-import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.yt.api.project.YtProject;
-import ru.protei.portal.core.model.yt.fields.YtFields;
+import ru.protei.portal.core.model.ent.YouTrackIssueStateChange;
+import ru.protei.portal.core.model.yt.dto.YtDto;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.yt.dto.customfield.issue.YtIssueCustomField;
+import ru.protei.portal.core.model.yt.dto.customfield.issue.YtSimpleIssueCustomField;
+import ru.protei.portal.core.model.yt.dto.customfield.issue.YtStateIssueCustomField;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
+import ru.protei.portal.core.model.yt.dto.project.YtProject;
+import ru.protei.portal.core.model.yt.YtFieldNames;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -58,6 +58,13 @@ public class YtTest { // TODO remove
     public void testBuildFields() {
         YtDtoFieldsMapper mapper = new YtDtoFieldsMapperImpl().setup();
         String query = mapper.getFields(YtIssue.class);
+        System.out.println(query);
+    }
+
+    @Test
+    public void testBuildFields2() {
+        YtDtoFieldsMapper mapper = new YtDtoFieldsMapperImpl().setup();
+        String query = mapper.getFields(YtActivityItem.class);
         System.out.println(query);
     }
 
@@ -135,11 +142,40 @@ public class YtTest { // TODO remove
         System.out.println(issues);
     }
 
+    @Test
+    public void testGetActivityItems() {
+//        String url = new YoutrackUrlProvider(URL).issueActivities("PG-230");
+//
+//        Map<String, String> params = new HashMap<>();
+//        params.put("categories", CollectionUtils.stream(YtActivityCategory.getAllCategoryIds()).collect(Collectors.joining(",")));
+////        params.put("categories", YtActivityCategory.CustomFieldCategory.getCategoryId());
+//
+//        Result<List<YtActivityItem>> result = client.read(url, params, YtActivityItem[].class).map(Arrays::asList);
+//        List<YtActivityItem> data = result.getData();
 
+        Result<List<YtActivityItem>> result = apiClient.getIssueActivityChanges("PG-230", YtActivityCategory.CustomFieldCategory);
+        List<YtActivityItem> data = result.getData();
+
+        System.out.println(data);
+    }
+
+    @Test
+    public void testGetIssueCustomFieldsChanges() {
+        Result<List<YtActivityItem>> result = youtrackService.getIssueCustomFieldsChanges("PG-230");
+        List<YtActivityItem> data = result.getData();
+        System.out.println(data);
+    }
+
+    @Test
+    public void testGetIssueStateChanges() {
+        Result<List<YouTrackIssueStateChange>> result = youtrackService.getIssueStateChanges("PG-230");
+        List<YouTrackIssueStateChange> data = result.getData();
+        System.out.println(data);
+    }
 
     private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
         YtSimpleIssueCustomField cf = new YtSimpleIssueCustomField();
-        cf.name = YtFields.crmNumber;
+        cf.name = YtFieldNames.crmNumber;
         cf.value = caseNumber == null ? null : String.valueOf(caseNumber);
         return cf;
     }
@@ -154,6 +190,8 @@ public class YtTest { // TODO remove
     YoutrackHttpClient client;
     @Autowired
     YoutrackApiClient apiClient;
+    @Autowired
+    YoutrackService youtrackService;
 
     private String JSON = "{\n" +
             "  \"description\": \"Some desc\\nHere\\nAnd there\",\n" +

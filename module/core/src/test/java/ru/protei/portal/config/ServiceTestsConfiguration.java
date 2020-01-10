@@ -15,8 +15,6 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -233,11 +231,6 @@ public class ServiceTestsConfiguration {
     @Bean
     public SiteFolderService getSiteFolderService() {
         return new SiteFolderServiceImpl();
-    }
-
-    @Bean
-    public YoutrackRestClient getYoutrackRestClient() {
-        return new YoutrackRestClientImpl();
     }
 
     @Bean

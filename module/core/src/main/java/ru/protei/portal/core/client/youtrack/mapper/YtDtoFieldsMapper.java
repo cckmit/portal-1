@@ -1,6 +1,6 @@
 package ru.protei.portal.core.client.youtrack.mapper;
 
-import ru.protei.portal.core.model.yt.api.YtDto;
+import ru.protei.portal.core.model.yt.dto.YtDto;
 
 import java.util.Map;
 

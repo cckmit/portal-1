@@ -7,18 +7,19 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.yt.api.customfield.issue.YtIssueCustomField;
-import ru.protei.portal.core.model.yt.api.customfield.issue.YtSimpleIssueCustomField;
-import ru.protei.portal.core.model.yt.api.issue.YtIssue;
-import ru.protei.portal.core.model.yt.api.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.yt.api.project.YtProject;
-import ru.protei.portal.core.model.yt.fields.YtFields;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
+import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.yt.dto.customfield.issue.YtIssueCustomField;
+import ru.protei.portal.core.model.yt.dto.customfield.issue.YtSimpleIssueCustomField;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
+import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
+import ru.protei.portal.core.model.yt.dto.project.YtProject;
+import ru.protei.portal.core.model.yt.YtFieldNames;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -106,6 +107,19 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
                 .map(Arrays::asList);
     }
 
+    @Override
+    public Result<List<YtActivityItem>> getIssueActivityChanges(String issueId, YtActivityCategory...activityCategories) {
+        log.info("getIssueActivityChanges(): issueId={}, activityCategories={}", issueId, activityCategories);
+        String url = new YoutrackUrlProvider(getBaseUrl()).issueActivities(issueId);
+        Map<String, String> params = new HashMap<String, String>() {{
+            put("categories", CollectionUtils.stream(Arrays.asList(activityCategories))
+                    .map(YtActivityCategory::getCategoryId)
+                    .collect(Collectors.joining(",")));
+        }};
+        return client.read(url, params, YtActivityItem[].class)
+                .map(Arrays::asList);
+    }
+
     private YtIssue makeNewBasicIssue(String projectId /* id, not name! */, String summary, String description) {
         YtProject project = new YtProject();
         project.id = projectId;
@@ -118,7 +132,7 @@ public class YoutrackApiClientImpl implements YoutrackApiClient {
 
     private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
         YtSimpleIssueCustomField cf = new YtSimpleIssueCustomField();
-        cf.name = YtFields.crmNumber;
+        cf.name = YtFieldNames.crmNumber;
         cf.value = caseNumber == null ? null : String.valueOf(caseNumber);
         return cf;
     }

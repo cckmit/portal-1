@@ -21,8 +21,6 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -535,11 +533,6 @@ public class MainConfiguration {
     @Bean
     public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
         return  new WorkerEntryShortViewDAO_Impl();
-    }
-
-    @Bean
-    public YoutrackRestClient getYoutrackRestDAO() {
-        return new YoutrackRestClientImpl();
     }
 
     @Bean

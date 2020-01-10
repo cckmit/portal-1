@@ -3,16 +3,21 @@ package ru.protei.portal.core.model.ent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.yt.Comment;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.core.utils.Pair;
 
 import java.io.Serializable;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class YouTrackIssueInfo implements Serializable {
+
+    private String id;
+    private String summary;
+    private String description;
+    private En_CaseState caseState;
+    private En_ImportanceLevel importance;
+    private List<CaseComment> comments;
+    private List<Pair<Attachment, CaseAttachment>> attachments;
 
     public String getId() {
         return id;
@@ -58,20 +63,32 @@ public class YouTrackIssueInfo implements Serializable {
         return importance;
     }
 
-    private En_CaseState caseState;
-    private En_ImportanceLevel importance;
-    private String id;
-    private String summary;
-    private String description;
+    public List<CaseComment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CaseComment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Pair<Attachment, CaseAttachment>> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Pair<Attachment, CaseAttachment>> attachments) {
+        this.attachments = attachments;
+    }
 
     @Override
     public String toString() {
         return "YouTrackIssueInfo{" +
-                "id='" + id + '\'' +
-                ", caseState=" + caseState +
+                "caseState=" + caseState +
                 ", importance=" + importance +
+                ", id='" + id + '\'' +
                 ", summary='" + summary + '\'' +
                 ", description='" + description + '\'' +
+                ", comments=" + comments +
+                ", attachments=" + attachments +
                 '}';
     }
 }

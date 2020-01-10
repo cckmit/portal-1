@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
-import ru.protei.portal.core.model.yt.api.YtDto;
+import ru.protei.portal.core.model.yt.dto.YtDto;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +37,7 @@ public class YtDtoObjectMapperProvider {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         mapper.setAnnotationIntrospectors(new JacksonAnnotationIntrospector() {
             public Object findFilterId(Annotated a) { return FILTER_NAME; }
         }, new JacksonAnnotationIntrospector());
@@ -109,7 +110,10 @@ public class YtDtoObjectMapperProvider {
             return super.idResolver(
                     config,
                     baseType,
-                    CollectionUtils.union(CollectionUtils.emptyIfNull(subtypes), CollectionUtils.emptyIfNull(this.subtypes)),
+                    CollectionUtils.union(
+                        CollectionUtils.emptyIfNull(subtypes),
+                        CollectionUtils.emptyIfNull(this.subtypes)
+                    ),
                     forSer,
                     forDeser
             );
