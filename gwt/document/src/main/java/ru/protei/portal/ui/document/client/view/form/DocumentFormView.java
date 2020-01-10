@@ -219,7 +219,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
 
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
-        setProjectInfo("", "", "");
         if (activity != null)
             activity.onProjectChanged();
     }

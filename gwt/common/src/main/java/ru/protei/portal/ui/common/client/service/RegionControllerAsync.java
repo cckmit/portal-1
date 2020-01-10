@@ -22,7 +22,11 @@ public interface RegionControllerAsync {
 
     void getProjectsByRegions(ProjectQuery query, AsyncCallback<Map<String,List<Project>>> callback);
 
-    void getProjectsList(ProjectQuery query, AsyncCallback<List<Project>> callback);
+    void getProjectList(ProjectQuery query, AsyncCallback<List<Project>> callback);
+
+    void getProjectOptionList(ProjectQuery query, AsyncCallback<List<EntityOption>> async);
+
+    void getProjectInfoList(ProjectQuery query, AsyncCallback<List<ProjectInfo>> async);
 
     void getProject(Long id, AsyncCallback<Project> callback);
 
@@ -33,6 +37,4 @@ public interface RegionControllerAsync {
     void getRegionList(AsyncCallback<List<EntityOption>> callback);
 
     void removeProject(Long projectId, AsyncCallback<Boolean> async);
-
-    void getProjectsEntityOptionList(ProjectQuery query, AsyncCallback<List<EntityOption>> async);
 }

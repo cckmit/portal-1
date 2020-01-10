@@ -291,6 +291,16 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(result);
     }
 
+    @Override
+    public Result<List<ProjectInfo>> listInfoProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        List<ProjectInfo> result = projects.stream()
+                .map(ProjectInfo::fromCaseObject).collect(toList());
+        return ok(result);
+    }
+
     private void updateTeam( CaseObject caseObject, List<PersonProjectMemberView> team) {
 
         List<PersonProjectMemberView> toAdd = new ArrayList<>(team);

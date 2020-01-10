@@ -8,7 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -51,16 +51,16 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
 
     @Override
     public void onProjectChanged() {
-        Project project = view.project().getValue();
-        if (project != null) {
-            fireEvent(new ProjectEvents.Set(project));
+        ProjectInfo projectInfo = view.project().getValue();
+        if (projectInfo != null) {
+            fireEvent(new ProjectEvents.Set(projectInfo));
         }
     }
 
     private void requestProjects() {
         ProjectQuery query = makeQuery();
         view.clearProjectList();
-        regionService.getProjectsList(query, new FluentCallback<List<Project>>()
+        regionService.getProjectInfoList(query, new FluentCallback<List<ProjectInfo>>()
                 .withErrorMessage(lang.errGetList())
                 .withSuccess(result -> {
                     view.fillProjectList(result);

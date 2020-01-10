@@ -175,9 +175,8 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onProjectColumnClicked(Document value) {
-        if (value == null || value.getProject() == null)
-            return;
-        fireEvent(new ProjectEvents.ShowFullScreen(value.getProject().getId()));
+        if (value == null) return;
+        fireEvent(new ProjectEvents.ShowFullScreen(value.getProjectId()));
     }
 
     @Override

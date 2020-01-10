@@ -136,7 +136,7 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public List<Project> getProjectsList(ProjectQuery query) throws RequestFailedException {
+    public List<Project> getProjectList(ProjectQuery query) throws RequestFailedException {
         log.info("getProjectsList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -144,13 +144,19 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public List<EntityOption> getProjectsEntityOptionList(ProjectQuery query) throws RequestFailedException {
+    public List<EntityOption> getProjectOptionList(ProjectQuery query) throws RequestFailedException {
         log.info("getProjectsEntityOptionList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<List<Project>> response = projectService.listProjects(token, query);
-
         return ServiceUtils.checkResultAndGetData(projectService.listOptionProjects(token, query));
+    }
+
+    @Override
+    public List<ProjectInfo> getProjectInfoList(ProjectQuery query) throws RequestFailedException {
+        log.info("getProjectInfoList(): query={}", query);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(projectService.listInfoProjects(token, query));
     }
 
     @Override

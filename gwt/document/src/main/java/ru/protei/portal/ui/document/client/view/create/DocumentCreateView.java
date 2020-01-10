@@ -80,6 +80,11 @@ public class DocumentCreateView extends Composite implements AbstractDocumentCre
         return documentContainer;
     }
 
+    @Override
+    public HasEnabled createEnabled() {
+        return btnCreate;
+    }
+
     private void ensureDebugIds() {}
 
     @UiHandler("btnSearch")

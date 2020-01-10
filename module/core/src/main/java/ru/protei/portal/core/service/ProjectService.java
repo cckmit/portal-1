@@ -39,6 +39,7 @@ public interface ProjectService {
 
     Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query);
 
+    Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query);
     /**
      * Получает информацию о проекте
      * @param id

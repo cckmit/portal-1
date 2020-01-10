@@ -5,7 +5,7 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 
 /**
  * События для вкладки с проектами
@@ -133,11 +133,11 @@ public class ProjectEvents {
      */
     public static class Set {
 
-        public Set(Project project) {
-            this.project = project;
+        public Set(ProjectInfo projectInfo) {
+            this.projectInfo = projectInfo;
         }
 
-        public Project project;
+        public ProjectInfo projectInfo;
     }
 
     /**

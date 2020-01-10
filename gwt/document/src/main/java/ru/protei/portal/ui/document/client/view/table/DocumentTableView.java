@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -174,8 +175,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
             }
 
-            if (value.getProject() != null && value.getProject().getCustomer() != null) {
-                html.append( "<div class=\"document-name\">(" + value.getProject().getCustomer().getCname() + ")</div>" );
+            if (value.getContragentName() != null) {
+                html.append( "<div class=\"document-name\">(" + value.getContragentName() + ")</div>" );
             }
 
             html.append( "<div><b>" + value.getType().getName() + " (" + DateFormatter.formatYear(value.getCreated()) + ")</b></div>" );
@@ -222,15 +223,10 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         }
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            Project project = value.getProject();
-            if (project == null) {
-                return;
-            }
-
             if (policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
-                cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
+                cell.setInnerHTML("<a href=\"#\">" + StringUtils.emptyIfNull(value.getProjectName()) + "</a>");
             } else {
-                cell.setInnerHTML(project.getName());
+                cell.setInnerHTML(StringUtils.emptyIfNull(value.getProjectName()));
             }
 
             if (value.isDeprecatedUnit()) {

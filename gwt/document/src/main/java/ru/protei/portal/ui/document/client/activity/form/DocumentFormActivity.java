@@ -52,14 +52,6 @@ public abstract class DocumentFormActivity
         event.parent.add(view.asWidget());
         tag = event.tag;
         fillView(event.document);
-        if (view.project().getValue() != null) {
-            refreshProject(proj -> {
-                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
-                fillViewProjectInfo(proj);
-            });
-        } else {
-            setDesignationEnabled(false);
-        }
     }
 
     @Event
@@ -79,8 +71,8 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        fillViewProject(ProjectInfo.fromProject(event.project));
-        onProjectChanged();
+
+        view.project().setValue(event.projectInfo == null || event.projectInfo.getId() == null ? null : new EntityOption(event.projectInfo.getName(), event.projectInfo.getId()));
     }
 
     @Override
@@ -112,21 +104,25 @@ public abstract class DocumentFormActivity
 
     @Override
     public void onProjectChanged() {
-        if (view.project().getValue() != null) {
-            refreshProject(proj -> {
-                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
-                fillViewProjectInfo(proj);
-            });
+        if (view.project().getValue() == null) {
+            refreshProject(null);
+            return;
+        }
+        requestProject(projectInfo -> refreshProject(projectInfo));
+    }
+
+    private void refreshProject(ProjectInfo project) {
+        if (project != null) {
+            setDesignationEnabled(isDesignationVisible(project, view.documentCategory().getValue()));
+            view.setEquipmentProjectId(project.getId());
+            fillViewProjectInfo(project);
         } else {
             setDesignationEnabled(false);
+            fillViewProjectInfo(null);
         }
 
-        EntityOption project = view.project().getValue();
         setEquipmentEnabled(project != null);
         view.equipment().setValue(null, true);
-
-        if (project != null)
-            view.setEquipmentProjectId(project.getId());
     }
 
     @Override
@@ -154,7 +150,7 @@ public abstract class DocumentFormActivity
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
-    private void refreshProject(Consumer<ProjectInfo> consumer) {
+    private void requestProject(Consumer<ProjectInfo> consumer) {
         regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<ProjectInfo>()
                 .withSuccess(result -> {
                     project = result;
@@ -342,7 +338,7 @@ public abstract class DocumentFormActivity
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.keywords().setValue(document.getKeywords());
-        fillViewProject(document.getProjectInfo());
+        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
@@ -370,11 +366,6 @@ public abstract class DocumentFormActivity
 
         view.documentDocUploader().resetForm();
         view.documentPdfUploader().resetForm();
-    }
-
-    private void fillViewProject(ProjectInfo project) {
-        view.project().setValue(project == null ? null : new EntityOption(project.getName(), project.getId()));
-        fillViewProjectInfo(project);
     }
 
     private void fillViewProjectInfo(ProjectInfo project) {

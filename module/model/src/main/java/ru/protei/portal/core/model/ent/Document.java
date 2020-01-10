@@ -70,8 +70,15 @@ public class Document implements Serializable {
 
     @JdbcColumn(name = "project_id")
     private Long projectId;
-    @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private CaseObject project;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "case_name", sqlTableAlias = "case_object")
+    private String projectName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
+    }, mappedColumn = "cname")
+    private String contragentName;
 
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
@@ -181,20 +188,20 @@ public class Document implements Serializable {
         this.projectId = projectId;
     }
 
-    public CaseObject getProjectAsCaseObject() {
-        return project;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public Project getProject() {
-        return Project.fromCaseObject(project);
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public void setProject(CaseObject project) {
-        this.project = project;
+    public String getContragentName() {
+        return contragentName;
     }
 
-    public ProjectInfo getProjectInfo() {
-        return ProjectInfo.fromCaseObject(project);
+    public void setContragentName( String contragentName ) {
+        this.contragentName = contragentName;
     }
 
     public String getVersion() {
@@ -282,19 +289,20 @@ public class Document implements Serializable {
                 ", name='" + name + '\'' +
                 ", decimalNumber='" + decimalNumber + '\'' +
                 ", inventoryNumber=" + inventoryNumber +
+                ", state=" + state +
                 ", type=" + type +
                 ", annotation='" + annotation + '\'' +
                 ", registrar=" + registrar +
                 ", contractor=" + contractor +
                 ", projectId=" + projectId +
-                ", project=" + project +
+                ", projectName='" + projectName + '\'' +
+                ", contragentName='" + contragentName + '\'' +
                 ", equipment=" + equipment +
                 ", version='" + version + '\'' +
                 ", created=" + created +
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
-                ", state=" + state +
                 '}';
     }
 }
