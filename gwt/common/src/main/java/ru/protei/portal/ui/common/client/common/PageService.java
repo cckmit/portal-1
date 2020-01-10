@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.common.client.common;
 
-import com.mysql.jdbc.profiler.ProfilerEvent;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.DashboardEvents;
 
 import java.util.ArrayList;
 import java.util.List;
