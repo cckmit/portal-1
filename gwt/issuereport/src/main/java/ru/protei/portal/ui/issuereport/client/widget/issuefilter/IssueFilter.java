@@ -42,6 +42,7 @@ import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractI
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -59,7 +60,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
-        initiators.setCompaniesSupplier(() -> companies.getValue());
+        initiators.setCompaniesSupplier(() -> new HashSet<>( companies.getValue()) );
     }
 
     @Override

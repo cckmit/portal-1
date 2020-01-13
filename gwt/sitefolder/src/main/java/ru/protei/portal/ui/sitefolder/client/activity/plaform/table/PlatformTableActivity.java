@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -29,6 +30,8 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPla
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -234,7 +237,7 @@ public abstract class PlatformTableActivity implements
                         .collect(Collectors.toList())
         );
         query.setManagerIds(filterView.managers().getValue() == null
-                ? null
+                ? Collections.singletonList( CrmConstants.Employee.UNDEFINED )
                 : filterView.managers().getValue().stream()
                         .map(PersonShortView::getId)
                         .collect(Collectors.toList())

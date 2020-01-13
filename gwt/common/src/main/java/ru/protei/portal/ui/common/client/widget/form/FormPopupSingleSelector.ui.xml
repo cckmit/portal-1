@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="form-group form-group-default form-group-default-selectFx" ui:field="formContainer">
+        <label ui:field="label" class="fade hide"/>
+        <div class="cs-wrapper">
+            <div class="cs-select cs-skin-slide cs-transparent form-control">
+                <span ui:field="text" class="cs-placeholder"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

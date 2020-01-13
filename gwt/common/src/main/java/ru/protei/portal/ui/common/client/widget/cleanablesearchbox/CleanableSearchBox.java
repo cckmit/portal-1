@@ -134,7 +134,7 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         this.textBox.removeStyleName("rounded-left-3");
     }
 
-    public HandlerRegistration addInputHandler(InputHandler handler) {
+    public HandlerRegistration ock(InputHandler handler) {
         return addDomHandler(handler, InputEvent.getType());
     }
 

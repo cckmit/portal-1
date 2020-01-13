@@ -2730,6 +2730,17 @@ div.select2-container {
   }
 }
 
+.select2-container {
+  .select2-button {
+    display: flex;
+
+    .select2-add-button {
+      flex-grow: 1;
+      margin-right: 5px;
+    }
+  }
+}
+
 .case-subscribers {
   div.select2-container {
     border: 0 !important;
@@ -2739,6 +2750,14 @@ div.select2-container {
       li.select2-search-choice {
         display: inline !important;
         padding-right: 10px;
+      }
+    }
+  }
+
+  .select2-container {
+    .select2-button {
+      .select2-add-button {
+        flex-grow: 0;
       }
     }
   }

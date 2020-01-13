@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -47,7 +48,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
     }
 
@@ -304,9 +304,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    Provider<EquipmentModel> equipmentModelProvider;
 
     private AbstractDocumentFormActivity activity;
 

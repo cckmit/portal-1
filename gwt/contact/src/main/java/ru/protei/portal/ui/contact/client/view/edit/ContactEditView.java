@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
@@ -36,11 +37,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        company.setCategories( Arrays.asList(
+        companyModel.setCategories( Arrays.asList(
                 En_CompanyCategory.CUSTOMER,
                 En_CompanyCategory.PARTNER,
                 En_CompanyCategory.SUBCONTRACTOR ) );
-        company.showDeprecated(false);
+        company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
     }
@@ -364,7 +365,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @UiHandler("firstName")
-    public void onFirstNameChanged(InputEvent event) {
+    public void onFirstNameChanged( InputEvent event) {
         resetTimer();
     }
 
@@ -512,8 +513,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField
     Label sendWelcomeEmailWarning;
 
-    //@UiField
-    //HTMLPanel contactDeleted;
+    @Inject
+    CompanyModel companyModel;
 
     Timer changeContactLoginTimer = new Timer() {
         @Override

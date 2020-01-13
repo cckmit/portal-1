@@ -18,7 +18,9 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
  * Вид селектора
+ * @deprecated  следует использовать {@link ButtonPopupSingleSelector}
  */
+@Deprecated
 public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
 
     public ButtonSelector() {

@@ -13,87 +13,83 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+//import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+//import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
 /**
  * Модель селектора компаний
  */
-public abstract class CompanyModel implements Activity, SelectorModel<EntityOption> {
+public abstract class CompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
     @Event
     public void onInit( AuthEvents.Success event ) {
-        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
-            subscriber.clearOptions();
-        }
+        cache.clearCache();
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
-            subscriber.clearOptions();
-        }
+        cache.clearCache();
+    }
+
+
+    public CompanyModel() {
+        query = makeQuery( categories, false );
+        cache.setLoadHandler(makeLoadHandler(query));
     }
 
     @Override
-    public void onSelectorLoad( SelectorWithModel<EntityOption> selector ) {
-        if ( selector == null ) {
-            return;
-        }
-        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            requestOptions(selector, selectorToQuery.get(selector));
-        }
+    public EntityOption get( int elementIndex, LoadingHandler loadingHandler ) {
+        return cache.get( elementIndex, loadingHandler );
     }
 
     @Override
-    public void onSelectorUnload( SelectorWithModel<EntityOption> selector ) {
-        if ( selector == null ) {
-            return;
-        }
-        selector.clearOptions();
+    public String getElementName( EntityOption value ) {
+        return value == null ? "" : value.getDisplayText();
     }
 
-    public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        subscribers.add( selector );
-        updateQuery( selector, categories );
+    public void setCategories( List<En_CompanyCategory> categories ) {
+        query.setCategoryIds( toList( categories, En_CompanyCategory::getId ) );
     }
 
-    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        CompanyQuery query = makeQuery( categories, false );
-        selectorToQuery.put(selector, query);
+    public void showOnlyParentCompanies( boolean isOnlyParentCompanies ) {
+        query.setOnlyParentCompanies( isOnlyParentCompanies );
     }
 
-    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories, boolean isOnlyParentCompanies ) {
-        CompanyQuery query = makeQuery( categories, isOnlyParentCompanies );
-        selectorToQuery.put(selector, query);
+    public void showDeprecated( Boolean isShowDeprecated) {
+        query.setShowDeprecated(isShowDeprecated);
     }
 
-    public void updateQuery(SelectorWithModel<EntityOption> selector, Boolean isShowDeprecated) {
-        if (selectorToQuery.get(selector) != null) {
-            selectorToQuery.get(selector).setShowDeprecated(isShowDeprecated);
-        }
+    private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query) {
+       return ( offset, limit, handler ) -> {
+            query.setOffset(offset);
+            query.setLimit(limit);
+            companyService.getCompanyOptionList( query, new RequestCallback<List<EntityOption>>() {
+                @Override
+                public void onError( Throwable throwable ) {
+                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                    handler.onFailure( throwable );
+                }
+
+                @Override
+                public void onSuccess( List<EntityOption> options ) {
+                    transliteration(options);
+                    handler.onSuccess(options);
+                }
+            } );
+        };
     }
 
-    private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
-        companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess( List<EntityOption> options ) {
-                transliteration(options);
-                selector.fillOptions( options );
-                selector.refreshValue();
-            }
-        } );
-    }
-
-    public CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
+    private CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(
@@ -103,6 +99,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         }
         query.setOnlyParentCompanies( isParentIdIsNull );
         query.setSortHomeCompaniesAtBegin( true );
+        query.setShowDeprecated( false );
         return query;
     }
 
@@ -116,6 +113,12 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     @Inject
     Lang lang;
 
-    private Map<SelectorWithModel< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
-    private List<SelectorWithModel< EntityOption >> subscribers = new ArrayList<>();
+    private List<En_CompanyCategory > categories = Arrays.asList(
+            En_CompanyCategory.CUSTOMER,
+            En_CompanyCategory.PARTNER,
+            En_CompanyCategory.SUBCONTRACTOR,
+            En_CompanyCategory.HOME);
+
+    private CompanyQuery query;
+    private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

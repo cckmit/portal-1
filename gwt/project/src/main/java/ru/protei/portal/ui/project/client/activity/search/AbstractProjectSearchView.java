@@ -23,5 +23,5 @@ public interface AbstractProjectSearchView extends IsWidget {
     void clearProjectList();
     void fillProjectList(List<Project> list);
     void resetFilter();
-    void refreshProducts();
+//    void refreshProducts();
 }

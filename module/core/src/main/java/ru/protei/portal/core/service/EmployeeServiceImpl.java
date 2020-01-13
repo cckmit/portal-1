@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 
@@ -104,6 +105,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
         return ok(result);
+    }
+
+    @Override
+    public Result<PersonShortView> getEmployeeById( AuthToken token, Long emploeeId ) {
+        Person person = personDAO.get( emploeeId );
+        if(person==null) return error( En_ResultStatus.NOT_FOUND );
+        return ok(person.toShortNameShortView());
     }
 
     @Override

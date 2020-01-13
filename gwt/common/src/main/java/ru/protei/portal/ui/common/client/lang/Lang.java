@@ -1961,4 +1961,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contactFieldLengthExceed(String fieldName, int symbolsCount);
 
     String errorFieldHasInvalidValue(String fieldName);
+
+    String searchNoMatchesFound();
+
+    String emptySelectorList();
 }

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
+
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -31,6 +32,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
@@ -44,6 +46,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Активность таблицы обращений
@@ -64,7 +67,7 @@ public abstract class IssueTableActivity
         filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
-        filterParamView.setInitiatorCompaniesSupplier(() -> filterParamView.companies().getValue());
+        filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
 
         pagerView.setActivity( this );
 
@@ -80,10 +83,13 @@ public abstract class IssueTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
+        sp.start( "onShow" );
         applyFilterViewPrivileges();
 
         initDetails.parent.clear();
+        sp.check( "clear" );
         initDetails.parent.add( view.asWidget() );
+        sp.check( "add view" );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
 
@@ -109,6 +115,7 @@ public abstract class IssueTableActivity
         clearScroll(event);
 
         loadTable();
+        sp.stop( "onShow end." );
     }
 
     @Event
@@ -514,6 +521,16 @@ public abstract class IssueTableActivity
 
     @Inject
     IssueFilterService issueFilterService;
+
+    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
+        @Override
+        public void append( String message, double currentTime ) {
+            log.info("Profile IssueTableActivity: "+ message+" "+currentTime);
+
+        }
+    } );
+
+    private static final Logger log = Logger.getLogger( IssueTableActivity.class.getName() );
 
     private static String CREATE_ACTION;
     private AbstractIssueFilterWidgetView filterParamView;

@@ -16,6 +16,8 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/EmployeeController" )
 public interface EmployeeController extends RemoteService {
 
+    PersonShortView getEmployeeById( Long emploeeId ) throws RequestFailedException;
+
     /**
      * Получение списка сотрудников
      * @return список сотрудников

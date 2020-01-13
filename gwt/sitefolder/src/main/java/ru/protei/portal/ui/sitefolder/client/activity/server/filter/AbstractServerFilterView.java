@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractServerFilterView extends IsWidget {
