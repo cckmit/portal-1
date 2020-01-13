@@ -15,6 +15,8 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
@@ -91,10 +93,12 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 generalUpdate(endpoint, event, issue, issueClient);
             }
 
-            if (event.getCaseComment() != null && !event.getCaseComment().isPrivateComment()) {
-                logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
-                issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment(), event.getInitiator()))
-                        .claim();
+            if (event.isCommentAttached()) {
+                event.getAddedCaseComments().forEach(comment -> {
+                    if (!comment.isPrivateComment()) {
+                        logger.debug("add comment {} to issue {}", comment.getId(), issue.getKey());
+                        issueClient.addComment(issue.getCommentsUri(), convertComment(comment, event.getInitiator())).claim();
+                    }});
             }
 
             if (event.getAddedAttachments() != null) {
@@ -104,7 +108,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     }
 
     private Comment convertComment (CaseComment ourComment, Person initiator) {
-        return Comment.valueOf(initiator.getDisplayShortName() + "\r\n" + ourComment.getText());
+        return Comment.valueOf(TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText());
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

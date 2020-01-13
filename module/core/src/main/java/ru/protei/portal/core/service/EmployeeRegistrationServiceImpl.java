@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -69,14 +70,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
-        jdbcManyRelationsHelper.fillAll(employeeRegistration);
-        if(isNotEmpty(employeeRegistration.getCuratorsIds())){
+        if(!isEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
-        }
-        if(isNotEmpty(employeeRegistration.getYoutrackIssues())) {
-            employeeRegistration.getYoutrackIssues()
-                    .forEach(caseLink -> youtrackService.getIssueInfo( caseLink.getRemoteId() )
-                            .ifOk(caseLink::setYouTrackIssueInfo));
         }
         return ok(employeeRegistration);
     }

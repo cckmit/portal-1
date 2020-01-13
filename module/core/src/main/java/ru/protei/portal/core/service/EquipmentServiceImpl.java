@@ -192,13 +192,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<Boolean> removeEquipment(AuthToken token, Long equipmentId, Person person) {
+    public Result<Boolean> removeEquipment(AuthToken token, Long equipmentId, String author) {
 
         if (equipmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        removeLinkedDocuments(token, equipmentId, person);
+        removeLinkedDocuments(token, equipmentId, author);
 
         Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
         return ok(removeStatus );
@@ -312,7 +312,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         return (decimalNumber != null && decimalNumber.getId() == null);
     }
 
-    private void removeLinkedDocuments(AuthToken token, Long equipmentId, Person person) {
+    private void removeLinkedDocuments(AuthToken token, Long equipmentId, String author) {
 
         Result<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
 
@@ -334,7 +334,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 documents2merge.add(document);
                 continue;
             }
-            Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), person);
+            Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), author);
             if (result.isError()) {
                 log.error("removeLinkedDocuments(): failed to remove document | status={}", result.getStatus());
             }

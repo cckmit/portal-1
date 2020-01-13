@@ -21,9 +21,9 @@ import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.utils.EventExpirationControl;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
@@ -32,6 +32,8 @@ import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 @Configuration
 public class JiraTestConfiguration {
@@ -80,6 +82,16 @@ public class JiraTestConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO() {
         return new CaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaDAO getCaseMetaDAO() {
+        return new CaseObjectMetaDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectMetaNotifiersDAO getCaseMetaNotifiersDAO() {
+        return new CaseObjectMetaNotifiersDAO_Impl();
     }
 
     @Bean
@@ -153,11 +165,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public UserSessionDAO getUserSessionDAO() {
-        return new UserSessionDAO_Impl();
-    }
-
-    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
     }
@@ -180,6 +187,26 @@ public class JiraTestConfiguration {
     @Bean
     public CaseService getCaseService() {
         return new CaseServiceImpl();
+    }
+
+    @Bean
+    public CompanyService getCompanyService() {
+        return new CompanyServiceImpl();
+    }
+
+    @Bean
+    public CompanyGroupDAO getCompanyGroupDao() {
+        return new CompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    public CompanyCategoryDAO getCompanyCategoryDao() {
+        return new CompanyCategoryDAO_Impl();
+    }
+
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDao() {
+        return new CompanySubscriptionDAO_Impl();
     }
 
     @Bean
@@ -233,8 +260,8 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public EventExpirationControl getEventExpirationControl() {
-        return new EventExpirationControl();
+    public AssemblerService getAssemblerService() {
+        return new AssemblerServiceImpl();
     }
 
     @Bean
@@ -260,5 +287,10 @@ public class JiraTestConfiguration {
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public LockService getLockService() {
+        return new LockServiceImpl();
     }
 }

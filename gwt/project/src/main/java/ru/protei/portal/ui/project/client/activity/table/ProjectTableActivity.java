@@ -92,10 +92,11 @@ public abstract class ProjectTableActivity
         }
 
         regionService.removeProject(projectIdForRemove, new FluentCallback<Boolean>()
-                .withResult(() -> {
+                .withError(t -> {
                     projectIdForRemove = null;
                 })
                 .withSuccess(result -> {
+                    projectIdForRemove = null;
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(new ProjectEvents.Show());

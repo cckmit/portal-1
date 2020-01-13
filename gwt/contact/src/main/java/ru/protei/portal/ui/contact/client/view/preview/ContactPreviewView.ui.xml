@@ -19,7 +19,7 @@
                         <g:Anchor ui:field="displayName" styleName="full-screen-link" href="#"/>
                     </h4>
 
-                    <img ui:field="genderImage" src="" class="preview-title-image_right"/>
+                    <img ui:field="genderImage" src="" class="preview-title-image-right"/>
 
                     <p>
                         <g:InlineLabel>

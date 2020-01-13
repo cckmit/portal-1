@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -113,36 +113,6 @@ public abstract class CaseCommentListActivity
         );
     }
 
-    @Event
-    public void onValidateComment(CaseCommentEvents.ValidateComment event) {
-        if (event.isNewCase()) {
-            event.validate(true);
-            return;
-        }
-        event.validate(isValid());
-    }
-
-    @Event
-    public void onGetCurrentComment(CaseCommentEvents.GetCurrentComment event) {
-        if (StringUtils.isEmpty(view.message().getValue())) {
-            event.provide(null);
-        } else {
-            event.provide(buildCaseComment());
-        }
-    }
-
-    @Event
-    public void onSavingEvent(CaseCommentEvents.OnSavingEvent event) {
-        lockSave();
-    }
-
-    @Event
-    public void onDoneEvent(CaseCommentEvents.OnDoneEvent event) {
-        unlockSave();
-        if (event.caseComment != null) {
-            storage.remove(makeStorageKey(event.caseComment.getCaseId()));
-        }
-    }
 
 
     @Override
@@ -180,7 +150,6 @@ public abstract class CaseCommentListActivity
                     }
                     view.removeComment(itemView);
                     itemViewToModel.remove(itemView);
-                    fireEvent(new IssueEvents.ChangeModel());
                     updateTimeElapsedInIssue(itemViewToModel.values());
                 })
         );
@@ -515,9 +484,14 @@ public abstract class CaseCommentListActivity
 
         boolean isEdit = comment.getId() != null;
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
-                .withResult(this::unlockSave)
-                .withErrorMessage(lang.errEditIssueComment())
-                .withSuccess(result -> onCommentSent(isEdit, result))
+                .withError( t -> {
+                    unlockSave();
+                    fireEvent( lang.errEditIssueComment() );
+                } )
+                .withSuccess( result -> {
+                    unlockSave();
+                    onCommentSent( isEdit, result );
+                } )
         );
     }
 

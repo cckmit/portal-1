@@ -31,7 +31,6 @@ import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActiv
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 

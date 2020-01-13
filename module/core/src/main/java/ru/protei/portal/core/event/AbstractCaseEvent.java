@@ -12,21 +12,15 @@ public interface AbstractCaseEvent {
 
     ServiceModule getServiceModule();
 
-    Person getPerson();
+    Long getPersonId();
 
-    CaseObject getCaseObject();
+    Long getCaseObjectId();
 
-    CaseObject getNewState();
+    Object getSource();
 
-    CaseObject getOldState();
+    boolean isEagerEvent();//TODO нужен для Redmine
 
-    CaseComment getCaseComment();
-
-    CaseComment getOldCaseComment();
-
-    CaseComment getRemovedCaseComment();
-
-    Collection<Attachment> getAddedAttachments();
-
-    Collection<Attachment> getRemovedAttachments();
+    default boolean isCreateEvent() {
+        return false;
+    }
 }

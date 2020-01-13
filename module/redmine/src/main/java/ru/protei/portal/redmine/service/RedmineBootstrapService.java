@@ -19,14 +19,15 @@ public class RedmineBootstrapService {
 
     @PostConstruct
     public void init() {
-        updateCreationDateAttachments();
-        updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
-        updateNullIssueCreator();
+        //updateCreationDateAttachments();
+        //updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
+        //updateNullIssueCreator();
+        updateCaseObjectById(152767L);
     }
 
     private void updateCreationDateAttachments() {
         /* for one-time only before Redmine integration enabled */
-        if (portalConfig.data().integrationConfig().isRedminePatchAttachmentsEnabled()) {
+        if (portalConfig.data().integrationConfig().isRedminePatchEnabled()) {
             logger.debug("Update creation date of issue attachments started");
             redmineEndpointDAO.getAll().forEach(redmineService::updateCreationDateAttachments);
             logger.debug("Update creation date of issue attachments ended");
@@ -35,10 +36,19 @@ public class RedmineBootstrapService {
 
     private void updateAttachmentsByCaseId(long caseId) {
         /* for one-time only before Redmine integration enabled */
-        if (portalConfig.data().integrationConfig().isRedminePatchAttachmentsEnabled()) {
+        if (portalConfig.data().integrationConfig().isRedminePatchEnabled()) {
             logger.debug("Merge attachments of case object with id {} started", caseId);
             redmineService.updateAttachmentsByCaseId(caseId);
             logger.debug("Merge attachments of case object with id {} ended", caseId);
+        }
+    }
+
+    private void updateCaseObjectById(long caseId) {
+        /* for one-time only before Redmine integration enabled */
+        if (portalConfig.data().integrationConfig().isRedminePatchEnabled()) {
+            logger.debug("Update case object with id {} started", caseId);
+            redmineService.updateCaseObjectById(caseId);
+            logger.debug("Update case object with id {} ended", caseId);
         }
     }
 

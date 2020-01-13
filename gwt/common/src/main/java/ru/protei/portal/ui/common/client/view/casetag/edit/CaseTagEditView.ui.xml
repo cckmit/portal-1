@@ -1,0 +1,37 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:colorpicker='urn:import:ru.protei.portal.ui.common.client.widget.colorpicker'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label ui:field="tagNameLabel"><ui:text from="{lang.tagName}"/></label>
+                    <g:TextBox ui:field="name" styleName="form-control"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <label ui:field="tagColorLabel"><ui:text from="{lang.tagColor}"/></label>
+                    <colorpicker:ColorPicker ui:field="color"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <g:HTMLPanel ui:field="companyPanel" visible="false">
+                        <label ui:field="tagCompanyLabel"><ui:text from="{lang.tagCompany}"/></label>
+                        <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
+                    </g:HTMLPanel>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <g:HTMLPanel ui:field="authorContainer" styleName="tag-author" visible="false">
+                <small>
+                    <g:Label ui:field="label"/>
+                </small>
+            </g:HTMLPanel>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -5,8 +5,8 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import java.util.*;
 
 public class TransliterationUtils {
-    static Map<Character, String> rusToLatinCharacters = new HashMap<>();
-    static Map<String, String> charsWithDots = new HashMap<>();
+    private static Map<Character, String> rusToLatinCharacters = new HashMap<>();
+    private static Map<String, String> charsWithDots = new HashMap<>();
 
     static {
         charsWithDots.put("Е.", "E.");
@@ -84,6 +84,10 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Э', "E");
         rusToLatinCharacters.put('Ю', "Ju");
         rusToLatinCharacters.put('Я', "Ja");
+    }
+
+    public static String transliterate(String input) {
+        return transliterate(input, "en");
     }
 
     public static String transliterate(String input, String locale) {

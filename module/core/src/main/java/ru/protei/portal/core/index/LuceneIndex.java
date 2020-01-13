@@ -36,8 +36,8 @@ public class LuceneIndex implements Closeable {
         this.path = path;
         this.analyzer = analyzer;
         this.indexWriter = new IndexWriter(
-                openDirectory(),
-                makeIndexWriterConfig(analyzer)
+            openDirectory(),
+            makeIndexWriterConfig(analyzer)
         );
     }
 
@@ -75,23 +75,23 @@ public class LuceneIndex implements Closeable {
     public List<String> searchByField(String field2search, String search, String field2get, int maxHits) throws IOException {
         if (isClosed) throw makeClosedException();
         try (
-                Directory directory = openDirectory();
-                IndexReader reader = DirectoryReader.open(directory)
+            Directory directory = openDirectory();
+            IndexReader reader = DirectoryReader.open(directory)
         ) {
             IndexSearcher searcher = new IndexSearcher(reader);
             QueryParser parser = new QueryParser(field2search, analyzer);
             Query query = parser.parse(search);
             TopDocs topDocs = searcher.search(query, maxHits);
             return Arrays.stream(topDocs.scoreDocs)
-                    .map(scoreDoc -> scoreDoc.doc)
-                    .map(id -> {
-                        try {
-                            return searcher.doc(id).get(field2get);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .collect(Collectors.toList());
+                .map(scoreDoc -> scoreDoc.doc)
+                .map(id -> {
+                    try {
+                        return searcher.doc(id).get(field2get);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
         } catch (ParseException e) {
             throw new IOException(e);
         }

@@ -1,22 +1,22 @@
 package ru.protei.portal.core.service.events;
 
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.ent.Person;
 
 public interface EventAssemblerService {
 
-    void publishEvent(CaseObjectEvent event);
+    void onCaseObjectCreateEvent(CaseObjectCreateEvent event);
 
-    void publishEvent(CaseCommentEvent event);
+    void onCaseNameAndDescriptionEvent(CaseNameAndDescriptionEvent event);
 
-    void publishEvent(CaseObjectCommentEvent event);
+    void onCaseObjectMetaEvent(CaseObjectMetaEvent event);
 
-    void publishEvent(CaseAttachmentEvent event);
+    void onCaseCommentEvent(CaseCommentEvent event);
 
-    AssembledCaseEvent getEvent(Person person, Long caseId);
+    void onCaseAttachmentEvent(CaseAttachmentEvent event);
 
-    void forcePublishCaseRelatedEvents(Long caseId);
+    void onCaseLinkEvent(CaseLinkEvent event);
+
+    AssembledCaseEvent getEvent(Long personId, Long caseId);
 
     int getEventsCount();
-
 }

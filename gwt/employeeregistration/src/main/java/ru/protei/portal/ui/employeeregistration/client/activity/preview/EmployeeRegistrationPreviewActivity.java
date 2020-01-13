@@ -12,10 +12,7 @@ import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -102,13 +99,16 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         }
 
         view.setState(value.getState());
-        view.setIssues(value.getYoutrackIssues());
 
-        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
                 .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW))
-                .build());
+                .readOnly());
+
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
+                .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
+                .withCaseId(value.getId())
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)));
     }
 
     private HasWidgets fullScreenContainer;
@@ -130,5 +130,4 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private En_EmploymentTypeLang employmentTypeLang;
     @Inject
     private Lang lang;
-
 }

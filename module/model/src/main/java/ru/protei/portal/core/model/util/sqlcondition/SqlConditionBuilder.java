@@ -121,6 +121,12 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
     }
 
     @Override
+    public Query forUpdate() {
+        isForUpdate = true;
+        return this;
+    }
+
+    @Override
     public Condition asCondition() {
         return this;
     }
@@ -169,6 +175,7 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
         if (fromExpression != null) result.append( " FROM " ).append( fromExpression ).append( " WHERE " );
         result.append( where );
         if (isEmpty( where )) result.append( "TRUE" );
+        if(isForUpdate) result.append( " FOR UPDATE" );
         return result.toString();
     }
 
@@ -230,6 +237,7 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
     private JdbcSort jdbcSort = null;
     private String selectExpression;
     private String fromExpression;
+    private boolean isForUpdate;
 
     /**
      * Operator
@@ -346,7 +354,6 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
     private String operator;
     private String columnName;
     private boolean not;
-
 
     // Operator done
 }

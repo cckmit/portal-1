@@ -11,12 +11,10 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -30,7 +28,6 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -47,7 +44,6 @@ public class MailNotificationProcessor {
 
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
-    private final static Semaphore messageIdSemaphore = new Semaphore(1);
     public static final LinkData EMPTY_LINK = new LinkData( "#", "" );
 
     @Autowired
@@ -91,37 +87,7 @@ public class MailNotificationProcessor {
 
         log.info( "Case notification :: subscribers: {}", join( notifiers, ni->ni.getAddress(), ",") );
 
-        CaseObject caseObject = event.getCaseObject();
-
-        Date upperBoundDate = makeCommentUpperBoundDate(event);
-        Result<List<CaseComment>> allComments = caseCommentService.getCaseCommentList(null, En_CaseType.CRM_SUPPORT, new CaseCommentQuery(caseObject.getId(), upperBoundDate));
-
-        if (allComments.isError()) {
-            log.error("Case notification :: failed to retrieve comments for caseId={}", caseObject.getId());
-            return;
-        }
-
-        List<CaseComment> comments = allComments.getData();
-        if (event.getRemovedComment() != null) {
-            comments.add(event.getRemovedComment());
-        }
-
-        if (event.getCaseComment() != null) {
-            boolean isNewCommentPresents = comments.stream()
-                    .anyMatch(comment ->
-                            Objects.equals(comment.getId(), event.getCaseComment().getId())
-                    );
-
-            if (!isNewCommentPresents) {
-                comments.add(event.getCaseComment());
-            }
-        }
-
-
         try {
-            messageIdSemaphore.acquire();
-
-            Long lastMessageId = getEmailLastId(caseObject.getId());
             Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
             final boolean IS_PRIVATE_RECIPIENT = true;
 
@@ -131,8 +97,11 @@ public class MailNotificationProcessor {
             String privateCaseUrl = getCrmCaseUrl( IS_PRIVATE_RECIPIENT );
             String publicCaseUrl = getCrmCaseUrl( !IS_PRIVATE_RECIPIENT );
 
-            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getMergeLinks(), privateCaseUrl );
-            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getMergeLinks()), publicCaseUrl );
+            DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
+            DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
+
+            List<CaseComment> comments =  event.getAllComments();
+            Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
             if ( isPrivateNotification(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
@@ -145,12 +114,8 @@ public class MailNotificationProcessor {
                 performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
                 performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
-
-            caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
-        } catch (InterruptedException e) {
-            log.warn("Case notification :: semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
-        } finally {
-            messageIdSemaphore.release();
+        } catch (Exception e) {
+            log.error( "Can't sent mail notification with case id = {}. Exception: ", event.getCaseObjectId(), e );
         }
     }
 
@@ -191,8 +156,12 @@ public class MailNotificationProcessor {
     }
 
     private boolean isPublic( CaseLink caseLink){
-        if(caseLink.isPrivate()) return false;
-        if(!CRM.equals( caseLink.getType() )) return false;
+        if(caseLink.isPrivate()) {
+            return false;
+        }
+        if(!CRM.equals( caseLink.getType() )) {
+            return false;
+        }
         return true;
     }
 
@@ -208,7 +177,7 @@ public class MailNotificationProcessor {
 
     private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
-                || event.isPrivateSend()
+                || isPrivateSend(event)
                 || config.data().smtp().isBlockExternalRecipients();
     }
 
@@ -245,7 +214,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(caseObject, event.getInitiator());
+        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(event, event.getInitiator());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for caseId={}", caseObject.getId());
             return;
@@ -274,11 +243,11 @@ public class MailNotificationProcessor {
 
 
     private Collection<NotificationEntry> collectNotifiers(AssembledCaseEvent event) {
-        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
+        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers(event.getCaseMeta());
         return formNotifiers(defaultNotifiers,
                 event.getInitiator(),
-                event.getCaseObject().getCreator(),
-                event.getCaseObject().getManager());
+                event.getCreator(),
+                event.getManager());
     }
 
     /**
@@ -306,13 +275,6 @@ public class MailNotificationProcessor {
 
     private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {
         return "case." + caseNumber + "." + id + "-" + recipientAddressHashCode;
-    }
-
-    private Date makeCommentUpperBoundDate(AssembledCaseEvent event) {
-        Date upperBoundDate = event.getCaseComment() == null || event.getRemovedComment() != null ?
-                new Date(event.getLastUpdated()) :
-                event.getCaseComment().getCreated();
-        return addSeconds(upperBoundDate, 1);
     }
 
     // -----------------------
@@ -593,11 +555,6 @@ public class MailNotificationProcessor {
         return notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList());
     }
 
-    private Long getEmailLastId(Long caseId) {
-        Result<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
-        return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
-    }
-
     private NotificationEntry fetchNotificationEntryFromPerson(Person person) {
         if (person == null || person.isFired() || person.isDeleted()) {
             return null;
@@ -615,14 +572,33 @@ public class MailNotificationProcessor {
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
-    private Date addSeconds(Date date, int sec) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.SECOND, sec);
-        return calendar.getTime();
+    private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
+
+        if (assembledCaseEvent.isPublicCommentsChanged()) {
+            return false;
+        }
+
+        if (publicChangesExistWithoutComments(assembledCaseEvent)) {
+            return false;
+        }
+
+        return true;
     }
 
-
+    private boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.getName().hasDifferences()
+                || assembledCaseEvent.getInfo().hasDifferences()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
+    }
 
     private class MimeMessageHeadersFacade {
 

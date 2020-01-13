@@ -19,22 +19,26 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.struct.UploadResult;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.session.SessionService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -46,8 +50,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
@@ -55,21 +63,20 @@ public class FileController {
 
     @Autowired
     CaseService caseService;
-
     @Autowired
     AttachmentService attachmentService;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     FileStorage fileStorage;
-
     @Autowired
     EventAssemblerService publisherService;
-
     @Autowired
     PortalConfig config;
+    @Autowired
+    AttachmentDAO attachmentDAO;
+    @Autowired
+    SessionService sessionService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
@@ -107,12 +114,13 @@ public class FileController {
             HttpServletResponse response
     ) {
 
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-        UploadResult result = null;
-
-        if (ud == null) {
-            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
+        AuthToken authToken = sessionService.getAuthToken(request);
+        if (authToken == null) {
+            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "AuthToken is null"));
         }
+
+        List<Attachment> bindAttachments = new ArrayList(  );
+        UploadResult result = null;
 
         try {
             logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
@@ -129,18 +137,17 @@ public class FileController {
 
                 logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
-                Person creator = ud.getPerson();
-                Attachment attachment = saveAttachment(item, creator.getId());
+                Attachment attachment = saveAttachment(item, authToken.getPersonId());
 
                 if (caseNumber != null) {
                     En_CaseType caseType = En_CaseType.find(caseTypeId);
-                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    Result<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(authToken, caseType, attachment, caseNumber);
                     if (caseAttachId.isError()) {
                         logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                         result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
                         break;
                     }
-                    shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
+                    bindAttachments.add( attachment );
                 }
                 result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
                 break;
@@ -149,8 +156,13 @@ public class FileController {
 
         }
         catch (FileUploadException | SQLException | IOException e) {
-                logger.error("uploadFileToCase", e);
-                result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
+            logger.error("uploadFileToCase", e);
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
+        }
+
+        if (!isEmpty( bindAttachments )) {
+            caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
+                shareNotification(caseId, authToken.getPersonId(), bindAttachments )  );
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
@@ -161,16 +173,15 @@ public class FileController {
     @PostMapping(value = "/uploadBase64File", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
     @ResponseBody
     public String uploadBase64File(HttpServletRequest request, @RequestBody Base64Facade base64Facade) {
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
-        UploadResult result = checkInputParams (ud, base64Facade);
+        AuthToken authToken = sessionService.getAuthToken(request);
+        UploadResult result = checkInputParams (authToken, base64Facade);
 
         try {
             if (result == null) {
                 String[] parts = base64Facade.getBase64().split(",");
                 byte[] bytes = Base64.getDecoder().decode(parts[1]);
-                Person creator = ud.getPerson();
-                Attachment attachment = saveAttachment(bytes, base64Facade, creator.getId());
+                Attachment attachment = saveAttachment(bytes, base64Facade, authToken.getPersonId());
                 result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
             }
         } catch (IOException | SQLException e) {
@@ -186,15 +197,13 @@ public class FileController {
         List<String> attachmentsJsons = new ArrayList<>();
         List<Attachment> attachments = new ArrayList<>();
 
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-        if (ud == null) {
+        AuthToken authToken = sessionService.getAuthToken(request);
+        if (authToken == null) {
             return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "auth error"));
         }
 
-        Person creator = ud.getPerson();
-
         for (Base64Facade currB64facade : base64Facades) {
-            UploadResult result = checkInputParams(ud, currB64facade);
+            UploadResult result = checkInputParams(authToken, currB64facade);
 
             if (result != null) {
                 removeFiles(attachments);
@@ -205,7 +214,7 @@ public class FileController {
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
 
             try {
-                Attachment attachment = saveAttachment(bytes, currB64facade, creator.getId());
+                Attachment attachment = saveAttachment(bytes, currB64facade, authToken.getPersonId());
                 attachmentsJsons.add(mapper.writeValueAsString(attachment));
                 attachments.add(attachment);
             } catch (IOException | SQLException e) {
@@ -275,12 +284,6 @@ public class FileController {
         if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
-//        try {
-//            shareNotification(attachment, caseId, null, person);
-//        }catch (NullPointerException e){
-//            logger.error("Notification error! "+ e.getMessage());
-//        }
-
         return caseAttachId.getData();
     }
 
@@ -290,18 +293,9 @@ public class FileController {
         }
     }
 
-    private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
-        Result<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
-        if (issue.isError()) {
-            logger.error("Notification error! Database exception: " + issue.getStatus().name());
-            return;
-        }
-
-        publisherService.publishEvent(new CaseAttachmentEvent.Builder(this)
-                .withCaseObject(issue.getData())
-                .withAddedAttachments(Collections.singletonList(attachment))
-                .withPerson(initiator)
-                .build());
+    private void shareNotification( Long caseId, Long initiatorId, List<Attachment> addedAttachments) {
+        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiatorId, caseId,
+                addedAttachments, null ));
     }
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {
@@ -443,11 +437,11 @@ public class FileController {
         return fileSize > maxSize * BYTES_IN_MEGABYTE;
     }
 
-    private UploadResult checkInputParams (UserSessionDescriptor ud, Base64Facade base64Facade){
+    private UploadResult checkInputParams (AuthToken authToken, Base64Facade base64Facade){
         UploadResult result = null;
 
-        if (ud == null) {
-            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null");
+        if (authToken == null) {
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "AuthToken is null");
         }
 
         else if (isFileSizeExceed(base64Facade.getSize(), config.data().getMaxFileSize())){

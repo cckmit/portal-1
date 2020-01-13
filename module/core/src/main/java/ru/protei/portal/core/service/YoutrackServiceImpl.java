@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
@@ -18,8 +18,10 @@ import ru.protei.portal.core.model.yt.api.IssueApi;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
@@ -52,7 +54,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     @Override
     public Result<YouTrackIssueInfo> getIssueInfo( String issueId ) {
         if (issueId == null) {
-            log.warn( "getIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
+            log.warn( "getYoutrackIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
             return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
@@ -80,6 +82,19 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         return apiDao.getIssue( issueId ).flatMap( issue ->
                 removeCrmNumberIfSame( issue, issue.getCrmNumber(), caseNumber ) );
+    }
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed ) {
+
+        for (String youtrackId : emptyIfNull( removed )) {
+            removeIssueCrmNumberIfSame( youtrackId, caseNumber);
+        }
+
+        for (String youtrackId : emptyIfNull( added)) {
+            setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
+        }
     }
 
     private Result<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {

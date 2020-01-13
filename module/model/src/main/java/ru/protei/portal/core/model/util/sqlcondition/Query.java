@@ -27,5 +27,7 @@ public interface Query {
 
     JdbcQueryParameters asJdbcQueryParameters();
 
+    Query forUpdate();
+
     Condition asCondition();
 }

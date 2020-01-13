@@ -4,8 +4,10 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 
 /**
  * Created by turik on 28.10.16.
@@ -41,8 +43,7 @@ public class IssueEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview ( HasWidgets parent, Long issueCaseNumber )
-        {
+        public ShowPreview ( HasWidgets parent, Long issueCaseNumber ) {
             this.parent = parent;
             this.issueCaseNumber = issueCaseNumber;
         }
@@ -53,42 +54,67 @@ public class IssueEvents {
     }
 
     /**
-     * Показать превью обращения full screen
+     * Показать форму редактирования
      */
     @Url( value = "issue_preview", primary = true )
     public static class ShowFullScreen {
-
-        public ShowFullScreen() {}
-
-        public ShowFullScreen ( Long issueCaseNumber )
-        {
-            this.issueCaseNumber = issueCaseNumber;
-        }
-
         @Name( "id" )
         public Long issueCaseNumber;
     }
 
-    @Url( value = "issue", primary = false )
+    /**
+     * Показать форму редактирования
+     */
+    @Url(value = "issue")
     public static class Edit {
+        @Name( "id" )
+        public Long caseNumber;
 
-        public Long id;
-        public Long issueId;
-
-        public Edit() { this.id = null; }
-        public Edit (Long id, Long issueId ) {
-            this.id = id;
-            this.issueId = issueId;
-        }
-
-        public static Edit byId (Long id) {
-            return new Edit(id, null);
-        }
-
-        public static Edit newItem (EntityOption option) {
-            return new Edit(null, option != null ? option.getId() : null);
+        public Edit() { this.caseNumber = null; }
+        public Edit (Long caseNumber) {
+            this.caseNumber = caseNumber;
         }
     }
+
+    public static class EditMeta {
+        public HasWidgets parent;
+
+        public EditMeta(HasWidgets parent) {
+            this.parent = parent;
+        }
+
+        public EditMeta withMeta(CaseObjectMeta meta) {
+            this.meta = meta;
+            return this;
+        }
+
+        public EditMeta withMetaNotifiers(CaseObjectMetaNotifiers metaNotifiers) {
+            this.metaNotifiers = metaNotifiers;
+            return this;
+        }
+
+        public EditMeta withMetaJira(CaseObjectMetaJira metaJira) {
+            this.metaJira = metaJira;
+            return this;
+        }
+
+        public EditMeta withReadOnly(boolean isReadOnly) {
+            this.isReadOnly = isReadOnly;
+            return this;
+        }
+
+        public CaseObjectMeta meta;
+        public CaseObjectMetaNotifiers metaNotifiers;
+        public CaseObjectMetaJira metaJira;
+        public boolean isReadOnly = false;
+    }
+
+
+    /**
+     * Показать форму создания
+     */
+    @Url(value = "issue_create")
+    public static class Create {}
 
     public static class ChangeIssue {
         public Long id;
@@ -102,12 +128,7 @@ public class IssueEvents {
      */
     public static class ChangeStateModel {}
 
-    /**
-     * Добавление / изменение / удаление обращений
-     */
-    public static class ChangeModel {}
-
-    /**
+   /**
      * Изменилась модель фильтров пользователя
      */
     public static class ChangeUserFilterModel{}
@@ -117,6 +138,27 @@ public class IssueEvents {
             this.timeElapsed = timeElapsed;
         }
         public Long timeElapsed;
+    }
+
+    public static class IssueStateChanged {
+        public IssueStateChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueImportanceChanged {
+        public IssueImportanceChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueManagerChanged {
+        public IssueManagerChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
     }
 }
 

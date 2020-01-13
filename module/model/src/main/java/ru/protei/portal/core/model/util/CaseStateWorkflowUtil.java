@@ -31,13 +31,10 @@ public class CaseStateWorkflowUtil {
         return false;
     }
 
-    public static En_CaseStateWorkflow recognizeWorkflow(CaseObject caseObject) {
 
-        if (caseObject == null) {
-            return En_CaseStateWorkflow.NO_WORKFLOW;
-        }
+    public static En_CaseStateWorkflow recognizeWorkflow(String extAppType) {
 
-        if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+        if (En_ExtAppType.JIRA.getCode().equals(extAppType)) {
             return En_CaseStateWorkflow.NX_JIRA;
         }
 

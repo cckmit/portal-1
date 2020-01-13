@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.DocumentService;
-import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.session.SessionService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +32,7 @@ public class DocumentController {
             @PathVariable("format") String format
     ) {
         try {
-            if (authService.getUserSessionDescriptor(request) == null) {
+            if (sessionService.getAuthToken(request) == null) {
                 log.info("uploadDocument(): user session descriptor not found");
                 return RESPONSE_ERROR;
             }
@@ -70,13 +68,12 @@ public class DocumentController {
             @PathVariable("format") String format
     ) {
         try {
-            UserSessionDescriptor descriptor = authService.getUserSessionDescriptor(request);
-            if (descriptor == null) {
-                log.warn("downloadDocument(): user session descriptor not found");
+            AuthToken token = sessionService.getAuthToken(request);
+            if (token == null) {
+                log.warn("downloadDocument(): auth token not found");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return;
             }
-            AuthToken token = descriptor.makeAuthToken();
 
             En_DocumentFormat documentFormat = En_DocumentFormat.of(format);
             if (documentFormat == null) {
@@ -140,8 +137,6 @@ public class DocumentController {
         }
     }
 
-    @Autowired
-    AuthService authService;
     @Autowired
     SessionService sessionService;
     @Autowired

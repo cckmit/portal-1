@@ -32,7 +32,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<EntityOption> companyCategory();
 
     HasValue<List<Subscription> > companySubscriptions();
-    HasValue<Set<CaseTag>> tags();
     HasValidable companySubscriptionsValidator();
 
     HasWidgets phonesContainer();
@@ -42,8 +41,5 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets siteFolderContainer();
 
     void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
-
     void setParentCompanyEnabled( boolean isEnabled );
-
-    void hideTags( boolean isShow );
 }

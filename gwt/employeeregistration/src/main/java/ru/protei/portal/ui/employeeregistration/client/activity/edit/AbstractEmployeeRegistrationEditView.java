@@ -2,6 +2,7 @@ package ru.protei.portal.ui.employeeregistration.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
@@ -58,4 +59,24 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
     HasValue<String> additionalSoft();
 
     HasValue<Set<PersonShortView>> curators();
+
+    HasVisibility workplaceErrorLabelVisibility();
+
+    void setWorkplaceErrorLabel(String errorMsg);
+
+    HasVisibility positionErrorLabelVisibility();
+
+    void setPositionErrorLabel(String errorMsg);
+
+    HasVisibility additionalSoftErrorLabelVisibility();
+
+    void setAdditionalSoftErrorLabel(String errorMsg);
+
+    HasVisibility resourceCommentErrorLabelVisibility();
+
+    void setResourceCommentErrorLabel(String errorMsg);
+
+    HasVisibility operatingSystemErrorLabelVisibility();
+
+    void setOperatingSystemErrorLabel(String errorMsg);
 }

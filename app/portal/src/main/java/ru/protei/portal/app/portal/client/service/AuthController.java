@@ -22,5 +22,5 @@ public interface AuthController extends RemoteService {
     /**
      * Выход пользователя
      */
-    void logout();
+    void logout() throws RequestFailedException;
 }

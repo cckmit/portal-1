@@ -3,7 +3,9 @@ package ru.protei.portal.core.model.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 
 /**
  * результат сравнения двух коллекций (и map в том числе)
@@ -13,8 +15,6 @@ public class DiffCollectionResult<T> implements Serializable {
 
     /**
      * возвращает список добавленных узлов
-     *
-     * @return список добавленных узлов
      */
     public List<T> getAddedEntries() {
         return addedEntries;
@@ -22,20 +22,16 @@ public class DiffCollectionResult<T> implements Serializable {
 
     /**
      * возвращает список удаленных узлов
-     *
-     * @return спсок удаленных узлов
      */
     public List<T> getRemovedEntries() {
         return removedEntries;
     }
 
     /**
-     * возвращает список всех изменившихся узлов
-     *
-     * @return список всех изменившихся узлов
+     * возвращает список изменившихся узлов
      */
-    public List<T> getAllDiffEntries() {
-        return allDiffEntries;
+    public List<DiffResult<T>> getChangedEntries() {
+        return changedEntries;
     }
 
     /**
@@ -55,15 +51,14 @@ public class DiffCollectionResult<T> implements Serializable {
             addedEntries = new ArrayList<T>();
         }
         addedEntries.add(entry);
-        allDiffEntries.add(entry);
     }
 
-    public void putAddedEntries(List<T> entries) {
+    public void putAddedEntries(Collection<T> entries) {
+        if (entries == null) return;
         if (addedEntries == null) {
             addedEntries = new ArrayList<T>();
         }
         addedEntries.addAll(entries);
-        allDiffEntries.addAll(entries);
     }
 
     /**
@@ -76,15 +71,35 @@ public class DiffCollectionResult<T> implements Serializable {
             removedEntries = new ArrayList<T>();
         }
         removedEntries.add(entry);
-        allDiffEntries.add(entry);
     }
 
-    public void putRemovedEntries(List<T> entries) {
+    public void putRemovedEntries(Collection<T> entries) {
+        if (entries == null) return;
         if (removedEntries == null) {
             removedEntries = new ArrayList<T>();
         }
         removedEntries.addAll(entries);
-        allDiffEntries.addAll(entries);
+    }
+
+    /**
+     * включить в результат измененный узел
+     */
+    public void putChangedEntry(T initialState, T newState) {
+        if (changedEntries == null) {
+            changedEntries = new ArrayList<DiffResult<T>>();
+        }
+        DiffResult<T> diffResult = new DiffResult<>();
+        diffResult.setInitialState( initialState );
+        diffResult.setNewState( newState );
+        changedEntries.add(diffResult);
+    }
+
+    public void putChangedEntries(Collection<DiffResult<T>> entries) {
+        if (entries == null) return;
+        if (changedEntries == null) {
+            changedEntries = new ArrayList<DiffResult<T>>();
+        }
+        changedEntries.addAll(entries);
     }
 
     /**
@@ -99,11 +114,34 @@ public class DiffCollectionResult<T> implements Serializable {
         sameEntries.add(entry);
     }
 
-    public void putSameEntries(List<T> entries) {
+    public void putSameEntries( Collection<T> entries) {
+        if (entries == null) return;
         if (sameEntries == null) {
             sameEntries = new ArrayList<T>();
         }
         sameEntries.addAll(entries);
+    }
+
+    public boolean hasDifferences() {
+        return hasAdded() || hasRemovedEntries() || hasChanged();
+    }
+
+    public boolean hasSameEntries() {
+        return !isEmpty(sameEntries);
+    }
+
+    public boolean hasRemovedEntries() {return !isEmpty(removedEntries); }
+
+    public boolean hasChanged() {
+        return !isEmpty(changedEntries);
+    }
+
+    public boolean hasAdded() {
+        return !isEmpty(addedEntries);
+    }
+
+    private boolean isEmpty( Collection entries ) {
+        return entries == null || entries.isEmpty();
     }
 
     /**
@@ -122,7 +160,8 @@ public class DiffCollectionResult<T> implements Serializable {
     private List<T> sameEntries;
 
     /**
-     * все различающиеся узлы
+     * измененные узлы
      */
-    private List<T> allDiffEntries = new ArrayList<T>();
+    private List<DiffResult<T>> changedEntries;
+
 }

@@ -18,19 +18,8 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     private NotifyEvents.NotifyType notifyType = NotifyEvents.NotifyType.ERROR;
     private Consumer<Throwable> errorHandler = null;
     private Consumer<T> successHandler = null;
-    private Runnable resultHandler = null;
     private long marker;
     private BiConsumer<Long, T> markedSuccessHandler = null;
-
-    /**
-     * Обработчик, который будет вызван при любом ответе сервера
-     * Установленный обработчик будет вызван до любого другого обработчика и не отменит их обработку
-     * @param resultHandler
-     */
-    public FluentCallback<T> withResult(Runnable resultHandler) {
-        this.resultHandler = resultHandler;
-        return this;
-    }
 
     public FluentCallback<T> withMarkedSuccess(long marker, BiConsumer<Long, T> markedSuccessHandler) {
         this.marker = marker;
@@ -66,10 +55,6 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     @Override
     public final void onFailure(Throwable throwable) {
 
-        if (resultHandler != null) {
-            resultHandler.run();
-        }
-
         if (errorHandler != null) {
             errorHandler.accept(throwable);
             return;
@@ -85,10 +70,6 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
 
     @Override
     public final void onSuccess(T result) {
-
-        if (resultHandler != null) {
-            resultHandler.run();
-        }
 
         if (markedSuccessHandler != null) {
             markedSuccessHandler.accept(marker, result);

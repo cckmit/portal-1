@@ -16,7 +16,7 @@ import ru.protei.portal.core.service.DocumentService;
 import ru.protei.portal.core.service.EquipmentService;
 import ru.protei.portal.ui.common.client.service.EquipmentController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -46,9 +46,9 @@ public class EquipmentControllerImpl implements EquipmentController {
                 query.getSearchString(), query.getTypes(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<List<EquipmentShortView >> response = equipmentService.shortViewList( descriptor.makeAuthToken(), query );
+        Result<List<EquipmentShortView >> response = equipmentService.shortViewList( token, query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -60,9 +60,9 @@ public class EquipmentControllerImpl implements EquipmentController {
     public Equipment getEquipment(long id) throws RequestFailedException {
         log.info("get equipment, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Equipment> response = equipmentService.getEquipment( descriptor.makeAuthToken(), id );
+        Result<Equipment> response = equipmentService.getEquipment( token, id );
         log.info("get equipment, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isOk()) {
@@ -76,7 +76,7 @@ public class EquipmentControllerImpl implements EquipmentController {
     @Override
     public Equipment saveEquipment(Equipment eq) throws RequestFailedException {
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
         if (eq == null) {
             log.warn("null equipment in request");
@@ -84,12 +84,11 @@ public class EquipmentControllerImpl implements EquipmentController {
         }
 
         if ( eq.getId() == null ) {
-            UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
-            eq.setAuthorId( session.getPerson() == null ? 0 : session.getPerson().getId() );
+            eq.setAuthorId( token.getPersonId() );
         }
         log.info("store equipment, id: {} ", HelperFunc.nvl(eq.getId(), "new"));
 
-        Result<Equipment> response = equipmentService.saveEquipment( descriptor.makeAuthToken(), eq );
+        Result<Equipment> response = equipmentService.saveEquipment( token, eq );
         log.info("store equipment, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -104,12 +103,10 @@ public class EquipmentControllerImpl implements EquipmentController {
     public Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException {
         log.info( "copy equipment: id: {}, newName = {}", equipmentId, newName );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        Long authorId = token.getPersonId();
 
-        UserSessionDescriptor session = sessionService.getUserSessionDescriptor( httpRequest );
-        Long authorId = session.getPerson() == null ? 0 : session.getPerson().getId();
-
-        Result<Long> response = equipmentService.copyEquipment( session.makeAuthToken(), equipmentId, newName, authorId );
+        Result<Long> response = equipmentService.copyEquipment( token, equipmentId, newName, authorId );
         log.info( "copy equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -124,9 +121,10 @@ public class EquipmentControllerImpl implements EquipmentController {
     public boolean removeEquipment( Long equipmentId ) throws RequestFailedException {
         log.info( "remove equipment: id={}", equipmentId );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Boolean> response = equipmentService.removeEquipment( descriptor.makeAuthToken(), equipmentId, descriptor.getPerson() );
+        Result<Boolean> response = equipmentService.removeEquipment( token, equipmentId, token.getPersonDisplayShortName() );
+
         log.info( "remove equipment: result: {}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -141,9 +139,9 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         log.info("get decimal numbers of equipment, id: {}", equipmentId);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<List<DecimalNumber>> response = equipmentService.getDecimalNumbersOfEquipment(descriptor.makeAuthToken(), equipmentId);
+        Result<List<DecimalNumber>> response = equipmentService.getDecimalNumbersOfEquipment(token, equipmentId);
 
         log.info("get decimal numbers of equipment, id: {} -> {} ", equipmentId, response.isOk() ? "ok" : response.getStatus());
 
@@ -174,10 +172,10 @@ public class EquipmentControllerImpl implements EquipmentController {
 
     @Override
     public DecimalNumber findDecimalNumber(DecimalNumber decimalNumber) throws RequestFailedException {
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
         log.info("find decimal number: decimal number={}", decimalNumber);
-        Result<DecimalNumber> response = equipmentService.findDecimalNumber(descriptor.makeAuthToken(), decimalNumber);
+        Result<DecimalNumber> response = equipmentService.findDecimalNumber(token, decimalNumber);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -191,7 +189,9 @@ public class EquipmentControllerImpl implements EquipmentController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        Result<Integer> response = equipmentService.getNextAvailableDecimalNumber( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+
+        Result<Integer> response = equipmentService.getNextAvailableDecimalNumber( token, filter );
         if (response.isOk()) {
             log.info("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -207,7 +207,9 @@ public class EquipmentControllerImpl implements EquipmentController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        Result<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+
+        Result<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( token, filter );
         if (response.isOk()) {
             log.info("get next available decimal number, result: {}", response.getData());
             return response.getData();
@@ -230,9 +232,9 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         log.info("getDocument: id={}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
+        Result<Document> response = documentService.getDocument(token, id);
         log.info("getDocument: id={} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -253,7 +255,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         log.info("saveDocument: id={}", id4log);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         Result<Document> response;
 
         FileItem pdfFile = sessionService.getFilePdf(httpRequest);
@@ -262,9 +264,9 @@ public class EquipmentControllerImpl implements EquipmentController {
         sessionService.setFileDoc(httpRequest, null);
 
         if (document.getId() == null) {
-            response = documentService.createDocument(descriptor.makeAuthToken(), document, docFile, pdfFile, descriptor.getPerson());
+            response = documentService.createDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         } else {
-            response = documentService.updateDocument(descriptor.makeAuthToken(), document, docFile, pdfFile, descriptor.getPerson());
+            response = documentService.updateDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
         }
 
         log.info("saveDocument: id={} | result: {}", id4log, response.isOk() ? "ok" : response.getStatus());
@@ -274,16 +276,6 @@ public class EquipmentControllerImpl implements EquipmentController {
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-        log.info( "userSessionDescriptor={}", descriptor );
-        if ( descriptor == null ) {
-            throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
-        }
-
-        return descriptor;
     }
 
     @Autowired

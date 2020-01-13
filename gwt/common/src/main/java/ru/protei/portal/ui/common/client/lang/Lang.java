@@ -1055,10 +1055,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkCrmShort();
 
-    String caseLinkOldCrm();
-
-    String caseLinkOldCrmShort();
-
     String caseLinkYouTrack();
 
     String caseLinkYouTrackShort();
@@ -1668,6 +1664,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+    String employeeRegistrationPositionExceed(int num);
+
+    String employeeRegistrationWorkplaceExceed(int num);
+
+    String employeeRegistrationOperatingSystemExceed(int num);
+
     String employeeRegistrationAdditionalSoftLengthExceed(int num);
 
     String employeeRegistrationResourceCommentLengthExceed(int num);
@@ -1828,7 +1830,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String firstHundredRecords();
 
-    String issueCopyToClipboard();
+    String issueCopyNumber();
 
     String errCopyToClipboard();
 
@@ -1918,6 +1920,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errAccessDenied();
 
+    String caseLinkSuccessfulCreated();
+
+    String caseLinkSuccessfulRemoved();
+
+    String issueCopyNumberAndName();
+
     String documentConfirmRemove();
 
     String documentRemoved();
@@ -1939,4 +1947,14 @@ public interface Lang extends Messages, ContactItemLang {
     String documentFileDoc();
 
     String documentFilePdf();
+
+    String backToIssues();
+
+    String editNameAndDescription();
+
+    String openFullScreen();
+
+    String tagAdd();
+
+    String linkAdd();
 }

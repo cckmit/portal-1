@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -19,7 +18,7 @@
 
                     <h5 ui:field="name"/>
 
-                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group" enabled="false" showLabel="false"/>
+                    <g:HTMLPanel ui:field="linksContainer"/>
 
                     <div class="form-group-attached">
                         <div class="row clearfix">

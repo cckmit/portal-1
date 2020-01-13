@@ -1,1 +1,1 @@
-${issue}<#noparse> CRM-${case.caseNumber?c} [${TranslitUtils.transliterate(author.displayName, lang)!'?'}] ${caseState} ${importanceLevel} ${(case.product.name)!''}</#noparse>
+${issue}<#noparse> CRM-${caseNumber?c} [${TranslitUtils.transliterate(author.displayName, lang)!'?'}] ${caseState} ${importanceLevel} ${(productName)!''}</#noparse>

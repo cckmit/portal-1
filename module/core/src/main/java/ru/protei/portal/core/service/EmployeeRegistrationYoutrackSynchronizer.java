@@ -11,19 +11,24 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
 import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+import ru.protei.winter.jdbc.annotations.JdbcManyJoinData;
+import ru.protei.winter.jdbc.annotations.JdbcOneToMany;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -50,6 +55,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private CaseObjectDAO caseObjectDAO;
 
     @Autowired
+    private CaseLinkDAO caseLinkDAO;
+
+    @Autowired
     private CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
@@ -57,9 +65,6 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private MigrationEntryDAO migrationEntryDAO;
-
-    @Autowired
-    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     private EventPublisherService publisherService;
@@ -152,11 +157,12 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, Date lastYtSynchronization) {
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
-        jdbcManyRelationsHelper.fill(employeeRegistration, "youtrackIssues");
-
         En_CaseState oldState = employeeRegistration.getState();
 
-        Set<CaseLink> issues = employeeRegistration.getYoutrackIssues();
+        CaseLinkQuery linkQuery = new CaseLinkQuery();
+        linkQuery.setCaseId(employeeRegistration.getId());
+        linkQuery.setType(En_CaseLink.YT);
+        List<CaseLink> issues = caseLinkDAO.getListByQuery(linkQuery);
         if (CollectionUtils.isEmpty(issues))
             return;
 

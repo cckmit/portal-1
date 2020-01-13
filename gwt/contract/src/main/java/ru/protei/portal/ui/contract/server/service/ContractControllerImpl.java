@@ -8,13 +8,12 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.ContractService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ContractController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -34,9 +33,9 @@ public class ContractControllerImpl implements ContractController {
     public Contract getContract(Long id) throws RequestFailedException {
         log.info(" get contract, id: {}", id);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Contract> response = contractService.getContract(descriptor.makeAuthToken(), id);
+        Result<Contract> response = contractService.getContract(token, id);
         log.info(" get contract, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -54,14 +53,14 @@ public class ContractControllerImpl implements ContractController {
 
         log.info("create contract, id: {}", HelperFunc.nvlt(contract.getId(), "new"));
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        contract.setCreatorId(descriptor.getPerson().getId());
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        contract.setCreatorId(token.getPersonId());
 
         Result<Long> response;
         if ( contract.getId() == null ) {
-            response = contractService.createContract(descriptor.makeAuthToken(), contract);
+            response = contractService.createContract(token, contract);
         } else {
-            response = contractService.updateContract(descriptor.makeAuthToken(), contract);
+            response = contractService.updateContract(token, contract);
         }
 
         log.info("create contract, result: {}", response.isOk() ? "ok" : response.getStatus());
@@ -72,16 +71,6 @@ public class ContractControllerImpl implements ContractController {
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
-        log.info("userSessionDescriptor={}", descriptor);
-        if (descriptor == null) {
-            throw new RequestFailedException(En_ResultStatus.SESSION_NOT_FOUND);
-        }
-
-        return descriptor;
     }
 
     @Autowired

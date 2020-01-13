@@ -956,13 +956,21 @@ label.bordered:after {
   transition: all 0.5s;
 }
 
+.preview-container .card {
+  overflow-y: auto;
+  box-sizing: border-box;
+  max-height: calc(100vh - 130px); // 80px = main-header (60px) + top offset (15px) + bottom offset (55px)
+  z-index: 0;
+  right: 0;
+  position: relative;
+}
 
 .preview-wrapper,
 .preview-card,
 .filter-container .card {
   overflow-y: auto;
   box-sizing: border-box;
-  max-height: calc(100vh - 110px); // 80px = main-header (60px) + top offset (15px) + bottom offset (35px)
+  max-height: calc(100vh - 130px); // 80px = main-header (60px) + top offset (15px) + bottom offset (55px)
   z-index: 0;
   right: 0;
   position: relative;
@@ -1757,37 +1765,38 @@ a {
   right: 12%;
   border-radius: 50%;
 }
-.case-tag {
-  position: relative;
-  display: inline-block;
-  margin: 2px;
-  text-align: left;
-  height: 22px;
-  line-height: 22px;
-  cursor: default;
-  border-radius: 2px;
 
-  > * {
-    float: left;
-  }
+/**** case tag ****/
+.case-tags-container {
+  padding-left: 0;
+}
+
+.case-tag {
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 4px;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1em;
 
   .case-tag-close {
-    height: 12px;
-    width: 12px;
-    font-size: 0.8em;
     color: inherit;
+    margin-left: 5px;
+    margin-right: -2px;
     cursor: pointer;
-    padding: 5px 0 5px 6px;
+    font-size: 12px;
   }
 
   .case-tag-text {
-    padding: 0 6px 0 6px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-font-smoothing: initial;
+    line-height: 1em;
   }
 }
 
@@ -1795,10 +1804,6 @@ a {
 .case-tag-popup {
   z-index: 1000;
   float: left;
-  /*
-  min-width: 160px;
-  max-width: 360px;
-  */
   width: 300px;
   box-sizing: border-box;
   background: #fff;
@@ -1832,9 +1837,7 @@ a {
     padding: 0;
 
     .case-tag {
-      position: relative;
       text-align: center;
-      height: 22px;
       line-height: 22px;
       display: flex;
       margin: 6px;
@@ -1887,7 +1890,6 @@ a {
 }
 
 /**** Importance level icons ****/
-
 .importance-btn {
   padding: 5px 10px 5px 5px !important;
 }
@@ -3478,24 +3480,50 @@ label {
 }
 
 .number-copy-panel {
-  display: inline-block!important;
-  padding-right: 30px;
-  .copy-issue-description {
-    margin-left: 3px;
-    display: none;
+  display: inline-block;
+  .copy-issue-number {
+    opacity: .0;
+    position: absolute;
+    left: 3px;
+    font-size: 14px;
+    margin-top: 1px;
     .far {
       color: #929292;
     }
     &:hover {
       .far {
-        color: #5698d3;
+        color: #008080;
       }
     }
   }
 
   &:hover {
-    .copy-issue-description {
-      display: inline-block;
+    .copy-issue-number {
+      opacity: 1;
+    }
+  }
+}
+
+.number-and-name-copy-panel {
+  .copy-issue-number-and-name {
+    opacity: .0;
+    position: absolute;
+    left: 3px;
+    font-size: 14px;
+    margin-top: 1px;
+    .far {
+      color: #929292;
+    }
+    &:hover {
+      .far {
+        color: #008080;
+      }
+    }
+  }
+
+  &:hover {
+    .copy-issue-number-and-name {
+      opacity: 1;
     }
   }
 }
@@ -3587,7 +3615,6 @@ table {
   text-decoration: line-through;
 }
 
-
 /**** card links panel ****/
 .card-links {
   .collapse-btn {
@@ -3646,7 +3673,7 @@ table {
 /**** case links ****/
 .case-links {
   padding: 5px 10px !important;
-  max-height: 100px;
+  max-height: 120px;
   overflow: auto;
 
   .case-link {
@@ -3681,7 +3708,7 @@ table {
 
     &.case-link-completed {
       a {
-        color: gray;
+        color: gray !important;
       }
 
       .case-link-number {
@@ -3772,6 +3799,7 @@ table {
   display: none;
 }
 
+.preview-title-image-right,
 .preview-title-image-container-right {
   position: absolute;
   top: 20px;
@@ -3779,6 +3807,10 @@ table {
   img {
     height: 50px;
   }
+}
+
+.preview-title-image-right {
+  height: 50px;
 }
 
 .table-documents {
@@ -3795,4 +3827,8 @@ table {
   .document-project-column {
     width: 18%;
   }
+}
+
+.text-danger.size-error {
+  font-size: 75% !important;
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.util.sqlcondition;
 
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 

@@ -12,7 +12,7 @@
                         <g:Anchor ui:field="productName" href="#"/>
                     </h4>
 
-                    <img ui:field="typeImage" src="" class="preview-title-image_right"/>
+                    <img ui:field="typeImage" src="" class="preview-title-image-right"/>
                     <div class="small hint-text no-margin">
                         <a ui:field="wikiLink" href="#" target="_blank"/>
                     </div>

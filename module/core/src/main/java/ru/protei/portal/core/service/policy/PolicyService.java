@@ -2,9 +2,9 @@ package ru.protei.portal.core.service.policy;
 
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 
 import java.util.Set;
 
@@ -17,7 +17,7 @@ public interface PolicyService {
 
     boolean hasEveryPrivilegeOf( Set< UserRole > roles, En_Privilege... privileges );
 
-    boolean hasAccessForCaseObject( UserSessionDescriptor descriptor, En_Privilege privilege, CaseObject caseObject );
+    boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject );
 
     boolean hasAnyPrivilegeOf( Set< UserRole > roles, En_Privilege... privileges );
 

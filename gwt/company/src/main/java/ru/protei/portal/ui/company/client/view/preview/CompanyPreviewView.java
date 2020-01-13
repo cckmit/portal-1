@@ -7,13 +7,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
 
-import java.util.Set;
 
 /**
  * Представление превью компании
@@ -117,17 +114,10 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         subscription.setText(value);
     }
 
-    @Override
-    public void setTags(Set<CaseTag> value) {
-        this.caseMetaView.setTags(value);
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        tagsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.TAGS);
-        caseMetaView.setEnsureDebugIdTagContainer(DebugIds.COMPANY_PREVIEW.TAGS_CONTAINER);
         subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
         subscription.ensureDebugId(DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
         contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
@@ -159,11 +149,6 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     ImageElement categoryImage;
     @UiField
     HTMLPanel siteFolderContainer;
-    @Inject
-    @UiField(provided = true)
-    CaseMetaView caseMetaView;
-    @UiField
-    SpanElement tagsLabel;
     @UiField
     SpanElement subscriptionLabel;
     @UiField

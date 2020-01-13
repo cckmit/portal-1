@@ -34,11 +34,11 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setState(En_CaseState state);
 
-    void setIssues(Set<CaseLink> issues);
-
     void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
 
-    void setProbationPeriodMonth( String probationPeriodMonth );
+    HasWidgets getLinksContainer();
+
+    void setProbationPeriodMonth(String probationPeriodMonth );
 
     void setOperatingSystem( String operatingSystem );
 

@@ -6,9 +6,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author michael
@@ -57,9 +56,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
-
-    @JdbcOneToMany(table = "case_tag", localColumn = "id", remoteColumn = "company_id" )
-    private Set<CaseTag> tags;
 
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
     private List<CaseState> caseStates;
@@ -179,14 +175,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.subscriptions = subscriptions;
     }
 
-    public Set<CaseTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<CaseTag> tags) {
-        this.tags = tags;
-    }
-
     public List<CaseState> getCaseStates() {
         return caseStates;
     }
@@ -240,6 +228,15 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         isArchived = deleted;
     }
 
+    public Collection<Long> getCompanyAndChildIds() {
+        ArrayList<Long> ids = new ArrayList<>();
+        ids.add(getId());
+        if (getChildCompanies() != null) {
+            ids.addAll(getChildCompanies().stream().map(Company::getId).collect(Collectors.toList()));
+        }
+        return ids;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -265,7 +262,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", oldId=" + oldId +
                 ", isHidden=" + isHidden +
                 ", subscriptions=" + subscriptions +
-                ", tags=" + tags +
                 ", caseStates=" + caseStates +
                 ", isArchived=" + isArchived +
                 '}';
