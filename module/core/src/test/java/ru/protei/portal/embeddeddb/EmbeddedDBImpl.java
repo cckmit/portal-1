@@ -16,17 +16,17 @@ import ru.protei.portal.config.TestConfig;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.Random;
 
 public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
 
     private static final String DB_SCHEMA_NAME = "portal_test";
-    private static final int DB_PORT = 33062;
+    public static final int DB_PORT = 33062;
+    private int port = DB_PORT;
     private static final String DB_USERNAME = "admin";
     private static final String DB_PASSWORD = "sql";
     private static final SchemaConfig SCHEMA_CONFIG = SchemaConfig.aSchemaConfig(DB_SCHEMA_NAME).build();
     private static final Logger log = LoggerFactory.getLogger(EmbeddedDBImpl.class);
-    private static boolean isInitialized = false;
+    private boolean isInitialized = false;
     private static EmbeddedMysql mysqld;
     private static ApplicationContext context;
     @Autowired private TestConfig testConfig;
@@ -44,9 +44,11 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
         }
         isInitialized = true;
         if (testConfig.data().embeddedDbEnabled) {
-            mysqld = EmbeddedMysql.anEmbeddedMysql(buildConfig())
+            port = testConfig.data().getPort();
+            mysqld = EmbeddedMysql.anEmbeddedMysql(buildConfig(port))
                     .addSchema(SCHEMA_CONFIG)
                     .start();
+            log.info( "onInit(): Started on port={}", port );
         }
         applyLiquibase();
     }
@@ -56,8 +58,13 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
         if (testConfig.data().embeddedDbEnabled) {
             mysqld.dropSchema(SCHEMA_CONFIG);
             mysqld.stop();
+            log.info( "onShutdown(): Stopped on port={}", port );
         }
         isInitialized = false;
+    }
+
+    public int getPort(  ) {
+        return port;
     }
 
     private void applyLiquibase() {
@@ -65,14 +72,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
         context.getBean(SpringLiquibase.class);
     }
 
-    private MysqldConfig buildConfig() {
-        int port = DB_PORT;
-        if(testConfig.data().isRandomPort){
-            Random random = new Random( );
-            int rand = random.nextInt( 100 );
-            port += rand;
-        }
-
+    private MysqldConfig buildConfig(int port) {
         return MysqldConfig.aMysqldConfig(Version.v5_7_19)
                 .withCharset(Charset.UTF8)
                 .withPort(port)
