@@ -38,5 +38,6 @@ public class TestConfig {
         }
 
         public final boolean embeddedDbEnabled;
+        public boolean isRandomPort = true;
     }
 }

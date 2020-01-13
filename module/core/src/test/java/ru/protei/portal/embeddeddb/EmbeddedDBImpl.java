@@ -16,6 +16,7 @@ import ru.protei.portal.config.TestConfig;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Random;
 
 public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
 
@@ -65,9 +66,16 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
     }
 
     private MysqldConfig buildConfig() {
+        int port = DB_PORT;
+        if(testConfig.data().isRandomPort){
+            Random random = new Random( );
+            int rand = random.nextInt( 100 );
+            port += rand;
+        }
+
         return MysqldConfig.aMysqldConfig(Version.v5_7_19)
                 .withCharset(Charset.UTF8)
-                .withPort(DB_PORT)
+                .withPort(port)
                 .withUser(DB_USERNAME, DB_PASSWORD)
                 .withServerVariable("lower_case_table_names", 1)
                 .build();
