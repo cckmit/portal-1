@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.subscription.item.SubscriptionItem;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -106,6 +107,7 @@ public class SubscriptionList
 
         modelToView.put( subscriptionItemWidget, subscription );
         container.add( subscriptionItemWidget );
+        setDebugIds(container.getWidgetIndex(subscriptionItemWidget), subscriptionItemWidget);
     }
 
     private void addEmptyItem() {
@@ -120,6 +122,14 @@ public class SubscriptionList
                 .values();
 
         return new ArrayList<>(c);
+    }
+
+    private void setDebugIds(int index, SubscriptionItem subscriptionItemWidget) {
+        subscriptionItemWidget.ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM + index);
+        subscriptionItemWidget.setDebugId(
+                DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_LANG_CODE + index,
+                DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_EMAIL + index
+        );
     }
 
     @UiField

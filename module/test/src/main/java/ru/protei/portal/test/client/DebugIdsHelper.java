@@ -135,4 +135,21 @@ public class DebugIdsHelper {
             return DebugIds.LOCALE_BUTTON.DEFAULT + locale;
         }
     }
+    public static final class PRODUCT_TYPE {
+        public static String byId(int id) {
+            if (id == 1) {
+                return DebugIds.PRODUCT_TYPES_BUTTON.COMPONENT;
+            }
+            if (id == 2) {
+                return DebugIds.PRODUCT_TYPES_BUTTON.PRODUCT;
+            }
+            if (id == 3) {
+                return DebugIds.PRODUCT_TYPES_BUTTON.DIRECTION;
+            }
+            if (id == 4) {
+                return DebugIds.PRODUCT_TYPES_BUTTON.COMPLEX;
+            }
+            return DebugIds.PRODUCT_TYPES_BUTTON.DEFAULT + id;
+        }
+    }
 }

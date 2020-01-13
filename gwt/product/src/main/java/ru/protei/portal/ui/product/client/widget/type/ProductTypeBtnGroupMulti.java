@@ -2,6 +2,7 @@ package ru.protei.portal.ui.product.client.widget.type;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
@@ -22,6 +23,7 @@ public class ProductTypeBtnGroupMulti extends ToggleBtnGroupMulti<En_DevUnitType
                     type,
                     typeLang.getName(type)
             );
+            setEnsureDebugId(type, DebugIdsHelper.PRODUCT_TYPE.byId(type.getId()));
         }
     }
 

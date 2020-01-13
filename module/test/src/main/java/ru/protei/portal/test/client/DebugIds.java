@@ -185,6 +185,14 @@ public class DebugIds {
         String COSMETIC = "importance-button-cosmetic";
     }
 
+    public interface PRODUCT_TYPES_BUTTON {
+        String DEFAULT = "product-types-button-";
+        String COMPONENT = "product-types-button-component";
+        String PRODUCT = "product-types-button-product";
+        String DIRECTION = "product-types-button-direction";
+        String COMPLEX = "product-types-button-complex";
+    }
+
     public interface ISSUE_STATE {
         String DEFAULT = "issue-state-";
         String CREATED = "issue-state-created";
@@ -384,6 +392,47 @@ public class DebugIds {
 
     public interface PRODUCT_TABLE {
         String LOCK_ICON = "product-table-lock-icon";
+        interface FILTER {
+            String SHOW_DEPRECATED = "product-filter-show-deprecated-button";
+            String TYPES = "product-filter-types-selector";
+        }
+    }
+
+    public interface PRODUCT {
+        String NAME = "product-name";
+        String WIKI_LINK = "product-wiki-link";
+        String DESCRIPTION = "product-description";
+        String SUBSCRIPTIONS = "product-subscriptions";
+        String SUBSCRIPTIONS_ITEM = "product-subscriptions-item-";
+        String SUBSCRIPTIONS_ITEM_LANG_CODE = "product-subscriptions-item-lang-code-";
+        String SUBSCRIPTIONS_ITEM_EMAIL = "product-subscriptions-item-email-";
+        String INCLUDES = "product-includes";
+        String PRODUCTS = "product-products";
+        String ALIASES = "product-aliases";
+        String HISTORY_VERSION = "product-history-version";
+        String CONFIGURATION = "product-configuration";
+        String CDR_DESCRIPTION = "product-cdr-description";
+
+        interface TAB {
+            String HISTORY_VERSION = "product_preview-tab-history-version";
+            String CONFIGURATION = "product_preview-tab-configuration";
+            String CDR_DESCRIPTION = "product_preview-tab-cdr-description";
+        }
+    }
+
+    public interface PRODUCT_PREVIEW {
+        String NAME = "product-preview-name";
+        String WIKI_LINK = "product-preview-wiki-link";
+        String DESCRIPTION = "product-preview-description";
+        String HISTORY_VERSION = "product-preview-history-version";
+        String CONFIGURATION = "product-preview-configuration";
+        String CDR_DESCRIPTION = "product-preview-cdr-description";
+
+        interface TAB {
+            String HISTORY_VERSION = "product-preview-tab-history-version";
+            String CONFIGURATION = "product-preview-tab-configuration";
+            String CDR_DESCRIPTION = "product-preview-tab-cdr-description";
+        }
     }
 
     public interface PRODUCT_ITEM {

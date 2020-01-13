@@ -99,6 +99,11 @@ public class SubscriptionItem
         return email.getValue().isEmpty() || email.isValid();
     }
 
+    public void setDebugId(String localeId, String emailId) {
+        locale.setEnsureDebugId(localeId);
+        email.ensureDebugId(emailId);
+    }
+
     private boolean isChangedStatusFromNewToFilled() {
         return ( value.getEmail() == null || value.getEmail().trim().isEmpty() )
                 && email.getValue().length() > 0;
