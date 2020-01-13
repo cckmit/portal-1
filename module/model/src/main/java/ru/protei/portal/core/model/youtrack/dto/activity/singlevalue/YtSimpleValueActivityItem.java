@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.youtrack.dto.activity.singlevalue;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-SimpleValueActivityItem.html */
+/**
+ *  https://www.jetbrains.com/help/youtrack/standalone/api-entity-SimpleValueActivityItem.html
+ */
 public class YtSimpleValueActivityItem extends YtSingleValueActivityItem {
 
     public Object removed;

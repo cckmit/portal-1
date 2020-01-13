@@ -5,7 +5,9 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.project.YtProjectCus
 
 import java.util.List;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-Project.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-Project.html
+ */
 public class YtProject extends YtDto {
 
     public String name;

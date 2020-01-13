@@ -4,7 +4,9 @@ import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 
 import java.util.List;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-AttachmentActivityItem.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-AttachmentActivityItem.html
+ */
 public class YtAttachmentActivityItem extends YtCreatedDeletedActivityItem {
 
     public List<YtIssueAttachment> removed;

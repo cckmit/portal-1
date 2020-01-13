@@ -5,7 +5,9 @@ import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
 import java.util.List;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-IssueComment.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-IssueComment.html
+ */
 public class YtIssueComment extends YtDto {
 
     public String text;

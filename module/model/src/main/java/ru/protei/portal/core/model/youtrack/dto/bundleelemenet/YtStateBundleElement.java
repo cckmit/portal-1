@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.youtrack.dto.bundleelemenet;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateBundleElement.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateBundleElement.html
+ */
 public class YtStateBundleElement extends YtLocalizableBundleElement {
 
     public Boolean isResolved;

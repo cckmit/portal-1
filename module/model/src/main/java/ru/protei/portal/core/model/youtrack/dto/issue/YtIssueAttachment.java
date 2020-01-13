@@ -3,7 +3,9 @@ package ru.protei.portal.core.model.youtrack.dto.issue;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-IssueAttachment.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-IssueAttachment.html
+ */
 public class YtIssueAttachment extends YtDto {
 
     public String name;

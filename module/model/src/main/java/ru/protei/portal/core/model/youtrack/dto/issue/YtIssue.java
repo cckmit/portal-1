@@ -10,7 +10,9 @@ import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 import java.util.List;
 import java.util.Objects;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-Issue.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-Issue.html
+ */
 public class YtIssue extends YtDto {
 
     public String idReadable;

@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-ActivityCategory.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-ActivityCategory.html
+ */
 public enum YtActivityCategory {
     AttachmentRenameCategory,
     AttachmentVisibilityCategory,

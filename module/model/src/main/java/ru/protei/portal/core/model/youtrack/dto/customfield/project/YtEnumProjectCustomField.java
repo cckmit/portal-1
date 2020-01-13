@@ -2,7 +2,9 @@ package ru.protei.portal.core.model.youtrack.dto.customfield.project;
 
 import ru.protei.portal.core.model.youtrack.dto.bundle.YtEnumBundle;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-EnumProjectCustomField.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-EnumProjectCustomField.html
+ */
 public class YtEnumProjectCustomField extends YtBundleProjectCustomField {
 
     public YtEnumBundle bundle;

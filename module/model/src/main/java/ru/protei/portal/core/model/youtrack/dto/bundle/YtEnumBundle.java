@@ -4,7 +4,9 @@ import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleEleme
 
 import java.util.List;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-EnumBundle.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-EnumBundle.html
+ */
 public class YtEnumBundle extends YtBaseBundle {
 
     public List<YtEnumBundleElement> values;

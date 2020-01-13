@@ -5,7 +5,9 @@ import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElem
 
 import java.util.List;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateProjectCustomField.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateProjectCustomField.html
+ */
 public class YtStateProjectCustomField extends YtBundleProjectCustomField {
 
     public YtStateBundle bundle;

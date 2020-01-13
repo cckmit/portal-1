@@ -4,7 +4,9 @@ import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.customfield.YtCustomField;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-ProjectCustomField.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-ProjectCustomField.html
+ */
 public class YtProjectCustomField extends YtDto {
 
     public YtCustomField field;

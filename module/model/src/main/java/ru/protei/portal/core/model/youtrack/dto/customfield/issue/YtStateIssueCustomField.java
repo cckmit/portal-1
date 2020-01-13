@@ -2,7 +2,9 @@ package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateIssueCustomField.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateIssueCustomField.html
+ */
 public class YtStateIssueCustomField extends YtSingleValueIssueCustomField {
 
     public YtStateBundleElement value;

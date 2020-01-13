@@ -6,7 +6,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.Reflections;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldSubclassesSpecifier;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoEntityName;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldName;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldCustomSubclasses;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import javax.annotation.PostConstruct;
@@ -28,8 +30,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         Reflections reflections = makeReflections();
         Set<Class<? extends YtDto>> allClasses = getSubclasses(YtDto.class, new BuildFieldsContext(reflections));
         for (Class<? extends YtDto> clazz : allClasses) {
-            String className = ClassUtils.getSimpleName(clazz);
-            String entityName = convertClassNameToYtEntityName(className);
+            String entityName = getEntityName(clazz);
             String entityFields = buildFieldsOfClass(clazz, new BuildFieldsContext(reflections));
             dto2fields.put(clazz, entityFields);
             entity2dto.put(entityName, clazz);
@@ -110,13 +111,13 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         List<Field> fields = FieldUtils.getAllFieldsList(rootClazz);
         List<Class<? extends YtDto>> subclasses = new ArrayList<>();
         if (rootClazz == YtDto.class && rootField != null) {
-            YtDtoFieldSubclassesSpecifier specifier = rootField.getAnnotation(YtDtoFieldSubclassesSpecifier.class);
+            YtDtoFieldCustomSubclasses specifier = rootField.getAnnotation(YtDtoFieldCustomSubclasses.class);
             if (specifier == null) {
                 throw new IllegalStateException(String.format("Field [%s] has no YtDtoFieldSpecifier annotation", rootField));
             }
             subclasses.addAll(Arrays.asList(specifier.value()));
         } else {
-            YtDtoFieldSubclassesSpecifier specifier = rootField != null ? rootField.getAnnotation(YtDtoFieldSubclassesSpecifier.class) : null;
+            YtDtoFieldCustomSubclasses specifier = rootField != null ? rootField.getAnnotation(YtDtoFieldCustomSubclasses.class) : null;
             if (specifier != null) {
                 subclasses.addAll(Arrays.asList(specifier.value()));
             } else {
@@ -164,6 +165,10 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
     }
 
     private String getFieldName(Field field) {
+        YtDtoFieldName ytDtoFieldName = field.getAnnotation(YtDtoFieldName.class);
+        if (ytDtoFieldName != null && StringUtils.isNotEmpty(ytDtoFieldName.value())) {
+            return ytDtoFieldName.value();
+        }
         JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
         if (jsonProperty != null && StringUtils.isNotEmpty(jsonProperty.value())) {
             return jsonProperty.value();
@@ -171,7 +176,12 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         return field.getName();
     }
 
-    private String convertClassNameToYtEntityName(String className) {
+    private String getEntityName(Class<? extends YtDto> clazz) {
+        YtDtoEntityName ytDtoEntityName = clazz.getAnnotation(YtDtoEntityName.class);
+        if (ytDtoEntityName != null && StringUtils.isNotEmpty(ytDtoEntityName.value())) {
+            return ytDtoEntityName.value();
+        }
+        String className = ClassUtils.getSimpleName(clazz);
         return className.replaceFirst("^Yt", "");
     }
 

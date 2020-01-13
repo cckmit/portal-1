@@ -4,7 +4,9 @@ import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.filterfield.YtFilterField;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-ActivityItem.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-ActivityItem.html
+ */
 public abstract class YtActivityItem extends YtDto {
 
     public Long timestamp;

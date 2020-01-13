@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.youtrack.dto.activity.customfield;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-TextCustomFieldActivityItem.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-TextCustomFieldActivityItem.html
+ */
 public class YtTextCustomFieldActivityItem extends YtCustomFieldActivityItem {
 
     public String removed;

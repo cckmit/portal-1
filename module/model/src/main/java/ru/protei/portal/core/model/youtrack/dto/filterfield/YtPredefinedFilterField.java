@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.youtrack.dto.filterfield;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-PredefinedFilterField.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-PredefinedFilterField.html
+ */
 public class YtPredefinedFilterField extends YtFilterField {
 
     @Override

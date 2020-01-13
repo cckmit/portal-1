@@ -3,7 +3,9 @@ package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.project.YtStateProjectCustomField;
 
-/** not documented */
+/**
+ * not documented
+ */
 public class YtStateMachineIssueCustomField extends YtSingleValueIssueCustomField {
 
     public YtStateProjectCustomField projectCustomField;

@@ -4,7 +4,9 @@ import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElem
 
 import java.util.List;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateBundle.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-StateBundle.html
+ */
 public class YtStateBundle extends YtBaseBundle {
 
     public List<YtStateBundleElement> values;

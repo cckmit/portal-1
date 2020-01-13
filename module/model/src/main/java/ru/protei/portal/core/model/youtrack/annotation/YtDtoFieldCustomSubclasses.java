@@ -15,11 +15,13 @@ import java.lang.annotation.Target;
  * - Если аннотация не указана, тогда все дочерние классы
  * - Если аннотация указана, тогда только те классы, которые указаны в аннотации
  *
- * Данная аннотация обязательна для полей с типом YtDto (не подтипом).
+ * Данная аннотация обязательна для полей с типом YtDto.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface YtDtoFieldSubclassesSpecifier {
-    /** Список классов для получения дочерних полей */
+public @interface YtDtoFieldCustomSubclasses {
+    /**
+     * Список классов
+     */
     Class<? extends YtDto>[] value();
 }

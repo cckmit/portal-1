@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.youtrack.dto.customfield.project;
 
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-SimpleProjectCustomField.html */
+/**
+ * https://www.jetbrains.com/help/youtrack/standalone/api-entity-SimpleProjectCustomField.html
+ */
 public class YtSimpleProjectCustomField extends YtProjectCustomField {
 
     @Override
