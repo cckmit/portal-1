@@ -54,6 +54,10 @@ public class CollectionUtils {
         return list == null ? Collections.<T>emptyList() : list;
     }
 
+    public static <K, V> Map<K, V> emptyIfNull( Map<K, V> map ) {
+        return map == null ? Collections.<K, V>emptyMap() : map;
+    }
+
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
                                          final Function<? super I, ? extends O> mapper ) {
         if ( iterable == null || mapper == null || output == null ) {

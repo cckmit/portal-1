@@ -74,8 +74,8 @@ public class YtDtoObjectMapperProvider {
 
     private static List<NamedType> makeSubtypes(YtDtoFieldsMapper fieldsMapper) {
         List<NamedType> subtypes = new ArrayList<>();
-        Map<String, Class<? extends YtDto>> entityNameClassMap = fieldsMapper.getEntityNameClassMap();
-        for (Map.Entry<String, Class<? extends YtDto>> entry : entityNameClassMap.entrySet()) {
+        Map<String, Class<?>> entityNameClassMap = fieldsMapper.getEntityNameClassMap();
+        for (Map.Entry<String, Class<?>> entry : entityNameClassMap.entrySet()) {
             subtypes.add(new NamedType(entry.getValue(), entry.getKey()));
         }
         return subtypes;

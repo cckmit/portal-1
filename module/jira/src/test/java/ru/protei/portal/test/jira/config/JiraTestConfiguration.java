@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
@@ -267,11 +265,6 @@ public class JiraTestConfiguration {
     @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
-    }
-
-    @Bean
-    public YoutrackApiClient getYoutrackApiDAO() {
-        return new YoutrackApiClientImpl();
     }
 
     @Bean

@@ -6,7 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 import ru.protei.portal.api.struct.Result;
@@ -16,7 +21,6 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
@@ -39,68 +43,51 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     }
 
     @Override
-    public <RES> Result<RES> read(String url, Class<RES> clazz) {
-        return read(url, "", clazz);
+    public <RES> Result<RES> read(YoutrackRequest<?, RES> request) {
+        ensureFieldsValueSet(request);
+        return doRead(request.getUrl(), request.getParams(), request.getResponseClass());
     }
 
     @Override
-    public <RES> Result<RES> read(String url, String query, Class<RES> clazz) {
-        Map<String, String> params = new HashMap<>();
-        params.put("query", query);
-        return read(url, params, clazz);
+    public <REQ, RES> Result<RES> create(YoutrackRequest<REQ, RES> request) {
+        ensureFieldsValueSet(request);
+        return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto());
     }
 
     @Override
-    public <RES> Result<RES> read(String url, Map<String, String> params, Class<RES> clazz) {
-        String fields = fieldsMapper.getFields(clazz);
-        return read(url, fields, params, clazz);
+    public <REQ, RES> Result<RES> update(YoutrackRequest<REQ, RES> request) {
+        ensureFieldsValueSet(request);
+        return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto());
     }
 
     @Override
-    public <RES> Result<RES> read(String url, String fields, String query, Class<RES> clazz) {
-        Map<String, String> params = new HashMap<>();
-        params.put("query", query);
-        return read(url, fields, params, clazz);
+    public <REQ, RES> Result<RES> remove(YoutrackRequest<REQ, RES> request) {
+        ensureFieldsValueSet(request);
+        return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto(), request.getRequestDtoFieldNamesToRemove());
     }
 
-    @Override
-    public <RES> Result<RES> read(String url, String fields, Map<String, String> params, Class<RES> clazz) {
-        String path = buildUrl(url, fields, params);
-        return execute((client, headers) -> client.exchange(path, HttpMethod.GET, new HttpEntity<>(headers), clazz))
-                .map(ResponseEntity::getBody);
-    }
-
-    @Override
-    public <REQ extends YtDto, RES> Result<RES> save(String url, Class<RES> clazz, REQ dto) {
-        return save(url, clazz, dto, new String[0]);
-    }
-
-    @Override
-    public <REQ extends YtDto, RES> Result<RES> save(String url, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
-        String fields = fieldsMapper.getFields(clazz);
-        return save(url, fields, clazz, dto, dtoForceIncludeFields);
-    }
-
-    @Override
-    public <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto) {
-        return save(url, fields, clazz, dto, new String[0]);
-    }
-
-    @Override
-    public <REQ extends YtDto, RES> Result<RES> save(String url, String fields, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
-        try {
-            String path = buildUrl(url, fields);
-            String body = serializeDto(dto, dtoForceIncludeFields);
-            return execute((client, headers) -> client.postForEntity(path, new HttpEntity<>(body, headers), clazz))
-                    .map(ResponseEntity::getBody);
-        } catch (Exception e) {
-            log.warn("save(): Failed to do save request", e);
-            return error(En_ResultStatus.INTERNAL_ERROR);
+    private void ensureFieldsValueSet(YoutrackRequest<?, ?> request) {
+        if (!request.getParams().containsKey("fields")) {
+            String fields = fieldsMapper.getFields(request.getResponseClass(), request.getResponseClassIncludeClasses());
+            request.getParams().put("fields", fields);
         }
     }
 
-    @Override
-    public <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler) {
+    private <RES> Result<RES> doRead(String url, Map<String, String> params, Class<RES> clazz) {
+        return buildUrl(url, params)
+            .flatMap(path -> execute((client, headers) -> client.exchange(path, HttpMethod.GET, new HttpEntity<>(headers), clazz)))
+            .map(ResponseEntity::getBody);
+    }
+
+    private <REQ, RES> Result<RES> doSave(String url, Map<String, String> params, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
+        return buildUrl(url, params)
+            .flatMap(path -> serializeDto(dto, dtoForceIncludeFields)
+                .flatMap(body -> execute((client, headers) -> client.postForEntity(path, new HttpEntity<>(body, headers), clazz)))
+                .map(ResponseEntity::getBody)
+            );
+    }
+
+    private <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler) {
         RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
         RestTemplate ytClient = makeClient(errorHandler);
 
@@ -132,33 +119,23 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         return ok(response);
     }
 
-    public void setAuthHeaders(HttpHeaders authHeaders) {
-        this.authHeaders = authHeaders;
-    }
-
-    private String buildUrl(String base, String fields) {
-        return buildUrl(base, fields, null);
-    }
-
-    private String buildUrl(String base, String fields, Map<String, String> params) {
-        List<String> queryList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(fields)) {
-            queryList.add("fields=" + urlEncode(fields));
+    private Result<String> buildUrl(String base, Map<String, String> params) {
+        if (!params.containsKey("fields")) {
+            return error(En_ResultStatus.INTERNAL_ERROR, "No 'fields' value provided");
         }
-        if (params != null) {
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
-                    queryList.add(key + "=" + urlEncode(value));
-                }
+        List<String> queryList = new ArrayList<>();
+        for (Map.Entry<String, String> entry : CollectionUtils.emptyIfNull(params).entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
+                queryList.add(key + "=" + urlEncode(value));
             }
         }
         String url = base;
         if (CollectionUtils.isNotEmpty(queryList)) {
             url += "?" + String.join("&", queryList);
         }
-        return url;
+        return ok(url);
     }
 
     private String urlEncode(String value) {
@@ -171,8 +148,14 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     }
 
     private RestTemplate makeClient(RestTemplateResponseErrorHandler errorHandler) {
-        RestTemplate template = new RestTemplate();
-        defineCustomObjectMapper(template);
+        RestTemplate template = new RestTemplate(Arrays.asList(
+                new MappingJackson2HttpMessageConverter(objectMapper),
+                new ByteArrayHttpMessageConverter(),
+                new StringHttpMessageConverter(),
+                new ResourceHttpMessageConverter(),
+                new SourceHttpMessageConverter<>(),
+                new AllEncompassingFormHttpMessageConverter()
+        ));
         if (errorHandler != null) {
             template.setErrorHandler(errorHandler);
         }
@@ -180,17 +163,16 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         return template;
     }
 
-    private RestTemplate defineCustomObjectMapper(RestTemplate template) {
-        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-        template.getMessageConverters().removeIf(m -> MappingJackson2HttpMessageConverter.class.getName().equals(m.getClass().getName()));
-        template.getMessageConverters().add(messageConverter);
-        return template;
-    }
-
-    private <T extends YtDto> String serializeDto(T dto, String...forceIncludeFields) throws JsonProcessingException {
-        return objectMapper
-            .writer(YtDtoObjectMapperProvider.getFilterProvider(Arrays.asList(forceIncludeFields)))
-            .writeValueAsString(dto);
+    private <T> Result<String> serializeDto(T dto, String...forceIncludeFields) {
+        try {
+            String body = objectMapper
+                .writer(YtDtoObjectMapperProvider.getFilterProvider(Arrays.asList(forceIncludeFields)))
+                .writeValueAsString(dto);
+            return ok(body);
+        } catch (JsonProcessingException e) {
+            log.error(String.format("Failed to serialize dto : [%s]", dto), e);
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
     }
 
     @Autowired

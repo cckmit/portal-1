@@ -15,8 +15,6 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
@@ -533,11 +531,6 @@ public class MainConfiguration {
     @Bean
     public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
         return  new WorkerEntryShortViewDAO_Impl();
-    }
-
-    @Bean
-    public YoutrackApiClient getYoutrackApiDAO() {
-        return new YoutrackApiClientImpl();
     }
 
     @Bean

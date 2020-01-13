@@ -9,8 +9,6 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
@@ -66,11 +64,6 @@ public class ServiceTestsConfiguration {
         messageSource.setBasenames("Lang");
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
-    }
-
-    @Bean
-    public YoutrackApiClient getYoutrackApiClient() {
-        return new YoutrackApiClientImpl();
     }
 
     @Bean

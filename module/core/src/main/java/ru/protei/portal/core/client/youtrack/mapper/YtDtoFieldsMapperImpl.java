@@ -5,74 +5,55 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.youtrack.annotation.YtDtoEntityName;
-import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldName;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldCustomSubclasses;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldName;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
-    @PostConstruct
-    public void init() {
-        setup();
-    }
-
     @Override
-    public YtDtoFieldsMapper setup() {
-        clean();
-        Reflections reflections = makeReflections();
-        Set<Class<? extends YtDto>> allClasses = getSubclasses(YtDto.class, new BuildFieldsContext(reflections));
-        for (Class<? extends YtDto> clazz : allClasses) {
-            String entityName = getEntityName(clazz);
-            String entityFields = buildFieldsOfClass(clazz, new BuildFieldsContext(reflections));
-            dto2fields.put(clazz, entityFields);
-            entity2dto.put(entityName, clazz);
-        }
-        return this;
-    }
-
-    @Override
-    public <T> String getFields(Class<T> clazz) {
-        if (dto2fields == null || dto2fields.isEmpty()) {
-            setup();
-        }
+    public String getFields(Class<?> clazz, Class<?>...includeClasses) {
+        Class<?> type = null;
         if (TypeUtils.isAssignable(clazz, YtDto.class)) {
-            return dto2fields.get(clazz);
+            type = clazz;
         }
-        if (clazz.isArray()) {
-            Class<?> componentType = clazz.getComponentType();
-            if (TypeUtils.isAssignable(componentType, YtDto.class)) {
-                return dto2fields.get(componentType);
-            }
+        if (clazz.isArray() && TypeUtils.isAssignable(clazz.getComponentType(), YtDto.class)) {
+            type = clazz.getComponentType();
         }
-        return null;
+        if (type == null) {
+            return null;
+        }
+        return buildFieldsOfClass(type, new BuildFieldsContext(getReflections(), Arrays.asList(includeClasses)));
     }
 
     @Override
-    public Map<String, Class<? extends YtDto>> getEntityNameClassMap() {
-        if (entity2dto == null || entity2dto.isEmpty()) {
-            setup();
+    public Map<String, Class<?>> getEntityNameClassMap() {
+        Map<String, Class<?>> entity2dto = new HashMap<>();
+        Set<Class<? extends YtDto>> allClasses = getSubclasses(YtDto.class, getReflections());
+        for (Class<?> clazz : allClasses) {
+            String entityName = getEntityName(clazz);
+            entity2dto.put(entityName, clazz);
         }
         return entity2dto;
     }
 
-    private <T extends YtDto> String buildFieldsOfClass(Class<T> clazz, BuildFieldsContext context) {
-        Map<String, Object> map = buildFieldMapOfClass(clazz, context);
+    private String buildFieldsOfClass(Class<?> clazz, BuildFieldsContext context) {
+        Map<String, Object> map = buildFieldMapOfClass(null, clazz, context);
         return map2string(map);
     }
 
-    private <T extends YtDto> Map<String, Object> buildFieldMapOfClass(Class<T> rootClazz, BuildFieldsContext context) {
-        return buildFieldMapOfClass(null, rootClazz, context);
-    }
-
-    private <T extends YtDto> Map<String, Object> buildFieldMapOfClass(Field rootField, Class<T> rootClazz, BuildFieldsContext context) {
+    private Map<String, Object> buildFieldMapOfClass(Field rootField, Class<?> rootClazz, BuildFieldsContext context) {
         // Map<String, Map<String, Map<String, Map<String, ...>>>>
         Map<String, Object> fieldTree = new HashMap<>();
 
@@ -89,7 +70,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
             } else {
                 fieldMapOld = new HashMap<>();
             }
-            Class<T> clazz = getClassAssignableFromYtDto(field);
+            Class<?> clazz = getClassAssignableFromYtDto(field);
             if (clazz == null) {
                 fieldTree.put(fieldName, fieldMapOld);
                 continue;
@@ -107,52 +88,56 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         return fieldTree;
     }
 
-    private <T extends YtDto> List<Field> getFieldsOfGivenAndSuperAndSubClasses(Field rootField, Class<T> rootClazz, BuildFieldsContext context) {
+    private List<Field> getFieldsOfGivenAndSuperAndSubClasses(Field rootField, Class<?> rootClazz, BuildFieldsContext context) {
         List<Field> fields = FieldUtils.getAllFieldsList(rootClazz);
-        List<Class<? extends YtDto>> subclasses = new ArrayList<>();
-        if (rootClazz == YtDto.class && rootField != null) {
-            YtDtoFieldCustomSubclasses specifier = rootField.getAnnotation(YtDtoFieldCustomSubclasses.class);
-            if (specifier == null) {
-                throw new IllegalStateException(String.format("Field [%s] has no YtDtoFieldSpecifier annotation", rootField));
-            }
+        List<Class<?>> subclasses = new ArrayList<>();
+        YtDtoFieldCustomSubclasses specifier = rootField != null
+                ? rootField.getAnnotation(YtDtoFieldCustomSubclasses.class)
+                : null;
+        if (specifier != null) {
             subclasses.addAll(Arrays.asList(specifier.value()));
         } else {
-            YtDtoFieldCustomSubclasses specifier = rootField != null ? rootField.getAnnotation(YtDtoFieldCustomSubclasses.class) : null;
-            if (specifier != null) {
-                subclasses.addAll(Arrays.asList(specifier.value()));
+            if (rootClazz == YtDto.class && rootField != null) {
+                log.error("Field [{}] has no YtDtoFieldCustomSubclasses annotation, field's subclasses are skipped", rootField);
             } else {
-                subclasses.addAll(getSubclasses(rootClazz, context));
+                subclasses.addAll(getSubclasses(rootClazz, context.reflections));
             }
         }
-        for (Class<? extends YtDto> subclass : subclasses) {
+        for (Class<?> subclass : subclasses) {
             List<Field> subfields = Arrays.asList(subclass.getFields());
             fields.addAll(subfields);
         }
-        return fields;
+        return fields.stream()
+            .filter(field -> {
+                boolean isAlwaysInclude = field.getAnnotation(YtDtoFieldAlwaysInclude.class) != null;
+                if (isAlwaysInclude) return true;
+                boolean isYtDtoField = getClassAssignableFromYtDto(field) != null;
+                if (!isYtDtoField) return true;
+                return context.includeYtDtoClasses.contains(getFieldClass(field));
+            })
+            .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends YtDto> Class<T> getClassAssignableFromYtDto(Field field) {
+    private Class<?> getFieldClass(Field field) {
+        Class<?> fieldType = field.getType();
+        if (TypeUtils.isAssignable(fieldType, Collection.class)) {
+            Type type = field.getGenericType();
+            if (type instanceof ParameterizedType) {
+                ParameterizedType pType = (ParameterizedType) type;
+                return (Class<?>) pType.getActualTypeArguments()[0];
+            }
+        }
+        if (fieldType.isArray()) {
+            return fieldType.getComponentType();
+        }
+        return fieldType;
+    }
+
+    private Class<?> getClassAssignableFromYtDto(Field field) {
         try {
-            Class<?> fieldType = field.getType();
+            Class<?> fieldType = getFieldClass(field);
             if (TypeUtils.isAssignable(fieldType, YtDto.class)) {
-                return (Class<T>) fieldType;
-            }
-            if (TypeUtils.isAssignable(fieldType, Collection.class)) {
-                Type type = field.getGenericType();
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType pType = (ParameterizedType) type;
-                    Type genericType = pType.getActualTypeArguments()[0];
-                    if (TypeUtils.isAssignable(genericType, YtDto.class)) {
-                        return (Class<T>) genericType;
-                    }
-                }
-            }
-            if (fieldType.isArray()) {
-                Class<?> componentType = fieldType.getComponentType();
-                if (TypeUtils.isAssignable(componentType, YtDto.class)) {
-                    return (Class<T>) componentType;
-                }
+                return fieldType;
             }
             return null;
         } catch (Exception e) {
@@ -160,8 +145,8 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         }
     }
 
-    private <T extends YtDto> Set<Class<? extends T>> getSubclasses(Class<T> clazz, BuildFieldsContext context) {
-        return context.reflections.getSubTypesOf(clazz);
+    private <T> Set<Class<? extends T>> getSubclasses(Class<T> clazz, Reflections reflections) {
+        return reflections.getSubTypesOf(clazz);
     }
 
     private String getFieldName(Field field) {
@@ -176,7 +161,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         return field.getName();
     }
 
-    private String getEntityName(Class<? extends YtDto> clazz) {
+    private String getEntityName(Class<?> clazz) {
         YtDtoEntityName ytDtoEntityName = clazz.getAnnotation(YtDtoEntityName.class);
         if (ytDtoEntityName != null && StringUtils.isNotEmpty(ytDtoEntityName.value())) {
             return ytDtoEntityName.value();
@@ -185,13 +170,12 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         return className.replaceFirst("^Yt", "");
     }
 
-    private void clean() {
-        dto2fields = new HashMap<>();
-        entity2dto = new HashMap<>();
-    }
-
-    private Reflections makeReflections() {
-        return new Reflections(ClassUtils.getPackageCanonicalName(YtDto.class));
+    private Reflections getReflections() {
+        if (reflections != null) {
+            return reflections;
+        }
+        String packageName = ClassUtils.getPackageCanonicalName(YtDto.class);
+        return reflections = new Reflections(packageName);
     }
 
     private Map<String, Object> joinMaps(Map<String, Object> map1, Map<String, Object> map2) {
@@ -226,18 +210,20 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         return String.join(",", tokens);
     }
 
-    private Map<Class<? extends YtDto>, String> dto2fields;
-    private Map<String, Class<? extends YtDto>> entity2dto;
+    private Reflections reflections;
+    private static final Logger log = LoggerFactory.getLogger(YtDtoFieldsMapperImpl.class);
 
     private static class BuildFieldsContext {
-        public final Reflections reflections;
-        public final List<Class<?>> classStack;
-        public BuildFieldsContext(Reflections reflections) {
+        final Reflections reflections;
+        final List<Class<?>> includeYtDtoClasses;
+        final List<Class<?>> classStack;
+        BuildFieldsContext(Reflections reflections, List<Class<?>> includeYtDtoClasses) {
             this.reflections = reflections;
+            this.includeYtDtoClasses = includeYtDtoClasses;
             this.classStack = new ArrayList<>();
         }
-        public void pushClass(Class<?> clazz) { classStack.add(clazz); }
-        public void removeClass(Class<?> clazz) { classStack.remove(clazz); }
-        public boolean hasClass(Class<?> clazz) { return classStack.contains(clazz); }
+        void pushClass(Class<?> clazz) { classStack.add(clazz); }
+        void removeClass(Class<?> clazz) { classStack.remove(clazz); }
+        boolean hasClass(Class<?> clazz) { return classStack.contains(clazz); }
     }
 }

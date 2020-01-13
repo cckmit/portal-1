@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 
 /**
@@ -7,15 +9,17 @@ import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleEleme
  */
 public class YtSingleEnumIssueCustomField extends YtSingleValueIssueCustomField {
 
+    @YtDtoFieldAlwaysInclude
     public YtEnumBundleElement value;
+
     public String getValue() {
         if (value == null) {
             return null;
         }
-        if (value.localizedName != null) {
+        if (StringUtils.isNotEmpty(value.localizedName)) {
             return value.localizedName;
         }
-        if (value.name != null) {
+        if (StringUtils.isNotEmpty(value.name)) {
             return value.name;
         }
         return null;

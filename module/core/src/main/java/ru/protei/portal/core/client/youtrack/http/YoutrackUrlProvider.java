@@ -1,4 +1,4 @@
-package ru.protei.portal.core.client.youtrack.api;
+package ru.protei.portal.core.client.youtrack.http;
 
 public class YoutrackUrlProvider {
 

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.youtrack.dto.issue;
 
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
@@ -16,6 +17,7 @@ public class YtIssueComment extends YtDto {
     public Long created;
     public Long updated;
     public Boolean deleted;
+    @YtDtoFieldAlwaysInclude
     public YtUser author;
     public List<YtIssueAttachment> attachments;
 
