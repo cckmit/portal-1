@@ -318,8 +318,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
-        metaView.setStateMandatory(false);
-        metaView.setImportanceMandatory(false);
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
