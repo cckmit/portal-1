@@ -4,7 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.yt.dto.YtDto;
+import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import java.util.Map;
 import java.util.function.BiFunction;

@@ -1,5 +1,0 @@
-package ru.protei.portal.core.model.yt.dto.customfield.issue;
-
-/** https://www.jetbrains.com/help/youtrack/standalone/api-entity-SingleValueIssueCustomField.html */
-public abstract class YtSingleValueIssueCustomField extends YtIssueCustomField {
-}

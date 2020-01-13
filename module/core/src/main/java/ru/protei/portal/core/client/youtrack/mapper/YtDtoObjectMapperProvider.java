@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
-import ru.protei.portal.core.model.yt.dto.YtDto;
+import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import java.util.ArrayList;
 import java.util.Collection;

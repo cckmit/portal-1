@@ -16,7 +16,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.yt.dto.YtDto;
+import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;

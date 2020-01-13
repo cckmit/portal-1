@@ -1,11 +1,11 @@
 package ru.protei.portal.core.client.youtrack.api;
 
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.yt.dto.activity.YtActivityCategory;
-import ru.protei.portal.core.model.yt.dto.activity.YtActivityItem;
-import ru.protei.portal.core.model.yt.dto.issue.YtIssue;
-import ru.protei.portal.core.model.yt.dto.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.yt.dto.project.YtProject;
+import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
+import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
+import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
+import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 
 import java.util.Date;
 import java.util.List;

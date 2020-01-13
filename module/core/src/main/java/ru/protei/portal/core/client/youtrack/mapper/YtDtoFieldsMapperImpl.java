@@ -6,8 +6,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.reflections.Reflections;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.yt.annotation.YtDtoFieldSubclassesSpecifier;
-import ru.protei.portal.core.model.yt.dto.YtDto;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldSubclassesSpecifier;
+import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
