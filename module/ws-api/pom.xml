@@ -18,21 +18,6 @@
 
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18.1</version>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
@@ -140,6 +125,20 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>2.9.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-module-jaxb-annotations</artifactId>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -181,7 +180,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${project.junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -191,32 +190,36 @@
             <version>4.0.0</version>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ru.protei</groupId>
-                    <artifactId>portal4.skin.classic</artifactId>
+                    <artifactId>atlassian-renderer</artifactId>
+                    <groupId>com.atlassian.renderer</groupId>
                 </exclusion>
                 <exclusion>
                     <groupId>ru.protei</groupId>
                     <artifactId>jmc</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.jxls</groupId>
                     <artifactId>jxls-poi</artifactId>
+                    <groupId>org.jxls</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sybase.jdbc3</groupId>
+                    <artifactId>jconn3</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.freemarker</groupId>
                     <artifactId>freemarker</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-all</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>javax.mail</groupId>
                     <artifactId>mail</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>commons-fileupload</groupId>
                     <artifactId>commons-fileupload</artifactId>
+                    <groupId>commons-fileupload</groupId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
@@ -225,10 +228,6 @@
                 <exclusion>
                     <groupId>org.apache.pdfbox</groupId>
                     <artifactId>pdfbox</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.lucene</groupId>
-                    <artifactId>lucene-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.lucene</groupId>
@@ -259,19 +258,23 @@
                     <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.atlassian.renderer</groupId>
-                    <artifactId>atlassian-renderer</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>com.googlecode.juniversalchardet</groupId>
                     <artifactId>juniversalchardet</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jsch.agentproxy.svnkit-trilead-ssh2</artifactId>
+                    <groupId>com.jcraft</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>4.3.0.RELEASE</version>
+            <version>${project.spring.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -286,6 +289,26 @@
             <artifactId>wix-embedded-mysql</artifactId>
             <version>4.1.2</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jna-platform</artifactId>
+                    <groupId>net.java.dev.jna</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-lang3</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-compress</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.11</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
