@@ -41,8 +41,6 @@ public interface Query {
 
     JdbcSort getSort();
 
-//    JdbcQueryParameters asJdbcQueryParameters();
-
     Query forUpdate();
 
     Condition asCondition();
