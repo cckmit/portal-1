@@ -276,16 +276,20 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         name.ensureDebugId(DebugIds.PRODUCT.NAME);
         info.ensureDebugId(DebugIds.PRODUCT.DESCRIPTION);
         wikiLink.ensureDebugId(DebugIds.PRODUCT.WIKI_LINK);
-        subscriptions.ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS);
+        
         children.ensureDebugId(DebugIds.PRODUCT.INCLUDES);
         parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
         aliases.ensureDebugId(DebugIds.PRODUCT.ALIASES);
+
         tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT.TAB.HISTORY_VERSION);
         historyVersion.getElement().setId(DebugIds.PRODUCT.HISTORY_VERSION);
         tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT.TAB.CONFIGURATION);
         configuration.getElement().setId(DebugIds.PRODUCT.CONFIGURATION);
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT.CDR_DESCRIPTION);
+
+        saveBtn.ensureDebugId(DebugIds.PRODUCT.SAVE_BUTTON);
+        cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
     }
 
     Timer changeTimer = new Timer() {

@@ -111,8 +111,15 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     }
 
     private void ensureDebugIds() {
+        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
+
         showDeprecated.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.SHOW_DEPRECATED);
         types.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.TYPES);
+
+        resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
     }
 
     Timer timer = new Timer() {

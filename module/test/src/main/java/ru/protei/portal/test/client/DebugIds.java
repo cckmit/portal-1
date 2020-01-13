@@ -403,20 +403,22 @@ public class DebugIds {
         String WIKI_LINK = "product-wiki-link";
         String DESCRIPTION = "product-description";
         String SUBSCRIPTIONS = "product-subscriptions";
-        String SUBSCRIPTIONS_ITEM = "product-subscriptions-item-";
-        String SUBSCRIPTIONS_ITEM_LANG_CODE = "product-subscriptions-item-lang-code-";
-        String SUBSCRIPTIONS_ITEM_EMAIL = "product-subscriptions-item-email-";
+        String SUBSCRIPTIONS_ITEM = "product-subscriptions-item";
+        String SUBSCRIPTIONS_ITEM_LANG_CODE = "product-subscriptions-item-lang-code";
+        String SUBSCRIPTIONS_ITEM_EMAIL = "product-subscriptions-item-email";
         String INCLUDES = "product-includes";
         String PRODUCTS = "product-products";
         String ALIASES = "product-aliases";
         String HISTORY_VERSION = "product-history-version";
         String CONFIGURATION = "product-configuration";
         String CDR_DESCRIPTION = "product-cdr-description";
+        String SAVE_BUTTON = "product-save-button";
+        String CANCEL_BUTTON = "product-cancel-button";
 
         interface TAB {
-            String HISTORY_VERSION = "product_preview-tab-history-version";
-            String CONFIGURATION = "product_preview-tab-configuration";
-            String CDR_DESCRIPTION = "product_preview-tab-cdr-description";
+            String HISTORY_VERSION = "product-tab-history-version";
+            String CONFIGURATION = "product-tab-configuration";
+            String CDR_DESCRIPTION = "product-tab-cdr-description";
         }
     }
 
@@ -427,6 +429,7 @@ public class DebugIds {
         String HISTORY_VERSION = "product-preview-history-version";
         String CONFIGURATION = "product-preview-configuration";
         String CDR_DESCRIPTION = "product-preview-cdr-description";
+        String BACK_BUTTON = "product-preview-back-button";
 
         interface TAB {
             String HISTORY_VERSION = "product-preview-tab-history-version";

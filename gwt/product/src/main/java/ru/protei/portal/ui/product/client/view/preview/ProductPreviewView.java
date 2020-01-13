@@ -115,6 +115,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         configuration.getElement().setId(DebugIds.PRODUCT_PREVIEW.CONFIGURATION);
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT_PREVIEW.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT_PREVIEW.CDR_DESCRIPTION);
+
+        backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
     }
 
     @UiField

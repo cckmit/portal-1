@@ -27,6 +27,7 @@ public class SubscriptionList
 {
     public SubscriptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS);
     }
 
     @Override
@@ -107,7 +108,6 @@ public class SubscriptionList
 
         modelToView.put( subscriptionItemWidget, subscription );
         container.add( subscriptionItemWidget );
-        setDebugIds(container.getWidgetIndex(subscriptionItemWidget), subscriptionItemWidget);
     }
 
     private void addEmptyItem() {
@@ -122,14 +122,6 @@ public class SubscriptionList
                 .values();
 
         return new ArrayList<>(c);
-    }
-
-    private void setDebugIds(int index, SubscriptionItem subscriptionItemWidget) {
-        subscriptionItemWidget.ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM + index);
-        subscriptionItemWidget.setDebugId(
-                DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_LANG_CODE + index,
-                DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_EMAIL + index
-        );
     }
 
     @UiField
