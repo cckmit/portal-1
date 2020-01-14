@@ -101,6 +101,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
                 : null;
         if (specifier != null) {
             for (Class<?> clazz : specifier.value()) {
+                subclasses.add(clazz);
                 subclasses.addAll(getSubclasses(clazz, context.reflections));
             }
         } else {
