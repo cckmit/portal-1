@@ -1,9 +1,8 @@
 package ru.protei.portal.ui.common.client.animation;
 
-import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class NotifyAnimation {
         Timer opacityTimer = new Timer() {
             @Override
             public void run() {
-                currentOpacityMap.put(notify, currentOpacityMap.get(notify) - 1000.0 / (FRAME_PER_SECOND * CLOSE_TIME) );
+                currentOpacityMap.put(notify, currentOpacityMap.get(notify) - 1000.0 / (FRAMES_PER_SECOND * CLOSE_TIME) );
                 notify.asWidget().getElement().getStyle().setOpacity(currentOpacityMap.get(notify));
             }
         };
@@ -53,11 +52,11 @@ public class NotifyAnimation {
             }
         };
 
-        opacityTimer.scheduleRepeating(1000 / FRAME_PER_SECOND);
+        opacityTimer.scheduleRepeating(1000 / FRAMES_PER_SECOND);
         closeTimer.schedule(CLOSE_TIME);
     }
 
-    private static final int FRAME_PER_SECOND = 25;
+    private static final int FRAMES_PER_SECOND = 25;
     private Map<IsWidget, Double> currentOpacityMap = new HashMap<>();
     private HasWidgets parentWrapper;
     private static final int AUTO_CLOSE_TIME = 5000;

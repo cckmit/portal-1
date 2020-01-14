@@ -94,7 +94,6 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
 
     private TextBox makeInput() {
         TextBox input = new TextBox();
-        input.ensureDebugId("123");
         input.getElement().setAttribute("size", "1");
         if (StringUtils.isNotEmpty(placeholder)) {
             input.getElement().setAttribute("placeholder", placeholder);
