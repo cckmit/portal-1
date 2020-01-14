@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
+import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -43,51 +45,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class, PortalApiController.class})
 @WebAppConfiguration
 public class TestPortalApiController extends BaseServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(TestPortalApiController.class);
-    private static final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
-    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
-    private static final int COUNT_OF_PRIVATE_ISSUES = 5;
-    private static final int COUNT_OF_MESSAGE_ISSUES = 1;
-    private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER + COUNT_OF_MESSAGE_ISSUES;
-    private static final List<Long> issuesIds = new ArrayList<>();
-    private static final En_Privilege[] PRIVILEGES = new En_Privilege[]{En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE};
-    private static final String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
-    private static final String ISSUES_PREFIX = "Portal_API_issue_test_";
-    private static final String PORTAL_API_TEST_ROLE_CODE = "portal_api_test_role";
-    private static ObjectMapper objectMapper;
-    private static PersonDAO personDAO;
-    private static UserLoginDAO userLoginDAO;
-    private static CaseService caseService;
-    private static AuthServiceMock authService;
-    private static CaseObjectDAO caseObjectDAO;
-    private static UserRoleDAO userRoleDAO;
-    private static CaseCommentDAO caseCommentDAO;
-    private static Person person;
-    private static UserLogin userLogin;
-    private static Company company;
-    private static UserRole mainRole;
+    private final Logger log = LoggerFactory.getLogger(TestPortalApiController.class);
+    private final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
+    private final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
+    private final int COUNT_OF_PRIVATE_ISSUES = 5;
+    private final int COUNT_OF_MESSAGE_ISSUES = 1;
+    private final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER + COUNT_OF_MESSAGE_ISSUES;
+    private final List<Long> issuesIds = new ArrayList<>();
+    private final En_Privilege[] PRIVILEGES = new En_Privilege[]{En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE};
+    private final String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
+    private final String ISSUES_PREFIX = "Portal_API_issue_test_";
+    private final String PORTAL_API_TEST_ROLE_CODE = "portal_api_test_role";
+
+    private Person person;
+    private UserLogin userLogin;
+    private Company company;
+    private UserRole mainRole;
     private MockMvc mockMvc;
 
     @Autowired
     PortalApiController portalApiController;
 
-    @BeforeClass
-    public static void initClass() throws Exception {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
-                CoreConfigurationContext.class,
-                JdbcConfigurationContext.class,
-                DatabaseConfiguration.class,
-                IntegrationTestsConfiguration.class
-        );
+    @Autowired
+    AuthService authService;
 
-        objectMapper = applicationContext.getBean(ObjectMapper.class);
-        personDAO = applicationContext.getBean(PersonDAO.class);
-        caseService = applicationContext.getBean(CaseService.class);
-        authService = (AuthServiceMock) applicationContext.getBean(AuthService.class);
-        userLoginDAO = applicationContext.getBean(UserLoginDAO.class);
-        userRoleDAO = applicationContext.getBean(UserRoleDAO.class);
-        caseObjectDAO = applicationContext.getBean(CaseObjectDAO.class);
-        caseCommentDAO = applicationContext.getBean(CaseCommentDAO.class);
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Before
+    public void init() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(portalApiController).build();
 
         caseCommentDAO.removeAll();
         caseObjectDAO.removeAll();
@@ -110,11 +97,6 @@ public class TestPortalApiController extends BaseServiceTest {
                 COUNT_OF_ISSUES_WITHOUT_MANAGER,
                 COUNT_OF_PRIVATE_ISSUES
         );
-    }
-
-    @Before
-    public void initMockMvc() {
-        mockMvc = MockMvcBuilders.standaloneSetup(portalApiController).build();
     }
 
     @Test
@@ -258,8 +240,8 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
-    @AfterClass
-    public static void destroy() {
+    @After
+    public void destroy() {
         caseCommentDAO.removeByCaseIds(issuesIds);
         caseObjectDAO.removeByNameLike(ISSUES_PREFIX);
         userLoginDAO.removeByPersonId(person.getId());
@@ -267,7 +249,7 @@ public class TestPortalApiController extends BaseServiceTest {
         personDAO.removeByKey(person.getId());
     }
 
-    private static Person createAndPersistPerson(Company company) {
+    private Person createAndPersistPerson(Company company) {
         Person p = createNewPerson( company );
         String personFirstName = "Test" + new Date().getTime();
 
@@ -295,7 +277,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .findFirst().get();
     }
 
-    private static UserRole createAndPersistUserRoles() {
+    private UserRole createAndPersistUserRoles() {
         UserRole role = new UserRole();
         role.setCode(PORTAL_API_TEST_ROLE_CODE);
         role.setInfo(PORTAL_API_TEST_ROLE_CODE);
@@ -307,7 +289,7 @@ public class TestPortalApiController extends BaseServiceTest {
         return role;
     }
 
-    private static UserLogin createAndPersistUserLogin() throws Exception {
+    private UserLogin createAndPersistUserLogin() throws Exception {
         UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
         userLogin.setUlogin(person.getFirstName());
         userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
@@ -320,7 +302,7 @@ public class TestPortalApiController extends BaseServiceTest {
         return userLogin;
     }
 
-    private static void createAndPersistSomeIssues(Long companyId) {
+    private void createAndPersistSomeIssues(Long companyId) {
         for (int i = 0; i < COUNT_OF_ISSUES_WITHOUT_MANAGER; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
@@ -330,7 +312,7 @@ public class TestPortalApiController extends BaseServiceTest {
         }
     }
 
-    private static void createAndPersistSomeIssuesWithManager( Person manager, Long companyId ) {
+    private void createAndPersistSomeIssuesWithManager( Person manager, Long companyId ) {
         for (int i = 0; i < COUNT_OF_ISSUES_WITH_MANAGER; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
@@ -340,7 +322,7 @@ public class TestPortalApiController extends BaseServiceTest {
         }
     }
 
-    private static void createAndPersistIssueForComments(Person manager, Long companyId ) {
+    private void createAndPersistIssueForComments(Person manager, Long companyId ) {
         CaseObject caseObject = createNewCaseObject(manager);
         caseObject.setName(ISSUES_PREFIX + "testGetCaseCommentsListByCaseId");
         caseObject.setInitiator(manager);
@@ -356,7 +338,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseCommentDAO.persist(caseComment);
     }
 
-    private static void createAndPersistSomePrivateIssues(Long companyId) {
+    private void createAndPersistSomePrivateIssues(Long companyId) {
         for (int i = 0; i < COUNT_OF_PRIVATE_ISSUES; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
@@ -367,7 +349,7 @@ public class TestPortalApiController extends BaseServiceTest {
         }
     }
 
-    private static void setThreadUserLogin(UserLogin userLogin) {
+    private void setThreadUserLogin(UserLogin userLogin) {
         authService.makeThreadAuthToken(userLogin);
     }
 
