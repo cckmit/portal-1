@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class YtDtoObjectMapperProvider {
         return mapper;
     }
 
-    public static FilterProvider getFilterProvider(List<String> forceIncludeFields) {
+    public static FilterProvider getFilterProvider(List<YtFieldDescriptor> includeFields) {
         SimpleFilterProvider filters = new SimpleFilterProvider();
         filters.addFilter(YtDtoObjectMapperProvider.FILTER_NAME, new SimpleBeanPropertyFilter() {
             @Override
@@ -54,12 +55,14 @@ public class YtDtoObjectMapperProvider {
                 if (!include(writer)) {
                     return;
                 }
-                String field = writer.getName();
-                if (forceIncludeFields.contains(field)) {
-                    writer.serializeAsField(pojo, jgen, provider);
+                if (pojo == null) {
                     return;
                 }
-                if (pojo == null) {
+                Class<?> clazz = pojo.getClass();
+                String field = writer.getName();
+                YtFieldDescriptor fieldDescriptor = new YtFieldDescriptor(clazz, field);
+                if (includeFields.contains(fieldDescriptor)) {
+                    writer.serializeAsField(pojo, jgen, provider);
                     return;
                 }
                 Object value = FieldUtils.readField(pojo, field);

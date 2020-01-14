@@ -21,6 +21,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 
 import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
@@ -44,29 +45,29 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
 
     @Override
     public <RES> Result<RES> read(YoutrackRequest<?, RES> request) {
-        ensureFieldsValueSet(request);
+        ensureFieldsParamSet(request);
         return doRead(request.getUrl(), request.getParams(), request.getResponseClass());
     }
 
     @Override
     public <REQ, RES> Result<RES> create(YoutrackRequest<REQ, RES> request) {
-        ensureFieldsValueSet(request);
+        ensureFieldsParamSet(request);
         return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto());
     }
 
     @Override
     public <REQ, RES> Result<RES> update(YoutrackRequest<REQ, RES> request) {
-        ensureFieldsValueSet(request);
+        ensureFieldsParamSet(request);
         return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto());
     }
 
     @Override
     public <REQ, RES> Result<RES> remove(YoutrackRequest<REQ, RES> request) {
-        ensureFieldsValueSet(request);
+        ensureFieldsParamSet(request);
         return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto(), request.getRequestDtoFieldNamesToRemove());
     }
 
-    private void ensureFieldsValueSet(YoutrackRequest<?, ?> request) {
+    private void ensureFieldsParamSet(YoutrackRequest<?, ?> request) {
         if (!request.getParams().containsKey("fields")) {
             String fields = fieldsMapper.getFields(request.getResponseClass(), request.getResponseClassIncludeClasses());
             request.getParams().put("fields", fields);
@@ -79,7 +80,7 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
             .map(ResponseEntity::getBody);
     }
 
-    private <REQ, RES> Result<RES> doSave(String url, Map<String, String> params, Class<RES> clazz, REQ dto, String...dtoForceIncludeFields) {
+    private <REQ, RES> Result<RES> doSave(String url, Map<String, String> params, Class<RES> clazz, REQ dto, YtFieldDescriptor...dtoForceIncludeFields) {
         return buildUrl(url, params)
             .flatMap(path -> serializeDto(dto, dtoForceIncludeFields)
                 .flatMap(body -> execute((client, headers) -> client.postForEntity(path, new HttpEntity<>(body, headers), clazz)))
@@ -163,7 +164,7 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         return template;
     }
 
-    private <T> Result<String> serializeDto(T dto, String...forceIncludeFields) {
+    private <T> Result<String> serializeDto(T dto, YtFieldDescriptor...forceIncludeFields) {
         try {
             String body = objectMapper
                 .writer(YtDtoObjectMapperProvider.getFilterProvider(Arrays.asList(forceIncludeFields)))

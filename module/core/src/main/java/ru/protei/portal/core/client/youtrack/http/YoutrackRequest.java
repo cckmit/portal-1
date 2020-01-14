@@ -1,5 +1,7 @@
 package ru.protei.portal.core.client.youtrack.http;
 
+import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +12,7 @@ public class YoutrackRequest<REQ, RES> {
     private Class<RES> responseClass;
     private Class<?>[] responseClassIncludeClasses;
     private REQ requestDto;
-    private String[] requestDtoFieldNamesToRemove;
+    private YtFieldDescriptor[] requestDtoFieldNamesToRemove;
 
     public YoutrackRequest(Class<RES> clazz) {
         this(null, clazz);
@@ -52,7 +54,7 @@ public class YoutrackRequest<REQ, RES> {
         return this;
     }
 
-    public YoutrackRequest<REQ, RES> remove(REQ dto, String...fieldNamesToRemove) {
+    public YoutrackRequest<REQ, RES> remove(REQ dto, YtFieldDescriptor...fieldNamesToRemove) {
         this.requestDto = dto;
         this.requestDtoFieldNamesToRemove = fieldNamesToRemove;
         return this;
@@ -78,7 +80,7 @@ public class YoutrackRequest<REQ, RES> {
         return requestDto;
     }
 
-    public String[] getRequestDtoFieldNamesToRemove() {
+    public YtFieldDescriptor[] getRequestDtoFieldNamesToRemove() {
         return requestDtoFieldNamesToRemove;
     }
 }

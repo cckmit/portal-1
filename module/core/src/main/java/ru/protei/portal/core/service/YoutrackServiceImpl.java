@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
+import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.YtFieldNames;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
@@ -185,7 +186,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         return client.remove(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
                 .fillResponseWith(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
-                .remove(issue, "value"));
+                .remove(issue, new YtFieldDescriptor(YtSimpleIssueCustomField.class, "value")));
     }
 
     private YouTrackIssueInfo convertYtIssue(YtIssue issue) {
