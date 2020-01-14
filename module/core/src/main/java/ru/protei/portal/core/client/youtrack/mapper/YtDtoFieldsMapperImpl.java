@@ -60,7 +60,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
     private Map<String, Object> buildFieldMapOfClass(Field rootField, Class<?> rootClazz, BuildFieldsContext context) {
         // Map<String, Map<String, Map<String, Map<String, ...>>>>
-        Map<String, Object> fieldTree = new HashMap<>();
+        Map<String, Object> fieldTree = newFieldMap();
 
         context.pushClass(rootClazz);
 
@@ -73,7 +73,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
                 //noinspection unchecked
                 fieldMapOld = (Map<String, Object>) fieldTree.get(fieldName);
             } else {
-                fieldMapOld = new HashMap<>();
+                fieldMapOld = newFieldMap();
             }
             Class<?> clazz = getClassAssignableFromYtDto(field);
             if (clazz == null) {
@@ -202,7 +202,8 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
     }
 
     private Map<String, Object> joinMaps(Map<String, Object> map1, Map<String, Object> map2) {
-        Map<String, Object> result = new HashMap<>(map1);
+        Map<String, Object> result = newFieldMap();
+        result.putAll(map1);
         map2.forEach((key, map) -> {
             Object v = result.get(key);
             if (v instanceof Map) {
@@ -231,6 +232,10 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
             }
         });
         return String.join(",", tokens);
+    }
+
+    private Map<String, Object> newFieldMap() {
+        return new TreeMap<>(Comparator.naturalOrder());
     }
 
     private Reflections reflections;
