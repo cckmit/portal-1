@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomF
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,12 +33,47 @@ public class YtIssue extends YtDto {
     public List<YtIssueAttachment> attachments;
 
     @JsonIgnore
-    public YtIssueCustomField getField(String fieldName) {
+    public YtIssueCustomField getCrmNumberField() {
+        return getField(CustomFieldNames.crmNumber);
+    }
+
+    @JsonIgnore
+    public YtIssueCustomField getPriorityField() {
+        return getField(CustomFieldNames.priority);
+    }
+
+    @JsonIgnore
+    public YtIssueCustomField getStateField() {
+        return getField(getStateFieldNames());
+    }
+
+    @JsonIgnore
+    public YtIssueCustomField getField(String...fieldName) {
+        List<String> fieldNames = Arrays.asList(fieldName);
         return CollectionUtils.stream(customFields)
                 .filter(Objects::nonNull)
-                .filter((field) -> Objects.equals(fieldName, field.name))
+                .filter((field) -> fieldNames.contains(field.name))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @JsonIgnore
+    public static String[] getStateFieldNames() {
+        return new String[] {
+                CustomFieldNames.stateEng,
+                CustomFieldNames.stateRus,
+                CustomFieldNames.stateEquipmentRus,
+                CustomFieldNames.stateAcrmRus
+        };
+    }
+
+    public interface CustomFieldNames {
+        String crmNumber = "Номер обращения в CRM";
+        String priority = "Priority";
+        String stateEng = "State";
+        String stateRus = "Состояние";
+        String stateEquipmentRus = "Статус заказа";
+        String stateAcrmRus = "Статус заявки";
     }
 
     @Override

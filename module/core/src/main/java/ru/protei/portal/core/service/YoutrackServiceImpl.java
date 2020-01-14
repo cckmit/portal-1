@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
-import ru.protei.portal.core.model.youtrack.YtFieldNames;
 import ru.protei.portal.core.model.youtrack.dto.activity.customfield.YtCustomFieldActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
@@ -47,7 +46,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 })
                 .map(ytActivityItems -> CollectionUtils.stream(ytActivityItems)
                         .filter(ytActivityItem -> ytActivityItem.field != null)
-                        .filter(ytActivityItem -> issueStateFieldNames().contains(ytActivityItem.field.name))
+                        .filter(ytActivityItem -> Arrays.asList(YtIssue.getStateFieldNames()).contains(ytActivityItem.field.name))
                         .filter(ytActivityItem -> ytActivityItem instanceof YtCustomFieldActivityItem)
                         .map(ytActivityItem -> (YtCustomFieldActivityItem) ytActivityItem)
                         .filter(ytCustomFieldActivityItem ->
@@ -104,7 +103,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
+                    YtIssueCustomField field = issue.getCrmNumberField();
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return ok(convertYtIssue(issue));
@@ -121,7 +120,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
+                    YtIssueCustomField field = issue.getCrmNumberField();
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return removeCrmNumber(issue.idReadable);
@@ -234,7 +233,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
         YtSimpleIssueCustomField cf = new YtSimpleIssueCustomField();
-        cf.name = YtFieldNames.crmNumber;
+        cf.name = YtIssue.CustomFieldNames.crmNumber;
         cf.value = caseNumber == null ? null : String.valueOf(caseNumber);
         return cf;
     }
@@ -244,7 +243,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     private String getIssuePriority(YtIssue issue) {
-        YtIssueCustomField field = issue.getField(YtFieldNames.priority);
+        YtIssueCustomField field = issue.getPriorityField();
         if (field == null) {
             return null;
         }
@@ -252,30 +251,11 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     private String getIssueState(YtIssue issue) {
-        YtIssueCustomField field = getIssueStateField(issue);
+        YtIssueCustomField field = issue.getStateField();
         if (field == null) {
             return null;
         }
         return field.getValue();
-    }
-
-    private YtIssueCustomField getIssueStateField(YtIssue issue) {
-        for (String stateFieldName : issueStateFieldNames()) {
-            YtIssueCustomField issueCustomField = issue.getField(stateFieldName);
-            if (issueCustomField != null) {
-                return issueCustomField;
-            }
-        }
-        return null;
-    }
-
-    private List<String> issueStateFieldNames() {
-        return Arrays.asList(
-                YtFieldNames.stateEng,
-                YtFieldNames.stateRus,
-                YtFieldNames.equipmentStateRus,
-                YtFieldNames.acrmStateRus
-        );
     }
 
     @Autowired
