@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.subscription.item.SubscriptionItem;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -26,6 +27,7 @@ public class SubscriptionList
 {
     public SubscriptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS);
     }
 
     @Override

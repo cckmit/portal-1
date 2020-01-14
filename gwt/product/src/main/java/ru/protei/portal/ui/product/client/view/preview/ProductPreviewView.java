@@ -3,14 +3,15 @@ package ru.protei.portal.ui.product.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
 
@@ -22,6 +23,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -103,6 +105,20 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         }
     }
 
+    private void ensureDebugIds() {
+        productName.ensureDebugId(DebugIds.PRODUCT_PREVIEW.NAME);
+        wikiLink.setId(DebugIds.PRODUCT_PREVIEW.WIKI_LINK);
+        info.ensureDebugId(DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
+        tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT_PREVIEW.TAB.HISTORY_VERSION);
+        historyVersion.getElement().setId(DebugIds.PRODUCT_PREVIEW.HISTORY_VERSION);
+        tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT_PREVIEW.TAB.CONFIGURATION);
+        configuration.getElement().setId(DebugIds.PRODUCT_PREVIEW.CONFIGURATION);
+        tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT_PREVIEW.TAB.CDR_DESCRIPTION);
+        cdrDescription.getElement().setId(DebugIds.PRODUCT_PREVIEW.CDR_DESCRIPTION);
+
+        backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
+    }
+
     @UiField
     Lang lang;
     @UiField
@@ -115,6 +131,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     Anchor productName;
     @UiField
     AnchorElement wikiLink;
+    @UiField
+    TabWidget tabWidget;
     @UiField
     HTMLPanel configuration;
     @UiField

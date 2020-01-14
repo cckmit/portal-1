@@ -16,8 +16,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
@@ -69,6 +70,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
                 activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay );
             }
         } );
+
+        ensureDebugIds();
     }
 
     @Override
@@ -270,6 +273,26 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         changeTimer.schedule(300);
     }
 
+    private void ensureDebugIds() {
+        name.ensureDebugId(DebugIds.PRODUCT.NAME);
+        info.ensureDebugId(DebugIds.PRODUCT.DESCRIPTION);
+        wikiLink.ensureDebugId(DebugIds.PRODUCT.WIKI_LINK);
+        
+        children.ensureDebugId(DebugIds.PRODUCT.INCLUDES);
+        parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
+        aliases.ensureDebugId(DebugIds.PRODUCT.ALIASES);
+
+        tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT.TAB.HISTORY_VERSION);
+        historyVersion.getElement().setId(DebugIds.PRODUCT.HISTORY_VERSION);
+        tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT.TAB.CONFIGURATION);
+        configuration.getElement().setId(DebugIds.PRODUCT.CONFIGURATION);
+        tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT.TAB.CDR_DESCRIPTION);
+        cdrDescription.getElement().setId(DebugIds.PRODUCT.CDR_DESCRIPTION);
+
+        saveBtn.ensureDebugId(DebugIds.PRODUCT.SAVE_BUTTON);
+        cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
+    }
+
     Timer changeTimer = new Timer() {
         @Override
         public void run() {
@@ -315,6 +338,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField( provided = true )
     SubscriptionList subscriptions;
+    @UiField
+    TabWidget tabWidget;
     @UiField
     MarkdownAreaWithPreview historyVersion;
     @UiField
