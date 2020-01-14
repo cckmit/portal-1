@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.youtrack.dto.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
@@ -15,6 +16,7 @@ import java.util.Objects;
  */
 public class YtIssue extends YtDto {
 
+    @YtDtoFieldAlwaysInclude
     public String idReadable;
     public String summary;
     public String description;

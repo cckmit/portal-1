@@ -9,10 +9,11 @@ public class YoutrackRequest<REQ, RES> {
 
     private String url;
     private Map<String, String> params;
-    private Class<RES> responseClass;
-    private Class<?>[] responseClassIncludeClasses;
-    private REQ requestDto;
-    private YtFieldDescriptor[] requestDtoFieldNamesToRemove;
+    private Class<RES> response;
+    private Class<?>[] responseIncludeYtDtoFields;
+    private boolean responseIncludeNotYtDtoFields;
+    private REQ request;
+    private YtFieldDescriptor[] requestFieldsToRemove;
 
     public YoutrackRequest(Class<RES> clazz) {
         this(null, clazz);
@@ -20,7 +21,7 @@ public class YoutrackRequest<REQ, RES> {
 
     public YoutrackRequest(String url, Class<RES> clazz) {
         this.url = url;
-        this.responseClass = clazz;
+        this.response = clazz;
         this.params = new HashMap<>();
     }
 
@@ -44,19 +45,24 @@ public class YoutrackRequest<REQ, RES> {
         return this;
     }
 
-    public YoutrackRequest<REQ, RES> fillResponseWith(Class<?>...classes) {
-        this.responseClassIncludeClasses = classes;
+    public YoutrackRequest<REQ, RES> fillResponseWithPojo() {
+        this.responseIncludeNotYtDtoFields = true;
+        return this;
+    }
+
+    public YoutrackRequest<REQ, RES> fillResponseWithYt(Class<?>...classes) {
+        this.responseIncludeYtDtoFields = classes;
         return this;
     }
 
     public YoutrackRequest<REQ, RES> save(REQ dto) {
-        this.requestDto = dto;
+        this.request = dto;
         return this;
     }
 
     public YoutrackRequest<REQ, RES> remove(REQ dto, YtFieldDescriptor...fieldNamesToRemove) {
-        this.requestDto = dto;
-        this.requestDtoFieldNamesToRemove = fieldNamesToRemove;
+        this.request = dto;
+        this.requestFieldsToRemove = fieldNamesToRemove;
         return this;
     }
 
@@ -68,19 +74,23 @@ public class YoutrackRequest<REQ, RES> {
         return params;
     }
 
-    public Class<RES> getResponseClass() {
-        return responseClass;
+    public Class<RES> getResponse() {
+        return response;
     }
 
-    public Class<?>[] getResponseClassIncludeClasses() {
-        return responseClassIncludeClasses;
+    public Class<?>[] getResponseIncludeYtDtoFields() {
+        return responseIncludeYtDtoFields;
     }
 
-    public REQ getRequestDto() {
-        return requestDto;
+    public boolean getResponseIncludeNotYtDtoFields() {
+        return responseIncludeNotYtDtoFields;
     }
 
-    public YtFieldDescriptor[] getRequestDtoFieldNamesToRemove() {
-        return requestDtoFieldNamesToRemove;
+    public REQ getRequest() {
+        return request;
+    }
+
+    public YtFieldDescriptor[] getRequestFieldsToRemove() {
+        return requestFieldsToRemove;
     }
 }

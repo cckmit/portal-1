@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.youtrack.dto;
 
+import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
+
 /**
  * Базовый класс для всех YouTrack сущностей.
  * Каждый класс сущности должнен быть унаследован от этого класса.
@@ -20,7 +22,9 @@ package ru.protei.portal.core.model.youtrack.dto;
  */
 public abstract class YtDto {
 
+    @YtDtoFieldAlwaysInclude
     public String id;
+    @YtDtoFieldAlwaysInclude
     public /* readonly */ String $type;
 
     @Override

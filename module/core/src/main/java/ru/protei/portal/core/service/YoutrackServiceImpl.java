@@ -44,6 +44,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<List<YouTrackIssueStateChange>> getIssueStateChanges(String issueId) {
         return client.read(new YoutrackRequest<>(YtActivityItem[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issueActivities(issueId))
+                .fillResponseWithPojo()
                 .params(new HashMap<String, String>() {{
                     put("categories", YtActivityCategory.CustomFieldCategory.getCategoryId());
                 }}))
@@ -110,7 +111,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return client.read(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWith(YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class))
+                .fillResponseWithPojo()
+                .fillResponseWithYt(YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class))
                 .map(this::convertYtIssue);
     }
 
@@ -122,7 +124,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return client.read(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWith(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class))
+                .fillResponseWithPojo()
+                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class))
                 .flatMap(issue -> {
                     YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
@@ -142,7 +145,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return client.read(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWith(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class))
+                .fillResponseWithPojo()
+                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class))
                 .flatMap(issue -> {
                     YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
@@ -174,7 +178,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         issue.customFields.add(makeCrmNumberCustomField(caseNumber));
         return client.update(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWith(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
+                .fillResponseWithPojo()
+                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
                 .save(issue));
     }
 
@@ -185,7 +190,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         issue.customFields.add(makeCrmNumberCustomField(null));
         return client.remove(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWith(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
+                .fillResponseWithPojo()
+                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
                 .remove(issue, new YtFieldDescriptor(YtSimpleIssueCustomField.class, "value")));
     }
 

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
     @Override
-    public String getFields(Class<?> clazz, Class<?>...includeClasses) {
+    public String getFields(Class<?> clazz, boolean includeNotYtDtoFields, Class<?>...includeYtDtoFields) {
         Class<?> type = null;
         if (TypeUtils.isAssignable(clazz, YtDto.class)) {
             type = clazz;
@@ -34,7 +34,12 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
         if (type == null) {
             return null;
         }
-        return buildFieldsOfClass(type, new BuildFieldsContext(getReflections(), Arrays.asList(includeClasses)));
+        BuildFieldsContext context = new BuildFieldsContext(
+                getReflections(),
+                includeNotYtDtoFields,
+                Arrays.asList(includeYtDtoFields)
+        );
+        return buildFieldsOfClass(type, context);
     }
 
     @Override
@@ -112,8 +117,11 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
                 boolean isAlwaysInclude = field.getAnnotation(YtDtoFieldAlwaysInclude.class) != null;
                 if (isAlwaysInclude) return true;
                 boolean isYtDtoField = getClassAssignableFromYtDto(field) != null;
-                if (!isYtDtoField) return true;
-                return context.includeYtDtoClasses.contains(getFieldClass(field));
+                if (isYtDtoField) {
+                    return context.includeYtDtoFields.contains(getFieldClass(field));
+                } else {
+                    return context.includeNotYtDtoFields;
+                }
             })
             .collect(Collectors.toList());
     }
@@ -215,11 +223,13 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
     private static class BuildFieldsContext {
         final Reflections reflections;
-        final List<Class<?>> includeYtDtoClasses;
+        final boolean includeNotYtDtoFields;
+        final List<Class<?>> includeYtDtoFields;
         final List<Class<?>> classStack;
-        BuildFieldsContext(Reflections reflections, List<Class<?>> includeYtDtoClasses) {
+        BuildFieldsContext(Reflections reflections, boolean includeNotYtDtoFields, List<Class<?>> includeYtDtoFields) {
             this.reflections = reflections;
-            this.includeYtDtoClasses = includeYtDtoClasses;
+            this.includeNotYtDtoFields = includeNotYtDtoFields;
+            this.includeYtDtoFields = includeYtDtoFields;
             this.classStack = new ArrayList<>();
         }
         void pushClass(Class<?> clazz) { classStack.add(clazz); }

@@ -46,30 +46,34 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     @Override
     public <RES> Result<RES> read(YoutrackRequest<?, RES> request) {
         ensureFieldsParamSet(request);
-        return doRead(request.getUrl(), request.getParams(), request.getResponseClass());
+        return doRead(request.getUrl(), request.getParams(), request.getResponse());
     }
 
     @Override
     public <REQ, RES> Result<RES> create(YoutrackRequest<REQ, RES> request) {
         ensureFieldsParamSet(request);
-        return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto());
+        return doSave(request.getUrl(), request.getParams(), request.getResponse(), request.getRequest());
     }
 
     @Override
     public <REQ, RES> Result<RES> update(YoutrackRequest<REQ, RES> request) {
         ensureFieldsParamSet(request);
-        return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto());
+        return doSave(request.getUrl(), request.getParams(), request.getResponse(), request.getRequest());
     }
 
     @Override
     public <REQ, RES> Result<RES> remove(YoutrackRequest<REQ, RES> request) {
         ensureFieldsParamSet(request);
-        return doSave(request.getUrl(), request.getParams(), request.getResponseClass(), request.getRequestDto(), request.getRequestDtoFieldNamesToRemove());
+        return doSave(request.getUrl(), request.getParams(), request.getResponse(), request.getRequest(), request.getRequestFieldsToRemove());
     }
 
     private void ensureFieldsParamSet(YoutrackRequest<?, ?> request) {
         if (!request.getParams().containsKey("fields")) {
-            String fields = fieldsMapper.getFields(request.getResponseClass(), request.getResponseClassIncludeClasses());
+            String fields = fieldsMapper.getFields(
+                    request.getResponse(),
+                    request.getResponseIncludeNotYtDtoFields(),
+                    request.getResponseIncludeYtDtoFields()
+            );
             request.getParams().put("fields", fields);
         }
     }
