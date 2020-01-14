@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
+import java.util.Date;
 import java.util.List;
 
 public interface AbstractDocumentFormView extends IsWidget {
@@ -46,6 +47,10 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     HasValue<Boolean> isApproved();
 
+    HasValue<PersonShortView> approvedBy();
+
+    HasValue<Date> approvalDate();
+
     HasText decimalNumberText();
 
     HasValidable nameValidator();
@@ -61,6 +66,9 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     void uploaderEnabled(boolean isEnabled);
 
+    void approvedByEnabled(boolean isEnabled);
+
+    void approvalDateEnabled(boolean isEnabled);
 
     AbstractDocumentUploader documentDocUploader();
 

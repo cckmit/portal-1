@@ -857,6 +857,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String documentApproveFieldsIsEmpty();
+
     String negativeInventoryNumber();
 
     String customerNotSet();
@@ -1319,6 +1321,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentApproveType();
 
     String documentApproved();
+
+    String documentApprovedBy();
+
+    String documentApprovalDate();
 
     String documentNotApproved();
 

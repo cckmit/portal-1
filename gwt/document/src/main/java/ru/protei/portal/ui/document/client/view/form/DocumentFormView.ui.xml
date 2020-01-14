@@ -10,7 +10,9 @@
              xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:stringselectform="urn:import:ru.protei.portal.ui.common.client.widget.stringselectform">
+             xmlns:stringselectform="urn:import:ru.protei.portal.ui.common.client.widget.stringselectform"
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+    >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -25,9 +27,25 @@
                             <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                         </div>
                     </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-4">
                         <div class="checkbox check-success p-t-10 p-b-10">
                             <g:CheckBox ui:field="approved" text="{lang.documentApproved}"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default" ui:field="approvedByContainer">
+                            <person:EmployeeFormSelector ui:field="approvedBy"
+                                                         header="{lang.documentApprovedBy}"
+                                                         />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default" ui:field="approvalDateContainer">
+                            <label><ui:text from="{lang.documentApprovalDate}"/></label>
+                            <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy"/>
                         </div>
                     </div>
                 </div>

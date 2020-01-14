@@ -154,6 +154,12 @@ public abstract class DocumentFormActivity
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
+    @Override
+    public void onApprovedChanged() {
+        setApprovedByEnable(view.isApproved().getValue());
+        setApprovalDateEnable(view.isApproved().getValue());
+    }
+
     private void refreshProject(Consumer<Project> consumer) {
         regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
                 .withSuccess(result -> {
@@ -204,6 +210,20 @@ public abstract class DocumentFormActivity
         }
     }
 
+    private void setApprovedByEnable(boolean isEnabled) {
+        view.approvedByEnabled(isEnabled);
+        if (!isEnabled) {
+            view.approvedBy().setValue(null);
+        }
+    }
+
+    private void setApprovalDateEnable(boolean isEnabled) {
+        view.approvalDateEnabled(isEnabled);
+        if (!isEnabled) {
+            view.approvalDate().setValue(null);
+        }
+    }
+
     private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
             return false;
@@ -233,7 +253,9 @@ public abstract class DocumentFormActivity
             return StringUtils.isNotEmpty(document.getName()) &&
                     document.getProjectId() != null;
         } else {
-            return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+            return document.isValid()
+                    && isValidInventoryNumberForMinistryOfDefence(document)
+                    && isValidApproveFields(document);
         }
     }
 
@@ -245,6 +267,13 @@ public abstract class DocumentFormActivity
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
+    }
+
+    private boolean isValidApproveFields(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
+        return document.getApprovedBy() != null && document.getApprovalDate() != null;
     }
 
     private void saveDocument(Document document) {
@@ -301,13 +330,20 @@ public abstract class DocumentFormActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
-            return lang.inventoryNumberIsEmpty();
-        } else if (doc.getInventoryNumber() < 0) {
-            return lang.negativeInventoryNumber();
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
+                return lang.inventoryNumberIsEmpty();
+            } else if (doc.getInventoryNumber() < 0) {
+                return lang.negativeInventoryNumber();
+            }
         }
         if (HelperFunc.isEmpty(doc.getName())) {
             return lang.documentNameIsNotSet();
+        }
+        if (doc.getApproved()) {
+            if (doc.getApprovedBy() == null || doc.getApprovalDate() == null) {
+                return lang.documentApproveFieldsIsEmpty();
+            }
         }
         return null;
     }
@@ -327,6 +363,8 @@ public abstract class DocumentFormActivity
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         d.setApproved(view.isApproved().getValue());
+        d.setApprovedBy(Person.fromPersonShortView(view.approvedBy().getValue()));
+        d.setApprovalDate(view.approvalDate().getValue());
         d.setState(document.getState());
         return d;
     }
@@ -348,6 +386,8 @@ public abstract class DocumentFormActivity
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.isApproved().setValue(isNew ? false : document.getApproved());
+        view.approvedBy().setValue(document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
+        view.approvalDate().setValue(document.getApprovalDate());
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
@@ -365,6 +405,8 @@ public abstract class DocumentFormActivity
         setEquipmentEnabled(isNew || decimalNumberIsNotSet);
         setDecimalNumberEnabled(decimalNumberIsNotSet);
         setInventoryNumberEnabled(inventoryNumberIsNotSet);
+        setApprovedByEnable(document.getApproved());
+        setApprovalDateEnable(document.getApproved());
 
         view.nameValidator().setValid(true);
 
