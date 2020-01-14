@@ -128,11 +128,17 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         columns.add(approve);
         columns.add(name);
         columns.add(decimalNumber);
+        columns.add(region);
+        columns.add(company);
+        columns.add(type);
 
         table.addColumn(approve.header, approve.values);
         table.addColumn(name.header, name.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
+        table.addColumn(region.header, region.values);
+        table.addColumn(company.header, company.values);
+        table.addColumn(type.header, type.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
@@ -232,6 +238,72 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
+        }
+    };
+
+    private final ClickColumn<Document> region = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-region-column"; }
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.documentProjectRegion());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (value.getProject().getRegion() != null) {
+                html
+                        .append("<div class=\"region\">")
+                        .append(value.getProject().getRegion())
+                        .append("</div> ");
+            }
+
+            cell.setInnerHTML(html.toString());
+        }
+    };
+
+    private final ClickColumn<Document> company = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-company-column"; }
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.companyName());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (value.getProject().getCustomer() != null) {
+                html
+                        .append("<div class=\"company\">")
+                        .append(value.getProject().getCustomer().getCname())
+                        .append("</div> ");
+            }
+
+            cell.setInnerHTML(html.toString());
+        }
+    };
+
+    private final ClickColumn<Document> type = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-type-column"; }
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.documentType());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (value.getType() != null) {
+                html
+                        .append("<div class=\"type\">")
+                        .append(value.getType().getShortName())
+                        .append("</div> ");
+            }
+
+            cell.setInnerHTML(html.toString());
         }
     };
 
