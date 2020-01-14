@@ -3,12 +3,11 @@ package ru.protei.portal.ui.employeeregistration.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -130,8 +129,33 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         this.additionalSoft.setInnerText( additionalSoft );
     }
 
+    @UiHandler( "fullName" )
+    public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
+
+        if ( activity != null ) {
+            activity.onFullScreenPreviewClicked();
+        }
+    }
+
+    @Override
+    public void showFullScreen(boolean isFullScreen) {
+        backButtonPanel.setVisible(isFullScreen);
+        previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onBackButtonClicked();
+        }
+    }
+
+
     @UiField
-    InlineLabel fullName;
+    Anchor fullName;
     @UiField
     SpanElement headOfDepartment;
     @UiField
@@ -164,6 +188,13 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     HTMLPanel commentContainer;
     @UiField
     SpanElement curators;
+    @UiField
+    HTMLPanel previewWrapperContainer;
+    @UiField
+    HTMLPanel backButtonPanel;
+    @UiField
+    Button backButton;
+
 
     @Inject
     @UiField

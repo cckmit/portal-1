@@ -1332,6 +1332,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryEmployeeRegistration();
 
+    String goToEmployeeRegistration();
+
     String employmentTypeFullTime();
 
     String employmentTypePartTime();

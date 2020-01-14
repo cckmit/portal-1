@@ -121,7 +121,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
         name = new DynamicColumn<>(lang.companyName(), null, this::getCompanyInfoBlock);
 
-        category = new DynamicColumn<>(null, "column_img-35", value -> {
+        category = new DynamicColumn<>(null, "column-img", value -> {
             if (value.getCategory() == null || value.getCategory().getId() == null) return "";
             En_CompanyCategory category = En_CompanyCategory.findById(value.getCategory().getId());
             return "<img src='" + "./images/company_" + category.name().toLowerCase() + ".svg" + "' title='" + value.getCategory().getName() + "'></img>";

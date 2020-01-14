@@ -123,6 +123,9 @@ public abstract class DocumentTableActivity
         if (!UiConstants.ActionBarIdentity.DOCUMENT.equals(event.identity)) {
             return;
         }
+
+        view.clearSelection();
+
         fireEvent(new DocumentEvents.Create());
     }
 

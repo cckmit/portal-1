@@ -130,7 +130,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
             return builder.toString();
         });
 
-        type = new DynamicColumn<>(null, "column_img-35", value -> "<img src='" + value.getType().getImgSrc() + "' title='" + typeLang.getName(value.getType()) + "'></img>");
+        type = new DynamicColumn<>(null, "column-img", value -> "<img src='" + value.getType().getImgSrc() + "' title='" + typeLang.getName(value.getType()) + "'></img>");
 
         table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );

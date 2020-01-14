@@ -22,7 +22,5 @@ public interface AbstractProjectTableView extends IsWidget {
 
     void updateRow( Project project );
 
-    void selectRow(Project project);
-
     void clearSelection();
 }

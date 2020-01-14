@@ -69,11 +69,6 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     @Override
-    public void setSectionTitle( String sectionTitle ) {
-        // not implemented
-    }
-
-    @Override
     public void setSubMenuVisible(boolean isVisible) {
         if (isVisible != subSection.isVisible()) {
             subSection.setVisible(isVisible);
@@ -94,6 +89,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         } else {
             subSection.addStyleName("collapsed");
         }
+    }
+
+    @Override
+    public void setSectionTitle(String title) {
+        anchor.setTitle( title );
     }
 
     @Override

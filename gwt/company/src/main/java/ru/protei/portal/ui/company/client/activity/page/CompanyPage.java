@@ -30,7 +30,7 @@ public abstract class CompanyPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.COMPANY_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.COMPANY, DebugIds.SIDEBAR_MENU.COMPANY ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.COMPANY, ТAB, DebugIds.SIDEBAR_MENU.COMPANY ) );
             fireEvent( new AppEvents.InitPage( new CompanyEvents.Show( true ) ) );
         }
     }

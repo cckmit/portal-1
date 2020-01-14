@@ -86,6 +86,8 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
             return;
         }
 
+        view.clearSelection();
+
         fireEvent( new AccountEvents.Edit() );
     }
 

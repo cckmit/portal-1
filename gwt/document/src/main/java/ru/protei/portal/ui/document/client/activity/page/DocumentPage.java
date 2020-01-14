@@ -28,7 +28,7 @@ public abstract class DocumentPage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, DebugIds.SIDEBAR_MENU.DOCUMENT));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, TAB, DebugIds.SIDEBAR_MENU.DOCUMENT));
             fireEvent(new AppEvents.InitPage(new DocumentEvents.Show(true)));
         }
     }

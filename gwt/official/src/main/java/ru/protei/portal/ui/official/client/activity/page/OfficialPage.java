@@ -26,7 +26,7 @@ public abstract class OfficialPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.OFFICIAL_VIEW) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.OFFICIAL, DebugIds.SIDEBAR_MENU.OFFICIAL ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.OFFICIAL, ТAB, DebugIds.SIDEBAR_MENU.OFFICIAL ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

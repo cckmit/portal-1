@@ -28,7 +28,7 @@ public abstract class EmployeeRegistrationPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_REGISTRATION_VIEW) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE_REGISTRATION, DebugIds.SIDEBAR_MENU.EMPLOYEE_REGISTRATION) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE_REGISTRATION, ТAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_REGISTRATION) );
             fireEvent(new AppEvents.InitPage(show));
         }
     }

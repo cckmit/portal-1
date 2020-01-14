@@ -81,6 +81,8 @@ public abstract class CompanyTableActivity implements
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new CompanyEvents.Edit(null));
     }
 

@@ -28,7 +28,7 @@ public abstract class ContractPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTRACT, DebugIds.SIDEBAR_MENU.CONTRACT) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTRACT, ТAB, DebugIds.SIDEBAR_MENU.CONTRACT) );
             fireEvent( new AppEvents.InitPage( new ContractEvents.Show( true ) ) );
         }
     }

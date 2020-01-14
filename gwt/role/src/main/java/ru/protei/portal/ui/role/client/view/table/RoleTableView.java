@@ -71,6 +71,11 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
     }
 
     @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
+    @Override
     public void setData( List<UserRole> roles ) {
         for ( UserRole role : roles ) {
             table.addRow( role );
