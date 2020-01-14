@@ -1,7 +1,5 @@
 package ru.protei.portal.core.client.youtrack.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,9 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
+import java.util.Arrays;
 import java.util.function.BiFunction;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -36,60 +29,22 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
 
     @PostConstruct
     public void init() {
-        authHeaders = new HttpHeaders();
-        authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        authHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        authHeaders.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
-        objectMapper = YtDtoObjectMapperProvider.getMapper(fieldsMapper);
+        headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
     }
 
     @Override
-    public <RES> Result<RES> read(YoutrackRequest<?, RES> request) {
-        ensureFieldsParamSet(request);
-        return doRead(request.getUrl(), request.getParams(), request.getResponse());
+    public <T> Result<T> read(String url, Class<T> clazz) {
+        return execute((client, headers) -> client.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz))
+                .map(ResponseEntity::getBody);
     }
 
     @Override
-    public <REQ, RES> Result<RES> create(YoutrackRequest<REQ, RES> request) {
-        ensureFieldsParamSet(request);
-        return doSave(request.getUrl(), request.getParams(), request.getResponse(), request.getRequest());
-    }
-
-    @Override
-    public <REQ, RES> Result<RES> update(YoutrackRequest<REQ, RES> request) {
-        ensureFieldsParamSet(request);
-        return doSave(request.getUrl(), request.getParams(), request.getResponse(), request.getRequest());
-    }
-
-    @Override
-    public <REQ, RES> Result<RES> remove(YoutrackRequest<REQ, RES> request) {
-        ensureFieldsParamSet(request);
-        return doSave(request.getUrl(), request.getParams(), request.getResponse(), request.getRequest(), request.getRequestFieldsToRemove());
-    }
-
-    private void ensureFieldsParamSet(YoutrackRequest<?, ?> request) {
-        if (!request.getParams().containsKey("fields")) {
-            String fields = fieldsMapper.getFields(
-                    request.getResponse(),
-                    request.getResponseIncludeNotYtDtoFields(),
-                    request.getResponseIncludeYtDtoFields()
-            );
-            request.getParams().put("fields", fields);
-        }
-    }
-
-    private <RES> Result<RES> doRead(String url, Map<String, String> params, Class<RES> clazz) {
-        return buildUrl(url, params)
-            .flatMap(path -> execute((client, headers) -> client.exchange(path, HttpMethod.GET, new HttpEntity<>(headers), clazz)))
-            .map(ResponseEntity::getBody);
-    }
-
-    private <REQ, RES> Result<RES> doSave(String url, Map<String, String> params, Class<RES> clazz, REQ dto, YtFieldDescriptor...dtoForceIncludeFields) {
-        return buildUrl(url, params)
-            .flatMap(path -> serializeDto(dto, dtoForceIncludeFields)
-                .flatMap(body -> execute((client, headers) -> client.postForEntity(path, new HttpEntity<>(body, headers), clazz)))
-                .map(ResponseEntity::getBody)
-            );
+    public <T> Result<T> save(String url, String body, Class<T> clazz) {
+        return execute((client, headers) -> client.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), clazz))
+                .map(ResponseEntity::getBody);
     }
 
     private <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler) {
@@ -99,7 +54,7 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         ResponseEntity<RES> response;
 
         try {
-            response = handler.apply(ytClient, authHeaders);
+            response = handler.apply(ytClient, headers);
         } catch (Exception e) {
             log.warn("execute(): Can't execute youtrack request, unexpected exception", e);
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -124,42 +79,14 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         return ok(response);
     }
 
-    private Result<String> buildUrl(String base, Map<String, String> params) {
-        if (!params.containsKey("fields")) {
-            return error(En_ResultStatus.INTERNAL_ERROR, "No 'fields' value provided");
-        }
-        List<String> queryList = new ArrayList<>();
-        for (Map.Entry<String, String> entry : CollectionUtils.emptyIfNull(params).entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
-                queryList.add(key + "=" + urlEncode(value));
-            }
-        }
-        String url = base;
-        if (CollectionUtils.isNotEmpty(queryList)) {
-            url += "?" + String.join("&", queryList);
-        }
-        return ok(url);
-    }
-
-    private String urlEncode(String value) {
-        try {
-            return URLEncoder.encode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.warn("urlEncode(): Failed to urlencode (" + value + ")", e);
-            return value;
-        }
-    }
-
     private RestTemplate makeClient(RestTemplateResponseErrorHandler errorHandler) {
         RestTemplate template = new RestTemplate(Arrays.asList(
-                new MappingJackson2HttpMessageConverter(objectMapper),
                 new ByteArrayHttpMessageConverter(),
                 new StringHttpMessageConverter(),
                 new ResourceHttpMessageConverter(),
                 new SourceHttpMessageConverter<>(),
-                new AllEncompassingFormHttpMessageConverter()
+                new AllEncompassingFormHttpMessageConverter(),
+                new MappingJackson2HttpMessageConverter(YtDtoObjectMapperProvider.getMapper(fieldsMapper))
         ));
         if (errorHandler != null) {
             template.setErrorHandler(errorHandler);
@@ -168,26 +95,12 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
         return template;
     }
 
-    private <T> Result<String> serializeDto(T dto, YtFieldDescriptor...forceIncludeFields) {
-        try {
-            String body = objectMapper
-                .writer(YtDtoObjectMapperProvider.getFilterProvider(Arrays.asList(forceIncludeFields)))
-                .writeValueAsString(dto);
-            return ok(body);
-        } catch (JsonProcessingException e) {
-            log.error(String.format("Failed to serialize dto : [%s]", dto), e);
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-    }
-
     @Autowired
     private PortalConfig portalConfig;
     @Autowired
     private YtDtoFieldsMapper fieldsMapper;
 
-    private HttpHeaders authHeaders;
-    private ObjectMapper objectMapper;
+    private HttpHeaders headers;
 
     private final static Logger log = LoggerFactory.getLogger(YoutrackHttpClientImpl.class);
 }
-

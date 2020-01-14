@@ -15,6 +15,8 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
@@ -536,6 +538,11 @@ public class MainConfiguration {
     @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public YoutrackApi getYoutrackApi() {
+        return new YoutrackApiImpl();
     }
 
     @Bean

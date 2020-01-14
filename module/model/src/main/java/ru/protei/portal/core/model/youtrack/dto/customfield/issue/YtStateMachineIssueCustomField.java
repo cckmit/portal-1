@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
+import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.project.YtStateProjectCustomField;
 
@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.project.YtStateProje
 public class YtStateMachineIssueCustomField extends YtSingleValueIssueCustomField {
 
     public YtStateProjectCustomField projectCustomField;
-    @YtDtoFieldAlwaysInclude
+    @YtAlwaysInclude
     public YtStateBundleElement value;
 
     @Override

@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface YtDtoFieldCustomSubclasses {
+public @interface YtCustomSubclasses {
     /**
      * Список классов
      */

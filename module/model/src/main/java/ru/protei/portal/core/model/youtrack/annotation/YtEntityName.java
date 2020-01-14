@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface YtDtoEntityName {
+public @interface YtEntityName {
     /**
      * Имя youtrack-api сущности
      */

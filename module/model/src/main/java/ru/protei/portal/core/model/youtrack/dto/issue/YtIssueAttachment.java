@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.youtrack.dto.issue;
 
-import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
+import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
@@ -20,7 +20,7 @@ public class YtIssueAttachment extends YtDto {
     public String mimeType;
     public String metaData;
     public Boolean removed;
-    @YtDtoFieldAlwaysInclude
+    @YtAlwaysInclude
     public YtUser author;
 
     @Override

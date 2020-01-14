@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.youtrack.dto.project;
 
+import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.customfield.project.YtProjectCustomField;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class YtProject extends YtDto {
 
     public String name;
+    @YtAlwaysInclude
     public String shortName;
     public String description;
     public Boolean archived;

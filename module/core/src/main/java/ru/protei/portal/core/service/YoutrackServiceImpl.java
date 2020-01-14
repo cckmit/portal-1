@@ -7,9 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
-import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
-import ru.protei.portal.core.client.youtrack.http.YoutrackRequest;
-import ru.protei.portal.core.client.youtrack.http.YoutrackUrlProvider;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -17,8 +15,6 @@ import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.YtFieldNames;
-import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
-import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.activity.customfield.YtCustomFieldActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
@@ -27,7 +23,6 @@ import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
-import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -42,13 +37,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public Result<List<YouTrackIssueStateChange>> getIssueStateChanges(String issueId) {
-        return client.read(new YoutrackRequest<>(YtActivityItem[].class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issueActivities(issueId))
-                .fillResponseWithPojo()
-                .params(new HashMap<String, String>() {{
-                    put("categories", YtActivityCategory.CustomFieldCategory.getCategoryId());
-                }}))
-                .map(Arrays::asList)
+        return api.getIssueCustomFieldActivityItems(issueId)
                 .map(ytActivityItems -> {
                     ytActivityItems.sort(Comparator.comparing(
                             ytActivityItem -> ytActivityItem.timestamp,
@@ -73,9 +62,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createIssue(String projectName, String summary, String description) {
         log.info("createIssue(): projectName={}, summary={}, description={}", projectName, summary, description);
 
-        Result<String> projectResult = client.read(new YoutrackRequest<>(YtProject[].class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).projects()))
-                .map(Arrays::asList)
+        Result<String> projectResult = api.getProjectIdByName(projectName)
                 .flatMap(projects -> {
                     if (projects.size() == 1) return ok(projects.get(0));
                     return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one project: " + projects.size());
@@ -85,34 +72,27 @@ public class YoutrackServiceImpl implements YoutrackService {
             log.info("createIssue(): projectName={}, summary={}, description={} | failed to get project", projectName, summary, description);
             return error(projectResult.getStatus(), projectResult.getMessage());
         }
-        String projectId = projectResult.getData();
 
-        return client.create(new YoutrackRequest<>(YtIssue.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issues())
-                .save(makeNewBasicIssue(projectId, summary, description)))
+        YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
+        return api.createIssueAndReturnId(issue)
                 .map(ytIssue -> ytIssue.idReadable);
     }
 
     @Override
     public Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter(String projectName, Date updatedAfter) {
-        return client.read(new YoutrackRequest<>(YtIssue[].class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issues())
-                .query(String.format("project: %s updated: %s .. *", projectName, dateToYtString(updatedAfter))))
-                .map(issues -> Arrays.stream(issues)
-                        .map(issue -> issue.idReadable)
-                        .collect(Collectors.toSet()));
+        String query = String.format("project: %s updated: %s .. *", projectName, dateToYtString(updatedAfter));
+        return api.getIssueIdsByQuery(query).map(issues -> CollectionUtils.stream(issues)
+                .map(issue -> issue.idReadable)
+                .collect(Collectors.toSet()));
     }
 
     @Override
-    public Result<YouTrackIssueInfo> getIssueInfo( String issueId ) {
+    public Result<YouTrackIssueInfo> getIssueInfo(String issueId) {
         if (issueId == null) {
             log.warn("getYoutrackIssueInfo(): Can't get issue info. Argument issueId is mandatory");
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return client.read(new YoutrackRequest<>(YtIssue.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWithPojo()
-                .fillResponseWithYt(YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class))
+        return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .map(this::convertYtIssue);
     }
 
@@ -122,19 +102,15 @@ public class YoutrackServiceImpl implements YoutrackService {
             log.warn("setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return client.read(new YoutrackRequest<>(YtIssue.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWithPojo()
-                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class))
+        return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
                     YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
-                        return ok(issue);
+                        return ok(convertYtIssue(issue));
                     }
                     return setCrmNumber(issue.idReadable, caseNumber);
-                })
-                .map(this::convertYtIssue);
+                });
     }
 
     @Override
@@ -143,19 +119,15 @@ public class YoutrackServiceImpl implements YoutrackService {
             log.warn("removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return client.read(new YoutrackRequest<>(YtIssue.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWithPojo()
-                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class))
+        return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
                     YtIssueCustomField field = issue.getField(YtFieldNames.crmNumber);
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return removeCrmNumber(issue.idReadable);
                     }
-                    return ok(issue);
-                })
-                .map(this::convertYtIssue);
+                    return ok(convertYtIssue(issue));
+                });
     }
 
     @Async(BACKGROUND_TASKS)
@@ -171,28 +143,23 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
     }
 
-    private Result<YtIssue> setCrmNumber(String issueId, Long caseNumber) {
+    private Result<YouTrackIssueInfo> setCrmNumber(String issueId, Long caseNumber) {
         log.info("setCrmNumber(): issueId={}, caseNumber={}", issueId, caseNumber);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
         issue.customFields.add(makeCrmNumberCustomField(caseNumber));
-        return client.update(new YoutrackRequest<>(YtIssue.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWithPojo()
-                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
-                .save(issue));
+        return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
+                .map(this::convertYtIssue);
     }
 
-    private Result<YtIssue> removeCrmNumber(String issueId) {
+    private Result<YouTrackIssueInfo> removeCrmNumber(String issueId) {
         log.info("removeCrmNumber(): issueId={}", issueId);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
         issue.customFields.add(makeCrmNumberCustomField(null));
-        return client.remove(new YoutrackRequest<>(YtIssue.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
-                .fillResponseWithPojo()
-                .fillResponseWithYt(YtIssueCustomField.class, YtIssueComment.class, YtIssueAttachment.class)
-                .remove(issue, new YtFieldDescriptor(YtSimpleIssueCustomField.class, "value")));
+        YtFieldDescriptor crmNumberField = new YtFieldDescriptor(YtSimpleIssueCustomField.class, "value");
+        return api.removeIssueFieldAndReturnWithFieldsCommentsAttachments(issueId, issue, crmNumberField)
+                .map(this::convertYtIssue);
     }
 
     private YouTrackIssueInfo convertYtIssue(YtIssue issue) {
@@ -276,10 +243,6 @@ public class YoutrackServiceImpl implements YoutrackService {
         return new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").format(date);
     }
 
-    private String getBaseUrl() {
-        return config.data().youtrack().getApiBaseUrl() + "/api";
-    }
-
     private String getIssuePriority(YtIssue issue) {
         YtIssueCustomField field = issue.getField(YtFieldNames.priority);
         if (field == null) {
@@ -316,7 +279,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Autowired
-    YoutrackHttpClient client;
+    YoutrackApi api;
     @Autowired
     PortalConfig config;
 

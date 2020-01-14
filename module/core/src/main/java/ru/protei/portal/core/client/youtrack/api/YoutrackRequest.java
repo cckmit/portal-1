@@ -1,11 +1,11 @@
-package ru.protei.portal.core.client.youtrack.http;
+package ru.protei.portal.core.client.youtrack.api;
 
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class YoutrackRequest<REQ, RES> {
+class YoutrackRequest<REQ, RES> {
 
     private String url;
     private Map<String, String> params;
@@ -45,12 +45,12 @@ public class YoutrackRequest<REQ, RES> {
         return this;
     }
 
-    public YoutrackRequest<REQ, RES> fillResponseWithPojo() {
+    public YoutrackRequest<REQ, RES> fillSimpleFields() {
         this.responseIncludeNotYtDtoFields = true;
         return this;
     }
 
-    public YoutrackRequest<REQ, RES> fillResponseWithYt(Class<?>...classes) {
+    public YoutrackRequest<REQ, RES> fillYtFields(Class<?>...classes) {
         this.responseIncludeYtDtoFields = classes;
         return this;
     }

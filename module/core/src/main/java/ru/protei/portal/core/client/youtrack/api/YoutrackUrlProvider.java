@@ -1,6 +1,6 @@
-package ru.protei.portal.core.client.youtrack.http;
+package ru.protei.portal.core.client.youtrack.api;
 
-public class YoutrackUrlProvider {
+class YoutrackUrlProvider {
 
     private final String baseUrl;
 

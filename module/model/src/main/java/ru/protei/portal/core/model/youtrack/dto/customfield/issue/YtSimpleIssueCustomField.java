@@ -1,13 +1,13 @@
 package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 
-import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
+import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
 
 /**
  * https://www.jetbrains.com/help/youtrack/standalone/api-entity-SimpleIssueCustomField.html
  */
 public class YtSimpleIssueCustomField extends YtIssueCustomField {
 
-    @YtDtoFieldAlwaysInclude
+    @YtAlwaysInclude
     public String value;
 
     public String getValue() { return value; }

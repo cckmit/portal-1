@@ -2,7 +2,9 @@ package ru.protei.portal.core.model.youtrack.dto.issue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.youtrack.annotation.YtDtoFieldAlwaysInclude;
+import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
+import ru.protei.portal.core.model.youtrack.annotation.YtEntityName;
+import ru.protei.portal.core.model.youtrack.annotation.YtFieldName;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
@@ -14,9 +16,11 @@ import java.util.Objects;
 /**
  * https://www.jetbrains.com/help/youtrack/standalone/api-entity-Issue.html
  */
+@YtEntityName("Issue")
 public class YtIssue extends YtDto {
 
-    @YtDtoFieldAlwaysInclude
+    @YtAlwaysInclude
+    @YtFieldName("idReadable")
     public String idReadable;
     public String summary;
     public String description;
