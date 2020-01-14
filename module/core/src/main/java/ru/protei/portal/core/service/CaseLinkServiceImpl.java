@@ -265,7 +265,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private boolean isValidLink(CaseLink value) {
-        if ( value.getCaseId() == null || value.getType() == null || StringUtils.isBlank(value.getRemoteId())) {
+        if ( value.getCaseId() == null || value.getType() == null || StringUtils.isBlank(value.getRemoteId()) || value.getRemoteId().equals(String.valueOf(value.getCaseId())) ) {
             return false;
         }
 

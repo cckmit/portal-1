@@ -91,23 +91,18 @@ public abstract class CaseLinkListActivity
     }
 
     @Override
-    public void onAddLinkClicked(CaseLink value) {
-        if (value == null || !show.isEnabled) {
+    public void onAddLinkClicked(CaseLink caseLink) {
+        if (caseLink == null || !show.isEnabled) {
             return;
         }
 
-        if (Objects.equals(value.getRemoteId(), String.valueOf(show.caseNumber))) {
-            showError(lang.errUnableLinkIssueToItself());
-            return;
-        }
-
-        value.setCaseId(show.caseId);
-        switch (value.getType()) {
+        caseLink.setCaseId(show.caseId);
+        switch (caseLink.getType()) {
             case CRM:
-                addCrmLink( value );
+                addCrmLink( caseLink );
                 break;
             case YT:
-                addYtLink( value );
+                addYtLink( caseLink );
         }
     }
 
@@ -156,6 +151,11 @@ public abstract class CaseLinkListActivity
                 .withSuccess(caseInfo -> {
                     if (caseInfo == null) {
                         showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
+                        return;
+                    }
+
+                    if (Objects.equals(caseLink.getCaseId(), caseInfo.getId())) {
+                        showError(lang.errUnableLinkIssueToItself());
                         return;
                     }
 

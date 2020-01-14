@@ -25,11 +25,6 @@ public class CaseLinkEvents {
             return this;
         }
 
-        public Show withCaseNumber(Long caseNumber) {
-            this.caseNumber = caseNumber;
-            return this;
-        }
-
         public Show withReadOnly(boolean isReadOnly) {
             this.isEnabled = !isReadOnly;
             return this;
@@ -41,7 +36,6 @@ public class CaseLinkEvents {
 
         public HasWidgets parent;
         public Long caseId;
-        public Long caseNumber;
         public En_CaseType caseType;
         public boolean isEnabled = true;
     }
