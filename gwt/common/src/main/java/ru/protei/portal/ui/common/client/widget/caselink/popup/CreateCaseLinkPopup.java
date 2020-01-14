@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.caselink.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -100,18 +101,15 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler("remoteIdInput")
     public void onChangeText(KeyPressEvent event) {
-        if (event.getCharCode() == ENTER_CODE) {
+        if (event.getCharCode() == KeyCodes.KEY_ENTER) {
             keyTapTimer.run();
         }
     }
 
     public void setInputTextHandler() {
-        remoteIdInput.addInputHandler(new InputHandler() {
-            @Override
-            public void onInput(InputEvent event) {
-                keyTapTimer.cancel();
-                keyTapTimer.schedule(300);
-            }
+        remoteIdInput.addInputHandler(event -> {
+            keyTapTimer.cancel();
+            keyTapTimer.schedule(300);
         });
     }
 
@@ -148,7 +146,6 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
-    private static final int ENTER_CODE = 13;
     private RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
     private Timer keyTapTimer = new Timer() {
         @Override

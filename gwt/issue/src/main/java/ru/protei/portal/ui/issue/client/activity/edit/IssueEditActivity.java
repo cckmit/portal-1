@@ -311,7 +311,11 @@ public abstract class IssueEditActivity implements
         boolean readOnly = isReadOnly();
 
         view.setCaseNumber(issue.getCaseNumber());
-        view.setPrivateIssue(issue.isPrivateCase());
+
+        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW)) {
+            view.setPrivateIssue(issue.isPrivateCase());
+        }
+
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));

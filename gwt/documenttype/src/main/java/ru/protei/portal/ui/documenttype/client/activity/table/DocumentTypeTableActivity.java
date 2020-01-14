@@ -66,6 +66,8 @@ public abstract class DocumentTypeTableActivity
             return;
         }
 
+        view.clearSelection();
+
         animation.showDetails();
         fireEvent(new DocumentTypeEvents.ShowPreview(view.getPreviewContainer(), null));
     }

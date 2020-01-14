@@ -81,6 +81,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         if (!UiConstants.ActionBarIdentity.CONTRACT.equals(event.identity)) {
             return;
         }
+
+        view.clearSelection();
+
         fireEvent(new ContractEvents.Edit());
     }
 

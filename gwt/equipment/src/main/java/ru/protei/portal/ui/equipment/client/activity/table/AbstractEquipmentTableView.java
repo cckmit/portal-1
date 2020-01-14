@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 /**
@@ -14,6 +15,8 @@ public interface AbstractEquipmentTableView extends IsWidget {
     void setAnimation ( TableAnimation animation );
 
     void clearRecords();
+
+    void removeSelection (Equipment value);
 
     void clearSelection();
 

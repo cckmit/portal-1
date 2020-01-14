@@ -31,7 +31,7 @@ public abstract class ContactPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTACT, DebugIds.SIDEBAR_MENU.CONTACT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTACT, ТAB, DebugIds.SIDEBAR_MENU.CONTACT ) );
             fireEvent( new AppEvents.InitPage( new ContactEvents.Show( true ) ) );
         }
     }

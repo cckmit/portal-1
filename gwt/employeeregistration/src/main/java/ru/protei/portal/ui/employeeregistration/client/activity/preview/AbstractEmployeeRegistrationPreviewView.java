@@ -34,7 +34,7 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setState(En_CaseState state);
 
-    void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
+    void setPhoneOfficeTypeList( String phoneOfficeTypeList );
 
     HasWidgets getLinksContainer();
 
@@ -45,6 +45,8 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setResourceComment( String resourceComment );
 
     void setAdditionalSoft( String additionalSoft );
+
+    void showFullScreen(boolean isFullScreen);
 
     HasWidgets getCommentsContainer();
 }

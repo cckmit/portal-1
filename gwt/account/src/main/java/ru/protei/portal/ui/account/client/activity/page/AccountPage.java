@@ -29,7 +29,7 @@ public abstract class AccountPage implements Activity {
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT, DebugIds.SIDEBAR_MENU.ACCOUNT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT, ТAB, DebugIds.SIDEBAR_MENU.ACCOUNT ) );
             fireEvent( new AppEvents.InitPage( new AccountEvents.Show(true) ) );
         }
     }

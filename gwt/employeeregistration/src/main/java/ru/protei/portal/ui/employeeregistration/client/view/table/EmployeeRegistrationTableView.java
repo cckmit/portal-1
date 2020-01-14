@@ -72,6 +72,11 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         return filterContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         ClickColumn<EmployeeRegistration> state = new ClickColumn<EmployeeRegistration>() {
             @Override
@@ -112,6 +117,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         ClickColumn<EmployeeRegistration> headOfDepartment = new ClickColumn<EmployeeRegistration>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("head-of-department");
                 columnHeader.setInnerText(lang.employeeRegistrationHeadOfDepartmentColumnHeader());
             }
 
@@ -128,6 +134,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         ClickColumn<EmployeeRegistration> employmentDate = new ClickColumn<EmployeeRegistration>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("employment-date");
                 columnHeader.setInnerText(lang.employeeRegistrationEmploymentDateColumnHeader());
             }
 

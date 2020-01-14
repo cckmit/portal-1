@@ -72,6 +72,8 @@ public abstract class RoleTableActivity
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new RoleEvents.Edit(null));
     }
 

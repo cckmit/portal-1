@@ -3566,17 +3566,18 @@ form-group .verifiable-after
 // table images default style
 table {
   thead {
-    th.column_img-35 {
+    th.column-img {
       width: 70px;
     }
   }
 
   tbody {
-    td.column_img-35 {
+    td.column-img {
       height: 35px;
       max-height: 35px;
-      width: 35px;
-      max-width: 35px;
+      width: 70px;
+      min-width: 70px;
+      max-width: 70px;
       white-space: pre-line;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -3850,4 +3851,28 @@ table {
 
 .text-danger.size-error {
   font-size: 75% !important;
+}
+
+.products .table {
+  word-break: break-word;
+}
+
+.site-folder .table {
+  word-break: break-word;
+}
+
+.employee-registration .table {
+  word-break: break-word;
+
+  .number {
+    min-width: 95px;
+  }
+
+  .employment-date{
+    min-width: 85px;
+  }
+
+  .head-of-department{
+    min-width: 130px;
+  }
 }

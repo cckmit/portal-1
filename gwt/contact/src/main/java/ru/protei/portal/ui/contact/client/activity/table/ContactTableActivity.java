@@ -87,6 +87,8 @@ public abstract class ContactTableActivity
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new ContactEvents.Edit().newItem(filterView.company().getValue()));
     }
 
