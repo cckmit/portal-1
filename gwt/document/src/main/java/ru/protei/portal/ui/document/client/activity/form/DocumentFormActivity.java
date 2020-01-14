@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -35,11 +35,6 @@ import java.util.function.Consumer;
 
 public abstract class DocumentFormActivity
         implements Activity, AbstractDocumentFormActivity {
-
-    @Event
-    public void onAuthSuccess( AuthEvents.Success event ) {
-        this.authorizedProfile = event.profile;
-    }
 
     @PostConstruct
     public void onInit() {
@@ -72,7 +67,10 @@ public abstract class DocumentFormActivity
             return;
         }
 
-        view.project().setValue(event.projectInfo == null || event.projectInfo.getId() == null ? null : new EntityOption(event.projectInfo.getName(), event.projectInfo.getId()));
+        if (event.project != null) {
+            view.project().setValue(event.project);
+            onProjectChanged();
+        }
     }
 
     @Override
@@ -104,25 +102,15 @@ public abstract class DocumentFormActivity
 
     @Override
     public void onProjectChanged() {
-        if (view.project().getValue() == null) {
-            refreshProject(null);
-            return;
-        }
-        requestProject(projectInfo -> refreshProject(projectInfo));
-    }
-
-    private void refreshProject(ProjectInfo project) {
-        if (project != null) {
-            setDesignationEnabled(isDesignationVisible(project, view.documentCategory().getValue()));
-            view.setEquipmentProjectId(project.getId());
-            fillViewProjectInfo(project);
-        } else {
-            setDesignationEnabled(false);
-            fillViewProjectInfo(null);
-        }
+        EntityOption project = view.project().getValue();
 
         setEquipmentEnabled(project != null);
         view.equipment().setValue(null, true);
+
+        if (project != null)
+            view.setEquipmentProjectId(project.getId());
+
+        refreshProject();
     }
 
     @Override
@@ -150,6 +138,18 @@ public abstract class DocumentFormActivity
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
+    private void refreshProject() {
+        if (view.project().getValue() == null) {
+            setDesignationEnabled(false);
+            return;
+        }
+
+        requestProject(projectInfo -> {
+            setDesignationEnabled(isDesignationVisible(projectInfo, view.documentCategory().getValue()));
+            fillViewProjectInfo(projectInfo);
+        } );
+    }
+
     private void requestProject(Consumer<ProjectInfo> consumer) {
         regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<ProjectInfo>()
                 .withSuccess(result -> {
@@ -160,11 +160,13 @@ public abstract class DocumentFormActivity
     }
 
     private void setDesignationEnabled(boolean isDesignationEnabled) {
+        Window.alert("setDesignationEnabled = " + isDesignationEnabled);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
     }
 
     private void setDecimalNumberEnabled(boolean isEnabled) {
+        Window.alert("setDecimalNumberEnabled = " + isEnabled);
         view.decimalNumberEnabled(isEnabled);
         if (!isEnabled) {
             view.decimalNumber().setValue(null);
@@ -338,15 +340,17 @@ public abstract class DocumentFormActivity
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
         view.version().setValue(document.getVersion());
+        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
+        refreshProject();
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.isApproved().setValue(isNew ? false : document.getApproved());
 
         if (isNew) {
-            PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
+            Profile profile = policyService.getProfile();
+            PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
         } else {
@@ -393,10 +397,11 @@ public abstract class DocumentFormActivity
     DocumentControllerAsync documentService;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    PolicyService policyService;
 
     private String tag;
     private Document document;
     private ProjectInfo project;
-    private Profile authorizedProfile;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

@@ -81,13 +81,9 @@ public class ProjectList
 
     private void addItem(ProjectInfo value) {
         ProjectItem itemView = itemFactory.get();
-/*
         itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
-*/
         itemView.setName(value.getName());
-/*
         itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect(Collectors.joining(", ")));
-*/
         itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
         itemView.setManagers(value.getManager() == null ? "" : value.getManager().getDisplayText());
         itemView.addValueChangeHandler(this);

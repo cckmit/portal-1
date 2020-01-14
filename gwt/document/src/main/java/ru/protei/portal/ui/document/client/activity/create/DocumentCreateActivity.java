@@ -46,7 +46,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
 
     @Event
     public void onSetProject(ProjectEvents.Set event) {
-        fireEvent(new DocumentEvents.Form.SetProject(event.projectInfo, TAG));
+        fireEvent(new DocumentEvents.Form.SetProject(event.project, TAG));
     }
 
     @Override

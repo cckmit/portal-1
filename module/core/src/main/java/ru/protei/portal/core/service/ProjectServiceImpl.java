@@ -138,15 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
 
-        ProjectInfo project = new ProjectInfo(
-                projectFromDb.getId(),
-                projectFromDb.getName(),
-                En_CustomerType.find(projectFromDb.getLocal()),
-                CollectionUtils.isEmpty(projectFromDb.getLocations()) ? null : EntityOption.fromLocation(projectFromDb.getLocations().get(0).getLocation()),
-                projectFromDb.getProduct() == null ? null : new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()),
-                projectFromDb.getManager() == null ? null : new EntityOption(projectFromDb.getManager().getDisplayShortName(), projectFromDb.getManagerId()),
-                projectFromDb.getInitiatorCompany() == null ? null : new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId())
-        );
+        ProjectInfo project = ProjectInfo.fromCaseObject(projectFromDb);
         return ok(project);
     }
 
@@ -296,12 +288,14 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
+        helper.fill(projects, "products");
+
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
         return ok(result);
     }
 
-    private void updateTeam( CaseObject caseObject, List<PersonProjectMemberView> team) {
+    private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
 
         List<PersonProjectMemberView> toAdd = new ArrayList<>(team);
         List<Long> toRemove = new ArrayList<>();
