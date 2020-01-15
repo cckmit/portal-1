@@ -37,7 +37,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     @Override
     public void handle(AssembledCaseEvent event) {
         logger.debug("Handling action on jira-related issue in Portal-CRM");
-        if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
+        if (!portalConfig.data().integrationConfig().isJiraEnabled() && !portalConfig.data().integrationConfig().isJiraBackchannelEnabled()) {
             logger.debug("Jira integration is disabled, nothing happens");
             return;
         }
