@@ -117,6 +117,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (document.getProjectAsCaseObject() != null) {
             jdbcManyRelationsHelper.fill(document.getProjectAsCaseObject(), "locations");
         }
+        jdbcManyRelationsHelper.fill(document, "members");
 
         resetDocumentPrivacyInfo(document);
 
@@ -177,6 +178,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
+            jdbcManyRelationsHelper.fill(document, "members");
             return ok(document);
         });
     }
@@ -206,6 +208,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (oldDocument == null) {
                 return error(En_ResultStatus.NOT_FOUND);
             }
+            jdbcManyRelationsHelper.fill(oldDocument, "members");
 
             En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
             if (validationStatus != En_ResultStatus.OK) {
@@ -268,6 +271,7 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
 
+            jdbcManyRelationsHelper.fill(document, "members");
             return ok(document);
         });
     }
@@ -451,6 +455,7 @@ public class DocumentServiceImpl implements DocumentService {
                 log.error("saveToDB(): failed to save document to the db");
                 return false;
             }
+            jdbcManyRelationsHelper.persist(document, "members");
         } catch (Exception e) {
             log.error("saveToDB(): failed to save document to the db", e);
             return false;
@@ -464,6 +469,7 @@ public class DocumentServiceImpl implements DocumentService {
                 log.error("updateAtDB(): failed to update document at the db");
                 return false;
             }
+            jdbcManyRelationsHelper.persist(document, "members");
         } catch (Exception e) {
             log.error("updateAtDB(): failed to update document at the db", e);
             return false;

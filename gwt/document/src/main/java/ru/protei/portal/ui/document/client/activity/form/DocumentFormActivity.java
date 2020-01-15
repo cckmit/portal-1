@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
@@ -32,6 +33,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class DocumentFormActivity
         implements Activity, AbstractDocumentFormActivity {
@@ -318,6 +320,7 @@ public abstract class DocumentFormActivity
         d.setAnnotation(view.annotation().getValue());
         d.setDecimalNumber(StringUtils.nullIfEmpty(view.decimalNumberText().getText()));
         d.setType(view.documentType().getValue());
+        d.setMembers(CollectionUtils.stream(view.members().getValue()).map(Person::fromPersonShortView).collect(Collectors.toList()));
         d.setExecutionType(view.executionType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
@@ -341,6 +344,7 @@ public abstract class DocumentFormActivity
         view.executionType().setValue(document.getExecutionType());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
+        view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromPerson).collect(Collectors.toSet()));
         view.keywords().setValue(document.getKeywords());
         fillViewProject(document.getProject());
         view.version().setValue(document.getVersion());
