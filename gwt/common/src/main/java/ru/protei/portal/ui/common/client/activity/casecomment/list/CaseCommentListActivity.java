@@ -100,9 +100,11 @@ public abstract class CaseCommentListActivity
         view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.enabledNewComment(isModifyEnabled);
-        view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
-                        lang.textMarkdownSupport() :
-                        lang.textJiraWikiMarkupSupport());
+        if (textMarkup == En_TextMarkup.MARKDOWN) {
+            view.setMarkupLabel(lang.textMarkdownSupport(), lang.textMarkdownLink());
+        } else {
+            view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), lang.textJiraWikiMarkupLink());
+        }
 
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
