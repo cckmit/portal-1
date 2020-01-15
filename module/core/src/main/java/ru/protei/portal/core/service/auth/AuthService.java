@@ -20,14 +20,4 @@ public interface AuthService {
     Result<AuthToken> logout(AuthToken token, String ip, String userAgent);
 
     Result<UserLogin> getUserLogin(AuthToken token, Long userLoginId);
-
-//    for tests only
-
-    default void makeThreadAuthToken(UserLogin userLogin) {}
-
-    default void resetThreadAuthToken() {}
-
-    default AuthToken getAuthToken() {
-        return null;
-    }
 }

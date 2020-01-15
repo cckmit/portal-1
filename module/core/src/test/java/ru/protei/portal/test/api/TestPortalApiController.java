@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -43,9 +44,6 @@ public class TestPortalApiController extends BaseServiceTest {
     PortalApiController portalApiController;
 
     @Autowired
-    AuthService authService;
-
-    @Autowired
     ObjectMapper objectMapper;
 
     private static final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
@@ -62,6 +60,7 @@ public class TestPortalApiController extends BaseServiceTest {
     private Company company;
     private UserRole mainRole;
     private MockMvc mockMvc;
+    private AuthServiceMock authService;
 
     @Before
     public void init() throws Exception {
@@ -340,5 +339,10 @@ public class TestPortalApiController extends BaseServiceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(obj))
         );
+    }
+
+    @Autowired
+    private void authService(AuthService authService) {
+        this.authService = (AuthServiceMock) authService;
     }
 }

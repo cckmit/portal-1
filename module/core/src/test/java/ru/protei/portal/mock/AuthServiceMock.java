@@ -41,12 +41,10 @@ public class AuthServiceMock implements AuthService {
         return ok( getAuthToken() );
     }
 
-    @Override
     public void makeThreadAuthToken(UserLogin userLogin) {
         setThreadAuthToken(userLogin, makeAuthToken(userLogin));
     }
 
-    @Override
     public void resetThreadAuthToken() {
         setThreadAuthToken(null, null);
     }
@@ -90,7 +88,6 @@ public class AuthServiceMock implements AuthService {
         return token;
     }
 
-    @Override
     public AuthToken getAuthToken() {
         AuthToken authToken = getThreadAuthToken();
         if (authToken == null) return stubAuthToken;
