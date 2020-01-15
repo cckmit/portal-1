@@ -21,12 +21,12 @@ public class DocumentEvents {
 
     public static class ShowPreview {
 
-        public ShowPreview (HasWidgets parent, Document document) {
+        public ShowPreview (HasWidgets parent, Long documentId) {
             this.parent = parent;
-            this.document = document;
+            this.documentId = documentId;
         }
 
-        public Document document;
+        public Long documentId;
         public HasWidgets parent;
     }
 

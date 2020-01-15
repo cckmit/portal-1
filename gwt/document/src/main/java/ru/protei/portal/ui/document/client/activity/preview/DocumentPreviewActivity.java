@@ -7,6 +7,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,7 +24,9 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class DocumentPreviewActivity implements Activity, AbstractDocumentPreviewActivity {
 
@@ -45,16 +49,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         event.parent.clear();
         event.parent.add(view.asWidget());
         view.footerVisibility().setVisible(false);
-        if (event.document == null) {
-            invalidDocument();
-            return;
-        }
-        Long documentId = event.document.getId();
-        if (documentId == null) {
-            invalidDocument();
-            return;
-        }
-        fillView(event.document);
+        loadDocument(event.documentId, this::fillView);
     }
 
     @Event
@@ -78,11 +73,9 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         documentService.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
     }
 
-    private void invalidDocument() {
-        fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
-    }
-
     private void fillView(Document document) {
+        boolean hasAccessToPdf = hasAccessToPdf();
+        boolean hasAccessToDoc = hasAccessToDoc(document);
         view.setHeader(document.getName() + " (#" + document.getId() + ")");
         view.setVersion(lang.documentVersion() + " " + document.getVersion());
         view.setCreatedBy(lang.createBy("", DateFormatter.formatDateTime(document.getCreated())));
@@ -92,8 +85,8 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
-        view.setDownloadLinkPdf(canView() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
-        view.setDownloadLinkDoc(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
+        view.setDownloadLinkPdf(hasAccessToPdf ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
+        view.setDownloadLinkDoc(hasAccessToDoc ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
         fillProject(document);
@@ -112,11 +105,18 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
     }
 
-    private boolean canView() {
-        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_VIEW);
+    private boolean hasAccessToDoc(Document document) {
+        if (!policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_VIEW)) {
+            return false;
+        }
+        Long currentPersonId = policyService.getProfile().getId();
+        return CollectionUtils.stream(document.getMembers())
+                .map(Person::getId)
+                .collect(Collectors.toList())
+                .contains(currentPersonId);
     }
 
-    private boolean canEdit() {
+    private boolean hasAccessToPdf() {
         return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_EDIT);
     }
 

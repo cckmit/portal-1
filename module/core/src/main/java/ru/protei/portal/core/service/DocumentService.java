@@ -48,7 +48,7 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result updateState( AuthToken token, Long documentId, En_DocumentState state);
 
-    @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_VIEW})
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_VIEW})
     Result<En_DocumentFormat> getDocumentFile(AuthToken token, Long documentId, Long projectId, En_DocumentFormat format, OutputStream outputStream);
 
     Result<String> getDocumentName(Long documentId);

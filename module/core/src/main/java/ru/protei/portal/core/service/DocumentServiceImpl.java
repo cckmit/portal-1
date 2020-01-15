@@ -14,10 +14,7 @@ import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DocumentFormat;
-import ru.protei.portal.core.model.dict.En_DocumentState;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Person;
@@ -26,6 +23,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
@@ -68,6 +66,8 @@ public class DocumentServiceImpl implements DocumentService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
@@ -311,6 +311,10 @@ public class DocumentServiceImpl implements DocumentService {
     public Result<En_DocumentFormat> getDocumentFile(AuthToken token, Long documentId, Long projectId, En_DocumentFormat format, OutputStream outputStream) {
         try {
             format = mergeDocDocxFormats(documentId, projectId, format);
+            boolean idDocFile = format == En_DocumentFormat.DOCX || format == En_DocumentFormat.DOC;
+            if (idDocFile && !hasAccessToDocFile(token, documentId)) {
+                return error(En_ResultStatus.PERMISSION_DENIED);
+            }
             documentSvnApi.getDocument(projectId, documentId, format, outputStream);
             return ok(format);
         } catch (SVNException e) {
@@ -473,6 +477,21 @@ public class DocumentServiceImpl implements DocumentService {
         } else {
             return En_DocumentFormat.DOC;
         }
+    }
+
+    private boolean hasAccessToDocFile(AuthToken token, Long documentId) {
+        if (policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.DOCUMENT_EDIT)) {
+            return true;
+        }
+        if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.DOCUMENT_VIEW)) {
+            return false;
+        }
+        Document document = documentDAO.partialGet(documentId, "id");
+        jdbcManyRelationsHelper.fill(document, "members");
+        return CollectionUtils.stream(document.getMembers())
+                .map(Person::getId)
+                .collect(Collectors.toList())
+                .contains(token.getPersonId());
     }
 
     private boolean saveToDB(Document document) {
