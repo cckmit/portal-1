@@ -73,58 +73,58 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Result<Person> saveContact( AuthToken token, Person p ) {
-        if (personDAO.isEmployee(p)) {
-            log.warn("person with id = {} is employee",p.getId());
+    public Result<Person> saveContact( AuthToken token, Person person ) {
+        if (personDAO.isEmployee(person)) {
+            log.warn("person with id = {} is employee",person.getId());
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (HelperFunc.isEmpty(p.getFirstName()) || HelperFunc.isEmpty(p.getLastName())
-                || p.getCompanyId() == null)
+        if (HelperFunc.isEmpty(person.getFirstName()) || HelperFunc.isEmpty(person.getLastName())
+                || person.getCompanyId() == null)
             return error(En_ResultStatus.VALIDATION_ERROR);
 
         // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
         // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
-        if (p.getId() != null) {
-            Person personOld = personDAO.getContact(p.getId());
-            if (personOld.isFired() != p.isFired()) {
-                log.warn("prevented change of person.isFired attr, person with id = {}", p.getId());
+        if (person.getId() != null) {
+            Person personOld = personDAO.getContact(person.getId());
+            if (personOld.isFired() != person.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
                 return error(En_ResultStatus.VALIDATION_ERROR);
             }
-            if (personOld.isDeleted() != p.isDeleted()) {
-                log.warn("prevented change of person.isDeleted attr, person with id = {}", p.getId());
+            if (personOld.isDeleted() != person.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
                 return error(En_ResultStatus.VALIDATION_ERROR);
             }
         }
 
-        if (HelperFunc.isEmpty(p.getDisplayName())) {
-            p.setDisplayName(p.getLastName() + " " + p.getFirstName());
+        if (HelperFunc.isEmpty(person.getDisplayName())) {
+            person.setDisplayName(person.getLastName() + " " + person.getFirstName());
         }
 
-        if (HelperFunc.isEmpty(p.getDisplayShortName())) {
+        if (HelperFunc.isEmpty(person.getDisplayShortName())) {
             StringBuilder b = new StringBuilder();
-            b.append (p.getLastName()).append(" ")
-                    .append (p.getFirstName().substring(0,1).toUpperCase()).append(".")
+            b.append (person.getLastName()).append(" ")
+                    .append (person.getFirstName().substring(0,1).toUpperCase()).append(".")
             ;
 
-            if (!p.getSecondName().isEmpty()) {
-                b.append(" ").append(p.getSecondName().substring(0,1).toUpperCase()).append(".");
+            if (!person.getSecondName().isEmpty()) {
+                b.append(" ").append(person.getSecondName().substring(0,1).toUpperCase()).append(".");
             }
 
-            p.setDisplayShortName(b.toString());
+            person.setDisplayShortName(b.toString());
         }
 
-        if (p.getCreated() == null)
-            p.setCreated(new Date());
+        if (person.getCreated() == null)
+            person.setCreated(new Date());
 
-        if (p.getCreator() == null)
-            p.setCreator("service");
+        if (person.getCreator() == null)
+            person.setCreator("service");
 
-        if (p.getGender() == null)
-            p.setGender(En_Gender.UNDEFINED);
+        if (person.getGender() == null)
+            person.setGender(En_Gender.UNDEFINED);
 
-        if (personDAO.saveOrUpdate(p)) {
-            return ok(p);
+        if (personDAO.saveOrUpdate(person)) {
+            return ok(person);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);

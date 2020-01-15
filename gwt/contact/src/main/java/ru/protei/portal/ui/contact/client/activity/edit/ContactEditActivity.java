@@ -109,11 +109,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (!validateSaveButton()) {
-            view.saveEnabled().setEnabled(false);
-            return;
-        }
-
         String errorMsg = validate();
 
         if (errorMsg != null) {
@@ -171,15 +166,25 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
-        String value = view.login().getText().trim();
 
-        if (value.isEmpty()){
+        String login = view.login().getText().trim();
+
+        if (login.isEmpty()) {
+            view.setContactLoginStatus(NameStatus.NONE);
+            view.loginErrorLabelVisibility().setVisible(false);
+            validateSaveButton();
+            return;
+        }
+
+        validateLimitedFields();
+
+        if (login.length() > LOGIN_SIZE) {
             view.setContactLoginStatus(NameStatus.NONE);
             return;
         }
 
         accountService.isLoginUnique(
-                value,
+                login,
                 account.getId(),
                 new RequestCallback<Boolean>() {
                     @Override
@@ -232,7 +237,20 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             view.secondNameErrorLabelVisibility().setVisible(view.secondName().getText().length() > SECOND_NAME_SIZE);
         }
 
+        if (view.shortName().getText() != null) {
+            view.shortNameErrorLabelVisibility().setVisible(view.shortName().getText().length() > SHORT_NAME_SIZE);
+        }
+
+        if (view.login().getText() != null) {
+            view.loginErrorLabelVisibility().setVisible(view.login().getText().trim().length() > LOGIN_SIZE);
+        }
+
         view.saveEnabled().setEnabled(validateSaveButton());
+    }
+
+    @Override
+    public void onCompanySelected() {
+        view.companyValidator().setValid(view.company().getValue() != null);
     }
 
     private boolean validateSaveButton() {
@@ -245,6 +263,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.login().getText() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
             return false;
         }
 
@@ -315,7 +341,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return lang.errFieldsRequired();
         }
 
-        if (!view.isValidLogin()) {
+        if (!isLoginValid()) {
             return lang.errorFieldHasInvalidValue(view.loginLabel().getText());
         }
 
@@ -339,6 +365,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return lang.errorFieldHasInvalidValue(view.secondNameLabel().getText());
         }
 
+        if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.shortNameLabel().getText());
+        }
+
         return null;
     }
 
@@ -353,6 +383,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
         // lock company field if provided person already contains defined company. Added with CRM-103 task.
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
+        view.companyValidator().setValid(person.getCompany() != null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
@@ -396,6 +427,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel().getText(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel().getText(), SECOND_NAME_SIZE));
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel().getText(), LAST_NAME_SIZE));
+        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel().getText(), SHORT_NAME_SIZE));
+        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel().getText(), LOGIN_SIZE));
     }
 
     private boolean passwordNotDefined() {
@@ -422,6 +455,18 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 view.sendWelcomeEmail().getValue() &&
                 view.workEmail().getText().isEmpty() &&
                 view.personalEmail().getText().isEmpty();
+    }
+
+    private boolean isLoginValid() {
+        if (Objects.equals(view.getContactLoginStatus(), NameStatus.ERROR)) {
+            return false;
+        }
+
+        if ((view.login() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean hasPrivileges(Long personId) {

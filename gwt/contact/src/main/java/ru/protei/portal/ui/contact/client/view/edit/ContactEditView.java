@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -13,6 +14,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -183,7 +185,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasValidable companyValidator(){
+    public HasValidable companyValidator() {
         return company;
     }
 
@@ -205,11 +207,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasValidable personalEmailValidator(){
         return personalEmail;
-    }
-
-    @Override
-    public boolean isValidLogin() {
-        return status != null && status.equals(NameStatus.ERROR) ? false : true;
     }
 
     @Override
@@ -268,6 +265,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasVisibility shortNameErrorLabelVisibility() {
+        return shortNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility loginErrorLabelVisibility() {
+        return loginErrorLabel;
+    }
+
+    @Override
     public HasText firstNameErrorLabel() {
         return firstNameErrorLabel;
     }
@@ -283,8 +290,23 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasText shortNameErrorLabel() {
+        return shortNameErrorLabel;
+    }
+
+    @Override
+    public HasText loginErrorLabel() {
+        return loginErrorLabel;
+    }
+
+    @Override
     public HasEnabled saveEnabled() {
         return saveButton;
+    }
+
+    @Override
+    public NameStatus getContactLoginStatus() {
+        return status;
     }
 
     @Override
@@ -300,6 +322,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasText lastNameLabel() {
         return lastNameLabel;
+    }
+
+    @Override
+    public HasText shortNameLabel() {
+        return shortNameLabel;
     }
 
     @Override
@@ -339,7 +366,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @UiHandler("login")
-    public void onChangeContactLogin( KeyUpEvent keyUpEvent ) {
+    public void onChangeContactLogin( InputEvent inputEvent ) {
         verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle() );
         changeContactLoginTimer.cancel();
         changeContactLoginTimer.schedule( 300 );
@@ -364,22 +391,19 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     }
 
-    @UiHandler("firstName")
-    public void onFirstNameChanged( InputEvent event) {
-        resetTimer();
+    @UiHandler({"firstName", "secondName", "lastName", "shortName"})
+    public void onLimitedFieldsChanged(InputEvent event) {
+        resetValidateTimer();
     }
 
-    @UiHandler("secondName")
-    public void onSecondNameChanged(InputEvent event) {
-        resetTimer();
+    @UiHandler("company")
+    public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onCompanySelected();
+        }
     }
 
-    @UiHandler("lastName")
-    public void onLastNameChanged(InputEvent event) {
-        resetTimer();
-    }
-
-    private void resetTimer() {
+    private void resetValidateTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);
     }
@@ -403,6 +427,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     ValidableTextBox secondName;
 
     @UiField
+    ValidableTextBox shortName;
+
+    @UiField
     Label firstNameErrorLabel;
 
     @UiField
@@ -410,6 +437,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     Label secondNameErrorLabel;
+
+    @UiField
+    Label shortNameErrorLabel;
+
+    @UiField
+    Label loginErrorLabel;
 
     @UiField
     Label firstNameLabel;
@@ -421,10 +454,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     Label secondNameLabel;
 
     @UiField
-    TextBox displayName;
+    Label shortNameLabel;
 
     @UiField
-    TextBox shortName;
+    TextBox displayName;
 
     @Inject
     @UiField(provided = true)
@@ -484,7 +517,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     GenderButtonSelector gender;
 
     @UiField
-    TextBox login;
+    ValidableTextBox login;
 
     @UiField
     PasswordTextBox password;

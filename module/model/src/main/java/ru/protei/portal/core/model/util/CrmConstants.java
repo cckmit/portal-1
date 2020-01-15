@@ -61,5 +61,7 @@ public class CrmConstants {
         int FIRST_NAME_SIZE = 80;
         int SECOND_NAME_SIZE = 80;
         int LAST_NAME_SIZE = 80;
+        int SHORT_NAME_SIZE = 128;
+        int LOGIN_SIZE = 64;
     }
 }
