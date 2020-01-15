@@ -145,5 +145,11 @@ public enum En_ResultStatus {
     /**
      * Изменение компании у проекта запрещено
      */
-    NOT_ALLOWED_CHANGE_PROJECT_COMPANY
+    NOT_ALLOWED_CHANGE_PROJECT_COMPANY,
+
+    /**
+     * Невозможно привязать задачу саму к себе
+     */
+
+    NOT_ALLOWED_LINK_ISSUE_TO_ITSELF
 }
