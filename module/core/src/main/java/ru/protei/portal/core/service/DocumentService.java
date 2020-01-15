@@ -37,6 +37,10 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result<Document> updateDocument( AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author);
 
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.DOCUMENT_EDIT})
+    @Auditable(En_AuditType.DOCUMENT_MODIFY)
+    Result<Document> updateDocumentDocFileByMember(AuthToken token, Long documentId, FileItem docFile, String comment, String author);
+
     @Privileged(requireAny = {En_Privilege.DOCUMENT_REMOVE, En_Privilege.EQUIPMENT_REMOVE})
     @Auditable(En_AuditType.DOCUMENT_REMOVE)
     Result<Long> removeDocument( AuthToken token, Long documentId, Long projectId, String author);

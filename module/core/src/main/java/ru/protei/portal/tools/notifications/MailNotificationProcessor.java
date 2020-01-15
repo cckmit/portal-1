@@ -358,15 +358,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        notifiers.forEach(entry -> {
-            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-            try {
-                sendMail(entry.getAddress(), subject, body);
-            } catch (Exception e) {
-                log.error("Failed to make MimeMessage", e);
-            }
-        });
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
     }
 
     @EventListener
@@ -513,16 +505,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        notifiers.forEach(entry -> {
-            try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                sendMail(entry.getAddress(), subject, body);
-            } catch (Exception exception) {
-                log.error("Failed to send message to entry={} for contractId={} and contractDateId={}: exception={}",
-                        entry, contract.getId(), contractDate.getId(), exception);
-            }
-        });
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
     }
 
     // -----------------------
@@ -558,20 +541,56 @@ public class MailNotificationProcessor {
             return;
         }
 
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onDocumentDocFileUpdatedByMemberEvent(DocumentDocFileUpdatedByMemberEvent event) {
+        Person initiator = event.getInitiator();
+        Document document = event.getDocument();
+        List<Person> personList = event.getPersonList();
+        String comment = event.getComment();
+        if (initiator == null || document == null || CollectionUtils.isEmpty(personList)) {
+            log.error("Failed to send document doc file updated by member notification: incomplete data provided: " +
+                    "document={}, personList={}, comment={}, initiator={}", document, personList, comment, initiator);
+            return;
+        }
+        List<NotificationEntry> recipients = personList.stream()
+                .map(this::fetchNotificationEntryFromPerson)
+                .collect(toList());
+
+        PreparedTemplate bodyTemplate = templateService.getDocumentDocFileUpdatedByMemberBody(document.getName(), initiator.getDisplayShortName(), comment);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for document doc file updated by member | document.id={}, person.ids={}, comment={}",
+                    document.getId(), personList.stream().map(Person::getId).collect(toList()), comment);
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getDocumentDocFileUpdatedByMemberSubject(document.getName());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for document doc file updated by member | document.id={}, person.ids={}, comment={}",
+                    document.getId(), personList.stream().map(Person::getId).collect(toList()), comment);
+            return;
+        }
+
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+    }
+
+    // -----
+    // Utils
+    // -----
+
+    private void sendMailToRecipients(Collection<NotificationEntry> recipients, PreparedTemplate bodyTemplate, PreparedTemplate subjectTemplate, boolean isShowPrivacy) {
         recipients.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
                 sendMail(entry.getAddress(), subject, body);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
             }
         });
     }
-
-    // -----
-    // Utils
-    // -----
 
     private void sendMail(String address, String subject, String body) throws MessagingException {
         MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());

@@ -85,6 +85,8 @@
                         <argument>notification/email/contract.remaining.one.day.body.ftl</argument>
                         <argument>notification/email/document.member.added.subject.ftl</argument>
                         <argument>notification/email/document.member.added.body.ftl</argument>
+                        <argument>notification/email/document.doc.file.updated.by.member.subject.ftl</argument>
+                        <argument>notification/email/document.doc.file.updated.by.member.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

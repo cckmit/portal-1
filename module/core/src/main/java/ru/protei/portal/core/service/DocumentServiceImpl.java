@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.DocumentDocFileUpdatedByMemberEvent;
 import ru.protei.portal.core.event.DocumentMemberAddedEvent;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -22,6 +24,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -31,10 +34,7 @@ import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -68,6 +68,10 @@ public class DocumentServiceImpl implements DocumentService {
     EventPublisherService publisherService;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    ProjectService projectService;
+    @Autowired
+    PortalConfig config;
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
@@ -165,22 +169,25 @@ public class DocumentServiceImpl implements DocumentService {
             Long documentId = document.getId();
             Long projectId = document.getProjectId();
 
+            String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, "");
+            String commitMessageRemoveAuto = getCommitMessageRemove(documentId, projectId, authorRollback, "");
+
             if (withPdf && !saveToIndex(pdfFile.get(), documentId, projectId)) {
                 log.error("createDocument(" + documentId + "): failed to add pdf file to the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            if (withDoc && !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, author)) {
+            if (withDoc && !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, commitMessageAdd)) {
                 log.error("createDocument(" + documentId + "): failed to save doc file to the svn");
                 if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            if (withPdf && !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, author)) {
+            if (withPdf && !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, commitMessageAdd)) {
                 log.error("createDocument(" + documentId + "): failed to save pdf file to the svn");
-                if (withDoc && !removeFromSVN(documentId, projectId, docFormat, authorRollback)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withDoc && !removeFromSVN(documentId, projectId, docFormat, commitMessageRemoveAuto)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
                 if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
@@ -233,6 +240,11 @@ public class DocumentServiceImpl implements DocumentService {
             boolean withDocFileRollback = withDoc && oldBytesDoc != null;
             boolean withPdfFileRollback = withPdf && oldBytesPdf != null;
 
+            String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, "");
+            String commitMessageUpdate = getCommitMessageUpdate(documentId, projectId, author, "");
+            String commitMessageRemove = getCommitMessageRemove(documentId, projectId, author, "");
+            String commitMessageRemoveAuto = getCommitMessageRemove(documentId, projectId, authorRollback, "");
+
             if (!updateAtDB(document)) {
                 log.error("updateDocument(" + documentId + "): failed to update document at the db");
                 return error(En_ResultStatus.NOT_UPDATED);
@@ -245,8 +257,8 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc && (withDocAtSvn ?
-                !updateAtSVN(docFile.getInputStream(), documentId, projectId, docFormat, author) :
-                !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, author))
+                !updateAtSVN(docFile.getInputStream(), documentId, projectId, docFormat, commitMessageUpdate) :
+                !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, commitMessageAdd))
             ) {
                 log.error("updateDocument(" + documentId + "): failed to update doc file at the svn");
                 if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
@@ -255,11 +267,11 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withPdf && (withPdfAtSvn ?
-                !updateAtSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, author) :
-                !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, author))
+                !updateAtSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, commitMessageUpdate) :
+                !saveToSVN(pdfFile.getInputStream(), documentId, projectId, pdfFormat, commitMessageAdd))
             ) {
                 log.error("updateDocument(" + documentId + "): failed to update pdf file at the svn");
-                if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat, authorRollback)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat, commitMessageRemoveAuto)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
                 if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
                 if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_UPDATED);
@@ -274,7 +286,7 @@ public class DocumentServiceImpl implements DocumentService {
                 if (!filesToRemove.isEmpty()) {
                     log.info("updateDocument(" + documentId + "): cleanup | going to remove files from svn: " + StringUtils.join(filesToRemove, ", "));
                     for (En_DocumentFormat format : filesToRemove) {
-                        if (!removeFromSVN(documentId, projectId, format, author)) {
+                        if (!removeFromSVN(documentId, projectId, format, commitMessageRemove)) {
                             log.error("updateDocument(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
                         }
                     }
@@ -283,6 +295,62 @@ public class DocumentServiceImpl implements DocumentService {
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
             sendDocumentMemberAddedEvent(document, newMembers);
+
+            return ok(document);
+        });
+    }
+
+    @Override
+    public Result<Document> updateDocumentDocFileByMember(AuthToken token, Long documentId, FileItem docFile, String comment, String author) {
+
+        if (documentId == null || docFile == null || StringUtils.isEmpty(comment)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        En_DocumentFormat docFormat = predictDocFormat(docFile);
+
+        if (docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
+
+            Document document = documentDAO.get(documentId);
+            if (document == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
+            jdbcManyRelationsHelper.fill(document, "members");
+            Long projectId = document.getProjectId();
+
+            if (document.getApproved()) {
+                return error(En_ResultStatus.NOT_AVAILABLE);
+            }
+
+            List<En_DocumentFormat> formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            boolean withDocAtSvn = formatsAtSvn.contains(docFormat);
+
+            String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, comment);
+            String commitMessageUpdate = getCommitMessageUpdate(documentId, projectId, author, comment);
+            String commitMessageRemove = getCommitMessageRemove(documentId, projectId, author, "");
+
+            if (withDocAtSvn ?
+                !updateAtSVN(docFile.getInputStream(), documentId, projectId, docFormat, commitMessageUpdate) :
+                !saveToSVN(docFile.getInputStream(), documentId, projectId, docFormat, commitMessageAdd)
+            ) {
+                log.error("updateDocumentDocFile(" + documentId + "): failed to update doc file at the svn");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            formatsAtSvn.stream()
+                    .filter(format -> format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX)
+                    .filter(format -> format != docFormat)
+                    .forEach(format -> {
+                        if (!removeFromSVN(documentId, projectId, format, commitMessageRemove)) {
+                            log.error("updateDocumentDocFileByMember(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
+                        }
+                    });
+
+            sendDocumentDocFileUpdatedByMember(token.getPersonId(), document, comment);
 
             return ok(document);
         });
@@ -382,6 +450,25 @@ public class DocumentServiceImpl implements DocumentService {
         }
         List<Person> personList = personDAO.getListByKeys(personIds);
         publisherService.publishEvent(new DocumentMemberAddedEvent(this, document, personList));
+    }
+
+    private void sendDocumentDocFileUpdatedByMember(Long initiatorId, Document document, String comment) {
+        List<Person> personList = new ArrayList<>();
+        if (document.getContractor() != null) {
+            personList.add(document.getContractor());
+        }
+        if (document.getRegistrar() != null) {
+            personList.add(document.getRegistrar());
+        }
+        Result<PersonProjectMemberView> result = projectService.getProject(null, document.getProjectId())
+                .map(Project::getLeader);
+        if (result.isOk() && result.getData() != null) {
+            Person leader = personDAO.get(result.getData().getId());
+            personList.add(leader);
+        }
+        personList.addAll(document.getMembers());
+        Person initiator = personDAO.get(initiatorId);
+        publisherService.publishEvent(new DocumentDocFileUpdatedByMemberEvent(this, initiator, document, personList, comment));
     }
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {
@@ -565,13 +652,13 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
-        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, author);
+    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
+        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, commitMessage);
     }
 
-    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
+    private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
         try {
-            documentSvnApi.saveDocument(projectId, documentId, documentFormat, author, inputStream);
+            documentSvnApi.saveDocument(projectId, documentId, documentFormat, commitMessage, inputStream);
         } catch (Exception e) {
             log.error("saveToSVN(" + documentId + ", " + projectId + "): failed to save file to the svn", e);
             return false;
@@ -579,13 +666,13 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean updateAtSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
-        return updateAtSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, author);
+    private boolean updateAtSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
+        return updateAtSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, commitMessage);
     }
 
-    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
+    private boolean updateAtSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
         try {
-            documentSvnApi.updateDocument(projectId, documentId, documentFormat, author, inputStream);
+            documentSvnApi.updateDocument(projectId, documentId, documentFormat, commitMessage, inputStream);
         } catch (Exception e) {
             log.error("updateAtSVN(" + documentId + ", " + projectId + "): failed to update file at the svn", e);
             return false;
@@ -593,9 +680,9 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean removeFromSVN(Long documentId, Long projectId, En_DocumentFormat documentFormat, String author) {
+    private boolean removeFromSVN(Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
         try {
-            documentSvnApi.removeDocument(projectId, documentId, documentFormat, author);
+            documentSvnApi.removeDocument(projectId, documentId, documentFormat, commitMessage);
         } catch (SVNException e) {
             if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == SVNErrorCode.FS_NOT_FOUND) {
                 return true;
@@ -631,5 +718,28 @@ public class DocumentServiceImpl implements DocumentService {
                 .map(En_DocumentFormat::of)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private String getCommitMessageAdd(Long documentId, Long projectId, String author, String comment) {
+        String commitTemplate = config.data().svn().getCommitMessageAdd();
+        return getCommitMessage(commitTemplate, documentId, projectId, author, comment);
+    }
+
+    private String getCommitMessageUpdate(Long documentId, Long projectId, String author, String comment) {
+        String commitTemplate = config.data().svn().getCommitMessageUpdate();
+        return getCommitMessage(commitTemplate, documentId, projectId, author, comment);
+    }
+
+    private String getCommitMessageRemove(Long documentId, Long projectId, String author, String comment) {
+        String commitTemplate = config.data().svn().getCommitMessageRemove();
+        return getCommitMessage(commitTemplate, documentId, projectId, author, comment);
+    }
+
+    private String getCommitMessage(String commitTemplate, Long documentId, Long projectId, String author, String comment) {
+        String commitMessage = String.format(commitTemplate, projectId, documentId, author);
+        if (StringUtils.isNotEmpty(comment)) {
+            commitMessage += ": " + comment;
+        }
+        return commitMessage;
     }
 }
