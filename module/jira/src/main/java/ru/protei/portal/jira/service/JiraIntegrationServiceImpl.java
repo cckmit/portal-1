@@ -34,6 +34,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
@@ -125,10 +126,21 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
             caseObj.setLocal(0);
 
-            updateCaseState(endpoint, issue, caseObj);
-            updatePriorityAndInfo(endpoint, issue, caseObj);
+            En_CaseState oldState = caseObj.getState();
+            En_CaseState newState = updateCaseState(endpoint, issue, caseObj);
+
+            Integer oldPriority = caseObj.getImpLevel();
+            Integer newPriority = updateCasePriority(endpoint, issue, caseObj);
+
+            updateNameAndInfo(issue, caseObj);
 
             caseObjectDAO.saveOrUpdate(caseObj);
+
+            if (!newState.equals(oldState))
+                pesrsistStateComment(personMapper.toProteiPerson(event.getUser()).getId(), caseObj.getId(), newState);
+
+            if (!newPriority.equals(oldPriority))
+                persistPriorityComment(personMapper.toProteiPerson(event.getUser()).getId(), caseObj.getId(), newPriority);
 
             AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, newCase, personMapper.toProteiPerson(event.getUser()));
 
@@ -168,7 +180,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCreatorInfo("jira");
 
         updateCaseState(endpoint, issue, caseObj);
-        updatePriorityAndInfo(endpoint, issue, caseObj);
+        updateCasePriority(endpoint, issue, caseObj);
+        updateNameAndInfo(issue, caseObj);
 
         caseObjectDAO.insertCase(caseObj);
 
@@ -367,7 +380,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return our;
     }
 
-    private void updateCaseState(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
+    private En_CaseState updateCaseState(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
         logger.debug("update case state, issue={}, jira-status = {}, current case state = {}", issue.getKey(), issue.getStatus().getName(), caseObj.getState());
 
         En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(endpoint.getStatusMapId(), issue.getStatus().getName());
@@ -376,12 +389,20 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         logger.debug("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getState(), state);
         caseObj.setState(state);
+
+        return state;
     }
 
-    private void updatePriorityAndInfo(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
+    private void updateNameAndInfo(Issue issue, CaseObject caseObj){
         logger.debug("update case name, issue={}, case={}", issue.getKey(), caseObj.getCaseNumber());
         IssueField issueCLM = issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_CLM);
         caseObj.setName((issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary());
+
+        // update info (description)
+        caseObj.setInfo(issue.getDescription());
+    }
+
+    private Integer updateCasePriority(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
 
         // update severity
         String severityName = CommonUtils.getIssueSeverity(issue);
@@ -390,18 +411,38 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(endpoint.getPriorityMapId(), severityName) : null;
 
+        Integer newPriority;
+
         if (jiraPriorityEntry == null) {
             logger.warn("unable to map jira-priority level : {}, set as basic", issue.getPriority().getName());
             caseObj.setImpLevel(En_ImportanceLevel.BASIC.getId());
+            newPriority = En_ImportanceLevel.BASIC.getId();
         }
         else {
             logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.importanceLevel(), jiraPriorityEntry.importanceLevel());
             caseObj.setImpLevel(jiraPriorityEntry.getLocalPriorityId());
+            newPriority = jiraPriorityEntry.getLocalPriorityId();
         }
 
-        // update info (description)
+        return newPriority;
+    }
 
-        caseObj.setInfo(issue.getDescription());
+    private Long pesrsistStateComment(Long authorId, Long caseId, En_CaseState state){
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthorId(authorId);
+        stateChangeMessage.setCreated(new Date());
+        stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setCaseStateId((long)state.getId());
+        return commentDAO.persist(stateChangeMessage);
+    }
+
+    private Long persistPriorityComment(Long authorId, Long caseId, Integer importance) {
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthorId(authorId);
+        stateChangeMessage.setCreated(new Date());
+        stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setCaseImpLevel(importance);
+        return commentDAO.persist(stateChangeMessage);
     }
 
     private JiraExtAppData addIssueTypeAndSeverity(JiraExtAppData jiraExtAppData, Issue issue) {
