@@ -25,7 +25,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     @Override
     public void handle(AssembledCaseEvent event) {
         logger.debug("Handling action on redmine-related issue in Portal-CRM");
-        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
+        if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {
             logger.debug("Redmine integration disabled in config, nothing happens");
             return;
         }
