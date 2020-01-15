@@ -3876,3 +3876,7 @@ table {
     min-width: 130px;
   }
 }
+
+.btn.has-error {
+  @extend .required;
+}
