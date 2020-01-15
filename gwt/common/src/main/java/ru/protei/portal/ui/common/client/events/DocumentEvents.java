@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Document;
@@ -27,6 +28,18 @@ public class DocumentEvents {
 
         public Document document;
         public HasWidgets parent;
+    }
+
+    @Url(value = "doc_preview", primary = true)
+    public static class ShowPreviewFullScreen {
+
+        public ShowPreviewFullScreen() {}
+        public ShowPreviewFullScreen(Long documentId) {
+            this.documentId = documentId;
+        }
+
+        @Name("id")
+        public Long documentId;
     }
 
     @Url("doc")

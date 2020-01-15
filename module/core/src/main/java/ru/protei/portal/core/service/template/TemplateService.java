@@ -32,6 +32,10 @@ public interface TemplateService {
 
     PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate);
 
+    PreparedTemplate getDocumentMemberAddedBody(String documentName, String url);
+
+    PreparedTemplate getDocumentMemberAddedSubject(String documentName);
+
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException;

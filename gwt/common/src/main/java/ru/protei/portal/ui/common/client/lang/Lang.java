@@ -1888,6 +1888,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContracts();
 
+    String goToDocuments();
+
     String contract();
 
     String buttonBack();

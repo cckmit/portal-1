@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.DocumentMemberAddedEvent;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.dict.En_DocumentState;
@@ -19,9 +21,11 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
@@ -53,6 +57,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
+    PersonDAO personDAO;
+    @Autowired
     DocumentStorageIndex documentStorageIndex;
     @Autowired
     LockService lockService;
@@ -60,6 +66,8 @@ public class DocumentServiceImpl implements DocumentService {
     DocumentSvnApi documentSvnApi;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
@@ -178,7 +186,9 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            jdbcManyRelationsHelper.fill(document, "members");
+            List<Long> newMembers = CollectionUtils.stream(document.getMembers()).map(Person::getId).collect(Collectors.toList());
+            sendDocumentMemberAddedEvent(document, newMembers);
+
             return ok(document);
         });
     }
@@ -271,7 +281,9 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
 
-            jdbcManyRelationsHelper.fill(document, "members");
+            List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
+            sendDocumentMemberAddedEvent(document, newMembers);
+
             return ok(document);
         });
     }
@@ -352,6 +364,20 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentQuery query = new DocumentQuery();
         query.setProjectIds(new LinkedList<>(Collections.singletonList(projectId)));
         return getDocuments(token, query);
+    }
+
+    private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {
+        List<Long> oldMembers = CollectionUtils.stream(oldDocument.getMembers()).map(Person::getId).collect(Collectors.toList());
+        List<Long> newMembers = CollectionUtils.stream(newDocument.getMembers()).map(Person::getId).collect(Collectors.toList());
+        return CollectionUtils.diffCollection(oldMembers, newMembers).getAddedEntries();
+    }
+
+    private void sendDocumentMemberAddedEvent(Document document, List<Long> personIds) {
+        if (document == null || CollectionUtils.isEmpty(personIds)) {
+            return;
+        }
+        List<Person> personList = personDAO.getListByKeys(personIds);
+        publisherService.publishEvent(new DocumentMemberAddedEvent(this, document, personList));
     }
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {

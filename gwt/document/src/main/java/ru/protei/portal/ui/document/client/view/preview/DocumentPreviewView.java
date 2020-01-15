@@ -4,12 +4,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -110,6 +109,18 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         this.executionType.setInnerText(executionType);
     }
 
+    @Override
+    public HasVisibility footerVisibility() {
+        return footerContainer;
+    }
+
+    @UiHandler("backButton")
+    public void backButtonClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
 
     @UiField
     Anchor downloadPdfButton;
@@ -141,6 +152,10 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     SpanElement keyWords;
     @UiField
     SpanElement executionType;
+    @UiField
+    HTMLPanel footerContainer;
+    @UiField
+    Button backButton;
 
     @Inject
     @UiField

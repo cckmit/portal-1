@@ -11,12 +11,18 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+
+import java.util.function.Consumer;
 
 public abstract class DocumentPreviewActivity implements Activity, AbstractDocumentPreviewActivity {
 
@@ -26,9 +32,19 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     @Event
+    public void onInit(AppEvents.InitDetails event) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow(DocumentEvents.ShowPreview event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
         event.parent.clear();
         event.parent.add(view.asWidget());
+        view.footerVisibility().setVisible(false);
         if (event.document == null) {
             invalidDocument();
             return;
@@ -39,6 +55,27 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
             return;
         }
         fillView(event.document);
+    }
+
+    @Event
+    public void onShow(DocumentEvents.ShowPreviewFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+        view.footerVisibility().setVisible(true);
+        loadDocument(event.documentId, this::fillView);
+    }
+
+    @Override
+    public void onBackClicked() {
+        fireEvent(new DocumentEvents.Show());
+    }
+
+    private void loadDocument(Long documentId, Consumer<Document> onSuccess) {
+        documentService.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
     }
 
     private void invalidDocument() {
@@ -55,7 +92,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
-        view.setDownloadLinkPdf(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
+        view.setDownloadLinkPdf(canView() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
         view.setDownloadLinkDoc(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
@@ -75,6 +112,10 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
     }
 
+    private boolean canView() {
+        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_VIEW);
+    }
+
     private boolean canEdit() {
         return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_EDIT);
     }
@@ -91,4 +132,8 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     AbstractDocumentPreviewView view;
     @Inject
     PolicyService policyService;
+    @Inject
+    DocumentControllerAsync documentService;
+
+    private AppEvents.InitDetails initDetails;
 }
