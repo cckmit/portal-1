@@ -22,10 +22,6 @@ import java.util.stream.Collectors;
 
 public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
-    public YtDtoFieldsMapperImpl() {
-        getReflections();
-    }
-
     @Override
     public String getFields(Class<?> clazz, boolean includeNotYtDtoFields, Class<?>...includeYtDtoFields) {
         Class<?> type = null;
