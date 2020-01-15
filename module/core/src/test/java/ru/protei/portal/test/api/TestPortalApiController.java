@@ -1,14 +1,12 @@
 package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,16 +17,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
-import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
-import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -54,11 +48,9 @@ public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
-    private final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
-    private final int COUNT_OF_PRIVATE_ISSUES = 5;
-    private final int COUNT_OF_MESSAGE_ISSUES = 1;
-    private final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER + COUNT_OF_MESSAGE_ISSUES;
+    private static final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
+    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
+    private static final int COUNT_OF_PRIVATE_ISSUES = 5;
     private final List<Long> issuesIds = new ArrayList<>();
     private final En_Privilege[] PRIVILEGES = new En_Privilege[]{En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE};
     private final String QWERTY_PASSWORD = "qwerty_test_API_password";
@@ -83,9 +75,6 @@ public class TestPortalApiController extends BaseServiceTest {
         setThreadUserLogin(userLogin);
 
         createAndPersistSomeIssues(person, company.getId());
-        createAndPersistSomeIssuesWithManager(person, company.getId());
-        createAndPersistSomePrivateIssues(person, company.getId());
-        createAndPersistIssueForComments(person, company.getId());
     }
 
     @Test
@@ -100,7 +89,9 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.initiatorId", is(person.getId().intValue())))
+                .andExpect(jsonPath("$.data.initiatorCompanyId", is(company.getId().intValue())));
 
         CaseObject caseObjectFromDb = caseObjectDAO.getByCaseNameLike(ISSUES_PREFIX + "test_create");
 
@@ -112,7 +103,9 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
-    public void getCaseListWithManager() throws Exception {
+    public void getCaseListByManager() throws Exception {
+        createAndPersistSomeIssuesWithManager(person, company.getId());
+
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setManagerIds(Collections.singletonList(person.getId()));
 
@@ -121,11 +114,13 @@ public class TestPortalApiController extends BaseServiceTest {
         accept
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(COUNT_OF_ISSUES_WITH_MANAGER)));
+                .andExpect(jsonPath("$.data[*].managerId", everyItem(is(person.getId().intValue()))));
     }
 
     @Test
     public void getPublicCases() throws Exception {
+        createAndPersistSomePrivateIssues(person, company.getId());
+
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setAllowViewPrivate(false);
 
@@ -134,7 +129,7 @@ public class TestPortalApiController extends BaseServiceTest {
         accept
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(COUNT_OF_ISSUES - COUNT_OF_PRIVATE_ISSUES)));
+                .andExpect(jsonPath("$.data[*].privateCase", everyItem(is(false))));
     }
 
     @Test
@@ -154,10 +149,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void getCaseListByCompanyId() throws Exception {
-        final int LIMIT = 3;
-
         CaseApiQuery caseApiQuery = new CaseApiQuery();
-        caseApiQuery.setLimit(LIMIT);
         caseApiQuery.setCompanyIds(Collections.singletonList(1L));
 
         ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
@@ -165,7 +157,7 @@ public class TestPortalApiController extends BaseServiceTest {
         accept
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(LIMIT)));
+                .andExpect(jsonPath("$.data[*].initiatorCompanyId", everyItem(is(1))));
     }
 
     @Test
@@ -183,6 +175,8 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void getCaseCommentsListByCaseId() throws Exception {
+        createAndPersistIssueForComments(person, company.getId());
+
         final int COMMENTS_COUNT = 3;
 
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
@@ -198,6 +192,8 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void getCaseCommentsListByCaseIdEmptyResult() throws Exception {
+        createAndPersistIssueForComments(person, company.getId());
+
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
         caseCommentApiQuery.setCaseId(caseObjectDAO.getMaxId() + 1);
 
@@ -211,6 +207,8 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void getCaseCommentsListByCaseIdError() throws Exception {
+        createAndPersistIssueForComments(person, company.getId());
+
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
         caseCommentApiQuery.setCaseId(null);
 
@@ -338,7 +336,7 @@ public class TestPortalApiController extends BaseServiceTest {
         return mockMvc.perform(
                 post(url)
                         .header("Accept", "application/json")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD + "asd").getBytes()))
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(obj))
         );
