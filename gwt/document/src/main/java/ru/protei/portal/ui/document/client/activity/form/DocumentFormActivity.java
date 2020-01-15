@@ -160,13 +160,11 @@ public abstract class DocumentFormActivity
     }
 
     private void setDesignationEnabled(boolean isDesignationEnabled) {
-        Window.alert("setDesignationEnabled = " + isDesignationEnabled);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
     }
 
     private void setDecimalNumberEnabled(boolean isEnabled) {
-        Window.alert("setDecimalNumberEnabled = " + isEnabled);
         view.decimalNumberEnabled(isEnabled);
         if (!isEnabled) {
             view.decimalNumber().setValue(null);
