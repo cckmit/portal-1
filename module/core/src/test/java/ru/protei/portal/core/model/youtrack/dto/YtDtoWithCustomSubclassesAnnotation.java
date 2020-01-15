@@ -17,6 +17,10 @@ public class YtDtoWithCustomSubclassesAnnotation extends YtDto {
         public String dd;
     }
 
+    public static class YtInner10 extends YtInner1 {
+        public String ee;
+    }
+
     public static class YtInner2 extends YtDto {
         public String bb;
     }

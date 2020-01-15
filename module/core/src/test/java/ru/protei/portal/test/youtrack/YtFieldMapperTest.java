@@ -96,7 +96,7 @@ public class YtFieldMapperTest {
     @Test
     public void testCustomSubclassesAnnotation() {
         String fields = getMapper().getFields(YtDtoWithCustomSubclassesAnnotation.class, true, YtDtoWithCustomSubclassesAnnotation.YtInner1.class, YtDtoWithCustomSubclassesAnnotation.YtInner2.class);
-        String expected = "$type,a,b,c($type,aa,bb,cc,dd,id),id";
+        String expected = "$type,a,b,c($type,aa,bb,cc,dd,ee,id),id";
         assertEquals(expected, fields);
     }
 

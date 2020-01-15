@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 
 public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
 
+    public YtDtoFieldsMapperImpl() {
+        getReflections();
+    }
+
     @Override
     public String getFields(Class<?> clazz, boolean includeNotYtDtoFields, Class<?>...includeYtDtoFields) {
         Class<?> type = null;
@@ -112,7 +116,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
             }
         }
         for (Class<?> subclass : subclasses) {
-            List<Field> subfields = Arrays.asList(subclass.getFields());
+            List<Field> subfields = FieldUtils.getAllFieldsList(subclass);
             fields.addAll(subfields);
         }
         return fields.stream()
@@ -139,6 +143,7 @@ public class YtDtoFieldsMapperImpl implements YtDtoFieldsMapper {
                     return context.includeNotYtDtoFields;
                 }
             })
+            .distinct()
             .collect(Collectors.toList());
     }
 
