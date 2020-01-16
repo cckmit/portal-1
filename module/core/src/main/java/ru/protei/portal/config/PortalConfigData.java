@@ -2,6 +2,8 @@ package ru.protei.portal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 import ru.protei.winter.core.utils.duration.DurationUtils;
@@ -31,6 +33,7 @@ public class PortalConfigData {
     private final YoutrackConfig youtrackConfig;
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
+    private final MarkupHelpLink markupHelpLink;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -54,6 +57,7 @@ public class PortalConfigData {
         youtrackConfig = new YoutrackConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
+        markupHelpLink = new MarkupHelpLink(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -119,6 +123,10 @@ public class PortalConfigData {
 
     public LdapConfig getLdapConfig() {
         return ldapConfig;
+    }
+
+    public MarkupHelpLink getMarkupHelpLink() {
+        return markupHelpLink;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -551,6 +559,24 @@ public class PortalConfigData {
 
         public String getUrl() {
             return url;
+        }
+    }
+
+    public static class MarkupHelpLink {
+        private final String markdown;
+        private final String jiraMarkup;
+
+        public MarkupHelpLink(PropertiesWrapper properties) {
+            markdown = properties.getProperty("markup.markdown");
+            jiraMarkup = properties.getProperty("markup.jira_markup");
+        }
+
+        public String getMarkdown() {
+            return markdown;
+        }
+
+        public String getJiraMarkup() {
+            return jiraMarkup;
         }
     }
 

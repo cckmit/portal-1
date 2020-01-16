@@ -39,7 +39,7 @@
                                     </fileuploader:AttachmentUploader>
                                     <div class="text-muted pull-right">
                                         <small ui:field="markupLabel"/>
-                                        <g:Anchor styleName="far fa-question-circle" ui:field="markupLink"/>
+                                        <g:Anchor styleName="far fa-question-circle" ui:field="markupLink" target="_blank"/>
                                     </div>
 
                                 </div>

@@ -36,6 +36,7 @@ import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
@@ -69,10 +70,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
-import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.*;
 import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemView;
 import ru.protei.winter.web.common.client.view.section.SectionItemView;
 
@@ -146,6 +144,8 @@ public class CommonClientModule extends AbstractGinModule {
 //        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
         bind( CaseTagModel.class ).asEagerSingleton();
+
+        bind( ConfigStorage.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
         requestStaticInjection(DefaultErrorHandler.class);

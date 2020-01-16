@@ -1732,10 +1732,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String textJiraWikiMarkupSupport();
 
-    String textMarkdownLink();
-
-    String textJiraWikiMarkupLink();
-
     String tagNotSpecified();
 
     String employeeRegistrationMainInfoTitle();
