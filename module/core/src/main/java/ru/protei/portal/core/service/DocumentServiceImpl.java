@@ -278,19 +278,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc) {
-                List<En_DocumentFormat> filesToRemove = formatsAtSvn
-                        .stream()
-                        .filter(format -> format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX)
-                        .filter(format -> format != docFormat)
-                        .collect(Collectors.toList());
-                if (!filesToRemove.isEmpty()) {
-                    log.info("updateDocument(" + documentId + "): cleanup | going to remove files from svn: " + StringUtils.join(filesToRemove, ", "));
-                    for (En_DocumentFormat format : filesToRemove) {
-                        if (!removeFromSVN(documentId, projectId, format, commitMessageRemove)) {
-                            log.error("updateDocument(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
-                        }
-                    }
-                }
+                removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             }
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
@@ -341,15 +329,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_UPDATED);
             }
 
-            formatsAtSvn.stream()
-                    .filter(format -> format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX)
-                    .filter(format -> format != docFormat)
-                    .forEach(format -> {
-                        if (!removeFromSVN(documentId, projectId, format, commitMessageRemove)) {
-                            log.error("updateDocumentDocFileByMember(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
-                        }
-                    });
-
+            removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             sendDocumentDocFileUpdatedByMember(token.getPersonId(), document, comment);
 
             return ok(document);
@@ -718,6 +698,18 @@ public class DocumentServiceImpl implements DocumentService {
                 .map(En_DocumentFormat::of)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private void removeDuplicatedDocFilesFromSvn(Collection<En_DocumentFormat> formatsAtSvn, En_DocumentFormat formatToKeep, Long documentId, Long projectId, String commitMessage) {
+        Collection<En_DocumentFormat> formatsToRemove = CollectionUtils.stream(formatsAtSvn)
+                .filter(format -> format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX)
+                .filter(format -> format != formatToKeep)
+                .collect(Collectors.toList());
+        for (En_DocumentFormat format : formatsToRemove) {
+            if (!removeFromSVN(documentId, projectId, format, commitMessage)) {
+                log.error("removeDuplicatedDocFilesFromSvn(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
+            }
+        }
     }
 
     private String getCommitMessageAdd(Long documentId, Long projectId, String author, String comment) {
