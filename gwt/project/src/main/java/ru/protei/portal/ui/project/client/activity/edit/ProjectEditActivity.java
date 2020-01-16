@@ -49,11 +49,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        resetView();
 
         if (event.id == null) {
             project = new Project();
+            resetView();
         } else {
+            resetView();
             requestProject(event.id, this::fillView);
         }
     }
@@ -84,6 +85,20 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         });
     }
 
+    @Event
+    public void onAddLink(CaseLinkEvents.Added event) {
+        if (event.page.equals(lang.projects())) {
+            project.addLink(event.caseLink);
+        }
+    }
+
+    @Event
+    public void onRemoveLink(CaseLinkEvents.Removed event) {
+        if (event.page.equals(lang.projects())) {
+            project.getLinks().remove(event.caseLink);
+        }
+    }
+
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
@@ -91,7 +106,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects()));
     }
 
     private boolean isNew(Project project) {
@@ -132,8 +147,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.numberVisibility().setVisible(false);
 
-        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) );
+        view.saveVisibility().setVisible( hasPrivileges(project.getId()) );
         view.saveEnabled().setEnabled(true);
+
+        if (project.getId() == null) fillCaseLinks(null);
     }
 
     private void fillView(Project project) {
@@ -155,22 +172,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(true);
         view.showDocuments(true);
 
-        view.addLinkButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT));
-
-        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
-             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
-                    .withCaseId(project.getId())
-                    .withCaseType(En_CaseType.CRM_SUPPORT)
-                    .withReadOnly(!policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
-        }
-        else {
-            view.getLinksContainer().clear();
-        }
+        fillCaseLinks(project.getId());
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(project.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
+                .withModifyEnabled(hasPrivileges(project.getId())));
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
     }
@@ -186,6 +193,20 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         return project;
+    }
+
+    private void fillCaseLinks(Long projectId){
+
+        view.getLinksContainer().clear();
+
+        view.addLinkButtonVisibility().setVisible(hasPrivileges(projectId));
+
+        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
+            fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                    .withCaseId(projectId)
+                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withReadOnly(!hasPrivileges(projectId)));
+        }
     }
 
     private boolean validateView() {

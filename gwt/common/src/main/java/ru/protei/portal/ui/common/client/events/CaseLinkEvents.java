@@ -41,31 +41,42 @@ public class CaseLinkEvents {
     }
 
     public static class Removed {
-        public Removed(Long caseId, CaseLink caseLink) {
+        public Removed(Long caseId, CaseLink caseLink, String page) {
             this.caseId = caseId;
             this.caseLink = caseLink;
+            this.page = page;
         }
 
         public CaseLink caseLink;
         public Long caseId;
+        public String page;
     }
 
     public static class Added {
-        public Added(Long caseId, CaseLink caseLink) {
+        public Added(Long caseId, CaseLink caseLink, String page) {
             this.caseId = caseId;
             this.caseLink = caseLink;
+            this.page = page;
         }
 
         public Long caseId;
         public CaseLink caseLink;
+        public String page;
     }
 
     public static class ShowLinkSelector {
         public ShowLinkSelector() {}
+
         public ShowLinkSelector(IsWidget target) {
             this.target = target;
         }
 
+        public ShowLinkSelector(IsWidget target, String page) {
+            this.target = target;
+            this.page = page;
+        }
+
+        public String page;
         public IsWidget target;
     }
 }

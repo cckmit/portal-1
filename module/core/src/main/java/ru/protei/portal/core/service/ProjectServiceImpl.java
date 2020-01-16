@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * Реализация сервиса управления проектами
@@ -75,6 +76,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    CaseLinkService caseLinkService;
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -226,6 +230,10 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
         caseObjectDAO.merge( caseObject );
+
+        if (isNotEmpty(project.getLinks())) {
+            caseLinkService.createLinks(token, caseObject.getId(), token.getPersonId(), project.getLinks());
+        }
 
         return ok(Project.fromCaseObject(caseObject));
     }

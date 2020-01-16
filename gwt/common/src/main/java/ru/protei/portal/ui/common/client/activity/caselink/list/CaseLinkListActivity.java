@@ -66,6 +66,9 @@ public abstract class CaseLinkListActivity
         if (!show.isEnabled) {
             return;
         }
+
+        if (page != null) this.page = event.page;
+
         view.showSelector(event.target);
     }
 
@@ -76,7 +79,7 @@ public abstract class CaseLinkListActivity
         }
 
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel()));
+            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel(), page));
             removeLinkViewFromParentAndModifyLinksCount(itemView);
             hideOrShowIfNoLinks();
             return;
@@ -169,7 +172,7 @@ public abstract class CaseLinkListActivity
 
     private void createLinkAndAddToParent(CaseLink value) {
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Added(show.caseId, value));
+            fireEvent(new CaseLinkEvents.Added(show.caseId, value, page));
             addLinkToParentAndModifyLinksCount(value);
             hideOrShowIfNoLinks();
             return;
@@ -252,4 +255,5 @@ public abstract class CaseLinkListActivity
 
     private int linksCount = 0;
     private CaseLinkEvents.Show show;
+    private String page = "";
 }
