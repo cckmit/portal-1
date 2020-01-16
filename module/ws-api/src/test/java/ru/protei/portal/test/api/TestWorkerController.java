@@ -1,5 +1,7 @@
 package ru.protei.portal.test.api;
 
+import org.apache.commons.io.IOUtils;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.APIConfigurationContext;
+import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.DatabaseConfiguration;
@@ -31,16 +34,16 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.Photo;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -51,6 +54,7 @@ public class TestWorkerController {
 
     @Autowired
     WebApplicationContext webApplicationContext;
+
     private static Logger logger = LoggerFactory.getLogger(TestWorkerController.class);
     private MockMvc mockMvc;
     private static String BASE_URI;
@@ -64,6 +68,8 @@ public class TestWorkerController {
     private String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
     private UserRole userRole;
     private Person person;
+    private String FIRST_PHOTO = "test1.jpg";
+    private String SECOND_PHOTO = "test2.jpg";
 
     @BeforeClass
     public static void initClass() throws Exception {
@@ -388,6 +394,84 @@ public class TestWorkerController {
         Assert.assertEquals("delete.position is not success! " + result.getMessage(), true, result.isOk());
     }
 
+    @Test
+    public void testGetPhoto() throws Exception {
+        Long id = 1L;
+
+        createPhotosById(id);
+
+        String uri = BASE_URI + "get.photo/" + id;
+
+        logger.debug("URI = " + uri);
+
+        ResultActions result = mockMvc.perform(
+                get(uri)
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .header("Accept", MediaType.IMAGE_JPEG)
+        );
+
+        Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, result.andReturn().getResponse().getStatus());
+
+        String sourcePhotoName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+        Path sourcePhotoPath = Paths.get(sourcePhotoName);
+
+        String diffPhotoName = WSConfig.getInstance().getDirPhotos() + SECOND_PHOTO;
+        Path diffPhotoPath = Paths.get(diffPhotoName);
+
+        byte[] receivedPhotoBytes = result.andReturn().getResponse().getContentAsByteArray();
+
+        Assert.assertTrue("Sent photo and received photo are not equals!", Arrays.equals(receivedPhotoBytes, Files.readAllBytes(sourcePhotoPath)));
+        Assert.assertFalse("Received photo are equal to different photo", Arrays.equals(receivedPhotoBytes, Files.readAllBytes(diffPhotoPath)));
+
+        Files.deleteIfExists(sourcePhotoPath);
+    }
+
+    @Test
+    public void testUpdatePhoto() throws Exception {
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
+        WorkerRecord worker = createWorkerRecord();
+        Result<Long> result = addWorker(worker);
+
+        Long id = result.getData();
+
+        createPhotosById(id);
+
+        String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+        String photoToUpdateName = WSConfig.getInstance().getDirPhotos() + SECOND_PHOTO;
+
+        Assert.assertFalse("Оld and new photo should be different", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
+
+        String uri = BASE_URI + "update.photo/" + id;
+
+        logger.debug("URI = " + uri);
+
+        ResultActions resultActions = mockMvc.perform(
+                put(uri)
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .content(Files.readAllBytes(Paths.get(photoToUpdateName)))
+        );
+
+        Assert.assertEquals("Request status is not OK", HttpServletResponse.SC_OK, resultActions.andReturn().getResponse().getStatus());
+
+        Assert.assertTrue("Updated and new photo should be equals", Arrays.equals(Files.readAllBytes(Paths.get(photoToUpdateName)), Files.readAllBytes(Paths.get(photoByIdName))));
+
+        Files.deleteIfExists(Paths.get(photoByIdName));
+    }
+
+    private void createPhotosById(Long id) throws Exception{
+            String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
+            Path photoByIdPath = Paths.get(photoByIdName);
+
+            String existPhotoName = WSConfig.getInstance().getDirPhotos() + FIRST_PHOTO;
+            Path existPhotoPath = Paths.get(existPhotoName);
+
+            Files.deleteIfExists(photoByIdPath);
+            Files.copy(existPhotoPath, photoByIdPath);
+    }
+
+
     private WorkerRecord createWorkerRecord() {
         WorkerRecord worker = new WorkerRecord();
 
@@ -452,7 +536,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 post(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
@@ -474,7 +558,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
@@ -495,7 +579,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(workerXml)
@@ -516,7 +600,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(listXml)
@@ -542,9 +626,8 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
 
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
@@ -559,9 +642,8 @@ public class TestWorkerController {
 
         ResultActions result = mockMvc.perform(
                 get(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
 
         Result<WorkerRecord> workerRecord = (Result<WorkerRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
@@ -580,7 +662,7 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 put(uri)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_XML)
                         .content(departmentXml)
@@ -605,9 +687,8 @@ public class TestWorkerController {
 
         ResultActions resultActions = mockMvc.perform(
                 delete(uriBuilder)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
         Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
 
@@ -628,9 +709,8 @@ public class TestWorkerController {
 
         ResultActions result = mockMvc.perform(
                 get(uriBuilder)
-                        .header("Accept", "application/xml")
+                        .header("Accept", MediaType.APPLICATION_XML)
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_XML)
         );
         Result<DepartmentRecord> departmentRecord = (Result<DepartmentRecord>) fromXml(result.andReturn().getResponse().getContentAsString());
 
@@ -648,44 +728,6 @@ public class TestWorkerController {
 
     private Object fromXml(String xml) throws Exception {
         return unmarshaller.unmarshal(new StringReader(xml));
-    }
-
-    private byte[] read(Long id) {
-
-        ByteArrayOutputStream out = null;
-        InputStream input = null;
-
-        try {
-            String fileName = id + ".jpg";
-            logger.debug("fileName = " + fileName);
-            File file = new File(getClass().getClassLoader().getResource("source.jpg").getFile());
-            if (file.exists()) {
-                copy(file.getAbsolutePath(), file.getParent() + "/" + id + ".jpg");
-                out = new ByteArrayOutputStream();
-                input = new BufferedInputStream(new FileInputStream(file));
-                int data = 0;
-                while ((data = input.read()) != -1) {
-                    out.write(data);
-                }
-                logger.debug("file exists");
-            } else {
-                logger.debug("file doesn't exist");
-            }
-        } catch (Exception e) {
-            logger.error("error while update photo", e);
-        } finally {
-            try {
-                input.close();
-                out.close();
-            } catch (Exception e) {
-            }
-        }
-        return out.toByteArray();
-    }
-
-    public static void copy(String resourceFileName, String destinationFileName) throws IOException {
-        if (Files.exists(Paths.get(destinationFileName))) Files.delete(Paths.get(destinationFileName));
-        Files.copy(Paths.get(resourceFileName), Paths.get(destinationFileName));
     }
 
     private void createAndPersistPerson() {

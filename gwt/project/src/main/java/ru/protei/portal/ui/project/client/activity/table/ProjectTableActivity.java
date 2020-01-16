@@ -77,6 +77,8 @@ public abstract class ProjectTableActivity
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new ProjectEvents.Edit());
     }
 

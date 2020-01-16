@@ -43,6 +43,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     HasWidgets getCommentsContainer();
     HasWidgets getDocumentsContainer();
+    HasWidgets getLinksContainer();
 
 
 }

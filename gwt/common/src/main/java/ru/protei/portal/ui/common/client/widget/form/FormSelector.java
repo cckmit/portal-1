@@ -16,12 +16,15 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
  * Вид селектора
+ *  @deprecated  следует использовать {@link FormPopupSingleSelector}
  */
+@Deprecated
 public class FormSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
 
     @Inject

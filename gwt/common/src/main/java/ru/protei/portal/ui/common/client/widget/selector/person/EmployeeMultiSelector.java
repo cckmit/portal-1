@@ -1,45 +1,30 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
-
-import java.util.List;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
 /**
  * Селектор сотрудников
  */
 public class EmployeeMultiSelector
-        extends MultipleInputSelector<PersonShortView>
-        implements SelectorWithModel<PersonShortView>
+    extends InputPopupMultiSelector<PersonShortView>
 {
 
     @Inject
     public void init(EmployeeModel model, Lang lang) {
-        this.lang = lang;
-        setSelectorModel(model);
+        this.model = model;
+        setAsyncModel( model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setFilter(personView -> !personView.isFired());
+        setItemRenderer( p -> p == null ? lang.employeeWithoutManager() : p.getName() );
     }
 
     @Override
-    public void fillOptions(List< PersonShortView > options) {
-        clearOptions();
-
-        if (hasWithoutValue) {
-            addOption(lang.employeeWithoutManager(), new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
-        }
-        for (PersonShortView personView : options) {
-            addOption(personView.getName(), personView);
-        }
-    }
-
-    public void setHasWithoutValue(boolean hasWithoutValue) {
-        this.hasWithoutValue = hasWithoutValue;
+    public void onUnload() {
+        model.clear();
     }
 
     public void setFiredEmployeesVisible(boolean firedEmployeesVisible) {
@@ -48,6 +33,5 @@ public class EmployeeMultiSelector
         }
     }
 
-    private Lang lang;
-    private boolean hasWithoutValue = false;
+    private EmployeeModel model;
 }

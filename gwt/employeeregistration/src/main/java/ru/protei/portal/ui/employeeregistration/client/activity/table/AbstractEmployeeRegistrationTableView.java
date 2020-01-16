@@ -21,4 +21,6 @@ public interface AbstractEmployeeRegistrationTableView extends IsWidget {
     HasWidgets getPreviewContainer();
 
     HTMLPanel getFilterContainer();
+
+    void clearSelection();
 }

@@ -3,13 +3,13 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-card card-fixed">
-        <div ui:field="preview" class="preview">
-            <div class="card card-default no-border">
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
+        <div class="preview card-body no-padding">
+            <div class="card no-border">
                 <div class="card-body">
                     <div class="row">
                         <h4 class="col-md-12 m-t-0 m-b-0" >
-                            <g:InlineLabel ui:field="fullName"/>
+                            <g:Anchor ui:field="fullName" styleName="full-screen-link" href="#"/>
                             <div class="inline pull-right">
                                 <small ui:field="createdBy"/>
                             </div>
@@ -146,5 +146,12 @@
                 </div>
             </div>
         </div>
+        <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToEmployeeRegistration}"/>
+                </div>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

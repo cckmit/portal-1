@@ -1,97 +1,88 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
-import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * Модель контактов домашней компании
  */
-public abstract class EmployeeModel implements Activity, SelectorModel< PersonShortView > {
+public abstract class EmployeeModel implements Activity,
+        AsyncSelectorModel<PersonShortView> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        myId = event.profile.getId();
-        list.clear();
+        requestCurrentPerson(event.profile.getId());
+        cache.clearCache();
+        employeeQuery = new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC );
+        cache.setLoadHandler(makeLoadHandler(employeeQuery));
     }
 
     @Override
-    public void onSelectorLoad( SelectorWithModel< PersonShortView > selector ) {
-        if ( selector == null ) {
-            return;
+    public PersonShortView get( int elementIndex, LoadingHandler loadingHandler ) {
+        if (currentPerson == null) {
+            return cache.get( elementIndex, loadingHandler );
         }
-        subscribers.add( selector );
-        if( CollectionUtils.isNotEmpty( list ) ) {
-            selector.fillOptions( list );
-            selector.refreshValue();
-            return;
+        if (elementIndex == 0) return currentPerson;
+        PersonShortView personShortView = cache.get( --elementIndex, loadingHandler );
+        if (personShortView == currentPerson) {
+            return cache.get( ++elementIndex, loadingHandler );
         }
-        refreshOptions();
+        return personShortView;
     }
 
-    @Override
-    public void onSelectorUnload( SelectorWithModel< PersonShortView > selector ) {
-        if ( selector == null ) {
-            return;
-        }
-        selector.clearOptions();
-        subscribers.remove( selector );
+    public void clear() {
+        cache.clearCache();
     }
 
-    private void notifySubscribers() {
-        for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
-            selector.fillOptions( list );
-            selector.refreshValue();
-        }
-    }
-
-    private void refreshOptions() {
-        if (requested) return;
-        requested = true;
-        employeeService.getEmployeeViewList( new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
-                new RequestCallback< List< PersonShortView > >() {
+    public SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler( EmployeeQuery query ) {
+        return new SelectorDataCacheLoadHandler() {
             @Override
-            public void onError( Throwable throwable ) {
-                requested = false;
-                fireEvent(new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR) );
-            }
+            public void loadData( int offset, int limit, AsyncCallback handler ) {
+                query.setOffset(offset);
+                query.setLimit(limit);
+                employeeService.getEmployeeViewList( query, new RequestCallback<List<PersonShortView>>() {
+                    @Override
+                    public void onError( Throwable throwable ) {
+                        fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                    }
 
-            @Override
-            public void onSuccess( List< PersonShortView > options ) {
-                requested = false;
-                int value = options.indexOf( new PersonShortView("", myId, false ) );
-                if ( value > 0 ) {
-                    options.add(0, options.remove( value ) );
-                }
-                transliteration(options);
-                list.clear();
-                list.addAll( options );
-                notifySubscribers();
+                    @Override
+                    public void onSuccess( List<PersonShortView> options ) {
+                        handler.onSuccess( transliteration( options ) );
+                    }
+                } );
             }
-        } );
+        };
     }
 
-    private void transliteration(List<PersonShortView> options) {
-        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+    private void requestCurrentPerson( Long myId ) {
+        if(currentPerson!=null && Objects.equals(currentPerson.getId(), myId)){
+            return;
+        }
+        currentPerson = null;
+        employeeService.getEmployeeById(myId, new FluentCallback<PersonShortView>().withSuccess( r->currentPerson=r ) );
+    }
+    private List<PersonShortView> transliteration(List<PersonShortView> options) {
+        return options;
     }
 
     @Inject
@@ -100,9 +91,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     @Inject
     Lang lang;
 
-    Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
-    Long myId;
-
-    private boolean requested;
-    private List< PersonShortView > list = new ArrayList<>();
+    PersonShortView currentPerson;
+    EmployeeQuery employeeQuery;
+    private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
 }

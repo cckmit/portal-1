@@ -91,21 +91,21 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     public void onMembersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
         model.members = event.getValue() == null ? new HashSet<>() : event.getValue();
         if (model.members.size() == 0 || (En_DevUnitPersonRoleType.HEAD_MANAGER.equals(model.role) && model.members.size() == 1)) {
-            members.hidePopup();
+//            members.hidePopup();
         }
         fireModelChanged();
     }
 
     private void applySingleMember() {
         if (En_DevUnitPersonRoleType.HEAD_MANAGER == model.role) {
-            members.setSelectedLimit(1);
+//            members.setSelectedLimit(1);
             if (model.members.size() > 1) {
                 Set<PersonShortView> value = new HashSet<>();
                 value.add(model.members.stream().findFirst().get());
                 members.setValue(value, true);
             }
         } else {
-            members.setSelectedLimit(0);
+//            members.setSelectedLimit(0);
         }
     }
 

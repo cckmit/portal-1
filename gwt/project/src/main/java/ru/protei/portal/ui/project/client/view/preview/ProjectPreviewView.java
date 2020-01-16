@@ -90,6 +90,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public HasWidgets getLinksContainer() {
+        return linksContainer;
+    }
+
+    @Override
     public void setContract(String value, String link) {
         contract.setText(value);
         contract.setHref(link);
@@ -104,6 +109,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public void isFullScreen(boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+        if (isFullScreen) {
+            metaTable.addClassName("p-r-15 p-l-15");
+        } else {
+            metaTable.removeClassName("p-r-15 p-l-15");
+        }
     }
 
     @UiHandler( "header" )
@@ -188,6 +198,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel commentsContainer;
     @UiField
     HTMLPanel previewWrapperContainer;
+    @UiField
+    HTMLPanel linksContainer;
+    @UiField
+    DivElement metaTable;
 
     @Inject
     @UiField

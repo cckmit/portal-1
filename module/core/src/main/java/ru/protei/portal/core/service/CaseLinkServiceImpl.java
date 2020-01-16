@@ -73,7 +73,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivateLinks(token)));
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPublicLinks(token)));
         return ok(caseLinks);
     }
 
@@ -134,9 +134,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean isShowOnlyPrivate = isShowOnlyPrivateLinks(authToken);
+        if (Objects.equals(link.getRemoteId(), String.valueOf(link.getCaseId()))) {
+            return error(En_ResultStatus.NOT_ALLOWED_LINK_ISSUE_TO_ITSELF);
+        }
+
+        boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
         // запрещено изменение ссылок вне зоны видимости
-        if (isShowOnlyPrivate && link.isPrivate()) {
+        if (isShowOnlyPublic && link.isPrivate()) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -265,14 +269,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private boolean isValidLink(CaseLink value) {
-        if ( value.getCaseId() == null || value.getType() == null || StringUtils.isBlank(value.getRemoteId())) {
+        if ( value.getCaseId() == null || value.getType() == null || StringUtils.isBlank(value.getRemoteId()) ) {
             return false;
         }
 
         return !En_CaseLink.CRM.equals(value.getType()) || NumberUtils.isDigits(value.getRemoteId());
     }
 
-    private boolean isShowOnlyPrivateLinks(AuthToken token) {
+    private boolean isShowOnlyPublicLinks(AuthToken token) {
         return !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW);
     }
 

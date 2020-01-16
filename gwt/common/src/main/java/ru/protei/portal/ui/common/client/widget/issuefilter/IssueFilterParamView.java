@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
@@ -58,6 +59,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setActivity(AbstractIssueFilterParamActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public void setCompaniesModel( AsyncSelectorModel<EntityOption> model ) {
+        companies.setAsyncModel( model );
     }
 
     @Override
@@ -378,22 +384,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     public void watchForScrollOf(Widget widget) {
         userFilter.watchForScrollOf(widget);
         sortField.watchForScrollOf(widget);
-        products.watchForScrollOf(widget);
-        companies.watchForScrollOf(widget);
-        initiators.watchForScrollOf(widget);
-        managers.watchForScrollOf(widget);
-        commentAuthors.watchForScrollOf(widget);
         tags.watchForScrollOf(widget);
     }
 
     public void stopWatchForScrollOf(Widget widget) {
         userFilter.stopWatchForScrollOf(widget);
         sortField.stopWatchForScrollOf(widget);
-        products.stopWatchForScrollOf(widget);
-        companies.stopWatchForScrollOf(widget);
-        initiators.stopWatchForScrollOf(widget);
-        managers.stopWatchForScrollOf(widget);
-        commentAuthors.stopWatchForScrollOf(widget);
         tags.stopWatchForScrollOf(widget);
     }
 

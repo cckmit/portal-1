@@ -16,18 +16,19 @@ public interface CaseLinkService {
     Result<Map<En_CaseLink, String>> getLinkMap();
 
     // TODO: линки используются на уровне Анкет и обращений. Для проверки привилегий нужна более гибкая проверка
-//    @Privileged({ En_Privilege.ISSUE_VIEW })
+    @Privileged(requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.PROJECT_VIEW, En_Privilege.EMPLOYEE_REGISTRATION_VIEW })
     Result<List<CaseLink>> getLinks( AuthToken token, Long caseId);
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
-    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Privileged(En_Privilege.ISSUE_EDIT)
     Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks);
 
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
     Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
+    @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     Result<Long> createLink(AuthToken authToken, CaseLink value);
 
     Result removeLink(AuthToken authToken, Long id);

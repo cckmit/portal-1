@@ -16,7 +16,7 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
     @Inject
     public void init( IssueFilterModel model ) {
         this.model = model;
-        setSearchEnabled( true );
+
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
     }

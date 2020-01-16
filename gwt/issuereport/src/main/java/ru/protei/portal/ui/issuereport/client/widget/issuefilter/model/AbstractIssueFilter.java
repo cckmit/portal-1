@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractIssueFilter {

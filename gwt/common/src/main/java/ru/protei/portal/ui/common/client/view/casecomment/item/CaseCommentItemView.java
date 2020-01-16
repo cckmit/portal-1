@@ -258,15 +258,15 @@ public class CaseCommentItemView
     }
 
     private void setTestAttributes() {
-        privateComment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
-        reply.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
-        edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
-        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REMOVE_BUTTON);
-        timeElapsed.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
-        date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
-        owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
-        status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.STATUS);
-        timeElapsedTypePopup.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP);
+        privateComment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.PRIVACY_ICON);
+        reply.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.REPLY_BUTTON);
+        edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_BUTTON);
+        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.REMOVE_BUTTON);
+        timeElapsed.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.TIME_ELAPSED);
+        date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.CREATE_DATE);
+        owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.OWNER);
+        status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.STATUS);
+        timeElapsedTypePopup.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP);
     }
 
 

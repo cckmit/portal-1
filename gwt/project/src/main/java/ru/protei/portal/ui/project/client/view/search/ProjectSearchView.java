@@ -91,10 +91,10 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         project.clearItems();
     }
 
-    @Override
-    public void refreshProducts() {
-        products.refreshOptions();
-    }
+//    @Override
+//    public void refreshProducts() {
+//        products.refreshOptions();
+//    }
 
     @UiHandler("search")
     public void onSearchClicked(ClickEvent event) {

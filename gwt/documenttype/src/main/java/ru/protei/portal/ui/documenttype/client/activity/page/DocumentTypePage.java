@@ -27,7 +27,7 @@ public abstract class DocumentTypePage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT_TYPE, DebugIds.SIDEBAR_MENU.DOCUMENT_TYPE));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT_TYPE, TAB, DebugIds.SIDEBAR_MENU.DOCUMENT_TYPE));
             fireEvent(new AppEvents.InitPage(show));
         }
     }

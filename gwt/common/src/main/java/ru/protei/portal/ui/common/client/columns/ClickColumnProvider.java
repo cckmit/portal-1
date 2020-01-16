@@ -23,6 +23,10 @@ public class ClickColumnProvider<T> {
         selectRowHandler.setRowSelected( selected, true );
     }
 
+    public void removeSelection (T row) {
+        selectRowHandler.setRowSelected(row, false);
+    }
+
     public T getSelected() {
         return selected;
     }

@@ -21,6 +21,7 @@ import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServ
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformMultiSelector;
 
+import java.util.List;
 import java.util.Set;
 
 public class ServerFilterView extends Composite implements AbstractServerFilterView {

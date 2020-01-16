@@ -32,6 +32,7 @@ import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -43,8 +44,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        parents.setRequestByOnLoad(false);
-        children.setRequestByOnLoad(false);
+//        parents.setRequestByOnLoad(false);
+//        children.setRequestByOnLoad(false);
 
         historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
@@ -77,8 +78,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setCurrentProduct(ProductShortView product) {
-        parents.exclude(product);
-        children.exclude(product);
+        parents.setFilter( p -> !Objects.equals(p, product) );
+        children.setFilter( p -> !Objects.equals(p, product) );
     }
 
     @Override

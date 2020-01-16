@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterView;
 
+import java.util.List;
 import java.util.Set;
 
 public class PlatformFilterView extends Composite implements AbstractPlatformFilterView {

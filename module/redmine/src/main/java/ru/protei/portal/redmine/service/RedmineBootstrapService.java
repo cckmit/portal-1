@@ -19,10 +19,10 @@ public class RedmineBootstrapService {
 
     @PostConstruct
     public void init() {
-        updateCreationDateAttachments();
-        updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
-        updateNullIssueCreator();
-        //updateCaseObjectById(156952L);
+        //updateCreationDateAttachments();
+        //updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
+        //updateNullIssueCreator();
+        updateCaseObjectById(152767L);
     }
 
     private void updateCreationDateAttachments() {

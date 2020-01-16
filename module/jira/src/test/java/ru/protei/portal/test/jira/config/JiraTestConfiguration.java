@@ -293,4 +293,9 @@ public class JiraTestConfiguration {
     public LockService getLockService() {
         return new LockServiceImpl();
     }
+
+    @Bean
+    public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
+        return new JiraCompanyGroupDAO_Impl();
+    }
 }

@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.Set;
@@ -20,6 +21,8 @@ import java.util.function.Supplier;
 public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void setActivity(AbstractIssueFilterParamActivity activity);
+
+    void setCompaniesModel( AsyncSelectorModel<EntityOption> model );
 
     AbstractIssueFilterParamActivity getActivity();
 

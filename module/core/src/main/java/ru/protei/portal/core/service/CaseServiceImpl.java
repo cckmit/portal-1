@@ -362,7 +362,7 @@ public class CaseServiceImpl implements CaseService {
                     caseMetaNotifiers.getNotifiers().stream()
                         .map(Person::getId)
                         .collect(Collectors.toList()),
-                    "id", "contactInfo")
+                    "id", "contactInfo", "displayShortName")
             ));
         }
         caseMetaNotifiers.setModified(new Date());

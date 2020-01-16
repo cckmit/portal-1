@@ -20,13 +20,13 @@
                     <issuestate:IssueStateFormSelector ui:field="state"
                                                        validation="true"
                                                        header="{lang.issueState}"
-                                                       mandatory="true"/>
+                                                       mandatory="false"/>
                 </div>
                 <div class="col-md-6">
                     <issueimportance:ImportanceFormSelector ui:field="importance"
                                                             validation="true"
                                                             header="{lang.issueImportance}"
-                                                            mandatory="true"/>
+                                                            mandatory="false"/>
                 </div>
             </div>
             <div class="row">

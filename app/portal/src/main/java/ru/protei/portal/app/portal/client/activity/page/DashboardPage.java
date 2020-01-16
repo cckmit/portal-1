@@ -30,7 +30,7 @@ public abstract class DashboardPage implements Activity {
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
-            fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD, DebugIds.SIDEBAR_MENU.DASHBOARD ) );
+            fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD, TAB, DebugIds.SIDEBAR_MENU.DASHBOARD ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

@@ -29,7 +29,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
 
     @Event
     public void onShow(DocumentEvents.Create event) {
-        if (policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }

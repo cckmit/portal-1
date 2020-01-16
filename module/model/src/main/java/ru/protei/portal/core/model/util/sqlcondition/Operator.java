@@ -17,9 +17,15 @@ public interface Operator {
 
     Condition like( String attr );
 
-    Condition isNull( Object attr );
+    Condition regexp( String condition );
+
+    /**
+     * Expected Any not null object or true
+     */
+    Condition isNull(Object notNullOrTrue);
 
     Condition in( Collection attr );
 
-    Condition in( Condition condition );
+    Condition in( Query query );
+
 }

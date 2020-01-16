@@ -33,6 +33,7 @@ import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelecto
 import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -56,7 +57,9 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        company.setAsyncModel( companyModel );
         initView();
+
         ensureDebugIds();
     }
 
@@ -291,7 +294,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
         company.setDefaultValue(lang.selectIssueCompany());
-        company.showDeprecated(false);
+        companyModel.showDeprecated(false);
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
@@ -457,6 +460,9 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
+
+    @Inject
+    CompanyModel companyModel;
 
     private AbstractIssueMetaActivity activity;
 

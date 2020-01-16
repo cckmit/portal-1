@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.caselink.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -16,6 +17,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.InputHandler;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
 
@@ -38,6 +41,8 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
                 showRelativeTo(relative);
             }
         };
+
+        setInputTextHandler();
     }
 
     @Override
@@ -95,12 +100,17 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     }
 
     @UiHandler("remoteIdInput")
-    public void onChangeText(KeyPressEvent event){
-        if(unicodeCurrentChar != '\n') {
-            unicodeCurrentChar = event.getUnicodeCharCode();
+    public void onChangeText(KeyPressEvent event) {
+        if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+            keyTapTimer.run();
+        }
+    }
+
+    public void setInputTextHandler() {
+        remoteIdInput.addInputHandler(event -> {
             keyTapTimer.cancel();
             keyTapTimer.schedule(300);
-        }
+        });
     }
 
     @UiHandler("typeSelector")
@@ -136,12 +146,11 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
-    private int unicodeCurrentChar;
+    private RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
     private Timer keyTapTimer = new Timer() {
         @Override
         public void run() {
-            RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue());
 
             if (youTrackMatcher != null) {
                 typeSelector.setValue(En_CaseLink.YT);

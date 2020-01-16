@@ -27,5 +27,5 @@ public interface AbstractProjectCreateView extends IsWidget {
     HasValidable directionValidator();
     HasValidable customerTypeValidator();
     HasValidable companyValidator();
-    void refreshProducts();
+//    void refreshProducts();
 }

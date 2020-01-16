@@ -15,12 +15,14 @@ import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLink
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -89,18 +91,18 @@ public abstract class CaseLinkListActivity
     }
 
     @Override
-    public void onAddLinkClicked(CaseLink value) {
-        if (value == null || !show.isEnabled) {
+    public void onAddLinkClicked(CaseLink caseLink) {
+        if (caseLink == null || !show.isEnabled) {
             return;
         }
 
-        value.setCaseId(show.caseId);
-        switch (value.getType()) {
+        caseLink.setCaseId(show.caseId);
+        switch (caseLink.getType()) {
             case CRM:
-                addCrmLink( value );
+                addCrmLink( caseLink );
                 break;
             case YT:
-                addYtLink( value );
+                addYtLink( caseLink );
         }
     }
 
@@ -149,6 +151,11 @@ public abstract class CaseLinkListActivity
                 .withSuccess(caseInfo -> {
                     if (caseInfo == null) {
                         showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
+                        return;
+                    }
+
+                    if (Objects.equals(caseLink.getCaseId(), caseInfo.getId())) {
+                        showError(lang.errUnableLinkIssueToItself());
                         return;
                     }
 

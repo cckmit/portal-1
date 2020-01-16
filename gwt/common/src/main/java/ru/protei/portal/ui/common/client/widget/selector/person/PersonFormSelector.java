@@ -1,86 +1,65 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-import java.util.List;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+
 import java.util.Set;
+import java.util.logging.Logger;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 
 /**
  * Селектор person
  */
-public class PersonFormSelector extends FormSelector< PersonShortView > implements SelectorWithModel<PersonShortView> {
+public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView> implements Refreshable
+{
 
     @Inject
-    public void init(InitiatorModel model) {
+    public void init( InitiatorModel model ) {
         this.model = model;
-        setSearchEnabled( true );
-        setSearchAutoFocus( true );
-        setDisplayOptionCreator( value -> {
-            if ( value == null ) {
-                return new DisplayOption( defaultValue );
-            }
-
-            return new DisplayOption(
-                    value.getName(),
-                    value.isFired() ? "not-active" : "",
-                    value.isFired() ? "fa fa-ban ban" : "" );
-        } );
+        setModel( model );
+        setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
-    public void fillOptions( List< PersonShortView > persons ){
-        clearOptions();
-        this.persons = persons;
+    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
+        PopupSelectorItem item = new PopupSelectorItem();
+        if (value == null) {
+            item.setName( defaultValue );
+            return item;
+        }
+        item.setName( elementHtml );
+
+        item.setStyle( value.isFired() ? "not-active" : "" );
+        item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );
+        return item;
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
+    public void setFired ( boolean fired ) {
+        this.fired = fired;
     }
 
-    public void setFired ( boolean value ) { this.fired = value; }
-
+    private static final Logger log = Logger.getLogger( PersonFormSelector.class.getName() );
 
     @Override
-    protected void showPopup(IsWidget relative) {
-        if(persons != null){
-            if (defaultValue != null) {
-                addOption(null);
-            }
-
-            persons.forEach(this::addOption);
-            persons = null;
-        }
-
-        super.showPopup(relative);
-        if(companyIds==null){
-            SelectorItem item = new SelectorItem();
-            item.setName(lang.initiatorSelectACompany());
-            item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
-            popup.getChildContainer().add(item);
+    public void refresh() {
+        PersonShortView value = getValue();
+        if (value != null
+                && !contains( model.getValues(), value )) {
+            setValue( null );
         }
     }
 
     public void updateCompanies(Set<Long> companyIds) {
-        this.companyIds = companyIds;
         if(model!=null){
             model.updateCompanies(this, companyIds, fired);
         }
     }
 
-    @Inject
-    Lang lang;
-
     private InitiatorModel model;
 
-    private String defaultValue;
     private boolean fired = false;
-    private Set<Long> companyIds;
-    private List<PersonShortView> persons;
 }

@@ -12,7 +12,7 @@ public class DocumentTypeFormSelector extends FormSelector<DocumentType> impleme
     @Inject
     void init(DocumentTypeModel model) {
         setSelectorModel(model);
-        setSearchEnabled( true );
+
         setSearchAutoFocus( true );
 
         setDisplayOptionCreator(val -> {

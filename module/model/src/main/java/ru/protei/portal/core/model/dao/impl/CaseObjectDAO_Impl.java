@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.*;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -107,7 +107,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @Override
     public String getExternalAppName( Long caseId ) {
         String select = query().
-                select( EXT_APP ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
+                select( EXT_APP ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).asQuery().buildSql();
 
         return jdbcTemplate.queryForObject( select, String.class, caseId );
     }
@@ -121,7 +121,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @Transactional
     public Long getAndIncrementEmailLastId( Long caseId ) {
         String selectForUpdate = query().forUpdate().
-                select( COLUMN_EMAIL_LAST_ID ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).getSqlCondition();
+                select( COLUMN_EMAIL_LAST_ID ).from( getTableName() ).where( getIdColumnName() ).equal( caseId ).asQuery().buildSql();
 
         Long lastId = jdbcTemplate.queryForObject( selectForUpdate, Long.class, caseId );
         String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + COLUMN_EMAIL_LAST_ID + "+1 WHERE " + getIdColumnName() + " = " + caseId;

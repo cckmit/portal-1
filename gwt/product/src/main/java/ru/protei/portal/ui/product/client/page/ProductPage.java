@@ -31,7 +31,7 @@ public abstract class ProductPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.PRODUCT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PRODUCT, DebugIds.SIDEBAR_MENU.PRODUCT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PRODUCT, ТAB, DebugIds.SIDEBAR_MENU.PRODUCT ) );
             fireEvent( new AppEvents.InitPage( new ProductEvents.Show( true ) ) );
         }
     }

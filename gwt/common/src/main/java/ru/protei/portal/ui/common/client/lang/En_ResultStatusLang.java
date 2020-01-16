@@ -55,6 +55,7 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_CHANGE_ISSUE_NAME_OR_DESCRIPTION: return lang.errNotAllowedChangeIssueNameOrDescription();
             case NOT_ALLOWED_CHANGE_PLATFORM_COMPANY: return lang.errSavePlatformConnectedIssuesExist();
             case NOT_ALLOWED_CHANGE_PROJECT_COMPANY: return lang.errSaveProjectCannotChangeCompany();
+            case NOT_ALLOWED_LINK_ISSUE_TO_ITSELF: return lang.errUnableLinkIssueToItself();
             default: return lang.errUnknownResult();
         }
     }

@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractContractFilterView extends IsWidget {

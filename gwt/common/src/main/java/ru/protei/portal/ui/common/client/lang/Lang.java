@@ -1332,6 +1332,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryEmployeeRegistration();
 
+    String goToEmployeeRegistration();
+
     String employmentTypeFullTime();
 
     String employmentTypePartTime();
@@ -1957,4 +1959,14 @@ public interface Lang extends Messages, ContactItemLang {
     String tagAdd();
 
     String linkAdd();
+
+    String contactFieldLengthExceed(String fieldName, int symbolsCount);
+
+    String errorFieldHasInvalidValue(String fieldName);
+
+    String searchNoMatchesFound();
+
+    String emptySelectorList();
+
+    String errUnableLinkIssueToItself();
 }

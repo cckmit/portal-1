@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -184,21 +185,21 @@ public abstract class IssueEditActivity implements
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
         boolean readOnly = isReadOnly();
         if (!isAllowedEditNameAndDescription || readOnly) return;
-        view.nameAndDescriptionEditButtonVisibility().setVisible( false );
+        view.nameAndDescriptionEditButtonVisibility().setVisible(false);
         view.nameVisibility().setVisible(false);
 
         view.getInfoContainer().clear();
-        view.getInfoContainer().add( issueNameDescriptionEditWidget );
+        view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup );
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
     }
 
     @Override
-    public void onIssueNameInfoChanged( CaseNameAndDescriptionChangeRequest changeRequest ) {
-        issue.setName( changeRequest.getName() );
-        issue.setInfo( changeRequest.getInfo() );
+    public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
+        issue.setName(changeRequest.getName());
+        issue.setInfo(changeRequest.getInfo());
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
@@ -310,7 +311,11 @@ public abstract class IssueEditActivity implements
         boolean readOnly = isReadOnly();
 
         view.setCaseNumber(issue.getCaseNumber());
-        view.setPrivateIssue(issue.isPrivateCase());
+
+        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW)) {
+            view.setPrivateIssue(issue.isPrivateCase());
+        }
+
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
@@ -327,7 +332,7 @@ public abstract class IssueEditActivity implements
         view.showEditViewButtonVisibility().setVisible(modePreview);
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
 
-        view.setBackgroundWhite(modePreview);
+        view.setPreviewStyles(modePreview);
     }
 
     private String makeName( String issueName, String jiraUrl, String extAppType ) {

@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.equipment;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.query.EquipmentQuery;
@@ -9,7 +11,10 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
@@ -17,47 +22,53 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class EquipmentModel extends LifecycleSelectorModel<EquipmentShortView> {
+public abstract class EquipmentModel implements Activity, AsyncSelectorModel<EquipmentShortView> {
+
+    public EquipmentModel() {
+        query = makeQuery();
+        cache.setLoadHandler(makeLoadHandler(query));
+    }
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        clear();
+        cache.clearCache();
     }
 
     @Event
     public void onEquipmentListChanged(EquipmentEvents.ChangeModel event) {
-        refreshOptions();
+        cache.clearCache();
     }
 
     @Override
-    protected void refreshOptions() {
-        EquipmentQuery query = makeQuery();
-        equipmentService.equipmentOptionList(query, new FluentCallback<List<EquipmentShortView>>()
-                .withErrorMessage(lang.errGetList())
-                .withSuccess(this::notifySubscribers));
+    public EquipmentShortView get( int elementIndex, LoadingHandler loadingHandler ) {
+        return cache.get( elementIndex, loadingHandler );
+    }
+
+    private SelectorDataCacheLoadHandler<EquipmentShortView> makeLoadHandler( final EquipmentQuery query) {
+        return new SelectorDataCacheLoadHandler() {
+            @Override
+            public void loadData( int offset, int limit, AsyncCallback handler ) {
+                query.setOffset( offset );
+                query.setLimit( limit );
+                equipmentService.equipmentOptionList( query, new FluentCallback<List<EquipmentShortView>>()
+                        .withErrorMessage( lang.errGetList() )
+                        .withSuccess( options -> handler.onSuccess( options ) ) );
+            }
+        };
     }
 
     private EquipmentQuery makeQuery() {
         EquipmentQuery query = new EquipmentQuery();
-        if (projectId != null) {
-            query.setProjectId(projectId);
-        }
-        if (types != null) {
-            query.setTypes(types);
-        } else {
-            query.setTypes(defaultEquipmentTypes);
-        }
+        query.setTypes(defaultEquipmentTypes);
         return query;
     }
 
     public void setVisibleTypes(Set<En_EquipmentType> types) {
-        this.types = types;
-        refreshOptions();
+        query.setTypes( types );
     }
 
     public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-        refreshOptions();
+        query.setProjectId( projectId );
     }
 
     @Inject
@@ -65,9 +76,11 @@ public abstract class EquipmentModel extends LifecycleSelectorModel<EquipmentSho
     @Inject
     Lang lang;
 
-    private Long projectId = null;
-    private Set<En_EquipmentType> types = null;
+
     private Set<En_EquipmentType> defaultEquipmentTypes = new HashSet<>(
             Arrays.asList(En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT)
     );
+
+    EquipmentQuery query;
+    private SelectorDataCache<EquipmentShortView> cache = new SelectorDataCache<>();
 }
