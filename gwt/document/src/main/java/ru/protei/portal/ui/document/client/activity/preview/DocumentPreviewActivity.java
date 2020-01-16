@@ -45,7 +45,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     @Event
     public void onShow(DocumentEvents.ShowPreview event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(event.parent));
             return;
         }
         event.parent.clear();
@@ -57,7 +57,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     @Event
     public void onShow(DocumentEvents.ShowPreviewFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
         initDetails.parent.clear();
@@ -81,7 +81,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
         view.documentDocUploadContainerLoading().setVisible(true);
         uploadDoc(document, () ->
-            documentService.updateDocumentDocFileByMember(document.getId(), comment, new FluentCallback<Document>()
+            documentController.updateDocumentDocFileByMember(document.getId(), comment, new FluentCallback<Document>()
                     .withError(throwable -> {
                         view.documentDocUploadContainerLoading().setVisible(false);
                         defaultErrorHandler.accept(throwable);
@@ -95,7 +95,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private void loadDocument(Long documentId, Consumer<Document> onSuccess) {
-        documentService.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
+        documentController.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
     }
 
     private void fillView(Document document) {
@@ -127,15 +127,15 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private void fillProject(Document document) {
-        if (document.getProjectId() == null) {
+        if (document.getProjectId() == null || !policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
             view.setProject("");
             view.setManager("");
         } else {
-            regionService.getProject(document.getProjectId(), new ShortRequestCallback<Project>()
-                    .setOnSuccess(project -> {
+            regionService.getProject(document.getProjectId(), new FluentCallback<Project>()
+                    .withSuccess(project -> {
                         view.setProject(project.getName());
                         view.setManager(project.getLeader() == null ? "" : project.getLeader().getName());
-                    } ));
+                    }));
         }
     }
 
@@ -172,7 +172,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private boolean hasAccessToPdf() {
-        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_EDIT);
+        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_VIEW);
     }
 
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
@@ -188,7 +188,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     @Inject
     PolicyService policyService;
     @Inject
-    DocumentControllerAsync documentService;
+    DocumentControllerAsync documentController;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 

@@ -104,22 +104,24 @@
                 </div>
             </div>
 
-            <h6><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></h6>
-            <g:HTMLPanel ui:field="documentDocUploadContainer" styleName="card card-default m-t-10">
-                <div class="card-body no-scroll no-padding card-body-dropzone">
-                    <div class="form-group form-group-default m-b-0 no-border required">
-                        <label><ui:text from="{lang.documentMemberWorkDocumentationComment}"/></label>
-                        <g:TextBox ui:field="documentDocComment" styleName="form-control comment"/>
+            <g:HTMLPanel ui:field="documentDocUploadContainer">
+                <h6><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></h6>
+                <div class="card card-default m-t-10">
+                    <div class="card-body no-scroll no-padding card-body-dropzone">
+                        <div class="form-group form-group-default m-b-0 no-border required">
+                            <label><ui:text from="{lang.documentMemberWorkDocumentationComment}"/></label>
+                            <g:TextBox ui:field="documentDocComment" styleName="form-control comment"/>
+                        </div>
+                        <fileuploader:DocumentUploader ui:field="documentDocUploader" format="DOC"/>
                     </div>
-                    <fileuploader:DocumentUploader ui:field="documentDocUploader" format="DOC"/>
-                </div>
-                <div class="card-footer bg-transparent no-border">
-                    <div class="text-right">
-                        <g:Button ui:field="uploadDocFile" styleName="btn no-border btn-info btn-xs" text="{lang.documentMemberWorkDocumentationUpload}"/>
+                    <div class="card-footer bg-transparent no-border">
+                        <div class="text-right">
+                            <g:Button ui:field="uploadDocFile" styleName="btn no-border btn-info btn-xs" text="{lang.documentMemberWorkDocumentationUpload}"/>
+                        </div>
                     </div>
-                </div>
-                <div class="card-stub d-flex align-items-center hide" ui:field="documentDocUploadContainerLoading">
-                    <div class="progress-circle-indeterminate"/>
+                    <div class="card-stub d-flex align-items-center hide" ui:field="documentDocUploadContainerLoading">
+                        <div class="progress-circle-indeterminate"/>
+                    </div>
                 </div>
             </g:HTMLPanel>
         </div>
