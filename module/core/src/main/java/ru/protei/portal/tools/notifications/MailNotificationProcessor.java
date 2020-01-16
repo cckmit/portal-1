@@ -523,6 +523,8 @@ public class MailNotificationProcessor {
         }
         List<NotificationEntry> recipients = personList.stream()
                 .map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
                 .collect(toList());
 
         String url = String.format(getDocumentPreviewUrl(), document.getId());
@@ -557,6 +559,8 @@ public class MailNotificationProcessor {
         }
         List<NotificationEntry> recipients = personList.stream()
                 .map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
                 .collect(toList());
 
         PreparedTemplate bodyTemplate = templateService.getDocumentDocFileUpdatedByMemberBody(document.getName(), initiator.getDisplayShortName(), comment);

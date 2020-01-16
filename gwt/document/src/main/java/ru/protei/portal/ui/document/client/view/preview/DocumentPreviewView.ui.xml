@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.document.uploader'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -69,6 +70,29 @@
 
             <h5><ui:text from="{lang.documentKeywords}"/></h5>
             <span ui:field="keyWords"/>
+
+            <g:HTMLPanel ui:field="documentDocUploadContainer" styleName="card card-default m-t-10">
+                <div class="card-header">
+                    <div class="card-title"><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></div>
+                </div>
+                <div class="card-body no-scroll no-padding card-body-dropzone">
+                    <fileuploader:DocumentUploader ui:field="documentDocUploader" format="DOC"/>
+                    <div class="form-group form-group-default m-b-0 no-border required">
+                        <label><ui:text from="{lang.documentMemberWorkDocumentationComment}"/></label>
+                        <g:TextBox ui:field="documentDocComment" styleName="form-control comment"/>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="card card-transparent no-margin">
+                        <div class="text-right">
+                            <g:Button ui:field="uploadDocFile" styleName="btn no-border btn-info btn-xs" text="Загрузить"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-stub d-flex align-items-center hide" ui:field="documentDocUploadContainerLoading">
+                    <div class="progress-circle-indeterminate"/>
+                </div>
+            </g:HTMLPanel>
         </div>
         <g:HTMLPanel ui:field="footerContainer" styleName="card-footer">
             <div class="card card-transparent no-margin">

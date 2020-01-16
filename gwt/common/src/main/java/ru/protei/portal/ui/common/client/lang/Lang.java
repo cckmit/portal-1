@@ -1971,4 +1971,8 @@ public interface Lang extends Messages, ContactItemLang {
     String emptySelectorList();
 
     String documentMembers();
+
+    String documentMemberUploadWorkDocumentation();
+
+    String documentMemberWorkDocumentationComment();
 }
