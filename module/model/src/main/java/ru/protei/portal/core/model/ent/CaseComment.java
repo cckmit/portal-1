@@ -81,6 +81,12 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
 
+    // not db column
+    private Date updated;
+
+    // not db column
+    private boolean deleted;
+
     public CaseComment() {}
 
     public CaseComment(String text) {
@@ -274,6 +280,22 @@ public class CaseComment extends AuditableObject {
         this.privateComment = privateComment;
     }
 
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -317,6 +339,8 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privateComment=" + privateComment +
+                ", updated=" + updated +
+                ", deleted=" + deleted +
                 '}';
     }
 }
