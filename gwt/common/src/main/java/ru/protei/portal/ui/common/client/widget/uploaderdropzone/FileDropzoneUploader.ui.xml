@@ -9,7 +9,7 @@
             <g:HTMLPanel ui:field="dropzone" styleName="dropzone">
                 <div class="dropzone-default">
                     <span><ui:text from="{lang.fileDropzoneLabel}"/></span>
-                    <span ui:field="filenameInfo"/>
+                    <div class="bold" ui:field="filenameInfo"/>
                 </div>
             </g:HTMLPanel>
         </g:HTMLPanel>

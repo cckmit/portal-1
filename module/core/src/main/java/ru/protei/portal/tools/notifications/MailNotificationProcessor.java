@@ -358,15 +358,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        notifiers.forEach(entry -> {
-            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-            try {
-                sendMail(entry.getAddress(), subject, body);
-            } catch (Exception e) {
-                log.error("Failed to make MimeMessage", e);
-            }
-        });
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
     }
 
     @EventListener
@@ -513,22 +505,96 @@ public class MailNotificationProcessor {
             return;
         }
 
-        notifiers.forEach(entry -> {
-            try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                sendMail(entry.getAddress(), subject, body);
-            } catch (Exception exception) {
-                log.error("Failed to send message to entry={} for contractId={} and contractDateId={}: exception={}",
-                        entry, contract.getId(), contractDate.getId(), exception);
-            }
-        });
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
     }
 
+    // -----------------------
+    // Document notifications
+    // -----------------------
+
+    @EventListener
+    public void onDocumentMemberAddedEvent(DocumentMemberAddedEvent event) {
+        Document document = event.getDocument();
+        List<Person> personList = event.getPersonList();
+        if (document == null || CollectionUtils.isEmpty(personList)) {
+            log.error("Failed to send document member added notification: incomplete data provided: " +
+                    "document={}, personList={}", document, personList);
+            return;
+        }
+        List<NotificationEntry> recipients = personList.stream()
+                .map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(toList());
+
+        String url = String.format(getDocumentPreviewUrl(), document.getId());
+
+        PreparedTemplate bodyTemplate = templateService.getDocumentMemberAddedBody(document.getName(), url);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for document added event | document.id={}, person.ids={}",
+                    document.getId(), personList.stream().map(Person::getId).collect(toList()));
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getDocumentMemberAddedSubject(document.getName());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for document added event | document.id={}, person.ids={}",
+                    document.getId(), personList.stream().map(Person::getId).collect(toList()));
+            return;
+        }
+
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onDocumentDocFileUpdatedByMemberEvent(DocumentDocFileUpdatedByMemberEvent event) {
+        Person initiator = event.getInitiator();
+        Document document = event.getDocument();
+        List<Person> personList = event.getPersonList();
+        String comment = event.getComment();
+        if (initiator == null || document == null || CollectionUtils.isEmpty(personList)) {
+            log.error("Failed to send document doc file updated by member notification: incomplete data provided: " +
+                    "document={}, personList={}, comment={}, initiator={}", document, personList, comment, initiator);
+            return;
+        }
+        List<NotificationEntry> recipients = personList.stream()
+                .map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(toList());
+
+        PreparedTemplate bodyTemplate = templateService.getDocumentDocFileUpdatedByMemberBody(document.getName(), initiator.getDisplayShortName(), comment);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for document doc file updated by member | document.id={}, person.ids={}, comment={}",
+                    document.getId(), personList.stream().map(Person::getId).collect(toList()), comment);
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getDocumentDocFileUpdatedByMemberSubject(document.getName());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for document doc file updated by member | document.id={}, person.ids={}, comment={}",
+                    document.getId(), personList.stream().map(Person::getId).collect(toList()), comment);
+            return;
+        }
+
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+    }
 
     // -----
     // Utils
     // -----
+
+    private void sendMailToRecipients(Collection<NotificationEntry> recipients, PreparedTemplate bodyTemplate, PreparedTemplate subjectTemplate, boolean isShowPrivacy) {
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
+                sendMail(entry.getAddress(), subject, body);
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage", e);
+            }
+        });
+    }
 
     private void sendMail(String address, String subject, String body) throws MessagingException {
         MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
@@ -570,6 +636,11 @@ public class MailNotificationProcessor {
     private String getEmployeeRegistrationUrl() {
         return config.data().getMailNotificationConfig().getCrmUrlInternal() +
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
+    }
+
+    private String getDocumentPreviewUrl() {
+        return config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                config.data().getMailNotificationConfig().getCrmDocumentPreviewUrl();
     }
 
     private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {

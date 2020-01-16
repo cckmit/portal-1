@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNu
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectFormSelector;
 import ru.protei.portal.ui.common.client.widget.stringselectform.StringTagInputForm;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -41,6 +42,7 @@ import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutio
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DocumentFormView extends Composite implements AbstractDocumentFormView {
 
@@ -144,6 +146,11 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Override
     public HasValue<Boolean> isApproved() {
         return approved;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> members() {
+        return members;
     }
 
     @Override
@@ -284,6 +291,9 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     DocumentExecutionTypeFormSelector executionType;
     @Inject
     @UiField(provided = true)
+    EmployeeMultiSelector members;
+    @Inject
+    @UiField(provided = true)
     StringTagInputForm keywords;
     @Inject
     @UiField(provided = true)
@@ -304,7 +314,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Inject
     @UiField
     Lang lang;
-
     private AbstractDocumentFormActivity activity;
 
     interface DocumentFormViewUiBinder extends UiBinder<HTMLPanel, DocumentFormView> {}

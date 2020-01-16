@@ -16,6 +16,8 @@ public interface DocumentControllerAsync {
 
     void saveDocument(Document document, AsyncCallback<Document> callback);
 
+    void updateDocumentDocFileByMember(Long documentId, String comment, AsyncCallback<Document> async);
+
     void removeDocument(Document document, AsyncCallback<Long> async);
 
     void getProjectDocuments(Long projectId, AsyncCallback<SearchResult<Document>> callback);

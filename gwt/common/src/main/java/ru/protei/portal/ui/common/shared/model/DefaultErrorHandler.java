@@ -25,12 +25,7 @@ public class DefaultErrorHandler implements Consumer<Throwable> {
         }
 
         RequestFailedException rf = (RequestFailedException) throwable;
-
-        if (PERMISSION_DENIED.equals(rf.status)) {
-            activity.fireEvent(new ForbiddenEvents.Show());
-        } else {
-            activity.fireEvent(new NotifyEvents.Show(lang.getMessage(rf.status), NotifyEvents.NotifyType.ERROR));
-        }
+        activity.fireEvent(new NotifyEvents.Show(lang.getMessage(rf.status), NotifyEvents.NotifyType.ERROR));
     }
 
     @Inject
