@@ -96,6 +96,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertNotNull("Expected 1 new created issue", caseObjectFromDb);
 
+        issuesIds.add(caseObjectFromDb.getId());
         authService.resetThreadAuthToken();
     }
 
