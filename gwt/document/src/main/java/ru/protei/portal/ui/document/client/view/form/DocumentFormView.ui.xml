@@ -192,6 +192,7 @@
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-6">
                                     <doccategory:DocumentCategoryFormSelector ui:field="documentCategory"
+                                                                              defaultValue="{lang.selectValue}"
                                                                               validation="false"
                                                                               header="{lang.documentCategory}"
                                                                               mandatory="false"/>
