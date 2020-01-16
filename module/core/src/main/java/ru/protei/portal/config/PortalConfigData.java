@@ -29,6 +29,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final JiraConfig jiraConfig;
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
 
@@ -36,8 +37,6 @@ public class PortalConfigData {
     private final boolean taskSchedulerEnabled;
 
     private final Long maxFileSize;
-
-    private final String jiraUrl;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
@@ -52,13 +51,13 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        jiraConfig = new JiraConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
         maxFileSize = wrapper.getProperty("max.file.size", Long.class, DEFAULT_FILE_SIZE_MEGABYTES);
-        jiraUrl = wrapper.getProperty("jira.url",  "");
     }
 
     public CommonConfig getCommonConfig() {
@@ -113,6 +112,10 @@ public class PortalConfigData {
         return youtrackConfig;
     }
 
+    public JiraConfig jiraConfig() {
+        return jiraConfig;
+    }
+
     public EmployeeConfig getEmployee() {
         return employeeConfig;
     }
@@ -126,8 +129,6 @@ public class PortalConfigData {
     }
 
     public Long getMaxFileSize() {return maxFileSize;}
-
-    public String getJiraUrl() {return jiraUrl;}
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
@@ -526,6 +527,25 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+    }
+
+    public static class JiraConfig {
+
+        private final String jiraUrl;
+        private final int queueLimit;
+
+        public JiraConfig(PropertiesWrapper properties) throws ConfigException {
+            jiraUrl = properties.getProperty("jira.url",  "");
+            queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
+        }
+
+        public String getJiraUrl() {
+            return jiraUrl;
+        }
+
+        public int getQueueLimit() {
+            return queueLimit;
         }
     }
 

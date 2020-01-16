@@ -1,14 +1,14 @@
 package ru.protei.portal.jira.service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.api.domain.Attachment;
+import com.atlassian.jira.rest.client.api.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
@@ -19,14 +19,16 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.factory.JiraClientFactory;
-import ru.protei.portal.core.model.struct.JiraExtAppData;
+import ru.protei.portal.jira.mapper.CachedPersonMapper;
+import ru.protei.portal.jira.mapper.PersonMapper;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
-import ru.protei.portal.jira.utils.JiraHookEventData;
+import ru.protei.portal.jira.dto.JiraHookEventData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,43 +44,31 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     @Autowired
     CaseService caseService;
-
     @Autowired
     CompanyDAO companyDAO;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     JiraEndpointDAO jiraEndpointDAO;
-
     @Autowired
     JiraCompanyGroupDAO jiraCompanyGroupDAO;
 
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
-
     @Autowired
     private CaseObjectDAO caseObjectDAO;
-
     @Autowired
     private CaseCommentDAO commentDAO;
-
     @Autowired
     private JiraStatusMapEntryDAO jiraStatusMapEntryDAO;
-
     @Autowired
     private JiraPriorityMapEntryDAO jiraPriorityMapEntryDAO;
-
     @Autowired
     JiraClientFactory clientFactory;
-
     @Autowired
     FileStorage fileStorage;
-
     @Autowired
     AttachmentService attachmentService;
-
 
     @Override
     public AssembledCaseEvent create(JiraEndpoint endpoint, JiraHookEventData event) {

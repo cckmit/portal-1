@@ -1,7 +1,8 @@
-package ru.protei.portal.jira.utils;
+package ru.protei.portal.jira.dict;
 
 public enum JiraHookEventType {
     COMMENT_CREATED("comment_created"),
+    COMMENT_UPDATED("comment_updated"),
     ISSUE_CREATED("jira:issue_created"),
     ISSUE_UPDATED("jira:issue_updated"),
     ISSUE_LINK_CREATED("issuelink_created"),

@@ -791,7 +791,7 @@ public class CaseServiceImpl implements CaseService {
                 extAppData.slaSeverity(),
                 endpoint.getSlaMapId()
             ));
-            caseObject.setJiraUrl(portalConfig.data().getJiraUrl());
+            caseObject.setJiraUrl(portalConfig.data().jiraConfig().getJiraUrl());
         } catch (Exception e) {
             log.warn("Failed to fill jira SLA information", e);
             caseObject.setCaseObjectMetaJira(new CaseObjectMetaJira());
