@@ -254,4 +254,6 @@ public class BaseServiceTest {
     protected UserLoginDAO userLoginDAO;
     @Autowired
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    protected UserRoleDAO userRoleDAO;
 }
