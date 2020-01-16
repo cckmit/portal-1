@@ -25,12 +25,11 @@ import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import java.util.*;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
+
     @Autowired
     JiraClientFactory clientFactory;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     FileStorage fileStorage;
 
@@ -71,7 +70,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         // TODO why no check if its jira issue (by ExternalCaseAppData.extAppType)
 
-        final JiraUtils.JiraIssueData issueData = CommonUtils.convert(extCaseData);
+        final JiraUtils.JiraIssueData issueData = JiraUtils.convert(extCaseData);
 
         final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
         if (endpoint == null) {

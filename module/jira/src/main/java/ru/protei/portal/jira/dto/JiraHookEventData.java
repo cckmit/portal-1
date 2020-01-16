@@ -1,25 +1,14 @@
-package ru.protei.portal.jira.utils;
-
+package ru.protei.portal.jira.dto;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.User;
-import com.atlassian.jira.rest.client.internal.json.ChangelogItemJsonParser;
-import com.atlassian.jira.rest.client.internal.json.CommentJsonParser;
-import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
-import com.atlassian.jira.rest.client.internal.json.UserJsonParser;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ru.protei.portal.jira.dict.JiraHookEventType;
 
 import java.util.Collection;
 
 public class JiraHookEventData {
-
-    private static Logger logger = LoggerFactory.getLogger(JiraHookEventData.class);
-
 
     private long timestamp;
     private JiraHookEventType eventType;
@@ -61,20 +50,40 @@ public class JiraHookEventData {
         return eventType;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public User getUser() {
         return user;
+    }
+
+    public void setIssue(Issue issue) {
+        this.issue = issue;
     }
 
     public Issue getIssue() {
         return issue;
     }
 
+    public void setChangelogId(Long changelogId) {
+        this.changelogId = changelogId;
+    }
+
     public Long getChangelogId() {
         return changelogId;
     }
 
+    public void setChangelogItems(Collection<ChangelogItem> changelogItems) {
+        this.changelogItems = changelogItems;
+    }
+
     public Collection<ChangelogItem> getChangelogItems() {
         return changelogItems;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
     }
 
     public Comment getComment() {
@@ -92,29 +101,14 @@ public class JiraHookEventData {
                 + "]";
     }
 
-
-    public static JiraHookEventData parse (String val) throws JSONException {
-        JSONObject jsonObject = new JSONObject(val);
-        String etype = jsonObject.getString("webhookEvent");
-        JiraHookEventType eventType = JiraHookEventType.byCode(etype);
-        if (eventType == null) {
-            logger.debug("unknown event type: {}", etype);
-            return null;
-        }
-
-        JiraHookEventData data = new JiraHookEventData(jsonObject.getLong("timestamp"), eventType);
-
-        data.user = JsonParseUtil.parseOptionalJsonObject(jsonObject, "user", new UserJsonParser());
-        data.issue = JsonParseUtil.parseOptionalJsonObject(jsonObject, "issue", new CustomJiraIssueParser());
-
-        data.comment = JsonParseUtil.parseOptionalJsonObject(jsonObject, "comment", new CommentJsonParser());
-        if (jsonObject.has("changelog")) {
-            JSONObject chLogJson = jsonObject.getJSONObject("changelog");
-
-            data.changelogId = JsonParseUtil.getOptionalLong(chLogJson, "id");
-            data.changelogItems = JsonParseUtil.parseJsonArray(chLogJson.getJSONArray("items"), new ChangelogItemJsonParser());
-        }
-
-        return data;
+    public String toFullString() {
+        return "jira-event: " + this.eventType.name() + "/" + this.timestamp
+                + "[user=" + user
+                + ", issue=" + issue
+                + ", log-id=" + changelogId
+                + ", log-items-count=" + (changelogItems != null ? changelogItems.size() : 0)
+                + ", log-items=" + changelogItems
+                + ", comment=" + comment
+                + "]";
     }
 }
