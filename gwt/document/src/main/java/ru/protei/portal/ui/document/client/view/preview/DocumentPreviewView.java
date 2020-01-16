@@ -52,7 +52,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
 
     @Override
     public void setAnnotation(String annotation) {
-        this.annotation.setText(annotation);
+        this.annotation.setInnerText(annotation);
     }
 
     @Override
@@ -73,6 +73,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Override
     public void setContractor(String text) {
         this.contractor.setInnerText(text);
+    }
+
+    @Override
+    public void setMembers(String text) {
+        this.members.setInnerText(text);
     }
 
     @Override
@@ -175,7 +180,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     SpanElement type;
     @UiField
-    Label annotation;
+    DivElement annotation;
     @UiField
     SpanElement project;
     @UiField
@@ -184,6 +189,8 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     SpanElement registrar;
     @UiField
     SpanElement contractor;
+    @UiField
+    SpanElement members;
     @UiField
     SpanElement numberDecimal;
     @UiField

@@ -27,6 +27,8 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setContractor(String text);
 
+    void setMembers(String text);
+
     void setNumberDecimal(String numberDecimal);
 
     void setNumberInventory(String numberInventory);
