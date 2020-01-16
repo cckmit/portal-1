@@ -24,10 +24,10 @@ import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
-import ru.protei.portal.jira.service.JiraIntegrationService;
-import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
+import ru.protei.portal.jira.service.*;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
@@ -220,8 +220,23 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public JiraIntegrationQueueService getJiraIntegrationQueueService() {
+        return new JiraIntegrationQueueServiceImpl();
+    }
+
+    @Bean
     public JiraIntegrationService getJiraService () {
         return new JiraIntegrationServiceImpl();
+    }
+
+    @Bean
+    public JiraBackchannelHandler getJiraBackchannelHandler() {
+        return new JiraBackchannelHandlerImpl();
+    }
+
+    @Bean
+    public JiraServiceLayerInterceptorLogging getJiraServiceLayerInterceptorLogging() {
+        return new JiraServiceLayerInterceptorLogging();
     }
 
     @Bean

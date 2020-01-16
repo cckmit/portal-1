@@ -228,7 +228,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     private Map<JiraHookEventType, JiraEventHandler> handlersMap = new HashMap<>();
 
     private final BlockingQueue<Pair<Long, JiraHookEventData>> queue = new LinkedBlockingQueue<>();
-    private final ExecutorService executor = (ThreadPoolExecutor) Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private static final int QUEUE_ALARM_THRESHOLD_PERCENT = 80;
     private static final int EVENT_SEND_DELAY_SEC = 3;
