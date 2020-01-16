@@ -96,8 +96,6 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertNotNull("Expected 1 new created issue", caseObjectFromDb);
 
-        caseCommentDAO.removeByCaseIds(Collections.singletonList(caseObjectFromDb.getId()));
-        caseObjectDAO.removeByKey(caseObjectFromDb.getId());
         authService.resetThreadAuthToken();
     }
 
