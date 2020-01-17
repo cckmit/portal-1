@@ -290,6 +290,10 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setDeleted(true);
         boolean result = caseObjectDAO.partialMerge(caseObject, "deleted");
 
+        caseLinkService.getLinks(token, caseObject.getId()).getData()
+                        .forEach(caseLink ->
+                                caseLinkService.removeLink(token, caseLink.getId()));
+
         return ok(result);
     }
 
