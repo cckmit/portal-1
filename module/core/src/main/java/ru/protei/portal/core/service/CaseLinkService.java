@@ -21,7 +21,7 @@ public interface CaseLinkService {
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
-    @Privileged(En_Privilege.ISSUE_EDIT)
+    @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks, boolean withCrossLinks);
 
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
