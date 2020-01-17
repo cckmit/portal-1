@@ -34,5 +34,7 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setDownloadLinkDoc(String link);
 
+    void setDownloadLinkApprovalSheet(String link);
+
     void setExecutionType(String executionType);
 }

@@ -61,13 +61,15 @@ public class DocumentControllerImpl implements DocumentController {
 
         FileItem pdfFile = sessionService.getFilePdf(httpRequest);
         FileItem docFile = sessionService.getFileDoc(httpRequest);
+        FileItem approvalSheetFile = sessionService.getFileApprovalSheet(httpRequest);
         sessionService.setFilePdf(httpRequest, null);
         sessionService.setFileDoc(httpRequest, null);
+        sessionService.setFileApprovalSheet(httpRequest, null);
 
         if (document.getId() == null) {
-            response = documentService.createDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
+            response = documentService.createDocument(token, document, docFile, pdfFile, approvalSheetFile, token.getPersonDisplayShortName());
         } else {
-            response = documentService.updateDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
+            response = documentService.updateDocument(token, document, docFile, pdfFile, approvalSheetFile, token.getPersonDisplayShortName());
         }
 
         log.info("save document, result: {}", response.isOk() ? "ok" : response.getStatus());

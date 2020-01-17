@@ -1956,6 +1956,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentFilePdf();
 
+    String documentFileApprovalSheet();
+
     String backToIssues();
 
     String editNameAndDescription();

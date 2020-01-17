@@ -140,6 +140,11 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
+    public AbstractDocumentUploader documentApprovalSheetUploader() {
+        return documentApprovedUploader;
+    }
+
+    @Override
     public HasValue<Boolean> isApproved() {
         return approved;
     }
@@ -196,6 +201,11 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         approvalDate.setEnabled(isEnabled);
         approvalDateContainer.removeClassName("disabled");
         if (!isEnabled) approvalDateContainer.addClassName("disabled");
+    }
+
+    @Override
+    public void uploaderApprovalSheetEnabled(boolean isEnabled) {
+        documentApprovedUploader.setEnabled(isEnabled);
     }
 
     @Override
@@ -280,6 +290,9 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     DocumentUploader documentPdfUploader;
     @Inject
     @UiField(provided = true)
+    DocumentUploader documentApprovedUploader;
+    @Inject
+    @UiField(provided = true)
     DocumentTypeFormSelector documentType;
     @Inject
     @UiField(provided = true)
@@ -337,7 +350,8 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     Anchor downloadDoc;
     @UiField
     Anchor downloadPdf;
-
+    @UiField
+    Anchor downloadApproved;
 
     @Inject
     @UiField

@@ -158,6 +158,7 @@ public abstract class DocumentFormActivity
     public void onApprovedChanged() {
         setApprovedByEnable(view.isApproved().getValue());
         setApprovalDateEnable(view.isApproved().getValue());
+        setUploaderApprovalSheetEnable(view.isApproved().getValue());
     }
 
     private void refreshProject(Consumer<Project> consumer) {
@@ -224,6 +225,13 @@ public abstract class DocumentFormActivity
         }
     }
 
+    private void setUploaderApprovalSheetEnable(boolean isEnabled) {
+        view.uploaderApprovalSheetEnabled(isEnabled);
+        if (!isEnabled) {
+            view.documentApprovalSheetUploader().resetForm();
+        }
+    }
+
     private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
             return false;
@@ -280,10 +288,11 @@ public abstract class DocumentFormActivity
         this.document = document;
         boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
         boolean isDocFileSet = view.documentDocUploader().isFileSet();
-        if (isPdfFileSet || isDocFileSet) {
+        boolean isApprovedFileSet = view.documentApprovalSheetUploader().isFileSet();
+        if (isPdfFileSet || isDocFileSet || isApprovedFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
         }
-        uploadPdf(() -> uploadDoc(() -> saveDocument()));
+        uploadPdf(() -> uploadDoc(() -> uploadApprovalSheet(() -> saveDocument())));
     }
 
     private void uploadPdf(Runnable andThen) {
@@ -312,6 +321,25 @@ public abstract class DocumentFormActivity
             public void onSuccess() { andThen.run(); }
         });
         view.documentDocUploader().uploadBindToDocument(document);
+    }
+
+    private void uploadApprovalSheet(Runnable andThen) {
+        if (!view.documentApprovalSheetUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentApprovalSheetUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() {
+                fireErrorMessage(lang.errSaveDocumentFile());
+            }
+
+            @Override
+            public void onSuccess() {
+                andThen.run();
+            }
+        });
+        view.documentApprovalSheetUploader().uploadBindToDocument(document);
     }
 
     private void fireErrorMessage(String msg) {

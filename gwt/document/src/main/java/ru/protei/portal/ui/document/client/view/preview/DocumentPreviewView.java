@@ -106,6 +106,15 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
+    public void setDownloadLinkApprovalSheet(String link) {
+        if (StringUtils.isEmpty(link)) {
+            downloadApprovalSheetButton.setVisible(false);
+        }
+        downloadApprovalSheetButton.setVisible(true);
+        downloadApprovalSheetButton.setHref(link);
+    }
+
+    @Override
     public void setExecutionType(String executionType) {
         this.executionType.setInnerText(executionType);
     }
@@ -115,6 +124,8 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     Anchor downloadPdfButton;
     @UiField
     Anchor downloadDocButton;
+    @UiField
+    Anchor downloadApprovalSheetButton;
     @UiField
     HeadingElement header;
     @UiField

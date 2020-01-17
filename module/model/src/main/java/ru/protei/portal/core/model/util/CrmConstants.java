@@ -11,6 +11,7 @@ public class CrmConstants {
         String FILE_ITEM = "file-item";
         String FILE_ITEM_PDF = "file-item-pdf";
         String FILE_ITEM_DOC = "file-item-doc";
+        String FILE_ITEM_APPROVAL_SHEET = "file-item-approval-sheet";
     }
 
     public interface Header {

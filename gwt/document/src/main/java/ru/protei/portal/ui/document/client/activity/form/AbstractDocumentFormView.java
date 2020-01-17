@@ -70,10 +70,13 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     void approvalDateEnabled(boolean isEnabled);
 
+    void uploaderApprovalSheetEnabled(boolean isEnabled);
+
     AbstractDocumentUploader documentDocUploader();
 
     AbstractDocumentUploader documentPdfUploader();
 
+    AbstractDocumentUploader documentApprovalSheetUploader();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 

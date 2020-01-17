@@ -6,6 +6,7 @@ public enum En_DocumentFormat {
     PDF("pdf"),
     DOCX("docx"),
     DOC("doc"),
+    AS("as"),
     ;
 
     En_DocumentFormat(String format) {
@@ -19,10 +20,21 @@ public enum En_DocumentFormat {
 
     public String getMimeType() {
         switch (this) {
-            case PDF: return AttachmentType.PDF.mimeType;
+            case PDF:
+            case AS:
+                return AttachmentType.PDF.mimeType;
             case DOC: return AttachmentType.DOC.mimeType;
             case DOCX: return AttachmentType.DOCX.mimeType;
             default: return AttachmentType.BINARY.mimeType;
+        }
+    }
+
+    public String getFilename(Long documentId) {
+        switch (this) {
+            case AS:
+                return documentId + "_approval_sheet.pdf";
+            default:
+                return documentId + "." + getFormat();
         }
     }
 
