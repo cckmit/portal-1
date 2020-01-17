@@ -83,7 +83,7 @@ public class CaseLinkEvents {
         }
 
         public IsWidget target;
-        public String page;
+        public String page = "";
         public boolean withCrossLinks = true;
     }
 }

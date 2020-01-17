@@ -67,7 +67,7 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        if (page != null) this.page = event.page;
+        this.page = event.page == null ? "" : event.page;
 
         this.withCrossLinks = event.withCrossLinks;
 
