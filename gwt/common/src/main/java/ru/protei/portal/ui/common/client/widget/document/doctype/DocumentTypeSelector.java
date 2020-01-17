@@ -17,7 +17,8 @@ public class DocumentTypeSelector
     void init(DocumentTypeModel model) {
         setSelectorModel(model);
 
-        setSearchAutoFocus( true );
+        setSearchEnabled(true);
+        setSearchAutoFocus(true);
 
         setDisplayOptionCreator(val -> {
             if (val == null) {
