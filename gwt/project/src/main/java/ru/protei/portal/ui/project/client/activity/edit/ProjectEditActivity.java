@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -87,14 +86,14 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        if (event.page.equals(lang.projects())) {
+        if (lang.projects().equals(event.pageId)) {
             project.addLink(event.caseLink);
         }
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        if (event.page.equals(lang.projects())) {
+        if (lang.projects().equals(event.pageId)) {
             project.getLinks().remove(event.caseLink);
         }
     }

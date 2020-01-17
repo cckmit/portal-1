@@ -41,49 +41,48 @@ public class CaseLinkEvents {
     }
 
     public static class Removed {
-        public Removed(Long caseId, CaseLink caseLink, String page) {
+        public Removed(Long caseId, CaseLink caseLink, String pageId) {
             this.caseId = caseId;
             this.caseLink = caseLink;
-            this.page = page;
+            this.pageId = pageId;
         }
 
         public CaseLink caseLink;
         public Long caseId;
-        public String page;
+        public String pageId;
     }
 
     public static class Added {
-        public Added(Long caseId, CaseLink caseLink, String page) {
+        public Added(Long caseId, CaseLink caseLink, String pageId) {
             this.caseId = caseId;
             this.caseLink = caseLink;
-            this.page = page;
+            this.pageId = pageId;
         }
 
         public Long caseId;
         public CaseLink caseLink;
-        public String page;
+        public String pageId;
     }
 
     public static class ShowLinkSelector {
         public ShowLinkSelector() {}
 
         public ShowLinkSelector(IsWidget target) {
-            this.target = target;
+            this(target, "");
         }
 
-        public ShowLinkSelector(IsWidget target, String page) {
-            this.target = target;
-            this.page = page;
+        public ShowLinkSelector(IsWidget target, String pageId) {
+            this(target, pageId, true);
         }
 
-        public ShowLinkSelector(IsWidget target, String page, boolean withCrossLinks) {
+        public ShowLinkSelector(IsWidget target, String pageId, boolean withCrossLinks) {
             this.target = target;
-            this.page = page;
+            this.pageId = pageId;
             this.withCrossLinks = withCrossLinks;
         }
 
         public IsWidget target;
-        public String page = "";
+        public String pageId = "";
         public boolean withCrossLinks = true;
     }
 }

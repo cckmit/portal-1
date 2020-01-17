@@ -67,8 +67,7 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        this.page = event.page == null ? "" : event.page;
-
+        this.pageId = event.pageId;
         this.withCrossLinks = event.withCrossLinks;
 
         view.showSelector(event.target);
@@ -81,7 +80,7 @@ public abstract class CaseLinkListActivity
         }
 
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel(), page));
+            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel(), pageId));
             removeLinkViewFromParentAndModifyLinksCount(itemView);
             hideOrShowIfNoLinks();
             return;
@@ -174,7 +173,7 @@ public abstract class CaseLinkListActivity
 
     private void createLinkAndAddToParent(CaseLink value) {
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Added(show.caseId, value, page));
+            fireEvent(new CaseLinkEvents.Added(show.caseId, value, pageId));
             addLinkToParentAndModifyLinksCount(value);
             hideOrShowIfNoLinks();
             return;
@@ -257,6 +256,6 @@ public abstract class CaseLinkListActivity
 
     private int linksCount = 0;
     private CaseLinkEvents.Show show;
-    private String page = "";
-    private boolean withCrossLinks = true;
+    private String pageId;
+    private boolean withCrossLinks;
 }

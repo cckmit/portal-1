@@ -131,6 +131,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
+    @Transactional
     public Result<Long> createLink(AuthToken authToken, CaseLink link, boolean withCrossLinks) {
         if (link == null || !isValidLink(link)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -187,6 +188,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
+    @Transactional
     public Result removeLink(AuthToken authToken, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

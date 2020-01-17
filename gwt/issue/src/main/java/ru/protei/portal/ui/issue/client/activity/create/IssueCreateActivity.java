@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -106,14 +105,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        if (event.page.equals(lang.issues())) {
+        if (lang.issues().equals(event.pageId)) {
             createRequest.addLink(event.caseLink);
         }
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        if (event.page.equals(lang.issues())) {
+        if (lang.issues().equals(event.pageId)) {
             createRequest.getLinks().remove(event.caseLink);
         }
     }
