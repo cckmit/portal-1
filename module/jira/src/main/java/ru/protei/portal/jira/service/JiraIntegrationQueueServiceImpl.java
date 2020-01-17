@@ -162,10 +162,9 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
                         log.info("Event for company={} contains data={}", companyId, eventData.toDebugString());
 
                         Issue issue = eventData.getIssue();
-                        Long endpointCompanyId = selectEndpointCompanyId(issue, companyId);
 
                         JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
-                                Objects.equals(ep.getCompanyId(), endpointCompanyId) &&
+                                Objects.equals(ep.getCompanyId(), companyId) &&
                                 Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
                         );
 
@@ -214,24 +213,12 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         private final Logger log = LoggerFactory.getLogger(JiraIntegrationQueueWorker.class);
     }
 
-    private Long selectEndpointCompanyId(Issue issue, Long originalCompanyId) {
-        return Optional.ofNullable(issue.getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME))
-                .map(IssueField::getValue)
-                .map(Object::toString)
-                .map(jiraCompanyGroupDAO::getByName)
-                .map(JiraCompanyGroup::getCompany)
-                .map(Company::getId)
-                .orElse(originalCompanyId);
-    }
-
     @Autowired
     PortalConfig config;
     @Autowired
     ThreadPoolTaskScheduler scheduler;
     @Autowired
     JiraEndpointDAO jiraEndpointDAO;
-    @Autowired
-    JiraCompanyGroupDAO jiraCompanyGroupDAO;
     @Autowired
     EventPublisherService eventPublisherService;
     @Autowired
