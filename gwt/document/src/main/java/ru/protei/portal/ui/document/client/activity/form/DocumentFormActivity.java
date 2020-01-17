@@ -414,8 +414,15 @@ public abstract class DocumentFormActivity
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.isApproved().setValue(isNew ? false : document.getApproved());
-        view.approvedBy().setValue(document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
-        view.approvalDate().setValue(document.getApprovalDate());
+        if (view.isApproved().getValue()) {
+            view.approvedBy().setValue(document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
+            view.approvalDate().setValue(document.getApprovalDate());
+            view.approvedByEnabled(true);
+            view.approvalDateEnabled(true);
+        } else {
+            view.approvedByEnabled(false);
+            view.approvalDateEnabled(false);
+        }
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());

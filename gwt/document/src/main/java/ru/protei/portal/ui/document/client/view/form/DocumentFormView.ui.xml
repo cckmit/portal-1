@@ -112,13 +112,14 @@
                         <div class="form-group form-group-default" ui:field="approvedByContainer">
                             <person:EmployeeFormSelector ui:field="approvedBy"
                                                          header="{lang.documentApprovedBy}"
+                                                         enabled="false"
                             />
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default" ui:field="approvalDateContainer">
                             <label><ui:text from="{lang.documentApprovalDate}"/></label>
-                            <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy"/>
+                            <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy" enabled="false"/>
                         </div>
                     </div>
                     <div class="col-md-4">
