@@ -19,7 +19,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Сервис управления обращениями
+ * Сервис фасада управления обращениями
+ * Сервис внутренний {@link ru.protei.portal.core.service.internal.CaseServiceInternal}
  */
 public interface CaseService {
 
