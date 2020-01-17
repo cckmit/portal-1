@@ -79,19 +79,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks) {
+    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks, boolean withCrossLinks) {
         List<CaseLink> allLinks = new ArrayList<>(caseLinks);
         caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
         List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);
-        List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
-        notYoutrackLinks.forEach(caseLink -> allLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
         caseLinkDAO.persistBatch(allLinks);
-        caseService.getCaseNumberById( token, caseId ).ifOk(caseNumber ->
-                youtrackService.mergeYouTrackLinks(caseNumber,
-                        youtrackLinksRemoteIds,
-                        Collections.emptyList()
-                )
-        );
+        if (withCrossLinks) {
+            List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
+            notYoutrackLinks.forEach(caseLink -> allLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
+            caseService.getCaseNumberById(token, caseId).ifOk(caseNumber ->
+                    youtrackService.mergeYouTrackLinks(caseNumber,
+                            youtrackLinksRemoteIds,
+                            Collections.emptyList()
+                    )
+            );
+        }
 
         return ok(caseLinks);
     }
@@ -129,7 +131,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<Long> createLink(AuthToken authToken, CaseLink link) {
+    public Result<Long> createLink(AuthToken authToken, CaseLink link, boolean withCrossLinks) {
         if (link == null || !isValidLink(link)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -153,27 +155,29 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             Long createdLinkId = caseLinkDAO.persist(link);
             link.setId(createdLinkId);
 
-            switch (link.getType()) {
-                case CRM:
-                    Long remoteId = NumberUtils.toLong(link.getRemoteId());
-                    // для crm-линков создаем зеркальные
-                    if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, remoteId, link.getCaseId().toString())) {
-                        CaseLink crossCrmLink = new CaseLink();
-                        crossCrmLink.setCaseId(remoteId);
-                        crossCrmLink.setRemoteId(link.getCaseId().toString());
-                        crossCrmLink.setType(En_CaseLink.CRM);
+            if (withCrossLinks) {
+                switch (link.getType()) {
+                    case CRM:
+                        Long remoteId = NumberUtils.toLong(link.getRemoteId());
+                        // для crm-линков создаем зеркальные
+                        if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, remoteId, link.getCaseId().toString())) {
+                            CaseLink crossCrmLink = new CaseLink();
+                            crossCrmLink.setCaseId(remoteId);
+                            crossCrmLink.setRemoteId(link.getCaseId().toString());
+                            crossCrmLink.setType(En_CaseLink.CRM);
 
-                        caseLinkDAO.persist(crossCrmLink);
-                    }
-                    break;
-                case YT:
-                    // для YT-линков создаем зеркальные на YT
-                    Long caseNumber = caseObjectDAO.getCaseNumberById(link.getCaseId());
-                    if (caseNumber == null) {
-                        return error(En_ResultStatus.NOT_FOUND);
-                    }
+                            caseLinkDAO.persist(crossCrmLink);
+                        }
+                        break;
+                    case YT:
+                        // для YT-линков создаем зеркальные на YT
+                        Long caseNumber = caseObjectDAO.getCaseNumberById(link.getCaseId());
+                        if (caseNumber == null) {
+                            return error(En_ResultStatus.NOT_FOUND);
+                        }
 
-                    youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
+                        youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
+                }
             }
 
             publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null ) );

@@ -232,7 +232,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObjectDAO.merge( caseObject );
 
         if (isNotEmpty(project.getLinks())) {
-            caseLinkService.createLinks(token, caseObject.getId(), token.getPersonId(), project.getLinks());
+            caseLinkService.createLinks(token, caseObject.getId(), token.getPersonId(), project.getLinks(), false);
         }
 
         return ok(Project.fromCaseObject(caseObject));

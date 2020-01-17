@@ -76,7 +76,14 @@ public class CaseLinkEvents {
             this.page = page;
         }
 
-        public String page;
+        public ShowLinkSelector(IsWidget target, String page, boolean withCrossLinks) {
+            this.target = target;
+            this.page = page;
+            this.withCrossLinks = withCrossLinks;
+        }
+
         public IsWidget target;
+        public String page;
+        public boolean withCrossLinks = true;
     }
 }

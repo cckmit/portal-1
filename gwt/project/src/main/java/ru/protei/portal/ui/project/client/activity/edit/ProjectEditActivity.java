@@ -106,7 +106,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects()));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects(), false));
     }
 
     private boolean isNew(Project project) {
@@ -204,7 +204,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(projectId)
-                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withCaseType(En_CaseType.PROJECT)
                     .withReadOnly(!hasPrivileges(projectId)));
         }
     }

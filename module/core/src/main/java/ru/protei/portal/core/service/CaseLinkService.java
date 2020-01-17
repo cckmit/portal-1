@@ -22,14 +22,14 @@ public interface CaseLinkService {
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
     @Privileged(En_Privilege.ISSUE_EDIT)
-    Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks);
+    Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks, boolean withCrossLinks);
 
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
     Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
-    Result<Long> createLink(AuthToken authToken, CaseLink value);
+    Result<Long> createLink(AuthToken authToken, CaseLink value, boolean withCrossLinks);
 
     Result removeLink(AuthToken authToken, Long id);
 }
