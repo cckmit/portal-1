@@ -13,7 +13,8 @@ public class DocumentTypeFormSelector extends FormSelector<DocumentType> impleme
     void init(DocumentTypeModel model) {
         setSelectorModel(model);
 
-        setSearchAutoFocus( true );
+        setSearchEnabled(true);
+        setSearchAutoFocus(true);
 
         setDisplayOptionCreator(val -> {
             if (val == null) {
