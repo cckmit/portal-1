@@ -147,10 +147,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.numberVisibility().setVisible(false);
 
-        view.saveVisibility().setVisible( hasPrivileges(project.getId()) );
+        view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
         view.saveEnabled().setEnabled(true);
 
-        if (project.getId() == null) fillCaseLinks(null);
+        if (project == null || project.getId() == null) fillCaseLinks(null);
     }
 
     private void fillView(Project project) {
