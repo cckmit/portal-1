@@ -83,7 +83,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         List<CaseLink> allLinks = new ArrayList<>(caseLinks);
         caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
         List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);
-        caseLinkDAO.persistBatch(allLinks);
         if (withCrossLinks) {
             List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
             notYoutrackLinks.forEach(caseLink -> allLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
@@ -94,6 +93,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     )
             );
         }
+        caseLinkDAO.persistBatch(allLinks);
 
         return ok(caseLinks);
     }
