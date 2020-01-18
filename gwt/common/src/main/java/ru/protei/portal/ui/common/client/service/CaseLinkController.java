@@ -21,7 +21,7 @@ public interface CaseLinkController extends RemoteService {
 
     List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException;
 
-    Long createLink(CaseLink value, boolean withCrossLinks) throws RequestFailedException;
+    Long createLink(CaseLink value, boolean createCrossLinks) throws RequestFailedException;
 
     void removeLink(Long id) throws RequestFailedException;
 }

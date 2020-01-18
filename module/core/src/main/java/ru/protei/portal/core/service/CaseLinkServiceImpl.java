@@ -79,11 +79,11 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks, boolean withCrossLinks) {
+    public Result<List<CaseLink>> createLinks(AuthToken token, Long caseId, Long initiatorId, List<CaseLink> caseLinks, boolean createCrossLinks) {
         List<CaseLink> allLinks = new ArrayList<>(caseLinks);
         caseLinks.forEach(caseLink -> caseLink.setCaseId(caseId));
         List<String> youtrackLinksRemoteIds = selectYouTrackLinkRemoteIds(caseLinks);
-        if (withCrossLinks) {
+        if (createCrossLinks) {
             List<CaseLink> notYoutrackLinks = caseLinks.stream().filter(caseLink -> !youtrackLinksRemoteIds.contains(caseLink.getRemoteId())).collect(Collectors.toList());
             notYoutrackLinks.forEach(caseLink -> allLinks.add(createCrossCRMLink(parseRemoteIdAsLongValue(caseLink.getRemoteId()), caseId)));
             caseService.getCaseNumberById(token, caseId).ifOk(caseNumber ->
@@ -132,7 +132,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<Long> createLink(AuthToken authToken, CaseLink link, boolean withCrossLinks) {
+    public Result<Long> createLink(AuthToken authToken, CaseLink link, boolean createCrossLinks) {
         if (link == null || !isValidLink(link)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -156,7 +156,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             Long createdLinkId = caseLinkDAO.persist(link);
             link.setId(createdLinkId);
 
-            if (withCrossLinks) {
+            if (createCrossLinks) {
                 switch (link.getType()) {
                     case CRM:
                         Long remoteId = NumberUtils.toLong(link.getRemoteId());
