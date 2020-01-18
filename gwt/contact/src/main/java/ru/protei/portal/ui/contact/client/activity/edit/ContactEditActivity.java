@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.GenerationPasswordUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
@@ -253,6 +254,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.companyValidator().setValid(view.company().getValue() != null);
     }
 
+    @Override
+    public void generatePassword() {
+        view.password().setText(GenerationPasswordUtils.generate(8));
+    }
+
     private boolean validateSaveButton() {
         if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
             return false;
@@ -342,7 +348,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if (!isLoginValid()) {
-            return lang.errorFieldHasInvalidValue(view.loginLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.loginLabel());
         }
 
         if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
@@ -428,7 +434,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel().getText(), SECOND_NAME_SIZE));
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel().getText(), LAST_NAME_SIZE));
         view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel().getText(), SHORT_NAME_SIZE));
-        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel().getText(), LOGIN_SIZE));
+        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
     }
 
     private boolean passwordNotDefined() {

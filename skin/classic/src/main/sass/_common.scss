@@ -3891,3 +3891,14 @@ table {
 .btn.has-error {
   @extend .required;
 }
+
+.text-small {
+  font-size: 85%;
+}
+
+.generate-password-wand {
+  color: #626262;
+  &:hover {
+    color: teal;
+  }
+}

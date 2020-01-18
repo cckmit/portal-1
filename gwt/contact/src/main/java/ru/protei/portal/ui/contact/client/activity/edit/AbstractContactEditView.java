@@ -117,7 +117,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText workEmailLabel();
 
-    HasText loginLabel();
+    String loginLabel();
 
     HasText loginErrorLabel();
 

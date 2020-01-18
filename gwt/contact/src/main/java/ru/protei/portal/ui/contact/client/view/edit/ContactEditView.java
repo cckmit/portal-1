@@ -2,8 +2,11 @@ package ru.protei.portal.ui.contact.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,7 +17,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -340,8 +342,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasText loginLabel() {
-        return loginLabel;
+    public String loginLabel() {
+        return loginLabel.getInnerText();
     }
 
     @UiHandler( "saveButton" )
@@ -400,6 +402,21 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
             activity.onCompanySelected();
+        }
+    }
+
+    @UiHandler("showPassword")
+    public void onShowPasswordClicked(ValueChangeEvent<Boolean> event) {
+        password.getElement().setAttribute("type", event.getValue() ? "text" : "password");
+        confirmPassword.getElement().setAttribute("type", event.getValue() ? "text" : "password");
+    }
+
+    @UiHandler("generatePassword")
+    public void onGeneratePasswordClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.generatePassword();
         }
     }
 
@@ -497,7 +514,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     Label workEmailLabel;
 
     @UiField
-    Label loginLabel;
+    LabelElement loginLabel;
 
     @UiField
     TextBox displayPosition;
@@ -521,6 +538,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     PasswordTextBox password;
+
+    @UiField
+    Anchor generatePassword;
+
+    @UiField
+    ToggleButton showPassword;
 
     @UiField
     Element verifiableIcon;

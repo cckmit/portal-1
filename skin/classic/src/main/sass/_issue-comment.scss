@@ -325,6 +325,13 @@ blockquote {
 }
 
 .message-preview {
+  &.text-box {
+    position: absolute;
+    right: 5px;
+    top: 30px;
+    font-size: 18px;
+    line-height: 1.5;
+  }
   .show-preview-btn {
 
     padding-left: 0;
