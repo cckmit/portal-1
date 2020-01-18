@@ -189,11 +189,14 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        Result addLinksResult = ok();
+
         if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
-            caseObjectCreateRequest.getLinks().forEach(caseLink -> {
+            for (CaseLink caseLink : caseObjectCreateRequest.getLinks()) {
                 caseLink.setCaseId(caseObject.getId());
-                caseLinkService.createLink(token, caseLink, true);
-            });
+                Result currentResult = caseLinkService.createLink(token, caseLink, true);
+                if (currentResult.isError()) addLinksResult = currentResult;
+            }
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -203,7 +206,7 @@ public class CaseServiceImpl implements CaseService {
         CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
         publisherService.publishEvent(event);
 
-        return ok(newState);
+        return addLinksResult.isOk() ? ok(newState) : error(addLinksResult.getStatus());
     }
 
     @Override

@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -132,6 +133,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         lockSave();
         issueService.createIssue(createRequest, new FluentCallback<Long>()
                 .withError(throwable -> unlockSave())
+                .withError(throwable -> {
+                    if (En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException)throwable).status)) {
+                        fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new IssueEvents.Show(true));
+                    }
+                    unlockSave();
+                })
                 .withSuccess(caseId -> {
                     unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

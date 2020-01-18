@@ -231,14 +231,17 @@ public class ProjectServiceImpl implements ProjectService {
         }
         caseObjectDAO.merge( caseObject );
 
+        Result addLinksResult = ok();
+
         if (isNotEmpty(project.getLinks())) {
-            project.getLinks().forEach(caseLink -> {
+            for (CaseLink caseLink : project.getLinks()) {
                 caseLink.setCaseId(caseObject.getId());
-                caseLinkService.createLink(token, caseLink, false);
-            });
+                Result currentResult = caseLinkService.createLink(token, caseLink, false);
+                if (currentResult.isError()) addLinksResult = currentResult;
+            }
         }
 
-        return ok(Project.fromCaseObject(caseObject));
+        return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(addLinksResult.getStatus());
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
