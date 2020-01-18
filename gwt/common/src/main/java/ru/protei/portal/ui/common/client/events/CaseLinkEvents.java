@@ -30,6 +30,11 @@ public class CaseLinkEvents {
             return this;
         }
 
+        public Show withPageId(String pageId){
+            this.pageId = pageId;
+            return this;
+        }
+
         public Show readOnly() {
             return withReadOnly(true);
         }
@@ -38,6 +43,7 @@ public class CaseLinkEvents {
         public Long caseId;
         public En_CaseType caseType;
         public boolean isEnabled = true;
+        public String pageId = "";
     }
 
     public static class Removed {

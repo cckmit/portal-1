@@ -58,9 +58,21 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public void removeLink(Long id) throws RequestFailedException {
+    public Long createLinkWithPublish(CaseLink value, boolean createCrossLinks) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        checkResult( linkService.removeLink( authToken, id) );
+        return checkResultAndGetData( linkService.createLinkWithPublish( authToken, value, createCrossLinks) );
+    }
+
+    @Override
+    public void deleteLink(Long id) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        checkResult( linkService.deleteLink( authToken, id) );
+    }
+
+    @Override
+    public void deleteLinkWithPublish(Long id) throws RequestFailedException {
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        checkResult( linkService.deleteLinkWithPublish( authToken, id) );
     }
 
     @Autowired

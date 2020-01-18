@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.caselink.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -42,6 +43,7 @@ public abstract class CaseLinkListActivity
     @Event
     public void onShow(CaseLinkEvents.Show event) {
         this.show = event;
+        pageId = event.pageId;
 
         event.parent.clear();
         event.parent.add(view.asWidget());
@@ -86,12 +88,22 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        controller.removeLink(itemView.getModel().getId(), new FluentCallback<Void>()
-                .withSuccess(res -> {
-                    removeLinkViewFromParentAndModifyLinksCount(itemView);
-                    hideOrShowIfNoLinks();
-                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                }));
+        if (lang.issues().equals(pageId)) {
+            controller.deleteLinkWithPublish(itemView.getModel().getId(), new FluentCallback<Void>()
+                    .withSuccess(res -> {
+                        removeLinkViewFromParentAndModifyLinksCount(itemView);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
+        else{
+            controller.deleteLink(itemView.getModel().getId(), new FluentCallback<Void>()
+                    .withSuccess(res -> {
+                        removeLinkViewFromParentAndModifyLinksCount(itemView);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
     }
 
     @Override
@@ -179,14 +191,26 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        controller.createLink(value, createCrossLinks, new FluentCallback<Long>()
-                .withError(throwable -> showError(lang.errInternalError()))
-                .withSuccess(id -> {
-                    value.setId(id);
-                    addLinkToParentAndModifyLinksCount(value);
-                    hideOrShowIfNoLinks();
-                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
-                }));
+        if (lang.issues().equals(pageId)) {
+            controller.createLinkWithPublish(value, createCrossLinks, new FluentCallback<Long>()
+                    .withError(throwable -> showError(lang.errInternalError()))
+                    .withSuccess(id -> {
+                        value.setId(id);
+                        addLinkToParentAndModifyLinksCount(value);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
+        else {
+            controller.createLink(value, createCrossLinks, new FluentCallback<Long>()
+                    .withError(throwable -> showError(lang.errInternalError()))
+                    .withSuccess(id -> {
+                        value.setId(id);
+                        addLinkToParentAndModifyLinksCount(value);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
     }
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value) {

@@ -232,7 +232,10 @@ public class ProjectServiceImpl implements ProjectService {
         caseObjectDAO.merge( caseObject );
 
         if (isNotEmpty(project.getLinks())) {
-            caseLinkService.createLinks(token, caseObject.getId(), token.getPersonId(), project.getLinks(), false);
+            project.getLinks().forEach(caseLink -> {
+                caseLink.setCaseId(caseObject.getId());
+                caseLinkService.createLink(token, caseLink, false);
+            });
         }
 
         return ok(Project.fromCaseObject(caseObject));
@@ -292,7 +295,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseLinkService.getLinks(token, caseObject.getId()).getData()
                         .forEach(caseLink ->
-                                caseLinkService.removeLink(token, caseLink.getId()));
+                                caseLinkService.deleteLink(token, caseLink.getId()));
 
         return ok(result);
     }

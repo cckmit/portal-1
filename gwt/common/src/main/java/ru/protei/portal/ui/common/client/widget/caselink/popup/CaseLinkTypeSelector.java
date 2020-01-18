@@ -44,6 +44,15 @@ public class CaseLinkTypeSelector extends ButtonSelector<En_CaseLink> {
         }
     }
 
+    @Override
+    public void setValue(En_CaseLink value) {
+        boolean isGranted = policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
+        if (isGranted || !value.isForcePrivacy()) {
+            super.setValue(value);
+        }
+    }
+
+
     @Inject
     En_CaseLinkLang lang;
     @Inject

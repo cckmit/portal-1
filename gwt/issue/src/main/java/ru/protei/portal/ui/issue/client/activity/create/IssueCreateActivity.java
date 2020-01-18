@@ -242,6 +242,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.attachmentsContainer().clear();
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withPageId(lang.issues())
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
         fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
