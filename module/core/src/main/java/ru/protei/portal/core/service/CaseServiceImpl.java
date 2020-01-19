@@ -17,13 +17,16 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.internal.CaseServiceInternal;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -44,7 +47,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 /**
  * Реализация сервиса управления обращениями
  */
-public class CaseServiceImpl implements CaseService {
+public class CaseServiceImpl implements CaseService, CaseServiceInternal {
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
@@ -102,8 +105,16 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    public Result<CaseObject> createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest ) {
+        return caseServiceInternal.createCaseObjectInternal( token, caseObjectCreateRequest )
+                .ifOk( createdCaseObject -> publisherService.publishEvent(
+                        new CaseObjectCreateEvent( this, ServiceModule.GENERAL, token.getPersonId(), createdCaseObject ) )
+        );
+    }
+
+    @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
+    public Result< CaseObject > createCaseObjectInternal( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
 
         CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
@@ -197,8 +208,6 @@ public class CaseServiceImpl implements CaseService {
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
-        publisherService.publishEvent(event);
 
         return ok(newState);
     }
@@ -878,6 +887,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
+    CaseServiceInternal caseServiceInternal;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }
