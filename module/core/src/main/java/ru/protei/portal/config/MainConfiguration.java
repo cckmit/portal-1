@@ -40,7 +40,6 @@ import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.events.*;
-import ru.protei.portal.core.service.internal.CaseServiceInternal;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -586,11 +585,6 @@ public class MainConfiguration {
     @Bean
     public CaseService getCaseService() {
         return new CaseServiceImpl();
-    }
-
-    @Bean
-    public CaseServiceInternal getCaseServiceInternal(@Autowired CaseService caseService) {
-        return (CaseServiceInternal) caseService;
     }
 
     @Bean

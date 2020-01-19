@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
@@ -26,7 +27,6 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.core.service.internal.CaseServiceInternal;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -47,7 +47,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 /**
  * Реализация сервиса управления обращениями
  */
-public class CaseServiceImpl implements CaseService, CaseServiceInternal {
+public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
@@ -106,110 +106,112 @@ public class CaseServiceImpl implements CaseService, CaseServiceInternal {
 
     @Override
     public Result<CaseObject> createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest ) {
-        return caseServiceInternal.createCaseObjectInternal( token, caseObjectCreateRequest )
+        return createCaseObjectInternal( token, caseObjectCreateRequest )
                 .ifOk( createdCaseObject -> publisherService.publishEvent(
                         new CaseObjectCreateEvent( this, ServiceModule.GENERAL, token.getPersonId(), createdCaseObject ) )
         );
     }
 
-    @Override
-    @Transactional
-    public Result< CaseObject > createCaseObjectInternal( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
+    private Result< CaseObject > createCaseObjectInternal( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
 
-        CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
+        return transactionTemplate.execute( transactionStatus -> {
 
-        if (!validateFieldsOfNew(caseObject)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
+            CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
-        applyCaseByScope( token, caseObject );
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return error(En_ResultStatus.PERMISSION_DENIED );
-        }
+            if (!validateFieldsOfNew(caseObject)) {
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+            }
 
-        Date now = new Date();
-        caseObject.setCreated(now);
-        caseObject.setModified(now);
+            applyCaseByScope( token, caseObject );
+            if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+                return error(En_ResultStatus.PERMISSION_DENIED );
+            }
 
-        if (personBelongsToHomeCompany(token)) {
-            if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_WORK_TIME_VIEW, caseObject)) {
+            Date now = new Date();
+            caseObject.setCreated(now);
+            caseObject.setModified(now);
+
+            if (personBelongsToHomeCompany(token)) {
+                if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_WORK_TIME_VIEW, caseObject)) {
+                    caseObject.setTimeElapsed(null);
+                }
+            } else {
+                caseObject.setState(En_CaseState.CREATED);
                 caseObject.setTimeElapsed(null);
             }
-        } else {
-            caseObject.setState(En_CaseState.CREATED);
-            caseObject.setTimeElapsed(null);
-        }
 
-        applyStateBasedOnManager(caseObject);
+            applyStateBasedOnManager(caseObject);
 
-        Long caseId = caseObjectDAO.insertCase(caseObject);
+            Long caseId = caseObjectDAO.insertCase(caseObject);
 
-        if (caseId == null)
-            return error(En_ResultStatus.NOT_CREATED);
-        else
-            caseObject.setId(caseId);
+            if (caseId == null)
+                return error(En_ResultStatus.NOT_CREATED);
+            else
+                caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
-        if (stateMessageId == null) {
-            log.error("State message for the issue {} not saved!", caseId);
-        }
-
-        Long impMessageId = createAndPersistImportanceMessage(token.getPersonId(), caseId, caseObject.getImpLevel());
-        if (impMessageId == null) {
-            log.error("Importance level message for the issue {} not saved!", caseId);
-        }
-
-        if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseObject.getId(), caseObject.getManager().getId());
-            if (messageId == null) {
-                log.error("Manager message for the issue {} not saved!", caseObject.getId());
+            Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
+            if (stateMessageId == null) {
+                log.error("State message for the issue {} not saved!", caseId);
             }
-        }
 
-        if(isNotEmpty(caseObject.getAttachments())){
-            caseAttachmentDAO.persistBatch(
-                    caseObject.getAttachments()
-                            .stream()
-                            .map(a -> new CaseAttachment(caseId, a.getId()))
-                            .collect(Collectors.toList())
-            );
-        }
+            Long impMessageId = createAndPersistImportanceMessage(token.getPersonId(), caseId, caseObject.getImpLevel());
+            if (impMessageId == null) {
+                log.error("Importance level message for the issue {} not saved!", caseId);
+            }
 
-        if(isNotEmpty(caseObject.getNotifiers())){
-            caseNotifierDAO.persistBatch(
-                    caseObject.getNotifiers()
-                            .stream()
-                            .map(person -> new CaseNotifier(caseId, person.getId()))
-                            .collect(Collectors.toList()));
+            if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
+                Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseObject.getId(), caseObject.getManager().getId());
+                if (messageId == null) {
+                    log.error("Manager message for the issue {} not saved!", caseObject.getId());
+                }
+            }
 
-            // update partially filled objects
-            caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers()
-                                    .stream()
-                                    .map(person ->  person.getId())
-                                    .collect(Collectors.toList()), "id", "contactInfo"))
-            );
-        }
+            if(isNotEmpty(caseObject.getAttachments())){
+                caseAttachmentDAO.persistBatch(
+                        caseObject.getAttachments()
+                                .stream()
+                                .map(a -> new CaseAttachment(caseId, a.getId()))
+                                .collect(Collectors.toList())
+                );
+            }
 
-        if (isNotEmpty(caseObjectCreateRequest.getTags())) {
-            caseObjectTagDAO.persistBatch(
-                    caseObjectCreateRequest.getTags()
-                            .stream()
-                            .map(tag -> new CaseObjectTag(caseId, tag.getId()))
-                            .collect(Collectors.toList())
-            );
-        }
+            if(isNotEmpty(caseObject.getNotifiers())){
+                caseNotifierDAO.persistBatch(
+                        caseObject.getNotifiers()
+                                .stream()
+                                .map(person -> new CaseNotifier(caseId, person.getId()))
+                                .collect(Collectors.toList()));
 
-        if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
-            caseLinkService.createLinks(token, caseId, token.getPersonId(), caseObjectCreateRequest.getLinks());
-        }
+                // update partially filled objects
+                caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
+                        caseObject.getNotifiers()
+                                .stream()
+                                .map(person ->  person.getId())
+                                .collect(Collectors.toList()), "id", "contactInfo"))
+                );
+            }
 
-        // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseId);
-        newState.setAttachments(caseObject.getAttachments());
-        newState.setNotifiers(caseObject.getNotifiers());
+            if (isNotEmpty(caseObjectCreateRequest.getTags())) {
+                caseObjectTagDAO.persistBatch(
+                        caseObjectCreateRequest.getTags()
+                                .stream()
+                                .map(tag -> new CaseObjectTag(caseId, tag.getId()))
+                                .collect(Collectors.toList())
+                );
+            }
 
-        return ok(newState);
+            if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
+                caseLinkService.createLinks(token, caseId, token.getPersonId(), caseObjectCreateRequest.getLinks());
+            }
+
+            // From GWT-side we get partially filled object, that's why we need to refresh state from db
+            CaseObject newState = caseObjectDAO.get(caseId);
+            newState.setAttachments(caseObject.getAttachments());
+            newState.setNotifiers(caseObject.getNotifiers());
+
+            return ok(newState);
+
+        } );
     }
 
     @Override
@@ -889,7 +891,7 @@ public class CaseServiceImpl implements CaseService, CaseServiceInternal {
     CaseObjectTagDAO caseObjectTagDAO;
 
     @Autowired
-    CaseServiceInternal caseServiceInternal;
+    private TransactionTemplate transactionTemplate;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -127,7 +128,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         lockSave();
         issueService.createIssue(createRequest, new FluentCallback<Long>()
-                .withError(throwable -> unlockSave())
+                .withError(throwable -> {
+                    unlockSave();
+                    defaultErrorHandler.accept(throwable);
+                })
                 .withSuccess(caseId -> {
                     unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -422,12 +426,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private boolean saving;
     private AppEvents.InitDetails init;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
-
 }
 
