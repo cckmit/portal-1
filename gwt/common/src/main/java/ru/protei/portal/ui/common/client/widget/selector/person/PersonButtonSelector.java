@@ -26,6 +26,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Inject
     public void init(InitiatorModel model) {
         this.model = model;
+        setModel(model);
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
@@ -39,10 +40,6 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
         }
         return item;
     }
-
-//    public void setDefaultValue( String value ) {
-//        this.defaultValue = value;
-//    }
 
     public void setFired ( boolean value ) { this.fired = value; }
 
@@ -58,8 +55,9 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Override
     public void onShowPopupClicked( ClickEvent event) {
 
-        if (!CollectionUtils.isEmpty( companyIds )) {
+        if (CollectionUtils.isNotEmpty( companyIds )) {
             super.onShowPopupClicked(event);
+            checkNoElements();
         } else {
             ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem item = new ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem();
             item.setName(lang.initiatorSelectACompany());
@@ -81,7 +79,6 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
     private InitiatorModel model;
 
-//    private String defaultValue;
     private boolean fired = false;
     private Set<Long> companyIds;
 
