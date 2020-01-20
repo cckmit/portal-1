@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -132,11 +133,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         lockSave();
         issueService.createIssue(createRequest, new FluentCallback<Long>()
-                .withError(throwable -> unlockSave())
                 .withError(throwable -> {
-                    if (En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException)throwable).status)) {
-                        fireEvent(new NotifyEvents.Show(lang.errNotSaved(), NotifyEvents.NotifyType.ERROR));
-                        fireEvent(new IssueEvents.Show(true));
+                    if (throwable instanceof RequestFailedException){
+                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
+                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
+                            fireEvent(new IssueEvents.Show(true));
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        }
+                        fireEvent(new NotifyEvents.Show(new En_ResultStatusLang(lang).getMessage(resultStatus), NotifyEvents.NotifyType.ERROR));
+                    }
+                    else {
+                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
                     }
                     unlockSave();
                 })

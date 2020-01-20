@@ -151,5 +151,11 @@ public enum En_ResultStatus {
      * Невозможно привязать задачу саму к себе
      */
 
-    NOT_ALLOWED_LINK_ISSUE_TO_ITSELF
+    NOT_ALLOWED_LINK_ISSUE_TO_ITSELF,
+
+    /**
+     * Некоторые ссылки не добавились
+     */
+
+    SOME_LINKS_NOT_ADDED
 }

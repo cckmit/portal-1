@@ -206,7 +206,7 @@ public class CaseServiceImpl implements CaseService {
         CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
         publisherService.publishEvent(event);
 
-        return addLinksResult.isOk() ? ok(newState) : error(addLinksResult.getStatus());
+        return addLinksResult.isOk() ? ok(newState) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     @Override

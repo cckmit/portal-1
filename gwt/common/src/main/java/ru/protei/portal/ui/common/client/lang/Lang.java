@@ -1969,4 +1969,6 @@ public interface Lang extends Messages, ContactItemLang {
     String emptySelectorList();
 
     String errUnableLinkIssueToItself();
+
+    String caseLinkSomeNotAdded();
 }

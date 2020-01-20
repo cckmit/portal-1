@@ -241,7 +241,7 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 
-        return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(addLinksResult.getStatus());
+        return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {

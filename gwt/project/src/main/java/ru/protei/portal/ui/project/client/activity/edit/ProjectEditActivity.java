@@ -9,14 +9,18 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -68,20 +72,28 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveEnabled().setEnabled(false);
 
-        regionService.saveProject( project, new RequestCallback<Project>(){
-            @Override
-            public void onError( Throwable throwable ) {
-                view.saveEnabled().setEnabled(true);
-            }
-
-            @Override
-            public void onSuccess( Project aVoid ) {
-                view.saveEnabled().setEnabled(true);
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new ProjectEvents.ChangeModel());
-                fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
-            }
-        });
+        regionService.saveProject(project, new FluentCallback<Project>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException){
+                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
+                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
+                            fireEvent(new ProjectEvents.Show(true));
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        }
+                        fireEvent(new NotifyEvents.Show(new En_ResultStatusLang(lang).getMessage(resultStatus), NotifyEvents.NotifyType.ERROR));
+                    }
+                    else {
+                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    }
+                    view.saveEnabled().setEnabled(true);
+                })
+                .withSuccess(aVoid -> {
+                    view.saveEnabled().setEnabled(true);
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
+                })
+        );
     }
 
     @Event
