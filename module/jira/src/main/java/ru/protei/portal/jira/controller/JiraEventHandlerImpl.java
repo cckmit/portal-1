@@ -1,16 +1,23 @@
 package ru.protei.portal.jira.controller;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
 import org.codehaus.jettison.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.JiraCompanyGroup;
 import ru.protei.portal.jira.service.JiraIntegrationQueueService;
 import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 public class JiraEventHandlerImpl {
@@ -21,6 +28,8 @@ public class JiraEventHandlerImpl {
     PortalConfig portalConfig;
     @Autowired
     JiraIntegrationQueueService jiraIntegrationQueueService;
+    @Autowired
+    JiraCompanyGroupDAO jiraCompanyGroupDAO;
 
     public JiraEventHandlerImpl() {
         logger.info("Jira webhook handler installed");
@@ -54,9 +63,12 @@ public class JiraEventHandlerImpl {
                 return;
             }
 
-            if (!jiraIntegrationQueueService.enqueue(companyId, eventData)) {
-                logger.error("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
-                        companyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
+            Long endpointCompanyId = selectEndpointCompanyId(eventData.getIssue(), companyId);
+            logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
+
+            if (!jiraIntegrationQueueService.enqueue(endpointCompanyId, eventData)) {
+                logger.error("jiraWebhook(): endpointCompanyId={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
+                        endpointCompanyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
             }
 
             /**
@@ -85,5 +97,15 @@ public class JiraEventHandlerImpl {
             logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, time={}ms | request completed",
                     companyId, realIP, fromHost, request.getQueryString(), total);
         }
+    }
+
+    private Long selectEndpointCompanyId(Issue issue, Long originalCompanyId) {
+        return Optional.ofNullable(issue.getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME))
+                .map(IssueField::getValue)
+                .map(Object::toString)
+                .map(jiraCompanyGroupDAO::getByName)
+                .map(JiraCompanyGroup::getCompany)
+                .map(Company::getId)
+                .orElse(originalCompanyId);
     }
 }

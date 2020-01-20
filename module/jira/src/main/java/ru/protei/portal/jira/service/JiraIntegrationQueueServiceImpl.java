@@ -1,6 +1,7 @@
 package ru.protei.portal.jira.service;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,12 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.JiraCompanyGroup;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.dict.JiraHookEventType;
+import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.winter.core.utils.Pair;
 
 import javax.annotation.PostConstruct;
@@ -157,6 +162,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
                         log.info("Event for company={} contains data={}", companyId, eventData.toDebugString());
 
                         Issue issue = eventData.getIssue();
+
                         JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
                                 Objects.equals(ep.getCompanyId(), companyId) &&
                                 Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
