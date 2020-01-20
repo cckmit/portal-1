@@ -41,10 +41,6 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
         return item;
     }
 
-//    public void setDefaultValue( String value ) {
-//        this.defaultValue = value;
-//    }
-
     public void setFired ( boolean value ) { this.fired = value; }
 
     @Override
@@ -82,7 +78,6 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
     private InitiatorModel model;
 
-//    private String defaultValue;
     private boolean fired = false;
     private Set<Long> companyIds;
 
