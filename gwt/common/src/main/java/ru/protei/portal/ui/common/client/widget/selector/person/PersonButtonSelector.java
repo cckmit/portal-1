@@ -57,6 +57,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
         if (!CollectionUtils.isEmpty( companyIds )) {
             super.onShowPopupClicked(event);
+            checkNoElements();
         } else {
             ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem item = new ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem();
             item.setName(lang.initiatorSelectACompany());
