@@ -259,6 +259,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.password().setText(GenerationPasswordUtils.generate(8));
     }
 
+    @Override
+    public void onShowPasswordClicked() {
+        view.setPasswordVisible(view.showPassword().getValue());
+    }
+
     private boolean validateSaveButton() {
         if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
             return false;
@@ -420,6 +425,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.login().setText(userLogin.getUlogin());
         view.password().setText("");
         view.confirmPassword().setText("");
+        view.showPassword().setValue(false, true);
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());

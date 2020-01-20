@@ -346,6 +346,17 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return loginLabel.getInnerText();
     }
 
+    @Override
+    public void setPasswordVisible(Boolean isPasswordVisible) {
+        password.getElement().setAttribute("type", isPasswordVisible ? "text" : "password");
+        confirmPassword.getElement().setAttribute("type", isPasswordVisible ? "text" : "password");
+    }
+
+    @Override
+    public HasValue<Boolean> showPassword() {
+        return showPassword;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -407,8 +418,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiHandler("showPassword")
     public void onShowPasswordClicked(ValueChangeEvent<Boolean> event) {
-        password.getElement().setAttribute("type", event.getValue() ? "text" : "password");
-        confirmPassword.getElement().setAttribute("type", event.getValue() ? "text" : "password");
+        if (activity != null) {
+            activity.onShowPasswordClicked();
+        }
     }
 
     @UiHandler("generatePassword")
