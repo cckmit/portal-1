@@ -7,14 +7,10 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingl
 /**
  * Селектор списка компаний
  */
-public class CompanySelector extends ButtonPopupSingleSelector< EntityOption >
-{
-
+public class CompanySelector extends ButtonPopupSingleSelector<EntityOption> {
     @Inject
-    public void init( CompanyModel companyModel ) {
-        setAsyncModel( companyModel );
-        setItemRenderer( value -> value == null ? defaultValue : value.getDisplayText() );
+    public void init(CompanyModel companyModel) {
+        setAsyncModel(companyModel);
+        setItemRenderer(value -> value == null ? defaultValue : value.getDisplayText());
     }
-
-
 }
