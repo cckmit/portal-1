@@ -64,11 +64,11 @@ public class JiraEventHandlerImpl {
             }
 
             Long endpointCompanyId = selectEndpointCompanyId(eventData.getIssue(), companyId);
-            logger.info("jiraWebhook(): endpointCompanyId={}", endpointCompanyId);
+            logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
 
             if (!jiraIntegrationQueueService.enqueue(endpointCompanyId, eventData)) {
-                logger.error("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
-                        companyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
+                logger.error("jiraWebhook(): endpointCompanyId={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
+                        endpointCompanyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
             }
 
             /**
