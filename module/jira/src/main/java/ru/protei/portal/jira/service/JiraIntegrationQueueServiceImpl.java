@@ -12,13 +12,16 @@ import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.dict.JiraHookEventType;
+import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.winter.core.utils.Pair;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueService {
