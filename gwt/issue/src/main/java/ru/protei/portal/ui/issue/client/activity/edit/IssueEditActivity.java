@@ -21,12 +21,15 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ReportStatusLang;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
@@ -237,6 +240,11 @@ public abstract class IssueEditActivity implements
 
     private void requestIssue(Long number, HasWidgets container) {
         issueController.getIssue(number, new FluentCallback<CaseObject>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException && En_ResultStatus.PERMISSION_DENIED.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new ForbiddenEvents.Show());
+                    }
+                })
                 .withSuccess(issue -> {
                     IssueEditActivity.this.issue = issue;
                     fillView(issue);
