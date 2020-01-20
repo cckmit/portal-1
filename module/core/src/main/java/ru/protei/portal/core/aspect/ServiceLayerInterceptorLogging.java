@@ -69,7 +69,7 @@ public class ServiceLayerInterceptorLogging {
                 profiling.put(methodName, profile);
             }
             profile.updateTime(executionTime);
-            log.info("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
+            log.info("result : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
                     methodName, profile.invokeCount, executionTime, profile.average, profile.maxTime, profile.minTime,
                     makeResultAsString(result));
 

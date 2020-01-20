@@ -198,12 +198,12 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
-        publisherService.publishEvent(event);
 
-        return ok(newState);
+        return ok(newState).publishEvent(event);
     }
 
     @Override
+    @Transactional
     public Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
@@ -229,16 +229,15 @@ public class CaseServiceImpl implements CaseService {
                 return error(En_ResultStatus.NOT_UPDATED);
             }
 
-            publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+            return ok(changeRequest)
+                    .publishEvent( new CaseNameAndDescriptionEvent(
                     this,
                     changeRequest.getId(),
                     nameDiff,
                     infoDiff,
                     token.getPersonId(),
                     ServiceModule.GENERAL,
-                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
-
-            return ok(changeRequest);
+                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())) );
         });
     }
 
@@ -318,16 +317,15 @@ public class CaseServiceImpl implements CaseService {
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
-        publisherService.publishEvent(new CaseObjectMetaEvent(
+        return ok(newCaseMeta)
+                .publishEvent( new CaseObjectMetaEvent(
                 this,
                 ServiceModule.GENERAL,
                 token.getPersonId(),
                 En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
                 newCaseMeta
-        ));
-
-        return ok(newCaseMeta);
+        ) );
     }
 
     @Override
@@ -824,9 +822,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PersonDAO personDAO;
-
-    @Autowired
-    EventPublisherService publisherService;
 
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
