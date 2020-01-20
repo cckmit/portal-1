@@ -342,31 +342,31 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if (!isLoginValid()) {
-            return lang.errorFieldHasInvalidValue(view.loginLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.loginLabel());
         }
 
         if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
-            return lang.errorFieldHasInvalidValue(view.workEmailLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.workEmailLabel());
         }
 
         if (!view.personalEmail().getText().isEmpty() && !view.personalEmailValidator().isValid()) {
-            return lang.errorFieldHasInvalidValue(view.personalEmailLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.personalEmailLabel());
         }
 
         if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
-            return lang.errorFieldHasInvalidValue(view.firstNameLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.firstNameLabel());
         }
 
         if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
-            return lang.errorFieldHasInvalidValue(view.lastNameLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.lastNameLabel());
         }
 
         if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
-            return lang.errorFieldHasInvalidValue(view.secondNameLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.secondNameLabel());
         }
 
         if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
-            return lang.errorFieldHasInvalidValue(view.shortNameLabel().getText());
+            return lang.errorFieldHasInvalidValue(view.shortNameLabel());
         }
 
         return null;
@@ -424,11 +424,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         view.showInfo(userLogin.getId() != null);
 
-        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel().getText(), FIRST_NAME_SIZE));
-        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel().getText(), SECOND_NAME_SIZE));
-        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel().getText(), LAST_NAME_SIZE));
-        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel().getText(), SHORT_NAME_SIZE));
-        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel().getText(), LOGIN_SIZE));
+        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
+        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
+        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
+        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel(), SHORT_NAME_SIZE));
+        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
     }
 
     private boolean passwordNotDefined() {

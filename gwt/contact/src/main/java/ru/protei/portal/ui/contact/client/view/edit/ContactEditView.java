@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contact.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -310,38 +311,38 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasText firstNameLabel() {
-        return firstNameLabel;
+    public String firstNameLabel() {
+        return firstNameLabel.getInnerText();
     }
 
     @Override
-    public HasText secondNameLabel() {
-        return secondNameLabel;
+    public String secondNameLabel() {
+        return secondNameLabel.getInnerText();
     }
 
     @Override
-    public HasText lastNameLabel() {
-        return lastNameLabel;
+    public String lastNameLabel() {
+        return lastNameLabel.getInnerText();
     }
 
     @Override
-    public HasText shortNameLabel() {
-        return shortNameLabel;
+    public String shortNameLabel() {
+        return shortNameLabel.getInnerText();
     }
 
     @Override
-    public HasText personalEmailLabel() {
-        return personalEmailLabel;
+    public String personalEmailLabel() {
+        return personalEmailLabel.getInnerText();
     }
 
     @Override
-    public HasText workEmailLabel() {
-        return workEmailLabel;
+    public String workEmailLabel() {
+        return workEmailLabel.getInnerText();
     }
 
     @Override
-    public HasText loginLabel() {
-        return loginLabel;
+    public String loginLabel() {
+        return loginLabel.getInnerText();
     }
 
     @UiHandler( "saveButton" )
@@ -445,16 +446,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     Label loginErrorLabel;
 
     @UiField
-    Label firstNameLabel;
+    LabelElement firstNameLabel;
 
     @UiField
-    Label lastNameLabel;
+    LabelElement lastNameLabel;
 
     @UiField
-    Label secondNameLabel;
+    LabelElement secondNameLabel;
 
     @UiField
-    Label shortNameLabel;
+    LabelElement shortNameLabel;
 
     @UiField
     TextBox displayName;
@@ -491,13 +492,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     TextArea homeAddress;
 
     @UiField
-    Label personalEmailLabel;
+    LabelElement personalEmailLabel;
 
     @UiField
-    Label workEmailLabel;
+    LabelElement workEmailLabel;
 
     @UiField
-    Label loginLabel;
+    LabelElement loginLabel;
 
     @UiField
     TextBox displayPosition;
