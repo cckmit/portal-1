@@ -55,7 +55,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Override
     public void onShowPopupClicked( ClickEvent event) {
 
-        if (!CollectionUtils.isEmpty( companyIds )) {
+        if (CollectionUtils.isNotEmpty( companyIds )) {
             super.onShowPopupClicked(event);
             checkNoElements();
         } else {
