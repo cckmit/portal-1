@@ -8,7 +8,6 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseLink;
@@ -16,19 +15,11 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-import ru.protei.portal.core.model.yt.Change;
-import ru.protei.portal.core.model.yt.ChangeResponse;
-import ru.protei.portal.core.model.yt.Comment;
-import ru.protei.portal.core.model.yt.YtAttachment;
-import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.jdbc.annotations.JdbcManyJoinData;
-import ru.protei.winter.jdbc.annotations.JdbcOneToMany;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -44,37 +35,26 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private YoutrackService youtrackService;
-
     @Autowired
     private CaseCommentDAO caseCommentDAO;
-
     @Autowired
     private EmployeeRegistrationDAO employeeRegistrationDAO;
-
     @Autowired
     private CaseObjectDAO caseObjectDAO;
-
     @Autowired
     private CaseLinkDAO caseLinkDAO;
-
     @Autowired
     private CaseAttachmentDAO caseAttachmentDAO;
-
     @Autowired
     private AttachmentDAO attachmentDAO;
-
     @Autowired
     private MigrationEntryDAO migrationEntryDAO;
-
     @Autowired
     private EventPublisherService publisherService;
-
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
-
     @Autowired
     private PortalConfig config;
-
 
     @PostConstruct
     public void startSynchronization() {
@@ -139,7 +119,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getListByQuery(query);
 
         for (EmployeeRegistration employeeRegistration : employeeRegistrations) {
-            synchronizeEmployeeRegistration(employeeRegistration, lastUpdate);
+            synchronizeEmployeeRegistration(employeeRegistration, lastUpdate.getTime());
         }
 
         migrationEntry.setLastUpdate(synchronizationStarted);
@@ -155,7 +135,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return issueIds;
     }
 
-    private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, Date lastYtSynchronization) {
+    private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, long lastYtSynchronization) {
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
         En_CaseState oldState = employeeRegistration.getState();
 
@@ -179,34 +159,29 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         }
     }
 
-    private void updateIssues(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, Collection<CaseLink> caseLinks) {
-        Map<CaseLink, ChangeResponse> issueToChanges = new HashMap<>();
+    private void updateIssues(EmployeeRegistration employeeRegistration, long lastYtSynchronization, Collection<CaseLink> caseLinks) {
+
+        List<En_CaseState> caseStates = new ArrayList<>();
 
         for (CaseLink caseLink : caseLinks) {
-            ChangeResponse issueChanges = youtrackService.getIssueChanges(caseLink.getRemoteId()).getData();
-            issueToChanges.put(caseLink, issueChanges);
+            String ytIssueId = caseLink.getRemoteId();
+            YouTrackIssueInfo ytIssue = youtrackService.getIssueInfo(ytIssueId).getData();
+            List<YouTrackIssueStateChange> ytIssueStateChanges = youtrackService.getIssueStateChanges(ytIssueId).getData();
+
+            log.info("updateIssues(): caseId={}, caseLink={}", employeeRegistration.getId(), caseLink);
+
+            caseStates.add(ytIssue.getCaseState());
+
+            parseStateChanges(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssueStateChanges);
+            parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssue.getComments());
+            parseAndUpdateAttachments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssue.getAttachments());
         }
 
-        En_CaseState state = getGeneralState(issueToChanges.values());
+        En_CaseState state = getGeneralState(caseStates);
         employeeRegistration.setState(state);
-
-        for (CaseLink caseLink : caseLinks) {
-            ChangeResponse changes = issueToChanges.get(caseLink);
-            if (changes == null)
-                continue;
-
-            log.info("updateIssues(): caseId={}, caseLink={}, changes={}", employeeRegistration.getId(), caseLink, changes);
-
-            parseStateChanges(employeeRegistration, lastYtSynchronization, caseLink.getId(), changes.getChange());
-            parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), changes.getIssue().getComment());
-        }
-        parseAndUpdateAttachments(employeeRegistration, caseLinks);
     }
 
-    private En_CaseState getGeneralState(Collection<ChangeResponse> changes) {
-        List<En_CaseState> caseStates = changes.stream()
-                .map(change -> YoutrackConstansMapping.toCaseState(change.getIssue().getStateId()))
-                .collect(Collectors.toList());
+    private En_CaseState getGeneralState(Collection<En_CaseState> caseStates) {
 
         Predicate<En_CaseState> isDone = cs -> cs == En_CaseState.DONE || cs == En_CaseState.CLOSED;
         Predicate<En_CaseState> isCanceled = cs -> cs == En_CaseState.IGNORED || cs == En_CaseState.CANCELED;
@@ -230,51 +205,59 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 
-    private void parseStateChanges(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, Long caseLinkId, List<Change> changes) {
+    private void parseStateChanges(Long caseId, long lastYtSynchronization, Long caseLinkId, List<YouTrackIssueStateChange> issueStateChanges) {
+        if (CollectionUtils.isEmpty(issueStateChanges)) {
+            return;
+        }
         List<CaseComment> stateChanges = new LinkedList<>();
-        changes.sort(Comparator.comparing(Change::getUpdated, Comparator.nullsFirst(Date::compareTo)));
-        for (Change change : changes) {
-            if (change == null)
-                continue;
-            if (DateUtils.beforeNotNull(change.getUpdated(), lastYtSynchronization))
-                continue;
+        for (YouTrackIssueStateChange issueStateChange : issueStateChanges) {
+            if (issueStateChange == null || issueStateChange.getTimestamp() == null) continue;
+            if (issueStateChange.getTimestamp() < lastYtSynchronization) continue;
 
-            CaseComment stateChange = parseStateChange(employeeRegistration, caseLinkId, change);
-            if (stateChange == null)
+            CaseComment stateChange = parseStateChange(caseId, caseLinkId, issueStateChange);
+            if (stateChange == null) {
                 continue;
+            }
+
             stateChanges.add(stateChange);
-            log.debug("parseStateChanges(): create new state change: YT: {}, PORTAL: {}", change, stateChange);
+            log.debug("parseStateChanges(): create new state change: YT: {}, PORTAL: {}", issueStateChanges, stateChange);
         }
         caseCommentDAO.persistBatch(stateChanges);
     }
 
-    private CaseComment parseStateChange(EmployeeRegistration employeeRegistration, Long caseLinkId, Change change) {
-        StringArrayWithIdArrayOldNewChangeField stateChangeField = change.getStateChangeField();
-        if (change.getUpdated() == null || stateChangeField == null)
+    private CaseComment parseStateChange(Long caseId, Long caseLinkId, YouTrackIssueStateChange issueStateChange) {
+
+        En_CaseState newState = issueStateChange.getAdded();
+        if (newState == null) {
             return null;
+        }
+
+        Long timestamp = issueStateChange.getTimestamp();
+        if (timestamp == null) {
+            return null;
+        }
 
         /* Чтобы предотвратить создание комментария об одном и том же изменении дважды,
            в качестве remoteId указываем дату изменения. По связке номера задачи и даты изменения можно отличать изменения */
 
-        String remoteId = String.valueOf(change.getUpdated().getTime());
-
-        if (caseCommentDAO.checkExistsByRemoteIdAndRemoteLinkId(remoteId, caseLinkId))
+        String remoteId = String.valueOf(timestamp);
+        if (caseCommentDAO.checkExistsByRemoteIdAndRemoteLinkId(remoteId, caseLinkId)) {
             return null;
-
-        En_CaseState newState = YoutrackConstansMapping.toCaseState(stateChangeField.getNewValue());
+        }
 
         CaseComment stateChange = new CaseComment();
         stateChange.setRemoteId(remoteId);
-        stateChange.setCaseId(employeeRegistration.getId());
-        stateChange.setCreated(change.getUpdated());
+        stateChange.setCaseId(caseId);
+        stateChange.setCreated(new Date(timestamp));
         stateChange.setRemoteLinkId(caseLinkId);
         stateChange.setAuthorId(YOUTRACK_USER_ID);
         stateChange.setCaseStateId((long) newState.getId());
-        stateChange.setOriginalAuthorName(change.getUpdaterName());
+        stateChange.setOriginalAuthorName(issueStateChange.getAuthorFullName());
+        stateChange.setOriginalAuthorFullName(issueStateChange.getAuthorFullName());
         return stateChange;
     }
 
-    private void parseAndUpdateComments(Long caseId, Date lastSynchronization, Long caseLinkId, List<Comment> comments) {
+    private void parseAndUpdateComments(Long caseId, long lastYtSynchronization, Long caseLinkId, List<CaseComment> comments) {
 
         if (CollectionUtils.isEmpty(comments)) {
             return;
@@ -289,22 +272,22 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         Set<Long> commentsToDelete = new LinkedHashSet<>();
 
         List<CaseComment> caseComments = caseCommentDAO.listByRemoteIds(comments.stream()
-                .map(Comment::getId)
+                .map(CaseComment::getRemoteId)
                 .collect(Collectors.toList()));
 
         List<CaseComment> caseCommentsWithoutDup = makeCaseCommentListWithoutDuplicates(caseComments);
 
-        for (Comment comment : comments) {
+        for (CaseComment comment : comments) {
 
             CaseComment caseComment = caseCommentsWithoutDup.stream()
-                    .filter(cc -> Objects.equals(cc.getRemoteId(), comment.getId()))
+                    .filter(cc -> Objects.equals(cc.getRemoteId(), comment.getRemoteId()))
                     .findFirst()
                     .orElse(null);
 
-            Boolean isDeleted = comment.getDeleted();
+            boolean isDeleted = comment.isDeleted();
             boolean existInDb = caseComment != null;
 
-            if (Boolean.TRUE.equals(isDeleted)) {
+            if (isDeleted) {
                 if (existInDb) {
                     commentsToDelete.add(caseComment.getId());
                     log.debug("parseAndUpdateComments(): delete comment: YT: {}, PORTAL: {}", comment, caseComment);
@@ -314,21 +297,24 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
             if (!existInDb) {
                 caseComment = new CaseComment();
-                caseComment.setAuthorId(YOUTRACK_USER_ID);
-                caseComment.setCreated(comment.getCreated());
                 caseComment.setCaseId(caseId);
-                caseComment.setRemoteId(comment.getId());
                 caseComment.setRemoteLinkId(caseLinkId);
-                caseComment.setOriginalAuthorName(comment.getAuthor());
-                caseComment.setOriginalAuthorFullName(comment.getAuthorFullName());
+                caseComment.setAuthorId(comment.getAuthorId());
+                caseComment.setCreated(comment.getCreated());
+                caseComment.setRemoteId(comment.getRemoteId());
+                caseComment.setOriginalAuthorName(comment.getOriginalAuthorName());
+                caseComment.setOriginalAuthorFullName(comment.getOriginalAuthorFullName());
                 caseComment.setText(comment.getText());
                 commentsToAdd.add(caseComment);
                 log.debug("parseAndUpdateComments(): create new comment: YT: {}, PORTAL: {}", comment, caseComment);
                 continue;
             }
 
-            Date lastCommentChange = DateUtils.max(comment.getUpdated(), comment.getCreated());
-            boolean commentContentChanged = DateUtils.beforeNotNull(lastSynchronization, lastCommentChange);
+            long lastCommentChange = Math.max(
+                    comment.getUpdated() == null ? 0 : comment.getUpdated().getTime(),
+                    comment.getCreated() == null ? 0 : comment.getCreated().getTime()
+            );
+            boolean commentContentChanged = lastCommentChange > lastYtSynchronization;
 
             if (commentContentChanged) {
                 caseComment.setText(comment.getText());
@@ -345,44 +331,42 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         caseCommentDAO.removeByKeys(commentsToDelete);
     }
 
-    private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, Collection<CaseLink> caseLinks) {
-        List<CaseAttachment> attachementsToRemove = caseAttachmentDAO.getListByCaseId(employeeRegistration.getId());
+    private void parseAndUpdateAttachments(Long caseId, long lastYtSynchronization, Long caseLinkId, List<Pair<Attachment, CaseAttachment>> attachments) {
+        List<CaseAttachment> existingAttachments = caseAttachmentDAO.getListByCaseId(caseId);
 
-        List<YtAttachment> ytAttachments = new LinkedList<>();
-        for (CaseLink caseLink : caseLinks) {
-            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId()).getData();
-            ytAttachments.addAll(issueAttachments);
-        }
-
-        for (YtAttachment ytAttachment : ytAttachments) {
-            if (ytAttachment == null || ytAttachment.getId() == null)
+        for (Pair<Attachment, CaseAttachment> ytAttachment : attachments) {
+            if (ytAttachment == null) {
                 continue;
+            }
+            Attachment attachment = ytAttachment.getA();
+            CaseAttachment caseAttachment = ytAttachment.getB();
 
-            Optional<CaseAttachment> existingAttachment = CollectionUtils.find(attachementsToRemove,
-                    ca -> ytAttachment.getId().equals(ca.getRemoteId()));
+            Optional<CaseAttachment> existingAttachment = CollectionUtils.find(
+                existingAttachments,
+                ca -> Objects.equals(caseAttachment.getRemoteId(), ca.getRemoteId())
+            );
 
-            if (existingAttachment.isPresent())
-                attachementsToRemove.remove(existingAttachment.get());
-            else {
-                Attachment attachment = new Attachment();
-                attachment.setCreated(ytAttachment.getCreated());
-                attachment.setCreatorId(YOUTRACK_USER_ID);
-                attachment.setFileName(ytAttachment.getName());
-                attachment.setExtLink(ytAttachment.getUrl());
-
+            if (existingAttachment.isPresent()) {
+                existingAttachments.remove(existingAttachment.get());
+            } else {
                 Long attachmentId = attachmentDAO.persist(attachment);
                 if (attachmentId == null) {
-                    log.warn("parseAndUpdateAttachments(): attachment {} not saved", attachment);
+                    log.warn("parseAndUpdateAttachments(): attachment not saved {}", attachment);
                     continue;
                 }
-
-                CaseAttachment ca = new CaseAttachment(employeeRegistration.getId(), attachmentId);
-                ca.setRemoteId(ytAttachment.getId());
-                caseAttachmentDAO.persist(ca);
-                log.debug("parseAndUpdateAttachments(): create new attachment: YT: {}, PORTAL attachment: {} case attachment: {}", ytAttachment, attachment, ca);
+                attachment.setId(attachmentId);
+                caseAttachment.setCaseId(caseId);
+                caseAttachment.setAttachmentId(attachmentId);
+                Long caseAttachmentId = caseAttachmentDAO.persist(caseAttachment);
+                if (caseAttachmentId == null) {
+                    log.warn("parseAndUpdateAttachments(): caseAttachment not saved {}", caseAttachment);
+                    continue;
+                }
+                caseAttachment.setId(caseAttachmentId);
+                log.debug("parseAndUpdateAttachments(): create new attachment: YT: {}, PORTAL attachment: {} case attachment: {}", ytAttachment, attachment, caseAttachment);
             }
         }
-        caseAttachmentDAO.removeBatch(attachementsToRemove);
+        caseAttachmentDAO.removeBatch(existingAttachments);
     }
 
     private void fireEmployeeRegistrationEvent(EmployeeRegistration employeeRegistration) {

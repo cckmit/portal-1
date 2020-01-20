@@ -85,6 +85,9 @@
         <Logger name="org.springframework.web" level="DEBUG">
             <AppenderRef ref="APP"/>
         </Logger>
+        <Logger name="org.reflections" level="WARN">
+            <AppenderRef ref="APP"/>
+        </Logger>
 
     </Loggers>
 

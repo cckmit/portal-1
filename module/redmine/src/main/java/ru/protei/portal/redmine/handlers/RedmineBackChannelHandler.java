@@ -11,9 +11,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.util.DiffResult;
-import ru.protei.portal.core.model.yt.fields.issue.DateIssueField;
 import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
@@ -25,7 +22,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     @Override
     public void handle(AssembledCaseEvent event) {
         logger.debug("Handling action on redmine-related issue in Portal-CRM");
-        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
+        if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {
             logger.debug("Redmine integration disabled in config, nothing happens");
             return;
         }

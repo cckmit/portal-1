@@ -29,7 +29,6 @@ public class Document implements Serializable {
     @JdbcColumn(name = "decimal_number")
     private String decimalNumber;
 
-
     /**
      * Инвентарный номер
      */
@@ -93,10 +92,12 @@ public class Document implements Serializable {
     @JdbcColumn(name = "is_approved")
     private Boolean isApproved;
 
-
     @JdbcColumn(name = "execution_type")
     @JdbcEnumerated(EnumType.ORDINAL)
     private En_DocumentExecutionType executionType;
+
+    @JdbcManyToMany(linkTable = "document_member", localLinkColumn = "document_id", remoteLinkColumn = "person_id")
+    private List<Person> members;
 
     public Document(){}
 
@@ -240,6 +241,14 @@ public class Document implements Serializable {
         return state;
     }
 
+    public List<Person> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Person> members) {
+        this.members = members;
+    }
+
     public boolean isActiveUnit () {
         return getState() == En_DocumentState.ACTIVE;
     }
@@ -290,6 +299,7 @@ public class Document implements Serializable {
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
                 ", state=" + state +
+                ", members=" + members +
                 '}';
     }
 }

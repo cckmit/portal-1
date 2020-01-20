@@ -67,14 +67,12 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         assembledPrevEvent.attachLinkEvent( event );
     }
 
-    @Override
-    public AssembledCaseEvent getEvent(Long personId, Long caseId) {
+    AssembledCaseEvent getEvent(Long personId, Long caseId) {
         Tuple<Long, Long> key = makeKey(personId, caseId);
         return assembledEventsMap.getOrDefault(key, null);
     }
 
-    @Override
-    public int getEventsCount() {
+    int getEventsCount() {
         return assembledEventsMap.size();
     }
 

@@ -1888,6 +1888,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContracts();
 
+    String goToDocuments();
+
     String contract();
 
     String buttonBack();
@@ -1969,4 +1971,12 @@ public interface Lang extends Messages, ContactItemLang {
     String emptySelectorList();
 
     String errUnableLinkIssueToItself();
+
+    String documentMembers();
+
+    String documentMemberUploadWorkDocumentation();
+
+    String documentMemberWorkDocumentationComment();
+
+    String documentMemberWorkDocumentationUpload();
 }

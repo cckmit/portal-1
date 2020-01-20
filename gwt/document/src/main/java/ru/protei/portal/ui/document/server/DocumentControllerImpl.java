@@ -81,6 +81,16 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
+    public Document updateDocumentDocFileByMember(Long documentId, String comment) throws RequestFailedException {
+        log.info("updateDocumentDocFileByMember(): documentId={}, comment={}", documentId, comment);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        FileItem docFile = sessionService.getFileDoc(httpRequest);
+        sessionService.setFileDoc(httpRequest, null);
+        Result<Document> response = documentService.updateDocumentDocFileByMember(token, documentId, docFile, comment, token.getPersonDisplayShortName());
+        return ServiceUtils.checkResultAndGetData(response);
+    }
+
+    @Override
     public Long removeDocument(Document document) throws RequestFailedException {
         if (document == null) {
             log.info("removeDocument(): null document in request");

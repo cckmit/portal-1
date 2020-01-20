@@ -215,7 +215,7 @@ public abstract class DocumentTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new DocumentEvents.ShowPreview(view.getPreviewContainer(), document));
+            fireEvent(new DocumentEvents.ShowPreview(view.getPreviewContainer(), document.getId()));
         }
     }
 

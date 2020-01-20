@@ -39,6 +39,11 @@ public abstract class DocumentPage implements Activity {
     }
 
     @Event
+    public void onShowPreview(DocumentEvents.ShowPreviewFullScreen event) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onEdit(DocumentEvents.Edit event) {
         fireSelectTab();
     }

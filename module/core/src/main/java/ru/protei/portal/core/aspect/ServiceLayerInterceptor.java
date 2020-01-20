@@ -8,6 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
@@ -32,10 +33,7 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging.SERVICE_FACADE_LOGGER_NAME;
@@ -64,7 +62,9 @@ public class ServiceLayerInterceptor {
     @Around("methodWithResult() && authServiceMethod()")
     public Object unhandledExceptionAuthMethods( ProceedingJoinPoint pjp ) {
         try {
-            return pjp.proceed();
+            Result result = (Result) pjp.proceed();
+            publishEvents( result == null ? null : result.getEvents() );
+            return result;
         } catch (Throwable t) {
             logger.warn( "Unhandled exception from auth methods: {}", pjp.getSignature(), t );
             return null;
@@ -83,9 +83,12 @@ public class ServiceLayerInterceptor {
 
         try {
             checkPrivileges( pjp );
+            logger.trace( "serviceFacadeProcessing(): begin" );
             // Все сервис методы "Фасада" обязаны возвращать объект результата выполения "Result"...
             Result result = (Result) pjp.proceed(); // Нужно падать если не приводтся к Result!
+            logger.trace( "serviceFacadeProcessing(): succsess" );
             tryDoAudit( pjp, result );
+            publishEvents( result == null ? null : result.getEvents() );
             return result;
         }
         catch (Throwable e) {
@@ -112,6 +115,13 @@ public class ServiceLayerInterceptor {
             }
 
             return error( En_ResultStatus.INTERNAL_ERROR );
+        }
+    }
+
+    private void publishEvents( List<ApplicationEvent> events ) {
+        if (events == null) return;
+        for (ApplicationEvent event : events) {
+            publisherService.publishEvent( event );
         }
     }
 

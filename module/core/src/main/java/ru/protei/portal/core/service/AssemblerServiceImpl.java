@@ -27,16 +27,14 @@ public class AssemblerServiceImpl implements AssemblerService {
     public void proceed( final AssembledCaseEvent sourceEvent ) {
         if (sourceEvent == null) return;
 
-        Result<AssembledCaseEvent> assembledCaseEventResult = fillInitiator(sourceEvent).flatMap(
+        fillInitiator(sourceEvent).flatMap(
                 this::fillCaseObject).flatMap(
                 this::fillCaseNameAndDescription).flatMap(
                 this::fillCaseMeta).flatMap(
                 this::fillComments).flatMap(
                 this::fillAttachments).flatMap(
-                this::fillLinks);
-
-        assembledCaseEventResult.ifOk(filledEvent ->
-                publisherService.publishEvent( filledEvent ) );
+                this::fillLinks).
+                ifOk( filledEvent -> publisherService.publishEvent( filledEvent ) );
     }
 
     private Result<AssembledCaseEvent> fillInitiator( AssembledCaseEvent e ) {
@@ -96,7 +94,7 @@ public class AssemblerServiceImpl implements AssemblerService {
         return ok(e);
     }
 
-    private Result<AssembledCaseEvent> fillAttachments( AssembledCaseEvent e ) {//TODO
+    private Result<AssembledCaseEvent> fillAttachments( AssembledCaseEvent e ) {
         if (e.isAttachmentsFilled()) {
             log.info( "fillAttachments(): CaseObjectID={} Attachments are already filled.", e.getCaseObjectId() );
             return ok( e );

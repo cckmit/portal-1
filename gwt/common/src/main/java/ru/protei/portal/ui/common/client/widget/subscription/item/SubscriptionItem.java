@@ -14,6 +14,7 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -35,6 +36,9 @@ public class SubscriptionItem
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         email.setRegexp( CrmConstants.Masks.EMAIL );
+        ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM);
+        locale.setEnsureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_LANG_CODE);
+        email.ensureDebugId( DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_EMAIL);
     }
 
     @Override

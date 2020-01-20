@@ -16,7 +16,4 @@ public interface EventAssemblerService {
 
     void onCaseLinkEvent(CaseLinkEvent event);
 
-    AssembledCaseEvent getEvent(Long personId, Long caseId);
-
-    int getEventsCount();
 }

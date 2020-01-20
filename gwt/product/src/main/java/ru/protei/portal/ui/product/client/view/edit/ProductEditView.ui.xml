@@ -75,7 +75,7 @@
             </div>
 
             <div class="container-fluid padding-15 bg-white">
-                <tab:TabWidget styleName="">
+                <tab:TabWidget styleName="" ui:field="tabWidget">
                     <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
                         <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
                     </tab:pane.TabWidgetPane>
