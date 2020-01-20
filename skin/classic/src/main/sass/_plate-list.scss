@@ -106,9 +106,7 @@ ul.plate-list {
     }
 
     &.employee {
-      height: 250px;
       .header-block {
-        height: calc(240px - 3em);
 
         & div {
           font-size: 11px;
@@ -146,7 +144,7 @@ ul.plate-list {
       backface-visibility: hidden;
       z-index: 1;
       //width: calc(100% - 3em);
-      height: calc(170px - 3em);
+      //height: calc(170px - 3em);
       top: 0;
       left: 0;
 
