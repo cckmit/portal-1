@@ -6,6 +6,7 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
@@ -29,9 +30,7 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public CaseComment parseJournalToCaseComment(Journal journal, long companyId) {
         final Person author = getAssignedPerson(companyId, journal.getUser());
-        if (journal.getNotes().startsWith(RedmineUtils.COMMENT_PROTEI_USER_PREFIX)) {
-            return null;
-        }
+
         final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         comment.setAuthor(author);

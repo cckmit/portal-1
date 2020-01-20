@@ -137,6 +137,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional
     public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author) {
 
         boolean withDoc = docFile != null;
@@ -194,13 +195,15 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             List<Long> newMembers = CollectionUtils.stream(document.getMembers()).map(Person::getId).collect(Collectors.toList());
-            sendDocumentMemberAddedEvent(document, newMembers);
+            List<Person> personList = getDocumentMemberAddedEvent( document, newMembers );
 
-            return ok(document);
+            return ok(document)
+                    .publishEvent( new DocumentMemberAddedEvent(this, document, personList));
         });
     }
 
     @Override
+    @Transactional
     public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author) {
 
         boolean withDoc = docFile != null;
@@ -282,13 +285,15 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
-            sendDocumentMemberAddedEvent(document, newMembers);
+            List<Person> personList = getDocumentMemberAddedEvent( document, newMembers );
 
-            return ok(document);
+            return ok(document)
+                    .publishEvent( new DocumentMemberAddedEvent(this, document, personList));
         });
     }
 
     @Override
+    @Transactional
     public Result<Document> updateDocumentDocFileByMember(AuthToken token, Long documentId, FileItem docFile, String comment, String author) {
 
         if (documentId == null || docFile == null || StringUtils.isEmpty(comment)) {
@@ -330,9 +335,11 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
-            sendDocumentDocFileUpdatedByMember(token.getPersonId(), document, comment);
+            List<Person> personList = getDocumentDocFileUpdatedByMember( document );
+            Person initiator = personDAO.get(token.getPersonId());
 
-            return ok(document);
+            return ok(document)
+                    .publishEvent( new DocumentDocFileUpdatedByMemberEvent(this, initiator, document, personList, comment));
         });
     }
 
@@ -384,6 +391,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional
     public Result<Long> removeDocument(AuthToken token, Long documentId, Long projectId, String author) {
 
         if (documentId == null || projectId == null) {
@@ -424,15 +432,14 @@ public class DocumentServiceImpl implements DocumentService {
         return CollectionUtils.diffCollection(oldMembers, newMembers).getAddedEntries();
     }
 
-    private void sendDocumentMemberAddedEvent(Document document, List<Long> personIds) {
+    private  List<Person> getDocumentMemberAddedEvent(Document document, List<Long> personIds) {
         if (document == null || CollectionUtils.isEmpty(personIds)) {
-            return;
+            return null;
         }
-        List<Person> personList = personDAO.getListByKeys(personIds);
-        publisherService.publishEvent(new DocumentMemberAddedEvent(this, document, personList));
+        return personDAO.getListByKeys(personIds);
     }
 
-    private void sendDocumentDocFileUpdatedByMember(Long initiatorId, Document document, String comment) {
+    private List<Person> getDocumentDocFileUpdatedByMember( Document document ) {
         List<Person> personList = new ArrayList<>();
         if (document.getContractor() != null) {
             personList.add(document.getContractor());
@@ -447,8 +454,7 @@ public class DocumentServiceImpl implements DocumentService {
             personList.add(leader);
         }
         personList.addAll(document.getMembers());
-        Person initiator = personDAO.get(initiatorId);
-        publisherService.publishEvent(new DocumentDocFileUpdatedByMemberEvent(this, initiator, document, personList, comment));
+        return personList;
     }
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {
