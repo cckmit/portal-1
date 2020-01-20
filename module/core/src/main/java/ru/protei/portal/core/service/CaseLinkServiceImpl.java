@@ -47,8 +47,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private PortalConfig portalConfig;
     @Autowired
     private YoutrackService youtrackService;
-    @Autowired
-    private EventPublisherService publisherService;
 
     @Autowired
     private CaseService caseService;
@@ -129,6 +127,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
+    @Transactional
     public Result<Long> createLink(AuthToken authToken, CaseLink link) {
         if (link == null || !isValidLink(link)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -176,13 +175,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
             }
 
-            publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null ) );
-
-            return ok(createdLinkId);
+            return ok(createdLinkId)
+                    .publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null ) );
         });
     }
 
     @Override
+    @Transactional
     public Result removeLink(AuthToken authToken, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -216,9 +215,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
 
-        publisherService.publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), existedLink.getCaseId(), null, existedLink ) );
+        if (removedCount != toRemoveIds.size()) {
+            return error( En_ResultStatus.INTERNAL_ERROR );
+        }
 
-        return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
+        return ok()
+                .publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), existedLink.getCaseId(), null, existedLink ) );
     }
 
     private Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
@@ -259,13 +261,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private Result<Long> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added ) {
-        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null ));
-        return ok(added.getId());
+        return ok(added.getId())
+                .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null ));
     }
 
     private Result<Long> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed ) {
-        publisherService.publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ));
-        return ok(removed.getId());
+        return ok(removed.getId())
+                .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ) );
     }
 
     private boolean isValidLink(CaseLink value) {
