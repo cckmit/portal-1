@@ -34,20 +34,26 @@
                                 </label>
                             </g:HTMLPanel>
                             <div class="form-group col-md-4">
-                                <g:Label ui:field="lastNameLabel" text="{lang.lastName}"/>
+                                <label ui:field="lastNameLabel">
+                                    <ui:text from="{lang.lastName}"/>
+                                </label>
                                 <validablefield:ValidableTextBox ui:field="lastName" styleName="form-control"
                                                                  notNull="true"/>
                                 <g:Label ui:field="lastNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
 
                             <div class="form-group col-md-4">
-                                <g:Label ui:field="firstNameLabel" text="{lang.firstName}"/>
+                                <label ui:field="firstNameLabel">
+                                    <ui:text from="{lang.firstName}"/>
+                                </label>
                                 <validablefield:ValidableTextBox ui:field="firstName" styleName="form-control"
                                                                  notNull="true"/>
                                 <g:Label ui:field="firstNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
                             <div class="form-group col-md-4">
-                                <g:Label ui:field="secondNameLabel" text="{lang.secondName}"/>
+                                <label ui:field="secondNameLabel">
+                                    <ui:text from="{lang.secondName}"/>
+                                </label>
                                 <validablefield:ValidableTextBox ui:field="secondName" styleName="form-control" notNull="false"/>
                                 <g:Label ui:field="secondNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
@@ -80,7 +86,9 @@
                             </div>
 
                             <div class="form-group col-md-4">
-                                <g:Label ui:field="shortNameLabel" text="{lang.displayShortName}"/>
+                                <label ui:field="shortNameLabel">
+                                    <ui:text from="{lang.displayShortName}"/>
+                                </label>
                                 <validablefield:ValidableTextBox ui:field="shortName" styleName="form-control" notNull="false"/>
                                 <g:Label ui:field="shortNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
@@ -128,13 +136,17 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <g:Label ui:field="workEmailLabel" text="{lang.workEmail}"/>
+                                <label ui:field="workEmailLabel">
+                                    <ui:text from="{lang.workEmail}"/>
+                                </label>
                                 <validatefield:ValidableTextBox ui:field="workEmail"
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <g:Label ui:field="personalEmailLabel" text="{lang.personalEmail}"/>
+                                <label ui:field="personalEmailLabel">
+                                    <ui:text from="{lang.personalEmail}"/>
+                                </label>
                                 <validatefield:ValidableTextBox ui:field="personalEmail"
                                                                 notNull="false"
                                                                 styleName="form-control"/>
@@ -208,7 +220,9 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-4">
-                                <g:Label ui:field="loginLabel" text="{lang.accountLogin}"/>
+                                <label ui:field="loginLabel">
+                                    <ui:text from="{lang.accountLogin}"/>
+                                </label>
                                 <div class="verifiable">
                                     <i ui:field="verifiableIcon"/>
                                 </div>
