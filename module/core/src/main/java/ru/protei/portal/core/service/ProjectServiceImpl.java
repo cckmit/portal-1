@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -128,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<Project> getProjectInfo(AuthToken token, Long id) {
+    public Result<ProjectInfo> getProjectInfo(AuthToken token, Long id) {
         CaseObject projectFromDb = caseObjectDAO.get(id);
 
         if (projectFromDb == null) {
@@ -137,17 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
 
-        Project project = new Project();
-        project.setId(projectFromDb.getId());
-        project.setName(projectFromDb.getName());
-        project.setCustomerType(En_CustomerType.find(projectFromDb.getLocal()));
-        project.setContragent(projectFromDb.getInitiatorCompany() == null ? null : new EntityOption(projectFromDb.getInitiatorCompany().getCname(), projectFromDb.getInitiatorCompanyId()));
-        project.setProductDirection(projectFromDb.getProduct() == null ? null : new EntityOption(projectFromDb.getProduct().getName(), projectFromDb.getProductId()));
-        project.setManager(projectFromDb.getManager() == null ? null : new EntityOption(projectFromDb.getManager().getDisplayShortName(), projectFromDb.getManagerId()));
-        if (CollectionUtils.isNotEmpty(projectFromDb.getLocations())) {
-            project.setRegion(EntityOption.fromLocation(projectFromDb.getLocations().get(0).getLocation()));
-        }
-
+        ProjectInfo project = ProjectInfo.fromCaseObject(projectFromDb);
         return ok(project);
     }
 
@@ -254,23 +245,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    @Transactional
-    public Result< Long > createProject( AuthToken token, Long creatorId ) {
-
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseNumber( caseTypeDAO.generateNextId(En_CaseType.PROJECT) );
-        caseObject.setTypeId( En_CaseType.PROJECT.getId() );
-        caseObject.setCreated( new Date() );
-        caseObject.setName( "Новый проект" );
-        caseObject.setInfo( "" );
-        caseObject.setStateId( En_RegionState.UNKNOWN.getId() );
-        caseObject.setCreatorId( creatorId );
-
-        Long newId = caseObjectDAO.persist( caseObject );
-        return ok(newId );
-    }
-
-    @Override
     public Result<Boolean> removeProject( AuthToken token, Long projectId) {
 
         CaseObject caseObject = caseObjectDAO.get(projectId);
@@ -296,7 +270,29 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Project> result = projects.stream()
                 .map(Project::fromCaseObject).collect(toList());
-        return ok(result );
+        return ok(result);
+    }
+
+    @Override
+    public Result<List<EntityOption>> listOptionProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        List<EntityOption> result = projects.stream()
+                .map(CaseObject::toEntityOption).collect(toList());
+        return ok(result);
+    }
+
+    @Override
+    public Result<List<ProjectInfo>> listInfoProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        helper.fill(projects, "products");
+
+        List<ProjectInfo> result = projects.stream()
+                .map(ProjectInfo::fromCaseObject).collect(toList());
+        return ok(result);
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {

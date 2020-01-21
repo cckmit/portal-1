@@ -6,6 +6,8 @@ import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 
 public class DocumentEvents {
 
@@ -82,8 +84,8 @@ public class DocumentEvents {
 
         public static class SetProject {
             public String tag;
-            public Project project;
-            public SetProject(Project project, String tag) {
+            public EntityOption project;
+            public SetProject(EntityOption project, String tag) {
                 this.project = project;
                 this.tag = tag;
             }

@@ -28,7 +28,7 @@ public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> 
 
     @Override
     protected void refreshOptions() {
-        regionService.getProjectsEntityOptionList(projectQuery, new FluentCallback<List<EntityOption>>()
+        regionService.getProjectOptionList(projectQuery, new FluentCallback<List<EntityOption>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(this::notifySubscribers)
         );

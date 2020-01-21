@@ -271,7 +271,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             return true;
         }
 
-        if (productId != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT)) {
+        if (productId != null && policyService.hasPrivilegeFor(En_Privilege.PRODUCT_EDIT)) {
             return true;
         }
 
