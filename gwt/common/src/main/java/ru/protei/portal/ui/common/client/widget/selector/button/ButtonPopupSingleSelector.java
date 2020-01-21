@@ -46,9 +46,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     @Override
     public void setValue(T value, boolean fireEvents) {
         selector.setValue(value);
-        showValue(value);
+        T selectorValue = selector.getValue();
+        showValue(selectorValue);
         if (fireEvents) {
-            ValueChangeEvent.fire(this, value);
+            ValueChangeEvent.fire(this, selectorValue);
         }
     }
 
