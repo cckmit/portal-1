@@ -233,12 +233,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         Result addLinksResult = ok();
 
-        if (isNotEmpty(project.getLinks())) {
-            for (CaseLink caseLink : project.getLinks()) {
-                caseLink.setCaseId(caseObject.getId());
-                Result currentResult = caseLinkService.createLink(token, caseLink, false);
-                if (currentResult.isError()) addLinksResult = currentResult;
-            }
+        for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
+            caseLink.setCaseId(caseObject.getId());
+            Result currentResult = caseLinkService.createLink(token, caseLink, false);
+            if (currentResult.isError()) addLinksResult = currentResult;
         }
 
         return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);

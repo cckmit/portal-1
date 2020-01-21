@@ -16,10 +16,10 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -74,18 +74,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         regionService.saveProject(project, new FluentCallback<Project>()
                 .withError(throwable -> {
+                    view.saveEnabled().setEnabled(true);
                     if (throwable instanceof RequestFailedException){
                         En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
                         if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
                             fireEvent(new ProjectEvents.Show(true));
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         }
-                        fireEvent(new NotifyEvents.Show(new En_ResultStatusLang(lang).getMessage(resultStatus), NotifyEvents.NotifyType.ERROR));
+                        defaultErrorHandler.accept(throwable);
                     }
                     else {
                         fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
                     }
-                    view.saveEnabled().setEnabled(true);
                 })
                 .withSuccess(aVoid -> {
                     view.saveEnabled().setEnabled(true);
@@ -266,6 +266,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
 

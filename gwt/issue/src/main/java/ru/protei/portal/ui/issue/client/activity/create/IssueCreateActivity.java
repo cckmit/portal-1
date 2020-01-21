@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -134,18 +135,19 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         lockSave();
         issueService.createIssue(createRequest, new FluentCallback<Long>()
                 .withError(throwable -> {
+                    unlockSave();
                     if (throwable instanceof RequestFailedException){
                         En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
                         if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
                             fireEvent(new IssueEvents.Show(true));
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         }
-                        fireEvent(new NotifyEvents.Show(new En_ResultStatusLang(lang).getMessage(resultStatus), NotifyEvents.NotifyType.ERROR));
+                        defaultErrorHandler.accept(throwable);
                     }
                     else {
                         fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
                     }
-                    unlockSave();
+
                 })
                 .withSuccess(caseId -> {
                     unlockSave();
@@ -442,6 +444,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private boolean saving;
     private AppEvents.InitDetails init;

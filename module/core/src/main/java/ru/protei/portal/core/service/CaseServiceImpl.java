@@ -14,6 +14,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -191,12 +192,10 @@ public class CaseServiceImpl implements CaseService {
 
         Result addLinksResult = ok();
 
-        if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
-            for (CaseLink caseLink : caseObjectCreateRequest.getLinks()) {
-                caseLink.setCaseId(caseObject.getId());
-                Result currentResult = caseLinkService.createLink(token, caseLink, true);
-                if (currentResult.isError()) addLinksResult = currentResult;
-            }
+        for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
+            caseLink.setCaseId(caseObject.getId());
+            Result currentResult = caseLinkService.createLink(token, caseLink, true);
+            if (currentResult.isError()) addLinksResult = currentResult;
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db

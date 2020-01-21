@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
@@ -58,7 +59,7 @@ public abstract class CaseLinkListActivity
         if (isCaseCreationMode()) return;
 
         controller.getCaseLinks(event.caseId, new FluentCallback<List<CaseLink>>()
-                .withError(throwable -> showError(lang.errGetList()))
+                .withError(this::showErrorFromServer)
                 .withSuccess(this::fillView)
         );
     }
@@ -193,7 +194,7 @@ public abstract class CaseLinkListActivity
 
         if (lang.issues().equals(pageId)) {
             controller.createLinkWithPublish(value, createCrossLinks, new FluentCallback<Long>()
-                    .withError(throwable -> showError(lang.errInternalError()))
+                    .withError(this::showErrorFromServer)
                     .withSuccess(id -> {
                         value.setId(id);
                         addLinkToParentAndModifyLinksCount(value);
@@ -203,7 +204,7 @@ public abstract class CaseLinkListActivity
         }
         else {
             controller.createLink(value, createCrossLinks, new FluentCallback<Long>()
-                    .withError(throwable -> showError(lang.errInternalError()))
+                    .withError(this::showErrorFromServer)
                     .withSuccess(id -> {
                         value.setId(id);
                         addLinkToParentAndModifyLinksCount(value);
@@ -234,6 +235,10 @@ public abstract class CaseLinkListActivity
 
         itemWidget.setHref(caseLinkProvider.getLink(value.getType(), linkId));
         view.getLinksContainer().add(itemWidget.asWidget());
+    }
+
+    private void showErrorFromServer(Throwable throwable) {
+        defaultErrorHandler.accept(throwable);
     }
 
     private void showError(String error) {
@@ -277,6 +282,8 @@ public abstract class CaseLinkListActivity
     private Provider<AbstractCaseLinkItemView> itemViewProvider;
     @Inject
     private CaseLinkProvider caseLinkProvider;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private int linksCount = 0;
     private CaseLinkEvents.Show show;

@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.ent.CaseLink;
 
 public class CaseLinkEvents {
 
+    private static final String PAGE_ID_DEFAULT_VALUE = "";
+
     public static class Show {
 
         public Show() {}
@@ -43,7 +45,7 @@ public class CaseLinkEvents {
         public Long caseId;
         public En_CaseType caseType;
         public boolean isEnabled = true;
-        public String pageId = "";
+        public String pageId = PAGE_ID_DEFAULT_VALUE;
     }
 
     public static class Removed {
@@ -88,7 +90,7 @@ public class CaseLinkEvents {
         }
 
         public IsWidget target;
-        public String pageId = "";
+        public String pageId = PAGE_ID_DEFAULT_VALUE;
         public boolean createCrossLinks = true;
     }
 }
