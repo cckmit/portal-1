@@ -14,6 +14,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -23,7 +24,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -189,8 +189,12 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
-            caseLinkService.createLinks(token, caseId, token.getPersonId(), caseObjectCreateRequest.getLinks());
+        Result addLinksResult = ok();
+
+        for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
+            caseLink.setCaseId(caseObject.getId());
+            Result currentResult = caseLinkService.createLink(token, caseLink, true);
+            if (currentResult.isError()) addLinksResult = currentResult;
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -199,7 +203,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setNotifiers(caseObject.getNotifiers());
         CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return ok(newState).publishEvent(event);
+        return addLinksResult.isOk() ? ok(newState).publishEvent(event) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     @Override

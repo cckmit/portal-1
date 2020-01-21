@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.struct;
 
 import java.io.Serializable;
 
-public class CaseNameAndDescriptionChangeRequest implements Serializable {
+public class CaseNameAndDescriptionChangeRequest extends AuditableObject {
     private Long id;
     private String name;
     private String info;
@@ -21,6 +21,11 @@ public class CaseNameAndDescriptionChangeRequest implements Serializable {
 
     public void setInfo( String info ) {
         this.info = info;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseNameAndDescriptionChangeRequest";
     }
 
     public Long getId() {

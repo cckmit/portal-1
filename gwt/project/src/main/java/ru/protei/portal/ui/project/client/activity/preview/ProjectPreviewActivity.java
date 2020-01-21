@@ -134,7 +134,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(project.getId())
-                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withCaseType(En_CaseType.PROJECT)
+                    .withPageId(lang.projects())
                     .readOnly());
         }
         else {

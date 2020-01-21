@@ -33,19 +33,6 @@ public class CaseLinkTypeSelector extends ButtonSelector<En_CaseLink> {
         });
     }
 
-    public void fillOptions() {
-        clearOptions();
-        boolean isGranted = policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
-        for (En_CaseLink value : En_CaseLink.values()) {
-            if (!isGranted && value.isForcePrivacy()) {
-                continue;
-            }
-            addOption(value);
-        }
-    }
-
     @Inject
     En_CaseLinkLang lang;
-    @Inject
-    PolicyService policyService;
 }
