@@ -12,11 +12,11 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -34,11 +34,6 @@ import java.util.stream.Collectors;
 
 public abstract class DocumentFormActivity
         implements Activity, AbstractDocumentFormActivity {
-
-    @Event
-    public void onAuthSuccess( AuthEvents.Success event ) {
-        this.authorizedProfile = event.profile;
-    }
 
     @PostConstruct
     public void onInit() {
@@ -66,8 +61,11 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        fillViewProject(event.project);
-        requestProject(event.project.getId(), this::onProjectChanged);
+
+        if (event.project != null) {
+            view.project().setValue(event.project);
+            onProjectChanged();
+        }
     }
 
     @Override
@@ -95,16 +93,18 @@ public abstract class DocumentFormActivity
             onProjectChanged(null);
             return;
         }
-        requestProject(view.project().getValue().getId(), this::onProjectChanged);
+        requestProject(view.project().getValue().getId(), projectInfo -> {
+            onProjectChanged(projectInfo);
+            if (projectInfo != null) {
+                view.equipment().setValue(null, true);
+                view.setEquipmentProjectId(projectInfo.getId());
+            }
+        });
     }
 
-    private void onProjectChanged(Project project) {
+    private void onProjectChanged(ProjectInfo project) {
         this.project = project;
         fillViewProjectInfo(project);
-        if (project != null) {
-            view.equipment().setValue(null, true);
-            view.setEquipmentProjectId(project.getId());
-        }
         renderViewState(project);
     }
 
@@ -131,12 +131,12 @@ public abstract class DocumentFormActivity
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
-    private void requestProject(long projectId, Consumer<Project> consumer) {
-        regionService.getProjectInfo(projectId, new FluentCallback<Project>()
+    private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>()
                 .withSuccess(consumer));
     }
 
-    private void renderViewState(Project project) {
+    private void renderViewState(ProjectInfo project) {
 
         En_DocumentCategory documentCategory = view.documentCategory().getValue();
 
@@ -180,7 +180,7 @@ public abstract class DocumentFormActivity
             view.documentDocUploader().resetForm();
         }
     }
-    private boolean isDecimalAndInventoryNumbersVisible(Project project, En_DocumentCategory documentCategory) {
+    private boolean isDecimalAndInventoryNumbersVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD) {
             return false;
         }
@@ -188,7 +188,7 @@ public abstract class DocumentFormActivity
         return customerType == En_CustomerType.MINISTRY_OF_DEFENCE ||
                 customerType == En_CustomerType.STATE_BUDGET;
     }
-    private boolean isEquipmentVisible(Project project, En_DocumentCategory documentCategory) {
+    private boolean isEquipmentVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null) {
             return false;
         }
@@ -319,7 +319,6 @@ public abstract class DocumentFormActivity
 
     private void fillView(Document document) {
         this.document = document;
-        this.project = document.getProject();
 
         boolean isNew = document.getId() == null;
 
@@ -330,7 +329,6 @@ public abstract class DocumentFormActivity
         view.documentType().setValue(document.getType());
         view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromPerson).collect(Collectors.toSet()));
         view.keywords().setValue(document.getKeywords());
-        fillViewProject(document.getProject());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
@@ -341,7 +339,8 @@ public abstract class DocumentFormActivity
         view.documentPdfUploader().resetForm();
 
         if (isNew) {
-            PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
+            Profile profile = policyService.getProfile();
+            PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
         } else {
@@ -349,15 +348,15 @@ public abstract class DocumentFormActivity
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
         }
 
-        renderViewState(document.getProject());
+        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
+        if (document.getProjectId() == null) {
+            onProjectChanged(null);
+            return;
+    }
+        requestProject(document.getProjectId(), this::onProjectChanged);
     }
 
-    private void fillViewProject(Project project) {
-        view.project().setValue(project == null ? null : new EntityOption(project.getName(), project.getId()));
-        fillViewProjectInfo(project);
-    }
-
-    private void fillViewProjectInfo(Project project) {
+    private void fillViewProjectInfo(ProjectInfo project) {
         view.setProjectInfo(
             project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
             project == null ? "" : fetchDisplayText(project.getProductDirection()),
@@ -382,10 +381,11 @@ public abstract class DocumentFormActivity
     DocumentControllerAsync documentService;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    PolicyService policyService;
 
     private String tag;
     private Document document;
-    private Project project;
-    private Profile authorizedProfile;
+    private ProjectInfo project;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

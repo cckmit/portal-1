@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.document.client.activity.create;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -26,6 +27,8 @@ public interface AbstractDocumentCreateView extends IsWidget {
     void setProjectSearchActive();
 
     void setProjectCreateActive();
+
+    HasEnabled createEnabled();
 
     // Wizard 2nd tab
 

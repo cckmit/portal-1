@@ -126,9 +126,6 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (document.getProjectAsCaseObject() != null) {
-            jdbcManyRelationsHelper.fill(document.getProjectAsCaseObject(), "locations");
-        }
         jdbcManyRelationsHelper.fill(document, "members");
 
         resetDocumentPrivacyInfo(document);

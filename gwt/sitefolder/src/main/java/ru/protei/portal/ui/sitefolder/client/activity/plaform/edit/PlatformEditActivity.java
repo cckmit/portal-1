@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -169,7 +169,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         return platform.getId() == null;
     }
 
-    private void fillProjectSpecificFieldsOnRefresh(Project project) {
+    private void fillProjectSpecificFieldsOnRefresh(ProjectInfo project) {
         view.company().setValue(project.getContragent());
         view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
@@ -179,7 +179,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         fireShowCompanyContacts(project.getContragent().getId());
     }
 
-    private void fillProjectSpecificFieldsOnLoad(Project project){
+    private void fillProjectSpecificFieldsOnLoad(ProjectInfo project){
         view.company().setValue(project.getContragent());
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
         view.companyEnabled().setEnabled(false);
@@ -189,8 +189,8 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         fireShowCompanyContacts(project.getContragent().getId());
     }
 
-    private void projectRequest(Long projectId, Consumer<Project> consumer) {
-        regionService.getProjectInfo(projectId, new FluentCallback<Project>().withSuccess(consumer));
+    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
     }
 
     private void clearProjectSpecificFields() {

@@ -41,6 +41,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), new Document(), TAG));
         view.resetWizard();
         onProjectSearchClicked();
+        view.createEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE));
     }
 
     @Event

@@ -61,10 +61,10 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         fillProject();
         regionService.saveProject(project, new FluentCallback<Project>()
                 .withErrorMessage(lang.errNotSaved())
-                .withSuccess(projectInfo -> {
+                .withSuccess(project -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Set(projectInfo));
+                    fireEvent(new ProjectEvents.Set(new EntityOption(project.getName(), project.getId())));
                     initialView(new Project());
                 }));
     }

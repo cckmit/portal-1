@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -131,11 +131,11 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
             view.setProject("");
             view.setManager("");
         } else {
-            regionService.getProject(document.getProjectId(), new FluentCallback<Project>()
-                    .withSuccess(project -> {
+            regionService.getProjectInfo(document.getProjectId(), new ShortRequestCallback< ProjectInfo >()
+                    .setOnSuccess(project -> {
                         view.setProject(project.getName());
-                        view.setManager(project.getLeader() == null ? "" : project.getLeader().getName());
-                    }));
+                        view.setManager(project.getManager() == null ? "" : project.getManager().getDisplayText());
+                    } ));
         }
     }
 
