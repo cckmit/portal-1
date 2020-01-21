@@ -434,3 +434,10 @@ select{
   height: 26px;
   width: 56px;
 }
+
+.btn-action-bar {
+  a {
+    @extend .btn;
+    padding: 1px 17px;
+  }
+}
