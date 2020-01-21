@@ -14,6 +14,8 @@ import ru.protei.portal.ui.contract.client.view.edit.ContractEditView;
 import ru.protei.portal.ui.contract.client.view.filter.ContractFilterView;
 import ru.protei.portal.ui.contract.client.view.preview.ContractPreviewView;
 import ru.protei.portal.ui.contract.client.view.table.ContractTableView;
+import ru.protei.portal.ui.contract.client.widget.selector.model.ContractStateModel;
+import ru.protei.portal.ui.contract.client.widget.selector.model.ContractTypeModel;
 
 public class ContractClientModule extends AbstractGinModule {
     @Override
@@ -30,6 +32,9 @@ public class ContractClientModule extends AbstractGinModule {
         bind(AbstractContractPreviewView.class).to(ContractPreviewView.class).in(Singleton.class);
 
         bind(AbstractContractFilterView.class).to(ContractFilterView.class).in(Singleton.class);
+
+        bind(ContractStateModel.class).asEagerSingleton();
+        bind(ContractTypeModel.class).asEagerSingleton();
     }
 }
 
