@@ -3,7 +3,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" styleName="employee">
-        <div class="header-block" ui:field="employeeContainer">
+        <div class="header-block height-auto" ui:field="employeeContainer">
             <h2 class="name" ui:field="name"></h2>
             <p class="controls">
                 <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
