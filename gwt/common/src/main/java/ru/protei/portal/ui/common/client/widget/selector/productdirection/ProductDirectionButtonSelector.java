@@ -32,7 +32,6 @@ public class ProductDirectionButtonSelector
 
         if (defaultValue != null) {
             addOption( null );
-            setValue( null );
         }
 
         products.forEach(this::addOption);
