@@ -68,6 +68,8 @@ public class Project extends AuditableObject {
 
     private EntityOption region;
 
+    private List<CaseLink> links;
+
     private Set<ProductShortView> products;
 
     private Person creator;
@@ -205,6 +207,17 @@ public class Project extends AuditableObject {
             team = new ArrayList<>();
         }
         team.add(person);
+    }
+
+    public List<CaseLink> getLinks() {
+        return links;
+    }
+
+    public void addLink(CaseLink link) {
+        if (links == null) {
+            links = new ArrayList<>();
+        }
+        links.add(link);
     }
 
     public boolean isDeleted() {

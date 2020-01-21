@@ -23,7 +23,6 @@ public class ContractStateSelector extends ButtonSelector<En_ContractState> impl
 
         if (defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
 
         options.forEach(this::addOption);

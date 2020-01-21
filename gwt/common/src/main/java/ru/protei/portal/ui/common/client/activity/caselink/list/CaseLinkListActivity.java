@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.caselink.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -19,10 +20,13 @@ import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -42,6 +46,7 @@ public abstract class CaseLinkListActivity
     @Event
     public void onShow(CaseLinkEvents.Show event) {
         this.show = event;
+        pageId = event.pageId;
 
         event.parent.clear();
         event.parent.add(view.asWidget());
@@ -50,13 +55,13 @@ public abstract class CaseLinkListActivity
         view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
         hideOrShowIfNoLinks();
 
-        linksCount = 0;
+        linksSet.clear();
         resetLinksContainerStateByLinksCount();
 
         if (isCaseCreationMode()) return;
 
         controller.getCaseLinks(event.caseId, new FluentCallback<List<CaseLink>>()
-                .withError(throwable -> showError(lang.errGetList()))
+                .withError(this::showErrorFromServer)
                 .withSuccess(this::fillView)
         );
     }
@@ -66,6 +71,10 @@ public abstract class CaseLinkListActivity
         if (!show.isEnabled) {
             return;
         }
+
+        this.pageId = event.pageId;
+        this.createCrossLinks = event.createCrossLinks;
+
         view.showSelector(event.target);
     }
 
@@ -76,18 +85,28 @@ public abstract class CaseLinkListActivity
         }
 
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel()));
+            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel(), pageId));
             removeLinkViewFromParentAndModifyLinksCount(itemView);
             hideOrShowIfNoLinks();
             return;
         }
 
-        controller.removeLink(itemView.getModel().getId(), new FluentCallback<Void>()
-                .withSuccess(res -> {
-                    removeLinkViewFromParentAndModifyLinksCount(itemView);
-                    hideOrShowIfNoLinks();
-                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                }));
+        if (lang.issues().equals(pageId)) {
+            controller.deleteLinkWithPublish(itemView.getModel().getId(), new FluentCallback<Void>()
+                    .withSuccess(res -> {
+                        removeLinkViewFromParentAndModifyLinksCount(itemView);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
+        else{
+            controller.deleteLink(itemView.getModel().getId(), new FluentCallback<Void>()
+                    .withSuccess(res -> {
+                        removeLinkViewFromParentAndModifyLinksCount(itemView);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
     }
 
     @Override
@@ -118,7 +137,8 @@ public abstract class CaseLinkListActivity
         if (CollectionUtils.isEmpty(links)) {
             return;
         }
-        linksCount = links.size();
+        linksSet = CollectionUtils.setOf(links);
+
         resetLinksContainerStateByLinksCount();
         links.forEach(this::makeCaseLinkViewAndAddToParent);
         hideOrShowIfNoLinks();
@@ -168,21 +188,37 @@ public abstract class CaseLinkListActivity
     }
 
     private void createLinkAndAddToParent(CaseLink value) {
+        if (linksSet.contains(value)){
+            fireEvent(new NotifyEvents.Show(lang.errCaseLinkAlreadyAdded(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Added(show.caseId, value));
+            fireEvent(new CaseLinkEvents.Added(show.caseId, value, pageId));
             addLinkToParentAndModifyLinksCount(value);
             hideOrShowIfNoLinks();
             return;
         }
 
-        controller.createLink(value, new FluentCallback<Long>()
-                .withError(throwable -> showError(lang.errInternalError()))
-                .withSuccess(id -> {
-                    value.setId(id);
-                    addLinkToParentAndModifyLinksCount(value);
-                    hideOrShowIfNoLinks();
-                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
-                }));
+        if (lang.issues().equals(pageId)) {
+            controller.createLinkWithPublish(value, createCrossLinks, new FluentCallback<Long>()
+                    .withError(this::showErrorFromServer)
+                    .withSuccess(id -> {
+                        value.setId(id);
+                        addLinkToParentAndModifyLinksCount(value);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
+        else {
+            controller.createLink(value, createCrossLinks, new FluentCallback<Long>()
+                    .withError(this::showErrorFromServer)
+                    .withSuccess(id -> {
+                        value.setId(id);
+                        addLinkToParentAndModifyLinksCount(value);
+                        hideOrShowIfNoLinks();
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        }
     }
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value) {
@@ -208,25 +244,29 @@ public abstract class CaseLinkListActivity
         view.getLinksContainer().add(itemWidget.asWidget());
     }
 
+    private void showErrorFromServer(Throwable throwable) {
+        defaultErrorHandler.accept(throwable);
+    }
+
     private void showError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     private void removeLinkViewFromParentAndModifyLinksCount(AbstractCaseLinkItemView itemView) {
         itemView.asWidget().removeFromParent();
-        linksCount--;
+        linksSet.remove(itemView.getModel());
         resetLinksContainerStateByLinksCount();
     }
 
     private void addLinkToParentAndModifyLinksCount(CaseLink value) {
-        linksCount++;
+        linksSet.add(value);
         makeCaseLinkViewAndAddToParent(value);
         resetLinksContainerStateByLinksCount();
     }
 
     private void resetLinksContainerStateByLinksCount() {
-        view.setLinksContainerVisible(linksCount > 0);
-        view.setHeader(lang.linkedWith() + (linksCount == 0 ? "" : " (" + linksCount + ")"));
+        view.setLinksContainerVisible(linksSet.size() > 0);
+        view.setHeader(lang.linkedWith() + (linksSet.size() == 0 ? "" : " (" + linksSet.size() + ")"));
     }
     private boolean isCaseCreationMode() {
         return show.caseId == null;
@@ -249,7 +289,12 @@ public abstract class CaseLinkListActivity
     private Provider<AbstractCaseLinkItemView> itemViewProvider;
     @Inject
     private CaseLinkProvider caseLinkProvider;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private int linksCount = 0;
+    private Set<CaseLink> linksSet = new HashSet<>();
     private CaseLinkEvents.Show show;
+    private String pageId;
+    private boolean createCrossLinks;
 }

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * Реализация сервиса управления проектами
@@ -75,6 +76,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    CaseLinkService caseLinkService;
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -227,7 +231,15 @@ public class ProjectServiceImpl implements ProjectService {
         }
         caseObjectDAO.merge( caseObject );
 
-        return ok(Project.fromCaseObject(caseObject));
+        Result addLinksResult = ok();
+
+        for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
+            caseLink.setCaseId(caseObject.getId());
+            Result currentResult = caseLinkService.createLink(token, caseLink, false);
+            if (currentResult.isError()) addLinksResult = currentResult;
+        }
+
+        return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
@@ -281,6 +293,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObject.setDeleted(true);
         boolean result = caseObjectDAO.partialMerge(caseObject, "deleted");
+
+        caseLinkService.getLinks(token, caseObject.getId()).getData()
+                        .forEach(caseLink ->
+                                caseLinkService.deleteLink(token, caseLink.getId()));
 
         return ok(result);
     }

@@ -28,6 +28,9 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = EmployeeRegistration.class, name = "EmployeeRegistration"),
         @JsonSubTypes.Type(value = LongAuditableObject.class, name = "LongAuditableObject"),
         @JsonSubTypes.Type(value = SimpleAuditableObject.class, name = "SimpleAuditableObject"),
+        @JsonSubTypes.Type(value = CaseNameAndDescriptionChangeRequest.class, name = "CaseNameAndDescriptionChangeRequest"),
+        @JsonSubTypes.Type(value = CaseObjectCreateRequest.class, name = "CaseObjectCreateRequest"),
+        @JsonSubTypes.Type(value = CaseObjectMeta.class, name = "CaseObjectMeta"),
 })
 public abstract class AuditableObject implements Serializable {
 

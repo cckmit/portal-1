@@ -1059,6 +1059,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkYouTrackShort();
 
+    String errCaseLinkAlreadyAdded();
+
     String linkedWith();
 
     String id();
@@ -1971,6 +1973,8 @@ public interface Lang extends Messages, ContactItemLang {
     String emptySelectorList();
 
     String errUnableLinkIssueToItself();
+
+    String caseLinkSomeNotAdded();
 
     String documentMembers();
 
