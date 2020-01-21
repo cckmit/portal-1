@@ -9,10 +9,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.CaseApiQuery;
-import ru.protei.portal.core.model.query.CaseCommentApiQuery;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -20,6 +17,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.util.AuthUtils;
@@ -55,6 +53,9 @@ public class PortalApiController {
     private CaseLinkService caseLinkService;
     @Autowired
     CaseCommentService caseCommentService;
+    @Autowired
+    private ProductService productService;
+
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
 
@@ -176,6 +177,45 @@ public class PortalApiController {
             log.error(ex.getMessage());
             return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
+    }
+
+    @PostMapping(value = "/products/{id:[0-9]+}/getfield/{field}")
+    public Result<String> getProductField( HttpServletRequest request, HttpServletResponse response,
+                                           @PathVariable("id") Long productId,
+                                           @PathVariable("field") String productField ) {
+        log.info( "getProductField() productId={} productField={}", productId, productField );
+
+        DevUnit.ProductField field = DevUnit.ProductField.from( productField.toUpperCase() );
+        if (field == null) {
+            log.warn( "getProductField(): Can't get product field value. Field \"{}\" is unknown.", productField );
+            return error( En_ResultStatus.INCORRECT_PARAMS, "Field " + productField + " is unknown." );
+        }
+
+        return AuthUtils.authenticate( request, response, authService, sidGen, log ).flatMap( authToken ->
+                productService.getProductField( authToken, productId, field ) )
+                .ifOk( id -> log.info( "getProductField(): OK " ) )
+                .ifError( result -> log.warn( "getProductField(): Can`t get field {} for product id={}. {}",
+                        productField, productId, result ) );
+    }
+
+    @PostMapping(value = "/products/{id:[0-9]+}/setfield/{field}")
+    public Result<Long> setProductField( HttpServletRequest request, HttpServletResponse response,
+                                           @PathVariable("id") Long productId,
+                                           @PathVariable("field") String productField,
+                                           @RequestBody String fieldValue) {
+        log.info( "setProductField() productId={} productField={} fieldValue={}", productId, productField, fieldValue );
+
+        DevUnit.ProductField field = DevUnit.ProductField.from( productField.toUpperCase() );
+        if (field == null) {
+            log.warn( "getProductField(): Can't set product field value. Field \"{}\" is unknown.", productField );
+            return error( En_ResultStatus.INCORRECT_PARAMS, "Field " + productField + " is unknown." );
+        }
+
+        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( authToken ->
+                productService.setProductField( authToken, productId, field, fieldValue ))
+                .ifOk( id -> log.info( "setProductField(): OK " ) )
+                .ifError( result -> log.warn( "setProductField(): Can`t set field {} for product id={}. {}",
+                        productField, productId, result ) );
     }
 
 

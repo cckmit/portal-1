@@ -46,4 +46,8 @@ public interface ProductService {
     Result<Boolean> checkUniqueProductByName(AuthToken token, String name, En_DevUnitType type, Long id);
 
     Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
+
+    Result<String> getProductField( AuthToken authToken, Long productId, DevUnit.ProductField productField );
+
+    Result<Long> setProductField( AuthToken authToken, Long productId, DevUnit.ProductField field, String fieldValue );
 }

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -15,6 +16,9 @@ import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -180,6 +184,18 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     public List<Long> keys() {
         String query = "select " + getIdColumnName() + " from " + getTableName();
         return jdbcTemplate.queryForList(query, Long.class);
+    }
+
+    @Override
+    public <K> K getColumnValue( String column, Class<K> type, String condition, Object... args ) {
+        String query = "select " + column + " from " + getTableName()+ " where " + condition;
+        return jdbcTemplate.queryForObject(query, args, type);
+    }
+
+    @Override
+    public <K> int setColumnValue( String column, Class<K> type, String condition, Object... args ) {
+        String query = "update " + getTableName() + " set " + column + "=? where " + condition;
+        return jdbcTemplate.update(query, args );
     }
 
     @Override

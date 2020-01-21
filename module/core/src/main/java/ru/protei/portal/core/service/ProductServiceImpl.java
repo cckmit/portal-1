@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
@@ -23,10 +24,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -88,6 +86,22 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
 
         return ok(result);
+    }
+
+    @Override
+    public Result<String> getProductField( AuthToken authToken, Long productId, DevUnit.ProductField productField ) {
+        if (!devUnitDAO.checkExistsByKey( productId ) ) return error( En_ResultStatus.NOT_FOUND );
+        return ok( devUnitDAO.getColumnValue( productField.asColumnName(),  String.class, DevUnit.Columns.ID + "=?", productId ) );
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> setProductField( AuthToken authToken, Long productId, DevUnit.ProductField productField, String fieldValue ) {
+        if (!devUnitDAO.checkExistsByKey( productId )) return error( En_ResultStatus.NOT_FOUND );
+        if (1 < devUnitDAO.setColumnValue( productField.asColumnName(), String.class, DevUnit.Columns.ID + "=?", new Object[]{fieldValue, productId} )) {
+            throw new RollbackTransactionException( "Can't set product field. More than one row updated." );
+        }
+        return ok( productId );
     }
 
     @Override
