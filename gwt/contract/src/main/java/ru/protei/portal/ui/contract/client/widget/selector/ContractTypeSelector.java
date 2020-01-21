@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.widget.selector;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -17,20 +18,19 @@ public class ContractTypeSelector extends ButtonSelector<En_ContractType> {
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
+        if (defaultValue != null) {
+            addOption(null);
+        }
     }
 
     private void fillOptions() {
         clearOptions();
 
-        if (defaultValue != null) {
-            addOption(null);
-        }
-        for(En_ContractType value : En_ContractType.values())
+        for(En_ContractType value : En_ContractType.values()) {
             addOption(value);
+        }
     }
 
-    @Inject
-    private Lang lang;
     @Inject
     private En_ContractTypeLang typeLang;
 

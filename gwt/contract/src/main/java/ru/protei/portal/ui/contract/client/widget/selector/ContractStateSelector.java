@@ -19,20 +19,19 @@ public class ContractStateSelector extends ButtonSelector<En_ContractState> {
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
+        if (defaultValue != null) {
+            addOption(null);
+        }
     }
 
     private void fillOptions() {
         clearOptions();
 
-        if (defaultValue != null) {
-            addOption(null);
-        }
-        for(En_ContractState value : En_ContractState.values())
+        for (En_ContractState value : En_ContractState.values()) {
             addOption(value);
+        }
     }
 
-    @Inject
-    private Lang lang;
     @Inject
     private En_ContractStateLang stateLang;
 
