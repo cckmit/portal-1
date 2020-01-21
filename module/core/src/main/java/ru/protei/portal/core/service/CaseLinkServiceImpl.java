@@ -219,7 +219,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
         boolean isAlreadyExist = caseLinkDAO.checkExistLink(link.getType(), link.getCaseId(), link.getRemoteId());
         if (isAlreadyExist) {
-            return error(En_ResultStatus.ALREADY_EXIST);
+            return error(En_ResultStatus.THIS_LINK_ALREADY_ADDED);
         }
         return ok(link);
     }

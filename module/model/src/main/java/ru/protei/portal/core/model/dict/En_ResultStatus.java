@@ -157,5 +157,11 @@ public enum En_ResultStatus {
      * Некоторые ссылки не добавились
      */
 
-    SOME_LINKS_NOT_ADDED
+    SOME_LINKS_NOT_ADDED,
+
+    /**
+     * Эта ссылка уже привязана
+     */
+
+    THIS_LINK_ALREADY_ADDED
 }

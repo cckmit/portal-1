@@ -23,8 +23,10 @@ import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -53,7 +55,7 @@ public abstract class CaseLinkListActivity
         view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
         hideOrShowIfNoLinks();
 
-        linksCount = 0;
+        linksSet.clear();
         resetLinksContainerStateByLinksCount();
 
         if (isCaseCreationMode()) return;
@@ -135,7 +137,8 @@ public abstract class CaseLinkListActivity
         if (CollectionUtils.isEmpty(links)) {
             return;
         }
-        linksCount = links.size();
+        linksSet = CollectionUtils.setOf(links);
+
         resetLinksContainerStateByLinksCount();
         links.forEach(this::makeCaseLinkViewAndAddToParent);
         hideOrShowIfNoLinks();
@@ -247,19 +250,23 @@ public abstract class CaseLinkListActivity
 
     private void removeLinkViewFromParentAndModifyLinksCount(AbstractCaseLinkItemView itemView) {
         itemView.asWidget().removeFromParent();
-        linksCount--;
+        linksSet.remove(itemView.getModel());
         resetLinksContainerStateByLinksCount();
     }
 
     private void addLinkToParentAndModifyLinksCount(CaseLink value) {
-        linksCount++;
-        makeCaseLinkViewAndAddToParent(value);
-        resetLinksContainerStateByLinksCount();
+        if (linksSet.add(value)) {
+            makeCaseLinkViewAndAddToParent(value);
+            resetLinksContainerStateByLinksCount();
+        }
+        else {
+            fireEvent(new NotifyEvents.Show(lang.errCaseLinkAlreadyAdded(), NotifyEvents.NotifyType.ERROR));
+        }
     }
 
     private void resetLinksContainerStateByLinksCount() {
-        view.setLinksContainerVisible(linksCount > 0);
-        view.setHeader(lang.linkedWith() + (linksCount == 0 ? "" : " (" + linksCount + ")"));
+        view.setLinksContainerVisible(linksSet.size() > 0);
+        view.setHeader(lang.linkedWith() + (linksSet.size() == 0 ? "" : " (" + linksSet.size() + ")"));
     }
     private boolean isCaseCreationMode() {
         return show.caseId == null;
@@ -286,6 +293,7 @@ public abstract class CaseLinkListActivity
     DefaultErrorHandler defaultErrorHandler;
 
     private int linksCount = 0;
+    private Set linksSet = new HashSet<>();
     private CaseLinkEvents.Show show;
     private String pageId;
     private boolean createCrossLinks;
