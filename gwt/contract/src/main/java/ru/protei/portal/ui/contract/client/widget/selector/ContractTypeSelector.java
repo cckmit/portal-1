@@ -18,13 +18,17 @@ public class ContractTypeSelector extends ButtonSelector<En_ContractType> {
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
-        if (defaultValue != null) {
-            addOption(null);
+        if (value != null) {
+            fillOptions();
         }
     }
 
     private void fillOptions() {
         clearOptions();
+
+        if (defaultValue != null) {
+            addOption(null);
+        }
 
         for(En_ContractType value : En_ContractType.values()) {
             addOption(value);
