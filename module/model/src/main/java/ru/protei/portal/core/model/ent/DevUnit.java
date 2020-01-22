@@ -330,29 +330,4 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         String CDR_DESCRIPTION = "cdr_description";
     }
 
-    public enum ProductField {
-        DESCRIPTION(Columns.UNIT_INFO),
-        HISTORY_VERSION( Columns.HISTORY_VERSION ),
-        CONFIGURATION(Columns.CONFIGURATION),
-        CDR_DESCRIPTION(Columns.CDR_DESCRIPTION);
-
-        ProductField( String columnName ) {
-            this.columnName = columnName;
-        }
-
-        public static ProductField from( String fieldString ) {
-            if(fieldString==null) return null;
-            try {
-                return valueOf(fieldString.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-
-        public String asColumnName(){
-            return columnName;
-        }
-
-        private String columnName;
-    }
 }

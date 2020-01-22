@@ -27,6 +27,4 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
 
     Map<Long, Long> getProductOldToNewMap ();
-
-    Product getProduct( Long productId );
 }

@@ -47,20 +47,6 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
         return result;
     }
 
-    @Override
-    public Product getProduct( Long productId ) {
-        Query query = SqlQueryBuilder.query().
-                select( UNIT_INFO, CDR_DESCRIPTION, HISTORY_VERSION, CONFIGURATION )
-                .from( getTableName() )
-                .where( ID ).equal( productId ).asQuery();
-        return jdbcTemplate.queryForObject( query.buildSql(), query.args(), ( rs, rowNum ) -> {
-            Product product = new Product();
-            product.setCdrDescription( rs.getString( CDR_DESCRIPTION ) );
-            return product;
-        } );
-
-    }
-
     @SqlConditionBuilder
     public SqlCondition createProductSqlCondition(ProductQuery query) {
         return new SqlCondition().build((condition, args) -> {

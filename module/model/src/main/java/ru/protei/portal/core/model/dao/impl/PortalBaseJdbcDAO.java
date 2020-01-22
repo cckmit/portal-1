@@ -184,18 +184,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     }
 
     @Override
-    public <K> K getColumnValue( String column, Class<K> type, String condition, Object... args ) {
-        String query = "select " + column + " from " + getTableName()+ " where " + condition;
-        return jdbcTemplate.queryForObject(query, args, type);
-    }
-
-    @Override
-    public <K> int setColumnValue( String column, Class<K> type, String condition, Object... args ) {
-        String query = "update " + getTableName() + " set " + column + "=? where " + condition;
-        return jdbcTemplate.update(query, args );
-    }
-
-    @Override
     public <K> List<K> listColumnValue(String column, Class<K> type) {
         String query = "select " + column + " from " + getTableName();
         return jdbcTemplate.queryForList(query, type);

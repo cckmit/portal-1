@@ -7,6 +7,8 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.util.Objects;
+
 @JdbcEntity(table = "dev_unit")
 public class Product extends AuditableObject {
 
@@ -72,6 +74,19 @@ public class Product extends AuditableObject {
     }
 
     public static final String PRODUCT = "Product";
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals( id, product.id );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( id );
+    }
 
     @Override
     public String toString() {
