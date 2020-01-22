@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.jdbc.JdbcBaseDAO;
-import ru.protei.winter.jdbc.JdbcHelper;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
+import ru.protei.winter.jdbc.*;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;

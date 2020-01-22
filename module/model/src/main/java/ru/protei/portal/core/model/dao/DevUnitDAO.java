@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dto.Product;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -26,4 +27,6 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
 
     Map<Long, Long> getProductOldToNewMap ();
+
+    Product getProduct( Long productId );
 }

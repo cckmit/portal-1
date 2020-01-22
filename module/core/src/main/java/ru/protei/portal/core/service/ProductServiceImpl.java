@@ -5,13 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
+import ru.protei.portal.core.model.dao.impl.ProductDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.Product;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
@@ -41,6 +42,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     DevUnitDAO devUnitDAO;
+
+    @Autowired
+    ProductDAO productDAO;
 
     @Autowired
     DevUnitChildRefDAO devUnitChildRefDAO;
@@ -89,19 +93,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Result<String> getProductField( AuthToken authToken, Long productId, DevUnit.ProductField productField ) {
-        if (!devUnitDAO.checkExistsByKey( productId ) ) return error( En_ResultStatus.NOT_FOUND );
-        return ok( devUnitDAO.getColumnValue( productField.asColumnName(),  String.class, DevUnit.Columns.ID + "=?", productId ) );
+    public Result<Product> getProductFields( AuthToken authToken, Long productId ) {
+        Product product = productDAO.get( productId );
+        if (product == null) return error( En_ResultStatus.NOT_FOUND );
+        return ok( product );
     }
 
     @Override
     @Transactional
-    public Result<Long> setProductField( AuthToken authToken, Long productId, DevUnit.ProductField productField, String fieldValue ) {
-        if (!devUnitDAO.checkExistsByKey( productId )) return error( En_ResultStatus.NOT_FOUND );
-        if (1 < devUnitDAO.setColumnValue( productField.asColumnName(), String.class, DevUnit.Columns.ID + "=?", new Object[]{fieldValue, productId} )) {
-            throw new RollbackTransactionException( "Can't set product field. More than one row updated." );
-        }
-        return ok( productId );
+    public Result<Long> updateProductFields( AuthToken authToken, Product product ) {
+        return getProduct( authToken, product.getId() ).map( devUnit ->
+                updateFields( devUnit, product ) ).flatMap( devUnit ->
+                updateProduct( authToken, devUnit ) ).map(
+                DevUnit::getId );
     }
 
     @Override
@@ -260,6 +264,14 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
+    }
+
+    private DevUnit updateFields( DevUnit devUnit, Product product ) {
+        if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
+        if (product.getConfiguration() != null) devUnit.setConfiguration( product.getConfiguration() );
+        if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
+        if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
+        return devUnit;
     }
 
     private final static Logger log = LoggerFactory.getLogger( ProductService.class );

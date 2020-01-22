@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.Product;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
@@ -47,7 +48,7 @@ public interface ProductService {
 
     Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
 
-    Result<String> getProductField( AuthToken authToken, Long productId, DevUnit.ProductField productField );
+    Result<Product> getProductFields( AuthToken authToken, Long productId );
 
-    Result<Long> setProductField( AuthToken authToken, Long productId, DevUnit.ProductField field, String fieldValue );
+    Result<Long> updateProductFields( AuthToken authToken, Product product );
 }

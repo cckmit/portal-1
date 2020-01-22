@@ -229,6 +229,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProductDAO getProductDAO() {
+        return new ProductDAO_Impl();
+    }
+
+    @Bean
     public DevUnitVersionDAO getDevUnitVersionDAO() {
         return new DevUnitVersionDAO_Impl();
     }
