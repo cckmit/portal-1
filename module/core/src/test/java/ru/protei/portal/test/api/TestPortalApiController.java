@@ -13,12 +13,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Product;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
@@ -156,6 +158,42 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data[*].initiatorCompanyId", everyItem(is(1))));
+    }
+
+    @Test
+    public void getProduct() throws Exception {
+        DevUnit product = makeProduct( );
+        createPostResultAction( "/api/products/" + product.getId(), null )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
+                .andExpect( jsonPath( "$.data[*].id", everyItem( is( product.getId() ) ) ) )
+                .andExpect( jsonPath( "$.data[*].description", everyItem( is( product.getInfo() ) ) ) )
+                .andExpect( jsonPath( "$.data[*].historyVersion", everyItem( is( product.getHistoryVersion() ) ) ) )
+                .andExpect( jsonPath( "$.data[*].cdrDescription", everyItem( is( product.getCdrDescription() ) ) ) )
+                .andExpect( jsonPath( "$.data[*].configuration", everyItem( is( product.getConfiguration() ) ) ) )
+        ;
+        devUnitDAO.remove( product );
+    }
+
+
+    @Test
+    public void updateProduct() throws Exception {
+        DevUnit devUnit = makeProduct( );
+
+        Product product = new Product();
+        product.setId( devUnit.getId() );
+        product.setDescription( "Updated Info" );
+        product.setHistoryVersion( "Updated historyVersion" );
+        product.setCdrDescription( "Updated cdrDescription" );
+        product.setConfiguration( "Updated configuration" );
+
+        createPostResultAction( "/api/products/update", product )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
+                .andExpect( jsonPath( "$.data[*]", everyItem( is( devUnit.getId() ) ) ) )
+        ;
+
+        devUnitDAO.remove( devUnit );
     }
 
     @Test
@@ -331,13 +369,16 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {
-        return mockMvc.perform(
-                post(url)
-                        .header("Accept", "application/json")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(obj))
-        );
+        MockHttpServletRequestBuilder builder = post( url )
+                .header( "Accept", "application/json" )
+                .header( "authorization", "Basic " + Base64.getEncoder().encodeToString( (person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes() ) )
+                .contentType( MediaType.APPLICATION_JSON );
+
+        if(obj!=null){
+            builder.content(objectMapper.writeValueAsString(obj));
+        }
+
+        return mockMvc.perform( builder );
     }
 
     @Autowired

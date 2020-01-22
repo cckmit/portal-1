@@ -197,7 +197,7 @@ public class PortalApiController {
         return authenticate(request, response, authService, sidGen, log ).flatMap( authToken ->
                 productService.updateProductFields( authToken, product ) )
                 .ifOk( id -> log.info( "updateProductFields(): OK " ) )
-                .ifError( result -> log.warn( "updateProductFields(): Can`t update produc fields for product={}. {}",
+                .ifError( result -> log.warn( "updateProductFields(): Can`t update product fields for product={}. {}",
                         product, result ) );
     }
 

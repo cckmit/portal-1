@@ -3,21 +3,16 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dto.Product;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
-import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static ru.protei.portal.core.model.ent.DevUnit.Columns.*;
 
 /**
  * Created by michael on 23.05.16.

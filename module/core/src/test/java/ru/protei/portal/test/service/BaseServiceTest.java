@@ -14,6 +14,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertNotNull;
@@ -21,19 +22,32 @@ import static org.junit.Assert.assertTrue;
 
 public class BaseServiceTest {
 
-    public Long makeProduct( String productName ) {
-        DevUnit product = createProduct( productName );
-
-        Long productId = devUnitDAO.persist( product );
-        return productId;
+    public DevUnit makeProduct(  ) {
+        return makeProduct( "Test product_" + uniqueIndex.incrementAndGet() );
     }
 
-    private static DevUnit createProduct( String productName ) {
+    public DevUnit makeProduct( String productName ) {
+        DevUnit product = createProduct( productName );
+
+        product = makeProduct(product);
+        return product;
+    }
+
+    public DevUnit makeProduct( DevUnit product ) {
+        product.setId( devUnitDAO.persist( product ) );
+        return product;
+    }
+
+    public static DevUnit createProduct( String productName ) {
         DevUnit product = new DevUnit();
         product.setName( productName );
         product.setCreated( new Date() );
         product.setTypeId( En_DevUnitType.PRODUCT.getId() );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
+        product.setInfo( "info" );
+        product.setHistoryVersion( "historyVersion" );
+        product.setCdrDescription( "cdrDescription" );
+        product.setConfiguration( "configuration" );
         return product;
     }
 
@@ -224,6 +238,8 @@ public class BaseServiceTest {
             caseNumberRepo.put( type, new AtomicLong( 0L ) );
         }
     }
+
+    private AtomicInteger uniqueIndex = new AtomicInteger( 0 );
 
     @Autowired
     protected CaseService caseService;

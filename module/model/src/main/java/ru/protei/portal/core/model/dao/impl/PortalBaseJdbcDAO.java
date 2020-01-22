@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -8,14 +7,14 @@ import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.jdbc.*;
+import ru.protei.winter.jdbc.JdbcBaseDAO;
+import ru.protei.winter.jdbc.JdbcHelper;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
