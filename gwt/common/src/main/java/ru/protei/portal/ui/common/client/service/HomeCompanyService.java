@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class HomeCompanyService implements Activity {
     @Event
-    public void authEvent(AuthEvents.Success event) {
+    public void authEvent(AuthEvents.Init event) {
         companyService.getAllHomeCompanyIds(new FluentCallback<List<Long>>()
                 .withSuccess(this::setHomeCompanyIds)
         );

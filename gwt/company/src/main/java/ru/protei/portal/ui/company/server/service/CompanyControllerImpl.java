@@ -228,8 +228,7 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List<Long> getAllHomeCompanyIds() throws RequestFailedException {
         log.info("getAllHomeCompanyIds()");
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+        return checkResultAndGetData(companyService.getAllHomeCompanyIds());
     }
 
     @Autowired
