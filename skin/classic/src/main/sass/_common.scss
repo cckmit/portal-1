@@ -3191,7 +3191,12 @@ div.select2-container {
   // fix arrow (different shifts because of relative position)
   .arrow {
     top: -11px !important;
-    margin-left: -4px !important;
+    margin-left: 4px !important;
+    &.rotate {
+      transform: rotateX(180deg);
+      top: auto !important;
+      bottom: -11px;
+    }
   }
 }
 
