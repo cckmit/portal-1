@@ -97,27 +97,32 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     }
 
     private void updateIssueProps(Issue issue, AssembledCaseEvent event, RedmineEndpoint endpoint) {
-        final long priorityMapId = endpoint.getPriorityMapId();
-        final long statusMapId = endpoint.getStatusMapId();
+        if (event.isCaseImportanceChanged()) {
+            final long priorityMapId = endpoint.getPriorityMapId();
+            logger.debug("Trying to get redmine priority level id matching with portal: {}", event.getLastCaseMeta().getImpLevel());
+            final RedminePriorityMapEntry redminePriorityMapEntry =
+                    priorityMapEntryDAO.getByPortalPriorityId(event.getLastCaseMeta().getImpLevel(), priorityMapId);
+            if (redminePriorityMapEntry != null) {
+                logger.debug("Found redmine priority level name: {}", redminePriorityMapEntry.getRedminePriorityName());
+                issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID)
+                        .setValue(redminePriorityMapEntry.getRedminePriorityName());
+            } else {
+                logger.debug("Redmine priority level not found");
+            }
+        }
 
-        logger.debug("Trying to get redmine priority level id matching with portal: {}", event.getLastCaseMeta().getImpLevel());
-        final RedminePriorityMapEntry redminePriorityMapEntry =
-                priorityMapEntryDAO.getByPortalPriorityId(event.getLastCaseMeta().getImpLevel(), priorityMapId);
-        if (redminePriorityMapEntry != null) {
-            logger.debug("Found redmine priority level name: {}", redminePriorityMapEntry.getRedminePriorityName());
-            issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID)
-                    .setValue(redminePriorityMapEntry.getRedminePriorityName());
-        } else
-            logger.debug("Redmine priority level not found");
-
-        logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
-        RedmineStatusMapEntry redmineStatusMapEntry = null;
-        redmineStatusMapEntry = statusMapEntryDAO.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId);
-        if (redmineStatusMapEntry != null && event.getLastCaseMeta().getState() != En_CaseState.VERIFIED) {
-            logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
-            issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
-        } else
-            logger.debug("Redmine status not found");
+        if (event.isCaseStateChanged()) {
+            final long statusMapId = endpoint.getStatusMapId();
+            logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
+            RedmineStatusMapEntry redmineStatusMapEntry = null;
+            redmineStatusMapEntry = statusMapEntryDAO.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId);
+            if (redmineStatusMapEntry != null && event.getLastCaseMeta().getState() != En_CaseState.VERIFIED) {
+                logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
+                issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
+            } else {
+                logger.debug("Redmine status not found");
+            }
+        }
 
         if (event.getName().hasDifferences()) {
             issue.setSubject(event.getName().getNewState());
