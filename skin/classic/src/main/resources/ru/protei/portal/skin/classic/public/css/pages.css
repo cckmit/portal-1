@@ -1647,7 +1647,7 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
 .page-sidebar {
     width: 280px;
     background-color: #2b303b;
-    z-index: 1051;
+    z-index: 1000;
     left: -210px;
     position: fixed;
     bottom: 0;
