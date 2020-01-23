@@ -7,17 +7,31 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class HomeCompanyService implements Activity {
     @Event
-    public void authEvent(AuthEvents.Init event) {
+    public void authEvent(AuthEvents.Success event) {
+        if (homeCompanyIds != null) {
+            return;
+        }
+
         companyService.getAllHomeCompanyIds(new FluentCallback<List<Long>>()
                 .withSuccess(this::setHomeCompanyIds)
         );
     }
 
-    public boolean isHomeCompany(Long companyId) {
-        return homeCompanyIds.contains(companyId);
+    public void isHomeCompany(Long companyId, Consumer<Boolean> companyConsumer) {
+        if (homeCompanyIds != null) {
+            companyConsumer.accept(homeCompanyIds.contains(companyId));
+        } else {
+            companyService.getAllHomeCompanyIds(new FluentCallback<List<Long>>()
+                    .withSuccess(companyIds -> {
+                        setHomeCompanyIds(companyIds);
+                        companyConsumer.accept(homeCompanyIds.contains(companyId));
+                    })
+            );
+        }
     }
 
     private void setHomeCompanyIds(List<Long> homeCompanyIds) {

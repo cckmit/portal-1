@@ -386,7 +386,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        issueMetaView.initiatorSelectorAllowAddNew(policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE)) {
+            return;
+        }
+
+        homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
