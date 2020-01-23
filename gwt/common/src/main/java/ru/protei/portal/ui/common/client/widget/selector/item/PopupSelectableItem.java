@@ -22,6 +22,11 @@ public class PopupSelectableItem<T>
     public PopupSelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         checkbox.setFormValue( Boolean.FALSE.toString() );
+        root.addDomHandler(event -> {
+            event.preventDefault();
+            selectorItemHandler.onSelectorItemClicked(this);
+            setSelected(!checkbox.getValue());
+        }, ClickEvent.getType());
     }
 
     @Override
@@ -72,11 +77,6 @@ public class PopupSelectableItem<T>
         return addHandler( keyUpHandler, KeyUpEvent.getType() );
     }
 
-    @UiHandler( "checkbox" )
-    public void onCheckboxClicked( ClickEvent event) {
-        selectorItemHandler.onSelectorItemClicked(this);
-    }
-
     @UiHandler("checkbox")
     public void onKeyUpEvent( KeyUpEvent keyUpEvent) {
         keyUpEvent.preventDefault();
@@ -87,6 +87,9 @@ public class PopupSelectableItem<T>
 
     private SelectorItemHandler selectorItemHandler;
     private T value;
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     CheckBox checkbox;
