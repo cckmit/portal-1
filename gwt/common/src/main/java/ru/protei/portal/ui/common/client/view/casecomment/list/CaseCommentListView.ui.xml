@@ -37,7 +37,11 @@
                                             <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
                                         </div>
                                     </fileuploader:AttachmentUploader>
-                                    <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
+                                    <div class="text-muted pull-right">
+                                        <small ui:field="markupLabel"/>
+                                        <g:Anchor styleName="far fa-question-circle" ui:field="markupLink" target="_blank"/>
+                                    </div>
+
                                 </div>
                             </div>
 
