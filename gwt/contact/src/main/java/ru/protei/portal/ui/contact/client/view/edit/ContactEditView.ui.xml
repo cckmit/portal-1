@@ -225,9 +225,6 @@
                             <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.accountPassword}"/>
-                                    <g:Anchor ui:field="generatePassword" styleName="generate-password-wand" href="#" title="{lang.contactGeneratePassword}">
-                                        <i class="fas fa-magic"/>
-                                    </g:Anchor>
                                 </label>
                                 <g:PasswordTextBox ui:field="password" styleName="form-control p-r-30"/>
                                 <div class="message-preview text-box">

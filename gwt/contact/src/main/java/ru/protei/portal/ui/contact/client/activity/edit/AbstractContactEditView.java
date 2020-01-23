@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -13,6 +14,8 @@ import java.util.Date;
  */
 public interface AbstractContactEditView extends IsWidget {
     void setActivity( AbstractContactEditActivity activity );
+
+    void setGeneratePasswordHandler(ClickHandler handler);
 
     HasValue<String> firstName();
     HasValue<String> lastName();
@@ -128,6 +131,8 @@ public interface AbstractContactEditView extends IsWidget {
     HasVisibility loginErrorLabelVisibility();
 
     void setPasswordVisible(Boolean isPasswordVisible);
+
+    void setPasswordGenPopupVisible(boolean isVisible);
 
     HasValue<Boolean> showPassword();
 }

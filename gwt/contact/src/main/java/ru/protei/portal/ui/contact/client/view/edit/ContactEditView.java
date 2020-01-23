@@ -4,9 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,10 +16,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -48,11 +49,17 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
+        password.addDomHandler(event -> changeContactLoginTimer.schedule( 300 ), InputEvent.getType());
     }
 
     @Override
     public void setActivity(AbstractContactEditActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public void setGeneratePasswordHandler(ClickHandler handler) {
+        passwordGenPopup.addClickHandler(handler);
     }
 
     @Override
@@ -353,6 +360,15 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public void setPasswordGenPopupVisible(boolean isVisible) {
+        if (isVisible) {
+            showPasswordGenPopup();
+        } else {
+            passwordGenPopup.hide();
+        }
+    }
+
+    @Override
     public HasValue<Boolean> showPassword() {
         return showPassword;
     }
@@ -381,12 +397,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiHandler("login")
     public void onChangeContactLogin( InputEvent inputEvent ) {
         verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle() );
-        changeContactLoginTimer.cancel();
-        changeContactLoginTimer.schedule( 300 );
-    }
-
-    @UiHandler("password")
-    public void onChangeContactPassword( KeyUpEvent keyUpEvent ) {
         changeContactLoginTimer.cancel();
         changeContactLoginTimer.schedule( 300 );
     }
@@ -423,18 +433,22 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     }
 
-    @UiHandler("generatePassword")
-    public void onGeneratePasswordClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.generatePassword();
+    @UiHandler("password")
+    public void onPasswordClicked(ClickEvent event) {
+        if (!StringUtils.isBlank(password().getText())) {
+            return;
         }
+
+        showPasswordGenPopup();
     }
 
     private void resetValidateTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);
+    }
+
+    private void showPasswordGenPopup() {
+        passwordGenPopup.showNear(password);
     }
 
     @UiField
@@ -552,9 +566,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     PasswordTextBox password;
 
     @UiField
-    Anchor generatePassword;
-
-    @UiField
     ToggleButton showPassword;
 
     @UiField
@@ -610,6 +621,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
             }
         }
     };
+
+    private PasswordGenPopup passwordGenPopup = new PasswordGenPopup();
 
     NameStatus status;
 
