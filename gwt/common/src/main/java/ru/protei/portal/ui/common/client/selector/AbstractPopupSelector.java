@@ -62,11 +62,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     @Override
     public void onUnload() {
-        clearPopupItems();
-        if (getPopup() instanceof SelectorPopupWithSearch) {
-            ((SelectorPopupWithSearch) getPopup()).clearSearchField();
-            getSelector().setSearchString(null);
-        }
+        clearSelector();
     }
 
     @Override
@@ -104,9 +100,11 @@ public abstract class AbstractPopupSelector<T> extends Composite
         });
     }
 
-    public void clearSearchField(){
+    public void clearSelector(){
+        clearPopupItems();
         if (getPopup() instanceof SelectorPopupWithSearch) {
             ((SelectorPopupWithSearch) getPopup()).clearSearchField();
+            getSelector().setSearchString(null);
         }
     }
 

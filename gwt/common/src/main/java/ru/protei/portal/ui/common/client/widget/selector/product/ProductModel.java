@@ -54,8 +54,7 @@ public abstract class ProductModel implements Activity,
 
     public void setUnitTypes( En_DevUnitType... enDevUnitTypes ) {
         cache.clearCache();
-        if (query.getTypes() != null) query.getTypes().clear();
-        query.addTypes( enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()) );
+        query.setTypes( enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()) );
     }
 
     private SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {

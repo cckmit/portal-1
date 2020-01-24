@@ -258,8 +258,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiHandler( "type" )
     public void onTypeChanged(ValueChangeEvent<En_DevUnitType> event) {
-        children.clearSearchField();
-        parents.clearSearchField();
+        children.clearSelector();
+        parents.clearSelector();
 
         if (activity != null) {
             activity.onTypeChanged(event.getValue());
