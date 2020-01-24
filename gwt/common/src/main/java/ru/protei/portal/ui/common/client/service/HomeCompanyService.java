@@ -26,6 +26,7 @@ public abstract class HomeCompanyService implements Activity {
             companyConsumer.accept(homeCompanyIds.contains(companyId));
         } else {
             companyService.getAllHomeCompanyIds(new FluentCallback<List<Long>>()
+                    .withError(throwable -> companyConsumer.accept(false))
                     .withSuccess(companyIds -> {
                         setHomeCompanyIds(companyIds);
                         companyConsumer.accept(homeCompanyIds.contains(companyId));
