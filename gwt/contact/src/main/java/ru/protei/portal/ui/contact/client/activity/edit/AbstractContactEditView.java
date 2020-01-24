@@ -133,6 +133,4 @@ public interface AbstractContactEditView extends IsWidget {
     void setPasswordVisible(Boolean isPasswordVisible);
 
     void setPasswordGenPopupVisible(boolean isVisible);
-
-    HasValue<Boolean> showPassword();
 }

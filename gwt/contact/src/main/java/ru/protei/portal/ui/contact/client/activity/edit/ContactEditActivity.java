@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.GenerationPasswordUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -167,7 +166,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     public void onChangeContactLogin() {
         view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
-        view.setPasswordGenPopupVisible(StringUtils.isBlank(view.password().getText()));
 
         String login = view.login().getText().trim();
 
@@ -198,11 +196,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     }
                 }
         );
-    }
-
-    @Override
-    public void onChangeContactPassword() {
-        view.sendWelcomeEmailVisibility().setVisible(true);
     }
 
     @Override
@@ -256,13 +249,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     @Override
-    public void generatePassword() {
-        view.password().setText(GenerationPasswordUtils.generate(8));
-    }
-
-    @Override
-    public void onShowPasswordClicked() {
-        view.setPasswordVisible(view.showPassword().getValue());
+    public void onPasswordGenerationClicked() {
+        String password = GenerationPasswordUtils.generate(8);
+        view.password().setText(password);
+        view.confirmPassword().setText(password);
     }
 
     private boolean validateSaveButton() {
@@ -426,12 +416,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.login().setText(userLogin.getUlogin());
         view.password().setText("");
         view.confirmPassword().setText("");
-        view.showPassword().setValue(false, true);
-        view.setGeneratePasswordHandler(event -> {
-            String password = GenerationPasswordUtils.generate(8);
-            view.password().setText(password);
-            view.confirmPassword().setText(password);
-        });
+        view.setPasswordVisible(false);
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());

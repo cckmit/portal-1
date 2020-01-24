@@ -3892,17 +3892,6 @@ table {
   @extend .required;
 }
 
-.text-small {
-  font-size: 85%;
-}
-
-.generate-password-wand {
-  color: #626262;
-  &:hover {
-    color: teal;
-  }
-}
-
 .popup-with-arrow {
   position: relative;
   margin-top: 10px;

@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -49,7 +50,15 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
-        password.addDomHandler(event -> changeContactLoginTimer.schedule( 300 ), InputEvent.getType());
+        password.addDomHandler(event -> {
+            changeContactLoginTimer.schedule( 300 );
+            setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
+        }, InputEvent.getType());
+        passwordGenPopup.addClickHandler(event -> {
+            if (activity != null) {
+                activity.onPasswordGenerationClicked();
+            }
+        });
     }
 
     @Override
@@ -362,15 +371,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public void setPasswordGenPopupVisible(boolean isVisible) {
         if (isVisible) {
-            showPasswordGenPopup();
+            passwordGenPopup.showNear(password);
         } else {
             passwordGenPopup.hide();
         }
-    }
-
-    @Override
-    public HasValue<Boolean> showPassword() {
-        return showPassword;
     }
 
     @UiHandler( "saveButton" )
@@ -428,27 +432,17 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiHandler("showPassword")
     public void onShowPasswordClicked(ValueChangeEvent<Boolean> event) {
-        if (activity != null) {
-            activity.onShowPasswordClicked();
-        }
+        setPasswordVisible(event.getValue());
     }
 
     @UiHandler("password")
     public void onPasswordClicked(ClickEvent event) {
-        if (!StringUtils.isBlank(password().getText())) {
-            return;
-        }
-
-        showPasswordGenPopup();
+        setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
     }
 
     private void resetValidateTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);
-    }
-
-    private void showPasswordGenPopup() {
-        passwordGenPopup.showNear(password);
     }
 
     @UiField
