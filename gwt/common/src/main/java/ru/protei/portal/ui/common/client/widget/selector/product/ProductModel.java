@@ -51,7 +51,10 @@ public abstract class ProductModel implements Activity,
     public void setUnitState( En_DevUnitState devUnitState ) {
         query.setState( devUnitState );
     }
+
     public void setUnitTypes( En_DevUnitType... enDevUnitTypes ) {
+        cache.clearCache();
+        if (query.getTypes() != null) query.getTypes().clear();
         query.addTypes( enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()) );
     }
 
