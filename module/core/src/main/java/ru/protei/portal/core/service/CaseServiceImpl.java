@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;

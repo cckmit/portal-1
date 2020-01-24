@@ -3,8 +3,6 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;

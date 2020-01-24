@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;

@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
@@ -47,8 +46,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private PortalConfig portalConfig;
     @Autowired
     private YoutrackService youtrackService;
-    @Autowired
-    private EventPublisherService publisherService;
 
     @Autowired
     private LockService lockService;
