@@ -48,6 +48,9 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasValidable stateValidator();
     HasValidable importanceValidator();
     HasValidable companyValidator();
+    HasValidable initiatorValidator();
+    HasValidable managerValidator();
+    HasValidable productValidator();
 
     HasEnabled stateEnabled();
     HasEnabled importanceEnabled();
