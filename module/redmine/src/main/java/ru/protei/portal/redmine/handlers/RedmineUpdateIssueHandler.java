@@ -49,7 +49,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("Object with id {} saved", object.getId());
     }
 
-    @Transactional
     protected void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
 
         //Synchronize comments

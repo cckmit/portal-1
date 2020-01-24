@@ -40,7 +40,6 @@ public class CaseUpdaterFactory {
             final RedmineToCrmEntry redmineStatusEntry = statusMapEntryDAO.getLocalStatus(endpoint.getStatusMapId(), newStatus);
 
             if (redmineStatusEntry != null) {
-                logger.debug("Found status id {}", redmineStatusEntry.getLocalStatusId());
 
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
                 final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
@@ -59,7 +58,7 @@ public class CaseUpdaterFactory {
                         oldMeta,
                         new CaseObjectMeta(object)));
             } else {
-                logger.debug("Status was not found");
+                logger.warn("Status was not found");
             }
         }
     }
@@ -73,7 +72,6 @@ public class CaseUpdaterFactory {
             final RedminePriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByRedminePriorityId(newPriority, endpoint.getPriorityMapId());
 
             if (priorityMapEntry != null) {
-                logger.debug("Found priority level id {}", priorityMapEntry.getLocalPriorityId());
 
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
                 final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
@@ -91,7 +89,7 @@ public class CaseUpdaterFactory {
                         oldMeta,
                         new CaseObjectMeta(object)));
             } else {
-                logger.debug("Priority was not found");
+                logger.warn("Priority was not found");
             }
         }
     }

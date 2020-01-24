@@ -295,7 +295,7 @@ public final class RedmineServiceImpl implements RedmineService {
         final RedmineEndpoint endpoint = redmineEndpointDAO.getByCompanyIdAndProjectId(companyId, projectId);
         final Issue issue = getIssueById(issueId, endpoint);
         if (issue == null) {
-            logger.debug("Issue with id {} was not found", issueId);
+            logger.warn("Issue with id {} was not found", issueId);
             return;
         }
 
