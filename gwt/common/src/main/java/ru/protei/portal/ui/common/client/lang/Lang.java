@@ -1981,4 +1981,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentMemberWorkDocumentationUpload();
 
     String contactGeneratePassword();
+
+    String contactPasswordIsDisplay();
 }

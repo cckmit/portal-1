@@ -129,8 +129,4 @@ public interface AbstractContactEditView extends IsWidget {
     NameStatus getContactLoginStatus();
 
     HasVisibility loginErrorLabelVisibility();
-
-    void setPasswordVisible(Boolean isPasswordVisible);
-
-    void setPasswordGenPopupVisible(boolean isVisible);
 }

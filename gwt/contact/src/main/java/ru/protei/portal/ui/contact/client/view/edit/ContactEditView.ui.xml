@@ -229,14 +229,18 @@
                                 <g:PasswordTextBox ui:field="password" styleName="form-control p-r-30"/>
                                 <div class="message-preview text-box">
                                     <g:ToggleButton ui:field="showPassword" styleName="btn show-preview-btn"
-                                                    title="{lang.commentPreviewIsDisplay}"/>
+                                                    title="{lang.contactPasswordIsDisplay}"/>
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.accountConfirmPassword}"/>
                                 </label>
-                                <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>
+                                <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control p-r-30"/>
+                                <div class="message-preview text-box">
+                                    <g:ToggleButton ui:field="showConfirmPassword" styleName="btn show-preview-btn"
+                                                    title="{lang.contactPasswordIsDisplay}"/>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -416,7 +416,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.login().setText(userLogin.getUlogin());
         view.password().setText("");
         view.confirmPassword().setText("");
-        view.setPasswordVisible(false);
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());

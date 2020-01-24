@@ -362,21 +362,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return loginLabel.getInnerText();
     }
 
-    @Override
-    public void setPasswordVisible(Boolean isPasswordVisible) {
-        password.getElement().setAttribute("type", isPasswordVisible ? "text" : "password");
-        confirmPassword.getElement().setAttribute("type", isPasswordVisible ? "text" : "password");
-    }
-
-    @Override
-    public void setPasswordGenPopupVisible(boolean isVisible) {
-        if (isVisible) {
-            passwordGenPopup.showNear(password);
-        } else {
-            passwordGenPopup.hide();
-        }
-    }
-
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -432,12 +417,25 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiHandler("showPassword")
     public void onShowPasswordClicked(ValueChangeEvent<Boolean> event) {
-        setPasswordVisible(event.getValue());
+        password.getElement().setAttribute("type", event.getValue() ? "text" : "password");
+    }
+
+    @UiHandler("showConfirmPassword")
+    public void onShowConfirmPasswordClicked(ValueChangeEvent<Boolean> event) {
+        confirmPassword.getElement().setAttribute("type", event.getValue() ? "text" : "password");
     }
 
     @UiHandler("password")
     public void onPasswordClicked(ClickEvent event) {
         setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
+    }
+
+    private void setPasswordGenPopupVisible(boolean isVisible) {
+        if (isVisible) {
+            passwordGenPopup.showNear(password);
+        } else {
+            passwordGenPopup.hide();
+        }
     }
 
     private void resetValidateTimer() {
@@ -561,6 +559,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     ToggleButton showPassword;
+
+    @UiField
+    ToggleButton showConfirmPassword;
 
     @UiField
     Element verifiableIcon;

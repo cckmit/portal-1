@@ -3941,8 +3941,8 @@ table {
   }
 }
 
-.export-popup {
-  background-color: white;
+.pwd-gen-popup {
+  background-color: #ededed;
   border: 1px solid #cccccc;
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
@@ -3951,23 +3951,9 @@ table {
   font-size: 12px;
   padding: 10px;
 
-  &.pwd-gen-popup {
-    background-color: #ededed;
-    .small-buttons {
-      button {
-        line-height: 10px;
-      }
-    }
-  }
-
-  .form-control {
-    &.has-error {
-      border-color: red;
-    }
-
-    &.add-route-after {
-      height: 26px;
-      width: 151px;
+  .small-buttons {
+    button {
+      line-height: 10px;
     }
   }
 }
