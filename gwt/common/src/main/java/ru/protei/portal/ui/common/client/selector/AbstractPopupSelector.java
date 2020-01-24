@@ -62,11 +62,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     @Override
     public void onUnload() {
-        clearPopupItems();
-        if (getPopup() instanceof SelectorPopupWithSearch) {
-            ((SelectorPopupWithSearch) getPopup()).clearSearchField();
-            getSelector().setSearchString(null);
-        }
+        clearSelector();
     }
 
     @Override
@@ -102,6 +98,14 @@ public abstract class AbstractPopupSelector<T> extends Composite
                 return selectorModel.get(elementIndex, AbstractPopupSelector.this);
             }
         });
+    }
+
+    public void clearSelector(){
+        clearPopupItems();
+        if (getPopup() instanceof SelectorPopupWithSearch) {
+            ((SelectorPopupWithSearch) getPopup()).clearSearchField();
+            getSelector().setSearchString(null);
+        }
     }
 
     public void setAsyncSearchModel( final AsyncSearchSelectorModel<T> selectorModel) {
