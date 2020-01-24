@@ -22,7 +22,9 @@ public class RedmineBootstrapService {
         //updateCreationDateAttachments();
         //updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
         //updateNullIssueCreator();
-        updateCaseObjectById(152767L);
+        //updateCaseObjectById(164679);
+        //createCaseObjectByIssueId(210479);
+
     }
 
     private void updateCreationDateAttachments() {
@@ -49,6 +51,15 @@ public class RedmineBootstrapService {
             logger.debug("Update case object with id {} started", caseId);
             redmineService.updateCaseObjectById(caseId);
             logger.debug("Update case object with id {} ended", caseId);
+        }
+    }
+
+    private void createCaseObjectByIssueId(int issueId) {
+        /* for one-time only before Redmine integration enabled */
+        if (portalConfig.data().integrationConfig().isRedminePatchEnabled()) {
+            logger.debug("Create case object by issue with id {} started", issueId);
+            redmineService.createCaseObjectByIssue(issueId, 2934, "296");
+            logger.debug("Create case object by issue with id {} ended", issueId);
         }
     }
 

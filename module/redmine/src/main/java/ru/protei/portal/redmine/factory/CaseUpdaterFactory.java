@@ -35,12 +35,11 @@ public class CaseUpdaterFactory {
         @Override
         public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value) {
 
-            Integer newStatus = parseStatus(value);
+            Integer newStatus = parseToInteger(value);
             logger.debug("Trying to get portal status id matching with redmine {}", newStatus);
             final RedmineToCrmEntry redmineStatusEntry = statusMapEntryDAO.getLocalStatus(endpoint.getStatusMapId(), newStatus);
 
             if (redmineStatusEntry != null) {
-                logger.debug("Found status id {}", redmineStatusEntry.getLocalStatusId());
 
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
                 final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
@@ -59,7 +58,7 @@ public class CaseUpdaterFactory {
                         oldMeta,
                         new CaseObjectMeta(object)));
             } else {
-                logger.debug("Status was not found");
+                logger.warn("Status was not found");
             }
         }
     }
@@ -68,11 +67,11 @@ public class CaseUpdaterFactory {
         @Override
         public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value) {
 
+            Integer newPriority = parseToInteger(value);
             logger.debug("Trying to get portal priority level id matching with redmine {}", value);
-            final RedminePriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByRedminePriorityName(value, endpoint.getPriorityMapId());
+            final RedminePriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByRedminePriorityId(newPriority, endpoint.getPriorityMapId());
 
             if (priorityMapEntry != null) {
-                logger.debug("Found priority level id {}", priorityMapEntry.getLocalPriorityId());
 
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
                 final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
@@ -90,7 +89,7 @@ public class CaseUpdaterFactory {
                         oldMeta,
                         new CaseObjectMeta(object)));
             } else {
-                logger.debug("Priority was not found");
+                logger.warn("Priority was not found");
             }
         }
     }
@@ -147,11 +146,11 @@ public class CaseUpdaterFactory {
                 put(DESCRIPTION_CHANGE, new CaseDescriptionUpdater());
             }};
 
-    private Integer parseStatus(String value) {
+    private Integer parseToInteger(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            logger.warn("Can't parse status {} to Integer", value);
+            logger.warn("Can't parse value {} to Integer", value);
             return null;
         }
     }

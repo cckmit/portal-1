@@ -49,7 +49,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("Object with id {} saved", object.getId());
     }
 
-    @Transactional
     protected void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
 
         //Synchronize comments
@@ -67,7 +66,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         //Synchronize status, priority, name, info
         latestJournals
                 .stream()
-                .filter(x -> StringUtils.isEmpty(x.getNotes()))
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .forEach(journal -> journal.getDetails()
                         .stream()
