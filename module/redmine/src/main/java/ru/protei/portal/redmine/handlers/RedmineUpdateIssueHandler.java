@@ -67,7 +67,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         //Synchronize status, priority, name, info
         latestJournals
                 .stream()
-                .filter(x -> StringUtils.isEmpty(x.getNotes()))
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .forEach(journal -> journal.getDetails()
                         .stream()
