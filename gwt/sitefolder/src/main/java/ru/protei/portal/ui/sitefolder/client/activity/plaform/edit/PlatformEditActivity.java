@@ -240,7 +240,9 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             return;
         }
 
-        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), companyId).readOnly());
+        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent( new ContactEvents.ShowConciseTable( view.contactsContainer(), companyId ).readOnly() );
+        }
     }
 
     private void fillPlatform(Platform platform) {
