@@ -11,4 +11,7 @@ public interface DocumentTypeControllerAsync {
     void getDocumentTypes(DocumentTypeQuery query, AsyncCallback<List<DocumentType>> async);
 
     void saveDocumentType(DocumentType type, AsyncCallback<DocumentType> async);
+
+    void removeDocumentType(DocumentType type, AsyncCallback<Long> async);
+
 }

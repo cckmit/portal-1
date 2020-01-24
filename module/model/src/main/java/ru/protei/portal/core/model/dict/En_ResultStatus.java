@@ -163,5 +163,10 @@ public enum En_ResultStatus {
      * Эта ссылка уже привязана
      */
 
-    THIS_LINK_ALREADY_ADDED
+    THIS_LINK_ALREADY_ADDED,
+
+    /**
+     * Удаление использующегося типа документа запрещено
+     */
+    NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE
 }

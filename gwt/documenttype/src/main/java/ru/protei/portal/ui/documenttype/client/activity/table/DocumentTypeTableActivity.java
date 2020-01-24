@@ -14,11 +14,14 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterActivity;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterView;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class DocumentTypeTableActivity
         implements AbstractDocumentTypeTableActivity, AbstractDocumentTypeFilterActivity, Activity {
@@ -87,6 +90,33 @@ public abstract class DocumentTypeTableActivity
         view.updateRow(event.doctype);
     }
 
+    @Event
+    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+
+        if (documentTypeToRemove == null) {
+            return;
+        }
+
+        documentTypeService.removeDocumentType(documentTypeToRemove, new FluentCallback<Long>()
+                .withError(errorHandler)
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.documentTypeRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new DocumentTypeEvents.Show());
+                })
+        );
+    }
+
+    @Event
+    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+
+        documentTypeToRemove = null;
+    }
 
     @Override
     public void onFilterChanged() {
@@ -112,6 +142,15 @@ public abstract class DocumentTypeTableActivity
         onItemClicked(value);
     }
 
+    @Override
+    public void onRemoveClicked(DocumentType value) {
+        if (value == null) {
+            return;
+        }
+
+        documentTypeToRemove = value;
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentTypeRemoveConfirmMessage()));
+    }
 
     private void updateListAndSelect(DocumentType type ) {
         requestDocumentTypes();
@@ -153,6 +192,10 @@ public abstract class DocumentTypeTableActivity
     AbstractDocumentTypeTableView view;
     @Inject
     AbstractDocumentTypeFilterView filterView;
+    @Inject
+    DefaultErrorHandler errorHandler;
+
+    private DocumentType documentTypeToRemove;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
