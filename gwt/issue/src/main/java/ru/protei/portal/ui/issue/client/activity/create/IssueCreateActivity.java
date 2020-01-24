@@ -390,7 +390,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
+        homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(result != null && !result));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
