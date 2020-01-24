@@ -216,6 +216,21 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public HasValidable initiatorValidator() {
+        return initiator;
+    }
+
+    @Override
+    public HasValidable managerValidator() {
+        return manager;
+    }
+
+    @Override
+    public HasValidable productValidator() {
+        return product;
+    }
+
+    @Override
     public HasEnabled companyEnabled() {
         return company;
     }
