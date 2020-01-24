@@ -46,7 +46,7 @@ public class PasswordTextBoxWithVisibility extends Composite implements HasClick
 
     @Override
     public HandlerRegistration addInputHandler(InputHandler handler) {
-        return addHandler(handler, InputEvent.getType());
+        return addDomHandler(handler, InputEvent.getType());
     }
 
     @UiHandler("showPassword")
