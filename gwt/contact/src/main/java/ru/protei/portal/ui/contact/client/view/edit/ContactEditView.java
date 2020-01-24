@@ -23,6 +23,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
+import ru.protei.portal.ui.common.client.widget.passwordfield.HasPasswordVisibility;
+import ru.protei.portal.ui.common.client.widget.passwordfield.PasswordTextBoxWithVisibility;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -50,10 +52,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
-        password.addDomHandler(event -> {
-            changeContactLoginTimer.schedule( 300 );
-            setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
-        }, InputEvent.getType());
+
         passwordGenPopup.addClickHandler(event -> {
             if (activity != null) {
                 activity.onPasswordGenerationClicked();
@@ -362,6 +361,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return loginLabel.getInnerText();
     }
 
+    @Override
+    public HasPasswordVisibility passwordVisibility() {
+        return password;
+    }
+
+    @Override
+    public HasPasswordVisibility confirmPasswordVisibility() {
+        return confirmPassword;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -415,18 +424,14 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     }
 
-    @UiHandler("showPassword")
-    public void onShowPasswordClicked(ValueChangeEvent<Boolean> event) {
-        password.getElement().setAttribute("type", event.getValue() ? "text" : "password");
-    }
-
-    @UiHandler("showConfirmPassword")
-    public void onShowConfirmPasswordClicked(ValueChangeEvent<Boolean> event) {
-        confirmPassword.getElement().setAttribute("type", event.getValue() ? "text" : "password");
+    @UiHandler("password")
+    public void onPasswordClicked(ClickEvent event) {
+        setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
     }
 
     @UiHandler("password")
-    public void onPasswordClicked(ClickEvent event) {
+    public void onPasswordChanged(InputEvent event) {
+        changeContactLoginTimer.schedule( 300 );
         setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
     }
 
@@ -555,13 +560,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     ValidableTextBox login;
 
     @UiField
-    PasswordTextBox password;
-
-    @UiField
-    ToggleButton showPassword;
-
-    @UiField
-    ToggleButton showConfirmPassword;
+    PasswordTextBoxWithVisibility password;
 
     @UiField
     Element verifiableIcon;
@@ -570,7 +569,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     HTMLPanel infoPanel;
 
     @UiField
-    PasswordTextBox confirmPassword;
+    PasswordTextBoxWithVisibility confirmPassword;
 
     @UiField
     HTMLPanel contactFired;

@@ -1,40 +1,44 @@
 package ru.protei.portal.core.model.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class GenerationPasswordUtils {
-    private static List<String> symbols = new ArrayList<>();
+    private static List<Character> cons;
+    private static List<Character> vocal;
+    private static List<Character> numbers;
+    private static final int DEFAULT_PASSWORD_SIZE = 8;
+    private static final int DEFAULT_COUNT_OF_NUMBERS = 2;
 
     static {
-        Character symbol;
-
-//        [A-Z]
-        for (int i = 65; i < 91; i++) {
-            symbol = (char) i;
-            symbols.add(symbol.toString());
-        }
-
-//        [a-z]
-        for (int i = 97; i < 123; i++) {
-            symbol = (char) i;
-            symbols.add(symbol.toString());
-        }
-
-//        [0-9]
-        for (int i = 48; i < 58; i++) {
-            symbol = (char) i;
-            symbols.add(symbol.toString());
-        }
+        cons = Arrays.asList('b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z');
+        vocal = Arrays.asList('a', 'e', 'i', 'o', 'u');
+        numbers = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
     }
 
-    public static String generate(int countOfSymbols) {
+    public static String generate() {
+        return generate(DEFAULT_PASSWORD_SIZE, DEFAULT_COUNT_OF_NUMBERS);
+    }
+
+    public static String generate(int passwordSize, int countOfNumbers) {
+        if (passwordSize < countOfNumbers) {
+            return null;
+        }
+
         StringBuilder result = new StringBuilder();
         Random random = new Random();
 
-        for (int i = 0; i < countOfSymbols; i++) {
-            result.append(symbols.get(random.nextInt(symbols.size())));
+        for (int i = 0; i < passwordSize - countOfNumbers; i++) {
+            if (i % 2 == 0) {
+                result.append(cons.get(random.nextInt(cons.size())));
+            } else {
+                result.append(vocal.get(random.nextInt(vocal.size())));
+            }
+        }
+
+        for (int i = 0; i < countOfNumbers; i++) {
+            result.append(numbers.get(random.nextInt(numbers.size())));
         }
 
         return result.toString();

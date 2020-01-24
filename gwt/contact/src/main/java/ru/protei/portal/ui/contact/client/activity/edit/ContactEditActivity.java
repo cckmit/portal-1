@@ -250,7 +250,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onPasswordGenerationClicked() {
-        String password = GenerationPasswordUtils.generate(8);
+        String password = GenerationPasswordUtils.generate();
         view.password().setText(password);
         view.confirmPassword().setText(password);
     }
@@ -416,6 +416,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.login().setText(userLogin.getUlogin());
         view.password().setText("");
         view.confirmPassword().setText("");
+
+        view.passwordVisibility().setPasswordVisible(false);
+        view.confirmPasswordVisibility().setPasswordVisible(false);
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());

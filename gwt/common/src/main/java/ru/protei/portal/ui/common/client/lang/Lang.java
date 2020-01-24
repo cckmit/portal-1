@@ -1982,5 +1982,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactGeneratePassword();
 
-    String contactPasswordIsDisplay();
+    String passwordIsDisplay();
 }

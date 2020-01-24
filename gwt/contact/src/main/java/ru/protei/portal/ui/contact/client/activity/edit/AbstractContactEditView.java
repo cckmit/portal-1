@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.passwordfield.HasPasswordVisibility;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -129,4 +130,8 @@ public interface AbstractContactEditView extends IsWidget {
     NameStatus getContactLoginStatus();
 
     HasVisibility loginErrorLabelVisibility();
+
+    HasPasswordVisibility passwordVisibility();
+
+    HasPasswordVisibility confirmPasswordVisibility();
 }

@@ -6,7 +6,8 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:locale='urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:visiblepwd="urn:import:ru.protei.portal.ui.common.client.widget.passwordfield">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -226,21 +227,13 @@
                                 <label class="">
                                     <ui:text from="{lang.accountPassword}"/>
                                 </label>
-                                <g:PasswordTextBox ui:field="password" styleName="form-control p-r-30"/>
-                                <div class="message-preview text-box">
-                                    <g:ToggleButton ui:field="showPassword" styleName="btn show-preview-btn"
-                                                    title="{lang.contactPasswordIsDisplay}"/>
-                                </div>
+                                <visiblepwd:PasswordTextBoxWithVisibility ui:field="password"/>
                             </div>
                             <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.accountConfirmPassword}"/>
                                 </label>
-                                <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control p-r-30"/>
-                                <div class="message-preview text-box">
-                                    <g:ToggleButton ui:field="showConfirmPassword" styleName="btn show-preview-btn"
-                                                    title="{lang.contactPasswordIsDisplay}"/>
-                                </div>
+                                <visiblepwd:PasswordTextBoxWithVisibility ui:field="confirmPassword"/>
                             </div>
                         </div>
                     </div>
