@@ -13,12 +13,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
@@ -37,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@EnableTransactionManagement
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class, PortalApiController.class})
 @WebAppConfiguration
 public class TestPortalApiController extends BaseServiceTest {
@@ -156,6 +161,39 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data[*].initiatorCompanyId", everyItem(is(1))));
+    }
+
+    @Test
+    @Transactional
+    public void getProduct() throws Exception {
+        DevUnit product = makeProduct( );
+        createPostResultAction( "/api/products/" + product.getId(), null )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
+                .andExpect( jsonPath( "$.data.id").value(  product.getId().intValue() ) )
+                .andExpect( jsonPath( "$.data.historyVersion", is( product.getHistoryVersion() ) ) )
+                .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
+                .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
+        ;
+    }
+
+
+    @Test
+    @Transactional
+    public void updateProduct() throws Exception {
+        DevUnit devUnit = makeProduct( );
+
+        DevUnitInfo product = new DevUnitInfo();
+        product.setId( devUnit.getId() );
+        product.setHistoryVersion( "Updated historyVersion" );
+        product.setCdrDescription( "Updated cdrDescription" );
+        product.setConfiguration( "Updated configuration" );
+
+        createPostResultAction( "/api/products/update", product )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
+                .andExpect( jsonPath( "$.data").value(  product.getId().intValue() ) )
+        ;
     }
 
     @Test
@@ -331,13 +369,16 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {
-        return mockMvc.perform(
-                post(url)
-                        .header("Accept", "application/json")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(obj))
-        );
+        MockHttpServletRequestBuilder builder = post( url )
+                .header( "Accept", "application/json" )
+                .header( "authorization", "Basic " + Base64.getEncoder().encodeToString( (person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes() ) )
+                .contentType( MediaType.APPLICATION_JSON );
+
+        if(obj!=null){
+            builder.content(objectMapper.writeValueAsString(obj));
+        }
+
+        return mockMvc.perform( builder );
     }
 
     @Autowired

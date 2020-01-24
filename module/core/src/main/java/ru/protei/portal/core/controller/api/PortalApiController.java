@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.CaseApiQuery;
-import ru.protei.portal.core.model.query.CaseCommentApiQuery;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -20,22 +18,20 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
-import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.util.AuthUtils.authenticate;
 
 /**
  * Севрис для  API
@@ -55,6 +51,9 @@ public class PortalApiController {
     private CaseLinkService caseLinkService;
     @Autowired
     CaseCommentService caseCommentService;
+    @Autowired
+    private ProductService productService;
+
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
 
@@ -75,7 +74,7 @@ public class PortalApiController {
         log.info("API | getCaseList(): query={}", query);
 
         try {
-            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
 
             if (authTokenAPIResult.isError()) {
                 return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
@@ -108,7 +107,7 @@ public class PortalApiController {
         }
 
         try {
-            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
 
             if (authTokenAPIResult.isError()) {
                 return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
@@ -147,7 +146,7 @@ public class PortalApiController {
         }
 
         try {
-            Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
 
             if (authTokenAPIResult.isError()) {
                 return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
@@ -178,6 +177,30 @@ public class PortalApiController {
         }
     }
 
+    @PostMapping(value = "/products/{id:[0-9]+}")
+    public Result<DevUnitInfo> getProductInfo( HttpServletRequest request, HttpServletResponse response,
+                                               @PathVariable("id") Long productId ) {
+        log.info( "getProductInfo() productId={}", productId);
+
+        return authenticate( request, response, authService, sidGen, log ).flatMap( authToken ->
+                productService.getProductInfo( authToken, productId ) )
+                .ifOk( id -> log.info( "getProductInfo(): OK " ) )
+                .ifError( result -> log.warn( "getProductInfo(): Can`t get info for product id={}. {}",
+                        productId, result ) );
+    }
+
+    @PostMapping(value = "/products/update")
+    public Result<Long> updateProductByInfo( HttpServletRequest request, HttpServletResponse response,
+                                             @RequestBody DevUnitInfo product) {
+        log.info( "updateProductByInfo() product={} ", product);
+
+        return authenticate(request, response, authService, sidGen, log ).flatMap( authToken ->
+                productService.updateProductFromInfo( authToken, product ) )
+                .ifOk( id -> log.info( "updateProductByInfo(): OK " ) )
+                .ifError( result -> log.warn( "updateProductByInfo(): Can`t update product by info={}. {}",
+                        product, result ) );
+    }
+
 
     @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
     public Result<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
@@ -185,7 +208,7 @@ public class PortalApiController {
                                                 @PathVariable("youtrackId") String youtrackId ) {
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
+        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
                 .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
@@ -199,7 +222,7 @@ public class PortalApiController {
                                                       @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
+        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
                 .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
@@ -214,7 +237,7 @@ public class PortalApiController {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
         // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return AuthUtils.authenticate(request, response, authService, sidGen, log).flatMap( token ->
+        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
                 .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
@@ -230,7 +253,7 @@ public class PortalApiController {
 
         log.info("API | getCaseCommentList(): query={}", query);
 
-        Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+        Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
 
         if (authTokenAPIResult.isError()) {
             return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
