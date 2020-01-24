@@ -69,9 +69,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
         view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
-        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent() == null ? null : project.getContragent().getId()).readOnly());
+        showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }
-
 
     private void fillView( Platform value ) {
         if (value == null) {
@@ -93,7 +92,13 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
             view.setProject("", "");
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
             view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
-            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
+            showContacts(value.getCompanyId());
+        }
+    }
+
+    private void showContacts(Long companyId) {
+        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), companyId).readOnly());
         }
     }
 
