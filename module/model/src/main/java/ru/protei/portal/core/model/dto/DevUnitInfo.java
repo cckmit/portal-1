@@ -1,35 +1,22 @@
 package ru.protei.portal.core.model.dto;
 
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.util.Objects;
 
-@JdbcEntity(table = "dev_unit")
-public class Product extends AuditableObject {
+public class DevUnitInfo extends AuditableObject {
 
-    @JdbcId(name = DevUnit.Columns.ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name= DevUnit.Columns.UNIT_INFO)
-    private String description;
-
-    @JdbcColumn(name = DevUnit.Columns.CONFIGURATION)
     private String configuration;
 
-    @JdbcColumn(name = DevUnit.Columns.CDR_DESCRIPTION)
     private String cdrDescription;
 
-    @JdbcColumn(name = DevUnit.Columns.HISTORY_VERSION)
     private String historyVersion;
 
     @Override
     public String getAuditType() {
-        return PRODUCT;
+        return DEV_UNIT_INFO;
     }
 
     @Override
@@ -39,14 +26,6 @@ public class Product extends AuditableObject {
 
     public void setId( Long id ) {
         this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription( String description ) {
-        this.description = description;
     }
 
     public String getCdrDescription() {
@@ -73,13 +52,13 @@ public class Product extends AuditableObject {
         this.configuration = configuration;
     }
 
-    public static final String PRODUCT = "Product";
+    public static final String DEV_UNIT_INFO = "DevUnitInfo";
 
     @Override
     public boolean equals( Object o ) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
+        DevUnitInfo product = (DevUnitInfo) o;
         return Objects.equals( id, product.id );
     }
 
@@ -92,7 +71,6 @@ public class Product extends AuditableObject {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", description='" + description + '\'' +
                 ", cdrDescription='" + cdrDescription + '\'' +
                 ", historyVersion='" + historyVersion + '\'' +
                 ", configuration='" + configuration + '\'' +

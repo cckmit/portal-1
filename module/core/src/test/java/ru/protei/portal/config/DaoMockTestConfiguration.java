@@ -4,8 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.ProductDAO;
-import ru.protei.portal.core.model.dao.impl.ProductDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -88,11 +86,6 @@ public class DaoMockTestConfiguration {
     @Bean
     public DevUnitDAO getDevUnitDAO() {
         return  mock(DevUnitDAO.class);
-    }
-
-    @Bean
-    public ProductDAO getProductDAO() {
-        return  mock(ProductDAO.class);
     }
 
     @Bean

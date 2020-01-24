@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.struct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import ru.protei.portal.core.model.dto.Product;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 
 import java.io.Serializable;
@@ -32,7 +32,7 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = CaseNameAndDescriptionChangeRequest.class, name = "CaseNameAndDescriptionChangeRequest"),
         @JsonSubTypes.Type(value = CaseObjectCreateRequest.class, name = "CaseObjectCreateRequest"),
         @JsonSubTypes.Type(value = CaseObjectMeta.class, name = "CaseObjectMeta"),
-        @JsonSubTypes.Type(value = Product.class, name = Product.PRODUCT),
+        @JsonSubTypes.Type(value = DevUnitInfo.class, name = DevUnitInfo.DEV_UNIT_INFO),
 })
 public abstract class AuditableObject implements Serializable {
 

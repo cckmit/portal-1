@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.Product;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
@@ -178,26 +178,26 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/products/{id:[0-9]+}")
-    public Result<Product> getProductFields( HttpServletRequest request, HttpServletResponse response,
-                                           @PathVariable("id") Long productId ) {
-        log.info( "getProductFields() productId={}", productId);
+    public Result<DevUnitInfo> getProductInfo( HttpServletRequest request, HttpServletResponse response,
+                                               @PathVariable("id") Long productId ) {
+        log.info( "getProductInfo() productId={}", productId);
 
         return authenticate( request, response, authService, sidGen, log ).flatMap( authToken ->
-                productService.getProductFields( authToken, productId ) )
-                .ifOk( id -> log.info( "getProductFields(): OK " ) )
-                .ifError( result -> log.warn( "getProductFields(): Can`t get field for product id={}. {}",
+                productService.getProductInfo( authToken, productId ) )
+                .ifOk( id -> log.info( "getProductInfo(): OK " ) )
+                .ifError( result -> log.warn( "getProductInfo(): Can`t get info for product id={}. {}",
                         productId, result ) );
     }
 
     @PostMapping(value = "/products/update")
-    public Result<Long> updateProductFields( HttpServletRequest request, HttpServletResponse response,
-                                             @RequestBody Product product) {
-        log.info( "updateProductFields() product={} ", product);
+    public Result<Long> updateProductByInfo( HttpServletRequest request, HttpServletResponse response,
+                                             @RequestBody DevUnitInfo product) {
+        log.info( "updateProductByInfo() product={} ", product);
 
         return authenticate(request, response, authService, sidGen, log ).flatMap( authToken ->
-                productService.updateProductFields( authToken, product ) )
-                .ifOk( id -> log.info( "updateProductFields(): OK " ) )
-                .ifError( result -> log.warn( "updateProductFields(): Can`t update product fields for product={}. {}",
+                productService.updateProductFromInfo( authToken, product ) )
+                .ifOk( id -> log.info( "updateProductByInfo(): OK " ) )
+                .ifError( result -> log.warn( "updateProductByInfo(): Can`t update product by info={}. {}",
                         product, result ) );
     }
 

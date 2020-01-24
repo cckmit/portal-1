@@ -15,12 +15,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.Product;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
@@ -39,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@EnableTransactionManagement
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class, PortalApiController.class})
 @WebAppConfiguration
 public class TestPortalApiController extends BaseServiceTest {
@@ -161,28 +164,27 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
     public void getProduct() throws Exception {
         DevUnit product = makeProduct( );
         createPostResultAction( "/api/products/" + product.getId(), null )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
-                .andExpect( jsonPath( "$.data[*].id", everyItem( is( product.getId() ) ) ) )
-                .andExpect( jsonPath( "$.data[*].description", everyItem( is( product.getInfo() ) ) ) )
-                .andExpect( jsonPath( "$.data[*].historyVersion", everyItem( is( product.getHistoryVersion() ) ) ) )
-                .andExpect( jsonPath( "$.data[*].cdrDescription", everyItem( is( product.getCdrDescription() ) ) ) )
-                .andExpect( jsonPath( "$.data[*].configuration", everyItem( is( product.getConfiguration() ) ) ) )
+                .andExpect( jsonPath( "$.data.id").value(  product.getId().intValue() ) )
+                .andExpect( jsonPath( "$.data.historyVersion", is( product.getHistoryVersion() ) ) )
+                .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
+                .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
         ;
-        devUnitDAO.remove( product );
     }
 
 
     @Test
+    @Transactional
     public void updateProduct() throws Exception {
         DevUnit devUnit = makeProduct( );
 
-        Product product = new Product();
+        DevUnitInfo product = new DevUnitInfo();
         product.setId( devUnit.getId() );
-        product.setDescription( "Updated Info" );
         product.setHistoryVersion( "Updated historyVersion" );
         product.setCdrDescription( "Updated cdrDescription" );
         product.setConfiguration( "Updated configuration" );
@@ -190,10 +192,8 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction( "/api/products/update", product )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
-                .andExpect( jsonPath( "$.data[*]", everyItem( is( devUnit.getId() ) ) ) )
+                .andExpect( jsonPath( "$.data").value(  product.getId().intValue() ) )
         ;
-
-        devUnitDAO.remove( devUnit );
     }
 
     @Test

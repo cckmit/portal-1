@@ -22,22 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 public class BaseServiceTest {
 
-    public DevUnit makeProduct(  ) {
-        return makeProduct( "Test product_" + uniqueIndex.incrementAndGet() );
-    }
-
-    public DevUnit makeProduct( String productName ) {
-        DevUnit product = createProduct( productName );
-
-        product = makeProduct(product);
-        return product;
-    }
-
-    public DevUnit makeProduct( DevUnit product ) {
-        product.setId( devUnitDAO.persist( product ) );
-        return product;
-    }
-
     public static DevUnit createProduct( String productName ) {
         DevUnit product = new DevUnit();
         product.setName( productName );
@@ -217,6 +201,19 @@ public class BaseServiceTest {
         CaseTag caseTag = createCaseTag(tag1, type);
         caseTag.setId( caseTagDAO.persist( caseTag ) );
         return caseTag;
+    }
+
+    public DevUnit makeProduct(  ) {
+        return makeProduct( "Test product_" + uniqueIndex.incrementAndGet() );
+    }
+
+    public DevUnit makeProduct( String productName ) {
+        return makeProduct( createProduct( productName ) );
+    }
+
+    public DevUnit makeProduct( DevUnit product ) {
+        product.setId( devUnitDAO.persist( product ) );
+        return product;
     }
 
     // Remove

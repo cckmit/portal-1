@@ -8,11 +8,10 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
-import ru.protei.portal.core.model.dao.impl.ProductDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dto.Product;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
@@ -42,9 +41,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     DevUnitDAO devUnitDAO;
-
-    @Autowired
-    ProductDAO productDAO;
 
     @Autowired
     DevUnitChildRefDAO devUnitChildRefDAO;
@@ -93,15 +89,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Result<Product> getProductFields( AuthToken authToken, Long productId ) {
-        Product product = productDAO.get( productId );
-        if (product == null) return error( En_ResultStatus.NOT_FOUND );
-        return ok( product );
+    public Result<DevUnitInfo> getProductInfo( AuthToken authToken, Long productId ) {
+        DevUnit devUnit = devUnitDAO.get( productId );
+        if (devUnit == null) return error( En_ResultStatus.NOT_FOUND );
+        return ok( toInfo(devUnit) );
     }
 
     @Override
     @Transactional
-    public Result<Long> updateProductFields( AuthToken authToken, Product product ) {
+    public Result<Long> updateProductFromInfo( AuthToken authToken, DevUnitInfo product ) {
         return getProduct( authToken, product.getId() ).map( devUnit ->
                 updateFields( devUnit, product ) ).flatMap( devUnit ->
                 updateProduct( authToken, devUnit ) ).map(
@@ -266,12 +262,20 @@ public class ProductServiceImpl implements ProductService {
         return true;
     }
 
-    private DevUnit updateFields( DevUnit devUnit, Product product ) {
-        if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
+    private DevUnit updateFields( DevUnit devUnit, DevUnitInfo product ) {
         if (product.getConfiguration() != null) devUnit.setConfiguration( product.getConfiguration() );
         if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
         if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
         return devUnit;
+    }
+
+    private DevUnitInfo toInfo( DevUnit devUnit) {
+        DevUnitInfo info = new DevUnitInfo();
+        info.setId( devUnit.getId() );
+        info.setConfiguration( devUnit.getConfiguration() );
+        info.setCdrDescription( devUnit.getCdrDescription() );
+        info.setHistoryVersion( devUnit.getHistoryVersion() );
+        return info;
     }
 
     private final static Logger log = LoggerFactory.getLogger( ProductService.class );
