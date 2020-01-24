@@ -100,12 +100,10 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         if (event.isCaseImportanceChanged()) {
             final long priorityMapId = endpoint.getPriorityMapId();
             logger.debug("Trying to get redmine priority level id matching with portal: {}", event.getLastCaseMeta().getImpLevel());
-            final RedminePriorityMapEntry redminePriorityMapEntry =
-                    priorityMapEntryDAO.getByPortalPriorityId(event.getLastCaseMeta().getImpLevel(), priorityMapId);
+            final RedminePriorityMapEntry redminePriorityMapEntry = priorityMapEntryDAO.getByPortalPriorityId(event.getLastCaseMeta().getImpLevel(), priorityMapId);
             if (redminePriorityMapEntry != null) {
-                logger.debug("Found redmine priority level name: {}", redminePriorityMapEntry.getRedminePriorityName());
-                issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID)
-                        .setValue(redminePriorityMapEntry.getRedminePriorityName());
+                logger.debug("Found redmine priority level name: {}", redminePriorityMapEntry.getRedminePriorityId());
+                issue.setPriorityId(redminePriorityMapEntry.getRedminePriorityId());
             } else {
                 logger.debug("Redmine priority level not found");
             }
