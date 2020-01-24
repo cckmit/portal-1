@@ -21,15 +21,14 @@ public abstract class HomeCompanyService implements Activity {
         );
     }
 
-    public void isHomeCompany(Long companyId, Consumer<Boolean> companyConsumer) {
+    public void isHomeCompany(Long companyId, Consumer<Boolean> successConsumer) {
         if (homeCompanyIds != null) {
-            companyConsumer.accept(homeCompanyIds.contains(companyId));
+            successConsumer.accept(homeCompanyIds.contains(companyId));
         } else {
             companyService.getAllHomeCompanyIds(new FluentCallback<List<Long>>()
-                    .withError(throwable -> companyConsumer.accept(null))
                     .withSuccess(companyIds -> {
                         setHomeCompanyIds(companyIds);
-                        companyConsumer.accept(homeCompanyIds.contains(companyId));
+                        successConsumer.accept(homeCompanyIds.contains(companyId));
                     })
             );
         }

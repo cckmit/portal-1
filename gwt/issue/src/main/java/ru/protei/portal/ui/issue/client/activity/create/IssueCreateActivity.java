@@ -382,6 +382,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void initiatorSelectorAllowAddNew(Long companyId) {
+        issueMetaView.initiatorSelectorAllowAddNew(false);
+
         if (companyId == null) {
             return;
         }
@@ -390,7 +392,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(result != null && !result));
+        homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
