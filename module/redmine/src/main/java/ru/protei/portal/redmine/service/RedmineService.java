@@ -26,6 +26,8 @@ public interface RedmineService {
 
     void updateCaseObjectById(Long caseId);
 
+    void createCaseObjectByIssue(int issueId, long companyId, String projectId);
+
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);
 
