@@ -24,7 +24,6 @@ public class RedmineBootstrapService {
         //updateNullIssueCreator();
         //updateCaseObjectById(164679);
         //createCaseObjectByIssueId(210479);
-
     }
 
     private void updateCreationDateAttachments() {
