@@ -46,10 +46,25 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
     public void handleUpdateCaseObjectByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
         final CaseObject object = caseObjectDAO.get(caseId);
         compareAndUpdate(issue, object, endpoint);
-        logger.debug("Object with id {} saved", object.getId());
     }
 
-    protected void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+    public void handleUpdatePriorityByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
+        final CaseObject object = caseObjectDAO.get(caseId);
+        issue.getJournals()
+                .stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Journal::getCreatedOn))
+                .forEach(journal -> journal.getDetails()
+                        .stream()
+                        .filter(detail -> detail.getName().equals(RedmineChangeType.PRIORITY_CHANGE.getName()))
+                        .forEach(detail -> {
+                            caseUpdaterFactory
+                                    .getUpdater(RedmineChangeType.findByName(detail.getName()).get())
+                                    .apply(object, endpoint, journal, detail.getNewValue());
+                        }));
+    }
+
+    private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
 
         //Synchronize comments
         handleComments(issue, object, endpoint);
