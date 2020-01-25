@@ -98,13 +98,23 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void createAndStoreStateComment(Date created, Long authorId, Long stateId, Long caseObjectId) {
+    public Long createAndStoreStateComment(Date created, Long authorId, Long stateId, Long caseId) {
         CaseComment statusComment = new CaseComment();
         statusComment.setCreated(created);
         statusComment.setAuthorId(authorId);
         statusComment.setCaseStateId(stateId);
-        statusComment.setCaseId(caseObjectId);
-        caseCommentDAO.persist(statusComment);
+        statusComment.setCaseId(caseId);
+        return caseCommentDAO.persist(statusComment);
+    }
+
+    @Override
+    public Long createAndStoreImportanceComment(Date created, Long authorId, Integer importance, Long caseId) {
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setCreated(created);
+        stateChangeMessage.setAuthorId(authorId);
+        stateChangeMessage.setCaseImpLevel(importance);
+        stateChangeMessage.setCaseId(caseId);
+        return caseCommentDAO.persist(stateChangeMessage);
     }
 
     @Override

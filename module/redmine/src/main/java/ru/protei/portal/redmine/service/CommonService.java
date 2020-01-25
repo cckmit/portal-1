@@ -16,7 +16,9 @@ public interface CommonService {
 
     CaseComment processStoreComment(Long authorId, Long caseObjectId, CaseComment comment);
 
-    void createAndStoreStateComment(Date created, Long authorId, Long stateId, Long caseObjectId);
+    Long createAndStoreStateComment(Date created, Long authorId, Long stateId, Long caseObjectId);
+
+    Long createAndStoreImportanceComment(Date created, Long authorId, Integer importance, Long caseId);
 
     Person getAssignedPerson(Long companyId, User user);
 }
