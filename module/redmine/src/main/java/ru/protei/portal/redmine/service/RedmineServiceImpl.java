@@ -287,7 +287,8 @@ public final class RedmineServiceImpl implements RedmineService {
             return;
         }
 
-        updateHandler.handleUpdateCaseObjectByIssue(issue, caseId, endpoint);
+        //updateHandler.handleUpdateCaseObjectByIssue(issue, caseId, endpoint);
+        updateHandler.handleUpdatePriorityByIssue(issue, caseId, endpoint);
     }
 
     @Override

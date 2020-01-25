@@ -48,7 +48,10 @@ public class CaseUpdaterFactory {
                 caseObjectDAO.merge(object);
                 logger.debug("Updated case state, old={}, new={}", En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
 
-                commonService.createAndStoreStateComment(journal.getCreatedOn(), author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId());
+                Long stateCommentId = commonService.createAndStoreStateComment(journal.getCreatedOn(), author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId());
+                if (stateCommentId == null) {
+                    logger.error("State comment for the issue {} not saved!", object.getId());
+                }
 
                 publisherService.publishEvent(new CaseObjectMetaEvent(
                         this,
@@ -76,10 +79,14 @@ public class CaseUpdaterFactory {
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
                 final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
 
-
                 object.setImpLevel(priorityMapEntry.getLocalPriorityId());
                 caseObjectDAO.merge(object);
                 logger.debug("Updated case priority, old={}, new={}", En_ImportanceLevel.find(oldMeta.getImpLevel()), En_ImportanceLevel.find(object.getImpLevel()));
+
+                Long ImportanceCommentId = commonService.createAndStoreImportanceComment(journal.getCreatedOn(), author.getId(), priorityMapEntry.getLocalPriorityId(), object.getId());
+                if (ImportanceCommentId == null) {
+                    logger.error("Importance comment for the issue {} not saved!", object.getId());
+                }
 
                 publisherService.publishEvent(new CaseObjectMetaEvent(
                         this,
