@@ -7,17 +7,13 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.DocumentType;
-import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.query.DocumentTypeQuery;
-import ru.protei.portal.core.service.DocumentService;
 import ru.protei.portal.core.service.DocumentTypeService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.DocumentTypeController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -63,17 +59,9 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
     @Override
     public Long removeDocumentType(DocumentType documentType) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-
-        if (documentType == null) {
-            log.warn("document type id is null");
-            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
         Result<Long> response = documentTypeService.removeDocumentType(token, documentType);
-        log.info("remove document type, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.info("remove document type, id: {}", response.getData());
             return response.getData();
         }
 

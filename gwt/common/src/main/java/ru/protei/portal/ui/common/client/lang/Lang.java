@@ -1985,4 +1985,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentMemberWorkDocumentationUpload();
 
     String documentTypeUnableToRemoveUsedDocumentType();
+
+    String errUpdateOrDeleteLinkedObjectError();
 }

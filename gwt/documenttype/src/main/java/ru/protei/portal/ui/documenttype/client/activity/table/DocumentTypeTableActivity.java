@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.query.DocumentTypeQuery;
@@ -14,6 +15,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -101,8 +103,18 @@ public abstract class DocumentTypeTableActivity
         }
 
         documentTypeService.removeDocumentType(documentTypeToRemove, new FluentCallback<Long>()
-                .withError(errorHandler)
+                .withError(throwable -> {
+                    documentTypeToRemove = null;
+
+                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new NotifyEvents.Show(lang.documentTypeUnableToRemoveUsedDocumentType(), NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        errorHandler.accept(throwable);
+                    }
+                })
                 .withSuccess(result -> {
+                    documentTypeToRemove = null;
+
                     fireEvent(new NotifyEvents.Show(lang.documentTypeRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new DocumentTypeEvents.Show());
                 })

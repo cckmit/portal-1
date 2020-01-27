@@ -168,5 +168,10 @@ public enum En_ResultStatus {
     /**
      * Удаление использующегося типа документа запрещено
      */
-    NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE
+    NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE,
+
+    /**
+     * Ошибка обновления или удаления связанного объекта
+     */
+    UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR
 }

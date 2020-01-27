@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
