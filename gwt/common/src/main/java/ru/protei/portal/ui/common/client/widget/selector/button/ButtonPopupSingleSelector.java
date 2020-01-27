@@ -51,6 +51,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if (fireEvents) {
             ValueChangeEvent.fire(this, selectorValue);
         }
+
+        if (isValidable) {
+            setValid(isValid());
+        }
     }
 
     @Override
@@ -136,6 +140,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         showValue(value);
         getPopup().hide();
         ValueChangeEvent.fire(this, value);
+
+        if (isValidable) {
+            setValid(isValid());
+        }
     }
 
 

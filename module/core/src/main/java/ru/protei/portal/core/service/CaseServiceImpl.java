@@ -138,7 +138,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
+        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState());
         if (stateMessageId == null) {
             log.error("State message for the issue {} not saved!", caseId);
         }
@@ -152,6 +152,14 @@ public class CaseServiceImpl implements CaseService {
             Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseObject.getId(), caseObject.getManager().getId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
+        if (caseObject.getTimeElapsed() != null && caseObject.getTimeElapsed() > 0L) {
+            Long timeElapsedMessage = createAndPersistTimeElapsedMessage(token.getPersonId(), caseId, caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
+
+            if (timeElapsedMessage == null) {
+                log.error("Time elapsed message for the issue {} not saved!", caseId);
             }
         }
 
@@ -298,7 +306,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!Objects.equals(oldCaseMeta.getState(), caseMeta.getState())) {
-            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getState(), null, null);
+            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getState());
             if (messageId == null) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -586,16 +594,23 @@ public class CaseServiceImpl implements CaseService {
         return ok(caseNumber);
     }
 
-    private Long createAndPersistStateMessage(Long authorId, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
+    private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthorId(authorId);
+        stateChangeMessage.setCreated(new Date());
+        stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setTimeElapsed(timeElapsed);
+        stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
+
+        return caseCommentDAO.persist(stateChangeMessage);
+    }
+
+    private Long createAndPersistStateMessage(Long authorId, Long caseId, En_CaseState state) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseStateId((long)state.getId());
-        if (timeElapsed != null && timeElapsed > 0L) {
-            stateChangeMessage.setTimeElapsed(timeElapsed);
-            stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
-        }
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
