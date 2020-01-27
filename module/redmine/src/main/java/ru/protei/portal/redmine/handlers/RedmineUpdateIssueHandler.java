@@ -109,7 +109,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .reduce((o1, o2) -> o2)
                 .orElse(null);
         final Date latestCreated = (comment != null) ? comment.getCreated() : issue.getCreatedOn();
-        logger.debug("Last comment was synced on {}, with id {}", latestCreated);
+        logger.debug("Last comment was synced on {}", latestCreated);
 
         logger.debug("Starting adding new comments");
 
