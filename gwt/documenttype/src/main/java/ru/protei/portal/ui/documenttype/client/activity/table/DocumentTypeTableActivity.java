@@ -23,7 +23,6 @@ import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentT
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterView;
 
 import java.util.List;
-import java.util.Objects;
 
 public abstract class DocumentTypeTableActivity
         implements AbstractDocumentTypeTableActivity, AbstractDocumentTypeFilterActivity, Activity {
@@ -92,44 +91,6 @@ public abstract class DocumentTypeTableActivity
         view.updateRow(event.doctype);
     }
 
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-
-        if (documentTypeToRemove == null) {
-            return;
-        }
-
-        documentTypeService.removeDocumentType(documentTypeToRemove, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    documentTypeToRemove = null;
-
-                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
-                        fireEvent(new NotifyEvents.Show(lang.documentTypeUnableToRemoveUsedDocumentType(), NotifyEvents.NotifyType.ERROR));
-                    } else {
-                        errorHandler.accept(throwable);
-                    }
-                })
-                .withSuccess(result -> {
-                    documentTypeToRemove = null;
-
-                    fireEvent(new NotifyEvents.Show(lang.documentTypeRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new DocumentTypeEvents.Show());
-                })
-        );
-    }
-
-    @Event
-    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-
-        documentTypeToRemove = null;
-    }
-
     @Override
     public void onFilterChanged() {
         requestDocumentTypes();
@@ -160,8 +121,23 @@ public abstract class DocumentTypeTableActivity
             return;
         }
 
-        documentTypeToRemove = value;
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentTypeRemoveConfirmMessage()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.documentTypeRemoveConfirmMessage(), onConfirmRemoveClicked(value)));
+    }
+
+    private ConfirmDialogEvents.Show.Action onConfirmRemoveClicked(DocumentType value) {
+        return () -> documentTypeService.removeDocumentType(value, new FluentCallback<Long>()
+                .withError(throwable -> {
+                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new NotifyEvents.Show(lang.documentTypeUnableToRemoveUsedDocumentType(), NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        errorHandler.accept(throwable);
+                    }
+                })
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.documentTypeRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new DocumentTypeEvents.Show());
+                })
+        );
     }
 
     private void updateListAndSelect(DocumentType type ) {
@@ -186,7 +162,7 @@ public abstract class DocumentTypeTableActivity
             }
         });
     }
-    
+
     private DocumentTypeQuery makeQuery() {
         En_SortDir sortDir = filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC;
         return new DocumentTypeQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir, filterView.documentCategories().getValue() );
@@ -206,8 +182,6 @@ public abstract class DocumentTypeTableActivity
     AbstractDocumentTypeFilterView filterView;
     @Inject
     DefaultErrorHandler errorHandler;
-
-    private DocumentType documentTypeToRemove;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

@@ -215,7 +215,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
+        ConfirmDialogEvents.Show show = new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage());
+        show.confirmButtonText = lang.contactFire();
+        fireEvent( show );
     }
 
     @Override

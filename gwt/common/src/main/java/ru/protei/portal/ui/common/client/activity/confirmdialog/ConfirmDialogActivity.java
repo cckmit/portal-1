@@ -18,11 +18,12 @@ public abstract class ConfirmDialogActivity implements Activity, AbstractConfirm
 
     @Event
     public void onConfirmDialogShow( ConfirmDialogEvents.Show event ) {
-        if ( event.identity == null ) {
+        if ( event.identity == null && event.action == null ) {
             return;
         }
 
         identity = event.identity;
+        action = event.action;
         view.setText( event.text );
         if ( event.confirmButtonText != null ) {
             view.setConfirmButtonText( event.confirmButtonText );
@@ -33,17 +34,41 @@ public abstract class ConfirmDialogActivity implements Activity, AbstractConfirm
     @Override
     public void onConfirmClicked() {
         view.hide();
-        fireEvent( new ConfirmDialogEvents.Confirm( identity ) );
+
+        String identityTmp = identity;
+        if (identityTmp != null) {
+            fireEvent( new ConfirmDialogEvents.Confirm(identityTmp) );
+            identity = null;
+        }
+
+        ConfirmDialogEvents.Show.Action actionTmp = action;
+        if (actionTmp != null) {
+            action.onConfirm();
+            action = null;
+        }
     }
 
     @Override
     public void onCancelClicked() {
         view.hide();
-        fireEvent( new ConfirmDialogEvents.Cancel( identity ) );
+
+        String identityTmp = identity;
+        if (identityTmp != null) {
+            fireEvent( new ConfirmDialogEvents.Cancel( identityTmp ) );
+            identity = null;
+        }
+
+        ConfirmDialogEvents.Show.Action actionTmp = action;
+        if (actionTmp != null) {
+            action.onCancel();
+            action = null;
+        }
     }
 
     @Inject
     AbstractConfirmDialogView view;
 
     String identity;
+
+    private ConfirmDialogEvents.Show.Action action;
 }
