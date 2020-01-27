@@ -8,14 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.JiraCompanyGroup;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.service.JiraIntegrationQueueService;
+import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
@@ -37,6 +40,8 @@ public class JiraEventHandlerImpl {
     JiraCompanyGroupDAO jiraCompanyGroupDAO;
     @Autowired
     JiraEndpointDAO jiraEndpointDAO;
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
 
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private EntityCache<JiraEndpoint> jiraEndpointCache() {
@@ -126,18 +131,16 @@ public class JiraEventHandlerImpl {
                 Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
         );
 
-        if (endpoint == null) {
-            logger.warn("jiraWebhook() unable to find end-point record for original company id jira-issue company={}, project={}", originalCompanyId, issue.getProject());
-            Long endpointCompanyId = selectEndpointCompanyId(issue, originalCompanyId);
-            logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
+        if (endpoint == null) return null;
 
-            return jiraEndpointCache().findFirst(ep ->
-                    Objects.equals(ep.getCompanyId(), endpointCompanyId) &&
-                    Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
-            );
-        } else {
-            return endpoint;
-        }
+        CaseObject caseObject = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
+        if (caseObject != null) return endpoint;
+
+        Long endpointCompanyId = selectEndpointCompanyId(issue, originalCompanyId);
+        logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
+        return jiraEndpointCache().findFirst(ep ->
+                Objects.equals(ep.getCompanyId(), endpointCompanyId) &&
+                        Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId())));
     }
 
     private Long selectEndpointCompanyId(Issue issue, Long originalCompanyId) {

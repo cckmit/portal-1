@@ -55,7 +55,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         int queueSize = queue.size();
         if (queueLimit > 0) {
             if (queueSize > queueLimit) {
-                log.error("Event has not been enqueued, reached queue limit {}/{}, companyId={}, eventData={}",
+                log.error("Event has not been enqueued, reached queue limit {}/{}, endpoint={}, eventData={}",
                         queueSize, queueLimit, endpoint, eventData.toFullString());
                 return false;
             }
@@ -71,7 +71,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
 
         boolean isEnqueued = queue.offer(new Pair<>(endpoint, eventData));
         if (!isEnqueued) {
-            log.error("Event has not been enqueued, companyId={}, eventData={}",
+            log.error("Event has not been enqueued, endpoint={}, eventData={}",
                     endpoint, eventData.toFullString());
         }
 
