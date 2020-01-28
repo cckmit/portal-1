@@ -11,10 +11,13 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
+import ru.protei.portal.ui.common.client.events.ApproveEvent;
+import ru.protei.portal.ui.common.client.events.ApproveHandler;
+import ru.protei.portal.ui.common.client.events.HasApproveHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
 
-public class PasswordGenPopup extends BasePopupView implements HasClickHandlers {
+public class PasswordGenPopup extends BasePopupView implements HasApproveHandlers {
 
     public PasswordGenPopup() {
         setWidget(ourUiBinder.createAndBindUi(this));
@@ -22,8 +25,8 @@ public class PasswordGenPopup extends BasePopupView implements HasClickHandlers 
     }
 
     @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addHandler(handler, ClickEvent.getType());
+    public HandlerRegistration addApproveHandler(ApproveHandler handler) {
+        return addHandler(handler, ApproveEvent.getType());
     }
 
     @Override
@@ -33,8 +36,7 @@ public class PasswordGenPopup extends BasePopupView implements HasClickHandlers 
 
     @UiHandler("applyButton")
     public void onApplyButtonClicked(ClickEvent event) {
-        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
-        hide();
+        fireApproveEventAndHidePopup();
     }
 
     @UiHandler("cancelButton")
@@ -70,7 +72,15 @@ public class PasswordGenPopup extends BasePopupView implements HasClickHandlers 
             if (KeyCodes.KEY_ESCAPE == keyUpEvent.getNativeKeyCode()) {
                 hide();
             }
+            if (KeyCodes.KEY_ENTER == keyUpEvent.getNativeKeyCode()) {
+                fireApproveEventAndHidePopup();
+            }
         }, KeyUpEvent.getType());
+    }
+
+    private void fireApproveEventAndHidePopup() {
+        ApproveEvent.fire(this);
+        hide();
     }
 
     @UiField

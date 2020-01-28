@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -23,8 +22,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
-import ru.protei.portal.ui.common.client.widget.passwordfield.HasPasswordVisibility;
-import ru.protei.portal.ui.common.client.widget.passwordfield.PasswordTextBoxWithVisibility;
+import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -53,21 +51,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
 
-        passwordGenPopup.addClickHandler(event -> {
-            if (activity != null) {
-                activity.onPasswordGenerationClicked();
-            }
-        });
+        passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
     }
 
     @Override
     public void setActivity(AbstractContactEditActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public void setGeneratePasswordHandler(ClickHandler handler) {
-        passwordGenPopup.addClickHandler(handler);
     }
 
     @Override
@@ -187,12 +176,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasText password() {
+    public HasValue<String> password() {
         return password;
     }
 
     @Override
-    public HasText confirmPassword() {
+    public HasValue<String> confirmPassword() {
         return confirmPassword;
     }
 
@@ -361,16 +350,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return loginLabel.getInnerText();
     }
 
-    @Override
-    public HasPasswordVisibility passwordVisibility() {
-        return password;
-    }
-
-    @Override
-    public HasPasswordVisibility confirmPasswordVisibility() {
-        return confirmPassword;
-    }
-
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -425,18 +404,19 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @UiHandler("password")
-    public void onPasswordClicked(ClickEvent event) {
-        setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
+    public void onPasswordClicked(FocusEvent event) {
+        showGenPasswordPopupIfNeeded();
     }
 
     @UiHandler("password")
     public void onPasswordChanged(InputEvent event) {
         changeContactLoginTimer.schedule( 300 );
-        setPasswordGenPopupVisible(StringUtils.isBlank(password().getText()));
+        showGenPasswordPopupIfNeeded();
     }
 
-    private void setPasswordGenPopupVisible(boolean isVisible) {
-        if (isVisible) {
+    private void showGenPasswordPopupIfNeeded() {
+        boolean isNeededShowPasswordGenPopup = StringUtils.isBlank(password().getValue());
+        if (isNeededShowPasswordGenPopup) {
             passwordGenPopup.showNear(password);
         } else {
             passwordGenPopup.hide();
@@ -560,7 +540,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     ValidableTextBox login;
 
     @UiField
-    PasswordTextBoxWithVisibility password;
+    PasswordTextBox password;
 
     @UiField
     Element verifiableIcon;
@@ -569,7 +549,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     HTMLPanel infoPanel;
 
     @UiField
-    PasswordTextBoxWithVisibility confirmPassword;
+    PasswordTextBox confirmPassword;
 
     @UiField
     HTMLPanel contactFired;
@@ -589,7 +569,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     CompanyModel companyModel;
 
-    Timer changeContactLoginTimer = new Timer() {
+    private Timer changeContactLoginTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
@@ -598,7 +578,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     };
 
-    Timer changeContactEmailTimer = new Timer() {
+    private Timer changeContactEmailTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
@@ -616,11 +596,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     };
 
+    private NameStatus status;
+    private AbstractContactEditActivity activity;
     private PasswordGenPopup passwordGenPopup = new PasswordGenPopup();
-
-    NameStatus status;
-
-    AbstractContactEditActivity activity;
 
     private static ContactViewUiBinder ourUiBinder = GWT.create(ContactViewUiBinder.class);
     interface ContactViewUiBinder extends UiBinder<HTMLPanel, ContactEditView> {}

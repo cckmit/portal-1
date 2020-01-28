@@ -13,7 +13,7 @@ public class GenerationPasswordUtils {
 
     static {
         cons = Arrays.asList('b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z');
-        vocal = Arrays.asList('a', 'e', 'i', 'o', 'u');
+        vocal = Arrays.asList('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U');
         numbers = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
     }
 

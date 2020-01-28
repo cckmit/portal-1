@@ -1,11 +1,9 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.widget.passwordfield.HasPasswordVisibility;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -15,8 +13,6 @@ import java.util.Date;
  */
 public interface AbstractContactEditView extends IsWidget {
     void setActivity( AbstractContactEditActivity activity );
-
-    void setGeneratePasswordHandler(ClickHandler handler);
 
     HasValue<String> firstName();
     HasValue<String> lastName();
@@ -53,9 +49,9 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText login();
 
-    HasText password();
+    HasValue<String> password();
 
-    HasText confirmPassword();
+    HasValue<String> confirmPassword();
 
     HasValue<EntityOption> company();
 
@@ -131,7 +127,4 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasVisibility loginErrorLabelVisibility();
 
-    HasPasswordVisibility passwordVisibility();
-
-    HasPasswordVisibility confirmPasswordVisibility();
 }

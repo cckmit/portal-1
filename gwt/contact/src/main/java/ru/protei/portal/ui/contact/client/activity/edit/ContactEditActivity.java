@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Objects;
@@ -58,25 +59,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             newPerson.setCompany(event.company);
             initialView(newPerson, new UserLogin());
         } else {
-            contactService.getContact(event.id, new AsyncCallback<Person>() {
-                @Override
-                public void onFailure(Throwable throwable) {
-                    fireErrorMessage(lang.errGetList());
-                }
-
-                @Override
-                public void onSuccess(Person person) {
-                    accountService.getContactAccount(person.getId(), new RequestCallback<UserLogin>() {
-                        @Override
-                        public void onError(Throwable throwable) {}
-
-                        @Override
-                        public void onSuccess(UserLogin userLogin) {
-                            initialView(person, userLogin == null ? new UserLogin() : userLogin);
-                        }
-                    } );
-                }
-            });
+            contactService.getContact(event.id, new FluentCallback<Person>()
+                    .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<UserLogin>()
+                            .withSuccess(userLogin -> initialView(person, userLogin == null ? new UserLogin() : userLogin)))));
         }
     }
 
@@ -90,22 +75,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        contactService.fireContact(contact.getId(), new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireErrorMessage(throwable.getMessage());
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
+        contactService.fireContact(contact.getId(), new FluentCallback<Boolean>()
+                .withError(throwable -> fireErrorMessage(throwable.getMessage()))
+                .withSuccess(result -> {
+                    if (result) {
+                        fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new Back());
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    }
+                }));
     }
 
     @Override
@@ -186,16 +165,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         accountService.isLoginUnique(
                 login,
                 account.getId(),
-                new RequestCallback<Boolean>() {
-                    @Override
-                    public void onError(Throwable throwable) {}
-
-                    @Override
-                    public void onSuccess(Boolean isUnique) {
-                        view.setContactLoginStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
-                    }
-                }
-        );
+                new FluentCallback<Boolean>()
+                        .withSuccess(isUnique -> view.setContactLoginStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR)));
     }
 
     @Override
@@ -251,8 +222,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Override
     public void onPasswordGenerationClicked() {
         String password = GenerationPasswordUtils.generate();
-        view.password().setText(password);
-        view.confirmPassword().setText(password);
+        view.password().setValue(password);
+        view.confirmPassword().setValue(password);
     }
 
     private boolean validateSaveButton() {
@@ -324,8 +295,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     private UserLogin applyChangesLogin() {
         account.setUlogin(view.login().getText());
-        if (!HelperFunc.isEmpty(view.password().getText())) {
-            account.setUpass(view.password().getText());
+        if (!HelperFunc.isEmpty(view.password().getValue())) {
+            account.setUpass(view.password().getValue());
         }
         return account;
     }
@@ -414,11 +385,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayDepartment().setText(person.getDepartment());
 
         view.login().setText(userLogin.getUlogin());
-        view.password().setText("");
-        view.confirmPassword().setText("");
-
-        view.passwordVisibility().setPasswordVisible(false);
-        view.confirmPasswordVisibility().setPasswordVisible(false);
+        view.password().setValue(null);
+        view.confirmPassword().setValue(null);
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
@@ -439,20 +407,20 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private boolean passwordNotDefined() {
         return HelperFunc.isNotEmpty(view.login().getText()) &&
                 !Objects.equals(view.login().getText().trim(), account.getUlogin()) &&
-                HelperFunc.isEmpty(view.password().getText());
+                HelperFunc.isEmpty(view.password().getValue());
     }
 
     private boolean passwordConfirmed() {
         return HelperFunc.isEmpty(view.login().getText()) ||
-                HelperFunc.isEmpty(view.password().getText()) ||
-                (!HelperFunc.isEmpty(view.confirmPassword().getText()) &&
-                        view.password().getText().equals(view.confirmPassword().getText()));
+                HelperFunc.isEmpty(view.password().getValue()) ||
+                (!HelperFunc.isEmpty(view.confirmPassword().getValue()) &&
+                        view.password().getValue().equals(view.confirmPassword().getValue()));
     }
 
     private boolean isVisibleSendEmail() {
         return HelperFunc.isNotEmpty(view.login().getText()) &&
                 (!Objects.equals(view.login().getText().trim(), account.getUlogin()) ||
-                HelperFunc.isNotEmpty(view.password().getText()));
+                HelperFunc.isNotEmpty(view.password().getValue()));
     }
 
     private boolean isVisibleSendEmailWarning() {
