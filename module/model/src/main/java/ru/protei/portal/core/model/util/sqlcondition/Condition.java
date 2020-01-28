@@ -1,8 +1,5 @@
 package ru.protei.portal.core.model.util.sqlcondition;
 
-import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
-
 import java.util.List;
 
 public interface Condition {
@@ -10,11 +7,15 @@ public interface Condition {
 
     Operator or( String name );
 
-    Condition or( Condition inCondition );
+    Condition and( Query inQuery );
+
+    Condition or( Query inQuery );
 
     Condition and( Condition inCondition );
 
-    Condition condition( String arbitrarySqlExpression );
+    Condition or( Condition inCondition );
+
+    Condition condition( String arbitrarySqlCondition );
 
     Condition attribute( Object attr );
 
@@ -23,8 +24,6 @@ public interface Condition {
     String getSqlCondition();
 
     List<Object> getSqlParameters();
-
-    SqlCondition build();
 
     Query asQuery();
 

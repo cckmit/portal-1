@@ -16,6 +16,19 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body">
             <div class="row p-b-10">
+
+                <div class="btn-toolbar flex-wrap m-l-15">
+                    <div class="btn-group form-group">
+                        <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">
+                            <i class="fa fa-arrow-left"/>
+                        </g:Button>
+
+                        <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
+                            <i class="fas fa-link"/>
+                        </g:Button>
+                    </div>
+                </div>
+
                 <h5 class="no-margin col-md-12">
                     <g:Label ui:field="number" styleName="m-b-15 inline-block"/>
                 </h5>
@@ -23,6 +36,10 @@
                     <label><ui:text from="{lang.projectName}"/></label>
                     <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
                 </div>
+
+
+
+                <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12"/>
             </div>
 
             <div class="row">

@@ -47,6 +47,11 @@ public abstract class RoleTableActivity
 
     @Event
     public void onShow( RoleEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ROLE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
@@ -67,18 +72,9 @@ public abstract class RoleTableActivity
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new RoleEvents.Edit(null));
-    }
-
-    @Event
-    public void onShowTable( RoleEvents.ShowTable event ) {
-        event.parent.clear();
-        event.parent.add( view.asWidget() );
-
-        isShowTable = true;
-
-        query = makeQuery();
-        requestRecords();
     }
 
     @Event

@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -37,10 +38,10 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         initialView(new Project());
     }
 
-    @Event
-    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-        view.refreshProducts();
-    }
+//    @Event
+//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
+//        view.refreshProducts();
+//    }
 
     @Event
     public void onSetProduct(ProductEvents.Set event) {
@@ -61,10 +62,10 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         fillProject();
         regionService.saveProject(project, new FluentCallback<Project>()
                 .withErrorMessage(lang.errNotSaved())
-                .withSuccess(projectInfo -> {
+                .withSuccess(project -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Set(projectInfo));
+                    fireEvent(new ProjectEvents.Set(new EntityOption(project.getName(), project.getId())));
                     initialView(new Project());
                 }));
     }

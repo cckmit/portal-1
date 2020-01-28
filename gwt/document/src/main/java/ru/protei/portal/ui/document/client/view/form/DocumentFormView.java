@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNu
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectFormSelector;
 import ru.protei.portal.ui.common.client.widget.stringselectform.StringTagInputForm;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -40,6 +42,7 @@ import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutio
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DocumentFormView extends Composite implements AbstractDocumentFormView {
 
@@ -47,7 +50,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
     }
 
@@ -144,6 +146,11 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Override
     public HasValue<Boolean> isApproved() {
         return approved;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> members() {
+        return members;
     }
 
     @Override
@@ -284,6 +291,9 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     DocumentExecutionTypeFormSelector executionType;
     @Inject
     @UiField(provided = true)
+    EmployeeMultiSelector members;
+    @Inject
+    @UiField(provided = true)
     StringTagInputForm keywords;
     @Inject
     @UiField(provided = true)
@@ -304,10 +314,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    Provider<EquipmentModel> equipmentModelProvider;
-
     private AbstractDocumentFormActivity activity;
 
     interface DocumentFormViewUiBinder extends UiBinder<HTMLPanel, DocumentFormView> {}

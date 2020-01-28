@@ -5,11 +5,10 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
 
@@ -30,6 +29,11 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
 
     @Event
     public void onShow(DocumentEvents.Create event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         fireEvent(new ProjectEvents.Search(view.projectSearchContainer()));
@@ -37,6 +41,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), new Document(), TAG));
         view.resetWizard();
         onProjectSearchClicked();
+        view.createEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE));
     }
 
     @Event
@@ -82,6 +87,8 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     Lang lang;
     @Inject
     AbstractDocumentCreateView view;
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
     private final String TAG = "DocumentCreateActivity";

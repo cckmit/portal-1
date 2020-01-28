@@ -37,7 +37,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        linkedEquipment.setModel(equipmentModelProvider.get());
     }
 
     @Override
@@ -170,9 +169,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         date.setVisible(isVisible);
         dateTextBox.setEnabled(false);
     }
-
-    @Inject
-    Provider<EquipmentModel> equipmentModelProvider;
 
     @Inject
     @UiField

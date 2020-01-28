@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -35,8 +36,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         parentCompany.setDefaultValue(lang.selectIssueCompany());
-        parentCompany.showOnlyParentCompanies(true);
-        parentCompany.showDeprecated(false);
+        companyModel.showOnlyParentCompanies(true);
+        parentCompany.setAsyncModel(companyModel);
     }
 
     @Override
@@ -202,6 +203,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField( provided = true )
     SubscriptionList subscriptions;
 
+
+    @Inject
+    CompanyModel companyModel;
     Timer timer = new Timer() {
         @Override
         public void run() {

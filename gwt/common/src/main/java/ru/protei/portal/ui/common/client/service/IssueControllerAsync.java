@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**

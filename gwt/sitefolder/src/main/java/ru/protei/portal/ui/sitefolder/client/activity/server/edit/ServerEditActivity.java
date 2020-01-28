@@ -30,6 +30,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Edit event) {
+        if (!hasPrivileges(event.serverId)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -142,6 +146,18 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
     private boolean isValid() {
         return view.nameValidator().isValid() && view.platformValidator().isValid();
+    }
+
+    private boolean hasPrivileges(Long serverId) {
+        if (serverId == null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return true;
+        }
+
+        if (serverId != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

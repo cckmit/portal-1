@@ -20,13 +20,13 @@
                     <issuestate:IssueStateFormSelector ui:field="state"
                                                        validation="true"
                                                        header="{lang.issueState}"
-                                                       mandatory="true"/>
+                                                       mandatory="false"/>
                 </div>
                 <div class="col-md-6">
                     <issueimportance:ImportanceFormSelector ui:field="importance"
                                                             validation="true"
                                                             header="{lang.issueImportance}"
-                                                            mandatory="true"/>
+                                                            mandatory="false"/>
                 </div>
             </div>
             <div class="row">
@@ -34,6 +34,7 @@
                     <devunit:DevUnitFormSelector ui:field="product"
                                                  validation="false"
                                                  header="{lang.issueProduct}"
+                                                 hasNullValue="true"
                                                  mandatory="false"/>
                 </div>
             </div>
@@ -42,6 +43,7 @@
                     <person:EmployeeFormSelector ui:field="manager"
                                                  validation="false"
                                                  header="{lang.issueManager}"
+                                                 hasNullValue="true"
                                                  mandatory="false"/>
                 </div>
             </div>
@@ -66,6 +68,7 @@
                                                validation="false"
                                                header="{lang.issueInitiator}"
                                                mandatory="false"
+                                               hasNullValue="true"
                                                fired="false"/>
                 </div>
             </div>

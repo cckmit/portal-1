@@ -21,11 +21,15 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ReportStatusLang;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
@@ -215,7 +219,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onAddLinkClicked(IsWidget target) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, lang.issues()));
     }
 
     @Override
@@ -236,6 +240,11 @@ public abstract class IssueEditActivity implements
 
     private void requestIssue(Long number, HasWidgets container) {
         issueController.getIssue(number, new FluentCallback<CaseObject>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException && En_ResultStatus.PERMISSION_DENIED.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new ForbiddenEvents.Show());
+                    }
+                })
                 .withSuccess(issue -> {
                     IssueEditActivity.this.issue = issue;
                     fillView(issue);
@@ -253,6 +262,7 @@ public abstract class IssueEditActivity implements
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withPageId(lang.issues())
                 .withReadOnly(readOnly));
     }
 
@@ -310,10 +320,14 @@ public abstract class IssueEditActivity implements
         boolean readOnly = isReadOnly();
 
         view.setCaseNumber(issue.getCaseNumber());
-        view.setPrivateIssue(issue.isPrivateCase());
+
+        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW)) {
+            view.setPrivateIssue(issue.isPrivateCase());
+        }
+
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
-        view.setName( makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo());

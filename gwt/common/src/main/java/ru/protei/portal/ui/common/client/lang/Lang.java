@@ -1011,6 +1011,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errInitiatorNotSelected();
+
     String contactFired();
 
     String contactDeleted();
@@ -1058,6 +1060,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseLinkYouTrack();
 
     String caseLinkYouTrackShort();
+
+    String errCaseLinkAlreadyAdded();
 
     String linkedWith();
 
@@ -1331,6 +1335,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationEmploymentDateColumnHeader();
 
     String privilegeCategoryEmployeeRegistration();
+
+    String goToEmployeeRegistration();
 
     String employmentTypeFullTime();
 
@@ -1886,6 +1892,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContracts();
 
+    String goToDocuments();
+
     String contract();
 
     String buttonBack();
@@ -1957,4 +1965,24 @@ public interface Lang extends Messages, ContactItemLang {
     String tagAdd();
 
     String linkAdd();
+
+    String contactFieldLengthExceed(String fieldName, int symbolsCount);
+
+    String errorFieldHasInvalidValue(String fieldName);
+
+    String searchNoMatchesFound();
+
+    String emptySelectorList();
+
+    String errUnableLinkIssueToItself();
+
+    String caseLinkSomeNotAdded();
+
+    String documentMembers();
+
+    String documentMemberUploadWorkDocumentation();
+
+    String documentMemberWorkDocumentationComment();
+
+    String documentMemberWorkDocumentationUpload();
 }

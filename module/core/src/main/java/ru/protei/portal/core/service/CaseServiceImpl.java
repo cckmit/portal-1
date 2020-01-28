@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
@@ -15,18 +14,16 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.struct.JiraExtAppData;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -105,16 +102,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<CaseObject> createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest ) {
-        return createCaseObjectInternal( token, caseObjectCreateRequest )
-                .ifOk( createdCaseObject -> publisherService.publishEvent(
-                        new CaseObjectCreateEvent( this, ServiceModule.GENERAL, token.getPersonId(), createdCaseObject ) )
-        );
-    }
-
-    private Result< CaseObject > createCaseObjectInternal( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
-
-        return transactionTemplate.execute( transactionStatus -> {
 
             CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
@@ -200,21 +189,25 @@ public class CaseServiceImpl implements CaseService {
                 );
             }
 
-            if (isNotEmpty(caseObjectCreateRequest.getLinks())) {
-                caseLinkService.createLinks(token, caseId, token.getPersonId(), caseObjectCreateRequest.getLinks());
+        Result addLinksResult = ok();
+
+        for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
+            caseLink.setCaseId(caseObject.getId());
+            Result currentResult = caseLinkService.createLink(token, caseLink, true);
+            if (currentResult.isError()) addLinksResult = currentResult;
             }
 
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
             CaseObject newState = caseObjectDAO.get(caseId);
             newState.setAttachments(caseObject.getAttachments());
             newState.setNotifiers(caseObject.getNotifiers());
+        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-            return ok(newState);
-
-        } );
+        return addLinksResult.isOk() ? ok(newState).publishEvent(event) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     @Override
+    @Transactional
     public Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
@@ -240,16 +233,15 @@ public class CaseServiceImpl implements CaseService {
                 return error(En_ResultStatus.NOT_UPDATED);
             }
 
-            publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+            return ok(changeRequest)
+                    .publishEvent( new CaseNameAndDescriptionEvent(
                     this,
                     changeRequest.getId(),
                     nameDiff,
                     infoDiff,
                     token.getPersonId(),
                     ServiceModule.GENERAL,
-                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())));
-
-            return ok(changeRequest);
+                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())) );
         });
     }
 
@@ -329,16 +321,15 @@ public class CaseServiceImpl implements CaseService {
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
-        publisherService.publishEvent(new CaseObjectMetaEvent(
+        return ok(newCaseMeta)
+                .publishEvent( new CaseObjectMetaEvent(
                 this,
                 ServiceModule.GENERAL,
                 token.getPersonId(),
                 En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
                 newCaseMeta
-        ));
-
-        return ok(newCaseMeta);
+        ) );
     }
 
     @Override
@@ -373,7 +364,7 @@ public class CaseServiceImpl implements CaseService {
                     caseMetaNotifiers.getNotifiers().stream()
                         .map(Person::getId)
                         .collect(Collectors.toList()),
-                    "id", "contactInfo")
+                    "id", "contactInfo", "displayShortName")
             ));
         }
         caseMetaNotifiers.setModified(new Date());
@@ -802,7 +793,7 @@ public class CaseServiceImpl implements CaseService {
                 extAppData.slaSeverity(),
                 endpoint.getSlaMapId()
             ));
-            caseObject.setJiraUrl(portalConfig.data().getJiraUrl());
+            caseObject.setJiraUrl(portalConfig.data().jiraConfig().getJiraUrl());
         } catch (Exception e) {
             log.warn("Failed to fill jira SLA information", e);
             caseObject.setCaseObjectMetaJira(new CaseObjectMetaJira());
@@ -835,9 +826,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PersonDAO personDAO;
-
-    @Autowired
-    EventPublisherService publisherService;
 
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
@@ -890,8 +878,6 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseObjectTagDAO caseObjectTagDAO;
 
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

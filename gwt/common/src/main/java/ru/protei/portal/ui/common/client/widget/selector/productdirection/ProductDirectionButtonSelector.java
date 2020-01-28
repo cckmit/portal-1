@@ -20,7 +20,7 @@ public class ProductDirectionButtonSelector
     public void init( ProductDirectionModel productDirectionModel ) {
         productDirectionModel.subscribe( this );
         setSelectorModel( productDirectionModel );
-        setSearchEnabled( true );
+
         setSearchAutoFocus( true );
 
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.name ) );
@@ -32,7 +32,6 @@ public class ProductDirectionButtonSelector
 
         if (defaultValue != null) {
             addOption( null );
-            setValue( null );
         }
 
         products.forEach(this::addOption);

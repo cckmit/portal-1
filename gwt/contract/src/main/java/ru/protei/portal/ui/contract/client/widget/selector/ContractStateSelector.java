@@ -2,39 +2,35 @@ package ru.protei.portal.ui.contract.client.widget.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
-import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.model.ContractStateModel;
 
-public class ContractStateSelector extends ButtonSelector<En_ContractState> {
+import java.util.List;
 
+public class ContractStateSelector extends ButtonSelector<En_ContractState> implements SelectorWithModel<En_ContractState> {
     @Inject
-    public void init() {
+    public void init(ContractStateModel model, En_ContractStateLang stateLang) {
+        setSelectorModel(model);
         setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : stateLang.getName(o)));
-        fillOptions();
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
-    }
-
-    private void fillOptions() {
+    @Override
+    public void fillOptions(List<En_ContractState> options) {
         clearOptions();
 
         if (defaultValue != null) {
             addOption(null);
         }
-        for(En_ContractState value : En_ContractState.values())
-            addOption(value);
+
+        options.forEach(this::addOption);
     }
 
-    @Inject
-    private Lang lang;
-    @Inject
-    private En_ContractStateLang stateLang;
+    public void setDefaultValue( String value ) {
+        this.defaultValue = value;
+    }
 
     private String defaultValue = null;
 }

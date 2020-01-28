@@ -13,7 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
@@ -64,7 +64,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
-    public HasValue<Project> project() {
+    public HasValue<ProjectInfo> project() {
         return project;
     }
 
@@ -74,7 +74,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
-    public void fillProjectList(List<Project> list) {
+    public void fillProjectList(List<ProjectInfo> list) {
         searchInfo.removeClassName("hide");
         projectsContainer.removeClassName("hide");
         project.addItems(list);
@@ -91,10 +91,10 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         project.clearItems();
     }
 
-    @Override
-    public void refreshProducts() {
-        products.refreshOptions();
-    }
+//    @Override
+//    public void refreshProducts() {
+//        products.refreshOptions();
+//    }
 
     @UiHandler("search")
     public void onSearchClicked(ClickEvent event) {
@@ -113,7 +113,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @UiHandler("project")
-    public void onProjectChanged(ValueChangeEvent<Project> event) {
+    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
         if (activity != null) {
             activity.onProjectChanged();
         }

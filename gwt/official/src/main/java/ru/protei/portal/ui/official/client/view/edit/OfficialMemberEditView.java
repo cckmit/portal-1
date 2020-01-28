@@ -10,15 +10,13 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditView;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialMemberEditActivity;
 import ru.protei.portal.ui.official.client.widget.AmpluaButtonSelector;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -30,8 +28,8 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue( lang.selectOfficialCompany() );
-        company.setCategories( Collections.singletonList( En_CompanyCategory.OFFICIAL ) );
-        company.showDeprecated(false);
+        companyModel.setCategories( Collections.singletonList( En_CompanyCategory.OFFICIAL ) );
+        company.setAsyncModel( companyModel );
     }
 
     @Override
@@ -94,11 +92,11 @@ public class OfficialMemberEditView extends Composite implements AbstractOfficia
     Lang lang;
 
     @Inject
-    En_PersonRoleTypeLang roleTypeLang;
-
-    @Inject
     @UiField(provided = true)
     CompanySelector company;
+
+    @Inject
+    CompanyModel companyModel;
 
     @UiField
     TextBox lastName;

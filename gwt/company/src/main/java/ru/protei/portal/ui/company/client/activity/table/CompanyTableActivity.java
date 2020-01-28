@@ -61,6 +61,11 @@ public abstract class CompanyTableActivity implements
 
     @Event(Type.FILL_CONTENT)
     public void onShow(CompanyEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.COMPANY_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
@@ -80,6 +85,8 @@ public abstract class CompanyTableActivity implements
         if ( !(UiConstants.ActionBarIdentity.COMPANY.equals( event.identity )) ) {
             return;
         }
+
+        view.clearSelection();
 
         fireEvent(new CompanyEvents.Edit(null));
     }

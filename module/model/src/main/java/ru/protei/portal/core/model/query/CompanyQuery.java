@@ -27,6 +27,8 @@ public class CompanyQuery extends BaseQuery {
 
     private Boolean isShowDeprecated;
 
+    private Boolean isReverseOrder;
+
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
@@ -82,6 +84,10 @@ public class CompanyQuery extends BaseQuery {
         return onlyVisibleFields;
     }
 
+    public Boolean isReverseOrder() {
+        return isReverseOrder;
+    }
+
     public void setOnlyVisibleFields(boolean onlyVisibleFields) {
         this.onlyVisibleFields = onlyVisibleFields;
     }
@@ -102,6 +108,12 @@ public class CompanyQuery extends BaseQuery {
         isShowDeprecated = deprecated;
     }
 
+    public CompanyQuery reverseOrder( boolean reverseOrder ) {
+        this.isReverseOrder = reverseOrder;
+        return this;
+    }
+
+
     @Override
     public String toString() {
         return "CompanyQuery{" +
@@ -109,6 +121,7 @@ public class CompanyQuery extends BaseQuery {
                 ", isOnlyParentCompanies=" + isOnlyParentCompanies +
                 ", categoryIds=" + categoryIds +
                 ", companyIds=" + companyIds +
+                ", reverseOrder=" + isReverseOrder +
                 '}';
     }
 }

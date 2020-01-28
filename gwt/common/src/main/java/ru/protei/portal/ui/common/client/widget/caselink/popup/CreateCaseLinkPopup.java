@@ -1,8 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.caselink.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
@@ -11,11 +15,15 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
 
@@ -38,6 +46,8 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
                 showRelativeTo(relative);
             }
         };
+
+        setInputTextHandler();
     }
 
     @Override
@@ -45,8 +55,8 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         resizeHandlerReg = Window.addResizeHandler(resizeHandler);
         scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
 
-        typeSelector.fillOptions();
-        typeSelector.setValue(En_CaseLink.CRM);
+        fillOptionsToTypeSelector();
+        setValueToTypeSelector(En_CaseLink.CRM);
     }
 
     @Override
@@ -95,12 +105,17 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     }
 
     @UiHandler("remoteIdInput")
-    public void onChangeText(KeyPressEvent event){
-        if(unicodeCurrentChar != '\n') {
-            unicodeCurrentChar = event.getUnicodeCharCode();
+    public void onChangeText(KeyPressEvent event) {
+        if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+            keyTapTimer.run();
+        }
+    }
+
+    public void setInputTextHandler() {
+        remoteIdInput.addInputHandler(event -> {
             keyTapTimer.cancel();
             keyTapTimer.schedule(300);
-        }
+        });
     }
 
     @UiHandler("typeSelector")
@@ -120,6 +135,21 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         remoteIdInput.setEnsureDebugIdAction(debugId);
     }
 
+    private void setValueToTypeSelector(En_CaseLink value){
+        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW) || !value.isForcePrivacy()) {
+            typeSelector.setValue(value);
+        }
+    }
+
+    private void fillOptionsToTypeSelector(){
+        for (En_CaseLink value : En_CaseLink.values()) {
+            if (!policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW) && value.isForcePrivacy()) {
+                continue;
+            }
+            typeSelector.addOption(value);
+        }
+    }
+
     @UiField
     HTMLPanel root;
     @Inject
@@ -130,27 +160,27 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     @Inject
     @UiField
     Lang lang;
+    @Inject
+    PolicyService policyService;
 
     private UIObject relative;
     private ResizeHandler resizeHandler;
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
-    private int unicodeCurrentChar;
+    private RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
     private Timer keyTapTimer = new Timer() {
         @Override
         public void run() {
-            RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue());
 
             if (youTrackMatcher != null) {
-                typeSelector.setValue(En_CaseLink.YT);
+                setValueToTypeSelector(En_CaseLink.YT);
             } else{
-                typeSelector.setValue(En_CaseLink.CRM);
+                setValueToTypeSelector(En_CaseLink.CRM);
             }
         }
     };
-
 
     interface CreateLinkPopupViewUiBinder extends UiBinder<HTMLPanel, CreateCaseLinkPopup> {}
     private static CreateLinkPopupViewUiBinder ourUiBinder = GWT.create(CreateLinkPopupViewUiBinder.class);

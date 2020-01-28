@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -25,26 +26,26 @@ import java.util.stream.Collectors;
 
 public class ProjectList
         extends Composite
-        implements HasValue<Project>, ValueChangeHandler<Boolean> {
+        implements HasValue<ProjectInfo>, ValueChangeHandler<Boolean> {
 
     public ProjectList() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
-    public Project getValue() {
+    public ProjectInfo getValue() {
         return selected;
     }
 
     @Override
-    public void setValue(Project value) {
+    public void setValue(ProjectInfo value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(Project value, boolean fireEvents) {
+    public void setValue(ProjectInfo value, boolean fireEvents) {
         selected = value;
-        for (Map.Entry<Project, ProjectItem > entry : itemToViewModel.entrySet()) {
+        for (Map.Entry<ProjectInfo, ProjectItem > entry : itemToViewModel.entrySet()) {
             entry.getValue().setValue(selected != null && selected.equals(entry.getKey()));
         }
         if (fireEvents) {
@@ -53,13 +54,13 @@ public class ProjectList
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Project> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectInfo> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
     @Override
     public void onValueChange(ValueChangeEvent<Boolean> event) {
-        Project value = itemViewToModel.get(event.getSource());
+        ProjectInfo value = itemViewToModel.get(event.getSource());
         if (value == null && !itemViewToModel.containsKey(event.getSource())) {
             return;
         }
@@ -67,7 +68,7 @@ public class ProjectList
         setValue(value, true);
     }
 
-    public void addItems(List<Project> list) {
+    public void addItems(List<ProjectInfo> list) {
         list.forEach(this::addItem);
     }
 
@@ -78,13 +79,13 @@ public class ProjectList
         selected = null;
     }
 
-    private void addItem(Project value) {
+    private void addItem(ProjectInfo value) {
         ProjectItem itemView = itemFactory.get();
         itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
         itemView.setName(value.getName());
         itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect(Collectors.joining(", ")));
         itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
-        itemView.setManagers(makeManagers(value));
+        itemView.setManagers(value.getManager() == null ? "" : value.getManager().getDisplayText());
         itemView.addValueChangeHandler(this);
         itemView.setValue(selected != null && selected.equals(value));
 
@@ -93,42 +94,16 @@ public class ProjectList
         container.add(itemView.asWidget());
     }
 
-    private String makeManagers(Project value) {
-        StringBuilder content = new StringBuilder();
-
-        List< PersonProjectMemberView > team = value.getTeam();
-        if (team != null) {
-            PersonProjectMemberView leader = team.stream()
-                    .filter(ppm -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))
-                    .findFirst()
-                    .orElse(null);
-            if (leader != null) {
-                content.append(leader.getName());
-                if (team.size() - 1 > 0) {
-                    content.append(" +")
-                            .append(team.size() - 1)
-                            .append(" ")
-                            .append(lang.membersCount());
-                }
-            } else if (team.size() > 0) {
-                content.append(team.size())
-                        .append(" ")
-                        .append(lang.membersCount());
-            }
-        }
-        return content.toString();
-    }
-
     @UiField
     FlowPanel container;
 
     @Inject
     Provider<ProjectItem> itemFactory;
 
-    Project selected;
+    ProjectInfo selected;
 
-    Map<ProjectItem, Project> itemViewToModel = new HashMap<>();
-    Map<Project, ProjectItem> itemToViewModel = new HashMap<>();
+    Map<ProjectItem, ProjectInfo> itemViewToModel = new HashMap<>();
+    Map<ProjectInfo, ProjectItem> itemToViewModel = new HashMap<>();
 
     @Inject
     En_CustomerTypeLang customerTypeLang;

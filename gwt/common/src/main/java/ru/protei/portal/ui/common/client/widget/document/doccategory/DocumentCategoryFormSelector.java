@@ -15,7 +15,7 @@ public class DocumentCategoryFormSelector extends FormSelector<En_DocumentCatego
     @Inject
     void init() {
         setSearchEnabled(false);
-        setHasNullValue(false);
+        setHasNullValue(true);
 
         setDisplayOptionCreator(val -> {
             if (val == null) {
@@ -32,7 +32,6 @@ public class DocumentCategoryFormSelector extends FormSelector<En_DocumentCatego
         clearOptions();
         if (defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
         options.forEach(this::addOption);
     }

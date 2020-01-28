@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
-import ru.protei.portal.ui.common.client.events.EquipmentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
@@ -53,6 +50,11 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
 
     @Event
     public void onShowFullScreen( EquipmentEvents.ShowFullScreen event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 

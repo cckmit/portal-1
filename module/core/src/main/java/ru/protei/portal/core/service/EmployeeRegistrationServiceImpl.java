@@ -232,7 +232,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     private CharSequence makeYtLinkToCrmRegistration( Long employeeRegistrationId, String employeeFullName ) {
-        return join( "[", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, " ", employeeFullName, "]" );
+        return join( "[", employeeFullName, "](", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, ")");
     }
 
     private void saveCaseLink(Long employeeRegistrationId, String issueId) {

@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +52,11 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Create event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 

@@ -6,10 +6,12 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -20,6 +22,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
+import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
  * Активность создания и редактирования контактного лица
@@ -38,6 +41,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Event
     public void onShow( ContactEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -102,7 +109,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (!validate()) {
+        String errorMsg = validate();
+
+        if (errorMsg != null) {
+            fireErrorMessage(errorMsg);
             return;
         }
 
@@ -156,15 +166,25 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
-        String value = view.login().getText().trim();
 
-        if (value.isEmpty()){
+        String login = view.login().getText().trim();
+
+        if (login.isEmpty()) {
+            view.setContactLoginStatus(NameStatus.NONE);
+            view.loginErrorLabelVisibility().setVisible(false);
+            validateSaveButton();
+            return;
+        }
+
+        validateLimitedFields();
+
+        if (login.length() > LOGIN_SIZE) {
             view.setContactLoginStatus(NameStatus.NONE);
             return;
         }
 
         accountService.isLoginUnique(
-                value,
+                login,
                 account.getId(),
                 new RequestCallback<Boolean>() {
                     @Override
@@ -203,7 +223,61 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
     }
 
-    private boolean isNew( Person person) {
+    @Override
+    public void validateLimitedFields() {
+        if (view.firstName().getValue() != null) {
+            view.firstNameErrorLabelVisibility().setVisible(view.firstName().getValue().length() > FIRST_NAME_SIZE);
+        }
+
+        if (view.lastName().getValue() != null) {
+            view.lastNameErrorLabelVisibility().setVisible(view.lastName().getValue().length() > LAST_NAME_SIZE);
+        }
+
+        if (view.secondName().getText() != null) {
+            view.secondNameErrorLabelVisibility().setVisible(view.secondName().getText().length() > SECOND_NAME_SIZE);
+        }
+
+        if (view.shortName().getText() != null) {
+            view.shortNameErrorLabelVisibility().setVisible(view.shortName().getText().length() > SHORT_NAME_SIZE);
+        }
+
+        if (view.login().getText() != null) {
+            view.loginErrorLabelVisibility().setVisible(view.login().getText().trim().length() > LOGIN_SIZE);
+        }
+
+        view.saveEnabled().setEnabled(validateSaveButton());
+    }
+
+    @Override
+    public void onCompanySelected() {
+        view.companyValidator().setValid(view.company().getValue() != null);
+    }
+
+    private boolean validateSaveButton() {
+        if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
+            return false;
+        }
+
+        if ((view.login().getText() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isNew(Person person) {
         return person.getId() == null;
     }
 
@@ -254,13 +328,48 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return account;
     }
 
-    private boolean validate() {
-        return view.companyValidator().isValid() &&
-                view.firstNameValidator().isValid() &&
-                view.lastNameValidator().isValid() &&
-                view.isValidLogin() &&
-                (view.workEmail().getText().isEmpty() || view.workEmailValidator().isValid()) &&
-                (view.personalEmail().getText().isEmpty() || view.personalEmailValidator().isValid());
+    private String validate() {
+        if (!view.companyValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.firstNameValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!view.lastNameValidator().isValid()) {
+            return lang.errFieldsRequired();
+        }
+
+        if (!isLoginValid()) {
+            return lang.errorFieldHasInvalidValue(view.loginLabel().getText());
+        }
+
+        if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.workEmailLabel().getText());
+        }
+
+        if (!view.personalEmail().getText().isEmpty() && !view.personalEmailValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.personalEmailLabel().getText());
+        }
+
+        if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.firstNameLabel().getText());
+        }
+
+        if ((view.lastName().getValue() != null) && (view.lastName().getValue().length() > LAST_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.lastNameLabel().getText());
+        }
+
+        if ((view.secondName().getText() != null) && (view.secondName().getText().length() > SECOND_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.secondNameLabel().getText());
+        }
+
+        if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.shortNameLabel().getText());
+        }
+
+        return null;
     }
 
     private void initialView(Person person, UserLogin userLogin){
@@ -274,6 +383,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
         // lock company field if provided person already contains defined company. Added with CRM-103 task.
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
+        view.companyValidator().setValid(person.getCompany() != null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
@@ -313,6 +423,12 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(false);
 
         view.showInfo(userLogin.getId() != null);
+
+        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel().getText(), FIRST_NAME_SIZE));
+        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel().getText(), SECOND_NAME_SIZE));
+        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel().getText(), LAST_NAME_SIZE));
+        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel().getText(), SHORT_NAME_SIZE));
+        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel().getText(), LOGIN_SIZE));
     }
 
     private boolean passwordNotDefined() {
@@ -341,6 +457,30 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 view.personalEmail().getText().isEmpty();
     }
 
+    private boolean isLoginValid() {
+        if (Objects.equals(view.getContactLoginStatus(), NameStatus.ERROR)) {
+            return false;
+        }
+
+        if ((view.login() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean hasPrivileges(Long personId) {
+        if (personId == null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE)) {
+            return true;
+        }
+
+        if (personId != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     AbstractContactEditView view;
     @Inject
@@ -349,6 +489,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     ContactControllerAsync contactService;
     @Inject
     AccountControllerAsync accountService;
+    @Inject
+    PolicyService policyService;
 
     private Person contact;
     private UserLogin account;

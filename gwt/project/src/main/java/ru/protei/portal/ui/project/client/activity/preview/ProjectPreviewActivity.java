@@ -49,6 +49,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Event
     public void onShow( ProjectEvents.ShowFullScreen event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
@@ -126,10 +131,21 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+            fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                    .withCaseId(project.getId())
+                    .withCaseType(En_CaseType.PROJECT)
+                    .withPageId(lang.projects())
+                    .readOnly());
+        }
+        else {
+            view.getLinksContainer().clear();
+        }
+
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT)));
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

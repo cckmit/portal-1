@@ -17,7 +17,7 @@ public class EquipmentFormSelector extends FormSelector<EquipmentShortView> impl
 
     @Inject
     public void init(Lang lang) {
-        setSearchEnabled( true );
+
         setSearchAutoFocus(true);
         setDisplayOptionCreator( value -> {
             StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public class EquipmentFormSelector extends FormSelector<EquipmentShortView> impl
 
     public void setModel(EquipmentModel model) {
         this.model = model;
-        setSelectorModel(model);
+//        setSelectorModel(model);//TODO
     }
 
     public void setHasNullValue(boolean hasNullValue) {
@@ -73,7 +73,7 @@ public class EquipmentFormSelector extends FormSelector<EquipmentShortView> impl
     public void setPrintDecimalNumbers(boolean isPrintDecimalNumbers) {
         this.printDecimalNumbers = isPrintDecimalNumbers;
         if (model != null) {
-            model.refreshFromCache(this);
+//            model.refreshFromCache(this);//TODO
         }
     }
 

@@ -57,6 +57,11 @@ public abstract class ContactTableActivity
 
     @Event
     public void onShow( ContactEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
@@ -81,6 +86,8 @@ public abstract class ContactTableActivity
         if ( !UiConstants.ActionBarIdentity.CONTACT.equals( event.identity ) ) {
             return;
         }
+
+        view.clearSelection();
 
         fireEvent(new ContactEvents.Edit().newItem(filterView.company().getValue()));
     }

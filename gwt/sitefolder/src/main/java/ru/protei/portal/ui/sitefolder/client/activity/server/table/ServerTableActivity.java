@@ -59,6 +59,11 @@ public abstract class ServerTableActivity implements
 
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());

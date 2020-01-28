@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -115,34 +116,34 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @UiHandler( "search" )
-    public void onSearchChanged( ValueChangeEvent< String > event ) {
+    public void onSearchChanged( InputEvent event ) {
         sortField.setValue(En_SortField.person_full_name);
         fireChangeTimer();
     }
 
     @UiHandler( "workPhone" )
-    public void onWorkPhoneChanged( ValueChangeEvent< String > event ) {
+    public void onWorkPhoneChanged( InputEvent event ) {
         fireChangeTimer();
     }
 
     @UiHandler( "mobilePhone" )
-    public void onMobilePhoneChanged( ValueChangeEvent< String > event ) {
+    public void onMobilePhoneChanged( InputEvent event ) {
         fireChangeTimer();
     }
 
     @UiHandler( "ipAddress" )
-    public void onIPAddressChanged( ValueChangeEvent< String > event ) {
+    public void onIPAddressChanged( InputEvent event ) {
         sortField.setValue(En_SortField.employee_ip);
         fireChangeTimer();
     }
 
     @UiHandler( "email" )
-    public void onEmailChanged( ValueChangeEvent< String > event ) {
+    public void onEmailChanged( InputEvent event ) {
         fireChangeTimer();
     }
 
     @UiHandler("department")
-    public void onDepartmentChanged( ValueChangeEvent< String > event ) {
+    public void onDepartmentChanged( InputEvent event ) {
         fireChangeTimer();
     }
 

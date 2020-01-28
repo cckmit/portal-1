@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.LocationService;
@@ -98,14 +99,14 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project getProjectInfo(Long id) throws RequestFailedException {
+    public ProjectInfo getProjectInfo(Long id) throws RequestFailedException {
         log.info("getProjectInfo(): id={}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Project> response = projectService.getProjectInfo( token, id );
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
+        Result<ProjectInfo> response = projectService.getProjectInfo(token, id);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
         }
 
         return response.getData();
@@ -135,21 +136,7 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public long createNewProject() throws RequestFailedException {
-        log.info( "createNewProject()" );
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result< Long > response = projectService.createProject( token, token.getPersonId() );
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-
-        return response.getData();
-    }
-
-    @Override
-    public List<Project> getProjectsList(ProjectQuery query) throws RequestFailedException {
+    public List<Project> getProjectList(ProjectQuery query) throws RequestFailedException {
         log.info("getProjectsList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -157,20 +144,19 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public List<EntityOption> getProjectsEntityOptionList(ProjectQuery query) throws RequestFailedException {
+    public List<EntityOption> getProjectOptionList(ProjectQuery query) throws RequestFailedException {
         log.info("getProjectsEntityOptionList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<List<Project>> response = projectService.listProjects(token, query);
+        return ServiceUtils.checkResultAndGetData(projectService.listOptionProjects(token, query));
+    }
 
-        if (response.isOk()) {
-            return response.getData()
-                    .stream()
-                    .map(project -> new EntityOption(project.getName(), project.getId()))
-                    .collect(Collectors.toList());
-        }
+    @Override
+    public List<ProjectInfo> getProjectInfoList(ProjectQuery query) throws RequestFailedException {
+        log.info("getProjectInfoList(): query={}", query);
 
-        throw new RequestFailedException(response.getStatus());
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(projectService.listInfoProjects(token, query));
     }
 
     @Override

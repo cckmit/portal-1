@@ -65,7 +65,7 @@
                                 <ui:text from="{lang.buttonSettings}"/>
                             </g:Anchor>
 
-                            <g:Anchor ui:field="logout" styleName="clearfix bg-master-lighter dropdown-item" title="{lang.logoutHotKey}" href="#">
+                            <g:Anchor ui:field="logout" styleName="clearfix dropdown-item" title="{lang.logoutHotKey}" href="#">
                                 <span class="pull-left"><ui:text from="{lang.buttonLogout}"/></span>
                                 <span class="pull-right">
                                     <i class="fas fa-power-off"/></span>

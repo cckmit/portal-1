@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.ent.CaseLink;
 
 public class CaseLinkEvents {
 
+    private static final String PAGE_ID_DEFAULT_VALUE = "";
+
     public static class Show {
 
         public Show() {}
@@ -30,6 +32,11 @@ public class CaseLinkEvents {
             return this;
         }
 
+        public Show withPageId(String pageId){
+            this.pageId = pageId;
+            return this;
+        }
+
         public Show readOnly() {
             return withReadOnly(true);
         }
@@ -38,34 +45,52 @@ public class CaseLinkEvents {
         public Long caseId;
         public En_CaseType caseType;
         public boolean isEnabled = true;
+        public String pageId = PAGE_ID_DEFAULT_VALUE;
     }
 
     public static class Removed {
-        public Removed(Long caseId, CaseLink caseLink) {
+        public Removed(Long caseId, CaseLink caseLink, String pageId) {
             this.caseId = caseId;
             this.caseLink = caseLink;
+            this.pageId = pageId;
         }
 
         public CaseLink caseLink;
         public Long caseId;
+        public String pageId;
     }
 
     public static class Added {
-        public Added(Long caseId, CaseLink caseLink) {
+        public Added(Long caseId, CaseLink caseLink, String pageId) {
             this.caseId = caseId;
             this.caseLink = caseLink;
+            this.pageId = pageId;
         }
 
         public Long caseId;
         public CaseLink caseLink;
+        public String pageId;
     }
 
     public static class ShowLinkSelector {
         public ShowLinkSelector() {}
+
         public ShowLinkSelector(IsWidget target) {
+            this(target, "");
+        }
+
+        public ShowLinkSelector(IsWidget target, String pageId) {
+            this(target, pageId, true);
+        }
+
+        public ShowLinkSelector(IsWidget target, String pageId, boolean createCrossLinks) {
             this.target = target;
+            this.pageId = pageId;
+            this.createCrossLinks = createCrossLinks;
         }
 
         public IsWidget target;
+        public String pageId = PAGE_ID_DEFAULT_VALUE;
+        public boolean createCrossLinks = true;
     }
 }

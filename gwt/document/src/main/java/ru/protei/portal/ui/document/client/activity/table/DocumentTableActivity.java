@@ -53,6 +53,11 @@ public abstract class DocumentTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow(DocumentEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
         view.getPagerContainer().add( pagerView.asWidget() );
@@ -118,6 +123,9 @@ public abstract class DocumentTableActivity
         if (!UiConstants.ActionBarIdentity.DOCUMENT.equals(event.identity)) {
             return;
         }
+
+        view.clearSelection();
+
         fireEvent(new DocumentEvents.Create());
     }
 
@@ -170,9 +178,8 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onProjectColumnClicked(Document value) {
-        if (value == null || value.getProject() == null)
-            return;
-        fireEvent(new ProjectEvents.ShowFullScreen(value.getProject().getId()));
+        if (value == null) return;
+        fireEvent(new ProjectEvents.ShowFullScreen(value.getProjectId()));
     }
 
     @Override
@@ -207,7 +214,7 @@ public abstract class DocumentTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new DocumentEvents.ShowPreview(view.getPreviewContainer(), document));
+            fireEvent(new DocumentEvents.ShowPreview(view.getPreviewContainer(), document.getId()));
         }
     }
 
@@ -220,6 +227,7 @@ public abstract class DocumentTableActivity
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
                 filterView.organizationCodes().getValue(),
+                filterView.documentCategory().getValue(),
                 filterView.documentType().getValue(),
                 (interval == null ? null : interval.from),
                 (interval == null ? null : interval.to),

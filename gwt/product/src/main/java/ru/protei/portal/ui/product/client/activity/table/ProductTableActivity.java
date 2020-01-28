@@ -59,6 +59,11 @@ public abstract class ProductTableActivity implements
 
     @Event(Type.FILL_CONTENT)
     public void onShow( ProductEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PRODUCT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
@@ -78,6 +83,8 @@ public abstract class ProductTableActivity implements
         if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity )) ) {
             return;
         }
+
+        view.clearSelection();
 
         fireEvent(new ProductEvents.Edit(null));
     }

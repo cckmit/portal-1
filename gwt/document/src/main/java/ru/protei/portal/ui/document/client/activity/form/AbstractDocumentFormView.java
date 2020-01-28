@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractDocumentFormView extends IsWidget {
 
@@ -45,6 +46,8 @@ public interface AbstractDocumentFormView extends IsWidget {
     HasValue<DecimalNumber> decimalNumber();
 
     HasValue<Boolean> isApproved();
+
+    HasValue<Set<PersonShortView>> members();
 
     HasText decimalNumberText();
 

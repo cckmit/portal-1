@@ -192,6 +192,7 @@
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-6">
                                     <doccategory:DocumentCategoryFormSelector ui:field="documentCategory"
+                                                                              defaultValue="{lang.selectValue}"
                                                                               validation="false"
                                                                               header="{lang.documentCategory}"
                                                                               mandatory="false"/>
@@ -204,6 +205,14 @@
                                                                       mandatory="false"/>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group m-t-10 m-b-0">
+                            <label><ui:text from="{lang.documentMembers}"/></label>
+                        </div>
+                        <div class="form-group form-group-attached">
+                            <person:EmployeeMultiSelector ui:field="members" styleName="case-subscribers"
+                                                          buttonStyle="btn-info btn-xs"/>
                         </div>
                     </div>
                 </div>

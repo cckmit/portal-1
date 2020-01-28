@@ -95,11 +95,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         table.updateRow( project );
     }
 
-    @Override
-    public void selectRow(Project project) {
-        columnProvider.setSelectedValue (project);
-    }
-
     private void initTable () {
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT) );
         columns.add(editClickColumn);

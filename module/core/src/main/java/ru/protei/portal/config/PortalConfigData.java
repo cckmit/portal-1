@@ -29,6 +29,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final JiraConfig jiraConfig;
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
 
@@ -36,8 +37,6 @@ public class PortalConfigData {
     private final boolean taskSchedulerEnabled;
 
     private final Long maxFileSize;
-
-    private final String jiraUrl;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
@@ -52,13 +51,13 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        jiraConfig = new JiraConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
         maxFileSize = wrapper.getProperty("max.file.size", Long.class, DEFAULT_FILE_SIZE_MEGABYTES);
-        jiraUrl = wrapper.getProperty("jira.url",  "");
     }
 
     public CommonConfig getCommonConfig() {
@@ -113,6 +112,10 @@ public class PortalConfigData {
         return youtrackConfig;
     }
 
+    public JiraConfig jiraConfig() {
+        return jiraConfig;
+    }
+
     public EmployeeConfig getEmployee() {
         return employeeConfig;
     }
@@ -126,8 +129,6 @@ public class PortalConfigData {
     }
 
     public Long getMaxFileSize() {return maxFileSize;}
-
-    public String getJiraUrl() {return jiraUrl;}
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
@@ -155,6 +156,7 @@ public class PortalConfigData {
     public static class MailNotificationConfig extends CommonConfig {
         private final String crmCaseUrl;
         private final String contractUrl;
+        private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
 
@@ -162,6 +164,7 @@ public class PortalConfigData {
             super(properties);
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
+            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
@@ -173,6 +176,10 @@ public class PortalConfigData {
 
         public String getContractUrl() {
             return contractUrl;
+        }
+
+        public String getCrmDocumentPreviewUrl() {
+            return crmDocumentPreviewUrl;
         }
 
         public String getCrmEmployeeRegistrationUrl() {
@@ -344,21 +351,29 @@ public class PortalConfigData {
 
     public static class IntegrationConfig {
         private final boolean redmineEnabled;
+        private final boolean redmineBackchannelEnabled;
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
+        private final boolean jiraBackchannelEnabled;
 
         private final boolean redminePatchEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
+            redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
+            jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
             redminePatchEnabled = properties.getProperty("integration.redmine.patch", Boolean.class, false);
         }
 
         public boolean isRedmineEnabled() {
             return redmineEnabled;
+        }
+
+        public boolean isRedmineBackchannelEnabled() {
+            return redmineBackchannelEnabled;
         }
 
         public boolean isYoutrackEnabled() {
@@ -371,6 +386,10 @@ public class PortalConfigData {
 
         public boolean isRedminePatchEnabled() {
             return redminePatchEnabled;
+        }
+
+        public boolean isJiraBackchannelEnabled() {
+            return jiraBackchannelEnabled;
         }
     }
 
@@ -526,6 +545,25 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+    }
+
+    public static class JiraConfig {
+
+        private final String jiraUrl;
+        private final int queueLimit;
+
+        public JiraConfig(PropertiesWrapper properties) throws ConfigException {
+            jiraUrl = properties.getProperty("jira.url",  "");
+            queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
+        }
+
+        public String getJiraUrl() {
+            return jiraUrl;
+        }
+
+        public int getQueueLimit() {
+            return queueLimit;
         }
     }
 

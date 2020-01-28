@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
+import ru.protei.portal.core.model.query.CaseCommentApiQuery;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,8 @@ public class PortalApiController {
     private CaseService caseService;
     @Autowired
     private CaseLinkService caseLinkService;
+    @Autowired
+    CaseCommentService caseCommentService;
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
 
@@ -219,6 +222,26 @@ public class PortalApiController {
                         youtrackId, oldCaseNumber, result ) );
     }
 
+    @PostMapping(value = "/comments")
+    public Result<List<CaseComment>> getCaseCommentList(
+            @RequestBody CaseCommentApiQuery query,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API | getCaseCommentList(): query={}", query);
+
+        Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, log);
+
+        if (authTokenAPIResult.isError()) {
+            return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
+        }
+
+        if (query.getCaseId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case ID");
+        }
+
+        return caseCommentService.getCaseCommentList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query));
+    }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
@@ -227,9 +250,20 @@ public class PortalApiController {
         // optional
         query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
         query.setManagerIds(apiQuery.getManagerIds());
+        query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
         query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
         query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));
+        return query;
+    }
+
+    private CaseCommentQuery makeCaseCommentQuery(CaseCommentApiQuery apiQuery) {
+        CaseCommentQuery query = new CaseCommentQuery();
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
+        query.setSortField(En_SortField.creation_date);
+        query.setSortDir(En_SortDir.DESC);
+        query.setCaseObjectIds(Collections.singletonList(apiQuery.getCaseId()));
         return query;
     }
 

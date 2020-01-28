@@ -7,16 +7,28 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class DocumentPreviewActivity implements Activity, AbstractDocumentPreviewActivity {
 
@@ -26,26 +38,71 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     @Event
-    public void onShow(DocumentEvents.ShowPreview event) {
-        event.parent.clear();
-        event.parent.add(view.asWidget());
-        if (event.document == null) {
-            invalidDocument();
-            return;
-        }
-        Long documentId = event.document.getId();
-        if (documentId == null) {
-            invalidDocument();
-            return;
-        }
-        fillView(event.document);
+    public void onInit(AppEvents.InitDetails event) {
+        this.initDetails = event;
     }
 
-    private void invalidDocument() {
-        fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+    @Event
+    public void onShow(DocumentEvents.ShowPreview event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show(event.parent));
+            return;
+        }
+        event.parent.clear();
+        event.parent.add(view.asWidget());
+        view.footerVisibility().setVisible(false);
+        loadDocument(event.documentId, this::fillView);
+    }
+
+    @Event
+    public void onShow(DocumentEvents.ShowPreviewFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            return;
+        }
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+        view.footerVisibility().setVisible(true);
+        loadDocument(event.documentId, this::fillView);
+    }
+
+    @Override
+    public void onBackClicked() {
+        fireEvent(new DocumentEvents.Show());
+    }
+
+    @Override
+    public void onUploadDocFileClicked() {
+        String comment = view.documentDocComment().getValue();
+        boolean isDocFileSet = view.documentDocUploader().isFileSet();
+        if (!isDocFileSet || StringUtils.isEmpty(comment)) {
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+        view.documentDocUploadContainerLoading().setVisible(true);
+        uploadDoc(document, () ->
+            documentController.updateDocumentDocFileByMember(document.getId(), comment, new FluentCallback<Document>()
+                    .withError(throwable -> {
+                        view.documentDocUploadContainerLoading().setVisible(false);
+                        defaultErrorHandler.accept(throwable);
+                    })
+                    .withSuccess(doc -> {
+                        view.documentDocUploadContainerLoading().setVisible(false);
+                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fillView(doc);
+                    }))
+        );
+    }
+
+    private void loadDocument(Long documentId, Consumer<Document> onSuccess) {
+        documentController.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
     }
 
     private void fillView(Document document) {
+        this.document = document;
+        boolean hasAccessToPdf = hasAccessToPdf();
+        boolean hasAccessToDoc = hasAccessToDoc(document);
+        boolean hasAccessToDocModification = hasAccessToDocModification(document);
         view.setHeader(document.getName() + " (#" + document.getId() + ")");
         view.setVersion(lang.documentVersion() + " " + document.getVersion());
         view.setCreatedBy(lang.createBy("", DateFormatter.formatDateTime(document.getCreated())));
@@ -55,28 +112,67 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
-        view.setDownloadLinkPdf(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
-        view.setDownloadLinkDoc(canEdit() ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
+        view.setDownloadLinkPdf(hasAccessToPdf ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
+        view.setDownloadLinkDoc(hasAccessToDoc ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
+        view.setMembers(CollectionUtils.stream(document.getMembers())
+                .map(Person::getDisplayShortName)
+                .collect(Collectors.joining(", ")));
+        view.documentDocUploader().resetForm();
+        view.documentDocComment().setValue("");
+        view.documentDocVisibility().setVisible(hasAccessToDocModification);
+        view.documentDocUploadContainerLoading().setVisible(false);
         fillProject(document);
     }
 
     private void fillProject(Document document) {
-        if (document.getProjectId() == null) {
+        if (document.getProjectId() == null || !policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
             view.setProject("");
             view.setManager("");
         } else {
-            regionService.getProject(document.getProjectId(), new ShortRequestCallback<Project>()
+            regionService.getProjectInfo(document.getProjectId(), new ShortRequestCallback< ProjectInfo >()
                     .setOnSuccess(project -> {
                         view.setProject(project.getName());
-                        view.setManager(project.getLeader() == null ? "" : project.getLeader().getName());
+                        view.setManager(project.getManager() == null ? "" : project.getManager().getDisplayText());
                     } ));
         }
     }
 
-    private boolean canEdit() {
-        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_EDIT);
+    private void uploadDoc(Document document, Runnable andThen) {
+        if (!view.documentDocUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentDocUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() { new NotifyEvents.Show(lang.errSaveDocumentFile(), NotifyEvents.NotifyType.ERROR); }
+            @Override
+            public void onSuccess() { andThen.run(); }
+        });
+        view.documentDocUploader().uploadBindToDocument(document);
+    }
+
+    private boolean hasAccessToDoc(Document document) {
+        if (policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_EDIT)) {
+            return true;
+        }
+        if (!policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_VIEW)) {
+            return false;
+        }
+        Long currentPersonId = policyService.getProfile().getId();
+        return CollectionUtils.stream(document.getMembers())
+                .map(Person::getId)
+                .collect(Collectors.toList())
+                .contains(currentPersonId);
+    }
+
+    private boolean hasAccessToDocModification(Document document) {
+        return hasAccessToDoc(document) && !document.getApproved();
+    }
+
+    private boolean hasAccessToPdf() {
+        return policyService.hasGrantAccessFor(En_Privilege.DOCUMENT_VIEW);
     }
 
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
@@ -91,4 +187,11 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     AbstractDocumentPreviewView view;
     @Inject
     PolicyService policyService;
+    @Inject
+    DocumentControllerAsync documentController;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
+
+    private Document document;
+    private AppEvents.InitDetails initDetails;
 }

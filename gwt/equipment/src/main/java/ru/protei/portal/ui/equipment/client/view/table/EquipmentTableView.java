@@ -85,6 +85,11 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     }
 
     @Override
+    public void removeSelection (Equipment value){
+        columnProvider.removeSelection(value);
+    }
+
+    @Override
     public void triggerTableLoad() {
         table.setTotalRecords(table.getPageSize());
     }

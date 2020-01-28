@@ -29,6 +29,6 @@ public interface EmployeeService {
     EmployeeDetailView getEmployeeProfile (Long id);
     EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
 
-//    @GetMapping(path = "/currentMissingEmployeesIDs.json")
-//    public String getCurrentMissingEmployeeIDs();
+    Result<PersonShortView> getEmployeeById( AuthToken token, Long emploeeId );
+
 }

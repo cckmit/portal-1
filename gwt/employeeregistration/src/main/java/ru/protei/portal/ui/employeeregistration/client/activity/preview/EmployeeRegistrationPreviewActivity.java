@@ -37,6 +37,9 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         event.parent.add( view.asWidget() );
 
         loadDetails(event.id);
+
+        employeeRegistrationId = event.id;
+        view.showFullScreen(false);
     }
 
     @Event
@@ -45,9 +48,28 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             fireEvent(new Back());
             return;
         }
+
+        employeeRegistrationId = event.id;
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         fullScreenContainer.clear();
         fullScreenContainer.add( view.asWidget() );
         loadDetails(event.id);
+        view.showFullScreen(true);
+    }
+
+    @Override
+    public void onFullScreenPreviewClicked () {
+        fireEvent( new EmployeeRegistrationEvents.ShowFullScreen( employeeRegistrationId ) );
+    }
+
+    @Override
+    public void onBackButtonClicked() {
+        fireEvent(new EmployeeRegistrationEvents.Show());
     }
 
     private void loadDetails(Long id) {
@@ -130,4 +152,6 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private En_EmploymentTypeLang employmentTypeLang;
     @Inject
     private Lang lang;
+
+    private Long employeeRegistrationId;
 }

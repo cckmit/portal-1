@@ -32,7 +32,6 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        company.showDeprecated(false);
         product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
@@ -97,10 +96,10 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         return company;
     }
 
-    @Override
-    public void refreshProducts() {
-        product.refreshOptions();
-    }
+//    @Override
+//    public void refreshProducts() {
+//        product.refreshOptions();
+//    }
 
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)

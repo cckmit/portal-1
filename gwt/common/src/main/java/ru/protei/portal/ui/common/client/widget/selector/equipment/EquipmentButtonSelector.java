@@ -2,29 +2,24 @@ package ru.protei.portal.ui.common.client.widget.selector.equipment;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
-import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Виджет связанных устройств
  */
-public class EquipmentButtonSelector
-        extends ButtonSelector<EquipmentShortView >
-        implements SelectorWithModel<EquipmentShortView> {
+public class EquipmentButtonSelector extends ButtonPopupSingleSelector<EquipmentShortView> {
 
     @Inject
-    public void init(Lang lang) {
-        setSearchEnabled( true );
-        setSearchAutoFocus(true);
-        setDisplayOptionCreator( value -> {
+    public void init(EquipmentModel model, Lang lang) {
+        this.model = model;
+        setAsyncModel(model);
+        setItemRenderer( value -> {
             StringBuilder sb = new StringBuilder();
             if ( value == null ) {
                 sb.append( lang.equipmentPrimaryUseNotDefinied() );
@@ -38,29 +33,8 @@ public class EquipmentButtonSelector
                 }
             }
 
-            return new DisplayOption( sb.toString() );
+            return sb.toString();
         } );
-    }
-
-    @Override
-    public void fillOptions( List< EquipmentShortView > options ) {
-        clearOptions();
-        if (hasNullValue) {
-            addOption(null);
-        }
-        options.forEach( this::addOption );
-    }
-
-    @Override
-    public void refreshValue() {}
-
-    public void setModel(EquipmentModel model) {
-        this.model = model;
-        setSelectorModel(model);
-    }
-
-    public void setHasNullValue(boolean hasNullValue) {
-        this.hasNullValue = hasNullValue;
     }
 
     public void setVisibleTypes(Set<En_EquipmentType> types) {
@@ -77,12 +51,8 @@ public class EquipmentButtonSelector
 
     public void setPrintDecimalNumbers(boolean isPrintDecimalNumbers) {
         this.printDecimalNumbers = isPrintDecimalNumbers;
-        if (model != null) {
-            model.refreshFromCache(this);
-        }
     }
 
     private EquipmentModel model;
-    private boolean hasNullValue = true;
     private boolean printDecimalNumbers = true;
 }

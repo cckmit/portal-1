@@ -21,6 +21,17 @@ $danger_color: #f55753;
   box-sizing: border-box;
 }
 
+.card {
+  .card-stub {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: #d8dadc5e;
+  }
+}
+
 /**   SORT BUTTON   **/
 .button.empty {
   padding: 0;
@@ -2730,6 +2741,17 @@ div.select2-container {
   }
 }
 
+.select2-container {
+  .select2-button {
+    display: flex;
+
+    .select2-add-button {
+      flex-grow: 1;
+      margin-right: 5px;
+    }
+  }
+}
+
 .case-subscribers {
   div.select2-container {
     border: 0 !important;
@@ -2739,6 +2761,14 @@ div.select2-container {
       li.select2-search-choice {
         display: inline !important;
         padding-right: 10px;
+      }
+    }
+  }
+
+  .select2-container {
+    .select2-button {
+      .select2-add-button {
+        flex-grow: 0;
       }
     }
   }
@@ -3547,17 +3577,18 @@ form-group .verifiable-after
 // table images default style
 table {
   thead {
-    th.column_img-35 {
+    th.column-img {
       width: 70px;
     }
   }
 
   tbody {
-    td.column_img-35 {
+    td.column-img {
       height: 35px;
       max-height: 35px;
-      width: 35px;
-      max-width: 35px;
+      width: 70px;
+      min-width: 70px;
+      max-width: 70px;
       white-space: pre-line;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -3831,4 +3862,32 @@ table {
 
 .text-danger.size-error {
   font-size: 75% !important;
+}
+
+.products .table {
+  word-break: break-word;
+}
+
+.site-folder .table {
+  word-break: break-word;
+}
+
+.employee-registration .table {
+  word-break: break-word;
+
+  .number {
+    min-width: 95px;
+  }
+
+  .employment-date{
+    min-width: 85px;
+  }
+
+  .head-of-department{
+    min-width: 130px;
+  }
+}
+
+.btn.has-error {
+  @extend .required;
 }

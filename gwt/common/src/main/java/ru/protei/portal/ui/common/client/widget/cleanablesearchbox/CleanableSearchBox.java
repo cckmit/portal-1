@@ -14,6 +14,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.InputHandler;
 
 public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled {
 
@@ -130,6 +132,10 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         this.addonIcon.setClassName(icon);
         this.addon.removeClassName("hide");
         this.textBox.removeStyleName("rounded-left-3");
+    }
+
+    public HandlerRegistration ock(InputHandler handler) {
+        return addDomHandler(handler, InputEvent.getType());
     }
 
     private void ensureDebugIds() {

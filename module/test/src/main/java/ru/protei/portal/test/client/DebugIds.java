@@ -75,6 +75,7 @@ public class DebugIds {
         String ROLE = "sidebar-menu-role";
         String SITE_FOLDER = "sidebar-menu-site-folder";
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
+        String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
         String ICON_SUFFIX = "-icon";
     }
@@ -183,6 +184,14 @@ public class DebugIds {
         String IMPORTANT = "importance-button-important";
         String BASIC = "importance-button-basic";
         String COSMETIC = "importance-button-cosmetic";
+    }
+
+    public interface PRODUCT_TYPES_BUTTON {
+        String DEFAULT = "product-types-button-";
+        String COMPONENT = "product-types-button-component";
+        String PRODUCT = "product-types-button-product";
+        String DIRECTION = "product-types-button-direction";
+        String COMPLEX = "product-types-button-complex";
     }
 
     public interface ISSUE_STATE {
@@ -343,6 +352,7 @@ public class DebugIds {
         String DIRECTION_SELECTOR = "project-direction-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
+        String LINKS_BUTTON = "project-links-button";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
@@ -383,6 +393,50 @@ public class DebugIds {
 
     public interface PRODUCT_TABLE {
         String LOCK_ICON = "product-table-lock-icon";
+        interface FILTER {
+            String SHOW_DEPRECATED = "product-filter-show-deprecated-button";
+            String TYPES = "product-filter-types-selector";
+        }
+    }
+
+    public interface PRODUCT {
+        String NAME = "product-name";
+        String WIKI_LINK = "product-wiki-link";
+        String DESCRIPTION = "product-description";
+        String SUBSCRIPTIONS = "product-subscriptions";
+        String SUBSCRIPTIONS_ITEM = "product-subscriptions-item";
+        String SUBSCRIPTIONS_ITEM_LANG_CODE = "product-subscriptions-item-lang-code";
+        String SUBSCRIPTIONS_ITEM_EMAIL = "product-subscriptions-item-email";
+        String INCLUDES = "product-includes";
+        String PRODUCTS = "product-products";
+        String ALIASES = "product-aliases";
+        String HISTORY_VERSION = "product-history-version";
+        String CONFIGURATION = "product-configuration";
+        String CDR_DESCRIPTION = "product-cdr-description";
+        String SAVE_BUTTON = "product-save-button";
+        String CANCEL_BUTTON = "product-cancel-button";
+
+        interface TAB {
+            String HISTORY_VERSION = "product-tab-history-version";
+            String CONFIGURATION = "product-tab-configuration";
+            String CDR_DESCRIPTION = "product-tab-cdr-description";
+        }
+    }
+
+    public interface PRODUCT_PREVIEW {
+        String NAME = "product-preview-name";
+        String WIKI_LINK = "product-preview-wiki-link";
+        String DESCRIPTION = "product-preview-description";
+        String HISTORY_VERSION = "product-preview-history-version";
+        String CONFIGURATION = "product-preview-configuration";
+        String CDR_DESCRIPTION = "product-preview-cdr-description";
+        String BACK_BUTTON = "product-preview-back-button";
+
+        interface TAB {
+            String HISTORY_VERSION = "product-preview-tab-history-version";
+            String CONFIGURATION = "product-preview-tab-configuration";
+            String CDR_DESCRIPTION = "product-preview-tab-cdr-description";
+        }
     }
 
     public interface PRODUCT_ITEM {

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,17 +9,18 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -43,13 +45,19 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onShow (ProjectEvents.Edit event) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        resetView();
 
         if (event.id == null) {
             project = new Project();
+            resetView();
         } else {
+            resetView();
             requestProject(event.id, this::fillView);
         }
     }
@@ -64,25 +72,52 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveEnabled().setEnabled(false);
 
-        regionService.saveProject( project, new RequestCallback<Project>(){
-            @Override
-            public void onError( Throwable throwable ) {
-                view.saveEnabled().setEnabled(true);
-            }
+        regionService.saveProject(project, new FluentCallback<Project>()
+                .withError(throwable -> {
+                    view.saveEnabled().setEnabled(true);
+                    if (throwable instanceof RequestFailedException){
+                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
+                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
+                            fireEvent(new ProjectEvents.Show(true));
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        }
+                        defaultErrorHandler.accept(throwable);
+                    }
+                    else {
+                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    }
+                })
+                .withSuccess(aVoid -> {
+                    view.saveEnabled().setEnabled(true);
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
+                })
+        );
+    }
 
-            @Override
-            public void onSuccess( Project aVoid ) {
-                view.saveEnabled().setEnabled(true);
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new ProjectEvents.ChangeModel());
-                fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
-            }
-        });
+    @Event
+    public void onAddLink(CaseLinkEvents.Added event) {
+        if (lang.projects().equals(event.pageId)) {
+            project.addLink(event.caseLink);
+        }
+    }
+
+    @Event
+    public void onRemoveLink(CaseLinkEvents.Removed event) {
+        if (lang.projects().equals(event.pageId)) {
+            project.getLinks().remove(event.caseLink);
+        }
     }
 
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
+    }
+
+    @Override
+    public void onAddLinkClicked(IsWidget anchor) {
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects(), false));
     }
 
     private boolean isNew(Project project) {
@@ -123,8 +158,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.numberVisibility().setVisible(false);
 
-        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) );
+        view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
         view.saveEnabled().setEnabled(true);
+
+        if (project == null || project.getId() == null) fillCaseLinks(null);
     }
 
     private void fillView(Project project) {
@@ -146,10 +183,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(true);
         view.showDocuments(true);
 
+        fillCaseLinks(project.getId());
+
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(project.getId())
-                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT)));
+                .withModifyEnabled(hasPrivileges(project.getId())));
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
     }
@@ -165,6 +204,20 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         return project;
+    }
+
+    private void fillCaseLinks(Long projectId){
+
+        view.getLinksContainer().clear();
+
+        view.addLinkButtonVisibility().setVisible(hasPrivileges(projectId));
+
+        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
+            fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                    .withCaseId(projectId)
+                    .withCaseType(En_CaseType.PROJECT)
+                    .withReadOnly(!hasPrivileges(projectId)));
+        }
     }
 
     private boolean validateView() {
@@ -193,6 +246,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         return true;
     }
 
+    private boolean hasPrivileges(Long projectId) {
+        if (projectId == null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE)) {
+            return true;
+        }
+
+        if (projectId != null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -201,6 +266,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
 

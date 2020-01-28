@@ -18,8 +18,10 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.service.JiraIntegrationService;
-import ru.protei.portal.jira.utils.JiraHookEventData;
-import ru.protei.portal.jira.utils.JiraHookEventType;
+import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.dict.JiraHookEventType;
+import ru.protei.portal.jira.utils.JiraHookEventParser;
+import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.test.jira.config.DatabaseTestConfiguration;
 import ru.protei.portal.test.jira.config.JiraTestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -57,11 +59,13 @@ public class JiraIntegrationServiceTest {
     private final String FILE_PATH_UPDATED_JSON = "issue.updated.json";
     private final String FILE_PATH_EMPTY_PROJECT_JSON = "issue.empty.project.json";
     private final String FILE_PATH_EMPTY_STATUS_JSON = "issue.empty.status.json";
+    private final String FILE_PATH_COMPANY_GROUP_JSON = "issue.companygroup.json";
 
     private String jsonString;
     private String updatedJsonString;
     private String emptyKeyJsonString;
     private String unknownStatusJsonString;
+    private String companyGroupJsonString;
 
     private static final Logger log = LoggerFactory.getLogger(JiraIntegrationServiceTest.class);
 
@@ -76,6 +80,8 @@ public class JiraIntegrationServiceTest {
         emptyKeyJsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_EMPTY_STATUS_JSON).getFile()));
         unknownStatusJsonString = new String(encoded, StandardCharsets.UTF_8);
+        encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_COMPANY_GROUP_JSON).getFile()));
+        companyGroupJsonString = new String(encoded, StandardCharsets.UTF_8);
     }
 
     @Test
@@ -114,10 +120,18 @@ public class JiraIntegrationServiceTest {
         Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
     }
 
+    @Test
+    public void parseIssueWithCompanyGroup() {
+
+        Issue issue = makeIssue(companyGroupJsonString);
+        Assert.assertNotNull("Parsed json with company group", issue);
+        Assert.assertEquals(issue.getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME).getValue(), "chinguitel_mr_Group");
+    }
+
     private Issue makeIssue(String jsonString) {
         try {
-            JiraHookEventData data = JiraHookEventData.parse(jsonString);
-            return data.getIssue();
+            JiraHookEventData data = JiraHookEventParser.parse(jsonString);
+            return data == null ? null : data.getIssue();
         } catch (JSONException e) {
             return null;
         }

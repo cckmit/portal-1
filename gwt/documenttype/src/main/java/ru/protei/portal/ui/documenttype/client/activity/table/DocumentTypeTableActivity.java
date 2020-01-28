@@ -39,6 +39,11 @@ public abstract class DocumentTypeTableActivity
 
     @Event
     public void onShow(DocumentTypeEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
@@ -60,6 +65,8 @@ public abstract class DocumentTypeTableActivity
         if (!UiConstants.ActionBarIdentity.DOCUMENT_TYPE.equals(event.identity)) {
             return;
         }
+
+        view.clearSelection();
 
         animation.showDetails();
         fireEvent(new DocumentTypeEvents.ShowPreview(view.getPreviewContainer(), null));

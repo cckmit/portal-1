@@ -2,6 +2,10 @@ package ru.protei.portal.core.model.util;
 
 public class CrmConstants {
 
+    public static final int DEFAULT_SELECTOR_PAGE_SIZE = 20;
+    public static final int DEFAULT_SELECTOR_CHUNK_SIZE = 100;
+    public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";
@@ -51,5 +55,13 @@ public class CrmConstants {
         long MINUTE = 60 * SEC;
         long HOUR = 60 * MINUTE;
         long DAY = 24 * HOUR;
+    }
+
+    public interface ContactConstants {
+        int FIRST_NAME_SIZE = 80;
+        int SECOND_NAME_SIZE = 80;
+        int LAST_NAME_SIZE = 80;
+        int SHORT_NAME_SIZE = 128;
+        int LOGIN_SIZE = 64;
     }
 }

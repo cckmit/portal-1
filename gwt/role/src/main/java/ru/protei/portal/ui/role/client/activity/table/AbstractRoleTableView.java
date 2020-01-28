@@ -21,4 +21,6 @@ public interface AbstractRoleTableView extends IsWidget {
     void setData( List<UserRole> roles );
 
     void clearRecords();
+
+    void clearSelection();
 }

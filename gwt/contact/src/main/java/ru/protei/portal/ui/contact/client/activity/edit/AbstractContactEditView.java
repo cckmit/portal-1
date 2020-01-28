@@ -69,8 +69,6 @@ public interface AbstractContactEditView extends IsWidget {
 
     void setContactLoginStatus(NameStatus status);
 
-    boolean isValidLogin();
-
     void showInfo( boolean isShow );
 
     HasVisibility saveVisibility();
@@ -90,4 +88,42 @@ public interface AbstractContactEditView extends IsWidget {
     HasValidable workEmailValidator();
 
     HasValidable personalEmailValidator();
+
+    HasVisibility firstNameErrorLabelVisibility();
+
+    HasVisibility secondNameErrorLabelVisibility();
+
+    HasVisibility lastNameErrorLabelVisibility();
+
+    HasVisibility shortNameErrorLabelVisibility();
+
+    HasText firstNameErrorLabel();
+
+    HasText secondNameErrorLabel();
+
+    HasText lastNameErrorLabel();
+
+    HasText shortNameErrorLabel();
+
+    HasText firstNameLabel();
+
+    HasText secondNameLabel();
+
+    HasText lastNameLabel();
+
+    HasText shortNameLabel();
+
+    HasText personalEmailLabel();
+
+    HasText workEmailLabel();
+
+    HasText loginLabel();
+
+    HasText loginErrorLabel();
+
+    HasEnabled saveEnabled();
+
+    NameStatus getContactLoginStatus();
+
+    HasVisibility loginErrorLabelVisibility();
 }

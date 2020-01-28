@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -27,6 +28,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
     }
 
     @Override
@@ -106,6 +108,18 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    private void ensureDebugIds() {
+        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
+
+        showDeprecated.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.SHOW_DEPRECATED);
+        types.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.TYPES);
+
+        resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
     }
 
     Timer timer = new Timer() {

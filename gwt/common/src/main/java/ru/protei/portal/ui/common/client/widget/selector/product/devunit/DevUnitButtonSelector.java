@@ -5,59 +5,44 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
-
-import java.util.List;
 
 /**
  * Button селектор с продуктами
  */
-public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
+public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShortView>
+{
 
     @Inject
     public void init(ProductModel model) {
         this.model = model;
-        model.subscribe(this, En_DevUnitState.ACTIVE, null);
-        setSelectorModel(model);
-        setSearchEnabled(true);
-        setSearchAutoFocus(true);
+        model.setUnitState(En_DevUnitState.ACTIVE);
+        setAsyncModel(model);
 
-        setDisplayOptionCreator( value -> {
-            if (value == null) {
-                return new DisplayOption(defaultValue);
-            }
-            return new DisplayOption(
-                    value.getName() + ( HelperFunc.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")"),
-                    En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
-                    En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
-        } );
+        setItemRenderer( value -> value == null ? defaultValue :
+                value.getName() + ( HelperFunc.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")") );
     }
 
     @Override
-    public void fillOptions(List<ProductShortView> options) {
-        if (defaultValue != null) {
-            addOption(null);
+    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml ) {
+        PopupSelectorItem item = new PopupSelectorItem();
+        item.setName(elementHtml);
+        if(value!=null){
+            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" );
+            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "" );
         }
-
-        options.forEach(this::addOption);
+        return item;
     }
 
     public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
         if (model != null) {
-            model.updateQuery(this, enDevUnitState, enDevUnitTypes);
+            model.setUnitState(enDevUnitState);
+            model.setUnitTypes(enDevUnitTypes);
         }
     }
 
-    public void refreshOptions() {
-        model.getOptionsFromServer(this);
-    }
-
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-    private String defaultValue = null;
     protected ProductModel model;
 }

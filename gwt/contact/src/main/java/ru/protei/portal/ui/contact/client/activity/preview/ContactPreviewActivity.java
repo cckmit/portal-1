@@ -4,13 +4,16 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
@@ -45,6 +48,11 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
     @Event
     public void onShow( ContactEvents.ShowFullScreen event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
@@ -112,6 +120,9 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
     @Inject
     ContactControllerAsync contactService;
+
+    @Inject
+    PolicyService policyService;
 
     private Long contactId;
     private AppEvents.InitDetails initDetails;

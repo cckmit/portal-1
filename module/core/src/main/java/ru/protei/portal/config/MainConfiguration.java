@@ -15,12 +15,12 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -536,18 +536,23 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YoutrackRestClient getYoutrackRestDAO() {
-        return new YoutrackRestClientImpl();
-    }
-
-    @Bean
-    public YoutrackApiClient getYoutrackApiDAO() {
-        return new YoutrackApiClientImpl();
-    }
-
-    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public YoutrackApi getYoutrackApi() {
+        return new YoutrackApiImpl();
+    }
+
+    @Bean
+    public YtDtoFieldsMapper getYtDtoFieldsMapper() {
+        return new YtDtoFieldsMapperImpl();
+    }
+
+    @Bean
+    public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
+        return new JiraCompanyGroupDAO_Impl();
     }
 
     /* SERVICES */

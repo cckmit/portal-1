@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -28,7 +27,6 @@ public class Document implements Serializable {
 
     @JdbcColumn(name = "decimal_number")
     private String decimalNumber;
-
 
     /**
      * Инвентарный номер
@@ -69,8 +67,15 @@ public class Document implements Serializable {
 
     @JdbcColumn(name = "project_id")
     private Long projectId;
-    @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private CaseObject project;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "case_name", sqlTableAlias = "case_object")
+    private String projectName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
+    }, mappedColumn = "cname")
+    private String contragentName;
 
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
@@ -93,10 +98,12 @@ public class Document implements Serializable {
     @JdbcColumn(name = "is_approved")
     private Boolean isApproved;
 
-
     @JdbcColumn(name = "execution_type")
     @JdbcEnumerated(EnumType.ORDINAL)
     private En_DocumentExecutionType executionType;
+
+    @JdbcManyToMany(linkTable = "document_member", localLinkColumn = "document_id", remoteLinkColumn = "person_id")
+    private List<Person> members;
 
     public Document(){}
 
@@ -180,16 +187,20 @@ public class Document implements Serializable {
         this.projectId = projectId;
     }
 
-    public CaseObject getProjectAsCaseObject() {
-        return project;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public Project getProject() {
-        return Project.fromCaseObject(project);
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public void setProject(CaseObject project) {
-        this.project = project;
+    public String getContragentName() {
+        return contragentName;
+    }
+
+    public void setContragentName( String contragentName ) {
+        this.contragentName = contragentName;
     }
 
     public String getVersion() {
@@ -240,6 +251,14 @@ public class Document implements Serializable {
         return state;
     }
 
+    public List<Person> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Person> members) {
+        this.members = members;
+    }
+
     public boolean isActiveUnit () {
         return getState() == En_DocumentState.ACTIVE;
     }
@@ -282,7 +301,8 @@ public class Document implements Serializable {
                 ", registrar=" + registrar +
                 ", contractor=" + contractor +
                 ", projectId=" + projectId +
-                ", project=" + project +
+                ", projectName='" + projectName + '\'' +
+                ", contragentName='" + contragentName + '\'' +
                 ", equipment=" + equipment +
                 ", version='" + version + '\'' +
                 ", created=" + created +
@@ -290,6 +310,7 @@ public class Document implements Serializable {
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
                 ", state=" + state +
+                ", members=" + members +
                 '}';
     }
 }

@@ -317,6 +317,53 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getDocumentMemberAddedBody(String documentName, String url) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("url", url);
+        templateModel.put("documentName", documentName);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/document.member.added.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getDocumentMemberAddedSubject(String documentName) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("documentName", documentName);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/document.member.added.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getDocumentDocFileUpdatedByMemberBody(String documentName, String initiatorName, String comment) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("documentName", documentName);
+        templateModel.put("initiatorName", initiatorName);
+        templateModel.put("comment", comment);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/document.doc.file.updated.by.member.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getDocumentDocFileUpdatedByMemberSubject(String documentName) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("documentName", documentName);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/document.doc.file.updated.by.member.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private List<Map<String, Object>> getCommentsModelKeys( List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))

@@ -6,12 +6,16 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
@@ -47,6 +51,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Event
     public void onShow (ProductEvents.Edit event) {
+        if (!hasPrivileges(event.productId)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
 
@@ -257,10 +266,24 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 isNameUnique;
     }
 
+    private boolean hasPrivileges(Long productId) {
+        if (productId == null && policyService.hasPrivilegeFor(En_Privilege.PRODUCT_CREATE)) {
+            return true;
+        }
+
+        if (productId != null && policyService.hasPrivilegeFor(En_Privilege.PRODUCT_EDIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     AbstractProductEditView view;
     @Inject
     Lang lang;
+    @Inject
+    PolicyService policyService;
     @Inject
     ProductControllerAsync productService;
     @Inject

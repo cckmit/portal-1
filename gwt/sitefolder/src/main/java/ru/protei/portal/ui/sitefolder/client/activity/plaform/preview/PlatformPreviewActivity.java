@@ -4,8 +4,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -35,8 +38,14 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
     @Event
     public void onShow(SiteFolderPlatformEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+
+        platformId = event.platformId;
 
         platformRequest(event.platformId, this::fillView);
         view.footerContainerVisibility().setVisible(true);
@@ -52,17 +61,16 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
     }
 
-    private void projectRequest(Long projectId, Consumer<Project> consumer) {
-        regionService.getProjectInfo(projectId, new FluentCallback<Project>().withSuccess(consumer));
+    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
     }
 
-    private void fillProjectSpecificFields (Project project){
+    private void fillProjectSpecificFields (ProjectInfo project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
         view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
-        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), project.getContragent() == null ? null : project.getContragent().getId()).readOnly());
+        showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }
-
 
     private void fillView( Platform value ) {
         if (value == null) {
@@ -84,7 +92,13 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
             view.setProject("", "");
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
             view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
-            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
+            showContacts(value.getCompanyId());
+        }
+    }
+
+    private void showContacts(Long companyId) {
+        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), companyId).readOnly());
         }
     }
 
@@ -114,6 +128,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     SiteFolderControllerAsync siteFolderController;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    PolicyService policyService;
 
 
     private Long platformId;

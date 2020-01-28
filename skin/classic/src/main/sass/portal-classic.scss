@@ -50,9 +50,9 @@ p {
   }
   .app-version {
     color: #788195 !important;
-    width: 100% !important;
+    width: 270px !important;
     position: fixed;
-    bottom: 0;
+    bottom: 0px;
     line-height: 30px;
     text-align: center;
     font-size: 13px !important;
@@ -173,6 +173,12 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   font-weight: 900;
 }
 
+/* Попап селектора */
+.selector-popup{
+  position: absolute !important;
+  display: block !important;
+  float: left;
+}
 .form-group-default.form-group-default-selectFx .cs-wrapper .cs-placeholder {
   text-overflow: ellipsis;
 }

@@ -23,6 +23,18 @@ public class CollectionUtils {
         return (null == iterable || !iterable.iterator().hasNext());
     }
 
+    public static <T> T get( List<T> col, int elementIndex ) {
+        if(col==null) return null;
+        if(col.size() <= elementIndex )return null;
+        return col.get(elementIndex);
+    }
+
+    public static <T> T get( T[] col, int elementIndex ) {
+        if(col==null) return null;
+        if(col.length <= elementIndex )return null;
+        return col[elementIndex];
+    }
+
     public static <T> T getFirst( Iterable<T> iterable ) {
         return isEmpty( iterable ) ? null : iterable.iterator().next();
     }
@@ -50,6 +62,14 @@ public class CollectionUtils {
         return set == null ? Collections.<T>emptySet() : set;
     }
 
+    public static <T> List<T> emptyIfNull( List<T> list ) {
+        return list == null ? Collections.<T>emptyList() : list;
+    }
+
+    public static <K, V> Map<K, V> emptyIfNull( Map<K, V> map ) {
+        return map == null ? Collections.<K, V>emptyMap() : map;
+    }
+
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
                                          final Function<? super I, ? extends O> mapper ) {
         if ( iterable == null || mapper == null || output == null ) {
@@ -73,6 +93,17 @@ public class CollectionUtils {
         Iterator<I> it = iterable.iterator();
         while (it.hasNext()) {
             mapper.accept( it.next(), consumer );
+        }
+    }
+
+    public static <I, O> void transform( final I[] iterable, final Collection<O> output,
+                                         final Function<? super I, ? extends O> mapper ) {
+        if ( iterable == null || mapper == null || output == null ) {
+            return;
+        }
+
+        for (final I next : iterable) {
+            output.add( mapper.apply( next ) );
         }
     }
 
@@ -109,6 +140,12 @@ public class CollectionUtils {
     public static <R, T> List<R> toList( Iterable<T> iterable, BiConsumer<? super T, Consumer<R>> consumer ) {
         List<R> result = new ArrayList<>();
         transform( iterable, result, consumer );
+        return result;
+    }
+
+    public static <R, T> List<R> toList( T[] iterable, Function<? super T, ? extends R> mapper  ) {
+        List<R> result = new ArrayList<R>();
+        transform( iterable, result, mapper );
         return result;
     }
 

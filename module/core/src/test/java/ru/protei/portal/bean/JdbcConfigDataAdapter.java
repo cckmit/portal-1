@@ -16,4 +16,5 @@ public class JdbcConfigDataAdapter implements JdbcBeforeContextInitializer {
             connection.setLiquibaseEnabled(false);
         }
     }
+
 }
