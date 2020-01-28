@@ -166,9 +166,10 @@ public class IssueFilterUtils {
         if ( personSet == null || personSet.isEmpty() ) {
             return null;
         }
+
         return personSet
                 .stream()
-                .map( PersonShortView::getId )
+                .map( personShortView -> personShortView == null ? null : personShortView.getId() )
                 .collect( Collectors.toList() );
     }
 
@@ -199,7 +200,9 @@ public class IssueFilterUtils {
         query.setSortDir(filterWidgetView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setCompanyIds(getCompaniesIdList(filterWidgetView.companies().getValue()));
         query.setProductIds(getProductsIdList(filterWidgetView.products().getValue()));
-        query.setManagerIds(getManagersIdList(filterWidgetView.managers().getValue()));
+        List<Long> managersIdList = getManagersIdList(filterWidgetView.managers().getValue());
+        query.setWithoutManager(managersIdList != null && managersIdList.remove(null));
+        query.setManagerIds(managersIdList);
         query.setInitiatorIds(getManagersIdList(filterWidgetView.initiators().getValue()));
         query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
         query.setStates(getStateList(filterWidgetView.states().getValue()));

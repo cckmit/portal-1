@@ -95,7 +95,13 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                condition.append(" and manager in " + HelperFunc.makeInArg(query.getManagerIds(), false));
+                if (query.isWithoutManager() != null && query.isWithoutManager()) {
+                    condition.append(" and not (not manager in " + HelperFunc.makeInArg(query.getManagerIds(), false) + " and manager is not null)");
+                } else {
+                    condition.append(" and manager in " + HelperFunc.makeInArg(query.getManagerIds(), false));
+                }
+            } else if (query.isWithoutManager() != null && query.isWithoutManager()) {
+                condition.append(" and manager IS NULL");
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
@@ -182,10 +188,6 @@ public class CaseObjectSqlBuilder {
                 condition
                         .append(" and product_id = ")
                         .append(query.getProductDirectionId());
-            }
-
-            if (query.isWithoutManager() != null && query.isWithoutManager()) {
-                condition.append(" and manager IS NULL");
             }
         });
     }

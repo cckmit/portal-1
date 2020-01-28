@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -38,7 +39,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -229,11 +230,25 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
         companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
         updateInitiators();
-        managers().setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
+        setManagers(caseQuery.getManagerIds(), caseQuery.isWithoutManager());
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
+    }
+
+    private void setManagers(List<Long> managerIds, Boolean isWithoutManager) {
+        Set<PersonShortView> result = IssueFilterUtils.getPersons(managerIds);
+        if (isWithoutManager) {
+            if (result != null) {
+                result.add(null);
+            } else {
+                result = new HashSet<>();
+                result.add(null);
+            }
+        }
+
+        managers().setValue(result);
     }
 
     @Override
