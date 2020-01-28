@@ -8,16 +8,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
+import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.JiraCompanyGroup;
-import ru.protei.portal.jira.service.JiraIntegrationQueueService;
+import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.service.JiraIntegrationQueueService;
+import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class JiraEventHandlerImpl {
@@ -30,6 +38,18 @@ public class JiraEventHandlerImpl {
     JiraIntegrationQueueService jiraIntegrationQueueService;
     @Autowired
     JiraCompanyGroupDAO jiraCompanyGroupDAO;
+    @Autowired
+    JiraEndpointDAO jiraEndpointDAO;
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
+
+    private EntityCache<JiraEndpoint> jiraEndpointCache;
+    private EntityCache<JiraEndpoint> jiraEndpointCache() {
+        if (jiraEndpointCache == null) {
+            jiraEndpointCache = new EntityCache<>(jiraEndpointDAO, TimeUnit.MINUTES.toMillis(10));
+        }
+        return jiraEndpointCache;
+    }
 
     public JiraEventHandlerImpl() {
         logger.info("Jira webhook handler installed");
@@ -63,12 +83,18 @@ public class JiraEventHandlerImpl {
                 return;
             }
 
-            Long endpointCompanyId = selectEndpointCompanyId(eventData.getIssue(), companyId);
-            logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
+            Issue issue = eventData.getIssue();
+            JiraEndpoint endpoint = selectEndpoint(issue, companyId);
 
-            if (!jiraIntegrationQueueService.enqueue(endpointCompanyId, eventData)) {
-                logger.error("jiraWebhook(): endpointCompanyId={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
-                        endpointCompanyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
+            if (endpoint == null) {
+                logger.warn("Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject());
+                logger.error("Event for jira-issue has been dropped! company={}, project={}", companyId, issue.getProject());
+                return;
+            }
+
+            if (!jiraIntegrationQueueService.enqueue(endpoint, eventData)) {
+                logger.error("jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
+                        endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
             }
 
             /**
@@ -97,6 +123,24 @@ public class JiraEventHandlerImpl {
             logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, time={}ms | request completed",
                     companyId, realIP, fromHost, request.getQueryString(), total);
         }
+    }
+
+    private JiraEndpoint selectEndpoint(Issue issue, Long originalCompanyId) {
+        JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
+                Objects.equals(ep.getCompanyId(), originalCompanyId) &&
+                Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
+        );
+
+        if (endpoint == null) return null;
+
+        CaseObject caseObject = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
+        if (caseObject != null) return endpoint;
+
+        Long endpointCompanyId = selectEndpointCompanyId(issue, originalCompanyId);
+        logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
+        return jiraEndpointCache().findFirst(ep ->
+                Objects.equals(ep.getCompanyId(), endpointCompanyId) &&
+                        Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId())));
     }
 
     private Long selectEndpointCompanyId(Issue issue, Long originalCompanyId) {

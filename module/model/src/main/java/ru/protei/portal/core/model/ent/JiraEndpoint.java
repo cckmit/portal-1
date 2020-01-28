@@ -122,4 +122,12 @@ public class JiraEndpoint {
     public void setServerPassword(String serverPassword) {
         this.serverPassword = serverPassword;
     }
+
+    @Override
+    public String toString() {
+        return "JiraEndpoint{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                '}';
+    }
 }
