@@ -58,9 +58,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
 
-        validateCaseMeta(meta);
+        if (!validateCaseMeta(meta)){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
+        }
     }
-
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
@@ -331,7 +332,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
         metaView.managerValidator().setValid(managerIsValid);
 
-        boolean productIsValid = caseMeta.getProduct() != null || !isStateWithRestrictions(caseMeta.getState());
+        boolean productIsValid = (caseMeta.getProduct() != null && caseMeta.getManager() != null) || (!isStateWithRestrictions(caseMeta.getState()) && caseMeta.getManager() == null);
         metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
