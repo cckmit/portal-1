@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -15,11 +16,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
+import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -47,6 +50,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
+
+        passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
     }
 
     @Override
@@ -171,12 +176,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasText password() {
+    public HasValue<String> password() {
         return password;
     }
 
     @Override
-    public HasText confirmPassword() {
+    public HasValue<String> confirmPassword() {
         return confirmPassword;
     }
 
@@ -373,12 +378,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         changeContactLoginTimer.schedule( 300 );
     }
 
-    @UiHandler("password")
-    public void onChangeContactPassword( KeyUpEvent keyUpEvent ) {
-        changeContactLoginTimer.cancel();
-        changeContactLoginTimer.schedule( 300 );
-    }
-
     @UiHandler({"workEmail", "personalEmail"})
     public void onChangeEmail( KeyUpEvent keyUpEvent ) {
         changeContactEmailTimer.cancel();
@@ -401,6 +400,26 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
             activity.onCompanySelected();
+        }
+    }
+
+    @UiHandler("password")
+    public void onPasswordClicked(FocusEvent event) {
+        showGenPasswordPopupIfNeeded();
+    }
+
+    @UiHandler("password")
+    public void onPasswordChanged(InputEvent event) {
+        changeContactLoginTimer.schedule( 300 );
+        showGenPasswordPopupIfNeeded();
+    }
+
+    private void showGenPasswordPopupIfNeeded() {
+        boolean isNeededShowPasswordGenPopup = StringUtils.isBlank(password().getValue());
+        if (isNeededShowPasswordGenPopup) {
+            passwordGenPopup.showNear(password);
+        } else {
+            passwordGenPopup.hide();
         }
     }
 
@@ -550,7 +569,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     CompanyModel companyModel;
 
-    Timer changeContactLoginTimer = new Timer() {
+    private Timer changeContactLoginTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
@@ -559,7 +578,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     };
 
-    Timer changeContactEmailTimer = new Timer() {
+    private Timer changeContactEmailTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
@@ -577,9 +596,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     };
 
-    NameStatus status;
-
-    AbstractContactEditActivity activity;
+    private NameStatus status;
+    private AbstractContactEditActivity activity;
+    private PasswordGenPopup passwordGenPopup = new PasswordGenPopup();
 
     private static ContactViewUiBinder ourUiBinder = GWT.create(ContactViewUiBinder.class);
     interface ContactViewUiBinder extends UiBinder<HTMLPanel, ContactEditView> {}

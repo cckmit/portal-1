@@ -112,7 +112,7 @@ public abstract class BasePopupView
     }
 
     public void showOverRight(final UIObject relative, Integer width ) {
-        this.relativeOverLeft = relative;
+        this.relativeOverRight = relative;
         this.width = width;
 
         getPositionRoot().getElement().getStyle().setPosition( Style.Position.RELATIVE );
@@ -130,6 +130,12 @@ public abstract class BasePopupView
 
                 int relativeTop = relative.getAbsoluteTop();
                 int popupTop = relativeTop - getOffsetHeight();
+
+                Element arrow = getArrow();
+
+                if (arrow != null) {
+                    popupTop -= arrow.getOffsetHeight() / 2;
+                }
 
                 setPopupPosition( popupLeft, popupTop );
             }
@@ -275,6 +281,8 @@ public abstract class BasePopupView
         }
         else if ( relativeUnderCenter != null ) {
             showUnderCenter( relativeUnderCenter, width );
+        } else if (relativeOverRight != null) {
+            showOverRight(relativeOverRight, width);
         }
     }
 
@@ -301,6 +309,8 @@ public abstract class BasePopupView
     protected UIObject relativeRight;
 
     protected UIObject relativeUnderCenter;
+
+    protected UIObject relativeOverRight;
 
     private Position popupPosition = Position.FREE;
 

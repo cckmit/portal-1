@@ -1987,4 +1987,8 @@ public interface Lang extends Messages, ContactItemLang {
     String documentTypeUnableToRemoveUsedDocumentType();
 
     String errUpdateOrDeleteLinkedObjectError();
+
+    String contactGeneratePassword();
+
+    String passwordIsDisplay();
 }
