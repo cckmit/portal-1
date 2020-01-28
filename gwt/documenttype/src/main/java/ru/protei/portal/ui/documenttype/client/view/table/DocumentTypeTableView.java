@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_DocumentCategoryLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.documenttype.client.activity.table.AbstractDocumentTypeTableActivity;
@@ -37,6 +38,10 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
 
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler(activity);
+
+        removeClickColumn.setHandler(activity);
+        removeClickColumn.setRemoveHandler(activity);
+
         columns.forEach(c -> {
             c.setHandler(activity);
             c.setColumnProvider(columnProvider);
@@ -79,13 +84,15 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
     }
 
     private void initTable() {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_EDIT) );
+        editClickColumn.setEnabledPredicate(docType -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_EDIT) );
+        removeClickColumn.setEnabledPredicate(docType -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_REMOVE));
 
         columns.add(name);
         columns.add(shortName);
         columns.add(category);
         columns.add(gost);
         columns.add(editClickColumn);
+        columns.add(removeClickColumn);
 
         columns.forEach(c -> table.addColumn(c.header, c.values));
     }
@@ -157,6 +164,8 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
 
     @Inject
     private EditClickColumn<DocumentType> editClickColumn;
+    @Inject
+    private RemoveClickColumn<DocumentType> removeClickColumn;
     @Inject
     private En_DocumentCategoryLang documentCategoryLang;
 

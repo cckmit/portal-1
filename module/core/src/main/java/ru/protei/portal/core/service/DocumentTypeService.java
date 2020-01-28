@@ -14,4 +14,7 @@ public interface DocumentTypeService {
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_TYPE_CREATE, En_Privilege.DOCUMENT_TYPE_EDIT})
     Result<DocumentType> saveDocumentType( AuthToken token, DocumentType documentType);
+
+    @Privileged(En_Privilege.DOCUMENT_TYPE_REMOVE)
+    Result<Long> removeDocumentType(AuthToken authToken, DocumentType documentType);
 }
