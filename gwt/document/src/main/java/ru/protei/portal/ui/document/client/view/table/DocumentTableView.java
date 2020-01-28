@@ -126,22 +126,28 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_REMOVE) && !v.isDeprecatedUnit());
 
         columns.add(approve);
+        columns.add(type);
         columns.add(name);
         columns.add(decimalNumber);
-        columns.add(region);
         columns.add(company);
-        columns.add(type);
 
         table.addColumn(approve.header, approve.values);
+        table.addColumn(type.header, type.values);
         table.addColumn(name.header, name.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
-        table.addColumn(region.header, region.values);
         table.addColumn(company.header, company.values);
-        table.addColumn(type.header, type.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
+    }
+
+    private String getRegion(Document document) {
+        if (document.getProject() != null && document.getProject().getRegion() != null) {
+            return document.getProject().getRegion().toString();
+        } else {
+            return null;
+        }
     }
 
     private final ClickColumn<Document> approve = new ClickColumn<Document>() {
@@ -156,6 +162,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
+
+            cell.setTitle(getRegion(value));
         }
     };
 
@@ -190,6 +198,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 cell.addClassName("deprecated-entity");
             }
             cell.setInnerHTML(html.toString());
+
+            cell.setTitle(getRegion(value));
         }
     };
 
@@ -216,6 +226,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
+
+            cell.setTitle(getRegion(value));
         }
     };
 
@@ -238,6 +250,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
+
+            cell.setTitle(getRegion(value));
         }
     };
 
@@ -260,6 +274,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
 
             cell.setInnerHTML(html.toString());
+
+            cell.setTitle(getRegion(value));
         }
     };
 
@@ -282,6 +298,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
 
             cell.setInnerHTML(html.toString());
+
+            cell.setTitle(getRegion(value));
         }
     };
 
@@ -304,6 +322,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
 
             cell.setInnerHTML(html.toString());
+
+            cell.setTitle(getRegion(value));
         }
     };
 

@@ -21,7 +21,7 @@
             <form class="card-body p-t-0">
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <div class="form-group form-group-default">
                             <label><ui:text from="{lang.documentName}"/></label>
                             <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
@@ -68,7 +68,33 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <div class="checkbox check-success p-t-10 p-b-10">
+                                <g:CheckBox ui:field="approved" text="{lang.documentApproved}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" >
+                        <div class="form-group form-group-default" ui:field="approvedByContainer">
+                            <person:EmployeeFormSelector ui:field="approvedBy"
+                                                         header="{lang.documentApprovedBy}"
+                                                         enabled="false"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default document-approval-date"  ui:field="approvalDateContainer">
+                            <label><ui:text from="{lang.documentApprovalDate}"/></label>
+                            <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy"
+                                                     enabled="false"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
                                 <div class="card-title"><ui:text from="{lang.documentFileDoc}"/></div>
@@ -83,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
                                 <div class="card-title"><ui:text from="{lang.documentFilePdf}"/></div>
@@ -96,30 +122,6 @@
                             <div class="card-body no-scroll no-padding card-body-dropzone">
                                 <fileuploader:DocumentUploader ui:field="documentPdfUploader" format="PDF"/>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="checkbox check-success p-t-10 p-b-10">
-                            <g:CheckBox ui:field="approved" text="{lang.documentApproved}"/>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group form-group-default" ui:field="approvedByContainer">
-                            <person:EmployeeFormSelector ui:field="approvedBy"
-                                                         header="{lang.documentApprovedBy}"
-                                                         enabled="false"
-                            />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group form-group-default" ui:field="approvalDateContainer">
-                            <label><ui:text from="{lang.documentApprovalDate}"/></label>
-                            <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy" enabled="false"/>
                         </div>
                     </div>
                     <div class="col-md-4">
