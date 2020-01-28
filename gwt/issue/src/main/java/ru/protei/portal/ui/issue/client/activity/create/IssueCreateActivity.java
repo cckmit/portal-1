@@ -369,6 +369,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
+        if (issueMetaView.getInitiator() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errInitiatorNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         boolean isFieldsValid = view.nameValidator().isValid() &&
                 issueMetaView.stateValidator().isValid() &&
                         issueMetaView.importanceValidator().isValid() &&
