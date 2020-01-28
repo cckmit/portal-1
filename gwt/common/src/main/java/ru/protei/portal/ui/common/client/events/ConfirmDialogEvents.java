@@ -15,14 +15,26 @@ public class ConfirmDialogEvents {
             default void onCancel() {}
         }
 
-        public Show(String text, String identity) {
+        public Show(String identity, String text) {
             this.identity = identity;
             this.text = text;
+        }
+
+        public Show(String identity, String text, String confirmButtonText) {
+            this.identity = identity;
+            this.text = text;
+            this.confirmButtonText = confirmButtonText;
         }
 
         public Show(String text, Action action) {
             this.action = action;
             this.text = text;
+        }
+
+        public Show(String text, String confirmButtonText, Action action) {
+            this.action = action;
+            this.text = text;
+            this.confirmButtonText = confirmButtonText;
         }
 
         public String identity;

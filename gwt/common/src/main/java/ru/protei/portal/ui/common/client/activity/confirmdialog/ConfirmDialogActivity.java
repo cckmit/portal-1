@@ -68,7 +68,6 @@ public abstract class ConfirmDialogActivity implements Activity, AbstractConfirm
     @Inject
     AbstractConfirmDialogView view;
 
-    String identity;
-
+    private String identity;
     private ConfirmDialogEvents.Show.Action action;
 }
