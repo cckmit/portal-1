@@ -206,6 +206,12 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         projectRegion.setValue(region);
     }
 
+    @UiHandler("approved")
+    public void onApprovedChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null)
+            activity.onApprovedChanged();
+    }
+
     @UiHandler("equipment")
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
         if (activity != null)
