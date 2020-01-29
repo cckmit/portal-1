@@ -165,6 +165,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public UserDashboardDAO getUserDashboardDAO() {
+        return new UserDashboardDAO_Impl();
+    }
+
+    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
     }
@@ -282,6 +287,11 @@ public class JiraTestConfiguration {
     @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public UserDashboardService getUserDashboardService() {
+        return new UserDashboardServiceImpl();
     }
 
     @Bean

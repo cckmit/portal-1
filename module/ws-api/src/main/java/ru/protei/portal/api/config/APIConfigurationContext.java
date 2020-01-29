@@ -79,6 +79,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public UserDashboardDAO getUserDashboardDAO() {
+        return new UserDashboardDAO_Impl();
+    }
+
+    @Bean
     public UserRoleDAO getUserRoleDAO() {
         return new UserRoleDAO_impl();
     }
