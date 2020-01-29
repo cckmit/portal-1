@@ -279,7 +279,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
-        metaView.setProductTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        metaView.setProductTypes(En_DevUnitType.PRODUCT);
 
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
