@@ -64,7 +64,7 @@ public class PopupSelectableItem<T>
     }
 
     @Override
-    public void addSelectorHandler(SelectorItemHandler selectorItemHandler) {
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
         this.selectorItemHandler = selectorItemHandler;
     }
 
@@ -85,7 +85,7 @@ public class PopupSelectableItem<T>
     }
 
 
-    private SelectorItemHandler selectorItemHandler;
+    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     @UiField

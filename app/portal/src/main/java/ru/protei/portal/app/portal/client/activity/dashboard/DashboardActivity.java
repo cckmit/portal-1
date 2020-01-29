@@ -1,11 +1,11 @@
 package ru.protei.portal.app.portal.client.activity.dashboard;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -90,10 +90,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         return query;
     }
 
-    private CaseQuery generateNewRecordsQuery(){
+    private CaseQuery generateNewRecordsQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
-        query.setWithoutManager(true);
+        query.setManagerIds(CollectionUtils.singleValueList(null));
 
         return query;
     }

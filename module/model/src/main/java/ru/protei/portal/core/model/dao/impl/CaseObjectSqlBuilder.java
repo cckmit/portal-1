@@ -95,13 +95,15 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                if (query.isWithoutManager() != null && query.isWithoutManager()) {
-                    condition.append(" and not (not manager in " + HelperFunc.makeInArg(query.getManagerIds(), false) + " and manager is not null)");
+                boolean isNullContains = query.getManagerIds().remove(null);
+
+                if (!isNullContains) {
+                    condition.append(" and manager IN " + HelperFunc.makeInArg(query.getManagerIds(), false));
+                } else if (query.getManagerIds().isEmpty()) {
+                    condition.append(" and manager IS NULL");
                 } else {
-                    condition.append(" and manager in " + HelperFunc.makeInArg(query.getManagerIds(), false));
+                    condition.append(" and (manager IN " + HelperFunc.makeInArg(query.getManagerIds(), false) + " OR manager IS NULL)");
                 }
-            } else if (query.isWithoutManager() != null && query.isWithoutManager()) {
-                condition.append(" and manager IS NULL");
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {

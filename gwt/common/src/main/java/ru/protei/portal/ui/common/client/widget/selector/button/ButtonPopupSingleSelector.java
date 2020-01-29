@@ -151,15 +151,15 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(selector.makeElementName(value));
     }
 
-    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
-        PopupSelectorItem item = new PopupSelectorItem();
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         item.getElement().addClassName( UiConstants.Styles.TEXT_CENTER);
         return item;
     }
 
     @Override
-    protected AbstractPageableSelector getSelector() {
+    protected AbstractPageableSelector<T> getSelector() {
         return selector;
     }
 

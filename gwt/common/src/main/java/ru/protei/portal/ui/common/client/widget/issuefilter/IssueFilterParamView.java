@@ -230,25 +230,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
         companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
         updateInitiators();
-        setManagers(caseQuery.getManagerIds(), caseQuery.isWithoutManager());
+        managers().setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
-    }
-
-    private void setManagers(List<Long> managerIds, Boolean isWithoutManager) {
-        Set<PersonShortView> result = IssueFilterUtils.getPersons(managerIds);
-        if (isWithoutManager) {
-            if (result != null) {
-                result.add(null);
-            } else {
-                result = new HashSet<>();
-                result.add(null);
-            }
-        }
-
-        managers().setValue(result);
     }
 
     @Override

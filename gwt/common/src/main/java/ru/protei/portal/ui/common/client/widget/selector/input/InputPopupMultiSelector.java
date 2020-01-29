@@ -130,15 +130,15 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         clearButton.setVisible( !isEmpty() );
     }
 
-    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
-        PopupSelectableItem item = new PopupSelectableItem();
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
         return item;
     }
 
     @Override
-    protected AbstractPageableSelector getSelector() {
+    protected AbstractPageableSelector<T> getSelector() {
         return selector;
     }
 

@@ -1,9 +1,8 @@
 package ru.protei.portal.ui.common.client.selector.pageable;
 
 import com.google.gwt.user.client.TakesValue;
-import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.selector.selection.Selection;
 import ru.protei.portal.ui.common.client.selector.selection.MultiSelection;
+import ru.protei.portal.ui.common.client.selector.selection.Selection;
 
 import java.util.*;
 
@@ -36,7 +35,7 @@ public class MultiValuePageableSelector<T> extends AbstractPageableSelector<T>
     }
 
     private MultiSelection<T> selection = new MultiSelection<T>() {
-        protected List<T> options = new ArrayList<>();
+        List<T> options = new ArrayList<>();
 
         @Override
         public void select(T value) {
@@ -54,6 +53,10 @@ public class MultiValuePageableSelector<T> extends AbstractPageableSelector<T>
 
         @Override
         public boolean isSelected(T option) {
+            if (hasNullValue) {
+                return options.contains(option);
+            }
+
             return option != null && options.contains(option);
         }
 
