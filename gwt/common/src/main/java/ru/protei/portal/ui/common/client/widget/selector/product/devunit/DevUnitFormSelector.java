@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
@@ -17,12 +18,20 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
 
     @Inject
     public void init(ProductModel model) {
+        this.model = model;
         model.setUnitState(En_DevUnitState.ACTIVE);
         setAsyncModel(model);
 
         setItemRenderer( value -> value == null ? defaultValue :
                 value.getName() + (StringUtils.isEmpty(value.getAliases()) ? "" : " (" + value.getAliases() + ")") );
 
+    }
+
+    public void setTypes(En_DevUnitType... enDevUnitTypes) {
+        if (model != null) {
+            model.setUnitState( En_DevUnitState.ACTIVE );
+            model.setUnitTypes( enDevUnitTypes);
+        }
     }
 
     @Override
@@ -35,5 +44,7 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
         }
         return item;
     }
+
+    protected ProductModel model;
 
 }

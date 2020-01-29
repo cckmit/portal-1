@@ -11,10 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
@@ -179,6 +176,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setProductTypes(En_DevUnitType... enDevUnitTypes) {
+        product.setTypes(enDevUnitTypes);
+    }
+
+    @Override
     public void setInitiator(Person initiator) {
         PersonShortView initiatorValue = initiator == null ? null : initiator.toFullNameShortView();
         if (initiatorValue != null) initiatorValue.setName( transliteration( initiatorValue.getName() ) );
@@ -314,6 +316,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
+        product.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPLEX);
     }
 
     private void ensureDebugIds() {
