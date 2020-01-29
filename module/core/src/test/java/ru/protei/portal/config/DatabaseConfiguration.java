@@ -32,8 +32,8 @@ public class DatabaseConfiguration {
     }
 
     @Bean
-    public JdbcConfigDataAdapter getJdbcConfigDataAdapter() {
-        return new JdbcConfigDataAdapter(  );
+    public JdbcConfigDataAdapter getJdbcConfigDataAdapter( @Autowired TestConfig testConfig ) {
+        return new JdbcConfigDataAdapter( testConfig );
     }
 
     /**

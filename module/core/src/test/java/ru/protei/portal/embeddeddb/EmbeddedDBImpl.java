@@ -44,6 +44,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
         }
         isInitialized = true;
         if (testConfig.data().embeddedDbEnabled) {
+            port = testConfig.data().getPort();
             mysqld = EmbeddedMysql.anEmbeddedMysql(buildConfig(port))
                     .addSchema(SCHEMA_CONFIG)
                     .start();
