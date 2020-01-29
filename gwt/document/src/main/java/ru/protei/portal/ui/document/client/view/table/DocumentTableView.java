@@ -144,7 +144,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private String getRegion(Document document) {
         if (document.getProject() != null && document.getProject().getRegion() != null) {
-            return document.getProject().getRegion().toString();
+            return document.getProject().getRegion().getDisplayText();
         } else {
             return null;
         }
@@ -180,19 +180,16 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
             if (value.isDeprecatedUnit()) {
                 html
-                        .append("<div class =\"document-name\">")
+                        .append("<div class =\"document-name text-overflow-dynamic-container\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_TABLE.LOCK_ICON + "\"></i> ")
-                        .append(value.getName())
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
                         .append("</div>");
             } else {
-                html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
+                html
+                        .append( "<div class=\"document-name text-overflow-dynamic-container\">")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
+                        .append("</div>");
             }
-
-            if (value.getProject() != null && value.getProject().getCustomer() != null) {
-                html.append( "<div class=\"document-name\">(" + value.getProject().getCustomer().getCname() + ")</div>" );
-            }
-
-            html.append( "<div><b>" + value.getType().getName() + " (" + DateFormatter.formatYear(value.getCreated()) + ")</b></div>" );
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
@@ -245,35 +242,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 return;
             }
 
-            cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
+            cell.setInnerHTML("<a href=\"#\" class=\"text-overflow-dynamic-container\"><span class=\"text-overflow-dynamic-ellipsis\">" + project.getName() + "</span></a>");
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
-
-            cell.setTitle(getRegion(value));
-        }
-    };
-
-    private final ClickColumn<Document> region = new ClickColumn<Document>() {
-        @Override
-        protected String getColumnClassName() { return "document-region-column"; }
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.documentProjectRegion());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            StringBuilder html = new StringBuilder();
-
-            if (value.getProject().getRegion() != null) {
-                html
-                        .append("<div class=\"region\">")
-                        .append(value.getProject().getRegion())
-                        .append("</div> ");
-            }
-
-            cell.setInnerHTML(html.toString());
 
             cell.setTitle(getRegion(value));
         }
@@ -284,7 +257,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         protected String getColumnClassName() { return "document-company-column"; }
         @Override
         protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.companyName());
+            columnHeader.setInnerText(lang.company());
         }
         @Override
         public void fillColumnValue(Element cell, Document value) {
@@ -292,8 +265,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
             if (value.getProject().getCustomer() != null) {
                 html
-                        .append("<div class=\"company\">")
-                        .append(value.getProject().getCustomer().getCname())
+                        .append("<div class=\"company text-overflow-dynamic-container\">")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getProject().getCustomer().getCname() + "</span>")
                         .append("</div> ");
             }
 
@@ -308,7 +281,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         protected String getColumnClassName() { return "document-type-column"; }
         @Override
         protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.documentType());
+            columnHeader.setInnerText(lang.documentTypeShort());
         }
         @Override
         public void fillColumnValue(Element cell, Document value) {

@@ -69,18 +69,18 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="form-group form-group-default">
-                            <div class="checkbox check-success p-t-10 p-b-10">
+                        <div class="form-group">
+                            <div class="checkbox check-success p-t-10 p-b-10 pull-right">
                                 <g:CheckBox ui:field="approved" text="{lang.documentApproved}"/>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4" >
-                        <div class="form-group form-group-default" ui:field="approvedByContainer">
-                            <person:EmployeeFormSelector ui:field="approvedBy"
-                                                         header="{lang.documentApprovedBy}"
-                                                         enabled="false"
-                            />
+                        <div class="form-group" ui:field="approvedByContainer">
+                                    <person:EmployeeFormSelector ui:field="approvedBy"
+                                                                 header="{lang.documentApprovedBy}"
+                                                                 enabled="false"
+                                                                 addStyleNames="document-approval-by"/>
                         </div>
                     </div>
                     <div class="col-md-4">

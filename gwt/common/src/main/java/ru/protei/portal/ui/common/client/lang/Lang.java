@@ -1975,4 +1975,6 @@ public interface Lang extends Messages, ContactItemLang {
     String searchNoMatchesFound();
 
     String emptySelectorList();
+
+    String documentTypeShort();
 }
