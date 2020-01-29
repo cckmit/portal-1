@@ -83,6 +83,17 @@ public class CompanyServiceImpl implements CompanyService {
         return ok(result);
     }
 
+    @Override
+    public Result<List<EntityOption>> companyOptionListByIds( List<Long> ids ) {
+        List<Company> list = companyDAO.getListByKeys(ids);
+
+        if (list == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        return ok(list.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
 
     @Override
     public Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
@@ -39,6 +40,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     AuthService authService;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    CompanyService companyService;
 
     @Override
     public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
@@ -62,8 +65,16 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         CaseFilter filter = caseFilterDAO.get( id );
 
-        return filter != null ? ok( filter )
-                : error( En_ResultStatus.NOT_FOUND );
+        if (filter == null) {
+            return error( En_ResultStatus.NOT_FOUND );
+        }
+
+        if (!isEmpty(filter.getParams().getCompanyIds())) {
+            companyService.companyOptionListByIds(filter.getParams().getCompanyIds())
+                    .ifOk(data -> filter.getParams().getIssueFilterParams().setCompaniesEntityOptions(data));
+        }
+
+        return  ok( filter );
     }
 
     @Override

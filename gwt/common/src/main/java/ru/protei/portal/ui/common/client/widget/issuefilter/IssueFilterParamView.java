@@ -38,6 +38,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -227,7 +228,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateModifiedRange().setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
-        companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
+        companies().setValue(new HashSet<>(caseQuery.getIssueFilterParams().getCompaniesEntityOptions()));
         updateInitiators();
         managers().setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
