@@ -58,6 +58,7 @@ public class PasswordTextBox extends Composite implements HasFocusHandlers, HasV
     protected void onDetach() {
         super.onDetach();
         showPassword(false);
+        showPassword.setValue(false);
     }
 
     private void showPassword(boolean isVisible) {
