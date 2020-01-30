@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.IssueFilterParams;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -140,12 +141,12 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
+    public void onUserFilterChanged(Long id, Consumer<IssueFilterParams> consumer) {
 
-        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
+        filterService.getIssueFilter(id, new FluentCallback<IssueFilterParams>()
                 .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter ->
-                    consumer.accept(caseFilter)));
+                .withSuccess(issueFilterParams ->
+                    consumer.accept(issueFilterParams)));
     }
 
     @Override

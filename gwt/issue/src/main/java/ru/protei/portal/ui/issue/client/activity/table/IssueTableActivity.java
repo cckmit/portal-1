@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.IssueFilterParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -239,14 +240,14 @@ public abstract class IssueTableActivity
             return;
         }
 
-        filterService.getIssueFilter( filter.getId(), new RequestCallback< CaseFilter >() {
+        filterService.getIssueFilter( filter.getId(), new RequestCallback< IssueFilterParams >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( CaseFilter filter ) {
+            public void onSuccess( IssueFilterParams filter ) {
                 fillFilterFields( filter );
                 onFilterChanged();
             }
@@ -382,11 +383,11 @@ public abstract class IssueTableActivity
         }
     }
 
-    private void fillFilterFields( CaseFilter filter ) {
+    private void fillFilterFields( IssueFilterParams filter ) {
         filterView.removeFilterBtnVisibility().setVisible( true );
         filterView.editBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
-        filterParamView.fillFilterFields(filter.getParams());
+        filterParamView.fillFilterFieldsByFilter(filter);
     }
 
     private void showPreview ( CaseShortView value ) {

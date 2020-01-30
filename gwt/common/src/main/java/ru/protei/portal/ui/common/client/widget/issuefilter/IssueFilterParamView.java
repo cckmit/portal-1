@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.IssueFilterParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -23,9 +24,9 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
@@ -218,6 +219,26 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public void fillFilterFieldsByFilter(IssueFilterParams filter) {
+        searchPattern().setValue(filter.getSearchString());
+        searchByComments().setValue(filter.isSearchStringAtComments());
+        searchPrivate().setValue(filter.isViewPrivate());
+        sortDir().setValue(filter.getSortDir().equals(En_SortDir.ASC));
+        sortField().setValue(filter.getSortField());
+        dateCreatedRange().setValue(new DateInterval(filter.getCreatedFrom(), filter.getCreatedTo()));
+        dateModifiedRange().setValue(new DateInterval(filter.getModifiedFrom(), filter.getModifiedTo()));
+        importances().setValue(IssueFilterUtils.getImportances(filter.getImportanceIds()));
+        states().setValue(IssueFilterUtils.getStates(filter.getStateIds()));
+        companies().setValue(new HashSet<>(filter.getCompanyEntityOptions()));
+        updateInitiators();
+        managers().setValue(new HashSet<>(filter.getManagerPersonShortView()));
+        initiators().setValue(new HashSet<>(filter.getInitiatorPersonShortView()));
+        products().setValue(new HashSet<>(filter.getProductShortView()));
+        commentAuthors().setValue(new HashSet<>(filter.getCommentPersonShortView()));
+        tags().setValue(IssueFilterUtils.getOptions(filter.getCaseTagsIds()));
+    }
+
+    @Override
     public void fillFilterFields(CaseQuery caseQuery) {
         searchPattern().setValue(caseQuery.getSearchString());
         searchByComments().setValue(caseQuery.isSearchStringAtComments());
@@ -228,7 +249,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateModifiedRange().setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
-        companies().setValue(new HashSet<>(caseQuery.getIssueFilterParams().getCompaniesEntityOptions()));
+        companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
         updateInitiators();
         managers().setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));

@@ -172,9 +172,9 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
             return;
         }
 
-        model.onUserFilterChanged(value.getId(), caseFilter -> {
-            setValue(caseFilter.getParams());
-            filterName.setValue(caseFilter.getName());
+        model.onUserFilterChanged(value.getId(), issueFilterParams -> {
+            setValue(issueFilterParams.getCaseQuery());
+            filterName.setValue(issueFilterParams.getName());
             showUserFilterControls();
         });
     }

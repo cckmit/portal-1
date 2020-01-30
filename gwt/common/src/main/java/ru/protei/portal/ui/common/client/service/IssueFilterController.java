@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.IssueFilterParams;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -20,7 +21,7 @@ public interface IssueFilterController extends RemoteService {
      */
     List< CaseFilterShortView > getIssueFilterShortViewList( En_CaseFilterType filterType ) throws RequestFailedException;
 
-    CaseFilter getIssueFilter( Long id ) throws RequestFailedException;
+    IssueFilterParams getIssueFilter(Long id ) throws RequestFailedException;
 
     CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException;
 

@@ -10,10 +10,14 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.IssueFilterParams;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
@@ -42,6 +46,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     PolicyService policyService;
     @Autowired
     CompanyService companyService;
+    @Autowired
+    PersonService personService;
+    @Autowired
+    ProductService productService;
 
     @Override
     public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
@@ -59,8 +67,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result< CaseFilter > getIssueFilter( Long id ) {
-
+    public Result< IssueFilterParams > getIssueFilter( Long id ) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -69,12 +76,71 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        if (!isEmpty(filter.getParams().getCompanyIds())) {
-            companyService.companyOptionListByIds(filter.getParams().getCompanyIds())
-                    .ifOk(data -> filter.getParams().getIssueFilterParams().setCompaniesEntityOptions(data));
+        CaseQuery caseQuery = filter.getParams();
+        IssueFilterParams filterParams = caseQuery.getIssueFilterParams();
+
+        filterParams.setName(filter.getName());
+        filterParams.setCaseQuery(caseQuery);
+
+        filterParams.setSearchString(caseQuery.getSearchString());
+        filterParams.setSearchStringAtComments(caseQuery.isSearchStringAtComments());
+        filterParams.setViewPrivate(caseQuery.isViewPrivate());
+        filterParams.setSortDir(caseQuery.getSortDir());
+        filterParams.setSortField(caseQuery.getSortField());
+        filterParams.setCreatedFrom(caseQuery.getCreatedFrom());
+        filterParams.setCreatedTo(caseQuery.getCreatedTo());
+        filterParams.setModifiedFrom(caseQuery.getModifiedFrom());
+        filterParams.setModifiedTo(caseQuery.getModifiedTo());
+        filterParams.setImportanceIds(caseQuery.getImportanceIds());
+        filterParams.setStateIds(caseQuery.getStateIds());
+        filterParams.setCaseTagsIds(caseQuery.getCaseTagsIds());
+
+        if (!isEmpty(caseQuery.getCompanyIds())) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds(caseQuery.getCompanyIds());
+            if (result.isOk()) {
+                filterParams.setCompanyEntityOptions(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCompanyIds" );
+            }
         }
 
-        return  ok( filter );
+        if (!isEmpty(caseQuery.getManagerIds())) {
+            Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getManagerIds());
+            if (result.isOk()) {
+                filterParams.setManagerPersonShortView(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getManagerIds" );
+            }
+        }
+
+        if (!isEmpty(caseQuery.getInitiatorIds())) {
+            Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getInitiatorIds());
+            if (result.isOk()) {
+                filterParams.setInitiatorPersonShortView(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getInitiatorIds" );
+            }
+        }
+
+        if (!isEmpty(caseQuery.getProductIds())) {
+            Result<List<ProductShortView>> result = productService.shortViewListByIds(new ArrayList<>(caseQuery.getProductIds()));
+            if (result.isOk()) {
+                filterParams.setProductShortView(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getProductIds" );
+            }
+        }
+
+        if (!isEmpty(caseQuery.getCommentAuthorIds())) {
+            Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getCommentAuthorIds());
+            if (result.isOk()) {
+                filterParams.setCommentPersonShortView(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCommentAuthorIds" );
+            }
+        }
+
+        return  ok( filterParams );
     }
 
     @Override
