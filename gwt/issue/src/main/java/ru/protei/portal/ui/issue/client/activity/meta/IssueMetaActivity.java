@@ -77,6 +77,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
+        if (metaView.state().getValue().equals(En_CaseState.CREATED) && meta.getManager() != null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
+            metaView.state().setValue(meta.getState());
+            return;
+        }
         meta.setStateId(metaView.state().getValue().getId());
         onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
     }

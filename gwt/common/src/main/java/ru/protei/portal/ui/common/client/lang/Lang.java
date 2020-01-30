@@ -813,6 +813,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveIssueNeedSelectManager();
 
+    String errSaveIssueNeedUnselectManager();
+
     String document();
 
     String annotation();
