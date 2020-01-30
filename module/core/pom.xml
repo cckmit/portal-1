@@ -394,14 +394,6 @@
                     <artifactId>commons-beanutils</artifactId>
                     <groupId>commons-beanutils</groupId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>atlassian-mail</artifactId>
-                    <groupId>com.atlassian.mail</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>atlassian-plugins-core</artifactId>
-                    <groupId>com.atlassian.plugins</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
 
