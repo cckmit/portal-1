@@ -142,14 +142,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
-    private String getRegion(Document document) {
-        if (document.getProject() != null && document.getProject().getRegion() != null) {
-            return document.getProject().getRegion().getDisplayText();
-        } else {
-            return null;
-        }
-    }
-
     private final ClickColumn<Document> approve = new ClickColumn<Document>() {
         @Override
         protected String getColumnClassName() { return "document-approve-column"; }
@@ -162,8 +154,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
-
-            cell.setTitle(getRegion(value));
         }
     };
 
@@ -195,8 +185,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 cell.addClassName("deprecated-entity");
             }
             cell.setInnerHTML(html.toString());
-
-            cell.setTitle(getRegion(value));
         }
     };
 
@@ -223,8 +211,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
-
-            cell.setTitle(getRegion(value));
         }
     };
 
@@ -247,8 +233,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
-
-            cell.setTitle(getRegion(value));
         }
     };
 
@@ -271,8 +255,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
 
             cell.setInnerHTML(html.toString());
-
-            cell.setTitle(getRegion(value));
         }
     };
 
@@ -295,8 +277,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
 
             cell.setInnerHTML(html.toString());
-
-            cell.setTitle(getRegion(value));
         }
     };
 
