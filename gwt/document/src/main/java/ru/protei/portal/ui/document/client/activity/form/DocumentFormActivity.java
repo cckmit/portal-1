@@ -109,6 +109,11 @@ public abstract class DocumentFormActivity
     }
 
     @Override
+    public void onApprovedChanged() {
+        renderViewState(project);
+    }
+
+    @Override
     public void onEquipmentChanged() {
         view.decimalNumber().setValue(null, true);
         EquipmentShortView equipment = view.equipment().getValue();
@@ -138,6 +143,7 @@ public abstract class DocumentFormActivity
 
     private void renderViewState(ProjectInfo project) {
 
+        boolean isNew = document.getId() == null;
         En_DocumentCategory documentCategory = view.documentCategory().getValue();
 
         boolean isDesignationEnabled = isDecimalAndInventoryNumbersVisible(project, documentCategory);
@@ -147,7 +153,7 @@ public abstract class DocumentFormActivity
         setDocumentTypeEnabled(documentCategory != null);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
-        setUploaderEnabled(!document.getApproved());
+        setUploaderEnabled(isNew || !view.isApproved().getValue());
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
         view.decimalNumberEnabled(isEnabled);
@@ -351,9 +357,9 @@ public abstract class DocumentFormActivity
         view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
         if (document.getProjectId() == null) {
             onProjectChanged(null);
-            return;
-    }
-        requestProject(document.getProjectId(), this::onProjectChanged);
+        } else {
+            requestProject(document.getProjectId(), this::onProjectChanged);
+        }
     }
 
     private void fillViewProjectInfo(ProjectInfo project) {
