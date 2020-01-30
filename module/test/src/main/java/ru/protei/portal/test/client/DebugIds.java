@@ -97,9 +97,7 @@ public class DebugIds {
     }
 
     public interface DASHBOARD {
-        String TABLE_ACTIVE = "dashboard-table-active";
-        String TABLE_NEW = "dashboard-table-new";
-        String TABLE_INACTIVE = "dashboard-table-inactive";
+        String TABLE = "dashboard-table-";
     }
 
     public interface FILTER {

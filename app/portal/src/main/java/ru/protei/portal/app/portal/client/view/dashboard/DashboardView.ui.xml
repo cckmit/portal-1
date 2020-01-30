@@ -3,18 +3,25 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="p-3">
-        <div class="card-body no-padding dashboard">
+        <g:HTMLPanel styleName="row" ui:field="container"/>
+        <g:HTMLPanel ui:field="loadingView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false">
+            <div class="progress-circle-indeterminate"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="failedView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false">
             <div class="row">
-                <section class="dashboard-active-records col-md-12">
-                    <g:HTMLPanel ui:field="activeRecordsContainer"/>
-                </section>
-                <section class="dashboard-new-records col-md-12 col-lg-6">
-                    <g:HTMLPanel ui:field="newRecordsContainer"/>
-                </section>
-                <section class="dashboard-completed-records col-md-12 col-lg-6">
-                    <g:HTMLPanel ui:field="inactiveRecordsContainer"/>
-                </section>
+                <div class="col-md-12 text-center">
+                    <div><i class="fas fa-exclamation-circle fa-5x"/></div>
+                    <div><h5 class="hint-text" ui:field="failedViewText"/></div>
+                </div>
             </div>
-        </div>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="emptyView" styleName="p-t-20 p-b-20 p-l-20 p-r-20">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div><i class="fas fa-layer-group fa-5x"/></div>
+                    <div><h5 class="hint-text"><ui:text from="{lang.dashboardEmpty}"/></h5></div>
+                </div>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

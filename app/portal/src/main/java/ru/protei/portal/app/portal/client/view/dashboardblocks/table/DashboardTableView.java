@@ -4,126 +4,78 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ContactColumn;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ManagerColumn;
-import ru.protei.portal.app.portal.client.widget.importance.btngroup.CustomImportanceBtnGroupMulti;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.searchbtn.SearchButton;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyButtonViewerSelector;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
 import java.util.List;
-import java.util.Set;
 
-/**
- * Представление таблицы кейсов
- */
 public class DashboardTableView extends Composite implements AbstractDashboardTableView {
 
     @Inject
     public void onInit() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
-        initTable();
-        importance.init(
-                "",
-                "dashboard-importance-filter-btn",
-                false,
-                null
-        );
-    }
-
-    @Override
-    public void clearRecords() {
-        table.clearRows();
-    }
-
-    @Override
-    protected void onDetach() {
-        activity.removeView(this);
-        super.onDetach();
-    }
-
-    @Override
-    public void putRecords(List<CaseShortView> cases){
-//        table.addRow(cases.get(0));
-        cases.forEach(table::addRow);
-    }
-
-    @Override
-    public void putCompanies(List<EntityOption> companies) {
-        companiesBtn.fillOptions(companies);
+        initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
     public void setActivity(AbstractDashboardTableActivity activity) {
         this.activity = activity;
-        issueNumber.setHandler( activity );
-        issueNumber.setColumnProvider( columnProvider );
-        contact.setHandler( activity );
-        contact.setColumnProvider( columnProvider );
-        info.setHandler( activity );
-        info.setColumnProvider( columnProvider );
-        manager.setHandler(activity);
-        manager.setColumnProvider(columnProvider);
+        initTable();
     }
 
     @Override
-    public void setSectionName(String name) {
-        sectionName.setInnerText(name);
+    public void clearRecords() {
+        table.clearRows();
+        count.setInnerText("");
     }
 
     @Override
-    public void setRecordsCount(int number) {
-        count.setInnerText(String.valueOf(number));
+    public void putRecords(List<CaseShortView> list) {
+        list.forEach(table::addRow);
     }
 
     @Override
-    public void setFastOpenEnabled(boolean enabled) {
-        fastOpen.setEnabled(enabled);
-        fastOpen.setVisible(enabled);
+    public void setName(String name) {
+        this.name.setInnerText(name);
     }
 
     @Override
-    public void showLoader(boolean isShow){
-        if(isShow)
-            loader.addClassName("active");
-        else
-            loader.removeClassName("active");
+    public void setTotalRecords(int totalRecords) {
+        count.setInnerText("(" + totalRecords + ")");
     }
 
     @Override
-    public HasValue<Set<En_ImportanceLevel>> getImportance() {
-        return importance;
+    public void showLoader(boolean isShow) {
+        loading.removeClassName("show");
+        if (isShow) {
+            loading.addClassName("show");
+        }
     }
 
     @Override
-    public HasValue<String> getSearch() {
-        return search;
+    public void showTableOverflow(int showedRecords) {
+        tableOverflow.setVisible(true);
+        tableOverflowText.setInnerText(lang.dashboardTableOverflow(showedRecords));
     }
 
     @Override
-    public void toggleSearchIndicator(boolean show) {
-        search.setStyleName("indicator", show);
-    }
-
-    @Override
-    public void toggleInitiatorsIndicator(boolean show) {
-        companiesBtn.setStyleName("indicator", show);
+    public void hideTableOverflow() {
+        tableOverflow.setVisible(false);
     }
 
     @Override
@@ -131,52 +83,46 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         table.setEnsureDebugId(debugId);
     }
 
-    @UiHandler( "importance" )
-    public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
-        activity.updateImportance(this, event.getValue());
-    }
-
-    @UiHandler( "fastOpen" )
-    public void onFastOpenClicked(ClickEvent event) {
+    @UiHandler("open")
+    public void onOpenClicked(ClickEvent event) {
         event.preventDefault();
         if (activity != null) {
-            activity.onFastOpenClicked(this);
+            activity.onOpenClicked();
         }
     }
 
-    @UiHandler( "search" )
-    public void onSearchChanged(ValueChangeEvent<String> event) {
+    @UiHandler("reload")
+    public void onReloadClicked(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
-            activity.onSearchChanged(this, event.getValue());
+            activity.onReloadClicked();
         }
     }
 
-    @UiHandler( "companiesBtn" )
-    public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
-        if (activity != null) {
-            activity.onCompanySelected(this, event.getValue());
-        }
+    private void initTable() {
+
+        ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
+
+        NumberColumn number = new NumberColumn(lang, caseStateLang);
+        table.addColumn(number.header, number.values);
+        number.setHandler(activity);
+        number.setColumnProvider(columnProvider);
+
+        InfoColumn info = new InfoColumn(lang);
+        table.addColumn(info.header, info.values);
+        info.setHandler(activity);
+        info.setColumnProvider(columnProvider);
+
+        ContactColumn contact = new ContactColumn(lang);
+        table.addColumn(contact.header, contact.values);
+        contact.setHandler(activity);
+        contact.setColumnProvider(columnProvider);
+
+        ManagerColumn manager = new ManagerColumn(lang);
+        table.addColumn(manager.header, manager.values);
+        manager.setHandler(activity);
+        manager.setColumnProvider(columnProvider);
     }
-
-    private void initTable () {
-        issueNumber = new NumberColumn( lang, caseStateLang );
-        contact = new ContactColumn( lang );
-        manager = new ManagerColumn( lang );
-        info = new InfoColumn( lang );
-        table.addColumn( issueNumber.header, issueNumber.values );
-        table.addColumn( info.header, info.values );
-        table.addColumn( contact.header, contact.values );
-        table.addColumn( manager.header, manager.values );
-    }
-
-    ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
-    NumberColumn issueNumber;
-    ContactColumn contact;
-    ManagerColumn manager;
-    InfoColumn info;
-
-    AbstractDashboardTableActivity activity;
-    
 
     @Inject
     En_CaseStateLang caseStateLang;
@@ -185,26 +131,23 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     Lang lang;
 
     @UiField
-    SpanElement sectionName;
+    SpanElement name;
     @UiField
     SpanElement count;
     @UiField
-    Button fastOpen;
-    @Inject
-    @UiField( provided = true )
-    CustomImportanceBtnGroupMulti importance;
+    Anchor open;
     @UiField
-    DivElement loader;
+    Anchor reload;
     @UiField
-    HTMLPanel tableContainer;
+    DivElement loading;
     @UiField
     TableWidget<CaseShortView> table;
-    @Inject
-    @UiField( provided = true )
-    SearchButton search;
-    @Inject
-    @UiField( provided = true )
-    CompanyButtonViewerSelector companiesBtn;
+    @UiField
+    HTMLPanel tableOverflow;
+    @UiField
+    SpanElement tableOverflowText;
+
+    private AbstractDashboardTableActivity activity;
 
     interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
     private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);

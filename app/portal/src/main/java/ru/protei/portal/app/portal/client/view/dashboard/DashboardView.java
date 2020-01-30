@@ -1,17 +1,13 @@
 package ru.protei.portal.app.portal.client.view.dashboard;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.dashboard.AbstractDashboardView;
 
-/**
- * Created by bondarenko on 01.12.16.
- */
 public class DashboardView extends Composite implements AbstractDashboardView{
 
     @Inject
@@ -20,26 +16,40 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     }
 
     @Override
-    public HasWidgets getActiveRecordsContainer() {
-        return activeRecordsContainer;
+    public HasWidgets container() {
+        return container;
     }
 
     @Override
-    public HasWidgets getNewRecordsContainer() {
-        return newRecordsContainer;
+    public HasVisibility loadingViewVisibility() {
+        return loadingView;
     }
 
     @Override
-    public HasWidgets getInactiveRecordsContainer() {
-        return inactiveRecordsContainer;
+    public HasVisibility failedViewVisibility() {
+        return failedView;
+    }
+
+    @Override
+    public HasVisibility emptyViewVisibility() {
+        return emptyView;
+    }
+
+    @Override
+    public void setFailedViewText(String text) {
+        failedViewText.setInnerText(text);
     }
 
     @UiField
-    HTMLPanel activeRecordsContainer;
+    HTMLPanel container;
     @UiField
-    HTMLPanel newRecordsContainer;
+    HTMLPanel loadingView;
     @UiField
-    HTMLPanel inactiveRecordsContainer;
+    HTMLPanel failedView;
+    @UiField
+    HeadingElement failedViewText;
+    @UiField
+    HTMLPanel emptyView;
 
     interface DashboardViewUiBinder extends UiBinder<HTMLPanel, DashboardView> {}
     private static DashboardViewUiBinder ourUiBinder = GWT.create(DashboardViewUiBinder.class);

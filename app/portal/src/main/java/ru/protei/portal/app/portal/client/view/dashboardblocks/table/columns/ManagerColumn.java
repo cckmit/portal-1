@@ -7,9 +7,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-/**
- * Колонка "Менеджер"
- */
 public class ManagerColumn extends ClickColumn<CaseShortView> {
 
     @Inject

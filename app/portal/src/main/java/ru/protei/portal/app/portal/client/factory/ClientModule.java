@@ -9,7 +9,6 @@ import ru.protei.portal.app.portal.client.activity.auth.AuthActivity;
 import ru.protei.portal.app.portal.client.activity.dashboard.AbstractDashboardView;
 import ru.protei.portal.app.portal.client.activity.dashboard.DashboardActivity;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.DashboardTableActivity;
 import ru.protei.portal.app.portal.client.activity.page.DashboardPage;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.app.portal.client.activity.profile.ProfilePageActivity;
@@ -35,8 +34,6 @@ public class ClientModule extends AbstractGinModule {
 
         bind(DashboardActivity.class).asEagerSingleton();
         bind( AbstractDashboardView.class ).to(DashboardView.class).in(Singleton.class);
-
-        bind(DashboardTableActivity.class).asEagerSingleton();
         bind(AbstractDashboardTableView.class).to(DashboardTableView.class);
 
         bind( ProfilePageActivity.class ).asEagerSingleton();
