@@ -1011,8 +1011,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
-    String errInitiatorNotSelected();
-
     String contactFired();
 
     String contactDeleted();

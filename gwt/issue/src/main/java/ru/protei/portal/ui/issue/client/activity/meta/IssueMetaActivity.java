@@ -326,9 +326,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean companyIsValid = caseMeta.getInitiatorCompany() != null;
         metaView.companyValidator().setValid(companyIsValid);
 
-        boolean initiatorIsValid = caseMeta.getInitiatorCompany() == null || caseMeta.getInitiator() != null;
-        metaView.initiatorValidator().setValid(initiatorIsValid);
-
         boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
         metaView.managerValidator().setValid(managerIsValid);
 
@@ -338,7 +335,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean isFieldsValid =
                         productIsValid &&
                         managerIsValid &&
-                        initiatorIsValid &&
                         companyIsValid;
 
         return isFieldsValid;
