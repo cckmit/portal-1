@@ -90,7 +90,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onProductChanged() {
         meta.setProduct(metaView.getProduct());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() )));
     }
 
     @Override
@@ -332,7 +332,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
         metaView.managerValidator().setValid(managerIsValid);
 
-        boolean productIsValid = (caseMeta.getProduct() != null && caseMeta.getManager() != null) || (!isStateWithRestrictions(caseMeta.getState()) && caseMeta.getManager() == null);
+        boolean productIsValid = caseMeta.getProduct() != null || caseMeta.getManager() == null && !isStateWithRestrictions(caseMeta.getState());
         metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
