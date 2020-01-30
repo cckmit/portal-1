@@ -95,8 +95,23 @@ public class Document implements Serializable {
     @JdbcColumnCollection(name = "tags", separator = ",")
     private List<String> keywords;
 
+    /**
+     * Утвержденный
+     */
     @JdbcColumn(name = "is_approved")
     private Boolean isApproved;
+
+    /**
+     * Утвердил
+     */
+    @JdbcJoinedObject(localColumn = "approved_by_id")
+    private Person approvedBy;
+
+    /**
+     * Дата создания
+     */
+    @JdbcColumn(name = "approval_date")
+    private Date approvalDate;
 
     @JdbcColumn(name = "execution_type")
     @JdbcEnumerated(EnumType.ORDINAL)
@@ -235,6 +250,22 @@ public class Document implements Serializable {
         isApproved = approved;
     }
 
+    public Person getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Person approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Date getApprovalDate() {
+        return approvalDate;
+    }
+
+    public void setApprovalDate(Date approvalDate) {
+        this.approvalDate = approvalDate;
+    }
+
     public En_DocumentExecutionType getExecutionType() {
         return executionType;
     }
@@ -308,6 +339,8 @@ public class Document implements Serializable {
                 ", created=" + created +
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
+                ", approvedBy=" + approvedBy +
+                ", approvalDate =" + approvalDate +
                 ", executionType=" + executionType +
                 ", state=" + state +
                 ", members=" + members +

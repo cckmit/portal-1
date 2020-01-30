@@ -125,13 +125,17 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_REMOVE) && !v.isDeprecatedUnit());
 
         columns.add(approve);
+        columns.add(type);
         columns.add(name);
         columns.add(decimalNumber);
+        columns.add(company);
 
         table.addColumn(approve.header, approve.values);
+        table.addColumn(type.header, type.values);
         table.addColumn(name.header, name.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
+        table.addColumn(company.header, company.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
@@ -165,12 +169,15 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
             if (value.isDeprecatedUnit()) {
                 html
-                        .append("<div class =\"document-name\">")
+                        .append("<div class =\"document-name text-overflow-dynamic-container\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_TABLE.LOCK_ICON + "\"></i> ")
-                        .append(value.getName())
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
                         .append("</div>");
             } else {
-                html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
+                html
+                        .append( "<div class=\"document-name text-overflow-dynamic-container\">")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
+                        .append("</div>");
             }
 
             if (value.getContragentName() != null) {
@@ -230,6 +237,50 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
+        }
+    };
+
+    private final ClickColumn<Document> company = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-company-column"; }
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.company());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (value.getContragentName() != null) {
+                html
+                        .append("<div class=\"company text-overflow-dynamic-container\">")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getContragentName() + "</span>")
+                        .append("</div> ");
+            }
+
+            cell.setInnerHTML(html.toString());
+        }
+    };
+
+    private final ClickColumn<Document> type = new ClickColumn<Document>() {
+        @Override
+        protected String getColumnClassName() { return "document-type-column"; }
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.documentTypeShort());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
+
+            if (value.getType() != null) {
+                html
+                        .append("<div class=\"type\">")
+                        .append(value.getType().getShortName())
+                        .append("</div> ");
+            }
+
+            cell.setInnerHTML(html.toString());
         }
     };
 

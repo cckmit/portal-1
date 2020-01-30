@@ -13,4 +13,6 @@ public interface AbstractDocumentFormActivity {
     void onDownloadPdf();
 
     void onDownloadDoc();
+
+    void onApprovedChanged();
 }

@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -47,6 +48,10 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     HasValue<Boolean> isApproved();
 
+    HasValue<PersonShortView> approvedBy();
+
+    HasValue<Date> approvalDate();
+
     HasValue<Set<PersonShortView>> members();
 
     HasText decimalNumberText();
@@ -64,11 +69,17 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     void uploaderEnabled(boolean isEnabled);
 
+    void approvedByEnabled(boolean isEnabled);
+
+    void approvalDateEnabled(boolean isEnabled);
+
+    void uploaderApprovalSheetEnabled(boolean isEnabled);
 
     AbstractDocumentUploader documentDocUploader();
 
     AbstractDocumentUploader documentPdfUploader();
 
+    AbstractDocumentUploader documentApprovalSheetUploader();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 
