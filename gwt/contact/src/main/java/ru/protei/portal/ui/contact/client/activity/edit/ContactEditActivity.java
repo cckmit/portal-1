@@ -221,9 +221,19 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onPasswordGenerationClicked() {
+        if (rejectClickedByButton) {
+            rejectClickedByButton = false;
+            return;
+        }
+
         String password = GenerationPasswordUtils.generate();
         view.password().setValue(password);
         view.confirmPassword().setValue(password);
+    }
+
+    @Override
+    public void onRejectPasswordGenerationClicked() {
+        rejectClickedByButton = true;
     }
 
     private boolean validateSaveButton() {
@@ -469,4 +479,5 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
     private String origin;
+    private boolean rejectClickedByButton;
 }

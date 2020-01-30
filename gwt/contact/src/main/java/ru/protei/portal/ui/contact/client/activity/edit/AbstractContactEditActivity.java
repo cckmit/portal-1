@@ -12,4 +12,5 @@ public interface AbstractContactEditActivity {
     void validateLimitedFields();
     void onCompanySelected();
     void onPasswordGenerationClicked();
+    void onRejectPasswordGenerationClicked();
 }

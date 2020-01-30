@@ -46,7 +46,11 @@ public class PasswordTextBox extends Composite implements HasFocusHandlers, HasV
 
     @Override
     public HandlerRegistration addInputHandler(InputHandler handler) {
-        return addDomHandler(handler, InputEvent.getType());
+        return password.addDomHandler(handler, InputEvent.getType());
+    }
+
+    public void setFocus(boolean isFocus) {
+        password.setFocus(isFocus);
     }
 
     @UiHandler("showPassword")
