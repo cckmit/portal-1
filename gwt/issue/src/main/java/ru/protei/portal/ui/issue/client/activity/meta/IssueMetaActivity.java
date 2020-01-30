@@ -77,6 +77,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
+        if (metaView.state().getValue().equals(En_CaseState.CREATED) && meta.getManager() != null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
+            metaView.state().setValue(meta.getState());
+            return;
+        }
         meta.setStateId(metaView.state().getValue().getId());
         onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
     }
@@ -90,7 +95,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onProductChanged() {
         meta.setProduct(metaView.getProduct());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() )));
     }
 
     @Override
@@ -134,6 +139,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
+                    meta.setState(caseMetaUpdated.getState());
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
                     if(runAfterUpdate!=null) runAfterUpdate.run();
@@ -329,7 +335,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
         metaView.managerValidator().setValid(managerIsValid);
 
-        boolean productIsValid = (caseMeta.getProduct() != null && caseMeta.getManager() != null) || (!isStateWithRestrictions(caseMeta.getState()) && caseMeta.getManager() == null);
+        boolean productIsValid = caseMeta.getProduct() != null || caseMeta.getManager() == null && !isStateWithRestrictions(caseMeta.getState());
         metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
