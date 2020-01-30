@@ -139,6 +139,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
+                    meta.setState(caseMetaUpdated.getState());
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
                     if(runAfterUpdate!=null) runAfterUpdate.run();
