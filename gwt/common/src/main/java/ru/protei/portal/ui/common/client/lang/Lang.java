@@ -2001,4 +2001,16 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardEmpty();
 
     String dashboardTableOverflow(int records);
+
+    String dashboardTableName();
+
+    String dashboardTableFilter();
+
+    String dashboardTableCreate();
+
+    String dashboardTableEdit();
+
+    String dashboardTableConfirmRemove();
+
+    String dashboardTableRemoved();
 }

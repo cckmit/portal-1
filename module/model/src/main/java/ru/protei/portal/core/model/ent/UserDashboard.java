@@ -20,6 +20,9 @@ public class UserDashboard implements Serializable {
     @JdbcJoinedObject(localColumn = "case_filter_id", remoteColumn = "id")
     private CaseFilter caseFilter;
 
+    @JdbcColumn(name = "name")
+    private String name;
+
     public UserDashboard() {}
 
     public Long getId() {
@@ -59,6 +62,14 @@ public class UserDashboard implements Serializable {
         this.caseFilterId = caseFilter == null ? null : caseFilter.getId();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "UserDashboard{" +
@@ -66,6 +77,7 @@ public class UserDashboard implements Serializable {
                 ", loginId=" + loginId +
                 ", caseFilterId=" + caseFilterId +
                 ", caseFilter=" + caseFilter +
+                ", name=" + name +
                 '}';
     }
 }

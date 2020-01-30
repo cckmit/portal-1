@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
 
@@ -47,6 +48,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     @Event
+    public void onChangeTableModel(DashboardEvents.ChangeTableModel event) {
+        loadDashboard();
+    }
+
+    @Event
     public void onIssueCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE.equals(event.identity)) {
             return;
@@ -62,7 +68,30 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE.equals(event.identity)) {
             return;
         }
-        // TODO
+        fireEvent(new DashboardEvents.EditTable(new UserDashboard()));
+    }
+
+    @Event
+    public void onConfirmTableRemove(ConfirmDialogEvents.Confirm event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+        if (dashboardIdToRemove == null) {
+            return;
+        }
+        userLoginController.removeUserDashboard(dashboardIdToRemove, new FluentCallback<UserDashboard>()
+                .withSuccess(d -> {
+                    fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    loadDashboard();
+                }));
+    }
+
+    @Event
+    public void onCancelTableRemove(ConfirmDialogEvents.Cancel event) {
+        if (!Objects.equals(event.identity, getClass().getName())) {
+            return;
+        }
+        dashboardIdToRemove = null;
     }
 
     private void showView() {
@@ -147,15 +176,15 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                 continue;
             }
             CaseFilter filter = dashboard.getCaseFilter();
-            String name = filter.getName();
+            String name = dashboard.getName();
             CaseQuery query = new CaseQuery(filter.getParams());
-            AbstractDashboardTableView table = createIssueTable(i, name, query);
+            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, query);
             view.container().add(table.asWidget());
             loadTable(table, query);
         }
     }
 
-    private AbstractDashboardTableView createIssueTable(int order, String name, CaseQuery query) {
+    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseQuery query) {
         AbstractDashboardTableView table = tableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
@@ -167,6 +196,14 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             @Override
             public void onOpenClicked() {
                 fireEvent(new IssueEvents.Show(new CaseQuery(query), true));
+            }
+            @Override
+            public void onEditClicked() {
+                fireEvent(new DashboardEvents.EditTable(dashboard));
+            }
+            @Override
+            public void onRemoveClicked() {
+                removeTable(dashboard);
             }
             @Override
             public void onReloadClicked() {
@@ -200,6 +237,14 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                 }));
     }
 
+    private void removeTable(UserDashboard dashboard) {
+        if (dashboard == null || dashboard.getId() == null) {
+            return;
+        }
+        dashboardIdToRemove = dashboard.getId();
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.dashboardTableConfirmRemove()));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -215,6 +260,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Inject
     PolicyService policyService;
 
+    private Long dashboardIdToRemove = null;
     private AppEvents.InitDetails initDetails;
     private final static int TABLE_LIMIT = 50;
 }

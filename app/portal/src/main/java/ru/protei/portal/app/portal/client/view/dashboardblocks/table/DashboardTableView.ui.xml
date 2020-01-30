@@ -4,7 +4,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="col-lg-6 col-xl-6 col-xlg-6 p-b-5 p-t-5">
+    <g:HTMLPanel styleName="col-lg-12 col-xl-6 col-xlg-6 p-b-5 p-t-5">
         <div class="card widget-11 widget-loader-bar dashboard no-border no-margin">
             <div class="card-header">
                 <div class="card-title">
@@ -13,8 +13,10 @@
                 </div>
                 <div class="card-controls">
                     <ul>
-                        <li><g:Anchor styleName="fas fa-external-link-alt padding-0" ui:field="open"/></li>
+                        <li><g:Anchor styleName="fas fa-trash-alt padding-0" ui:field="remove"/></li>
+                        <li><g:Anchor styleName="fas fa-pencil-alt padding-0" ui:field="edit"/></li>
                         <li><g:Anchor styleName="fas fa-redo padding-0" ui:field="reload"/></li>
+                        <li><g:Anchor styleName="fas fa-external-link-alt padding-0" ui:field="open"/></li>
                     </ul>
                 </div>
             </div>

@@ -105,6 +105,7 @@ public class CaseQuery extends BaseQuery {
         setId(query.getId());
         setCaseNumbers(query.getCaseNumbers());
         setCompanyIds(query.getCompanyIds());
+        setInitiatorIds(query.getInitiatorIds());
         setProductIds(query.getProductIds());
         setLocationIds(query.getLocationIds());
         setDistrictIds(query.getDistrictIds());
@@ -119,6 +120,9 @@ public class CaseQuery extends BaseQuery {
         setWithoutManager(query.isWithoutManager());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
+        setSearchStringAtComments(query.isSearchStringAtComments());
+        setSearchCasenoString(query.getSearchCasenoString());
+        setMemberId(query.getMemberId());
         setCommentAuthorIds(query.getCommentAuthorIds());
         setCaseTagsIds(query.getCaseTagsIds());
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());

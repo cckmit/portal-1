@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.core.model.ent.UserDashboard;
 
 /**
  * События по дашборду
@@ -16,5 +14,17 @@ public class DashboardEvents {
     @Url( value = "dashboard", primary = true )
     public static class Show {
         public Show () {}
+    }
+
+    public static class EditTable {
+        public EditTable() {}
+        public EditTable(UserDashboard dashboard) {
+            this.dashboard = dashboard;
+        }
+        public UserDashboard dashboard;
+    }
+
+    public static class ChangeTableModel {
+        public ChangeTableModel() {}
     }
 }

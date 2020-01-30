@@ -9,5 +9,9 @@ public interface AbstractDashboardTableActivity extends ClickColumn.Handler<Case
 
     void onOpenClicked();
 
+    void onEditClicked();
+
+    void onRemoveClicked();
+
     void onReloadClicked();
 }

@@ -19,9 +19,14 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 public class UserLoginControllerImpl implements UserLoginController {
 
     @Override
-    public UserDashboard createUserDashboard(UserDashboard dashboard) throws RequestFailedException {
+    public UserDashboard saveUserDashboard(UserDashboard dashboard) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(userDashboardService.createUserDashboard(token, dashboard));
+        boolean isNew = dashboard == null || dashboard.getId() == null;
+        if (isNew) {
+            return checkResultAndGetData(userDashboardService.createUserDashboard(token, dashboard));
+        } else {
+            return checkResultAndGetData(userDashboardService.editUserDashboard(token, dashboard));
+        }
     }
 
     @Override

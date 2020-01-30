@@ -15,6 +15,9 @@
             <column name="case_filter_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="name" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

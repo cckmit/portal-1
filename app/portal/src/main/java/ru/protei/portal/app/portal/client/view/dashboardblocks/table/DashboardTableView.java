@@ -91,6 +91,22 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         }
     }
 
+    @UiHandler("edit")
+    public void onEditClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onEditClicked();
+        }
+    }
+
+    @UiHandler("remove")
+    public void onRemoveClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onRemoveClicked();
+        }
+    }
+
     @UiHandler("reload")
     public void onReloadClicked(ClickEvent event) {
         event.preventDefault();
@@ -136,6 +152,10 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     SpanElement count;
     @UiField
     Anchor open;
+    @UiField
+    Anchor edit;
+    @UiField
+    Anchor remove;
     @UiField
     Anchor reload;
     @UiField
