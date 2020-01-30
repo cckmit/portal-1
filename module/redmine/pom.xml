@@ -77,10 +77,6 @@
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>atlassian-renderer</artifactId>
-                    <groupId>com.atlassian.renderer</groupId>
-                </exclusion>
-                <exclusion>
                     <groupId>ru.protei</groupId>
                     <artifactId>jmc</artifactId>
                 </exclusion>
@@ -151,10 +147,6 @@
                 <exclusion>
                     <groupId>com.atlassian.commonmark</groupId>
                     <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.atlassian.renderer</groupId>
-                    <artifactId>atlassian-renderer</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.googlecode.juniversalchardet</groupId>
