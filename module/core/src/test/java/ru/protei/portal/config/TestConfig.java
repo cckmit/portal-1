@@ -31,12 +31,31 @@ public class TestConfig {
         return data;
     }
 
+    public interface EmbeddedDB {
+        int DB_PORT = 33062;
+    }
+
     public class TestConfigData {
 
         public TestConfigData(PropertiesWrapper wrapper) throws ConfigException {
             embeddedDbEnabled = wrapper.getProperty("portal.db.embedded.enabled", Boolean.class, true);
+            if(embeddedDbEnabled){
+                try {
+                    String portString = System.getenv( "embeddedDbPort" );
+                    if (null != portString) {
+                        port = Integer.parseInt( portString );
+                    }
+                } catch (Exception ignore) {
+                }
+            }
+        }
+
+        public int getPort() {
+            return port;
         }
 
         public final boolean embeddedDbEnabled;
+        public boolean isRandomPort = true;
+        private int port = EmbeddedDB.DB_PORT;
     }
 }
