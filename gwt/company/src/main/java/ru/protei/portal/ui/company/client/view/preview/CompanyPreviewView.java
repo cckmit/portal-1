@@ -24,8 +24,13 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public void setId(String id) {
+        this.companyId.setText(id);
+    }
+
+    @Override
     public void setName( String name ) {
-        this.companyName.setInnerText(name);
+        this.companyName.setText(name);
     }
 
     @Override
@@ -138,7 +143,9 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     Label info;
     @UiField
-    HeadingElement companyName;
+    InlineLabel companyId;
+    @UiField
+    InlineLabel companyName;
     @UiField
     HTMLPanel rootWrapper;
     @UiField

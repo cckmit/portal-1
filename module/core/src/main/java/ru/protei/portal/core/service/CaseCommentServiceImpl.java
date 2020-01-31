@@ -49,7 +49,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
         List<Long> caseNumbers = query.getCaseNumbers();
         if (!isEmpty(caseNumbers)) {
-            for (Long caseNumber :caseNumbers ) {
+            for (Long caseNumber : caseNumbers) {
                 Long caseId = caseObjectDAO.getCaseIdByNumber(caseNumber);
                 if (caseId != null) {
                     En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseId);

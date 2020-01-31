@@ -46,6 +46,7 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
+        view.setId("ID-" + value.getId());
         view.setName(value.getCname());
 
         String categoryImage = null;

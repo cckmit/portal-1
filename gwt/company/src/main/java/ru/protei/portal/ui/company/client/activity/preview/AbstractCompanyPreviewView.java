@@ -4,14 +4,13 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import ru.protei.portal.core.model.ent.CaseTag;
-
-import java.util.Set;
 
 /**
  * Абстракция представления превью компании
  */
 public interface AbstractCompanyPreviewView extends IsWidget {
+
+    void setId( String id );
 
     void setName( String name );
 
