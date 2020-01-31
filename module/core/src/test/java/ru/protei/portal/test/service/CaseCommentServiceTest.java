@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
@@ -12,11 +13,16 @@ import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseCommentService;
+import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -33,6 +39,13 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
 public class CaseCommentServiceTest extends BaseServiceTest {
 
+    private AuthServiceMock authService;
+
+    @Autowired
+    private void authService( AuthService authService ) {
+        this.authService = (AuthServiceMock) authService;
+    }
+
     @Test
     public void getCaseObjectsTest() {
         assertNotNull(caseService);
@@ -44,7 +57,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     public void getCaseCommentsDaoTest() {
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        makeUserLogin(person);
+        authService.makeThreadAuthToken(makeUserLogin(person));
         CaseObject caseObject = makeCaseObject(person);
 
         CaseComment comment = createNewComment(person, caseObject.getId(), "Test_Comment");
@@ -61,7 +74,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        makeUserLogin(person);
+        authService.makeThreadAuthToken(makeUserLogin(person));
         CaseObject caseObject = makeCaseObject(caseType, person);
 
         makeCaseComment(person, caseObject.getId(), "Test message");
@@ -97,7 +110,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        makeUserLogin(person);
+        authService.makeThreadAuthToken(makeUserLogin(person));
         CaseObject caseObject = makeCaseObject(caseType, person);
 
         // create
@@ -151,7 +164,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     public void changeTimeElapsedTest() {
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        makeUserLogin(person);
+        authService.makeThreadAuthToken(makeUserLogin(person));
         CaseObject caseObject = makeCaseObject(person);
 
         CaseComment comment1 = createNewComment(person, caseObject.getId(), "Comment1");
