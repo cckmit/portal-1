@@ -18,7 +18,7 @@ public class JdbcConfigDataAdapter implements JdbcBeforeContextInitializer {
     @Override
     public void initialize(JdbcConfigData configData) {
         disableLiquibaseBeanCreationByWinter(configData);
-        if(testConfig.data().embeddedDbEnabled && testConfig.data().isRandomPort){
+        if(testConfig.data().embeddedDbEnabled){
             setPort(configData, testConfig.data().getPort());
         }
     }

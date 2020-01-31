@@ -55,7 +55,6 @@ public class TestConfig {
         }
 
         public final boolean embeddedDbEnabled;
-        public boolean isRandomPort = true;
         private int port = EmbeddedDB.DB_PORT;
     }
 }

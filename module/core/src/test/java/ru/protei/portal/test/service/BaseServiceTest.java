@@ -11,8 +11,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -21,6 +20,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class BaseServiceTest {
+
+    public UserLogin createUserLogin( Person person ) {
+        UserLogin userLogin = userLoginDAO.createNewUserLogin( person );
+        userLogin.setUlogin("user" + person.getId());
+        userLogin.setCreated(new Date());
+        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        userLogin.setPersonId(person.getId());
+        return userLogin;
+    }
+
+    public static UserRole createUserRole(String roleCode, Set<En_Privilege> privileges) {
+        UserRole role = new UserRole();
+        role.setCode(roleCode);
+        role.setPrivileges(privileges);
+        role.setScope(En_Scope.SYSTEM);
+        return role;
+    }
 
     public static DevUnit createProduct( String productName ) {
         DevUnit product = new DevUnit();
@@ -121,17 +138,19 @@ public class BaseServiceTest {
 
     // Create and persist
 
+
+
+    protected UserRole makeUserRole(UserRole userRole) {
+        userRole.setId(  userRoleDAO.persist(userRole)  );
+        return userRole;
+    }
+
     protected UserLogin makeUserLogin( Person person ) {
-        UserLogin userLogin = new UserLogin();
-        userLogin.setUlogin("user" + person.getId());
-        userLogin.setCreated(new Date());
-        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
-        userLogin.setPersonId(person.getId());
+        return makeUserLogin(createUserLogin( person ));
+    }
+
+    protected UserLogin makeUserLogin( UserLogin userLogin ) {
         userLogin.setId( userLoginDAO.persist( userLogin ) );
-        if (authService instanceof AuthServiceMock) {
-            ((AuthServiceMock) authService).makeThreadAuthToken(userLogin);
-        }
         return userLogin;
     }
 
@@ -173,7 +192,10 @@ public class BaseServiceTest {
     }
 
     protected Person makePerson( Company company ) {
-        Person person = createNewPerson( company );
+        return makePerson(createNewPerson( company ));
+    }
+
+    protected Person makePerson( Person person ) {
         person.setId( personDAO.persist( person ) );
         return person;
     }
