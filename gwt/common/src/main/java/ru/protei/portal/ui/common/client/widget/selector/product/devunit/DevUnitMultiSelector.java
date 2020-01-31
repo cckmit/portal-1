@@ -51,5 +51,5 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
     @Inject
     private Lang lang;
 
-    protected ProductModel model;
+    private ProductModel model;
 }

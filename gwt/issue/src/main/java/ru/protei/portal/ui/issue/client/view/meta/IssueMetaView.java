@@ -316,7 +316,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-        product.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPLEX);
     }
 
     private void ensureDebugIds() {

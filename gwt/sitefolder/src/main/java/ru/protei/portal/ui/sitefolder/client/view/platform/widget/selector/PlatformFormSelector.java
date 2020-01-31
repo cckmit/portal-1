@@ -29,12 +29,6 @@ public class PlatformFormSelector extends FormPopupSingleSelector<PlatformOption
 
     }
 
-//    public void setDefaultValue(String defaultValue) {
-//        this.defaultValue = defaultValue;
-//    }
-
     @Inject
     PolicyService policyService;
-
-//    private String defaultValue = null;
 }

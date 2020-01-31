@@ -45,6 +45,6 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
         return item;
     }
 
-    protected ProductModel model;
+    private ProductModel model;
 
 }
