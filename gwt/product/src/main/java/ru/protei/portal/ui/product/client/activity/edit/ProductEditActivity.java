@@ -191,17 +191,18 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                         : null
         );
 
-        view.parents().setValue(devUnit.getParents() != null ? devUnit.getParents().stream()
+        view.parents().setValue(devUnit.getParents() == null ? null : devUnit.getParents().stream()
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
-                : null
         );
 
-        view.children().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
+        view.children().setValue(devUnit.getChildren() == null ? null : devUnit.getChildren().stream()
+                .filter(product -> !product.isDirection())
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
-                : null
         );
+
+        view.direction().setValue(devUnit.getProductDirection() == null ? null : devUnit.getProductDirection().toProductDirectionInfo());
 
         view.wikiLink().setValue(devUnit.getWikiLink());
 
@@ -247,6 +248,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .map(DevUnit::fromProductShortView)
                 .collect(Collectors.toList()) : null
         );
+
+        product.setProductDirection(DevUnit.fromProductDirectionInfo(view.direction().getValue()));
 
         product.setWikiLink(view.wikiLink().getValue());
         product.setCdrDescription(view.cdrDescription().getValue());

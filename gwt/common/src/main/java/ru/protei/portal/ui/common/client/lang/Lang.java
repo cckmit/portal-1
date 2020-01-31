@@ -2003,4 +2003,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactGeneratePassword();
 
     String passwordIsDisplay();
+
+    String productSelectDirection();
 }

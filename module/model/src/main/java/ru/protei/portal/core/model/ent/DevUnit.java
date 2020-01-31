@@ -10,9 +10,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -95,6 +93,15 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return product;
     }
 
+    public static DevUnit fromProductDirectionInfo(ProductDirectionInfo directionInfo) {
+        if (directionInfo == null) {
+            return null;
+        }
+
+        DevUnit direction = new DevUnit(directionInfo.id);
+        direction.setName(directionInfo.name);
+        return direction;
+    }
 
     public DevUnit () {}
 
@@ -252,6 +259,9 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return En_DevUnitType.COMPLEX.equals(getType());
     }
 
+    public boolean isDirection() {
+        return En_DevUnitType.DIRECTION.equals(getType());
+    }
 
     public String getWikiLink() {
         return wikiLink;
@@ -293,6 +303,26 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.aliases = aliases;
     }
 
+    public DevUnit getProductDirection() {
+        if (children == null) {
+            return null;
+        }
+
+        return children.stream().filter(product -> product.getType() == En_DevUnitType.DIRECTION).findFirst().orElse(null);
+    }
+
+    public void setProductDirection(DevUnit productDirection) {
+        if (productDirection == null) {
+            return;
+        }
+
+        if (children == null) {
+            children = new ArrayList<>(Collections.singleton(productDirection));
+        } else {
+            children.add(productDirection);
+        }
+    }
+
     @Override
     public String toString() {
         return "DevUnit{" +
@@ -306,6 +336,13 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", stateId=" + stateId +
                 ", oldId=" + oldId +
                 ", subscriptions=" + subscriptions +
+                ", parents=" + parents +
+                ", children=" + children +
+                ", wikiLink='" + wikiLink + '\'' +
+                ", configuration='" + configuration + '\'' +
+                ", cdrDescription='" + cdrDescription + '\'' +
+                ", historyVersion='" + historyVersion + '\'' +
+                ", aliases=" + aliases +
                 '}';
     }
 
