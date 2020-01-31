@@ -187,6 +187,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObjectDAO.insertCase(caseObj);
 
+        persistStateComment(personMapper.toProteiPerson(initiator).getId(), caseObj.getId(), caseObj.getState());
+        persistImportanceComment(personMapper.toProteiPerson(initiator).getId(), caseObj.getId(), caseObj.getImpLevel());
+
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
         caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
