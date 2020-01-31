@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -529,6 +530,10 @@ public class CaseObject extends AuditableObject {
 
     public interface Columns {
         String EXT_APP = "EXT_APP";
+    }
+
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.getName(), this.getId());
     }
 
     @Override

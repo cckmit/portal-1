@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @JdbcEntity(table = "dev_unit")
 public class DevUnit extends AuditableObject implements ProductShortViewSupport {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     @JdbcColumn(name="UTYPE_ID")
@@ -33,7 +33,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name="UNIT_NAME")
     private String name;
 
-    @JdbcColumn(name="UNIT_INFO")
+    @JdbcColumn(name=Columns.UNIT_INFO)
     private String info;
 
     @JdbcColumn(name="LAST_UPDATE")
@@ -60,13 +60,13 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = "wiki_link")
     private String wikiLink;
 
-    @JdbcColumn
+    @JdbcColumn(name = Columns.CONFIGURATION)
     private String configuration;
 
-    @JdbcColumn(name = "cdr_description")
+    @JdbcColumn(name = Columns.CDR_DESCRIPTION)
     private String cdrDescription;
 
-    @JdbcColumn(name = "history_version")
+    @JdbcColumn(name = Columns.HISTORY_VERSION)
     private String historyVersion;
 
     /**
@@ -321,4 +321,13 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public interface Columns {
+        String ID = "id";
+        String UNIT_INFO = "UNIT_INFO";
+        String HISTORY_VERSION = "history_version";
+        String CONFIGURATION = "configuration";
+        String CDR_DESCRIPTION = "cdr_description";
+    }
+
 }

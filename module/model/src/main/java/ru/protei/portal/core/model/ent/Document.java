@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -28,7 +27,6 @@ public class Document implements Serializable {
 
     @JdbcColumn(name = "decimal_number")
     private String decimalNumber;
-
 
     /**
      * Инвентарный номер
@@ -69,8 +67,15 @@ public class Document implements Serializable {
 
     @JdbcColumn(name = "project_id")
     private Long projectId;
-    @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private CaseObject project;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "case_name", sqlTableAlias = "case_object")
+    private String projectName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
+    }, mappedColumn = "cname")
+    private String contragentName;
 
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
@@ -90,13 +95,30 @@ public class Document implements Serializable {
     @JdbcColumnCollection(name = "tags", separator = ",")
     private List<String> keywords;
 
+    /**
+     * Утвержденный
+     */
     @JdbcColumn(name = "is_approved")
     private Boolean isApproved;
 
+    /**
+     * Утвердил
+     */
+    @JdbcJoinedObject(localColumn = "approved_by_id")
+    private Person approvedBy;
+
+    /**
+     * Дата создания
+     */
+    @JdbcColumn(name = "approval_date")
+    private Date approvalDate;
 
     @JdbcColumn(name = "execution_type")
     @JdbcEnumerated(EnumType.ORDINAL)
     private En_DocumentExecutionType executionType;
+
+    @JdbcManyToMany(linkTable = "document_member", localLinkColumn = "document_id", remoteLinkColumn = "person_id")
+    private List<Person> members;
 
     public Document(){}
 
@@ -180,16 +202,20 @@ public class Document implements Serializable {
         this.projectId = projectId;
     }
 
-    public CaseObject getProjectAsCaseObject() {
-        return project;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public Project getProject() {
-        return Project.fromCaseObject(project);
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public void setProject(CaseObject project) {
-        this.project = project;
+    public String getContragentName() {
+        return contragentName;
+    }
+
+    public void setContragentName( String contragentName ) {
+        this.contragentName = contragentName;
     }
 
     public String getVersion() {
@@ -224,6 +250,22 @@ public class Document implements Serializable {
         isApproved = approved;
     }
 
+    public Person getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Person approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Date getApprovalDate() {
+        return approvalDate;
+    }
+
+    public void setApprovalDate(Date approvalDate) {
+        this.approvalDate = approvalDate;
+    }
+
     public En_DocumentExecutionType getExecutionType() {
         return executionType;
     }
@@ -238,6 +280,14 @@ public class Document implements Serializable {
 
     public En_DocumentState getState(){
         return state;
+    }
+
+    public List<Person> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Person> members) {
+        this.members = members;
     }
 
     public boolean isActiveUnit () {
@@ -282,14 +332,18 @@ public class Document implements Serializable {
                 ", registrar=" + registrar +
                 ", contractor=" + contractor +
                 ", projectId=" + projectId +
-                ", project=" + project +
+                ", projectName='" + projectName + '\'' +
+                ", contragentName='" + contragentName + '\'' +
                 ", equipment=" + equipment +
                 ", version='" + version + '\'' +
                 ", created=" + created +
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
+                ", approvedBy=" + approvedBy +
+                ", approvalDate =" + approvalDate +
                 ", executionType=" + executionType +
                 ", state=" + state +
+                ", members=" + members +
                 '}';
     }
 }

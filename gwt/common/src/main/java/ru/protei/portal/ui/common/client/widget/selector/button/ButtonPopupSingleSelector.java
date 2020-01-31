@@ -20,7 +20,6 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.widget.selector.button.ValueButton;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -47,9 +46,14 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     @Override
     public void setValue(T value, boolean fireEvents) {
         selector.setValue(value);
-        showValue(value);
+        T selectorValue = selector.getValue();
+        showValue(selectorValue);
         if (fireEvents) {
-            ValueChangeEvent.fire(this, value);
+            ValueChangeEvent.fire(this, selectorValue);
+        }
+
+        if (isValidable) {
+            setValid(isValid());
         }
     }
 
@@ -136,6 +140,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         showValue(value);
         getPopup().hide();
         ValueChangeEvent.fire(this, value);
+
+        if (isValidable) {
+            setValid(isValid());
+        }
     }
 
 

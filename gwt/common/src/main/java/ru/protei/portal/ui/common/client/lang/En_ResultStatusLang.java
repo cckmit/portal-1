@@ -56,6 +56,10 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_CHANGE_PLATFORM_COMPANY: return lang.errSavePlatformConnectedIssuesExist();
             case NOT_ALLOWED_CHANGE_PROJECT_COMPANY: return lang.errSaveProjectCannotChangeCompany();
             case NOT_ALLOWED_LINK_ISSUE_TO_ITSELF: return lang.errUnableLinkIssueToItself();
+            case SOME_LINKS_NOT_ADDED: return lang.caseLinkSomeNotAdded();
+            case THIS_LINK_ALREADY_ADDED: return lang.errCaseLinkAlreadyAdded();
+            case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
+            case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
             default: return lang.errUnknownResult();
         }
     }

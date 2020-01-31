@@ -79,6 +79,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
+    @Transactional
     public Result attachTag(AuthToken authToken, Long caseId, Long tagId) {
         if ( caseId == null || tagId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

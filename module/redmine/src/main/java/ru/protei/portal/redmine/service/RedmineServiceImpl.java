@@ -287,7 +287,21 @@ public final class RedmineServiceImpl implements RedmineService {
             return;
         }
 
-        updateHandler.handleUpdateCaseObjectByIssue(issue, caseId, endpoint);
+        //updateHandler.handleUpdateCaseObjectByIssue(issue, caseId, endpoint);
+        updateHandler.handleUpdatePriorityByIssue(issue, caseId, endpoint);
+    }
+
+    @Override
+    public void createCaseObjectByIssue(int issueId, long companyId, String projectId) {
+        final RedmineEndpoint endpoint = redmineEndpointDAO.getByCompanyIdAndProjectId(companyId, projectId);
+        final Issue issue = getIssueById(issueId, endpoint);
+        if (issue == null) {
+            logger.warn("Issue with id {} was not found", issueId);
+            return;
+        }
+
+        User user = getUser(issue.getAuthorId(), endpoint);
+        handler.handle(user, issue, endpoint);
     }
 
     private Issue getIssueByIdWithAttachmentsOnly(int id, RedmineEndpoint endpoint) {

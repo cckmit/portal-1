@@ -1,14 +1,14 @@
 package ru.protei.portal.jira.service;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.api.domain.Attachment;
+import com.atlassian.jira.rest.client.api.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
@@ -19,14 +19,16 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.factory.JiraClientFactory;
-import ru.protei.portal.core.model.struct.JiraExtAppData;
+import ru.protei.portal.jira.mapper.CachedPersonMapper;
+import ru.protei.portal.jira.mapper.PersonMapper;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
-import ru.protei.portal.jira.utils.JiraHookEventData;
+import ru.protei.portal.jira.dto.JiraHookEventData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,48 +45,35 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     @Autowired
     CaseService caseService;
-
     @Autowired
     CompanyDAO companyDAO;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     JiraEndpointDAO jiraEndpointDAO;
-
     @Autowired
     JiraCompanyGroupDAO jiraCompanyGroupDAO;
 
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
-
     @Autowired
     private CaseObjectDAO caseObjectDAO;
-
     @Autowired
     private CaseCommentDAO commentDAO;
-
     @Autowired
     private JiraStatusMapEntryDAO jiraStatusMapEntryDAO;
-
     @Autowired
     private JiraPriorityMapEntryDAO jiraPriorityMapEntryDAO;
-
     @Autowired
     JiraClientFactory clientFactory;
-
     @Autowired
     FileStorage fileStorage;
-
     @Autowired
     AttachmentService attachmentService;
-
 
     @Override
     public AssembledCaseEvent create(JiraEndpoint endpoint, JiraHookEventData event) {
         return createCaseObject(event.getUser(),
-                getInitiatorCompany(endpoint, event),
                 event.getIssue(),
                 endpoint,
                 new CachedPersonMapper(personDAO, endpoint, personDAO.get(endpoint.getPersonId()))
@@ -99,7 +88,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
         if (caseObj == null) {
-            return createCaseObject(event.getUser(), getInitiatorCompany(endpoint, event), issue, endpoint, personMapper);
+            return createCaseObject(event.getUser(), issue, endpoint, personMapper);
         } else {
             if (CommonUtils.isTechUser(endpoint, event.getUser())) {
                 logger.info("skip event to prevent recursion, author is tech-login");
@@ -167,7 +156,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    private AssembledCaseEvent createCaseObject(User initiator, Company companyInitiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
+    private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
         final CaseObject caseObj = new CaseObject();
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ).getId(), caseObj );
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectCreateEvent);
@@ -183,7 +172,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
         caseObj.setLocal(0);
         caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
-        caseObj.setInitiatorCompany(companyInitiator);
+        caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
         caseObj.setCreator (caseObj.getInitiator());
         caseObj.setCreatorInfo("jira");
 
@@ -215,19 +204,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         externalCaseAppDAO.merge(appData);
 
         return caseEvent;
-    }
-
-    private Company getInitiatorCompany(JiraEndpoint endpoint, JiraHookEventData issue) {
-        IssueField field =  issue.getIssue().getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME);
-        String companyGroup = (field == null) ? null : field.getValue().toString();
-        if (companyGroup != null) {
-            JiraCompanyGroup jiraCompanyGroup = jiraCompanyGroupDAO.getByName(companyGroup);
-            if (jiraCompanyGroup != null) {
-                return jiraCompanyGroup.getCompany();
-            }
-        }
-
-        return companyDAO.get(endpoint.getCompanyId());
     }
 
     private List<CaseComment> processComments(JiraEndpoint endpoint, Issue issue, CaseObject caseObj, PersonMapper personMapper, JiraExtAppData state) {

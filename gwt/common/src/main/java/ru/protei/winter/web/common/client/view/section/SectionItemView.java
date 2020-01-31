@@ -21,6 +21,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     public SectionItemView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        root.addDomHandler(event -> onSectionClicked(), ClickEvent.getType());
     }
 
     @Override
@@ -107,7 +108,9 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         if ( anchor.getHref().endsWith("#") ) {
             event.preventDefault();
         }
+    }
 
+    private void onSectionClicked() {
         if ( activity != null ) {
             activity.onSectionClicked( this );
         }

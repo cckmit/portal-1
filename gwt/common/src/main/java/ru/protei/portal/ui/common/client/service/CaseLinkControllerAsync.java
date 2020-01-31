@@ -17,7 +17,11 @@ public interface CaseLinkControllerAsync {
 
     void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
 
-    void createLink(CaseLink value, AsyncCallback<Long> async);
+    void createLink(CaseLink value, boolean createCrossLinks,  AsyncCallback<Long> async);
 
-    void removeLink(Long id, AsyncCallback<Void> async);
+    void createLinkWithPublish(CaseLink value, boolean createCrossLinks,  AsyncCallback<Long> async);
+
+    void deleteLink(Long id, AsyncCallback<Void> async);
+
+    void deleteLinkWithPublish(Long id, AsyncCallback<Void> async);
 }

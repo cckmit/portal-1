@@ -106,9 +106,9 @@ ul.plate-list {
     }
 
     &.employee {
-      height: 250px;
+      height: auto;
       .header-block {
-        height: calc(240px - 3em);
+        height: auto;
 
         & div {
           font-size: 11px;

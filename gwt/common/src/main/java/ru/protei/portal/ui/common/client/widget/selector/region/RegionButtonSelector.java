@@ -27,7 +27,6 @@ public class RegionButtonSelector extends ButtonSelector<EntityOption> implement
 
         if(defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
 
         regions.forEach(this::addOption);

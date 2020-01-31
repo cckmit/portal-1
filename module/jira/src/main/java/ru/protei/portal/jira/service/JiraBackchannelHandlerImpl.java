@@ -15,22 +15,19 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
-import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 
 import java.util.*;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
+
     @Autowired
     JiraClientFactory clientFactory;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     FileStorage fileStorage;
 
@@ -59,8 +56,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             return;
         }
 
-//        final long caseId = object.getId();
-
         logger.debug("Modified object has id: {}", object.getId());
 
         ExternalCaseAppData extCaseData = externalCaseAppDAO.get(object.getId());
@@ -71,7 +66,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         // TODO why no check if its jira issue (by ExternalCaseAppData.extAppType)
 
-        final JiraUtils.JiraIssueData issueData = CommonUtils.convert(extCaseData);
+        final JiraUtils.JiraIssueData issueData = JiraUtils.convert(extCaseData);
 
         final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
         if (endpoint == null) {

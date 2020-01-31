@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.document.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
 public interface AbstractDocumentPreviewView extends IsWidget {
 
@@ -24,6 +27,8 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setContractor(String text);
 
+    void setMembers(String text);
+
     void setNumberDecimal(String numberDecimal);
 
     void setNumberInventory(String numberInventory);
@@ -34,5 +39,17 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setDownloadLinkDoc(String link);
 
+    void setDownloadLinkApprovalSheet(String link);
+
     void setExecutionType(String executionType);
+
+    AbstractDocumentUploader documentDocUploader();
+
+    HasValue<String> documentDocComment();
+
+    HasVisibility documentDocVisibility();
+
+    HasVisibility documentDocUploadContainerLoading();
+
+    HasVisibility footerVisibility();
 }

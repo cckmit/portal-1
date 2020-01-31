@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -32,6 +34,9 @@ public class Result<T> {
 
     @JsonProperty
     private String message;
+
+    @JsonIgnore
+    private List<ApplicationEvent> events;
 
     @JsonIgnore
     public boolean isOk () {
@@ -58,6 +63,10 @@ public class Result<T> {
         return message;
     }
 
+    public List<ApplicationEvent> getEvents() {
+        return events;
+    }
+
     public void setMessage( String message ) {
         this.message = message;
     }
@@ -70,10 +79,11 @@ public class Result<T> {
         this.data = data;
     }
 
-    public Result( En_ResultStatus status, T data, String message ) {
+    public Result( En_ResultStatus status, T data, String message, List<ApplicationEvent> events ) {
         this.status = status;
         this.data = data;
         this.message = message;
+        this.events = events;
     }
 
     @JsonIgnore
@@ -82,12 +92,12 @@ public class Result<T> {
     }
     @JsonIgnore
     public static <T> Result<T> error( En_ResultStatus status, String message ) {
-        return new Result<T>( status, null, message);
+        return new Result<T>( status, null, message, null);
     }
 
     @JsonIgnore
-    public Result<T> redirect ( String to) {
-        return this;
+    public static <T> Result<T> error( En_ResultStatus status, String message, List<ApplicationEvent> events ) {
+        return new Result<T>( status, null, message, events);
     }
 
     @JsonIgnore
@@ -97,7 +107,28 @@ public class Result<T> {
 
     @JsonIgnore
     public static <T> Result<T> ok( T data ) {
-        return new Result<T>( En_ResultStatus.OK, data, null);
+        return new Result<T>( En_ResultStatus.OK, data, null, null);
+    }
+
+    @JsonIgnore
+    public static <T> Result<T> ok( T data, List<ApplicationEvent> events ) {
+        return new Result<T>( En_ResultStatus.OK, data, null, events);
+    }
+
+    @JsonIgnore
+    public Result<T> publishEvent( ApplicationEvent event ) {
+        if (event == null) return this;
+        if (this.events == null) this.events = new ArrayList<>();
+        this.events.add( event );
+        return this;
+    }
+
+    @JsonIgnore
+    public Result<T> publishEvents( List<ApplicationEvent> events ) {
+        if (events == null) return this;
+        if (this.events == null) this.events = new ArrayList<>();
+        this.events.addAll( events );
+        return this;
     }
 
     @Override
@@ -106,6 +137,7 @@ public class Result<T> {
                 "status=" + status +
                 ", message='" + message + '\'' +
                 ", data=" + data +
+                ", events=" + data +
                 '}';
     }
 
@@ -150,9 +182,9 @@ public class Result<T> {
     @JsonIgnore
     public <U> Result<U> map( Function<? super T, ? extends U> mapper) {
         if (mapper == null || !isOk())
-            return error( status, message );
+            return error( status, message, events );
         else {
-            return ok( mapper.apply( data ) );
+            return ok( mapper.apply( data ), events );
         }
     }
 
@@ -162,9 +194,9 @@ public class Result<T> {
     @JsonIgnore
     public <U> Result<U> flatMap( Function<? super T, Result<U>> mapper) {
         if (mapper == null || !isOk())
-            return error( status, message );
+            return error( status, message, events );
         else {
-            return mapper.apply(data);
+            return mapper.apply( data ).publishEvents( events );
         }
     }
 

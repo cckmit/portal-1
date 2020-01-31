@@ -1,12 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.struct.AuditableObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CaseObjectCreateRequest implements Serializable {
+public class CaseObjectCreateRequest extends AuditableObject {
+
     private CaseObject caseObject;
 
     private List<CaseLink> links;
@@ -77,5 +78,15 @@ public class CaseObjectCreateRequest implements Serializable {
 
     public Long getCaseId() {
         return caseObject == null ? null : caseObject.getId();
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseObjectCreateRequest";
+    }
+
+    @Override
+    public Long getId() {
+        return getCaseId();
     }
 }

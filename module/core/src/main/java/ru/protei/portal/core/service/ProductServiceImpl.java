@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
@@ -23,10 +24,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -88,6 +86,22 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
 
         return ok(result);
+    }
+
+    @Override
+    public Result<DevUnitInfo> getProductInfo( AuthToken authToken, Long productId ) {
+        DevUnit devUnit = devUnitDAO.get( productId );
+        if (devUnit == null) return error( En_ResultStatus.NOT_FOUND );
+        return ok( toInfo(devUnit) );
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> updateProductFromInfo( AuthToken authToken, DevUnitInfo product ) {
+        return getProduct( authToken, product.getId() ).map( devUnit ->
+                updateFields( devUnit, product ) ).flatMap( devUnit ->
+                updateProduct( authToken, devUnit ) ).map(
+                DevUnit::getId );
     }
 
     @Override
@@ -246,6 +260,22 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
+    }
+
+    private DevUnit updateFields( DevUnit devUnit, DevUnitInfo product ) {
+        if (product.getConfiguration() != null) devUnit.setConfiguration( product.getConfiguration() );
+        if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
+        if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
+        return devUnit;
+    }
+
+    private DevUnitInfo toInfo( DevUnit devUnit) {
+        DevUnitInfo info = new DevUnitInfo();
+        info.setId( devUnit.getId() );
+        info.setConfiguration( devUnit.getConfiguration() );
+        info.setCdrDescription( devUnit.getCdrDescription() );
+        info.setHistoryVersion( devUnit.getHistoryVersion() );
+        return info;
     }
 
     private final static Logger log = LoggerFactory.getLogger( ProductService.class );

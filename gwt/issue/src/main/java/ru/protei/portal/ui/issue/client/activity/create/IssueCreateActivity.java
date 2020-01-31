@@ -16,9 +16,12 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -105,12 +108,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        createRequest.addLink(event.caseLink);
+        if (lang.issues().equals(event.pageId)) {
+            createRequest.addLink(event.caseLink);
+        }
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        createRequest.getLinks().remove(event.caseLink);
+        if (lang.issues().equals(event.pageId)) {
+            createRequest.getLinks().remove(event.caseLink);
+        }
     }
 
     @Override
@@ -127,7 +134,21 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         lockSave();
         issueService.createIssue(createRequest, new FluentCallback<Long>()
-                .withError(throwable -> unlockSave())
+                .withError(throwable -> {
+                    unlockSave();
+                    if (throwable instanceof RequestFailedException){
+                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
+                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
+                            fireEvent(new IssueEvents.Show(true));
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        }
+                        defaultErrorHandler.accept(throwable);
+                    }
+                    else {
+                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    }
+
+                })
                 .withSuccess(caseId -> {
                     unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -148,7 +169,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onAddLinkClicked(IsWidget target) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(target));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, lang.issues()));
     }
 
     @Override
@@ -238,6 +259,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.attachmentsContainer().clear();
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
+                .withPageId(lang.issues())
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
         fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
@@ -382,11 +404,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void initiatorSelectorAllowAddNew(Long companyId) {
+        issueMetaView.initiatorSelectorAllowAddNew(false);
+
         if (companyId == null) {
             return;
         }
 
-        issueMetaView.initiatorSelectorAllowAddNew(policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE) && !homeCompanyService.isHomeCompany(companyId));
+        if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE)) {
+            return;
+        }
+
+        homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
     }
 
     private boolean isStateWithRestrictions(En_CaseState caseState) {
@@ -422,11 +450,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private boolean saving;
     private AppEvents.InitDetails init;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
-
 }

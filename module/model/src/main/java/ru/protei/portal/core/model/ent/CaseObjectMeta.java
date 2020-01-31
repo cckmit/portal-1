@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -9,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "case_object")
-public class CaseObjectMeta implements Serializable {
+public class CaseObjectMeta extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
@@ -108,6 +109,11 @@ public class CaseObjectMeta implements Serializable {
         if (co.getExtAppType() != null) co.setExtAppType(getExtAppType());
         co.setPrivateCase(isPrivateCase());
         return co;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseObjectMeta";
     }
 
     public Long getId() {

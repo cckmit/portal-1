@@ -1,10 +1,13 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 
 public class DocumentEvents {
 
@@ -20,13 +23,25 @@ public class DocumentEvents {
 
     public static class ShowPreview {
 
-        public ShowPreview (HasWidgets parent, Document document) {
+        public ShowPreview (HasWidgets parent, Long documentId) {
             this.parent = parent;
-            this.document = document;
+            this.documentId = documentId;
         }
 
-        public Document document;
+        public Long documentId;
         public HasWidgets parent;
+    }
+
+    @Url(value = "doc_preview", primary = true)
+    public static class ShowPreviewFullScreen {
+
+        public ShowPreviewFullScreen() {}
+        public ShowPreviewFullScreen(Long documentId) {
+            this.documentId = documentId;
+        }
+
+        @Name("id")
+        public Long documentId;
     }
 
     @Url("doc")
@@ -69,8 +84,8 @@ public class DocumentEvents {
 
         public static class SetProject {
             public String tag;
-            public Project project;
-            public SetProject(Project project, String tag) {
+            public EntityOption project;
+            public SetProject(EntityOption project, String tag) {
                 this.project = project;
                 this.tag = tag;
             }

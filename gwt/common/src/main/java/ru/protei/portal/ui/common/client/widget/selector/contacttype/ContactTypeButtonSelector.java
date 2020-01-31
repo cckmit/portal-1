@@ -24,7 +24,6 @@ public class ContactTypeButtonSelector extends ButtonSelector<En_ContactItemType
 
         if(defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
 
         items.forEach(this::addOption);

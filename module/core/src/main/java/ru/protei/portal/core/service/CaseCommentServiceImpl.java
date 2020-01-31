@@ -78,16 +78,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
+        Result<CaseComment> okResult = ok( resultData.getCaseComment() );
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
+            okResult.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
+            okResult.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
                     null, resultData.getCaseComment(), null ) );
         }
 
-        return ok(resultData.getCaseComment());
+        return okResult;
     }
 
     @Override
@@ -160,16 +161,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
+        Result<CaseComment> okResult = ok( resultData.getCaseComment() );
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            publisherService.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
+            okResult.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), resultData.getRemovedAttachments())
             );
-            publisherService.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
+            okResult.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
         }
 
-        return ok( resultData.getCaseComment());
+        return okResult;
     }
 
     @Override
@@ -296,10 +298,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments ) );
-        publisherService.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment ) );
-
-        return ok( isRemoved);
+        return ok( isRemoved )
+                .publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments ) )
+                .publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment ) );
     }
 
     @Override

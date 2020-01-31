@@ -1,10 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.document.uploader'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="preview" styleName="card card-default no-border card-fixed preview-card">
+    <g:HTMLPanel ui:field="preview" styleName="card card-fixed no-border no-padding preview">
+
         <div class="card-body">
+
             <h4 ui:field="header" class="m-r-50"/>
             <div class="preview-title-image-container-right">
                 <g:Anchor href="javascript:void(0)" ui:field="downloadDocButton" target="_blank">
@@ -13,62 +16,125 @@
                 <g:Anchor href="javascript:void(0)" ui:field="downloadPdfButton" target="_blank">
                     <img src="./images/document-pdf.svg"/>
                 </g:Anchor>
+                <g:Anchor href="javascript:void(0)" ui:field="downloadApprovalSheetButton" target="_blank">
+                    <img src="./images/document-as.svg"/>
+                </g:Anchor>
             </div>
-
             <div class="inline">
                 <small ui:field="createdBy"/>
             </div>
 
-            <g:Label styleName="small hint-text pre-formatted-info" ui:field="annotation"/>
-            <div ui:field="version"/>
-
-            <h5><ui:text from="{lang.documentCommonHeader}"/></h5>
-            <div class="small">
-                <b><ui:text from="{lang.documentType}: "/></b>
-                <span ui:field="type"/>
-            </div>
+            <div ui:field="annotation" class="small hint-text pre-formatted-info"/>
 
             <div class="small">
-                <b><ui:text from="{lang.documentExecutionType}: "/></b>
-                <span ui:field="executionType"/>
+                <span><ui:text from="{lang.documentKeywords}: "/></span>
+                <span ui:field="keyWords"/>
             </div>
 
-            <div class="small">
-                <b><ui:text from="{lang.documentProject}: "/></b>
-                <span ui:field="project"/>
+            <h6><ui:text from="{lang.documentCommonHeader}"/></h6>
+            <div class="form-group-attached">
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentVersion}"/></label>
+                            <span ui:field="version"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentType}"/></label>
+                            <span ui:field="type"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentExecutionType}"/></label>
+                            <span ui:field="executionType"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentProject}"/></label>
+                            <span ui:field="project"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentDecimalNumber}"/></label>
+                            <span ui:field="numberDecimal"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.inventoryNumber}"/></label>
+                            <span ui:field="numberInventory"/>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <h5><ui:text from="{lang.documentIdentification}"/></h5>
-
-            <div class="small">
-                <b><ui:text from="{lang.documentDecimalNumber}: "/></b>
-                <span ui:field="numberDecimal"/>
+            <h6><ui:text from="{lang.documentWorkGroupHeader}"/></h6>
+            <div class="form-group-attached">
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentManager}"/></label>
+                            <span ui:field="manager"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentRegistrar}"/></label>
+                            <span ui:field="registrar"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentContractor}"/></label>
+                            <span ui:field="contractor"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <div class="form-group form-group-default">
+                            <label><ui:text from="{lang.documentMembers}"/></label>
+                            <span ui:field="members"/>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="small">
-                <b><ui:text from="{lang.inventoryNumber}: "/></b>
-                <span ui:field="numberInventory"/>
-            </div>
-
-            <h5><ui:text from="{lang.documentWorkGroupHeader}"/></h5>
-
-            <div class="small">
-                <b><ui:text from="{lang.documentManager}: "/></b>
-                <span ui:field="manager"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.documentRegistrar}: "/></b>
-                <span ui:field="registrar"/>
-            </div>
-
-            <div class="small">
-                <b><ui:text from="{lang.documentContractor}: "/></b>
-                <span ui:field="contractor"/>
-            </div>
-
-            <h5><ui:text from="{lang.documentKeywords}"/></h5>
-            <span ui:field="keyWords"/>
+            <g:HTMLPanel ui:field="documentDocUploadContainer">
+                <h6><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></h6>
+                <div class="card card-default m-t-10">
+                    <div class="card-body no-scroll no-padding card-body-dropzone">
+                        <div class="form-group form-group-default m-b-0 no-border required">
+                            <label><ui:text from="{lang.documentMemberWorkDocumentationComment}"/></label>
+                            <g:TextBox ui:field="documentDocComment" styleName="form-control comment"/>
+                        </div>
+                        <fileuploader:DocumentUploader ui:field="documentDocUploader" format="DOC"/>
+                    </div>
+                    <div class="card-footer bg-transparent no-border">
+                        <div class="text-right">
+                            <g:Button ui:field="uploadDocFile" styleName="btn no-border btn-info btn-xs" text="{lang.documentMemberWorkDocumentationUpload}"/>
+                        </div>
+                    </div>
+                    <div class="card-stub d-flex align-items-center hide" ui:field="documentDocUploadContainerLoading">
+                        <div class="progress-circle-indeterminate"/>
+                    </div>
+                </div>
+            </g:HTMLPanel>
         </div>
+
+        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToDocuments}"/>
+                </div>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

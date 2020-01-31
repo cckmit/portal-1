@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.uploaderdropzone;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -200,7 +201,7 @@ public class FileDropzoneUploader extends Composite implements HasHTML, HasSafeH
     @UiField
     protected HTMLPanel dropzone;
     @UiField
-    protected SpanElement filenameInfo;
+    protected DivElement filenameInfo;
 
     protected UploadHandler uploadHandler;
     protected boolean enabled = true;

@@ -61,13 +61,15 @@ public class DocumentControllerImpl implements DocumentController {
 
         FileItem pdfFile = sessionService.getFilePdf(httpRequest);
         FileItem docFile = sessionService.getFileDoc(httpRequest);
+        FileItem approvalSheetFile = sessionService.getFileApprovalSheet(httpRequest);
         sessionService.setFilePdf(httpRequest, null);
         sessionService.setFileDoc(httpRequest, null);
+        sessionService.setFileApprovalSheet(httpRequest, null);
 
         if (document.getId() == null) {
-            response = documentService.createDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
+            response = documentService.createDocument(token, document, docFile, pdfFile, approvalSheetFile, token.getPersonDisplayShortName());
         } else {
-            response = documentService.updateDocument(token, document, docFile, pdfFile, token.getPersonDisplayShortName());
+            response = documentService.updateDocument(token, document, docFile, pdfFile, approvalSheetFile, token.getPersonDisplayShortName());
         }
 
         log.info("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
@@ -78,6 +80,16 @@ public class DocumentControllerImpl implements DocumentController {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Document updateDocumentDocFileByMember(Long documentId, String comment) throws RequestFailedException {
+        log.info("updateDocumentDocFileByMember(): documentId={}, comment={}", documentId, comment);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        FileItem docFile = sessionService.getFileDoc(httpRequest);
+        sessionService.setFileDoc(httpRequest, null);
+        Result<Document> response = documentService.updateDocumentDocFileByMember(token, documentId, docFile, comment, token.getPersonDisplayShortName());
+        return ServiceUtils.checkResultAndGetData(response);
     }
 
     @Override

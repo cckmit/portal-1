@@ -46,11 +46,25 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
     public void handleUpdateCaseObjectByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
         final CaseObject object = caseObjectDAO.get(caseId);
         compareAndUpdate(issue, object, endpoint);
-        logger.debug("Object with id {} saved", object.getId());
     }
 
-    @Transactional
-    protected void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+    public void handleUpdatePriorityByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
+        final CaseObject object = caseObjectDAO.get(caseId);
+        issue.getJournals()
+                .stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Journal::getCreatedOn))
+                .forEach(journal -> journal.getDetails()
+                        .stream()
+                        .filter(detail -> detail.getName().equals(RedmineChangeType.PRIORITY_CHANGE.getName()))
+                        .forEach(detail -> {
+                            caseUpdaterFactory
+                                    .getUpdater(RedmineChangeType.findByName(detail.getName()).get())
+                                    .apply(object, endpoint, journal, detail.getNewValue());
+                        }));
+    }
+
+    private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
 
         //Synchronize comments
         handleComments(issue, object, endpoint);
@@ -67,7 +81,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         //Synchronize status, priority, name, info
         latestJournals
                 .stream()
-                .filter(x -> StringUtils.isEmpty(x.getNotes()))
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .forEach(journal -> journal.getDetails()
                         .stream()
@@ -96,7 +109,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .reduce((o1, o2) -> o2)
                 .orElse(null);
         final Date latestCreated = (comment != null) ? comment.getCreated() : issue.getCreatedOn();
-        logger.debug("Last comment was synced on {}, with id {}", latestCreated, comment.getId());
+        logger.debug("Last comment was synced on {}", latestCreated);
 
         logger.debug("Starting adding new comments");
 

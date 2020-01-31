@@ -128,4 +128,6 @@
   <include file="2019-11-26-modify-document-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-12-02-drop-user-session-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-12-20-add-jira-company-group-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-01-14-add-approve-fields-document-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-01-15-add-document-member-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

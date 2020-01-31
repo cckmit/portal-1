@@ -10,7 +10,9 @@
              xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:stringselectform="urn:import:ru.protei.portal.ui.common.client.widget.stringselectform">
+             xmlns:stringselectform="urn:import:ru.protei.portal.ui.common.client.widget.stringselectform"
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+    >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -19,15 +21,10 @@
             <form class="card-body p-t-0">
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <div class="form-group form-group-default">
                             <label><ui:text from="{lang.documentName}"/></label>
                             <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="checkbox check-success p-t-10 p-b-10">
-                            <g:CheckBox ui:field="approved" text="{lang.documentApproved}"/>
                         </div>
                     </div>
                 </div>
@@ -71,7 +68,33 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="checkbox check-success p-t-10 p-b-10 pull-right">
+                                <g:CheckBox ui:field="approved" text="{lang.documentApproved}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" >
+                        <div class="form-group" ui:field="approvedByContainer">
+                                    <person:EmployeeFormSelector ui:field="approvedBy"
+                                                                 header="{lang.documentApprovedBy}"
+                                                                 enabled="false"
+                                                                 addStyleNames="document-approval-by"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default document-approval-date"  ui:field="approvalDateContainer">
+                            <label><ui:text from="{lang.documentApprovalDate}"/></label>
+                            <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy"
+                                                     enabled="false"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
                                 <div class="card-title"><ui:text from="{lang.documentFileDoc}"/></div>
@@ -86,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
                                 <div class="card-title"><ui:text from="{lang.documentFilePdf}"/></div>
@@ -98,6 +121,21 @@
                             </div>
                             <div class="card-body no-scroll no-padding card-body-dropzone">
                                 <fileuploader:DocumentUploader ui:field="documentPdfUploader" format="PDF"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <div class="card-title"><ui:text from="{lang.documentFileApprovalSheet}"/></div>
+                                <div class="card-controls">
+                                    <ul>
+                                        <li><g:Anchor ui:field="downloadApproved"><i class="fas fa-cloud-download-alt"/></g:Anchor></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body no-scroll no-padding card-body-dropzone">
+                                <fileuploader:DocumentUploader ui:field="documentApprovedUploader" format="AS"/>
                             </div>
                         </div>
                     </div>
@@ -192,6 +230,7 @@
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-6">
                                     <doccategory:DocumentCategoryFormSelector ui:field="documentCategory"
+                                                                              defaultValue="{lang.selectValue}"
                                                                               validation="false"
                                                                               header="{lang.documentCategory}"
                                                                               mandatory="false"/>
@@ -204,6 +243,14 @@
                                                                       mandatory="false"/>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group m-t-10 m-b-0">
+                            <label><ui:text from="{lang.documentMembers}"/></label>
+                        </div>
+                        <div class="form-group form-group-attached">
+                            <person:EmployeeMultiSelector ui:field="members" styleName="case-subscribers"
+                                                          buttonStyle="btn-info btn-xs"/>
                         </div>
                     </div>
                 </div>

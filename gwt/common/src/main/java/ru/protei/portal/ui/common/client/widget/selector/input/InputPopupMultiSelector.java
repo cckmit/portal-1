@@ -52,9 +52,10 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     @Override
     public void setValue( Set<T> value, boolean fireEvents ) {
         selector.setValue( value );
-        showValue( value );
+        Set<T> selectorValue = selector.getValue();
+        showValue(selectorValue);
         if (fireEvents) {
-            ValueChangeEvent.fire( this, value );
+            ValueChangeEvent.fire(this, selectorValue);
         }
     }
 

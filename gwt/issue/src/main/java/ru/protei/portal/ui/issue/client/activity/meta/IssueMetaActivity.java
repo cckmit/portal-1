@@ -57,8 +57,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
-    }
 
+        if (!validateCaseMeta(meta)){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
+        }
+    }
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
@@ -230,9 +233,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        if(company!=null && initiator!=null){
-            onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
-        }
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
     }
 
     @Override
@@ -322,32 +323,21 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
 
-        if (caseMeta.getInitiatorCompany() == null) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
+        boolean companyIsValid = caseMeta.getInitiatorCompany() != null;
+        metaView.companyValidator().setValid(companyIsValid);
 
-        if (caseMeta.getManager() == null && isStateWithRestrictions(caseMeta.getState())) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
+        boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
+        metaView.managerValidator().setValid(managerIsValid);
 
-        if (caseMeta.getProduct() == null && isStateWithRestrictions(caseMeta.getState())) {
-            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
+        boolean productIsValid = (caseMeta.getProduct() != null && caseMeta.getManager() != null) || (!isStateWithRestrictions(caseMeta.getState()) && caseMeta.getManager() == null);
+        metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
-                metaView.stateValidator().isValid() &&
-                metaView.importanceValidator().isValid() &&
-                metaView.companyValidator().isValid();
+                        productIsValid &&
+                        managerIsValid &&
+                        companyIsValid;
 
-        if (!isFieldsValid) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        return true;
+        return isFieldsValid;
     }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {

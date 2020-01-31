@@ -164,6 +164,6 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
     List<Long> keys ();
     List<Long> existingKeys (Collection<Long> testKeys);
 
-    <K> List<K> listColumnValue (String column, Class<K> type);
+    <K> List<K> listColumnValue ( String column, Class<K> type);
     <K> List<K> listColumnValue (String column, Class<K> type, String condition, Object...args);
 }

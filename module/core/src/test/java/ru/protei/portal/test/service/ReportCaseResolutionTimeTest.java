@@ -539,7 +539,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         }
 
         public Long makeProduct( String name ) {
-            Long id = ReportCaseResolutionTimeTest.this.makeProduct( model.prefix + name );
+            Long id = ReportCaseResolutionTimeTest.this.makeProduct( model.prefix + name ).getId();
             model.rememberProductId( id );
             return id;
         }

@@ -3,36 +3,35 @@ package ru.protei.portal.ui.contract.client.widget.selector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.model.ContractTypeModel;
 
-public class ContractTypeSelector extends ButtonSelector<En_ContractType> {
+import java.util.List;
+
+public class ContractTypeSelector extends ButtonSelector<En_ContractType> implements SelectorWithModel<En_ContractType> {
 
     @Inject
-    public void init() {
+    public void init(ContractTypeModel model, En_ContractTypeLang typeLang) {
+        setSelectorModel(model);
         setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : typeLang.getName(o)));
-        fillOptions();
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
-    }
-
-    private void fillOptions() {
+    @Override
+    public void fillOptions(List<En_ContractType> options) {
         clearOptions();
 
         if (defaultValue != null) {
             addOption(null);
         }
-        for(En_ContractType value : En_ContractType.values())
-            addOption(value);
+
+        options.forEach(this::addOption);
     }
 
-    @Inject
-    private Lang lang;
-    @Inject
-    private En_ContractTypeLang typeLang;
+    public void setDefaultValue( String value ) {
+        this.defaultValue = value;
+    }
 
     private String defaultValue = null;
 }

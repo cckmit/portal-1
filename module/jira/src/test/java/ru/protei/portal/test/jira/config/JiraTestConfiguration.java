@@ -6,12 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
-import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -24,10 +24,10 @@ import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
-import ru.protei.portal.jira.service.JiraIntegrationService;
-import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
+import ru.protei.portal.jira.service.*;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
@@ -220,8 +220,23 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public JiraIntegrationQueueService getJiraIntegrationQueueService() {
+        return new JiraIntegrationQueueServiceImpl();
+    }
+
+    @Bean
     public JiraIntegrationService getJiraService () {
         return new JiraIntegrationServiceImpl();
+    }
+
+    @Bean
+    public JiraBackchannelHandler getJiraBackchannelHandler() {
+        return new JiraBackchannelHandlerImpl();
+    }
+
+    @Bean
+    public JiraServiceLayerInterceptorLogging getJiraServiceLayerInterceptorLogging() {
+        return new JiraServiceLayerInterceptorLogging();
     }
 
     @Bean
@@ -270,18 +285,18 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public YoutrackRestClient getYoutrackRestDAO() {
-        return new YoutrackRestClientImpl();
-    }
-
-    @Bean
-    public YoutrackApiClient getYoutrackApiDAO() {
-        return new YoutrackApiClientImpl();
-    }
-
-    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public YoutrackApi getYoutrackApi() {
+        return new YoutrackApiImpl();
+    }
+
+    @Bean
+    public YtDtoFieldsMapper getYtDtoFieldsMapper() {
+        return new YtDtoFieldsMapperImpl();
     }
 
     @Bean

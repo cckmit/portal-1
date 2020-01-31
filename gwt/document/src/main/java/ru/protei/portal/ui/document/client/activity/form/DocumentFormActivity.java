@@ -8,17 +8,15 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -32,14 +30,10 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class DocumentFormActivity
         implements Activity, AbstractDocumentFormActivity {
-
-    @Event
-    public void onAuthSuccess( AuthEvents.Success event ) {
-        this.authorizedProfile = event.profile;
-    }
 
     @PostConstruct
     public void onInit() {
@@ -52,14 +46,6 @@ public abstract class DocumentFormActivity
         event.parent.add(view.asWidget());
         tag = event.tag;
         fillView(event.document);
-        if (view.project().getValue() != null) {
-            refreshProject(proj -> {
-                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
-                fillViewProjectInfo(proj);
-            });
-        } else {
-            setDesignationEnabled(false);
-        }
     }
 
     @Event
@@ -67,11 +53,7 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        Document newDocument = fillDto(new Document());
-        if (!checkDocumentValid(newDocument)) {
-            return;
-        }
-        saveDocument(newDocument);
+        save(fillDto(document));
     }
 
     @Event
@@ -79,8 +61,11 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        fillViewProject(event.project);
-        onProjectChanged();
+
+        if (event.project != null) {
+            view.project().setValue(event.project);
+            onProjectChanged();
+        }
     }
 
     @Override
@@ -89,57 +74,57 @@ public abstract class DocumentFormActivity
 
     @Override
     public void onDocumentCategoryChanged() {
-        setDesignationEnabled(isDesignationVisible(project, view.documentCategory().getValue()));
+        En_DocumentCategory documentCategory = view.documentCategory().getValue();
+        DocumentType documentType = view.documentType().getValue();
+        boolean isDocumentTypeSet = documentType != null;
+        boolean isDocumentTypeCategoryMatched = isDocumentTypeSet && Objects.equals(documentCategory, documentType.getDocumentCategory());
 
-        En_DocumentCategory category = view.documentCategory().getValue();
-
-        setDocumentTypeEnabled(category != null);
-
-        if (category == null) {
-            setEquipmentEnabled(false);
-            return;
-        }
-
-        if( view.documentType().getValue() != null && !category.equals( view.documentType().getValue().getDocumentCategory())){
+        if (!isDocumentTypeCategoryMatched) {
             view.documentType().setValue(null);
         }
-        view.setDocumentTypeCategoryFilter(documentType -> documentType.getDocumentCategory() == category );
+        view.setDocumentTypeCategoryFilter(type -> type.getDocumentCategory() == documentCategory);
 
-        setEquipmentEnabled(category.isForEquipment());
-
-        setDecimalNumberEnabled();
+        renderViewState(project);
     }
 
     @Override
     public void onProjectChanged() {
-        if (view.project().getValue() != null) {
-            refreshProject(proj -> {
-                setDesignationEnabled(isDesignationVisible(proj, view.documentCategory().getValue()));
-                fillViewProjectInfo(proj);
-            });
-        } else {
-            setDesignationEnabled(false);
+        if (view.project().getValue() == null) {
+            onProjectChanged(null);
+            return;
         }
+        requestProject(view.project().getValue().getId(), projectInfo -> {
+            onProjectChanged(projectInfo);
+            if (projectInfo != null) {
+                view.equipment().setValue(null, true);
+                view.setEquipmentProjectId(projectInfo.getId());
+            }
+        });
+    }
 
-        EntityOption project = view.project().getValue();
-        setEquipmentEnabled(project != null);
-        view.equipment().setValue(null, true);
+    private void onProjectChanged(ProjectInfo project) {
+        this.project = project;
+        fillViewProjectInfo(project);
+        renderViewState(project);
+    }
 
-        if (project != null)
-            view.setEquipmentProjectId(project.getId());
+    @Override
+    public void onApprovedChanged() {
+        setApprovedByEnable(view.isApproved().getValue());
+        setApprovalDateEnable(view.isApproved().getValue());
+        setUploaderApprovalSheetEnable(view.isApproved().getValue());
+        renderViewState(project);
     }
 
     @Override
     public void onEquipmentChanged() {
         view.decimalNumber().setValue(null, true);
         EquipmentShortView equipment = view.equipment().getValue();
-        if (equipment == null) {
-            setDecimalNumberEnabled();
-        } else {
+        if (equipment != null) {
             List<DecimalNumber> decimalNumbers = equipment.getDecimalNumbers();
-            setDecimalNumberEnabled(true);
             view.setDecimalNumberHints(decimalNumbers);
         }
+        renderViewState(project);
     }
 
     @Override
@@ -154,48 +139,49 @@ public abstract class DocumentFormActivity
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
     }
 
-    private void refreshProject(Consumer<Project> consumer) {
-        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<Project>()
-                .withSuccess(result -> {
-                    project = result;
-                    consumer.accept(result);
-                })
-        );
+    private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>()
+                .withSuccess(consumer));
     }
 
-    private void setDesignationEnabled(boolean isDesignationEnabled) {
+    private void renderViewState(ProjectInfo project) {
+
+        boolean isNew = document.getId() == null;
+        En_DocumentCategory documentCategory = view.documentCategory().getValue();
+
+        boolean isDesignationEnabled = isDecimalAndInventoryNumbersVisible(project, documentCategory);
+        boolean isEquipmentEnabled = isEquipmentVisible(project, documentCategory);
+
+        setEquipmentEnabled(isEquipmentEnabled);
+        setDocumentTypeEnabled(documentCategory != null);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
+        setUploaderEnabled(isNew || !view.isApproved().getValue());
     }
-
     private void setDecimalNumberEnabled(boolean isEnabled) {
         view.decimalNumberEnabled(isEnabled);
         if (!isEnabled) {
             view.decimalNumber().setValue(null);
         }
     }
-
     private void setInventoryNumberEnabled(boolean isEnabled) {
         view.inventoryNumberEnabled(isEnabled);
         if (!isEnabled) {
             view.inventoryNumber().setValue(null);
         }
     }
-
     private void setEquipmentEnabled(boolean isEnabled) {
         view.equipmentEnabled(isEnabled);
         if (!isEnabled) {
             view.equipment().setValue(null);
         }
     }
-
     private void setDocumentTypeEnabled(boolean isEnabled) {
         view.documentTypeEnabled(isEnabled);
         if (!isEnabled) {
             view.documentType().setValue(null);
         }
     }
-
     private void setUploaderEnabled(boolean isEnabled) {
         view.uploaderEnabled(isEnabled);
         if (!isEnabled) {
@@ -203,18 +189,39 @@ public abstract class DocumentFormActivity
             view.documentDocUploader().resetForm();
         }
     }
-
-    private boolean isDesignationVisible(Project project, En_DocumentCategory documentCategory) {
-        if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
-            return false;
-
-        return project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE ||
-                project.getCustomerType() == En_CustomerType.STATE_BUDGET;
+    private void setApprovedByEnable(boolean isEnabled) {
+        view.approvedByEnabled(isEnabled);
+        if (!isEnabled) {
+            view.approvedBy().setValue(null);
+        }
     }
 
-    private void setDecimalNumberEnabled() {
-        En_DocumentCategory category = view.documentCategory().getValue();
-        setDecimalNumberEnabled(category != null && !category.isForEquipment());
+    private void setApprovalDateEnable(boolean isEnabled) {
+        view.approvalDateEnabled(isEnabled);
+        if (!isEnabled) {
+            view.approvalDate().setValue(null);
+        }
+    }
+
+    private void setUploaderApprovalSheetEnable(boolean isEnabled) {
+        view.uploaderApprovalSheetEnabled(isEnabled);
+        if (!isEnabled) {
+            view.documentApprovalSheetUploader().resetForm();
+        }
+    }
+    private boolean isDecimalAndInventoryNumbersVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
+        if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD) {
+            return false;
+        }
+        En_CustomerType customerType = project.getCustomerType();
+        return customerType == En_CustomerType.MINISTRY_OF_DEFENCE ||
+                customerType == En_CustomerType.STATE_BUDGET;
+    }
+    private boolean isEquipmentVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
+        if (project == null || documentCategory == null) {
+            return false;
+        }
+        return documentCategory.isForEquipment();
     }
 
     private boolean checkDocumentValid(Document newDocument) {
@@ -233,7 +240,9 @@ public abstract class DocumentFormActivity
             return StringUtils.isNotEmpty(document.getName()) &&
                     document.getProjectId() != null;
         } else {
-            return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+            return document.isValid()
+                    && isValidInventoryNumberForMinistryOfDefence(document)
+                    && isValidApproveFields(document);
         }
     }
 
@@ -247,14 +256,32 @@ public abstract class DocumentFormActivity
         return true;
     }
 
-    private void saveDocument(Document document) {
+    private boolean isValidApproveFields(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
+        return document.getApprovedBy() != null && document.getApprovalDate() != null;
+    }
+
+    private void save(Document document) {
+        if (!checkDocumentValid(document)) {
+            return;
+        }
         this.document = document;
         boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
         boolean isDocFileSet = view.documentDocUploader().isFileSet();
-        if (isPdfFileSet || isDocFileSet) {
+        boolean isApprovedFileSet = view.documentApprovalSheetUploader().isFileSet();
+        if (isPdfFileSet || isDocFileSet || isApprovedFileSet) {
             fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
         }
-        uploadPdf(() -> uploadDoc(() -> saveDocument()));
+        uploadPdf(() ->
+            uploadDoc(() ->
+                uploadApprovalSheet(() ->
+                    saveDocument(document, doc -> {
+                        fillView(doc);
+                        fireEvent(new DocumentEvents.Form.Saved(tag));
+                    }
+        ))));
     }
 
     private void uploadPdf(Runnable andThen) {
@@ -285,13 +312,32 @@ public abstract class DocumentFormActivity
         view.documentDocUploader().uploadBindToDocument(document);
     }
 
+    private void uploadApprovalSheet(Runnable andThen) {
+        if (!view.documentApprovalSheetUploader().isFileSet()) {
+            andThen.run();
+            return;
+        }
+        view.documentApprovalSheetUploader().setUploadHandler(new UploadHandler() {
+            @Override
+            public void onError() {
+                fireErrorMessage(lang.errSaveDocumentFile());
+            }
+
+            @Override
+            public void onSuccess() {
+                andThen.run();
+            }
+        });
+        view.documentApprovalSheetUploader().uploadBindToDocument(document);
+    }
+
     private void fireErrorMessage(String msg) {
         fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
     }
 
-    private void saveDocument() {
-        documentService.saveDocument(this.document, new FluentCallback<Document>()
-            .withSuccess(result -> fireEvent(new DocumentEvents.Form.Saved(tag))));
+    private void saveDocument(Document document, Consumer<Document> onSaved) {
+        documentService.saveDocument(document, new FluentCallback<Document>()
+                .withSuccess(onSaved));
     }
 
     private String getValidationErrorMessage(Document doc) {
@@ -301,23 +347,30 @@ public abstract class DocumentFormActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
-            return lang.inventoryNumberIsEmpty();
-        } else if (doc.getInventoryNumber() < 0) {
-            return lang.negativeInventoryNumber();
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
+                return lang.inventoryNumberIsEmpty();
+            } else if (doc.getInventoryNumber() < 0) {
+                return lang.negativeInventoryNumber();
+            }
         }
         if (HelperFunc.isEmpty(doc.getName())) {
             return lang.documentNameIsNotSet();
+        }
+        if (doc.getApproved()) {
+            if (doc.getApprovedBy() == null || doc.getApprovalDate() == null) {
+                return lang.documentApproveFieldsIsEmpty();
+            }
         }
         return null;
     }
 
     private Document fillDto(Document d) {
-        d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
         d.setDecimalNumber(StringUtils.nullIfEmpty(view.decimalNumberText().getText()));
         d.setType(view.documentType().getValue());
+        d.setMembers(CollectionUtils.stream(view.members().getValue()).map(Person::fromPersonShortView).collect(Collectors.toList()));
         d.setExecutionType(view.executionType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
@@ -327,6 +380,8 @@ public abstract class DocumentFormActivity
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         d.setApproved(view.isApproved().getValue());
+        d.setApprovedBy(Person.fromPersonShortView(view.approvedBy().getValue()));
+        d.setApprovalDate(view.approvalDate().getValue());
         d.setState(document.getState());
         return d;
     }
@@ -341,16 +396,29 @@ public abstract class DocumentFormActivity
         view.executionType().setValue(document.getExecutionType());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
+        view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromPerson).collect(Collectors.toSet()));
         view.keywords().setValue(document.getKeywords());
-        fillViewProject(document.getProject());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.isApproved().setValue(isNew ? false : document.getApproved());
+        view.nameValidator().setValid(true);
+        view.documentDocUploader().resetForm();
+        view.documentPdfUploader().resetForm();
+        if (view.isApproved().getValue()) {
+            view.approvedBy().setValue(document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
+            view.approvalDate().setValue(document.getApprovalDate());
+            view.approvedByEnabled(true);
+            view.approvalDateEnabled(true);
+        } else {
+            view.approvedByEnabled(false);
+            view.approvalDateEnabled(false);
+        }
 
         if (isNew) {
-            PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
+            Profile profile = policyService.getProfile();
+            PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
         } else {
@@ -358,26 +426,15 @@ public abstract class DocumentFormActivity
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
         }
 
-        boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
-        boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
-
-        setUploaderEnabled(isNew || !document.getApproved());
-        setEquipmentEnabled(isNew || decimalNumberIsNotSet);
-        setDecimalNumberEnabled(decimalNumberIsNotSet);
-        setInventoryNumberEnabled(inventoryNumberIsNotSet);
-
-        view.nameValidator().setValid(true);
-
-        view.documentDocUploader().resetForm();
-        view.documentPdfUploader().resetForm();
+        view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
+        if (document.getProjectId() == null) {
+            onProjectChanged(null);
+        } else {
+            requestProject(document.getProjectId(), this::onProjectChanged);
+        }
     }
 
-    private void fillViewProject(Project project) {
-        view.project().setValue(project == null ? null : new EntityOption(project.getName(), project.getId()));
-        fillViewProjectInfo(project);
-    }
-
-    private void fillViewProjectInfo(Project project) {
+    private void fillViewProjectInfo(ProjectInfo project) {
         view.setProjectInfo(
             project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
             project == null ? "" : fetchDisplayText(project.getProductDirection()),
@@ -402,10 +459,11 @@ public abstract class DocumentFormActivity
     DocumentControllerAsync documentService;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    PolicyService policyService;
 
     private String tag;
     private Document document;
-    private Project project;
-    private Profile authorizedProfile;
+    private ProjectInfo project;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

@@ -48,10 +48,10 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     PortalConfig config;
 
     @Override
-    public void saveDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author, InputStream inputStream) throws SVNException {
+    public void saveDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String commitMessage, InputStream inputStream) throws SVNException {
         String fileName = getFileName(projectId, documentId, documentFormat);
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedAddCommitMessage(projectId, documentId, author), null);
+        ISVNEditor editor = repository.getCommitEditor(commitMessage, null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -79,7 +79,7 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     }
 
     @Override
-    public void updateDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author, InputStream newDocumentStream) throws SVNException, IOException {
+    public void updateDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String commitMessage, InputStream newDocumentStream) throws SVNException, IOException {
         // see "File modification" at https://wiki.svnkit.com/Committing_To_A_Repository#line-264
 
         String fileName = getFileName(projectId, documentId, documentFormat);
@@ -95,7 +95,7 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
             throw e;
         }
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedUpdateCommitMessage(projectId, documentId, author), null);
+        ISVNEditor editor = repository.getCommitEditor(commitMessage, null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -124,10 +124,10 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     }
 
     @Override
-    public void removeDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String author) throws SVNException {
+    public void removeDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String commitMessage) throws SVNException {
         String fileName = getFileName(projectId, documentId, documentFormat);
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedRemoveCommitMessage(projectId, documentId, author), null);
+        ISVNEditor editor = repository.getCommitEditor(commitMessage, null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -176,21 +176,6 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     }
 
     private static String getFileName(Long projectId, Long documentId, En_DocumentFormat documentFormat) {
-        return documentId + "." + documentFormat.getFormat();
-    }
-
-    private String getFormattedAddCommitMessage(Long projectId, Long documentId, String author) {
-        String commitMessage = config.data().svn().getCommitMessageAdd();
-        return String.format(commitMessage, projectId, documentId, author);
-    }
-
-    private String getFormattedUpdateCommitMessage(Long projectId, Long documentId, String author) {
-        String commitMessage = config.data().svn().getCommitMessageUpdate();
-        return String.format(commitMessage, projectId, documentId, author);
-    }
-
-    private String getFormattedRemoveCommitMessage(Long projectId, Long documentId, String author) {
-        String commitMessage = config.data().svn().getCommitMessageRemove();
-        return String.format(commitMessage, projectId, documentId, author);
+        return documentFormat.getFilename(documentId);
     }
 }

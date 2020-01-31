@@ -22,11 +22,9 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
-import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageActivity;
 import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.activity.loading.AbstractLoadingActivity;
 import ru.protei.portal.ui.common.client.activity.loading.AbstractLoadingView;
 import ru.protei.portal.ui.common.client.activity.loading.LoadingActivity;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
@@ -36,6 +34,7 @@ import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
@@ -58,16 +57,12 @@ import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
-import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
@@ -146,6 +141,8 @@ public class CommonClientModule extends AbstractGinModule {
 //        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
         bind( CaseTagModel.class ).asEagerSingleton();
+
+        bind( ConfigStorage.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
         requestStaticInjection(DefaultErrorHandler.class);

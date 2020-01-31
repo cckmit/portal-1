@@ -24,11 +24,15 @@ public interface SessionService {
 
     void setFileDoc(HttpServletRequest request, FileItem fileItem);
 
+    void setFileApprovalSheet(HttpServletRequest request, FileItem fileItem);
+
     FileItem getFile(HttpServletRequest request);
 
     FileItem getFilePdf(HttpServletRequest request);
 
     FileItem getFileDoc(HttpServletRequest request);
+
+    FileItem getFileApprovalSheet(HttpServletRequest request);
 
     void clearAllFiles(HttpServletRequest request);
 }

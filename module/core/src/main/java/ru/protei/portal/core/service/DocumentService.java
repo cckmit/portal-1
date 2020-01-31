@@ -31,11 +31,15 @@ public interface DocumentService {
     Result<Document> getDocument( AuthToken token, Long id);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_CREATE, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
-    Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author);
+    Result<Document> createDocument( AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
-    Result<Document> updateDocument( AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author);
+    Result<Document> updateDocument( AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author);
+
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.DOCUMENT_EDIT})
+    @Auditable(En_AuditType.DOCUMENT_MODIFY)
+    Result<Document> updateDocumentDocFileByMember(AuthToken token, Long documentId, FileItem docFile, String comment, String author);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_REMOVE, En_Privilege.EQUIPMENT_REMOVE})
     @Auditable(En_AuditType.DOCUMENT_REMOVE)
@@ -48,7 +52,7 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     Result updateState( AuthToken token, Long documentId, En_DocumentState state);
 
-    @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_VIEW})
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_VIEW})
     Result<En_DocumentFormat> getDocumentFile(AuthToken token, Long documentId, Long projectId, En_DocumentFormat format, OutputStream outputStream);
 
     Result<String> getDocumentName(Long documentId);

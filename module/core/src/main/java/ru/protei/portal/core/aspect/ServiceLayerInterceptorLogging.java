@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.Order;
+import ru.protei.portal.core.model.struct.MethodProfile;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -68,7 +69,7 @@ public class ServiceLayerInterceptorLogging {
                 profiling.put(methodName, profile);
             }
             profile.updateTime(executionTime);
-            log.info("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
+            log.info("result : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
                     methodName, profile.invokeCount, executionTime, profile.average, profile.maxTime, profile.minTime,
                     makeResultAsString(result));
 
@@ -147,16 +148,3 @@ public class ServiceLayerInterceptorLogging {
 
 }
 
-class MethodProfile {
-    long invokeCount = 0L;
-    long minTime = 0L;
-    long maxTime = 0L;
-    long average = 0L;
-
-    public void updateTime(long executionTime) {
-        invokeCount++;
-        if (minTime > executionTime || minTime == 0) minTime = executionTime;
-        if (maxTime < executionTime || maxTime == 0) maxTime = executionTime;
-        average = average + (executionTime - average) / invokeCount;
-    }
-}

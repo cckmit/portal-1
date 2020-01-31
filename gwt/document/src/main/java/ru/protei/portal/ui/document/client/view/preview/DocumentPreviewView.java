@@ -1,24 +1,27 @@
 package ru.protei.portal.ui.document.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
 
 public class DocumentPreviewView extends Composite implements AbstractDocumentPreviewView {
 
-    public DocumentPreviewView() {
+    @Inject
+    public void onInit() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
@@ -49,7 +52,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
 
     @Override
     public void setAnnotation(String annotation) {
-        this.annotation.setText(annotation);
+        this.annotation.setInnerText(annotation);
     }
 
     @Override
@@ -73,6 +76,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
+    public void setMembers(String text) {
+        this.members.setInnerText(text);
+    }
+
+    @Override
     public void setNumberDecimal(String numberDecimal) {
         this.numberDecimal.setInnerText(numberDecimal);
     }
@@ -91,6 +99,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     public void setDownloadLinkPdf(String link) {
         if (StringUtils.isEmpty(link)) {
             downloadPdfButton.setVisible(false);
+            return;
         }
         downloadPdfButton.setVisible(true);
         downloadPdfButton.setHref(link);
@@ -100,9 +109,19 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     public void setDownloadLinkDoc(String link) {
         if (StringUtils.isEmpty(link)) {
             downloadDocButton.setVisible(false);
+            return;
         }
         downloadDocButton.setVisible(true);
         downloadDocButton.setHref(link);
+    }
+
+    @Override
+    public void setDownloadLinkApprovalSheet(String link) {
+        if (StringUtils.isEmpty(link)) {
+            downloadApprovalSheetButton.setVisible(false);
+        }
+        downloadApprovalSheetButton.setVisible(true);
+        downloadApprovalSheetButton.setHref(link);
     }
 
     @Override
@@ -110,11 +129,59 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         this.executionType.setInnerText(executionType);
     }
 
+    @Override
+    public AbstractDocumentUploader documentDocUploader() {
+        return documentDocUploader;
+    }
+
+    @Override
+    public HasValue<String> documentDocComment() {
+        return documentDocComment;
+    }
+
+    @Override
+    public HasVisibility documentDocVisibility() {
+        return documentDocUploadContainer;
+    }
+
+    @Override
+    public HasVisibility documentDocUploadContainerLoading() {
+        return new HasVisibility() { // Because documentDocUploadContainerLoading has 'd-flex' class with !important display
+            public boolean isVisible() { return !documentDocUploadContainerLoading.hasClassName("hide"); }
+            public void setVisible(boolean visible) {
+                documentDocUploadContainerLoading.removeClassName("hide");
+                if (!visible) documentDocUploadContainerLoading.addClassName("hide");
+            }
+        };
+    }
+
+    @Override
+    public HasVisibility footerVisibility() {
+        return footerContainer;
+    }
+
+    @UiHandler("backButton")
+    public void backButtonClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
+    @UiHandler("uploadDocFile")
+    public void uploadDocFileClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onUploadDocFileClicked();
+        }
+    }
 
     @UiField
     Anchor downloadPdfButton;
     @UiField
     Anchor downloadDocButton;
+    @UiField
+    Anchor downloadApprovalSheetButton;
     @UiField
     HeadingElement header;
     @UiField
@@ -124,7 +191,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     SpanElement type;
     @UiField
-    Label annotation;
+    DivElement annotation;
     @UiField
     SpanElement project;
     @UiField
@@ -134,6 +201,8 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     SpanElement contractor;
     @UiField
+    SpanElement members;
+    @UiField
     SpanElement numberDecimal;
     @UiField
     SpanElement numberInventory;
@@ -141,6 +210,21 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     SpanElement keyWords;
     @UiField
     SpanElement executionType;
+    @UiField
+    HTMLPanel footerContainer;
+    @UiField
+    Button backButton;
+    @UiField
+    HTMLPanel documentDocUploadContainer;
+    @UiField
+    DivElement documentDocUploadContainerLoading;
+    @Inject
+    @UiField(provided = true)
+    DocumentUploader documentDocUploader;
+    @UiField
+    TextBox documentDocComment;
+    @UiField
+    Button uploadDocFile;
 
     @Inject
     @UiField
