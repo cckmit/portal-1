@@ -40,6 +40,15 @@ public class CaseCommentSqlBuilder {
                         .append(")");
             }
 
+            if (CollectionUtils.isNotEmpty(query.getCaseNumbers())) {
+                condition.append(" and case_comment.case_id in (SELECT id FROM case_object WHERE CASENO in (")
+                        .append(query.getCaseNumbers().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","))
+                        )
+                        .append("))");
+            }
+
             if (CollectionUtils.isNotEmpty(query.getAuthorIds())) {
                 condition.append(" and case_comment.author_id in (")
                         .append(query.getAuthorIds().stream()

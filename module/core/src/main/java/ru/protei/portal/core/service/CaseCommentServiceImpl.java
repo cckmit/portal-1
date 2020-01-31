@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
@@ -46,22 +47,20 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        List<CaseComment> result = new ArrayList<>();
-        for (Long caseId : query.getCaseObjectIds()) {
-            En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseId);
-            if (checkAccessStatus != null) {
-                return error(checkAccessStatus);
-            }
-            applyFilterByScope(token, query);
-            Result<List<CaseComment>> partialResult = getList(query);
-            if (partialResult.isOk()) {
-                result.addAll(partialResult.getData());
-            } else {
-                return partialResult;
+        List<Long> caseNumbers = query.getCaseNumbers();
+        if (!isEmpty(caseNumbers)) {
+            for (Long caseNumber :caseNumbers ) {
+                Long caseId = caseObjectDAO.getCaseIdByNumber(caseNumber);
+                if (caseId != null) {
+                    En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseId);
+                    if (checkAccessStatus != null) {
+                        return error(checkAccessStatus);
+                    }
+                }
             }
         }
-
-        return ok(result);
+        applyFilterByScope(token, query);
+        return getList(query);
     }
 
     @Override

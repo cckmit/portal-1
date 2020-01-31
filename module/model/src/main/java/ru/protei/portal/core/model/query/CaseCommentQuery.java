@@ -13,6 +13,7 @@ public class CaseCommentQuery extends BaseQuery {
     private Boolean timeElapsedNotNull;
     private Boolean caseStateNotNull;
     private List<Long> caseObjectIds;
+    private List<Long> caseNumbers;
     private List<Long> authorIds;
     private Boolean viewPrivate = null;
 
@@ -100,5 +101,13 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setViewPrivate(Boolean viewOnlyPrivate) {
         this.viewPrivate = viewOnlyPrivate;
+    }
+
+    public List<Long> getCaseNumbers() {
+        return caseNumbers;
+    }
+
+    public void setCaseNumbers(List<Long> caseNumbers) {
+        this.caseNumbers = caseNumbers;
     }
 }

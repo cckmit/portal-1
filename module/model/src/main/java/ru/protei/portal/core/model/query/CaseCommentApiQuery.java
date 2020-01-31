@@ -5,15 +5,15 @@ package ru.protei.portal.core.model.query;
  */
 public class CaseCommentApiQuery extends BaseQuery {
 
-    private Long caseId;
+    private Long caseNumber;
 
-    public Long getCaseId() { return caseId; }
-    public void setCaseId(Long caseId) { this.caseId = caseId; }
+    public Long getCaseNumber() { return caseNumber; }
+    public void setCaseNumber(Long caseNumber) { this.caseNumber = caseNumber; }
 
     @Override
     public String toString() {
         return "CommentApiQuery{" +
-                "caseId=" + caseId +
+                "caseId=" + caseNumber +
                 '}';
     }
 }

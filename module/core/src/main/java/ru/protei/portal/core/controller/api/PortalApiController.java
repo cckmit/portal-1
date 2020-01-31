@@ -259,8 +259,8 @@ public class PortalApiController {
             return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
         }
 
-        if (query.getCaseId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case ID");
+        if (query.getCaseNumber() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case number");
         }
 
         return caseCommentService.getCaseCommentList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query));
@@ -286,7 +286,7 @@ public class PortalApiController {
         query.setOffset(apiQuery.getOffset());
         query.setSortField(En_SortField.creation_date);
         query.setSortDir(En_SortDir.DESC);
-        query.setCaseObjectIds(Collections.singletonList(apiQuery.getCaseId()));
+        query.setCaseNumbers(Collections.singletonList(apiQuery.getCaseNumber()));
         return query;
     }
 
