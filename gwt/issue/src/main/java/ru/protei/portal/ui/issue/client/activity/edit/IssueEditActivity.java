@@ -133,7 +133,7 @@ public abstract class IssueEditActivity implements
     public void onStateChanged( IssueEvents.IssueStateChanged event ) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
-            resetComments();
+            reloadComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -142,7 +142,7 @@ public abstract class IssueEditActivity implements
     public void onImportanceChanged( IssueEvents.IssueImportanceChanged event ) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
-            resetComments();
+            reloadComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -151,7 +151,7 @@ public abstract class IssueEditActivity implements
     public void onManagerChanged( IssueEvents.IssueManagerChanged event ) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
-            resetComments();
+            reloadComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -295,8 +295,8 @@ public abstract class IssueEditActivity implements
                 .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
     }
 
-    private void resetComments() {
-        fireEvent(new CaseCommentEvents.Reset());
+    private void reloadComments() {
+        fireEvent(new CaseCommentEvents.Reload());
     }
 
     private void attachToContainer(HasWidgets container) {

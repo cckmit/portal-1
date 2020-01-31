@@ -60,10 +60,9 @@ public class CaseCommentEvents {
     }
 
     /**
-     * Сбросить комментарии
+     * Перезагрузить список комментариев
      */
-
-    public static class Reset {
-        public Reset() {}
+    public static class Reload {
+        public Reload() {}
     }
 }

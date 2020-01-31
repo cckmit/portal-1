@@ -110,18 +110,12 @@ public abstract class CaseCommentListActivity
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
-        caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(this::fillView)
-        );
+        reloadComments();
     }
 
     @Event
-    public void onReset(CaseCommentEvents.Reset event) {
-        caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(this::fillView)
-        );
+    public void onReload(CaseCommentEvents.Reload event) {
+        reloadComments();
     }
 
     @Override
@@ -648,6 +642,13 @@ public abstract class CaseCommentListActivity
         textRenderController.render(text, textMarkup, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
+    }
+
+    private void reloadComments() {
+        caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(this::fillView)
+        );
     }
 
     private String transliteration(String input) {
