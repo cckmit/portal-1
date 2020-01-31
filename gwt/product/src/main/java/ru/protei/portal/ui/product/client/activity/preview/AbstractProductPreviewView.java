@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -13,6 +14,8 @@ public interface AbstractProductPreviewView extends IsWidget {
     void setActivity( AbstractProductPreviewActivity activity );
 
     void setInfo( String value );
+
+    void setDirection(String direction);
 
     void setWikiLink(String value);
 

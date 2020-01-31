@@ -45,6 +45,11 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setDirection(String direction) {
+        this.direction.setText(lang.productPreviewDirection(direction));
+    }
+
+    @Override
     public void setWikiLink(String value) {
         String href = value == null ? "#" : value;
         wikiLink.setInnerText(value);
@@ -115,6 +120,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         configuration.getElement().setId(DebugIds.PRODUCT_PREVIEW.CONFIGURATION);
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT_PREVIEW.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT_PREVIEW.CDR_DESCRIPTION);
+        direction.ensureDebugId(DebugIds.PRODUCT_PREVIEW.DIRECTION_LABEL);
 
         backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
     }
@@ -123,6 +129,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     Lang lang;
     @UiField
     Label info;
+    @UiField
+    Label direction;
     @UiField
     ImageElement typeImage;
     @UiField

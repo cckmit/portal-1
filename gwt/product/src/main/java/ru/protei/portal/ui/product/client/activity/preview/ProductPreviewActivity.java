@@ -81,6 +81,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + product.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setInfo(product.getInfo());
+        view.setDirection(product.getProductDirection() == null ? "" : product.getProductDirection().getName());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
         List<String> list = new ArrayList<>();

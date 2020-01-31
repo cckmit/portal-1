@@ -2005,4 +2005,6 @@ public interface Lang extends Messages, ContactItemLang {
     String passwordIsDisplay();
 
     String productSelectDirection();
+
+    String productPreviewDirection(String direction);
 }

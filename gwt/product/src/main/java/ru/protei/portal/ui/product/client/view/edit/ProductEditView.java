@@ -300,6 +300,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT.CDR_DESCRIPTION);
 
+        direction.ensureDebugId(DebugIds.PRODUCT.DIRECTION);
+        directionLabel.setId(DEBUG_ID_PREFIX + DebugIds.PRODUCT.DIRECTION_LABEL);
+
         saveBtn.ensureDebugId(DebugIds.PRODUCT.SAVE_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
     }
