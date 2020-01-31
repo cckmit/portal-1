@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.DevUnitChildRef;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -115,7 +116,19 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return error(En_ResultStatus.NOT_FOUND);
 
-        product = helper.fillAll( product );
+        product = helper.fillAll(product);
+
+        List<DevUnit> parents = new ArrayList<>();
+
+        for (DevUnit currProduct : product.getParents()) {
+            if (currProduct.isDirection()) {
+                product.setProductDirection(currProduct);
+            } else {
+                parents.add(currProduct);
+            }
+        }
+
+        product.setParents(parents);
 
         return ok(product);
     }

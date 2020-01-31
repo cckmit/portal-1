@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,18 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
         getListByCondition("UTYPE_ID=? and old_id is not null", En_DevUnitType.PRODUCT.getId())
                 .forEach(unit -> result.put(unit.getOldId(), unit.getId()));
         return result;
+    }
+
+    @Override
+    public List<DevUnit> getParents(Long productId) {
+        String sql = "SELECT * FROM dev_unit WHERE ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = " + productId + ")";
+        return jdbcTemplate.queryForList(sql, DevUnit.class);
+    }
+
+    @Override
+    public List<DevUnit> getChildren(Long productId) {
+        String sql = "SELECT * FROM dev_unit WHERE ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = " + productId + ")";
+        return jdbcTemplate.queryForList(sql, DevUnit.class);
     }
 
     @SqlConditionBuilder

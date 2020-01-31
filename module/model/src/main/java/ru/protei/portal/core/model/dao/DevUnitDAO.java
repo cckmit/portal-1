@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +18,8 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
     DevUnit checkExistsByName(En_DevUnitType type, String name);
     DevUnit getByLegacyId (En_DevUnitType type, Long legacyId);
     boolean updateState(DevUnit newState);
+    List<DevUnit> getParents(Long productId);
+    List<DevUnit> getChildren(Long productId);
 
     @SqlConditionBuilder
     SqlCondition createProductSqlCondition(ProductQuery query);

@@ -67,6 +67,8 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = Columns.HISTORY_VERSION)
     private String historyVersion;
 
+    private DevUnit productDirection;
+
     /**
      * Псевдонимы для поиска
      */
@@ -304,23 +306,11 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public DevUnit getProductDirection() {
-        if (children == null) {
-            return null;
-        }
-
-        return children.stream().filter(product -> product.getType() == En_DevUnitType.DIRECTION).findFirst().orElse(null);
+        return productDirection;
     }
 
     public void setProductDirection(DevUnit productDirection) {
-        if (productDirection == null) {
-            return;
-        }
-
-        if (children == null) {
-            children = new ArrayList<>(Collections.singleton(productDirection));
-        } else {
-            children.add(productDirection);
-        }
+        this.productDirection = productDirection;
     }
 
     @Override
