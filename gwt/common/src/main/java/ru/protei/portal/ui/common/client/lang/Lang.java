@@ -387,15 +387,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectCompanyGroup();
 
-    String activeRecords();
-
-    String newRecords();
-
-    String inactiveRecords();
-
     String dashboard();
-
-    String dashboardSelectCompany();
 
     String issueCommentChangeStatusTo();
 
@@ -2013,4 +2005,10 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardTableConfirmRemove();
 
     String dashboardTableRemoved();
+
+    String dashboardTableFilterCreation();
+
+    String dashboardTableFilterCreationNewIssues();
+
+    String dashboardTableFilterCreationActiveIssues();
 }

@@ -1,14 +1,12 @@
 package ru.protei.portal.app.portal.client.view.dashboardblocks.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditActivity;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditView;
@@ -30,6 +28,11 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     }
 
     @Override
+    public void updateFilterSelector() {
+        filter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -46,11 +49,29 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
         }
     }
 
+    @UiHandler("createFilterNewIssues")
+    public void createFilterNewIssuesClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCreateFilterNewIssuesClicked();
+        }
+    }
+
+    @UiHandler("createFilterActiveIssues")
+    public void createFilterActiveIssuesClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCreateFilterActiveIssues();
+        }
+    }
+
     @UiField
     TextBox name;
     @Inject
     @UiField(provided = true)
     IssueFilterSelector filter;
+    @UiField
+    Button createFilterNewIssues;
+    @UiField
+    Button createFilterActiveIssues;
 
     private AbstractDashboardTableEditActivity activity;
 

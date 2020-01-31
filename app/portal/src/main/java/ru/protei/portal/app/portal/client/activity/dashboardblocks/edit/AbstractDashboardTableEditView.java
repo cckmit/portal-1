@@ -8,6 +8,8 @@ public interface AbstractDashboardTableEditView extends IsWidget {
 
     void setActivity(AbstractDashboardTableEditActivity activity);
 
+    void updateFilterSelector();
+
     HasValue<String> name();
 
     HasValue<CaseFilterShortView> filter();

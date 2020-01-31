@@ -18,6 +18,19 @@
                     <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueFilterNotDefined}"/>
                 </div>
             </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.dashboardTableFilterCreation}"/></label>
+                    <div>
+                        <g:Button ui:field="createFilterNewIssues" styleName="btn btn-default btn-cons m-b-10">
+                            <span><ui:text from="{lang.dashboardTableFilterCreationNewIssues}"/></span>
+                        </g:Button>
+                        <g:Button ui:field="createFilterActiveIssues" styleName="btn btn-default btn-cons m-b-10">
+                            <span><ui:text from="{lang.dashboardTableFilterCreationActiveIssues}"/></span>
+                        </g:Button>
+                    </div>
+                </div>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
