@@ -108,6 +108,16 @@
             <version>1.0.11-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <artifactId>spring-jdbc</artifactId>
+            <groupId>org.springframework</groupId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        <dependency>
+            <artifactId>spring-oxm</artifactId>
+            <groupId>org.springframework</groupId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>winter.core</artifactId>
             <version>${project.winter.version}</version>
@@ -122,6 +132,18 @@
                 </exclusion>
                 <exclusion>
                     <artifactId>spring-aop</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-jdbc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-oxm</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-tx</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
@@ -213,6 +235,26 @@
                 </exclusion>
                 <exclusion>
                     <artifactId>spring-aop</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-jdbc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-oxm</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-tx</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-beans</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
