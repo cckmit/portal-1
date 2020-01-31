@@ -46,6 +46,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
         view.name().setValue(dashboard.getName());
         view.filter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView());
+        view.updateFilterSelector();
 
         dialogView.saveButtonVisibility().setVisible(true);
         dialogView.setHeader(isNew ? lang.dashboardTableCreate() : lang.dashboardTableEdit());

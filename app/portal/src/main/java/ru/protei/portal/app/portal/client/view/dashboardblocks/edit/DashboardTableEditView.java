@@ -19,7 +19,6 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        filter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
     @Override
