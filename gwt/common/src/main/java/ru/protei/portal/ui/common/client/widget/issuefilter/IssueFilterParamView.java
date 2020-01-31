@@ -13,7 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.IssueFilterParams;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -219,7 +219,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void fillFilterFieldsByFilter(IssueFilterParams filter) {
+    public void fillFilterFieldsByFilter(SelectorsParams filter) {
         searchPattern().setValue(filter.getSearchString());
         searchByComments().setValue(filter.isSearchStringAtComments());
         searchPrivate().setValue(filter.isViewPrivate());
@@ -231,9 +231,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         states().setValue(IssueFilterUtils.getStates(filter.getStateIds()));
         companies().setValue(new HashSet<>(filter.getCompanyEntityOptions()));
         updateInitiators();
-        managers().setValue(new HashSet<>(filter.getManagerPersonShortView()));
+        managers().setValue(new HashSet<>(filter.getPersonShortViews()));
         initiators().setValue(new HashSet<>(filter.getInitiatorPersonShortView()));
-        products().setValue(new HashSet<>(filter.getProductShortView()));
+        products().setValue(new HashSet<>(filter.getProductShortViews()));
         commentAuthors().setValue(new HashSet<>(filter.getCommentPersonShortView()));
         tags().setValue(IssueFilterUtils.getOptions(filter.getCaseTagsIds()));
     }

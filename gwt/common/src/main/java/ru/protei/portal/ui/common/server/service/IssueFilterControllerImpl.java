@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.IssueFilterParams;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.service.IssueFilterService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -42,10 +42,10 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public IssueFilterParams getIssueFilter( Long id ) throws RequestFailedException {
+    public SelectorsParams getIssueFilter(Long id ) throws RequestFailedException {
         log.info("getIssueFilter, id: {}", id);
 
-        Result<IssueFilterParams> response = issueFilterService.getIssueFilter( id );
+        Result<SelectorsParams> response = issueFilterService.getIssueFilter( id );
 
         log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 

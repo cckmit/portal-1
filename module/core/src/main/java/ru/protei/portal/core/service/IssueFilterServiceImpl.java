@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.IssueFilterParams;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -67,7 +67,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result< IssueFilterParams > getIssueFilter( Long id ) {
+    public Result<SelectorsParams> getIssueFilter(Long id ) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -77,7 +77,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         }
 
         CaseQuery caseQuery = filter.getParams();
-        IssueFilterParams filterParams = caseQuery.getIssueFilterParams();
+        SelectorsParams filterParams = caseQuery.getSelectorsParams();
 
         filterParams.setName(filter.getName());
         filterParams.setCaseQuery(caseQuery);
@@ -107,7 +107,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         if (!isEmpty(caseQuery.getManagerIds())) {
             Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getManagerIds());
             if (result.isOk()) {
-                filterParams.setManagerPersonShortView(result.getData());
+                filterParams.setPersonShortViews(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getManagerIds" );
             }
@@ -125,7 +125,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         if (!isEmpty(caseQuery.getProductIds())) {
             Result<List<ProductShortView>> result = productService.shortViewListByIds(new ArrayList<>(caseQuery.getProductIds()));
             if (result.isOk()) {
-                filterParams.setProductShortView(result.getData());
+                filterParams.setProductShortViews(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getProductIds" );
             }
