@@ -44,6 +44,11 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    public void setFileApprovalSheet(HttpServletRequest request, FileItem fileItem) {
+        request.getSession().setAttribute(CrmConstants.Session.FILE_ITEM_APPROVAL_SHEET, fileItem);
+    }
+
+    @Override
     public FileItem getFile(HttpServletRequest request) {
         return (FileItem) request.getSession().getAttribute(CrmConstants.Session.FILE_ITEM);
     }
@@ -59,10 +64,16 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    public FileItem getFileApprovalSheet(HttpServletRequest request) {
+        return (FileItem) request.getSession().getAttribute(CrmConstants.Session.FILE_ITEM_APPROVAL_SHEET);
+    }
+
+    @Override
     public void clearAllFiles(HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.setAttribute(CrmConstants.Session.FILE_ITEM, null);
         session.setAttribute(CrmConstants.Session.FILE_ITEM_PDF, null);
         session.setAttribute(CrmConstants.Session.FILE_ITEM_DOC, null);
+        session.setAttribute(CrmConstants.Session.FILE_ITEM_APPROVAL_SHEET, null);
     }
 }
