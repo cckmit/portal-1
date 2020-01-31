@@ -58,4 +58,12 @@ public class CaseCommentEvents {
         public boolean isPrivateCase = false;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
+
+    /**
+     * Сбросить комментарии
+     */
+
+    public static class Reset {
+        public Reset() {}
+    }
 }

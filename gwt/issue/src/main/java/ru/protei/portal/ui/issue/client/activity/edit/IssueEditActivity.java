@@ -133,7 +133,7 @@ public abstract class IssueEditActivity implements
     public void onStateChanged( IssueEvents.IssueStateChanged event ) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
-            showComments( issue );
+            resetComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -142,7 +142,7 @@ public abstract class IssueEditActivity implements
     public void onImportanceChanged( IssueEvents.IssueImportanceChanged event ) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
-            showComments( issue );
+            resetComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -151,7 +151,7 @@ public abstract class IssueEditActivity implements
     public void onManagerChanged( IssueEvents.IssueManagerChanged event ) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
-            showComments( issue );
+            resetComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -293,6 +293,10 @@ public abstract class IssueEditActivity implements
                 .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
                 .withPrivateCase( issue.isPrivateCase() )
                 .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+    }
+
+    private void resetComments() {
+        fireEvent(new CaseCommentEvents.Reset());
     }
 
     private void attachToContainer(HasWidgets container) {

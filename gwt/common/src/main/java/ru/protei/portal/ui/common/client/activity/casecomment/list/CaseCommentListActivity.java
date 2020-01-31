@@ -116,6 +116,14 @@ public abstract class CaseCommentListActivity
         );
     }
 
+    @Event
+    public void onReset(CaseCommentEvents.Reset event) {
+        caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(this::fillView)
+        );
+    }
+
     @Override
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
