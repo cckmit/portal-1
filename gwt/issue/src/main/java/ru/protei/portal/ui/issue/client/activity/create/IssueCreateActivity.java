@@ -286,6 +286,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setCaseMetaNotifiers(null);
 
+        issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         issueMetaView.state().setValue( caseObjectMeta.getState() );
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
