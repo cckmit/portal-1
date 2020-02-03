@@ -64,15 +64,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query ) {
+        return makeListProductShortView( devUnitDAO.listByQuery(query) );
+    }
 
-        List<DevUnit> list = devUnitDAO.listByQuery(query);
-
-        if (list == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        List<ProductShortView> result = list.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
-
-        return ok(result);
+    @Override
+    public Result<List<ProductShortView>> shortViewListByIds(List<Long> ids) {
+        return makeListProductShortView( devUnitDAO.getListByKeys(ids) );
     }
 
     @Override
@@ -276,6 +273,15 @@ public class ProductServiceImpl implements ProductService {
         info.setCdrDescription( devUnit.getCdrDescription() );
         info.setHistoryVersion( devUnit.getHistoryVersion() );
         return info;
+    }
+
+    private Result<List<ProductShortView>> makeListProductShortView(List<DevUnit> devUnits) {
+        if (devUnits == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<ProductShortView> result = devUnits.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
+
+        return ok(result);
     }
 
     private final static Logger log = LoggerFactory.getLogger( ProductService.class );
