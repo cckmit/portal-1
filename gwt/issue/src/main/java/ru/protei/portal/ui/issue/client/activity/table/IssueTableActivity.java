@@ -245,7 +245,7 @@ public abstract class IssueTableActivity
             return;
         }
 
-        filterService.getIssueFilter( filter.getId(), new RequestCallback<CaseFilter>() {
+        filterService.getIssueFilter( filter.getId(), new RequestCallback< CaseFilter >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );

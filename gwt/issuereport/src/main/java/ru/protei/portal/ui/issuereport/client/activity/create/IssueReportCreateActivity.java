@@ -144,8 +144,8 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
                 .withErrorMessage(lang.errNotFound())
-                .withSuccess(issueFilterParams ->
-                    consumer.accept(issueFilterParams)));
+                .withSuccess(caseFilter ->
+                    consumer.accept(caseFilter)));
     }
 
     @Override
