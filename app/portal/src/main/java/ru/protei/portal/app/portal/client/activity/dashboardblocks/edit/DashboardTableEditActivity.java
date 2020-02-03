@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class DashboardTableEditActivity implements Activity, AbstractDashboardTableEditActivity, AbstractDialogDetailsActivity {
 
@@ -44,7 +45,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         }
 
         view.name().setValue(dashboard.getName());
-        view.filter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView());
+        view.filter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView(), true);
         view.updateFilterSelector();
 
         dialogView.saveButtonVisibility().setVisible(true);
@@ -75,14 +76,18 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     @Override
-    public void onFilterChanged(CaseFilterShortView filterShortView) {
-        if (filterShortView == null) {
+    public void onFilterChanged(CaseFilterShortView oldFilter, CaseFilterShortView newFilter) {
+        if (newFilter == null) {
             return;
         }
-        if (StringUtils.isNotEmpty(view.name().getValue())) {
-            return;
+        String currentDashboardName = view.name().getValue();
+        String oldFilterName = oldFilter == null ? "" : oldFilter.getName();
+        String newFilterName = newFilter.getName();
+        boolean dashboardNameEmpty = StringUtils.isEmpty(currentDashboardName);
+        boolean dashboardNameMatchedOldFilterName = Objects.equals(currentDashboardName, oldFilterName);
+        if (dashboardNameEmpty || dashboardNameMatchedOldFilterName) {
+            view.name().setValue(newFilterName);
         }
-        view.name().setValue(filterShortView.getName());
     }
 
     @Override

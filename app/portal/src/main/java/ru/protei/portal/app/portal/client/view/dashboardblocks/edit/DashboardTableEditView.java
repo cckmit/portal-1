@@ -44,7 +44,8 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     @UiHandler("filter")
     public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
-            activity.onFilterChanged(event.getValue());
+            activity.onFilterChanged(lastFilterValue, event.getValue());
+            lastFilterValue = event.getValue();
         }
     }
 
@@ -73,6 +74,7 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     Button createFilterActiveIssues;
 
     private AbstractDashboardTableEditActivity activity;
+    private CaseFilterShortView lastFilterValue;
 
     interface DashboardTableEditViewUiBinder extends UiBinder<Widget, DashboardTableEditView> {}
     private static DashboardTableEditViewUiBinder ourUiBinder = GWT.create(DashboardTableEditViewUiBinder.class);
