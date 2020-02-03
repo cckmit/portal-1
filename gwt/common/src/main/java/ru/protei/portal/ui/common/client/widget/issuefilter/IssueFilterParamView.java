@@ -242,7 +242,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 .filter(personShortView ->
                         emptyIfNull(caseQuery.getInitiatorIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet()));
-        managers().setValue( emptyIfNull(filter.getPersonShortViews()).stream().
+        commentAuthors().setValue( emptyIfNull(filter.getPersonShortViews()).stream().
                 filter(personShortView ->
                         emptyIfNull(caseQuery.getCommentAuthorIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet()));
