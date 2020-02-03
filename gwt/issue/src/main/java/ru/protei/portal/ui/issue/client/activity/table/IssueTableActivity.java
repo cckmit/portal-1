@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -83,13 +84,10 @@ public abstract class IssueTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
-        sp.start( "onShow" );
         applyFilterViewPrivileges();
 
         initDetails.parent.clear();
-        sp.check( "clear" );
         initDetails.parent.add( view.asWidget() );
-        sp.check( "add view" );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
 
@@ -115,7 +113,6 @@ public abstract class IssueTableActivity
         clearScroll(event);
 
         loadTable();
-        sp.stop( "onShow end." );
     }
 
     @Event
@@ -294,7 +291,7 @@ public abstract class IssueTableActivity
 
     @Override
     public void onCompaniesFilterChanged() {
-        onFilterChanged();
+        startFilterChangedTimer();
         updateInitiatorSelector();
     }
 
@@ -489,6 +486,20 @@ public abstract class IssueTableActivity
         }
     }
 
+    private void startFilterChangedTimer() {
+        if (timer == null) {
+            timer = new Timer() {
+                @Override
+                public void run() {
+                    onFilterChanged();
+                }
+            };
+        } else {
+            timer.cancel();
+        }
+        timer.schedule(500);
+    }
+
     @Inject
     Lang lang;
 
@@ -532,6 +543,9 @@ public abstract class IssueTableActivity
         }
     } );
 
+
+
+
     private static final Logger log = Logger.getLogger( IssueTableActivity.class.getName() );
 
     private static String CREATE_ACTION;
@@ -540,4 +554,5 @@ public abstract class IssueTableActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
     private boolean isCreateFilterAction = true;
+    private Timer timer = null;
 }
