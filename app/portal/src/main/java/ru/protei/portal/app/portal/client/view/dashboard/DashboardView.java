@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.dashboard.AbstractDashboardView;
+import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 
 public class DashboardView extends Composite implements AbstractDashboardView{
 
@@ -43,7 +44,7 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     @UiField
     HTMLPanel container;
     @UiField
-    HTMLPanel loadingView;
+    IndeterminateCircleLoading loadingView;
     @UiField
     HTMLPanel failedView;
     @UiField

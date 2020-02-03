@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'>
+             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -29,9 +30,7 @@
                     </p>
                 </g:HTMLPanel>
             </div>
-            <div class="card-progress" ui:field="loading">
-                <div class="progress-circle-indeterminate progress-circle-master"/>
-            </div>
+            <loading:IndeterminateCircleLoading styleName="card-progress" ui:field="loading"/>
         </div>
     </g:HTMLPanel>
 

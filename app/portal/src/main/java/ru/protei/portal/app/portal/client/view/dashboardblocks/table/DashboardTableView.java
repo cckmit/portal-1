@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
@@ -61,9 +62,9 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
 
     @Override
     public void showLoader(boolean isShow) {
-        loading.removeClassName("show");
+        loading.removeStyleName("d-block");
         if (isShow) {
-            loading.addClassName("show");
+            loading.addStyleName("d-block");
         }
     }
 
@@ -159,7 +160,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     Anchor reload;
     @UiField
-    DivElement loading;
+    IndeterminateCircleLoading loading;
     @UiField
     TableWidget<CaseShortView> table;
     @UiField
