@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.service.IssueFilterService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -41,12 +43,26 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilter getIssueFilter( Long id ) throws RequestFailedException {
+    public CaseFilter getIssueFilter(Long id ) throws RequestFailedException {
         log.info("getIssueFilter, id: {}", id);
 
-        Result<CaseFilter > response = issueFilterService.getIssueFilter( id );
+        Result<CaseFilter> response = issueFilterService.getIssueFilter( id );
 
         log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+        return response.getData();
+    }
+
+    @Override
+    public SelectorsParams getSelectorsParams(SelectorsParamsRequest selectorsParamsRequest) throws RequestFailedException {
+        log.info("getSelectorsParams, selectorsParamsRequest: {}", selectorsParamsRequest);
+
+        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( selectorsParamsRequest );
+
+        log.info("getSelectorsParams, id: {}, response: {} ", selectorsParamsRequest, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

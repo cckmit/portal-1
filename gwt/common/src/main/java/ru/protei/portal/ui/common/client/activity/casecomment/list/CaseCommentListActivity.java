@@ -183,6 +183,9 @@ public abstract class CaseCommentListActivity
             view.timeElapsed().setTime(comment.getTimeElapsed());
             view.timeElapsedType().setValue(comment.getTimeElapsedType());
         }
+
+        view.getPrivacyVisibility().setVisible(false);
+
         view.focus();
     }
 
@@ -561,6 +564,7 @@ public abstract class CaseCommentListActivity
         view.attachmentContainer().clear();
         view.clearTimeElapsed();
         tempAttachments.clear();
+        view.getPrivacyVisibility().setVisible(isPrivateVisible);
         updateTimeElapsedInIssue(itemViewToModel.values());
     }
 
