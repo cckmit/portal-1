@@ -184,10 +184,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setTypeImageVisibility(!isCreate);
         view.setMutableState(currType);
 
-        view.productSubscriptions().setValue(devUnit.getSubscriptions() != null ? devUnit.getSubscriptions().stream()
-                        .map( Subscription::fromProductSubscription )
-                        .collect(Collectors.toList())
-                        : null
+        view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
+                .map(Subscription::fromProductSubscription)
+                .collect(Collectors.toList())
         );
 
         view.parents().setValue(devUnit.getParents() == null ? null : devUnit.getParents().stream()
@@ -196,7 +195,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
 
         view.children().setValue(devUnit.getChildren() == null ? null : devUnit.getChildren().stream()
-                .filter(product -> !product.isDirection())
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
         );
