@@ -29,8 +29,10 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public CaseComment parseJournalToCaseComment(Journal journal, long companyId) {
+        if (journal.getNotes().startsWith(RedmineUtils.COMMENT_PROTEI_USER_PREFIX)) {
+            return null;
+        }
         final Person author = getAssignedPerson(companyId, journal.getUser());
-
         final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         comment.setAuthor(author);
