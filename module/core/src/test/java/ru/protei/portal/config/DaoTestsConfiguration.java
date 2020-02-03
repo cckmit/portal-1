@@ -144,6 +144,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public UserDashboardDAO getUserDashboardDAO() {
+        return new UserDashboardDAO_Impl();
+    }
+
+    @Bean
     public CompanyDepartmentDAO getCompanyDepartmentDAO() {
         return new CompanyDepartmentDAO_Impl();
     }

@@ -294,6 +294,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public UserDashboardDAO getUserDashboardDAO() {
+        return new UserDashboardDAO_Impl();
+    }
+
+    @Bean
     public CompanyDepartmentDAO getCompanyDepartmentDAO() {
         return new CompanyDepartmentDAO_Impl();
     }
@@ -785,6 +790,11 @@ public class MainConfiguration {
     @Bean
     public SLAService getSLAService() {
         return new SLAServiceImpl();
+    }
+
+    @Bean
+    public UserDashboardService getUserDashboardService() {
+        return new UserDashboardServiceImpl();
     }
 
 

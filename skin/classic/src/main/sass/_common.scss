@@ -13,6 +13,11 @@ $master_color: #626262;
 $success_color: #10cfbd;
 $danger_color: #f55753;
 
+$bg_master: #626262;
+$bg_master_light: #e6e6e6;
+$bg_master_lighter: #f0f0f0;
+$bg_master_lightest: #fafafa;
+
 .hide {
   display: none !important
 }
@@ -1564,218 +1569,42 @@ a {
 
 .dashboard .table {
   margin-top: 0;
-
-  th {
-    border-bottom: 1px solid #dee4e5;
-    font-size: 9px;
-    color: #989898;
-    background: #eceeee;
-  }
-}
-
-.dashboard section .global-table-container {
-  background: white;
-  height: 376px;
-}
-
-.dashboard section {
-  width: 100%;
-}
-
-.dashboard [class *= "col-"] {
-  box-sizing: border-box;
-}
-
-.dashboard .global-table-container {
-  background: white;
-  height: 100%;
-}
-
-.dashboard .issues table .number .number-size {
-  font-size: 16px;
-  padding: 5px 0;
-}
-
-.dashboard .table {
   margin-bottom: 0;
   table-layout: fixed;
-}
 
-.dashboard .info > div {
-  position: relative;
-}
+  th {
+    border-bottom: none;
+    border-top: 1px solid $bg_master_lighter;
+    font-size: 9px;
+    color: $master_color;
+    background: $bg_master_lightest;
+  }
 
-.dashboard .issue-description {
-  max-height: 4.26em;
-  white-space: normal;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .number {
+    width: 130px;
+    .number-size {
+      font-size: 16px;
+      padding: 5px 0;
+    }
+  }
 
-.dashboard .info label {
-  display: inline-block;
-}
+  .issue-description {
+    max-height: 4.26em;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-/*.dashboard .text-semimuted {
-  position: absolute;
-  top: 1px;
-  right: 0;
-}*/
-
-.dashboard-section-name {
-  padding-left: 15px;
-  font-weight: bold;
-  font-size: 12px;
-  color: white;
-  line-height: 32px;
-  display: block;
-  overflow: hidden;
-}
-
-.dashboard-active-records .dashboard-section-name {
-  background: #436eaa;
-}
-
-.dashboard-new-records .dashboard-section-name {
-  background: #bf3f3f;
-}
-
-.dashboard-completed-records .dashboard-section-name {
-  background: #338947;
-}
-
-.dashboard-importance-filter-btn + .dashboard-importance-filter-btn {
-  border-left: 1px solid #eceeee;
-}
-
-.dashboard-section-name .btn-group {
-  vertical-align: top;
-}
-
-.dashboard .issues table .number {
-  width: 130px;
-}
-
-.dashboard .issues table .info {
-  width: 80%;
-}
-
-.dashboard .col-sm-12:not(:first-child) {
-  margin-top: 15px;
-}
-
-.dashboard-total-count {
-  color: white;
-  font-weight: bold;
-  padding: 4px 8px;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.3);
-  display: inline-block;
-  margin-left: 4px;
-  line-height: normal;
-  border-radius: 5px;
-  font-size: 10px;
-}
-
-.dashboard-section-name .rightSide {
-  float: right;
-  height: 32px;
-  line-height: 32px;
-}
-
-.dashboard-importance-filter-btn {
-  display: block;
-  padding: 0 8px;
-  cursor: pointer;
-  background: #eceeee;
-  color: #c9d0d1;
-  height: 32px;
-  float: left;
-  vertical-align: middle;
-  line-height: 32px;
-}
-
-.dashboard-importance-filter-btn:hover,
-.dashboard-importance-filter-btn.active {
-  background: linear-gradient(to top, #b9b8b8, #c5bebe);
-}
-
-.dashboard-importance-filter-btn:not(.active) .importance {
-  color: #c9d0d1 !important;
-}
-
-.dashboard-importance-filter-btn .importance-level {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.dashboard .Loader {
-  background-image: linear-gradient(45deg,
-          rgba(143, 162, 186, 0.5) 25%,
-          rgba(255, 255, 255, 0.5) 25%,
-          rgba(255, 255, 255, 0.5) 50%,
-          rgba(143, 162, 186, 0.5) 50%,
-          rgba(143, 162, 186, 0.5) 75%,
-          rgba(255, 255, 255, 0.5) 75%,
-          rgba(255, 255, 255, 0.5)
-  );
-}
-
-.dashboard .manager {
-  display: none;
-}
-
-.dashboard-btn {
-  display: inline-block;
-  vertical-align: top !important;
-  background: transparent !important;
-  border: none !important;
-  color: white !important;
-  width: 32px;
-  height: 32px;
-  padding: 0 !important;
-  i {
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-    vertical-align: top;
-    text-align: center;
+  .info {
+    label {
+      display: inline-block;
+    }
+    > div {
+      position: relative;
+    }
   }
 }
 
-.dashboard-search-btn {
-  display: inline-block;
-  height: 32px;
-  width: 32px;
-  vertical-align: top;
-}
-
-@media (min-width: 1400px) {
-  .dashboard-active-records {
-    margin-top: 0 !important;
-  }
-  .dashboard-new-records {
-    padding-right: 7.5px;
-  }
-  .dashboard-completed-records {
-    padding-left: 7.5px;
-  }
-}
-
-.indicator {
-  position: relative;
-}
-
-.indicator:after {
-  content: "";
-  position: absolute;
-  background: white;
-  height: 20%;
-  width: 20%;
-  top: 12%;
-  right: 12%;
-  border-radius: 50%;
-}
 
 /**** case tag ****/
 .case-tags-container {

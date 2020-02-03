@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.core.model.ent.UserDashboard;
 
 /**
  * События по дашборду
@@ -15,47 +13,18 @@ public class DashboardEvents {
      */
     @Url( value = "dashboard", primary = true )
     public static class Show {
-
         public Show () {}
-
     }
 
-    public static class ShowTableBlock{
-
-        public CaseQuery query;
-        public HasWidgets parent;
-        public boolean isLoaderShow;
-        public String sectionName;
-        public Integer daysLimit;
-        public String debugId;
-        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName) {
-            if(query == null || parent == null)
-                throw new NullPointerException("query or parent is nullable");
-
-            this.query = query;
-            this.parent = parent;
-            this.sectionName = sectionName;
+    public static class EditTable {
+        public EditTable() {}
+        public EditTable(UserDashboard dashboard) {
+            this.dashboard = dashboard;
         }
-
-        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, String debugId) {
-            this(query, parent, sectionName);
-            this.debugId = debugId;
-        }
-
-        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader) {
-            this(query, parent, sectionName);
-            this.isLoaderShow = showLoader;
-        }
-
-        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader, String debugId) {
-            this(query, parent, sectionName, debugId);
-            this.isLoaderShow = showLoader;
-        }
-
-        public ShowTableBlock withDaysLimit(Integer daysLimit) {
-            this.daysLimit = daysLimit;
-            return this;
-        }
+        public UserDashboard dashboard;
     }
 
+    public static class ChangeTableModel {
+        public ChangeTableModel() {}
+    }
 }

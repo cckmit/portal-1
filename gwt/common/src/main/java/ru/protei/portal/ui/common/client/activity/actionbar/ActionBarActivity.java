@@ -48,7 +48,7 @@ public abstract class ActionBarActivity
         itemView.setActivity( this );
         itemView.setText( header );
         itemView.setEnsureDebugId( debugId );
-        itemView.asWidget().addStyleName("btn");
+        itemView.asWidget().addStyleName("btn m-r-15");
 
         init.parent.add( itemView.asWidget() );
         itemViewToIdentity.put(itemView, identity);
