@@ -53,7 +53,8 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="old_id")
     private Long oldId;
 
-    @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
+    @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id",
+            additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
     private List<CaseAttachment> caseAttachments;
 
     @JdbcColumn(name="time_elapsed")

@@ -2,16 +2,11 @@ package ru.protei.portal.core.model.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by michael on 19.05.16.
- */
 @JdbcEntity(table = "case_comment")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseCommentShortView {
@@ -53,10 +48,6 @@ public class CaseCommentShortView {
     @JdbcColumn(name="comment_text")
     private String text;
 
-    @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<CaseAttachment> caseAttachments;
-
     @JdbcColumn(name="time_elapsed")
     private Long timeElapsed;
 
@@ -66,12 +57,6 @@ public class CaseCommentShortView {
 
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
-
-    // not db column
-    private Date updated;
-
-    // not db column
-    private boolean deleted;
 
     public CaseCommentShortView() {}
 
@@ -159,14 +144,6 @@ public class CaseCommentShortView {
         this.text = text;
     }
 
-    public List<CaseAttachment> getCaseAttachments() {
-        return caseAttachments;
-    }
-
-    public void setCaseAttachments(List<CaseAttachment> attachments) {
-        this.caseAttachments = attachments;
-    }
-
     public Long getTimeElapsed() {
         return timeElapsed;
     }
@@ -189,22 +166,6 @@ public class CaseCommentShortView {
 
     public void setPrivateComment(boolean privateComment) {
         this.privateComment = privateComment;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     @Override
@@ -233,12 +194,9 @@ public class CaseCommentShortView {
                 ", caseImpLevel=" + caseImpLevel +
                 ", replyTo=" + replyTo +
                 ", text='" + text + '\'' +
-                ", caseAttachments=" + caseAttachments +
                 ", timeElapsed=" + timeElapsed +
                 ", timeElapsedType=" + timeElapsedType +
                 ", privateComment=" + privateComment +
-                ", updated=" + updated +
-                ", deleted=" + deleted +
                 '}';
     }
 }
