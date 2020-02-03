@@ -26,7 +26,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.info("getCaseComments(): caseType={}, issueId={}", caseType, caseId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<List<CaseComment>> response = caseCommentService.getCaseCommentShortViewList(token, caseType, caseId);
+        Result<List<CaseComment>> response = caseCommentService.getCaseCommentList(token, caseType, caseId);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
