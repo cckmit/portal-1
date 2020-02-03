@@ -169,7 +169,7 @@ public class IssueFilterUtils {
 
         return personSet
                 .stream()
-                .map( personShortView -> personShortView == null ? null : personShortView.getId() )
+                .map( PersonShortView::getId )
                 .collect( Collectors.toList() );
     }
 
@@ -179,7 +179,7 @@ public class IssueFilterUtils {
         }
 
         Set<PersonShortView> persons = new HashSet<>();
-        personsIds.forEach(id -> persons.add(id == null ? null : new PersonShortView(null, id)));
+        personsIds.forEach(id -> persons.add(new PersonShortView(null, id)));
 
         return persons;
     }
