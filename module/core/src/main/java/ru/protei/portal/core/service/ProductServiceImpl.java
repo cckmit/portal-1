@@ -115,19 +115,9 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return error(En_ResultStatus.NOT_FOUND);
 
-        product = helper.fillAll(product);
-
-        List<DevUnit> parents = new ArrayList<>();
-
-        for (DevUnit currProduct : product.getParents()) {
-            if (currProduct.isDirection()) {
-                product.setProductDirection(currProduct);
-            } else {
-                parents.add(currProduct);
-            }
-        }
-
-        product.setParents(parents);
+        product.setParents(devUnitDAO.getParents(id));
+        product.setChildren(devUnitDAO.getChildren(id));
+        product.setProductDirection(devUnitDAO.getProductDirection(id));
 
         return ok(product);
     }
@@ -154,7 +144,7 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductSubscriptions(product.getId(), product.getSubscriptions());
 
-        saveProductDirection(product);
+        addDirectionToParents(product);
 
         helper.persist(product, "parents");
         helper.persist(product, "children");
@@ -190,7 +180,7 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        saveProductDirection(product);
+        addDirectionToParents(product);
 
         helper.persist(product, "parents");
         helper.persist(product, "children");
@@ -229,7 +219,7 @@ public class ProductServiceImpl implements ProductService {
         return ok(checkUniqueProduct(name, type, excludeId));
     }
 
-    private void saveProductDirection(DevUnit product) {
+    private void addDirectionToParents(DevUnit product) {
         if (product.getProductDirection() != null) {
             if (CollectionUtils.isNotEmpty(product.getParents())) {
                 product.getParents().add(product.getProductDirection());
