@@ -68,7 +68,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE.equals(event.identity)) {
             return;
         }
-        fireEvent(new DashboardEvents.EditTable(new UserDashboard()));
+        fireEvent(new DashboardEvents.EditTable());
     }
 
     @Event
@@ -79,8 +79,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (dashboardIdToRemove == null) {
             return;
         }
-        userLoginController.removeUserDashboard(dashboardIdToRemove, new FluentCallback<UserDashboard>()
-                .withSuccess(d -> {
+        userLoginController.removeUserDashboard(dashboardIdToRemove, new FluentCallback<Void>()
+                .withSuccess(v -> {
                     fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     loadDashboard();
                 }));

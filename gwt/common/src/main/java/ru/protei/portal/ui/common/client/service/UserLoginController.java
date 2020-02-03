@@ -10,9 +10,9 @@ import java.util.List;
 @RemoteServiceRelativePath("springGwtServices/UserLoginController")
 public interface UserLoginController extends RemoteService {
 
-    UserDashboard saveUserDashboard(UserDashboard dashboard) throws RequestFailedException;
+    Long saveUserDashboard(UserDashboard dashboard) throws RequestFailedException;
 
-    UserDashboard removeUserDashboard(Long dashboardId) throws RequestFailedException;
+    void removeUserDashboard(Long dashboardId) throws RequestFailedException;
 
     List<UserDashboard> getUserDashboards() throws RequestFailedException;
 }

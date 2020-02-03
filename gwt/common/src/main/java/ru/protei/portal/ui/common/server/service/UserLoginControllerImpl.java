@@ -12,27 +12,26 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 @Service("UserLoginController")
 public class UserLoginControllerImpl implements UserLoginController {
 
     @Override
-    public UserDashboard saveUserDashboard(UserDashboard dashboard) throws RequestFailedException {
+    public Long saveUserDashboard(UserDashboard dashboard) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         boolean isNew = dashboard == null || dashboard.getId() == null;
         if (isNew) {
             return checkResultAndGetData(userDashboardService.createUserDashboard(token, dashboard));
         } else {
-            return checkResultAndGetData(userDashboardService.editUserDashboard(token, dashboard));
+            return checkResultAndGetData(userDashboardService.editUserDashboard(token, dashboard)).getId();
         }
     }
 
     @Override
-    public UserDashboard removeUserDashboard(Long dashboardId) throws RequestFailedException {
+    public void removeUserDashboard(Long dashboardId) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(userDashboardService.removeUserDashboard(token, dashboardId));
+        checkResult(userDashboardService.removeUserDashboard(token, dashboardId));
     }
 
     @Override

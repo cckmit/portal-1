@@ -17,7 +17,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class UserDashboardServiceImpl implements UserDashboardService {
 
     @Override
-    public Result<UserDashboard> createUserDashboard(AuthToken token, UserDashboard dashboard) {
+    public Result<Long> createUserDashboard(AuthToken token, UserDashboard dashboard) {
 
         if (token == null || token.getUserLoginId() == null) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -36,7 +36,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        return ok(dashboard);
+        return ok(dashboard.getId());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
     }
 
     @Override
-    public Result<UserDashboard> removeUserDashboard(AuthToken token, Long dashboardId) {
+    public Result<Void> removeUserDashboard(AuthToken token, Long dashboardId) {
 
         if (token == null || token.getUserLoginId() == null) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -100,7 +100,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
             return error(En_ResultStatus.NOT_REMOVED);
         }
 
-        return ok(dashboard);
+        return ok();
     }
 
     @Override

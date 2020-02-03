@@ -165,11 +165,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public UserDashboardDAO getUserDashboardDAO() {
-        return new UserDashboardDAO_Impl();
-    }
-
-    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
     }

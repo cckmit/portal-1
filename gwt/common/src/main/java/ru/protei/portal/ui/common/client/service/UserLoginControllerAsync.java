@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface UserLoginControllerAsync {
 
-    void saveUserDashboard(UserDashboard dashboard, AsyncCallback<UserDashboard> async);
+    void saveUserDashboard(UserDashboard dashboard, AsyncCallback<Long> async);
 
-    void removeUserDashboard(Long dashboardId, AsyncCallback<UserDashboard> async);
+    void removeUserDashboard(Long dashboardId, AsyncCallback<Void> async);
 
     void getUserDashboards(AsyncCallback<List<UserDashboard>> async);
 }

@@ -36,13 +36,12 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     @Event
     public void onShow(DashboardEvents.EditTable event) {
-        if (event.dashboard == null) {
-            fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
 
-        this.dashboard = event.dashboard;
-        boolean isNew = dashboard.getId() == null;
+        dashboard = event.dashboard;
+        boolean isNew = dashboard == null || dashboard.getId() == null;
+        if (isNew) {
+            dashboard = new UserDashboard();
+        }
 
         view.name().setValue(dashboard.getName());
         view.filter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView());
@@ -62,8 +61,8 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         dashboard.setName(view.name().getValue());
         dashboard.setCaseFilterId(view.filter().getValue().getId());
 
-        userLoginController.saveUserDashboard(dashboard, new FluentCallback<UserDashboard>()
-                .withSuccess(d -> {
+        userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>()
+                .withSuccess(id -> {
                     dialogView.hidePopup();
                     fireEvent(new DashboardEvents.ChangeTableModel());
                 }));
