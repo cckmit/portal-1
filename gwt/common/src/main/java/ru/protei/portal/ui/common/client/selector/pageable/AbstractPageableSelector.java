@@ -4,6 +4,8 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import ru.protei.portal.ui.common.client.selector.selection.Selection;
 
+import java.util.function.Supplier;
+
 /**
  * Селектор с постраничным отображение списка доступных значений
  */
@@ -19,11 +21,15 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         this.selectorItemRenderer = selectorItemRenderer;
     }
 
+    public void setNullItem(Supplier<T> selectorNullItem) {
+        this.selectorNullItem = selectorNullItem;
+    }
+
     public void fillFromBegin(ItemsContainer<T> itemsContainer) {
         fromIndex = 0;
         if (hasNullValue) {
             if (!(hideSelectedFromChose && getSelection().isEmpty())) {
-                itemsContainer.fill(null, makeElementHtml(null));
+                itemsContainer.fill(selectorNullItem.get(), makeElementHtml(selectorNullItem.get()));
             }
         }
         fromIndex = fillElements(itemsContainer, fromIndex, pageSize);
@@ -149,6 +155,8 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
             return null;
         }
     };
+
+    private Supplier<T> selectorNullItem = () -> null;
 
     private String searchString;
 

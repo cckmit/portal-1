@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Cелектор c выпадающим списком, множественный выбор
@@ -117,6 +118,10 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         showValue( value );
         getPopup().showNear( itemContainer );
         ValueChangeEvent.fire( this, value );
+    }
+
+    protected void setNullItem(Supplier<T> selectorNullItem) {
+        getSelector().setNullItem(selectorNullItem);
     }
 
     public boolean isEmpty() {

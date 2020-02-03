@@ -95,9 +95,9 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                boolean isNullContains = query.getManagerIds().remove(null);
+                boolean isWithoutManager = query.getManagerIds().remove(CrmConstants.Employee.UNDEFINED);
 
-                if (!isNullContains) {
+                if (!isWithoutManager) {
                     condition.append(" and manager IN " + HelperFunc.makeInArg(query.getManagerIds(), false));
                 } else if (query.getManagerIds().isEmpty()) {
                     condition.append(" and manager IS NULL");

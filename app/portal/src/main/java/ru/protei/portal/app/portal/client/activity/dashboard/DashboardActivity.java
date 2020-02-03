@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
@@ -93,7 +94,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery generateNewRecordsQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
-        query.setManagerIds(CollectionUtils.singleValueList(null));
+        query.setManagerIds(CollectionUtils.singleValueList(CrmConstants.Employee.UNDEFINED));
 
         return query;
     }

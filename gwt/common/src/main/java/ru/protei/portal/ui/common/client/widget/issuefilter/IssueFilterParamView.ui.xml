@@ -45,7 +45,8 @@
 
         <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                       header="{lang.issueProduct}"
-                                                      addStyleNames="form-group col-md-12 resize-md-6"/>
+                                                      addStyleNames="form-group col-md-12 resize-md-6"
+                                                      hasNullValue="true"/>
 
         <companyselector:CompanyMultiSelector ui:field="companies"
                                               header="{lang.issueCompany}"
