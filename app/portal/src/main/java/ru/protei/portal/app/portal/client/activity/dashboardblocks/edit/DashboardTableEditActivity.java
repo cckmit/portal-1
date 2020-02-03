@@ -76,18 +76,16 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     @Override
-    public void onFilterChanged(CaseFilterShortView oldFilter, CaseFilterShortView newFilter) {
-        if (newFilter == null) {
-            return;
-        }
+    public void onFilterChanged(CaseFilterShortView filterShortView) {
         String currentDashboardName = view.name().getValue();
-        String oldFilterName = oldFilter == null ? "" : oldFilter.getName();
-        String newFilterName = newFilter.getName();
+        String oldFilterName = lastFilterName == null ? "" : lastFilterName;
+        String newFilterName = filterShortView == null ? "" : filterShortView.getName();
         boolean dashboardNameEmpty = StringUtils.isEmpty(currentDashboardName);
         boolean dashboardNameMatchedOldFilterName = Objects.equals(currentDashboardName, oldFilterName);
         if (dashboardNameEmpty || dashboardNameMatchedOldFilterName) {
             view.name().setValue(newFilterName);
         }
+        lastFilterName = newFilterName;
     }
 
     @Override
@@ -161,4 +159,5 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     PolicyService policyService;
 
     private UserDashboard dashboard;
+    private String lastFilterName;
 }

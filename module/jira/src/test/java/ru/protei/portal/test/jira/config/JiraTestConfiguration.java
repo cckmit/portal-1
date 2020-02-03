@@ -285,11 +285,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public UserDashboardService getUserDashboardService() {
-        return new UserDashboardServiceImpl();
-    }
-
-    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
