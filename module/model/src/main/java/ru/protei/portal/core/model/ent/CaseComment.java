@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -14,7 +12,6 @@ import java.util.Objects;
  * Created by michael on 19.05.16.
  */
 @JdbcEntity(table = "case_comment")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseComment extends AuditableObject {
 
     @JdbcId(name="id" , idInsertMode = IdInsertMode.AUTO)
@@ -30,7 +27,6 @@ public class CaseComment extends AuditableObject {
     private Long caseId;
 
     @JdbcJoinedObject(localColumn = "author_id", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "person")
-    @JsonIgnore
     private Person author;
 
     @JdbcColumn(name="cstate_id")
@@ -58,7 +54,6 @@ public class CaseComment extends AuditableObject {
     private Long oldId;
 
     @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<CaseAttachment> caseAttachments;
 
     @JdbcColumn(name="time_elapsed")

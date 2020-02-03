@@ -12,6 +12,7 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -19,9 +20,11 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -46,7 +49,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
+    public Result<SearchResult<CaseCommentShortView>> getCaseCommentShortViewList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
         List<Long> caseNumbers = query.getCaseNumbers();
         if (!isEmpty(caseNumbers)) {
             for (Long caseNumber : caseNumbers) {
@@ -60,7 +63,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
         }
         applyFilterByScope(token, query);
-        return getList(query);
+        return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
 
     @Override
@@ -453,6 +456,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
 
