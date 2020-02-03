@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.DevUnitChildRef;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -155,6 +154,8 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductSubscriptions(product.getId(), product.getSubscriptions());
 
+        saveProductDirection(product);
+
         helper.persist(product, "parents");
         helper.persist(product, "children");
 
@@ -188,6 +189,9 @@ public class ProductServiceImpl implements ProductService {
                 devUnitChildRefDAO.removeByParentId(product.getId());
             }
         }
+
+        saveProductDirection(product);
+
         helper.persist(product, "parents");
         helper.persist(product, "children");
 
@@ -223,6 +227,16 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         return ok(checkUniqueProduct(name, type, excludeId));
+    }
+
+    private void saveProductDirection(DevUnit product) {
+        if (product.getProductDirection() != null) {
+            if (CollectionUtils.isNotEmpty(product.getParents())) {
+                product.getParents().add(product.getProductDirection());
+            } else {
+                product.setParents(new ArrayList<>(Collections.singletonList(product.getProductDirection())));
+            }
+        }
     }
 
     private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {
