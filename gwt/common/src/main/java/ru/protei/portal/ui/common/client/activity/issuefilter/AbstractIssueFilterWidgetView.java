@@ -78,9 +78,7 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void resetFilter();
 
-    void fillFilterFieldsByFilter(SelectorsParams selectorsParams);
-
-    void fillFilterFields(CaseQuery caseQuery);
+    void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
     void setCompaniesErrorStyle(boolean hasError);
 

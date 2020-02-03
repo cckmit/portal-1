@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -21,14 +18,12 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -67,7 +62,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result<SelectorsParams> getIssueFilter(Long id ) {
+    public Result<CaseFilter> getIssueFilter(Long id ) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -76,71 +71,51 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        CaseQuery caseQuery = filter.getParams();
-        SelectorsParams filterParams = caseQuery.getSelectorsParams();
+        Result<SelectorsParams> selectorsParams = getSelectorsParams(makeSelectorsParamsRequest(filter.getParams()));
 
-        filterParams.setName(filter.getName());
-        filterParams.setCaseQuery(caseQuery);
+        if (selectorsParams.isError()) {
+            return error( selectorsParams.getStatus() );
+        }
 
-        filterParams.setSearchString(caseQuery.getSearchString());
-        filterParams.setSearchStringAtComments(caseQuery.isSearchStringAtComments());
-        filterParams.setViewPrivate(caseQuery.isViewPrivate());
-        filterParams.setSortDir(caseQuery.getSortDir());
-        filterParams.setSortField(caseQuery.getSortField());
-        filterParams.setCreatedFrom(caseQuery.getCreatedFrom());
-        filterParams.setCreatedTo(caseQuery.getCreatedTo());
-        filterParams.setModifiedFrom(caseQuery.getModifiedFrom());
-        filterParams.setModifiedTo(caseQuery.getModifiedTo());
-        filterParams.setImportanceIds(caseQuery.getImportanceIds());
-        filterParams.setStateIds(caseQuery.getStateIds());
-        filterParams.setCaseTagsIds(caseQuery.getCaseTagsIds());
+        filter.setSelectorsParams(selectorsParams.getData());
 
-        if (!isEmpty(caseQuery.getCompanyIds())) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds(caseQuery.getCompanyIds());
+        return  ok( filter );
+    }
+
+    @Override
+    public Result<SelectorsParams> getSelectorsParams(SelectorsParamsRequest request) {
+        log.debug( "getSelectorsParams(): request={} ", request );
+        SelectorsParams selectorsParams = new SelectorsParams();
+
+        if (!isEmpty(request.getCompanyIds())) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds(request.getCompanyIds());
             if (result.isOk()) {
-                filterParams.setCompanyEntityOptions(result.getData());
+                selectorsParams.setCompanyEntityOptions(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getCompanyIds" );
             }
         }
 
-        if (!isEmpty(caseQuery.getManagerIds())) {
-            Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getManagerIds());
+        if (!isEmpty(request.getPersonIds())) {
+            Result<List<PersonShortView>> result = personService.shortViewListByIds(request.getPersonIds());
             if (result.isOk()) {
-                filterParams.setPersonShortViews(result.getData());
+                selectorsParams.setPersonShortViews(result.getData());
             } else {
-                return error(result.getStatus(), "Error at getManagerIds" );
+                return error(result.getStatus(), "Error at getPersonIds" );
             }
         }
 
-        if (!isEmpty(caseQuery.getInitiatorIds())) {
-            Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getInitiatorIds());
-            if (result.isOk()) {
-                filterParams.setInitiatorPersonShortView(result.getData());
-            } else {
-                return error(result.getStatus(), "Error at getInitiatorIds" );
-            }
-        }
 
-        if (!isEmpty(caseQuery.getProductIds())) {
-            Result<List<ProductShortView>> result = productService.shortViewListByIds(new ArrayList<>(caseQuery.getProductIds()));
+        if (!isEmpty(request.getProductIds())) {
+            Result<List<ProductShortView>> result = productService.shortViewListByIds(new ArrayList<>(request.getProductIds()));
             if (result.isOk()) {
-                filterParams.setProductShortViews(result.getData());
+                selectorsParams.setProductShortViews(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getProductIds" );
             }
         }
 
-        if (!isEmpty(caseQuery.getCommentAuthorIds())) {
-            Result<List<PersonShortView>> result = personService.shortViewListByIds(caseQuery.getCommentAuthorIds());
-            if (result.isOk()) {
-                filterParams.setCommentPersonShortView(result.getData());
-            } else {
-                return error(result.getStatus(), "Error at getCommentAuthorIds" );
-            }
-        }
-
-        return  ok( filterParams );
+        return ok(selectorsParams);
     }
 
     @Override
@@ -208,5 +183,21 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     private boolean isUniqueFilter( String name, Long loginId, En_CaseFilterType type, Long excludeId ) {
         CaseFilter caseFilter = caseFilterDAO.checkExistsByParams( name, loginId, type );
         return caseFilter == null || caseFilter.getId().equals( excludeId );
+    }
+
+    private SelectorsParamsRequest makeSelectorsParamsRequest(CaseQuery caseQuery) {
+        SelectorsParamsRequest request = new SelectorsParamsRequest();
+
+        request.setCompanyIds(emptyIfNull(caseQuery.getCompanyIds()));
+
+        Set<Long> personsIds = new HashSet<>();
+        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
+        request.setPersonIds(new ArrayList<>(personsIds));
+
+        request.setProductIds(new ArrayList<>(emptyIfNull(caseQuery.getProductIds())));
+
+        return request;
     }
 }

@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
@@ -84,8 +83,6 @@ public class CaseQuery extends BaseQuery {
     private Boolean platformIndependentProject;
 
     private Long productDirectionId;
-
-    private SelectorsParams selectorsParams = new SelectorsParams();
 
     public CaseQuery() {}
 
@@ -400,9 +397,5 @@ public class CaseQuery extends BaseQuery {
                 ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
-    }
-
-    public SelectorsParams getSelectorsParams() {
-        return selectorsParams;
     }
 }

@@ -42,7 +42,9 @@ import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterWidgetView {
@@ -219,27 +221,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void fillFilterFieldsByFilter(SelectorsParams filter) {
-        searchPattern().setValue(filter.getSearchString());
-        searchByComments().setValue(filter.isSearchStringAtComments());
-        searchPrivate().setValue(filter.isViewPrivate());
-        sortDir().setValue(filter.getSortDir().equals(En_SortDir.ASC));
-        sortField().setValue(filter.getSortField());
-        dateCreatedRange().setValue(new DateInterval(filter.getCreatedFrom(), filter.getCreatedTo()));
-        dateModifiedRange().setValue(new DateInterval(filter.getModifiedFrom(), filter.getModifiedTo()));
-        importances().setValue(IssueFilterUtils.getImportances(filter.getImportanceIds()));
-        states().setValue(IssueFilterUtils.getStates(filter.getStateIds()));
-        companies().setValue(new HashSet<>(filter.getCompanyEntityOptions()));
-        updateInitiators();
-        managers().setValue(new HashSet<>(filter.getPersonShortViews()));
-        initiators().setValue(new HashSet<>(filter.getInitiatorPersonShortView()));
-        products().setValue(new HashSet<>(filter.getProductShortViews()));
-        commentAuthors().setValue(new HashSet<>(filter.getCommentPersonShortView()));
-        tags().setValue(IssueFilterUtils.getOptions(filter.getCaseTagsIds()));
-    }
-
-    @Override
-    public void fillFilterFields(CaseQuery caseQuery) {
+    public void fillFilterFields(CaseQuery caseQuery, SelectorsParams filter) {
         searchPattern().setValue(caseQuery.getSearchString());
         searchByComments().setValue(caseQuery.isSearchStringAtComments());
         searchPrivate().setValue(caseQuery.isViewPrivate());
@@ -249,12 +231,24 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateModifiedRange().setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
-        companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
+
+        companies().setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
         updateInitiators();
-        managers().setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
-        initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
-        products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
-        commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
+        managers().setValue( emptyIfNull(filter.getPersonShortViews()).stream()
+                .filter(personShortView ->
+                        emptyIfNull(caseQuery.getManagerIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet()));
+        initiators().setValue( emptyIfNull(filter.getPersonShortViews()).stream()
+                .filter(personShortView ->
+                        emptyIfNull(caseQuery.getInitiatorIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet()));
+        managers().setValue( emptyIfNull(filter.getPersonShortViews()).stream().
+                filter(personShortView ->
+                        emptyIfNull(caseQuery.getCommentAuthorIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet()));
+
+        products().setValue(new HashSet<>(emptyIfNull(filter.getProductShortViews())));
+
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
     }
 

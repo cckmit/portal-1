@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -45,9 +46,13 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Активность таблицы обращений
@@ -100,7 +105,7 @@ public abstract class IssueTableActivity
         );
 
         if (event.query != null) {
-            filterParamView.fillFilterFields(event.query);
+            fillFilterFieldsByCaseQuery(event.query);
             event.query = null;
         }
 
@@ -240,14 +245,14 @@ public abstract class IssueTableActivity
             return;
         }
 
-        filterService.getIssueFilter( filter.getId(), new RequestCallback<SelectorsParams>() {
+        filterService.getIssueFilter( filter.getId(), new RequestCallback<CaseFilter>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( SelectorsParams filter ) {
+            public void onSuccess( CaseFilter filter ) {
                 fillFilterFields( filter );
                 onFilterChanged();
             }
@@ -383,11 +388,43 @@ public abstract class IssueTableActivity
         }
     }
 
-    private void fillFilterFields( SelectorsParams filter ) {
+    private void fillFilterFields( CaseFilter filter ) {
         filterView.removeFilterBtnVisibility().setVisible( true );
         filterView.editBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
-        filterParamView.fillFilterFieldsByFilter(filter);
+        filterParamView.fillFilterFields(filter.getParams(), filter.getSelectorsParams());
+    }
+
+    private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
+        filterView.resetFilter();
+        filterService.getSelectorsParams( makeSelectorsParamsRequest(caseQuery), new RequestCallback<SelectorsParams>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( SelectorsParams selectorsParams ) {
+                filterParamView.fillFilterFields(caseQuery, selectorsParams);
+                onFilterChanged();
+            }
+        } );
+    }
+
+    private SelectorsParamsRequest makeSelectorsParamsRequest(CaseQuery caseQuery) {
+        SelectorsParamsRequest request = new SelectorsParamsRequest();
+
+        request.setCompanyIds(emptyIfNull(caseQuery.getCompanyIds()));
+
+        Set<Long> personsIds = new HashSet<>();
+        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
+        request.setPersonIds(new ArrayList<>(personsIds));
+
+        request.setProductIds(new ArrayList<>(emptyIfNull(caseQuery.getProductIds())));
+
+        return request;
     }
 
     private void showPreview ( CaseShortView value ) {

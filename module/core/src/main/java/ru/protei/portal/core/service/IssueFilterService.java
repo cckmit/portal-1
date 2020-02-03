@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 
 import java.util.List;
@@ -16,7 +17,9 @@ public interface IssueFilterService {
 
     Result<List<CaseFilterShortView>> getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType);
 
-    Result<SelectorsParams> getIssueFilter(Long id);
+    Result<CaseFilter> getIssueFilter(Long id);
+
+    Result<SelectorsParams> getSelectorsParams(SelectorsParamsRequest request);
 
     Result<CaseFilter> saveIssueFilter( AuthToken token, CaseFilter filter);
 

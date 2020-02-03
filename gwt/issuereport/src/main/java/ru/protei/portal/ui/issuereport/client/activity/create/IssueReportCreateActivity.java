@@ -140,9 +140,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onUserFilterChanged(Long id, Consumer<SelectorsParams> consumer) {
+    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
 
-        filterService.getIssueFilter(id, new FluentCallback<SelectorsParams>()
+        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
                 .withErrorMessage(lang.errNotFound())
                 .withSuccess(issueFilterParams ->
                     consumer.accept(issueFilterParams)));
