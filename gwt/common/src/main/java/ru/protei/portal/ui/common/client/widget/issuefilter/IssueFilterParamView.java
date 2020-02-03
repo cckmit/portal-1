@@ -311,32 +311,32 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("searchByComments")
     public void onSearchByCommentsChanged(ValueChangeEvent<Boolean> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("dateCreatedRange")
     public void onDateCreatedRangeChanged(ValueChangeEvent<DateInterval> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("dateModifiedRange")
     public void onDateModifiedRangeChanged(ValueChangeEvent<DateInterval> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("sortField")
     public void onSortFieldSelected(ValueChangeEvent<En_SortField> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("sortDir")
     public void onSortDirClicked(ClickEvent event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("products")
     public void onProductsSelected(ValueChangeEvent<Set<ProductShortView>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("companies")
@@ -348,37 +348,37 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("initiators")
     public void onInitiatorsSelected(ValueChangeEvent<Set<PersonShortView>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("managers")
     public void onManagersSelected(ValueChangeEvent<Set<PersonShortView>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("commentAuthors")
     public void onCommentAuthorsSelected(ValueChangeEvent<Set<PersonShortView>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("tags")
     public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("searchPrivate")
     public void onSearchOnlyPrivateChanged(ValueChangeEvent<Boolean> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("importance")
     public void onImportanceSelected(ValueChangeEvent<Set<En_ImportanceLevel>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     @UiHandler("state")
     public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
-        startFilterChangedTimer();
+        onFilterChanged();
     }
 
     public void watchForScrollOf(Widget widget) {
@@ -453,7 +453,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         } else {
             timer.cancel();
         }
-        timer.schedule(500);
+        timer.schedule(300);
     }
 
     @Inject

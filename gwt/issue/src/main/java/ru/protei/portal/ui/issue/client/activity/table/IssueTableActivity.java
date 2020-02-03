@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -291,14 +290,14 @@ public abstract class IssueTableActivity
 
     @Override
     public void onCompaniesFilterChanged() {
-        startFilterChangedTimer();
+        onFilterChanged();
         updateInitiatorSelector();
     }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
-        CaseQuery query = getQuery();
+        query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
         issueService.getIssues(query, new FluentCallback<SearchResult<CaseShortView>>()
@@ -307,12 +306,17 @@ public abstract class IssueTableActivity
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    asyncCallback.onSuccess(sr.getResults());
-                    if (isFirstChunk) {
-                        view.setTotalRecords(sr.getTotalCount());
-                        pagerView.setTotalPages(view.getPageCount());
-                        pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                    if (query.equals(getQuery())) {
+                        asyncCallback.onSuccess(sr.getResults());
+                        if (isFirstChunk) {
+                            view.setTotalRecords(sr.getTotalCount());
+                            pagerView.setTotalPages(view.getPageCount());
+                            pagerView.setTotalCount(sr.getTotalCount());
+                            restoreScrollTopPositionOrClearSelection();
+                        }
+                    }
+                    else {
+                        loadData(offset, limit, asyncCallback);
                     }
                 }));
     }
@@ -486,20 +490,6 @@ public abstract class IssueTableActivity
         }
     }
 
-    private void startFilterChangedTimer() {
-        if (timer == null) {
-            timer = new Timer() {
-                @Override
-                public void run() {
-                    onFilterChanged();
-                }
-            };
-        } else {
-            timer.cancel();
-        }
-        timer.schedule(500);
-    }
-
     @Inject
     Lang lang;
 
@@ -535,16 +525,7 @@ public abstract class IssueTableActivity
     @Inject
     IssueFilterService issueFilterService;
 
-    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
-        @Override
-        public void append( String message, double currentTime ) {
-            log.info("Profile IssueTableActivity: "+ message+" "+currentTime);
-
-        }
-    } );
-
-
-
+    private CaseQuery query = null;
 
     private static final Logger log = Logger.getLogger( IssueTableActivity.class.getName() );
 
@@ -554,5 +535,4 @@ public abstract class IssueTableActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
     private boolean isCreateFilterAction = true;
-    private Timer timer = null;
 }
