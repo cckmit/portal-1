@@ -29,13 +29,6 @@ public class CaseCommentShortView {
     })
     private String authorCompanyName;
 
-    @JdbcJoinedColumn( mappedColumn = "category_name", joinPath = {
-            @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "Company_category", localColumn = "category_id", remoteColumn = "id" )
-    })
-    private String authorCompanyCategory;
-
     @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
@@ -50,10 +43,6 @@ public class CaseCommentShortView {
 
     @JdbcColumn(name="time_elapsed")
     private Long timeElapsed;
-
-    @JdbcColumn(name="time_elapsed_type")
-    @JdbcEnumerated(EnumType.ID)
-    private En_TimeElapsedType timeElapsedType;
 
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
@@ -104,14 +93,6 @@ public class CaseCommentShortView {
         this.authorCompanyName = authorCompanyName;
     }
 
-    public String getAuthorCompanyCategory() {
-        return authorCompanyCategory;
-    }
-
-    public void setAuthorCompanyCategory(String authorCompanyCategory) {
-        this.authorCompanyCategory = authorCompanyCategory;
-    }
-
     public Long getCaseStateId() {
         return caseStateId;
     }
@@ -152,13 +133,6 @@ public class CaseCommentShortView {
         this.timeElapsed = timeElapsed;
     }
 
-    public En_TimeElapsedType getTimeElapsedType() {
-        return timeElapsedType;
-    }
-
-    public void setTimeElapsedType( En_TimeElapsedType timeElapsedType ) {
-        this.timeElapsedType = timeElapsedType;
-    }
 
     public boolean isPrivateComment() {
         return privateComment;
@@ -189,13 +163,11 @@ public class CaseCommentShortView {
                 ", caseNumber=" + caseNumber +
                 ", author='" + author + '\'' +
                 ", authorCompanyName='" + authorCompanyName + '\'' +
-                ", authorCompanyCategory='" + authorCompanyCategory + '\'' +
                 ", caseStateId=" + caseStateId +
                 ", caseImpLevel=" + caseImpLevel +
                 ", replyTo=" + replyTo +
                 ", text='" + text + '\'' +
                 ", timeElapsed=" + timeElapsed +
-                ", timeElapsedType=" + timeElapsedType +
                 ", privateComment=" + privateComment +
                 '}';
     }

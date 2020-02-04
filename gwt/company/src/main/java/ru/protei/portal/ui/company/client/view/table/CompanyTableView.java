@@ -48,8 +48,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         name.setColumnProvider( columnProvider );
         category.setHandler( activity );
         category.setColumnProvider( columnProvider );
-        idCompany.setHandler( activity );
-        idCompany.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
@@ -129,9 +127,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
             return "<img src='" + "./images/company_" + category.name().toLowerCase() + ".svg" + "' title='" + value.getCategory().getName() + "'></img>";
         });
 
-        idCompany = new DynamicColumn<>("ID", "column-img", value -> value.getId().toString());
-
-        table.addColumn( idCompany.header, idCompany.values );
         table.addColumn( category.header, category.values );
         table.addColumn( name.header, name.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
@@ -228,7 +223,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     ArchiveClickColumn<Company> archiveClickColumn;
     DynamicColumn<Company> name;
     DynamicColumn<Company> category;
-    DynamicColumn<Company> idCompany;
 
     AbstractCompanyTableActivity activity;
 

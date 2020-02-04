@@ -10,8 +10,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public interface AbstractCompanyPreviewView extends IsWidget {
 
-    void setId( String id );
-
     void setName( String name );
 
     void setActivity( AbstractCompanyPreviewActivity activity );
