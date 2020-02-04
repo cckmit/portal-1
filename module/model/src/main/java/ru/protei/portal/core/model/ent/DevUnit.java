@@ -49,12 +49,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcOneToMany(table = "DevUnitSubscription", localColumn = "id", remoteColumn = "dev_unit_id" )
     private List<DevUnitSubscription> subscriptions;
 
-    @JdbcManyToMany(localLinkColumn = "CHILD_ID", linkTable = "dev_unit_children", remoteLinkColumn = "DUNIT_ID")
-    private List<DevUnit> parents;
-
-    @JdbcManyToMany(localLinkColumn = "DUNIT_ID", linkTable = "dev_unit_children", remoteLinkColumn = "CHILD_ID")
-    private List<DevUnit> children;
-
     @JdbcColumn(name = "wiki_link")
     private String wikiLink;
 
@@ -66,6 +60,10 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @JdbcColumn(name = Columns.HISTORY_VERSION)
     private String historyVersion;
+
+    private List<DevUnit> parents;
+
+    private List<DevUnit> children;
 
     private DevUnit productDirection;
 
