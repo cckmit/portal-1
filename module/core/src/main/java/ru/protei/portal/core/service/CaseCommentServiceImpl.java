@@ -12,6 +12,7 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -19,9 +20,11 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -35,7 +38,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseObjectId);
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectById(token, caseType, caseObjectId);
         if (checkAccessStatus != null) {
             return error(checkAccessStatus);
         }
@@ -45,23 +48,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        List<CaseComment> result = new ArrayList<>();
-        for (Long caseId : query.getCaseObjectIds()) {
-            En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseId);
-            if (checkAccessStatus != null) {
-                return error(checkAccessStatus);
-            }
-            applyFilterByScope(token, query);
-            Result<List<CaseComment>> partialResult = getList(query);
-            if (partialResult.isOk()) {
-                result.addAll(partialResult.getData());
-            } else {
-                return partialResult;
-            }
+    public Result<SearchResult<CaseCommentShortView>> getCaseCommentShortViewList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectByNumber(token, caseType, query.getCaseNumber());
+        if (checkAccessStatus != null) {
+            return error(checkAccessStatus);
         }
-
-        return ok(result);
+        applyFilterByScope(token, query);
+        return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
 
     @Override
@@ -99,7 +92,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectById(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
             throw new ResultStatusException(checkAccessStatus);
         }
@@ -182,7 +175,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectById(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
             throw new ResultStatusException(checkAccessStatus);
         }
@@ -250,7 +243,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
         }
         if (checkAccessStatus == null) {
-            checkAccessStatus = checkAccessForCaseObject(token, caseType, removedComment.getCaseId());
+            checkAccessStatus = checkAccessForCaseObjectById(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
             if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
@@ -404,9 +397,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(comments);
     }
 
-    private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {
+    private En_ResultStatus checkAccessForCaseObjectById(AuthToken token, En_CaseType caseType, Long id) {
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.get(id));
+    }
+
+    private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByCaseno(caseNumber));
+    }
+
+    private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObject = caseObjectDAO.get(caseObjectId);
             if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
                 return En_ResultStatus.PERMISSION_DENIED;
             }
@@ -454,6 +454,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
 

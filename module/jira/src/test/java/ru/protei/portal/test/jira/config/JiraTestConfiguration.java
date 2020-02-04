@@ -135,6 +135,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CaseCommentShortViewDAO getCaseCommentShortViewDAO() {
+        return new CaseCommentShortViewDAO_Impl();
+    }
+
+    @Bean
     public CaseAttachmentDAO getCaseAttachmentDAO() {
         return new CaseAttachmentDAO_Impl();
     }
