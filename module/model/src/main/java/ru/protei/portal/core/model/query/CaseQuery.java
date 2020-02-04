@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -401,5 +398,46 @@ public class CaseQuery extends BaseQuery {
                 ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseQuery caseQuery = (CaseQuery) o;
+        return allowViewPrivate == caseQuery.allowViewPrivate &&
+                searchStringAtComments == caseQuery.searchStringAtComments &&
+                customerSearch == caseQuery.customerSearch &&
+                findRecordByCaseComments == caseQuery.findRecordByCaseComments &&
+                Objects.equals(id, caseQuery.id) &&
+                Objects.equals(caseNumbers, caseQuery.caseNumbers) &&
+                Objects.equals(companyIds, caseQuery.companyIds) &&
+                Objects.equals(initiatorIds, caseQuery.initiatorIds) &&
+                Objects.equals(productIds, caseQuery.productIds) &&
+                Objects.equals(locationIds, caseQuery.locationIds) &&
+                Objects.equals(districtIds, caseQuery.districtIds) &&
+                Objects.equals(managerIds, caseQuery.managerIds) &&
+                Objects.equals(withoutManager, caseQuery.withoutManager) &&
+                type == caseQuery.type &&
+                Objects.equals(stateIds, caseQuery.stateIds) &&
+                Objects.equals(importanceIds, caseQuery.importanceIds) &&
+                Objects.equals(viewPrivate, caseQuery.viewPrivate) &&
+                Objects.equals(createdFrom, caseQuery.createdFrom) &&
+                Objects.equals(createdTo, caseQuery.createdTo) &&
+                Objects.equals(modifiedFrom, caseQuery.modifiedFrom) &&
+                Objects.equals(modifiedTo, caseQuery.modifiedTo) &&
+                Objects.equals(searchCasenoString, caseQuery.searchCasenoString) &&
+                Objects.equals(memberId, caseQuery.memberId) &&
+                Objects.equals(commentAuthorIds, caseQuery.commentAuthorIds) &&
+                Objects.equals(caseTagsIds, caseQuery.caseTagsIds) &&
+                Objects.equals(local, caseQuery.local) &&
+                Objects.equals(contractIndependentProject, caseQuery.contractIndependentProject) &&
+                Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
+                Objects.equals(productDirectionId, caseQuery.productDirectionId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds, withoutManager, type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom, modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds, customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject, productDirectionId);
     }
 }

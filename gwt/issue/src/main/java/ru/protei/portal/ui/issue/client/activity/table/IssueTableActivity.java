@@ -34,7 +34,6 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
@@ -89,13 +88,10 @@ public abstract class IssueTableActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
-        sp.start( "onShow" );
         applyFilterViewPrivileges();
 
         initDetails.parent.clear();
-        sp.check( "clear" );
         initDetails.parent.add( view.asWidget() );
-        sp.check( "add view" );
         view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
 
@@ -116,12 +112,12 @@ public abstract class IssueTableActivity
             filterParamView.updateInitiators();
         }
 
-        toggleMsgSearchThreshold();
-
         clearScroll(event);
 
-        loadTable();
-        sp.stop( "onShow end." );
+        if(isSearchFieldCorrect()) {
+            loadTable();
+        }
+        validateSearchField(isSearchFieldCorrect());
     }
 
     @Event
@@ -212,8 +208,10 @@ public abstract class IssueTableActivity
             return;
         }
 
-        loadTable();
-        toggleMsgSearchThreshold();
+        if(isSearchFieldCorrect()) {
+            loadTable();
+        }
+        validateSearchField(isSearchFieldCorrect());
     }
 
     @Override
@@ -305,9 +303,9 @@ public abstract class IssueTableActivity
     }
 
     @Override
-    public void loadData(int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback) {
+    public void loadData(int offset, int limit, final AsyncCallback<List<CaseShortView>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
-        CaseQuery query = getQuery();
+        query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
         issueService.getIssues(query, new FluentCallback<SearchResult<CaseShortView>>()
@@ -316,12 +314,17 @@ public abstract class IssueTableActivity
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    asyncCallback.onSuccess(sr.getResults());
-                    if (isFirstChunk) {
-                        view.setTotalRecords(sr.getTotalCount());
-                        pagerView.setTotalPages(view.getPageCount());
-                        pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                    if (!query.equals(getQuery())) {
+                        loadData(offset, limit, asyncCallback);
+                    }
+                    else {
+                        asyncCallback.onSuccess(sr.getResults());
+                        if (isFirstChunk) {
+                            view.setTotalRecords(sr.getTotalCount());
+                            pagerView.setTotalPages(view.getPageCount());
+                            pagerView.setTotalCount(sr.getTotalCount());
+                            restoreScrollTopPositionOrClearSelection();
+                        }
                     }
                 }));
     }
@@ -354,16 +357,14 @@ public abstract class IssueTableActivity
         });
     }
 
-    @Override
-    public void toggleMsgSearchThreshold() {
-        if (filterParamView.searchByComments().getValue()) {
-            int actualLength = filterParamView.searchPattern().getValue().length();
-            filterParamView.searchByCommentsWarningVisibility().setVisible(actualLength < CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS);
-            filterView.createEnabled().setEnabled(actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS);
-        } else if (filterParamView.searchByCommentsWarningVisibility().isVisible()) {
-            filterParamView.searchByCommentsWarningVisibility().setVisible(false);
-            filterView.createEnabled().setEnabled(true);
-        }
+    private void validateSearchField(boolean isCorrect){
+        filterParamView.searchByCommentsWarningVisibility().setVisible(!isCorrect);
+        filterView.createEnabled().setEnabled(isCorrect);
+    }
+
+    private boolean isSearchFieldCorrect(){
+        return !filterParamView.searchByComments().getValue() ||
+                filterParamView.searchPattern().getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
     private void loadTable() {
@@ -562,13 +563,7 @@ public abstract class IssueTableActivity
     @Inject
     IssueFilterService issueFilterService;
 
-    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
-        @Override
-        public void append( String message, double currentTime ) {
-            log.info("Profile IssueTableActivity: "+ message+" "+currentTime);
-
-        }
-    } );
+    private CaseQuery query = null;
 
     private static final Logger log = Logger.getLogger( IssueTableActivity.class.getName() );
 
