@@ -445,6 +445,41 @@ public class DebugIds {
         String LOCK_ICON = "document-table-lock-icon";
     }
 
+    public interface DOCUMENT_FILTER {
+        String SEARCH_INPUT = "document-filter-search-input";
+        String SORT_BY_LABEL = "document-filter-sort-by-label";
+        String SORT_BY_SELECTOR = "document-filter-sort-by-selector";
+        String SORT_BY_TOGGLE = "document-filter-sort-by-toggle";
+        String CREATION_DATE_LABEL = "document-filter-creation-date-label";
+        String CREATION_DATE_INPUT = "document-filter-creation-date-input";
+        String CREATION_DATE_BUTTON = "document-filter-creation-date-button";
+        String MANAGER_LABEL = "document-filter-manager-label";
+        String MANAGER_SELECTOR = "document-filter-manager-selector";
+        String PROJECT_LABEL = "document-filter-project-label";
+        String PROJECT_SELECTOR = "document-filter-project-selector";
+        String ORGANIZATION_CODE_LABEL = "document-filter-organization-code-label";
+        String ORGANIZATION_CODE_PROTEI = "document-filter-organization-code-protei";
+        String ORGANIZATION_CODE_PROTEI_ST = "document-filter-organization-code-protei-st";
+        String DOCUMENT_TYPE_LABEL = "document-filter-document-type-label";
+        String DOCUMENT_TYPE_SELECTOR = "document-filter-document-type-selector";
+        String DOCUMENT_CATEGORY_LABEL = "document-filter-document-category-label";
+        String DOCUMENT_CATEGORY_SELECTOR = "document-filter-document-category-selector";
+        String APPROVED_LABEL = "document-filter-approved-label";
+        String APPROVED_YES = "document-filter-approved-yes";
+        String APPROVED_ANY = "document-filter-approved-any";
+        String APPROVED_NO = "document-filter-approved-no";
+        String DOCUMENT_TEXT_LABEL = "document-filter-document-text-label";
+        String DOCUMENT_TEXT_INPUT = "document-filter-document-text-input";
+        String KEY_WORD_LABEL = "document-filter-key-word-label";
+        String KEY_WORD_INPUT = "document-filter-key-word-input";
+        String SHOW_DEPRECATED_CHECKBOX = "document-filter-show-deprecated-checkbox";
+        String RESET_BUTTON = "document-filter-reset-button";
+    }
+
+    public interface DOCUMENT_PREVIEW {
+
+    }
+
     public interface LOCALE_BUTTON {
         String DEFAULT = "locale-button-";
         String EN = "locale-button-en";
