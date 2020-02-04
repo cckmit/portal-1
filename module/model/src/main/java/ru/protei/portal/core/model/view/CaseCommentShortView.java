@@ -17,7 +17,7 @@ public class CaseCommentShortView {
     private Date created;
 
     @JdbcColumn(name = "private_flag")
-    private boolean privateComment;
+    private boolean isPrivateComment;
 
     @JdbcColumn(name="case_id")
     private Long caseId;
@@ -67,11 +67,11 @@ public class CaseCommentShortView {
     }
 
     public boolean isPrivateComment() {
-        return privateComment;
+        return isPrivateComment;
     }
 
     public void setPrivateComment(boolean privateComment) {
-        this.privateComment = privateComment;
+        this.isPrivateComment = privateComment;
     }
 
     public Long getCaseId() {
@@ -156,7 +156,7 @@ public class CaseCommentShortView {
         return "CaseCommentShortView{" +
                 "id=" + id +
                 ", created=" + created +
-                ", privateComment=" + privateComment +
+                ", privateComment=" + isPrivateComment +
                 ", caseId=" + caseId +
                 ", authorId=" + authorId +
                 ", authorName='" + authorName + '\'' +
