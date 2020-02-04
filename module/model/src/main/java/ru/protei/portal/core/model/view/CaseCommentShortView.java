@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -17,41 +16,39 @@ public class CaseCommentShortView {
     @JdbcColumn(name="created")
     private Date created;
 
-    @JdbcJoinedColumn( mappedColumn = "caseno", table = "case_object", localColumn = "CASE_ID", remoteColumn = "ID" )
-    private Long caseNumber;
+    @JdbcColumn(name = "private_flag")
+    private boolean privateComment;
+
+    @JdbcColumn(name="case_id")
+    private Long caseId;
+
+    @JdbcColumn(name="author_id")
+    private Long authorId;
 
     @JdbcJoinedColumn( mappedColumn = "displayShortName", table = "Person", localColumn = "author_id", remoteColumn = "ID" )
-    private String author;
+    private String authorName;
+
+    @JdbcJoinedColumn( mappedColumn = "company_id", joinPath = {
+            @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
+    })
+    private Long companyId;
 
     @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
             @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
             @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
     })
-    private String authorCompanyName;
+    private String companyName;
 
     @JdbcColumn(name="cstate_id")
-    private Long caseStateId;
+    private Integer caseStateId;
 
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
 
-    @JdbcColumn(name="reply_to")
-    private Long replyTo;
-
     @JdbcColumn(name="comment_text")
     private String text;
 
-    @JdbcColumn(name="time_elapsed")
-    private Long timeElapsed;
-
-    @JdbcColumn(name = "private_flag")
-    private boolean privateComment;
-
     public CaseCommentShortView() {}
-
-    public CaseCommentShortView(String text) {
-        this.text = text;
-    }
 
     public Long getId() {
         return id;
@@ -69,35 +66,59 @@ public class CaseCommentShortView {
         this.created = created;
     }
 
-    public Long getCaseNumber() {
-        return caseNumber;
+    public boolean isPrivateComment() {
+        return privateComment;
     }
 
-    public void setCaseNumber(Long caseNumber) {
-        this.caseNumber = caseNumber;
+    public void setPrivateComment(boolean privateComment) {
+        this.privateComment = privateComment;
     }
 
-    public String getAuthor() {
-        return author;
+    public Long getCaseId() {
+        return caseId;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
     }
 
-    public String getAuthorCompanyName() {
-        return authorCompanyName;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthorCompanyName(String authorCompanyName) {
-        this.authorCompanyName = authorCompanyName;
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 
-    public Long getCaseStateId() {
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public Integer getCaseStateId() {
         return caseStateId;
     }
 
-    public void setCaseStateId(Long caseStateId) {
+    public void setCaseStateId(Integer caseStateId) {
         this.caseStateId = caseStateId;
     }
 
@@ -109,37 +130,12 @@ public class CaseCommentShortView {
         this.caseImpLevel = caseImpLevel;
     }
 
-    public Long getReplyTo() {
-        return replyTo;
-    }
-
-    public void setReplyTo(Long replyTo) {
-        this.replyTo = replyTo;
-    }
-
     public String getText() {
         return text;
     }
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public Long getTimeElapsed() {
-        return timeElapsed;
-    }
-
-    public void setTimeElapsed(Long timeElapsed) {
-        this.timeElapsed = timeElapsed;
-    }
-
-
-    public boolean isPrivateComment() {
-        return privateComment;
-    }
-
-    public void setPrivateComment(boolean privateComment) {
-        this.privateComment = privateComment;
     }
 
     @Override
@@ -160,15 +156,15 @@ public class CaseCommentShortView {
         return "CaseCommentShortView{" +
                 "id=" + id +
                 ", created=" + created +
-                ", caseNumber=" + caseNumber +
-                ", author='" + author + '\'' +
-                ", authorCompanyName='" + authorCompanyName + '\'' +
+                ", privateComment=" + privateComment +
+                ", caseId=" + caseId +
+                ", authorId=" + authorId +
+                ", authorName='" + authorName + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", companyName='" + companyName + '\'' +
                 ", caseStateId=" + caseStateId +
                 ", caseImpLevel=" + caseImpLevel +
-                ", replyTo=" + replyTo +
                 ", text='" + text + '\'' +
-                ", timeElapsed=" + timeElapsed +
-                ", privateComment=" + privateComment +
                 '}';
     }
 }

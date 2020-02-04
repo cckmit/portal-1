@@ -286,7 +286,7 @@ public class PortalApiController {
         query.setOffset(apiQuery.getOffset());
         query.setSortField(En_SortField.creation_date);
         query.setSortDir(En_SortDir.DESC);
-        query.setCaseNumbers(Collections.singletonList(apiQuery.getCaseNumber()));
+        query.setCaseNumber(apiQuery.getCaseNumber());
         return query;
     }
 

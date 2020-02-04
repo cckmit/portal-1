@@ -13,7 +13,7 @@ public class CaseCommentApiQuery extends BaseQuery {
     @Override
     public String toString() {
         return "CommentApiQuery{" +
-                "caseId=" + caseNumber +
+                "caseNumber=" + caseNumber +
                 '}';
     }
 }
