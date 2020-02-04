@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.stringselectform.item.StringTagInputFormItem;
 
 import java.util.LinkedList;
@@ -45,6 +46,10 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
+    }
+
+    public void ensureLabelDebugId(String debugId) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
     public void setHeader(String text) {

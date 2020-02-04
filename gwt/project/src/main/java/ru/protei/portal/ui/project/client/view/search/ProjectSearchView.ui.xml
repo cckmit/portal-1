@@ -10,19 +10,19 @@
     <g:HTMLPanel styleName="card-body">
         <div class="row">
             <div class="form-group col-md-4">
-                <label><ui:text from="{lang.projectName}"/></label>
+                <label ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
                 <g:TextBox ui:field="name" styleName="form-control"/>
             </div>
             <div class="form-group col-md-4">
-                <label><ui:text from="{lang.created}"/></label>
+                <label ui:field="dateCreatedRangeLabel"><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
             <div class="form-group col-md-4">
-                <label><ui:text from="{lang.projectCustomerType}"/></label>
+                <label ui:field="customerTypeLabel"><ui:text from="{lang.projectCustomerType}"/></label>
                 <cutomertype:CustomerTypeSelector ui:field="customerType"/>
             </div>
             <div class="form-group col-md-12">
-                <label><ui:text from="{lang.projectProducts}"/></label>
+                <label ui:field="productsLabel"><ui:text from="{lang.projectProducts}"/></label>
                 <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
             </div>
         </div>

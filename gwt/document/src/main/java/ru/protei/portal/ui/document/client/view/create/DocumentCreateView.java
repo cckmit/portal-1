@@ -7,8 +7,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidget;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
+import ru.protei.portal.ui.common.client.widget.wizard.pane.WizardWidgetPane;
 import ru.protei.portal.ui.document.client.activity.create.AbstractDocumentCreateActivity;
 import ru.protei.portal.ui.document.client.activity.create.AbstractDocumentCreateView;
 
@@ -85,7 +87,14 @@ public class DocumentCreateView extends Composite implements AbstractDocumentCre
         return btnCreate;
     }
 
-    private void ensureDebugIds() {}
+    private void ensureDebugIds() {
+        wizard.setTabNameDebugId(documentCreate.getTabName(), DebugIds.DOCUMENT.CREATE.BUTTON);
+        wizard.setTabNameDebugId(documentProject.getTabName(), DebugIds.DOCUMENT.PROJECT_SET.BUTTON);
+        wizard.setButtonNextDebugId(DebugIds.DOCUMENT.CREATE.NEXT_BUTTON);
+        wizard.setButtonPreviousDebugId(DebugIds.DOCUMENT.CREATE.PREVIOUS_BUTTON);
+        btnSearch.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.BUTTON);
+        btnCreate.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.BUTTON);
+    }
 
     @UiHandler("btnSearch")
     public void btnSearchClick(ClickEvent event) {
@@ -103,6 +112,10 @@ public class DocumentCreateView extends Composite implements AbstractDocumentCre
 
     @UiField
     WizardWidget wizard;
+    @UiField
+    WizardWidgetPane documentProject;
+    @UiField
+    WizardWidgetPane documentCreate;
     @UiField
     HTMLPanel projectChooseContainer;
     @UiField

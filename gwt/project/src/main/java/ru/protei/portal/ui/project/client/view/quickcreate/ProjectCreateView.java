@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.view.quickcreate;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -13,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
@@ -32,6 +34,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugId();
         product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
@@ -117,6 +120,26 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         }
     }
 
+    private void ensureDebugId() {
+        name.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.NAME_INPUT);
+        description.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.DESCRIPTION_INPUT);
+        region.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.REGION_SELECTOR);
+        direction.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.DIRECTION_SELECTOR);
+        customerType.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.CUSTOMER_TYPE_SELECTOR);
+        company.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.COMPANY_SELECTOR);
+        product.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.PRODUCT_SELECTOR);
+        saveBtn.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.SAVE_BUTTON);
+        resetBtn.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.RESET_BUTTON);
+
+        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.NAME_LABEL);
+        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.DESCRIPTION_LABEL);
+        regionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.REGION_LABEL);
+        directionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.DIRECTION_LABEL);
+        customerTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.CUSTOMER_TYPE_LABEL);
+        companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.COMPANY_LABEL);
+        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.PRODUCT_LABEL);
+    }
+
     @UiField
     ValidableTextBox name;
 
@@ -148,6 +171,27 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @UiField
     Button resetBtn;
+
+    @UiField
+    LabelElement nameLabel;
+
+    @UiField
+    LabelElement descriptionLabel;
+
+    @UiField
+    LabelElement regionLabel;
+
+    @UiField
+    LabelElement directionLabel;
+
+    @UiField
+    LabelElement customerTypeLabel;
+
+    @UiField
+    LabelElement companyLabel;
+
+    @UiField
+    LabelElement productLabel;
 
     @Inject
     @UiField

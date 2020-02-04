@@ -210,34 +210,34 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     private void ensureDebugIds() {
-        name.ensureDebugId(DebugIds.DOCUMENT_FILTER.SEARCH_INPUT);
-        sortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.SORT_BY_LABEL);
-        sortField.ensureDebugId(DebugIds.DOCUMENT_FILTER.SORT_BY_SELECTOR);
-        sortDir.ensureDebugId(DebugIds.DOCUMENT_FILTER.SORT_BY_TOGGLE);
-        dateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.CREATION_DATE_LABEL);
-        dateRange.setEnsureDebugId(DebugIds.DOCUMENT_FILTER.CREATION_DATE_INPUT);
-        dateRange.getRelative().ensureDebugId(DebugIds.DOCUMENT_FILTER.CREATION_DATE_BUTTON);
-        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.MANAGER_LABEL);
-        manager.ensureDebugId(DebugIds.DOCUMENT_FILTER.MANAGER_SELECTOR);
-        projectsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.PROJECT_LABEL);
-        projects.ensureDebugId(DebugIds.DOCUMENT_FILTER.PROJECT_SELECTOR);
-        organizationCodeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.ORGANIZATION_CODE_LABEL);
-        organizationCode.setEnsureDebugId(En_OrganizationCode.PAMR, DebugIds.DOCUMENT_FILTER.ORGANIZATION_CODE_PROTEI);
-        organizationCode.setEnsureDebugId(En_OrganizationCode.PDRA, DebugIds.DOCUMENT_FILTER.ORGANIZATION_CODE_PROTEI_ST);
-        documentCategoryLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.DOCUMENT_CATEGORY_LABEL);
-        documentCategory.ensureDebugId(DebugIds.DOCUMENT_FILTER.DOCUMENT_CATEGORY_SELECTOR);
-        documentTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.DOCUMENT_TYPE_LABEL);
-        documentType.ensureDebugId(DebugIds.DOCUMENT_FILTER.DOCUMENT_TYPE_SELECTOR);
-        approvedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.APPROVED_LABEL);
-        approved.setYesEnsureDebugId(DebugIds.DOCUMENT_FILTER.APPROVED_YES);
-        approved.setNotDefinedEnsureDebugId(DebugIds.DOCUMENT_FILTER.APPROVED_ANY);
-        approved.setNoEnsureDebugId(DebugIds.DOCUMENT_FILTER.APPROVED_NO);
-        contentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.DOCUMENT_TEXT_LABEL);
-        content.ensureDebugId(DebugIds.DOCUMENT_FILTER.DOCUMENT_TEXT_INPUT);
-        keywordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_FILTER.KEY_WORD_LABEL);
-        keywords.ensureDebugId(DebugIds.DOCUMENT_FILTER.KEY_WORD_INPUT);
-        showDeprecated.ensureDebugId(DebugIds.DOCUMENT_FILTER.SHOW_DEPRECATED_CHECKBOX);
-        resetBtn.ensureDebugId(DebugIds.DOCUMENT_FILTER.RESET_BUTTON);
+        name.ensureDebugId(DebugIds.DOCUMENT.FILTER.SEARCH_INPUT);
+        sortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.SORT_BY_LABEL);
+        sortField.ensureDebugId(DebugIds.DOCUMENT.FILTER.SORT_BY_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.DOCUMENT.FILTER.SORT_BY_TOGGLE);
+        dateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.CREATION_DATE_LABEL);
+        dateRange.setEnsureDebugId(DebugIds.DOCUMENT.FILTER.CREATION_DATE_INPUT);
+        dateRange.getRelative().ensureDebugId(DebugIds.DOCUMENT.FILTER.CREATION_DATE_BUTTON);
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.MANAGER_LABEL);
+        manager.ensureDebugId(DebugIds.DOCUMENT.FILTER.MANAGER_SELECTOR);
+        projectsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.PROJECT_LABEL);
+        projects.ensureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR);
+        organizationCodeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_LABEL);
+        organizationCode.setEnsureDebugId(En_OrganizationCode.PAMR, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI);
+        organizationCode.setEnsureDebugId(En_OrganizationCode.PDRA, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI_ST);
+        documentCategoryLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_CATEGORY_LABEL);
+        documentCategory.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_CATEGORY_SELECTOR);
+        documentTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_TYPE_LABEL);
+        documentType.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_TYPE_SELECTOR);
+        approvedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.APPROVED_LABEL);
+        approved.setYesEnsureDebugId(DebugIds.DOCUMENT.FILTER.APPROVED_YES);
+        approved.setNotDefinedEnsureDebugId(DebugIds.DOCUMENT.FILTER.APPROVED_ANY);
+        approved.setNoEnsureDebugId(DebugIds.DOCUMENT.FILTER.APPROVED_NO);
+        contentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_TEXT_LABEL);
+        content.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_TEXT_INPUT);
+        keywordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.KEY_WORD_LABEL);
+        keywords.ensureDebugId(DebugIds.DOCUMENT.FILTER.KEY_WORD_INPUT);
+        showDeprecated.ensureDebugId(DebugIds.DOCUMENT.FILTER.SHOW_DEPRECATED_CHECKBOX);
+        resetBtn.ensureDebugId(DebugIds.DOCUMENT.FILTER.RESET_BUTTON);
     }
 
     private void fireChangeTimer() {

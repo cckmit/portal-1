@@ -7,7 +7,7 @@
     <g:HTMLPanel>
         <wizard:WizardWidget ui:field="wizard" tabContentStyleName="no-padding">
 
-            <wizard:pane.WizardWidgetPane tabName="{lang.documentProjectHeader}" tabIcon="fa fa-archive"
+            <wizard:pane.WizardWidgetPane ui:field="documentProject" tabName="{lang.documentProjectHeader}" tabIcon="fa fa-archive"
                 buttonBack="{lang.buttonCancel}" buttonForward="{lang.buttonForward}">
                 <g:HTMLPanel ui:field="projectChooseContainer">
                     <div class="card-body">
@@ -31,7 +31,7 @@
                 <g:HTMLPanel ui:field="projectCreateContainer"/>
             </wizard:pane.WizardWidgetPane>
 
-            <wizard:pane.WizardWidgetPane tabName="{lang.documentCreateHeader}" tabIcon="fa fa-book"
+            <wizard:pane.WizardWidgetPane ui:field="documentCreate" tabName="{lang.documentCreateHeader}" tabIcon="fa fa-book"
                 buttonBack="{lang.buttonBack}" buttonForward="{lang.buttonCreate}">
                 <g:HTMLPanel styleName="card-body" ui:field="documentContainer"/>
             </wizard:pane.WizardWidgetPane>

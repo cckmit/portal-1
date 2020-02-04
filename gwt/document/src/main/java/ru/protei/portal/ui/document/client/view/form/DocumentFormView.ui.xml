@@ -23,7 +23,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentName}"/></label>
+                            <label ui:field="nameLabel"><ui:text from="{lang.documentName}"/></label>
                             <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                         </div>
                     </div>
@@ -32,19 +32,19 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentVersion}"/></label>
+                            <label ui:field="versionLabel"><ui:text from="{lang.documentVersion}"/></label>
                             <g:TextBox ui:field="version" styleName="form-control"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default" ui:field="inventoryNumberContainer">
-                            <label><ui:text from="{lang.inventoryNumber}"/></label>
+                            <label ui:field="inventoryNumberLabel"><ui:text from="{lang.inventoryNumber}"/></label>
                             <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default" ui:field="decimalNumberContainer">
-                            <label><ui:text from="{lang.documentDecimalNumber}"/></label>
+                            <label ui:field="decimalNumberLabel"><ui:text from="{lang.documentDecimalNumber}"/></label>
                             <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="form-control"/>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.annotation}"/></label>
+                            <label ui:field="annotationLabel"><ui:text from="{lang.annotation}"/></label>
                             <autoresizetextarea:AutoResizeTextArea ui:field="annotation" styleName="form-control comment"
                                                                    minRows="2" maxRows="10"/>
                         </div>
@@ -85,7 +85,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default document-approval-date"  ui:field="approvalDateContainer">
-                            <label><ui:text from="{lang.documentApprovalDate}"/></label>
+                            <label ui:field="approvalDateLabel"><ui:text from="{lang.documentApprovalDate}"/></label>
                             <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy"
                                                      enabled="false"
                             />
@@ -97,7 +97,7 @@
                     <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
-                                <div class="card-title"><ui:text from="{lang.documentFileDoc}"/></div>
+                                <div ui:field="downloadDocLabel" class="card-title"><ui:text from="{lang.documentFileDoc}"/></div>
                                 <div class="card-controls">
                                     <ul>
                                         <li><g:Anchor ui:field="downloadDoc"><i class="fas fa-cloud-download-alt"/></g:Anchor></li>
@@ -112,7 +112,7 @@
                     <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
-                                <div class="card-title"><ui:text from="{lang.documentFilePdf}"/></div>
+                                <div ui:field="downloadPdfLabel" class="card-title"><ui:text from="{lang.documentFilePdf}"/></div>
                                 <div class="card-controls">
                                     <ul>
                                         <li><g:Anchor ui:field="downloadPdf"><i class="fas fa-cloud-download-alt"/></g:Anchor></li>
@@ -127,7 +127,7 @@
                     <div class="col-md-4">
                         <div class="card card-default">
                             <div class="card-header">
-                                <div class="card-title"><ui:text from="{lang.documentFileApprovalSheet}"/></div>
+                                <div ui:field="downloadApprovedLabel" class="card-title"><ui:text from="{lang.documentFileApprovalSheet}"/></div>
                                 <div class="card-controls">
                                     <ul>
                                         <li><g:Anchor ui:field="downloadApproved"><i class="fas fa-cloud-download-alt"/></g:Anchor></li>
@@ -166,7 +166,7 @@
                         </div>
 
                         <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.documentSectionProject}"/></label>
+                            <label ui:field="documentSectionLabel"><ui:text from="{lang.documentSectionProject}"/></label>
                         </div>
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
@@ -178,7 +178,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group form-group-default">
-                                        <label class="fade"><ui:text from="{lang.documentProjectCustomerType}"/></label>
+                                        <label class="fade" ui:field="projectCustomerTypeLabel"><ui:text from="{lang.documentProjectCustomerType}"/></label>
                                         <g:TextBox ui:field="projectCustomerType" styleName="form-control" enabled="false"/>
                                     </div>
                                 </div>
@@ -186,13 +186,13 @@
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-6">
                                     <div class="form-group form-group-default">
-                                        <label class="fade"><ui:text from="{lang.documentProjectProductDirection}"/></label>
+                                        <label class="fade" ui:field="projectProductDirectionLabel"><ui:text from="{lang.documentProjectProductDirection}"/></label>
                                         <g:TextBox ui:field="projectProductDirection" styleName="form-control" enabled="false"/>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group form-group-default">
-                                        <label class="fade"><ui:text from="{lang.documentProjectRegion}"/></label>
+                                        <label class="fade" ui:field="projectRegionLabel"><ui:text from="{lang.documentProjectRegion}"/></label>
                                         <g:TextBox ui:field="projectRegion" styleName="form-control" enabled="false"/>
                                     </div>
                                 </div>
@@ -200,7 +200,7 @@
                         </div>
 
                         <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.documentSectionEquipment}"/></label>
+                            <label ui:field="documentSectionEquipmentLabel"><ui:text from="{lang.documentSectionEquipment}"/></label>
                         </div>
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
@@ -216,7 +216,7 @@
                         </div>
 
                         <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.documentSectionInfo}"/></label>
+                            <label ui:field="documentSectionInfoLabel"><ui:text from="{lang.documentSectionInfo}"/></label>
                         </div>
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
@@ -246,7 +246,7 @@
                         </div>
 
                         <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.documentMembers}"/></label>
+                            <label ui:field="documentMembersLabel"><ui:text from="{lang.documentMembers}"/></label>
                         </div>
                         <div class="form-group form-group-attached">
                             <person:EmployeeMultiSelector ui:field="members" styleName="case-subscribers"
