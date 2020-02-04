@@ -23,7 +23,7 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
 
-        setItemRenderer( option -> (option.getName() + (HelperFunc.isEmpty( option.getAliases() ) ? "" : " (" + option.getAliases() + ")")) );
+        setItemRenderer( option -> option.getId().equals(CrmConstants.Product.UNDEFINED) ? lang.productWithout() : (option.getName() + (HelperFunc.isEmpty( option.getAliases() ) ? "" : " (" + option.getAliases() + ")")) );
         setNullItem(() -> new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 ));
     }
 
@@ -33,9 +33,6 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
             model.setUnitTypes( enDevUnitTypes);
         }
     }
-
-    @Inject
-    private Lang lang;
 
     protected ProductModel model;
 }
