@@ -477,7 +477,43 @@ public class DebugIds {
     }
 
     public interface DOCUMENT_PREVIEW {
-
+        String DOWNLOAD_DOC_BUTTON = "document-preview-download-doc-button";
+        String DOWNLOAD_PDF_BUTTON = "document-preview-download-pdf-button";
+        String DOWNLOAD_APPROVAL_BUTTON = "document-preview-download-approval-button";
+        String DOC_COMMENT_INPUT = "document-preview-doc-comment-input";
+        String DOC_UPLOADER = "document-preview-doc-uploader";
+        String UPLOAD_DOC_FILE_BUTTON = "document-preview-upload-doc-file-button";
+        String BACK_BUTTON = "document-preview-back-button";
+        String HEADER_LABEL = "document-preview-header-label";
+        String CREATED_BY = "document-preview-created-by";
+        String ANNOTATION_LABEL = "document-preview-annotation-label";
+        String KEY_WORDS_LABEL = "document-preview-key-words-label";
+        String KEY_WORDS = "document-preview-key-words";
+        String COMMON_HEADER_LABEL = "document-preview-common-header-label";
+        String VERSION_LABEL = "document-preview-version-label";
+        String VERSION = "document-preview-version";
+        String TYPE_LABEL = "document-preview-type-label";
+        String TYPE = "document-preview-type";
+        String EXECUTION_TYPE_LABEL = "document-preview-execution-type-label";
+        String EXECUTION_TYPE = "document-preview-execution-type";
+        String PROJECT_LABEL = "document-preview-project-label";
+        String PROJECT = "document-preview-project";
+        String NUMBER_DECIMAL_LABEL = "document-preview-number-decimal-label";
+        String NUMBER_DECIMAL = "document-preview-number-decimal";
+        String NUMBER_INVENTORY_LABEL = "document-preview-number-inventory-label";
+        String NUMBER_INVENTORY = "document-preview-number-inventory";
+        String WORK_GROUP_HEADER_LABEL = "document-preview-work-group-header-label";
+        String MANAGER_LABEL = "document-preview-manager-label";
+        String MANAGER = "document-preview-manager";
+        String REGISTRAR_LABEL = "document-preview-registrar-label";
+        String REGISTRAR = "document-preview-registrar";
+        String CONTRACTOR_LABEL = "document-preview-contractor-label";
+        String CONTRACTOR = "document-preview-contractor";
+        String MEMBERS_LABEL = "document-preview-member-label";
+        String MEMBERS = "document-preview-member";
+        String UPLOAD_WORK_DOCUMENTATION_LABEL = "document-preview-upload-work-documentation-label";
+        String DOC_COMMENT_LABEL = "document-preview-doc-comment-label";
+        String DOC_UPLOAD_CONTAINER_LOADING = "document-preview-doc-upload-container-loading";
     }
 
     public interface LOCALE_BUTTON {
