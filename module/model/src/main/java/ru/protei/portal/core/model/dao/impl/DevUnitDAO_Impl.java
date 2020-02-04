@@ -50,7 +50,7 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
     @Override
     public DevUnit getProductDirection(Long productId) {
-        return getByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ? LIMIT 1",
+        return getByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );

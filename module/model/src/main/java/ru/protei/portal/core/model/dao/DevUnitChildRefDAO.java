@@ -3,8 +3,9 @@ package ru.protei.portal.core.model.dao;
 import ru.protei.portal.core.model.ent.DevUnitChildRef;
 
 public interface DevUnitChildRefDAO extends PortalBaseDAO<DevUnitChildRef> {
+    boolean removeParents(Long productId);
 
-    boolean removeByParentId(Long parentId);
+    boolean removeChildren(Long productId);
 
-    boolean removeByChildId(Long childId);
+    boolean removeProductDirection(Long productId);
 }

@@ -332,6 +332,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", configuration='" + configuration + '\'' +
                 ", cdrDescription='" + cdrDescription + '\'' +
                 ", historyVersion='" + historyVersion + '\'' +
+                ", productDirection=" + productDirection +
                 ", aliases=" + aliases +
                 '}';
     }

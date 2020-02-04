@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.DevUnitChildRef;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -144,10 +145,9 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductSubscriptions(product.getId(), product.getSubscriptions());
 
-        addDirectionToParents(product);
-
-        helper.persist(product, "parents");
-        helper.persist(product, "children");
+        saveProductDirection(product);
+        saveParents(product);
+        saveChildren(product);
 
         return ok(product);
 
@@ -172,18 +172,12 @@ public class ProductServiceImpl implements ProductService {
         updateProductSubscriptions( product.getId(), product.getSubscriptions() );
 
         if (!Objects.equals(oldProduct.getType(), product.getType())) {
-            if (product.isProduct()) {
-                devUnitChildRefDAO.removeByChildId(product.getId());
-                product.setParents(null);
-            } else {
-                devUnitChildRefDAO.removeByParentId(product.getId());
-            }
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        addDirectionToParents(product);
-
-        helper.persist(product, "parents");
-        helper.persist(product, "children");
+        saveProductDirection(product);
+        saveParents(product);
+        saveChildren(product);
 
         return ok(product);
     }
@@ -219,14 +213,36 @@ public class ProductServiceImpl implements ProductService {
         return ok(checkUniqueProduct(name, type, excludeId));
     }
 
-    private void addDirectionToParents(DevUnit product) {
-        if (product.getProductDirection() != null) {
-            if (CollectionUtils.isNotEmpty(product.getParents())) {
-                product.getParents().add(product.getProductDirection());
-            } else {
-                product.setParents(new ArrayList<>(Collections.singletonList(product.getProductDirection())));
-            }
+    private void saveProductDirection(DevUnit product) {
+        devUnitChildRefDAO.removeProductDirection(product.getId());
+
+        if (product.getProductDirection() == null) {
+            return;
         }
+
+        devUnitChildRefDAO.persist(new DevUnitChildRef(product.getProductDirection().getId(), product.getId()));
+    }
+
+    private void saveParents(DevUnit product) {
+        devUnitChildRefDAO.removeParents(product.getId());
+
+        if (CollectionUtils.isEmpty(product.getParents())) {
+            return;
+        }
+
+        List<DevUnitChildRef> parents = product.getParents().stream().map(parent -> new DevUnitChildRef(parent.getId(), product.getId())).collect(Collectors.toList());
+        devUnitChildRefDAO.persistBatch(parents);
+    }
+
+    private void saveChildren(DevUnit product) {
+        devUnitChildRefDAO.removeChildren(product.getId());
+
+        if (CollectionUtils.isEmpty(product.getChildren())) {
+            return;
+        }
+
+        List<DevUnitChildRef> children = product.getChildren().stream().map(child -> new DevUnitChildRef(product.getId(), child.getId())).collect(Collectors.toList());
+        devUnitChildRefDAO.persistBatch(children);
     }
 
     private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {
