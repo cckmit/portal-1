@@ -39,6 +39,12 @@ public class CaseCommentShortView {
     })
     private String companyName;
 
+    @JdbcJoinedColumn( mappedColumn = "category_id", joinPath = {
+            @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" ),
+    })
+    private Integer companyCategoryId;
+
     @JdbcColumn(name="cstate_id")
     private Integer caseStateId;
 
@@ -114,6 +120,14 @@ public class CaseCommentShortView {
         this.companyName = companyName;
     }
 
+    public Integer getCompanyCategoryId() {
+        return companyCategoryId;
+    }
+
+    public void setCompanyCategoryId(Integer companyCategoryId) {
+        this.companyCategoryId = companyCategoryId;
+    }
+
     public Integer getCaseStateId() {
         return caseStateId;
     }
@@ -156,12 +170,13 @@ public class CaseCommentShortView {
         return "CaseCommentShortView{" +
                 "id=" + id +
                 ", created=" + created +
-                ", privateComment=" + isPrivateComment +
+                ", isPrivateComment=" + isPrivateComment +
                 ", caseId=" + caseId +
                 ", authorId=" + authorId +
                 ", authorName='" + authorName + '\'' +
-                ", companyId='" + companyId + '\'' +
+                ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +
+                ", companyCategoryId=" + companyCategoryId +
                 ", caseStateId=" + caseStateId +
                 ", caseImpLevel=" + caseImpLevel +
                 ", text='" + text + '\'' +
