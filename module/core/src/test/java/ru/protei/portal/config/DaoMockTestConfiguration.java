@@ -104,6 +104,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
+        return mock(CaseCommentShortViewDAO.class);
+    }
+
+    @Bean
     public CaseDocumentDAO getCaseDocumentDAO() {
         return  mock(CaseDocumentDAO.class);
     }

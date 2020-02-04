@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseLinkService;
@@ -246,7 +247,7 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/comments")
-    public Result<List<CaseComment>> getCaseCommentList(
+    public Result<List<CaseCommentShortView>> getCaseCommentList(
             @RequestBody CaseCommentApiQuery query,
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -259,11 +260,10 @@ public class PortalApiController {
             return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
         }
 
-        if (query.getCaseId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case ID");
+        if (query.getCaseNumber() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case number");
         }
-
-        return caseCommentService.getCaseCommentList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query));
+        return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
@@ -286,7 +286,7 @@ public class PortalApiController {
         query.setOffset(apiQuery.getOffset());
         query.setSortField(En_SortField.creation_date);
         query.setSortDir(En_SortDir.DESC);
-        query.setCaseObjectIds(Collections.singletonList(apiQuery.getCaseId()));
+        query.setCaseNumber(apiQuery.getCaseNumber());
         return query;
     }
 

@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
@@ -220,21 +221,23 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     @Transactional
-    public void getCaseCommentsListByCaseId() throws Exception {
+    public void getCaseCommentsListByCaseNumber() throws Exception {
         CaseObject caseObject = makeCaseObject( person );
         makeCaseComment( person,caseObject.getId(), "testGetCaseCommentsListByCaseId. text comment. private" );
 
-        final int COMMENTS_COUNT = 3;
+        CaseCommentQuery query = new CaseCommentQuery();
+        query.setCaseObjectIds(Collections.singletonList(caseObject.getId()));
+        int caseCommentByIdCount = caseCommentDAO.getCaseCommentsCaseIds(query).size();
 
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
-        caseCommentApiQuery.setCaseId(caseObject.getId());
+        caseCommentApiQuery.setCaseNumber(caseObject.getCaseNumber());
 
         ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
 
         accept
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
-                .andExpect(jsonPath("$.data", hasSize(COMMENTS_COUNT)));
+                .andExpect(jsonPath("$.data", hasSize(caseCommentByIdCount)));
     }
 
     @Test
@@ -244,7 +247,7 @@ public class TestPortalApiController extends BaseServiceTest {
         makeCaseComment( person,caseObject.getId(), "testGetCaseCommentsListByCaseId. text comment. private" );
 
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
-        caseCommentApiQuery.setCaseId(caseObjectDAO.getMaxId() + 1);
+        caseCommentApiQuery.setCaseNumber(caseObject.getCaseNumber() + 1);
 
         ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
 
@@ -255,13 +258,12 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
-    public void getCaseCommentsListByCaseIdError() throws Exception {
-//        createAndPersistIssueForComments(person, company.getId());
+    public void getCaseCommentsListByCaseNumberError() throws Exception {
         CaseObject caseObject = makeCaseObject( person );
         makeCaseComment( person,caseObject.getId(), "testGetCaseCommentsListByCaseId. text comment. private" );
 
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
-        caseCommentApiQuery.setCaseId(null);
+        caseCommentApiQuery.setCaseNumber(null);
 
         ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
 

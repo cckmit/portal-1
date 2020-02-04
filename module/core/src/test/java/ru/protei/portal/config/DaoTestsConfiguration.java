@@ -94,6 +94,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
+        return new CaseCommentShortViewDAO_Impl();
+    }
+
+    @Bean
     public CaseDocumentDAO getCaseDocumentDAO() {
         return new CaseDocumentDAO_Impl();
     }
