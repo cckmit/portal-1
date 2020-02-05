@@ -91,7 +91,7 @@ public class CachedPersonMapper implements PersonMapper {
         person.setLocale("ru");
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade();
-        contactInfoFacade.setEmail(jiraUser.getEmailAddress());
+        contactInfoFacade.setInternalEmail(jiraUser.getEmailAddress());
         person.setContactInfo(contactInfoFacade.editInfo());
 
         personDAO.saveOrUpdate(person);

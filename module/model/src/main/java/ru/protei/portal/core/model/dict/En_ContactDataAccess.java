@@ -7,7 +7,8 @@ import java.io.Serializable;
  */
 public enum En_ContactDataAccess implements Serializable {
     PUBLIC,
-    PRIVATE;
+    PRIVATE,
+    INTERNAL;
 
     En_ContactDataAccess () {
 
