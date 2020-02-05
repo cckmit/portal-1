@@ -244,6 +244,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
+        return new CaseCommentShortViewDAO_Impl();
+    }
+
+    @Bean
     public CaseDocumentDAO getCaseDocumentDAO() {
         return new CaseDocumentDAO_Impl();
     }
@@ -291,6 +296,11 @@ public class MainConfiguration {
     @Bean
     public UserLoginDAO getUserLoginDAO() {
         return new UserLoginDAO_Impl();
+    }
+
+    @Bean
+    public UserDashboardDAO getUserDashboardDAO() {
+        return new UserDashboardDAO_Impl();
     }
 
     @Bean
@@ -785,6 +795,11 @@ public class MainConfiguration {
     @Bean
     public SLAService getSLAService() {
         return new SLAServiceImpl();
+    }
+
+    @Bean
+    public UserDashboardService getUserDashboardService() {
+        return new UserDashboardServiceImpl();
     }
 
 

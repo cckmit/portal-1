@@ -24,6 +24,7 @@ public interface CompanyService {
     @Privileged({ En_Privilege.COMPANY_VIEW })
     Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query);
     Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query);
+    Result<List<EntityOption>> companyOptionListByIds( List<Long> ids);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )

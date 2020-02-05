@@ -7,6 +7,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -77,7 +78,7 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void resetFilter();
 
-    void fillFilterFields(CaseQuery caseQuery);
+    void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
     void setCompaniesErrorStyle(boolean hasError);
 

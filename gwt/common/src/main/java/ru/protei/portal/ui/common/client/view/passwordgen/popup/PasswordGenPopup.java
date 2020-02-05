@@ -11,13 +11,11 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
-import ru.protei.portal.ui.common.client.events.ApproveEvent;
-import ru.protei.portal.ui.common.client.events.ApproveHandler;
-import ru.protei.portal.ui.common.client.events.HasApproveHandlers;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
 
-public class PasswordGenPopup extends BasePopupView implements HasApproveHandlers {
+public class PasswordGenPopup extends BasePopupView implements HasApproveHandlers, HasRejectHandlers {
 
     public PasswordGenPopup() {
         setWidget(ourUiBinder.createAndBindUi(this));
@@ -27,6 +25,11 @@ public class PasswordGenPopup extends BasePopupView implements HasApproveHandler
     @Override
     public HandlerRegistration addApproveHandler(ApproveHandler handler) {
         return addHandler(handler, ApproveEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addRejectHandler(RejectHandler handler) {
+        return addHandler(handler, RejectEvent.getType());
     }
 
     @Override
@@ -41,7 +44,7 @@ public class PasswordGenPopup extends BasePopupView implements HasApproveHandler
 
     @UiHandler("cancelButton")
     public void onCancelClicked(ClickEvent event) {
-        hide();
+        fireRejectEventAndHidePopup();
     }
 
     @Override
@@ -80,6 +83,11 @@ public class PasswordGenPopup extends BasePopupView implements HasApproveHandler
 
     private void fireApproveEventAndHidePopup() {
         ApproveEvent.fire(this);
+        hide();
+    }
+
+    private void fireRejectEventAndHidePopup() {
+        RejectEvent.fire(this);
         hide();
     }
 

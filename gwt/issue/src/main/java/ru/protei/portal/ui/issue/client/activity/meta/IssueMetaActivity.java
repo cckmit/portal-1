@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -58,9 +59,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
 
-        validateCaseMeta(meta);
+        if (!validateCaseMeta(meta)){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
+        }
     }
-
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
@@ -76,6 +78,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
+        if (metaView.state().getValue().equals(En_CaseState.CREATED) && meta.getManager() != null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
+            metaView.state().setValue(meta.getState());
+            return;
+        }
         meta.setStateId(metaView.state().getValue().getId());
         onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
     }
@@ -89,7 +96,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onProductChanged() {
         meta.setProduct(metaView.getProduct());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() )));
     }
 
     @Override
@@ -133,6 +140,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
+                    meta.setState(caseMetaUpdated.getState());
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
                     if(runAfterUpdate!=null) runAfterUpdate.run();
@@ -277,6 +285,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
+        metaView.setProductTypes(En_DevUnitType.PRODUCT);
+
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( meta.getState() );
@@ -325,19 +335,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean companyIsValid = caseMeta.getInitiatorCompany() != null;
         metaView.companyValidator().setValid(companyIsValid);
 
-        boolean initiatorIsValid = caseMeta.getInitiatorCompany() == null || caseMeta.getInitiator() != null;
-        metaView.initiatorValidator().setValid(initiatorIsValid);
-
         boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
         metaView.managerValidator().setValid(managerIsValid);
 
-        boolean productIsValid = caseMeta.getProduct() != null || !isStateWithRestrictions(caseMeta.getState());
+        boolean productIsValid = caseMeta.getProduct() != null || caseMeta.getManager() == null && !isStateWithRestrictions(caseMeta.getState());
         metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
                         productIsValid &&
                         managerIsValid &&
-                        initiatorIsValid &&
                         companyIsValid;
 
         return isFieldsValid;

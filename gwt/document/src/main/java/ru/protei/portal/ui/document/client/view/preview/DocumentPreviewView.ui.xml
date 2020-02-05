@@ -16,6 +16,9 @@
                 <g:Anchor href="javascript:void(0)" ui:field="downloadPdfButton" target="_blank">
                     <img src="./images/document-pdf.svg"/>
                 </g:Anchor>
+                <g:Anchor href="javascript:void(0)" ui:field="downloadApprovalSheetButton" target="_blank">
+                    <img src="./images/document-as.svg"/>
+                </g:Anchor>
             </div>
             <div class="inline">
                 <small ui:field="createdBy"/>

@@ -190,10 +190,6 @@
             <version>4.0.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>atlassian-renderer</artifactId>
-                    <groupId>com.atlassian.renderer</groupId>
-                </exclusion>
-                <exclusion>
                     <groupId>ru.protei</groupId>
                     <artifactId>jmc</artifactId>
                 </exclusion>

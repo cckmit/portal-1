@@ -7,7 +7,9 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
@@ -34,5 +36,5 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         }
     }
 
-    protected ProductModel model;
+    private ProductModel model;
 }

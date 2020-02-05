@@ -20,8 +20,7 @@ import javax.annotation.PreDestroy;
 public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
 
     private static final String DB_SCHEMA_NAME = "portal_test";
-    private static final int DB_PORT = 33062;
-    private int port = DB_PORT;
+    private int port = TestConfig.EmbeddedDB.DB_PORT;
     private static final String DB_USERNAME = "admin";
     private static final String DB_PASSWORD = "sql";
     private static final SchemaConfig SCHEMA_CONFIG = SchemaConfig.aSchemaConfig(DB_SCHEMA_NAME).build();
@@ -44,6 +43,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
         }
         isInitialized = true;
         if (testConfig.data().embeddedDbEnabled) {
+            port = testConfig.data().getPort();
             mysqld = EmbeddedMysql.anEmbeddedMysql(buildConfig(port))
                     .addSchema(SCHEMA_CONFIG)
                     .start();

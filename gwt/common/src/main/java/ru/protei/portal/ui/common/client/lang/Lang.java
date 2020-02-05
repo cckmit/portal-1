@@ -387,15 +387,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectCompanyGroup();
 
-    String activeRecords();
-
-    String newRecords();
-
-    String inactiveRecords();
-
     String dashboard();
-
-    String dashboardSelectCompany();
 
     String issueCommentChangeStatusTo();
 
@@ -813,6 +805,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveIssueNeedSelectManager();
 
+    String errSaveIssueNeedUnselectManager();
+
     String document();
 
     String annotation();
@@ -856,6 +850,8 @@ public interface Lang extends Messages, ContactItemLang {
     String documentProjectIsEmpty();
 
     String inventoryNumberIsEmpty();
+
+    String documentApproveFieldsIsEmpty();
 
     String negativeInventoryNumber();
 
@@ -1321,6 +1317,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentApproveType();
 
     String documentApproved();
+
+    String documentApprovedBy();
+
+    String documentApprovalDate();
 
     String documentNotApproved();
 
@@ -1954,6 +1954,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentFilePdf();
 
+    String documentFileApprovalSheet();
+
     String backToIssues();
 
     String editNameAndDescription();
@@ -1971,6 +1973,8 @@ public interface Lang extends Messages, ContactItemLang {
     String searchNoMatchesFound();
 
     String emptySelectorList();
+
+    String documentTypeShort();
 
     String errUnableLinkIssueToItself();
 
@@ -1991,4 +1995,30 @@ public interface Lang extends Messages, ContactItemLang {
     String contactGeneratePassword();
 
     String passwordIsDisplay();
+
+    String issueCreate();
+
+    String dashboardAddTable();
+
+    String dashboardEmpty();
+
+    String dashboardTableOverflow(int records);
+
+    String dashboardTableName();
+
+    String dashboardTableFilter();
+
+    String dashboardTableCreate();
+
+    String dashboardTableEdit();
+
+    String dashboardTableConfirmRemove();
+
+    String dashboardTableRemoved();
+
+    String dashboardTableFilterCreation();
+
+    String dashboardTableFilterCreationNewIssues();
+
+    String dashboardTableFilterCreationActiveIssues();
 }

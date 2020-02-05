@@ -176,6 +176,6 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
     }
 
     private static String getFileName(Long projectId, Long documentId, En_DocumentFormat documentFormat) {
-        return documentId + "." + documentFormat.getFormat();
+        return documentFormat.getFilename(documentId);
     }
 }

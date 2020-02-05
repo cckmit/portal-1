@@ -9,7 +9,7 @@
         </div>
 
         <div class="col-md-8">
-            <person:EmployeeMultiSelector ui:field="members"/>
+            <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false"/>
         </div>
     </g:HTMLPanel>
 

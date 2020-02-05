@@ -4,10 +4,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
@@ -37,6 +34,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
+    void setProductTypes(En_DevUnitType... enDevUnitTypes);
 
     void setInitiator(Person initiator);
     Person getInitiator();

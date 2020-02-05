@@ -1,0 +1,36 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.dashboardTableName}"/></label>
+                    <g:TextBox ui:field="name" styleName="form-control"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.dashboardTableFilter}"/></label>
+                    <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueFilterNotDefined}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.dashboardTableFilterCreation}"/></label>
+                    <div>
+                        <g:Button ui:field="createFilterNewIssues" styleName="btn btn-default btn-cons m-b-10">
+                            <span><ui:text from="{lang.dashboardTableFilterCreationNewIssues}"/></span>
+                        </g:Button>
+                        <g:Button ui:field="createFilterActiveIssues" styleName="btn btn-default btn-cons m-b-10">
+                            <span><ui:text from="{lang.dashboardTableFilterCreationActiveIssues}"/></span>
+                        </g:Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

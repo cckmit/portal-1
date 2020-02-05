@@ -135,14 +135,16 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author) {
+    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
 
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
+        boolean withApprovalSheet = approvalSheetFile != null;
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
+        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if (document == null || !isValidNewDocument(document, withDoc, withPdf)) {
+        if (document == null || !isValidNewDocument(document, withDoc, withPdf, withApprovalSheet)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -191,6 +193,15 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
+            if (withApprovalSheet && !saveToSVN(approvalSheetFile.getInputStream(), documentId, projectId, ApprovalSheetFormat, author)) {
+                log.error("createDocument(" + documentId + "): failed to save approval sheet file to the svn");
+                if (withDoc && !removeFromSVN(documentId, projectId, docFormat, authorRollback)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withPdf && !removeFromSVN(documentId, projectId, pdfFormat, authorRollback)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the svn");
+                if (!removeFromIndex(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document file from the index");
+                if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_CREATED);
+            }
+
             List<Long> newMembers = CollectionUtils.stream(document.getMembers()).map(Person::getId).collect(Collectors.toList());
             List<Person> personList = getDocumentMemberAddedEvent( document, newMembers );
 
@@ -201,12 +212,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, String author) {
+    public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
 
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
+        boolean withApprovalSheet = approvalSheetFile != null;
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
+        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
         if (document == null || document.getId() == null || !isValidDocument(document)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -232,13 +245,16 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(validationStatus);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = (withDoc || withPdf) ? listDocumentFormatsAtSVN(documentId, projectId) : Collections.emptyList();
+            List<En_DocumentFormat> formatsAtSvn = (withDoc || withPdf || withApprovalSheet) ? listDocumentFormatsAtSVN(documentId, projectId) : Collections.emptyList();
             boolean withDocAtSvn = withDoc && formatsAtSvn.contains(docFormat);
             boolean withPdfAtSvn = withPdf && formatsAtSvn.contains(pdfFormat);
+            boolean withApprovalSheetAtSvn = withApprovalSheet && formatsAtSvn.contains(ApprovalSheetFormat);
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
             byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
+            byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, ApprovalSheetFormat) : null;
             boolean withDocFileRollback = withDoc && oldBytesDoc != null;
             boolean withPdfFileRollback = withPdf && oldBytesPdf != null;
+            boolean withApprovalSheetFileRollback = withApprovalSheet && oldBytesApprovalSheet != null;
 
             String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, "");
             String commitMessageUpdate = getCommitMessageUpdate(documentId, projectId, author, "");
@@ -273,6 +289,18 @@ public class DocumentServiceImpl implements DocumentService {
                 log.error("updateDocument(" + documentId + "): failed to update pdf file at the svn");
                 if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat, commitMessageRemoveAuto)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
                 if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
+                if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            if (withApprovalSheet && (withApprovalSheetAtSvn ?
+                    !updateAtSVN(approvalSheetFile.getInputStream(), documentId, projectId, ApprovalSheetFormat, author) :
+                    !saveToSVN(approvalSheetFile.getInputStream(), documentId, projectId, ApprovalSheetFormat, author))
+            ) {
+                log.error("updateDocument(" + documentId + "): failed to update approval sheet file at the svn");
+                if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat, authorRollback)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
+                if (withPdfFileRollback && !updateAtIndex(oldBytesPdf, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback pdf document from the index");
+                if (withApprovalSheetFileRollback && !updateAtIndex(oldBytesApprovalSheet, documentId, projectId)) log.error("updateDocument(" + documentId + "): failed to rollback approval sheet from the index");
                 if (!updateAtDB(oldDocument)) log.error("updateDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_UPDATED);
             }
@@ -503,7 +531,7 @@ public class DocumentServiceImpl implements DocumentService {
         return oldObj != null && !oldObj.equals(newObj);
     }
 
-    private boolean isValidNewDocument(Document document, boolean withDoc, boolean withPdf) {
+    private boolean isValidNewDocument(Document document, boolean withDoc, boolean withPdf, boolean withApprovalSheet) {
         if (withDoc && !withPdf) {
             return StringUtils.isNotEmpty(document.getName()) &&
                     document.getProjectId() != null;
@@ -538,7 +566,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private En_DocumentFormat mergeDocDocxFormats(Long documentId, Long projectId, En_DocumentFormat format) throws SVNException {
-        if (format == En_DocumentFormat.PDF) {
+        if (format == En_DocumentFormat.PDF || format == En_DocumentFormat.AS) {
             return format;
         }
         List<En_DocumentFormat> formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);

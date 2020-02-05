@@ -52,6 +52,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
 
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
+        passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
     }
 
     @Override

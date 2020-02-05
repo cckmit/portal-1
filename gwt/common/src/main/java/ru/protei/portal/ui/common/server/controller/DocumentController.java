@@ -121,10 +121,16 @@ public class DocumentController {
     }
 
     private void saveFileToSession(HttpServletRequest request, FileItem fileItem, En_DocumentFormat documentFormat) {
-        if (documentFormat == En_DocumentFormat.PDF) {
-            sessionService.setFilePdf(request, fileItem);
-        } else {
-            sessionService.setFileDoc(request, fileItem);
+        switch (documentFormat) {
+            case PDF:
+                sessionService.setFilePdf(request, fileItem);
+                break;
+            case DOCX:
+            case DOC:
+                sessionService.setFileDoc(request, fileItem);
+                break;
+            case AS:
+                sessionService.setFileApprovalSheet(request, fileItem);
         }
     }
 

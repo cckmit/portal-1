@@ -25,7 +25,9 @@ public class NotifyAnimation {
         Timer prepareCloseTimer = new Timer() {
             @Override
             public void run() {
-                close( notify );
+                if (currentOpacityMap.containsKey(notify)) {
+                    close(notify);
+                }
             }
         };
 
