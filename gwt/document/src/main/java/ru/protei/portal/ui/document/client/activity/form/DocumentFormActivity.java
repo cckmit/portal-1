@@ -46,7 +46,6 @@ public abstract class DocumentFormActivity
         event.parent.add(view.asWidget());
         tag = event.tag;
         fillView(event.document);
-        isDocumentCreationInProgress = false;
     }
 
     @Event
@@ -270,6 +269,7 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document) {
         if (!checkDocumentValid(document)) {
+            isDocumentCreationInProgress = false;
             return;
         }
         this.document = document;
