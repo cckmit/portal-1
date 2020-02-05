@@ -220,7 +220,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.MANAGER_LABEL);
         manager.ensureDebugId(DebugIds.DOCUMENT.FILTER.MANAGER_SELECTOR);
         projectsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.PROJECT_LABEL);
-        projects.ensureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR);
+        projects.setAddEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_ADD_BUTTON);
+        projects.setClearEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_CLEAR_BUTTON);
+        projects.setItemContainerEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_ITEM_CONTAINER);
         organizationCodeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_LABEL);
         organizationCode.setEnsureDebugId(En_OrganizationCode.PAMR, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI);
         organizationCode.setEnsureDebugId(En_OrganizationCode.PDRA, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI_ST);
@@ -235,7 +237,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         contentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_TEXT_LABEL);
         content.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_TEXT_INPUT);
         keywordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.KEY_WORD_LABEL);
-        keywords.ensureDebugId(DebugIds.DOCUMENT.FILTER.KEY_WORD_INPUT);
+        keywords.setEnsureDebugId(DebugIds.DOCUMENT.FILTER.KEY_WORD_INPUT);
         showDeprecated.ensureDebugId(DebugIds.DOCUMENT.FILTER.SHOW_DEPRECATED_CHECKBOX);
         resetBtn.ensureDebugId(DebugIds.DOCUMENT.FILTER.RESET_BUTTON);
     }

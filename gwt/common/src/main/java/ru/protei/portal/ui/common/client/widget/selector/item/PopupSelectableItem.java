@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
@@ -27,6 +28,7 @@ public class PopupSelectableItem<T>
             selectorItemHandler.onSelectorItemClicked(this);
             setSelected(!checkbox.getValue());
         }, ClickEvent.getType());
+        root.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.POPUP.ITEM);
     }
 
     @Override

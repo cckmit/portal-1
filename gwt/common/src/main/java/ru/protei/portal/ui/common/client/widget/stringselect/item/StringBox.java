@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.test.client.DebugIds;
 
 /**
  * Один элемент инпут-селектора
@@ -21,6 +22,8 @@ public class StringBox extends Composite implements HasValue<String>, HasEnabled
 
     public StringBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.STRING_SELECT_INPUT.ITEM);
+        close.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.STRING_SELECT_INPUT.REMOVE_BUTTON);
     }
 
     public void setHandler(CloseHandler handler) {

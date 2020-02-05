@@ -293,7 +293,7 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         inventoryNumber.ensureDebugId(DebugIds.DOCUMENT.CREATE.INVENTORY_INPUT);
         decimalNumber.ensureDebugId(DebugIds.DOCUMENT.CREATE.DECIMAL_NUMBER_INPUT);
         annotation.ensureDebugId(DebugIds.DOCUMENT.CREATE.ANNOTATION_INPUT);
-        keywords.ensureDebugId(DebugIds.DOCUMENT.CREATE.KEY_WORD_INPUT);
+        keywords.ensureInputDebugId(DebugIds.DOCUMENT.CREATE.KEY_WORD_INPUT);
         keywords.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.KEY_WORD_LABEL);
         approved.ensureDebugId(DebugIds.DOCUMENT.CREATE.APPROVED_CHECKBOX);
         approvedBy.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.APPROVED_LABEL);
@@ -324,6 +324,7 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         documentType.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.DOCUMENT_TYPE_SELECTOR);
         documentType.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.DOCUMENT_TYPE_LABEL);
         members.setAddEnsureDebugId(DebugIds.DOCUMENT.CREATE.EMPLOYEE_ADD_BUTTON);
+        members.setClearEnsureDebugId(DebugIds.DOCUMENT.CREATE.EMPLOYEE_CLEAR_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.NAME_LABEL);
         versionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.VERSION_LABEL);

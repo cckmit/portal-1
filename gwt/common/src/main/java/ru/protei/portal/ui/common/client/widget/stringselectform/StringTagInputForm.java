@@ -52,6 +52,10 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
         label.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
+    public void ensureInputDebugId(String debugId) {
+        this.inputDebugId = debugId;
+    }
+
     public void setHeader(String text) {
         label.setInnerText(text);
     }
@@ -100,6 +104,7 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
     private TextBox makeInput() {
         TextBox input = new TextBox();
         input.getElement().setAttribute("size", "1");
+        input.ensureDebugId(inputDebugId);
         if (StringUtils.isNotEmpty(placeholder)) {
             input.getElement().setAttribute("placeholder", placeholder);
         }
@@ -118,6 +123,7 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
         return item;
     }
 
+
     @UiField
     LabelElement label;
     @UiField
@@ -126,6 +132,7 @@ public class StringTagInputForm extends Composite implements HasValue<List<Strin
     private String placeholder;
     private boolean isOnlyUnique = true;
     private List<String> value = new LinkedList<>();
+    private String inputDebugId = "";
 
     private static StringTagInputFormUiBinder ourUiBinder = GWT.create(StringTagInputFormUiBinder.class);
     interface StringTagInputFormUiBinder extends UiBinder<HTMLPanel, StringTagInputForm> {}

@@ -457,7 +457,9 @@ public class DebugIds {
             String MANAGER_LABEL = "document-filter-manager-label";
             String MANAGER_SELECTOR = "document-filter-manager-selector";
             String PROJECT_LABEL = "document-filter-project-label";
-            String PROJECT_SELECTOR = "document-filter-project-selector";
+            String PROJECT_SELECTOR_ADD_BUTTON = "document-filter-project-selector-add-button";
+            String PROJECT_SELECTOR_CLEAR_BUTTON = "document-filter-project-selector-clear-button";
+            String PROJECT_SELECTOR_ITEM_CONTAINER = "document-filter-project-selector-item-container";
             String ORGANIZATION_CODE_LABEL = "document-filter-organization-code-label";
             String ORGANIZATION_CODE_PROTEI = "document-filter-organization-code-protei";
             String ORGANIZATION_CODE_PROTEI_ST = "document-filter-organization-code-protei-st";
@@ -566,6 +568,7 @@ public class DebugIds {
             String PDF_APPROVED_DROP_ZONE = "document-create-pdf-approved-drop-zone";
             String EMPLOYEE_PERMISSION_LABEL = "document-create-employee-permission-label";
             String EMPLOYEE_ADD_BUTTON = "document-create-employee-add-button";
+            String EMPLOYEE_CLEAR_BUTTON = "document-create-employee-clear-button";
             String CUSTOMER_TYPE_LABEL = "document-create-customer-type-label";
             String CUSTOMER_TYPE = "document-create-customer-type";
             String DIRECTION_LABEL = "document-create-direction-label";
@@ -618,6 +621,16 @@ public class DebugIds {
 
     public interface PROJECT_LIST {
         String ITEM = "project-list-item";
+    }
+
+    public interface STRING_SELECT_INPUT {
+        String ITEM = "string-select-input";
+        String REMOVE_BUTTON = "string-select-input-remove-button";
+    }
+
+    public interface STRING_TAG_INPUT_FORM {
+        String ITEM = "string-tag-input-form-item";
+        String REMOVE_BUTTON = "string-tag-input-form-remove-button";
     }
 
     public interface LOCALE_BUTTON {
