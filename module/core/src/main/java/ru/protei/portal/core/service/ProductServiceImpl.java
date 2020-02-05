@@ -165,15 +165,16 @@ public class ProductServiceImpl implements ProductService {
 
         DevUnit oldProduct = devUnitDAO.get(product.getId());
 
-        Boolean result = devUnitDAO.merge(product);
-        if ( !result )
-            return error(En_ResultStatus.NOT_UPDATED);
-
-        updateProductSubscriptions( product.getId(), product.getSubscriptions() );
-
         if (!Objects.equals(oldProduct.getType(), product.getType())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        Boolean result = devUnitDAO.merge(product);
+        if ( !result ) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        updateProductSubscriptions( product.getId(), product.getSubscriptions() );
 
         saveProductDirection(product);
         saveParents(product);
