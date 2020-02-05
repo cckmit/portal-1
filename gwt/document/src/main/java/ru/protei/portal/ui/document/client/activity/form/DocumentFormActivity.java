@@ -46,6 +46,7 @@ public abstract class DocumentFormActivity
         event.parent.add(view.asWidget());
         tag = event.tag;
         fillView(event.document);
+        isDocumentCreationInProgress = false;
     }
 
     @Event
@@ -53,7 +54,10 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        saveDocument(fillDto(document));
+        if (!isDocumentCreationInProgress) {
+            isDocumentCreationInProgress = true;
+            saveDocument(fillDto(document));
+        }
     }
 
     @Event
@@ -280,6 +284,7 @@ public abstract class DocumentFormActivity
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
                             fillView(doc);
+                            isDocumentCreationInProgress = false;
                             fireEvent(new DocumentEvents.Form.Saved(tag));
                         }
         ))));
@@ -466,5 +471,6 @@ public abstract class DocumentFormActivity
     private String tag;
     private Document document;
     private ProjectInfo project;
+    private boolean isDocumentCreationInProgress = false;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }
