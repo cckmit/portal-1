@@ -180,16 +180,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                         .append("</div>");
             }
 
-            if (value.getContragentName() != null) {
-                html.append( "<div class=\"document-name\">(" + value.getContragentName() + ")</div>" );
-            }
-
-            html.append( "<div><b>" + value.getType().getName() + " (" + DateFormatter.formatYear(value.getCreated()) + ")</b></div>" );
+            cell.setInnerHTML(html.toString());
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
-            cell.setInnerHTML(html.toString());
         }
     };
 
@@ -228,11 +223,22 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         }
         @Override
         public void fillColumnValue(Element cell, Document value) {
+            StringBuilder html = new StringBuilder();
             if (policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
-                cell.setInnerHTML("<a href=\"#\">" + StringUtils.emptyIfNull(value.getProjectName()) + "</a>");
+                html
+                        .append("<a href=\"#\" class=\"text-overflow-dynamic-container\">")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">")
+                        .append(StringUtils.emptyIfNull(value.getProjectName()))
+                        .append("</span></a>");
             } else {
-                cell.setInnerHTML(StringUtils.emptyIfNull(value.getProjectName()));
+                html
+                        .append("<div class=\"text-overflow-dynamic-container\">")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">")
+                        .append(StringUtils.emptyIfNull(value.getProjectName()))
+                        .append("</span></div>");
             }
+
+            cell.setInnerHTML(html.toString());
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
