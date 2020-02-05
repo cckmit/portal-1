@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;

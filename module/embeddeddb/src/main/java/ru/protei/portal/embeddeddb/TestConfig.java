@@ -1,4 +1,4 @@
-package ru.protei.portal.config;
+package ru.protei.portal.embeddeddb;
 
 import ru.protei.winter.core.utils.config.ConfigUtils;
 import ru.protei.winter.core.utils.config.exception.ConfigException;

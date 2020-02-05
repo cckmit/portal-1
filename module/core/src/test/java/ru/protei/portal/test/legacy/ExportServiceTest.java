@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;

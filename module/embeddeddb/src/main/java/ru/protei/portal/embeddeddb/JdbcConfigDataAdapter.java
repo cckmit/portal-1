@@ -1,8 +1,8 @@
-package ru.protei.portal.bean;
+package ru.protei.portal.embeddeddb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.protei.portal.config.TestConfig;
+import ru.protei.portal.embeddeddb.TestConfig;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.embeddeddb.EmbeddedDB;
 import ru.protei.portal.embeddeddb.EmbeddedDBImpl;

@@ -1,13 +1,13 @@
-package ru.protei.portal.test.jira.config;
+package ru.protei.portal.embeddeddb;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import ru.protei.portal.test.jira.embeddeddb.EmbeddedDB;
-import ru.protei.portal.test.jira.embeddeddb.EmbeddedDBImpl;
-import ru.protei.portal.test.jira.bean.JdbcConfigDataAdapter;
+import ru.protei.portal.embeddeddb.JdbcConfigDataAdapter;
+import ru.protei.portal.embeddeddb.EmbeddedDB;
+import ru.protei.portal.embeddeddb.EmbeddedDBImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.jdbc.WinterLiquibase;
@@ -16,7 +16,7 @@ import ru.protei.winter.jdbc.config.JdbcConfig;
 import javax.sql.DataSource;
 
 @Configuration
-public class DatabaseTestConfiguration {
+public class DatabaseConfiguration {
 
     private final static String WINTER_PROPERTIES_CONFIG = CoreConfigurationContext.WINTER_CONFIG;
     private final static String LIQUIBASE_CHANGELOG_PATH = "classpath:liquibase/changelog.xml";
@@ -32,8 +32,8 @@ public class DatabaseTestConfiguration {
     }
 
     @Bean
-    public JdbcConfigDataAdapter getJdbcConfigDataAdapter() {
-        return new JdbcConfigDataAdapter();
+    public JdbcConfigDataAdapter getJdbcConfigDataAdapter( @Autowired TestConfig testConfig ) {
+        return new JdbcConfigDataAdapter( testConfig );
     }
 
     /**

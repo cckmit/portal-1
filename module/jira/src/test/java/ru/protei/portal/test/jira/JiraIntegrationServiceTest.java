@@ -22,7 +22,7 @@ import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.dict.JiraHookEventType;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
-import ru.protei.portal.test.jira.config.DatabaseTestConfiguration;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.test.jira.config.JiraTestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseTestConfiguration.class, JiraTestConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
 public class JiraIntegrationServiceTest {
 
     @Autowired

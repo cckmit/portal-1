@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
