@@ -20,7 +20,7 @@ public class EmployeeMultiSelector
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setFilter(personView -> !personView.isFired());
-        setItemRenderer(personShortView -> personShortView.getId().equals(CrmConstants.Employee.UNDEFINED) ? lang.employeeWithoutManager() : personShortView.getName());
+        setItemRenderer(PersonShortView::getName);
         setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
     }
 
