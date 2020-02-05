@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.activity.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -123,6 +124,9 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.documentDocUploader().resetForm();
         view.documentDocComment().setValue("");
         view.documentDocVisibility().setVisible(hasAccessToDocModification);
+        view.approvalContainerVisibility().setVisible(document.getApproved());
+        view.setApprovedBy(!document.getApproved() || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView().getName());
+        view.setApprovalDate(!document.getApproved() || document.getApprovalDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(document.getApprovalDate()));
         view.documentDocUploadContainerLoading().setVisible(false);
         fillProject(document);
     }

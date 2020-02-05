@@ -6,17 +6,21 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
+
+import java.util.Date;
 
 public class DocumentPreviewView extends Composite implements AbstractDocumentPreviewView {
 
@@ -130,6 +134,16 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy.setInnerText(approvedBy);
+    }
+
+    @Override
+    public void setApprovalDate(String approvalDate) {
+        this.approvalDate.setInnerText(approvalDate);
+    }
+
+    @Override
     public AbstractDocumentUploader documentDocUploader() {
         return documentDocUploader;
     }
@@ -142,6 +156,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Override
     public HasVisibility documentDocVisibility() {
         return documentDocUploadContainer;
+    }
+
+    @Override
+    public HasVisibility approvalContainerVisibility() {
+        return approvalContainer;
     }
 
     @Override
@@ -211,11 +230,17 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     SpanElement executionType;
     @UiField
+    SpanElement approvedBy;
+    @UiField
+    SpanElement approvalDate;
+    @UiField
     HTMLPanel footerContainer;
     @UiField
     Button backButton;
     @UiField
     HTMLPanel documentDocUploadContainer;
+    @UiField
+    HTMLPanel approvalContainer;
     @UiField
     DivElement documentDocUploadContainerLoading;
     @Inject
