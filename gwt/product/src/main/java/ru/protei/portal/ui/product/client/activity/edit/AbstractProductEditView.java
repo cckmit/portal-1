@@ -56,7 +56,9 @@ public interface AbstractProductEditView extends IsWidget {
     HasValue<List<Subscription>> productSubscriptions();
     HasValidable productSubscriptionsValidator();
 
-    void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed );
+    HasVisibility directionVisibility();
+
+    void setHistoryVersionPreviewAllowing(boolean isPreviewAllowed );
 
     void setConfigurationPreviewAllowing( boolean isPreviewAllowed );
 

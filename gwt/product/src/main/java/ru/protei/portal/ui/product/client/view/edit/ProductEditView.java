@@ -124,6 +124,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
+    public HasVisibility directionVisibility() {
+        return directionContainer;
+    }
+
+    @Override
     public void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed ) {
         historyVersion.setDisplayPreview( isPreviewAllowed );
     }
@@ -152,6 +157,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             childrenContainer.addStyleName("col-md-12");
 
             children.setTypes(En_DevUnitType.PRODUCT);
+
+            directionVisibility().setVisible(true);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
             descriptionLabel.setInnerText(lang.productDescription());
@@ -163,6 +170,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
+
+            directionVisibility().setVisible(true);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
             descriptionLabel.setInnerText(lang.componentDescription());
@@ -174,6 +183,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
+
+            directionVisibility().setVisible(false);
         }
     }
 
@@ -340,6 +351,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField(provided = true)
     ProductDirectionButtonSelector direction;
+    @UiField
+    HTMLPanel directionContainer;
     @UiField
     LabelElement directionLabel;
     @UiField

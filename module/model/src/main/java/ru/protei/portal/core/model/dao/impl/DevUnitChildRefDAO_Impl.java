@@ -6,17 +6,17 @@ import ru.protei.portal.core.model.ent.DevUnitChildRef;
 
 public class DevUnitChildRefDAO_Impl extends PortalBaseJdbcDAO<DevUnitChildRef> implements DevUnitChildRefDAO {
     @Override
-    public boolean removeParents(Long productId) {
-        return removeByCondition("CHILD_ID = ? AND DUNIT_ID IN (SELECT ID FROM dev_unit WHERE UTYPE_ID != ?)", productId, En_DevUnitType.DIRECTION.getId()) > 0;
+    public int removeParents(Long productId) {
+        return removeByCondition("CHILD_ID = ? AND DUNIT_ID IN (SELECT ID FROM dev_unit WHERE UTYPE_ID != ?)", productId, En_DevUnitType.DIRECTION.getId());
     }
 
     @Override
-    public boolean removeChildren(Long productId) {
-        return removeByCondition("DUNIT_ID = ?", productId) > 0;
+    public int removeChildren(Long productId) {
+        return removeByCondition("DUNIT_ID = ?", productId);
     }
 
     @Override
-    public boolean removeProductDirection(Long productId) {
-        return removeByCondition("CHILD_ID = ? AND DUNIT_ID IN (SELECT ID FROM dev_unit WHERE UTYPE_ID = ?)", productId, En_DevUnitType.DIRECTION.getId()) > 0;
+    public int removeProductDirection(Long productId) {
+        return removeByCondition("CHILD_ID = ? AND DUNIT_ID IN (SELECT ID FROM dev_unit WHERE UTYPE_ID = ?)", productId, En_DevUnitType.DIRECTION.getId());
     }
 }

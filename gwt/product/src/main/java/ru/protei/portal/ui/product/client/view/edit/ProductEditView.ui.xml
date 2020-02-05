@@ -54,6 +54,13 @@
                             <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                         </div>
 
+                        <g:HTMLPanel ui:field="directionContainer" styleName="row">
+                            <div class="form-group col-md-12">
+                                <label ui:field="directionLabel"><ui:text from="{lang.productDirection}"/></label>
+                                <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.productSelectDirection}"/>
+                            </div>
+                        </g:HTMLPanel>
+
                         <div class="row">
                             <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
                                 <label ui:field="parentsContainerLabel"/>
@@ -71,13 +78,6 @@
                                 <alias:StringSelectInput ui:field="aliases" placeholder="{lang.aliasInputPlaceholder}"/>
                             </div>
                         </g:HTMLPanel>
-
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <label ui:field="directionLabel"><ui:text from="{lang.productDirection}"/></label>
-                                <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.productSelectDirection}"/>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

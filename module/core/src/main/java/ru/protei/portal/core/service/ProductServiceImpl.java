@@ -214,6 +214,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void saveProductDirection(DevUnit product) {
+        if (En_DevUnitType.COMPONENT.equals(product.getType())) {
+            return;
+        }
+
         devUnitChildRefDAO.removeProductDirection(product.getId());
 
         if (product.getProductDirection() == null) {

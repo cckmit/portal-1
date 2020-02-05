@@ -147,6 +147,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             view.aliases().setValue(null);
             view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
         }
+
+        if (En_DevUnitType.COMPONENT.equals(type)) {
+            view.directionVisibility().setVisible(false);
+        } else {
+            view.directionVisibility().setVisible(true);
+        }
     }
 
     private boolean isNew(DevUnit product) {
