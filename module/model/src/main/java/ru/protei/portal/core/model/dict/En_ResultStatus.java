@@ -163,5 +163,15 @@ public enum En_ResultStatus {
      * Эта ссылка уже привязана
      */
 
-    THIS_LINK_ALREADY_ADDED
+    THIS_LINK_ALREADY_ADDED,
+
+    /**
+     * Удаление использующегося типа документа запрещено
+     */
+    NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE,
+
+    /**
+     * Ошибка обновления или удаления связанного объекта
+     */
+    UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR
 }

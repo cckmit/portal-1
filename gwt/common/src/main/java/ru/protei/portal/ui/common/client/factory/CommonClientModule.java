@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
@@ -140,6 +141,8 @@ public class CommonClientModule extends AbstractGinModule {
 //        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
         bind( CaseTagModel.class ).asEagerSingleton();
+
+        bind( ConfigStorage.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
         requestStaticInjection(DefaultErrorHandler.class);

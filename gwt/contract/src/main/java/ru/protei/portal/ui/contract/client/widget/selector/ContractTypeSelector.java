@@ -24,7 +24,6 @@ public class ContractTypeSelector extends ButtonSelector<En_ContractType> implem
 
         if (defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
 
         options.forEach(this::addOption);

@@ -31,8 +31,8 @@ public interface ProjectService {
      * Возвращает список проектов сгруппированных по регионам
      * @param query    параметры запроса
      */
-    @Privileged({ En_Privilege.PROJECT_VIEW})
-    Result<Map<String, List<Project>>> listProjectsByRegions(AuthToken token, ProjectQuery query );
+    @Privileged({ En_Privilege.PROJECT_VIEW })
+    Result<Map<String, List<Project>>> listProjectsByRegions(AuthToken token, ProjectQuery query);
 
     @Privileged(En_Privilege.PROJECT_VIEW)
     Result<List<Project>> listProjects(AuthToken token, ProjectQuery query);

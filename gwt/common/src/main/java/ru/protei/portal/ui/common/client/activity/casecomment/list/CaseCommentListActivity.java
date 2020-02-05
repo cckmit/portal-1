@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -100,9 +101,11 @@ public abstract class CaseCommentListActivity
         view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.enabledNewComment(isModifyEnabled);
-        view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
-                        lang.textMarkdownSupport() :
-                        lang.textJiraWikiMarkupSupport());
+        if (textMarkup == En_TextMarkup.MARKDOWN) {
+            view.setMarkupLabel(lang.textMarkdownSupport(), configStorage.getConfigData().markupHelpLinkMarkdown);
+        } else {
+            view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
+        }
 
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
@@ -112,8 +115,6 @@ public abstract class CaseCommentListActivity
                 .withSuccess(this::fillView)
         );
     }
-
-
 
     @Override
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
@@ -182,6 +183,9 @@ public abstract class CaseCommentListActivity
             view.timeElapsed().setTime(comment.getTimeElapsed());
             view.timeElapsedType().setValue(comment.getTimeElapsedType());
         }
+
+        view.getPrivacyVisibility().setVisible(false);
+
         view.focus();
     }
 
@@ -560,6 +564,7 @@ public abstract class CaseCommentListActivity
         view.attachmentContainer().clear();
         view.clearTimeElapsed();
         tempAttachments.clear();
+        view.getPrivacyVisibility().setVisible(isPrivateVisible);
         updateTimeElapsedInIssue(itemViewToModel.values());
     }
 
@@ -666,6 +671,9 @@ public abstract class CaseCommentListActivity
     CaseLinkProvider caseLinkProvider;
     @Inject
     private LocalStorageService storage;
+
+    @Inject
+    ConfigStorage configStorage;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;

@@ -49,9 +49,9 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText login();
 
-    HasText password();
+    HasValue<String> password();
 
-    HasText confirmPassword();
+    HasValue<String> confirmPassword();
 
     HasValue<EntityOption> company();
 
@@ -105,19 +105,19 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText shortNameErrorLabel();
 
-    HasText firstNameLabel();
+    String firstNameLabel();
 
-    HasText secondNameLabel();
+    String secondNameLabel();
 
-    HasText lastNameLabel();
+    String lastNameLabel();
 
-    HasText shortNameLabel();
+    String shortNameLabel();
 
-    HasText personalEmailLabel();
+    String personalEmailLabel();
 
-    HasText workEmailLabel();
+    String workEmailLabel();
 
-    HasText loginLabel();
+    String loginLabel();
 
     HasText loginErrorLabel();
 
@@ -126,4 +126,5 @@ public interface AbstractContactEditView extends IsWidget {
     NameStatus getContactLoginStatus();
 
     HasVisibility loginErrorLabelVisibility();
+
 }

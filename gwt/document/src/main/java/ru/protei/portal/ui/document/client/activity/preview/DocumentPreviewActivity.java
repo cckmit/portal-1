@@ -114,6 +114,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
         view.setDownloadLinkPdf(hasAccessToPdf ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/pdf" : null);
         view.setDownloadLinkDoc(hasAccessToDoc ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc" : null);
+        view.setDownloadLinkApprovalSheet(hasAccessToPdf ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/as" : null);
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
         view.setMembers(CollectionUtils.stream(document.getMembers())

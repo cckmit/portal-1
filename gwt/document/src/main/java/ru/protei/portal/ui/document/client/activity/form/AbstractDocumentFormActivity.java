@@ -2,6 +2,8 @@ package ru.protei.portal.ui.document.client.activity.form;
 
 public interface AbstractDocumentFormActivity {
 
+    void onApprovedChanged();
+
     void onEquipmentChanged();
 
     void onDocumentCategoryChanged();

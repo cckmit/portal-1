@@ -13,6 +13,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -43,7 +44,7 @@ public abstract class AppActivity
         this.init = event;
 
         initApp();
-        requestsAppVersion();
+        requestsClientConfigAndSetAppVersion();
 
         initialToken = History.getToken();
         fireEvent( new AuthEvents.Show() );
@@ -119,11 +120,12 @@ public abstract class AppActivity
         pingTimer.scheduleRepeating( 60000 );
     }
 
-    private void requestsAppVersion() {
+    private void requestsClientConfigAndSetAppVersion() {
         appService.getClientConfig(new FluentCallback<ClientConfigData>()
                 .withSuccess(config -> {
                     if (config != null) {
-                        view.setAppVersion(lang.version() + " " + config.appVersion);
+                        configStorage.setConfigData(config);
+                        view.setAppVersion(lang.version() + " " + configStorage.getConfigData().appVersion);
                     }
                 }));
     }
@@ -146,6 +148,8 @@ public abstract class AppActivity
     AppServiceAsync appService;
     @Inject
     Lang lang;
+    @Inject
+    ConfigStorage configStorage;
 
     String initialToken;
     private AppEvents.Init init;

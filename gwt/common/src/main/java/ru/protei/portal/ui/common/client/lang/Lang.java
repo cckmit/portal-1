@@ -857,6 +857,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String documentApproveFieldsIsEmpty();
+
     String negativeInventoryNumber();
 
     String customerNotSet();
@@ -1321,6 +1323,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentApproveType();
 
     String documentApproved();
+
+    String documentApprovedBy();
+
+    String documentApprovalDate();
 
     String documentNotApproved();
 
@@ -1954,6 +1960,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentFilePdf();
 
+    String documentFileApprovalSheet();
+
     String backToIssues();
 
     String editNameAndDescription();
@@ -1972,6 +1980,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String emptySelectorList();
 
+    String documentTypeShort();
+
     String errUnableLinkIssueToItself();
 
     String caseLinkSomeNotAdded();
@@ -1983,4 +1993,12 @@ public interface Lang extends Messages, ContactItemLang {
     String documentMemberWorkDocumentationComment();
 
     String documentMemberWorkDocumentationUpload();
+
+    String documentTypeUnableToRemoveUsedDocumentType();
+
+    String errUpdateOrDeleteLinkedObjectError();
+
+    String contactGeneratePassword();
+
+    String passwordIsDisplay();
 }

@@ -134,12 +134,16 @@ public class CaseCommentListView
     }
 
     @Override
-    public void setTextMarkupLabel(String label) {
+    public void setMarkupLabel(String label, String link) {
         if (label == null) {
-            textMarkupLabel.addClassName("hide");
+            markupLabel.addClassName("hide");
+            markupLink.addStyleName("hide");
         } else {
-            textMarkupLabel.setInnerText(label);
-            textMarkupLabel.removeClassName("hide");
+            markupLabel.setInnerText(label);
+            markupLabel.removeClassName("hide");
+
+            markupLink.setHref(link);
+            markupLink.removeStyleName("hide");
         }
     }
 
@@ -305,7 +309,9 @@ public class CaseCommentListView
     @UiField
     DivElement filesUpload;
     @UiField
-    Element textMarkupLabel;
+    Element markupLabel;
+    @UiField
+    Anchor markupLink;
     @UiField
     ToggleButton isDisplayPreview;
     @UiField

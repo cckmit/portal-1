@@ -2,16 +2,14 @@ package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
@@ -28,7 +26,6 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUpload
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectFormSelector;
@@ -40,6 +37,7 @@ import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormVie
 import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeFormSelector;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -144,8 +142,23 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
+    public AbstractDocumentUploader documentApprovalSheetUploader() {
+        return documentApprovedUploader;
+    }
+
+    @Override
     public HasValue<Boolean> isApproved() {
         return approved;
+    }
+
+    @Override
+    public HasValue<PersonShortView> approvedBy() {
+        return approvedBy;
+    }
+
+    @Override
+    public HasValue<Date> approvalDate() {
+        return approvalDate;
     }
 
     @Override
@@ -181,6 +194,25 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         decimalNumber.setEnabled(isEnabled);
         decimalNumberContainer.removeClassName("disabled");
         if (!isEnabled) decimalNumberContainer.addClassName("disabled");
+    }
+
+    @Override
+    public void approvedByEnabled(boolean isEnabled) {
+        approvedBy.setEnabled(isEnabled);
+        approvedByContainer.removeClassName("disabled");
+        if (!isEnabled) approvedByContainer.addClassName("disabled");
+    }
+
+    @Override
+    public void approvalDateEnabled(boolean isEnabled) {
+        approvalDate.setEnabled(isEnabled);
+        approvalDateContainer.removeClassName("disabled");
+        if (!isEnabled) approvalDateContainer.addClassName("disabled");
+    }
+
+    @Override
+    public void uploaderApprovalSheetEnabled(boolean isEnabled) {
+        documentApprovedUploader.setEnabled(isEnabled);
     }
 
     @Override
@@ -247,6 +279,12 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
         }
     }
 
+    @UiHandler("approved")
+    public void onApprovedChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null)
+            activity.onApprovedChanged();
+    }
+
     private void ensureDebugIds() {}
 
     @UiField
@@ -257,6 +295,9 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Inject
     @UiField(provided = true)
     DocumentUploader documentPdfUploader;
+    @Inject
+    @UiField(provided = true)
+    DocumentUploader documentApprovedUploader;
     @Inject
     @UiField(provided = true)
     DocumentTypeFormSelector documentType;
@@ -302,6 +343,16 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     DivElement decimalNumberContainer;
     @UiField
     CheckBox approved;
+    @UiField
+    DivElement approvedByContainer;
+    @Inject
+    @UiField(provided = true)
+    EmployeeFormSelector approvedBy;
+    @UiField
+    DivElement approvalDateContainer;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker approvalDate;
     @Inject
     @UiField(provided = true)
     EquipmentFormSelector equipment;
@@ -309,7 +360,8 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     Anchor downloadDoc;
     @UiField
     Anchor downloadPdf;
-
+    @UiField
+    Anchor downloadApproved;
 
     @Inject
     @UiField

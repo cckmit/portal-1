@@ -26,6 +26,8 @@ public class CaseFilter implements Serializable {
     @JdbcEnumerated(EnumType.STRING)
     private En_CaseFilterType type;
 
+    private SelectorsParams selectorsParams;
+
     public Long getId() {
         return id;
     }
@@ -68,6 +70,14 @@ public class CaseFilter implements Serializable {
 
     public CaseFilterShortView toShortView() {
         return new CaseFilterShortView( this.id, this.name );
+    }
+
+    public SelectorsParams getSelectorsParams() {
+        return selectorsParams;
+    }
+
+    public void setSelectorsParams(SelectorsParams selectorsParams) {
+        this.selectorsParams = selectorsParams;
     }
 
     @Override

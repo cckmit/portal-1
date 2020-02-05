@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;

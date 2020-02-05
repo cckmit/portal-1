@@ -40,6 +40,12 @@ public class CaseCommentSqlBuilder {
                         .append(")");
             }
 
+            if (query.getCaseNumber() != null) {
+                condition.append(" and case_comment.case_id in (SELECT id FROM case_object WHERE CASENO = ")
+                        .append(query.getCaseNumber())
+                        .append(")");
+            }
+
             if (CollectionUtils.isNotEmpty(query.getAuthorIds())) {
                 condition.append(" and case_comment.author_id in (")
                         .append(query.getAuthorIds().stream()

@@ -62,4 +62,5 @@ public class ProductQuery extends BaseQuery {
             this.types.addAll(types);
         }
     }
+
 }

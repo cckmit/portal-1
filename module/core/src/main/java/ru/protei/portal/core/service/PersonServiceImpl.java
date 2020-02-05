@@ -40,15 +40,12 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
         query = processQueryByPolicyScope(authToken, query);
+        return makeListPersonShortView(personDAO.getPersons( query ));
+    }
 
-        List<Person> list = personDAO.getPersons( query );
-
-        if ( list == null )
-            return error(En_ResultStatus.GET_DATA_ERROR );
-
-        List< PersonShortView > result = list.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
-
-        return ok(result);
+    @Override
+    public Result<List<PersonShortView>> shortViewListByIds( List<Long> ids ) {
+        return makeListPersonShortView(personDAO.getListByKeys( ids ));
     }
 
     @Override
@@ -75,6 +72,15 @@ public class PersonServiceImpl implements PersonService {
 
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
         return personQuery;
+    }
+
+    private Result<List<PersonShortView>> makeListPersonShortView(List<Person> persons) {
+        if ( persons == null )
+            return error(En_ResultStatus.GET_DATA_ERROR );
+
+        List< PersonShortView > result = persons.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
+
+        return ok(result);
     }
 
     @Autowired

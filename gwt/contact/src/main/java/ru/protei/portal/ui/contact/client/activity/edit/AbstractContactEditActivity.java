@@ -8,8 +8,8 @@ public interface AbstractContactEditActivity {
     void onCancelClicked();
     void onFireClicked();
     void onChangeContactLogin();
-    void onChangeContactPassword();
     void onChangeSendWelcomeEmail();
     void validateLimitedFields();
     void onCompanySelected();
+    void onPasswordGenerationClicked();
 }

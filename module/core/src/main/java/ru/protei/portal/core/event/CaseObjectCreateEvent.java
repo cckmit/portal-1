@@ -57,7 +57,7 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
 
     @Override
     public String toString() {
-        return "CaseObjectCreateEvent{" +
+        return "CaseObjectEvent{" +
                 "caseObjectId=" + getCaseObjectId() +
                 ", isEagerEvent=" + isEagerEvent() +
                 ", caseObject=" + asString(getCaseObject()) +

@@ -2418,6 +2418,25 @@ a {
   padding-right: 10px;
 }
 
+.decimal-number {
+  white-space: nowrap;
+}
+
+.form-group.form-group-default {
+  .date {
+    .input-group-btn {
+      > button {
+        padding-top: 0;
+        padding-bottom: 0;
+        border: 0;
+        background-color: transparent;
+        margin-right: -15px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
 .du-type,
 .eq-type,
 .auth-type {
@@ -3191,7 +3210,12 @@ div.select2-container {
   // fix arrow (different shifts because of relative position)
   .arrow {
     top: -11px !important;
-    margin-left: -4px !important;
+    margin-left: 4px !important;
+    &.rotate {
+      transform: rotateX(180deg);
+      top: auto !important;
+      bottom: -11px;
+    }
   }
 }
 
@@ -3850,13 +3874,16 @@ table {
     text-align: center;
   }
   .document-name-column {
-    width: 50%;
+    width: 40%;
   }
   .document-number-column {
-    width: 18%;
+    width: 17%;
   }
   .document-project-column {
-    width: 18%;
+    width: 17%;
+  }
+  .document-company-column {
+    width: 17%;
   }
 }
 
@@ -3888,6 +3915,151 @@ table {
   }
 }
 
+.text-overflow-dynamic-container {
+  position: relative;
+  max-width: 100%;
+  padding: 0 !important;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  vertical-align: text-bottom !important;
+}
+.text-overflow-dynamic-ellipsis {
+  position: absolute;
+  white-space: nowrap;
+  overflow-y: visible;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  max-width: 100%;
+  min-width: 0;
+  width:100%;
+  top: 0;
+  left: 0;
+}
+.text-overflow-dynamic-container:after,
+.text-overflow-dynamic-ellipsis:after {
+  content: '-';
+  display: inline;
+  visibility: hidden;
+  width: 0;
+}
+
 .btn.has-error {
   @extend .required;
 }
+
+.employee-list-bottom-indent {
+  padding-bottom: 40px;
+}
+
+.popup-with-arrow {
+  position: relative;
+  margin-top: 10px;
+  z-index: 100;
+
+  .popup-arrow {
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 11px;
+    top: -10px;
+    left: 12px;
+    border-bottom-color: rgba(0, 0, 0, 0.15);
+    border-top-width: 0;
+    z-index: 100;
+
+    &.pwd-gen-arrow {
+      border-bottom-color: #cccccc;
+      transform: rotateX(180deg);
+      top: auto;
+      bottom: -10px;
+      &:after {
+        border-bottom-color: #ededed;
+      }
+    }
+
+    &:after {
+      position: absolute;
+      display: block;
+      width: 0;
+      height: 0;
+      border-color: transparent;
+      border-style: solid;
+
+      border-width: 10px;
+      content: "";
+
+      top: 1px;
+      margin-left: -10px;
+      border-bottom-color: #ffffff;
+      border-top-width: 0;
+      content: " ";
+    }
+  }
+}
+
+.pwd-gen-popup {
+  background-color: #ededed;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+  font-size: 12px;
+  padding: 10px;
+
+  .small-buttons {
+    button {
+      line-height: 10px;
+    }
+  }
+}
+
+.d-flex {
+  display: flex;
+  &.justify-content-flex-end {
+    justify-content: flex-end;
+  }
+}
+
+/**** password box ****/
+.password-box {
+  position: relative;
+
+  .password-box_show-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    line-height: normal;
+    padding: 8px;
+    outline: none;
+    color: $master_color;
+    cursor: pointer;
+    font-size: 1.3em;
+
+    &.password-box_show-btn-up, &.password-box_show-btn-up-hovering {
+      &:after{
+        font-family: "Font Awesome 5 Free", serif;
+        content: "\f06e";
+      }
+    }
+
+    &.password-box_show-btn-down, &.password-box_show-btn-down-hovering {
+      &:after{
+        font-family: "Font Awesome 5 Free", serif;
+        content: "\f070";
+      }
+    }
+
+    &.password-box_show-btn-up-hovering, &.password-box_show-btn-down-hovering {
+      color: $success_color;
+    }
+  }
+}
+
+

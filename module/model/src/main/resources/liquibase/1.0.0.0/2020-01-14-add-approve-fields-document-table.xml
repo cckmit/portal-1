@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-approve-fields-document-table" author="porubov">
+        <addColumn tableName="document">
+            <column name="approved_by_id" type="BIGINT">
+                <constraints referencedTableName="person"
+                             referencedColumnNames="id"
+                             foreignKeyName="document_approved_by_id_fk" />
+            </column>
+            <column name="approval_date" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

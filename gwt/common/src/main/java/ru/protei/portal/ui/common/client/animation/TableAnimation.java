@@ -32,7 +32,11 @@ public class TableAnimation {
         detailsContainer.removeStyleName( styleDetails );
         detailsContainer.addStyleName( "no-width" );
 
-        if ( noFilter ) return;
+        if ( noFilter ) {
+            tableContainer.addStyleName( tableStyleWithoutDetails );
+            return;
+        }
+
         filterContainer.removeStyleName( "no-display" );
         filterContainer.addStyleName( filterCollapsed ? "collapsed" : styleFilter );
         tableContainer.addStyleName( filterCollapsed ? "filter-collapsed" : tableStyleWithoutDetails );

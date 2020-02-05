@@ -306,7 +306,7 @@ ul > li.selectable-item > a {
     background-color: #f5f5f5;
   }
 
-  .selectable-item-text {
+  &.selectable-item-text {
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
