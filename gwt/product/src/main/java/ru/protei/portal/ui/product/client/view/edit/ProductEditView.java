@@ -146,6 +146,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setMutableState(En_DevUnitType type) {
         parentsContainerLabel.setInnerText(lang.belongsTo());
+        checkName();
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
@@ -157,8 +158,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             childrenContainer.addStyleName("col-md-12");
 
             children.setTypes(En_DevUnitType.PRODUCT);
-
-            directionVisibility().setVisible(true);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
             descriptionLabel.setInnerText(lang.productDescription());
@@ -170,8 +169,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
-
-            directionVisibility().setVisible(true);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
             descriptionLabel.setInnerText(lang.componentDescription());
@@ -183,8 +180,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
-
-            directionVisibility().setVisible(false);
         }
     }
 
@@ -276,19 +271,12 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiHandler( "type" )
     public void onTypeChanged(ValueChangeEvent<En_DevUnitType> event) {
-        children.clearSelector();
-        parents.clearSelector();
-
         if (activity != null) {
             activity.onTypeChanged(event.getValue());
         }
-
-        setMutableState(event.getValue());
-        checkName();
     }
 
-    private void checkName ()
-    {
+    private void checkName () {
         setNameStatus(NameStatus.UNDEFINED);
 
         changeTimer.cancel();

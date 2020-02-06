@@ -140,19 +140,19 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onTypeChanged(En_DevUnitType type) {
-        currType = type;
-        if (type.getId() != product.getTypeId()) {
-            view.parents().setValue(null);
-            view.children().setValue(null);
-            view.aliases().setValue(null);
-            view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
+        if (type.equals(currType)) {
+            return;
         }
 
-        if (En_DevUnitType.COMPONENT.equals(type)) {
-            view.directionVisibility().setVisible(false);
-        } else {
-            view.directionVisibility().setVisible(true);
-        }
+        currType = type;
+
+        view.parents().setValue(null);
+        view.children().setValue(null);
+        view.aliases().setValue(null);
+        view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
+        view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
+
+        view.setMutableState(type);
     }
 
     private boolean isNew(DevUnit product) {
@@ -177,17 +177,17 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void fillView(DevUnit devUnit) {
 
-        boolean isCreate = devUnit.getId() == null;
+        boolean isNew = isNew(devUnit);
 
-        view.setCurrentProduct(isCreate ? null : devUnit.toProductShortView());
+        view.setCurrentProduct(isNew ? null : devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
         view.info().setValue(devUnit.getInfo());
 
-        currType = isCreate ? En_DevUnitType.COMPLEX : devUnit.getType();
+        currType = isNew ? En_DevUnitType.COMPLEX : devUnit.getType();
         view.type().setValue(currType);
-        view.typeVisibility().setVisible(isCreate);
-        view.setTypeImage(isCreate || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
-        view.setTypeImageVisibility(!isCreate);
+        view.typeVisibility().setVisible(isNew);
+        view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
+        view.setTypeImageVisibility(!isNew);
         view.setMutableState(currType);
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()

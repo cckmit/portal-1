@@ -13,7 +13,7 @@ public interface AbstractProductEditActivity {
 
     void onCancelClicked ();
 
-    void onNameChanged ();
+    void onNameChanged();
 
     void renderMarkdownText(String text, Consumer<String> consumer);
 
