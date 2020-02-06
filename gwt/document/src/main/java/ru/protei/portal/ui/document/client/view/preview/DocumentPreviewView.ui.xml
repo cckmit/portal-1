@@ -108,7 +108,7 @@
             </div>
 
             <g:HTMLPanel ui:field="approvalContainer">
-                <h6><ui:text from="{lang.documentApproved}"/></h6>
+                <h6><ui:text from="{lang.documentiSApproved}"/></h6>
                 <div class="form-group-attached">
                     <div class="row clearfix">
                         <div class="col-md-6">

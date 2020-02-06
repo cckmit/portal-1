@@ -73,6 +73,13 @@ public class Document implements Serializable {
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "case_id", table = "case_location"),
+            @JdbcJoinPath(localColumn = "location_id", remoteColumn = "id", table = "location"),
+    }, mappedColumn = "name")
+    private String projectLocation;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
     }, mappedColumn = "cname")
     private String contragentName;
@@ -208,6 +215,14 @@ public class Document implements Serializable {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getProjectLocation() {
+        return projectLocation;
+    }
+
+    public void setProjectLocation(String projectLocation) {
+        this.projectLocation = projectLocation;
     }
 
     public String getContragentName() {

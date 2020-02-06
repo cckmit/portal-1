@@ -226,13 +226,17 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             StringBuilder html = new StringBuilder();
             if (policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
                 html
-                        .append("<a href=\"#\" class=\"text-overflow-dynamic-container\">")
+                        .append("<a href=\"#\" title=\"")
+                        .append(value.getProjectLocation() == null ? "" : value.getProjectLocation())
+                        .append("\" class=\"text-overflow-dynamic-container\">")
                         .append("<span class=\"text-overflow-dynamic-ellipsis\">")
                         .append(StringUtils.emptyIfNull(value.getProjectName()))
                         .append("</span></a>");
             } else {
                 html
-                        .append("<div class=\"text-overflow-dynamic-container\">")
+                        .append("<div title=\"")
+                        .append(value.getProjectLocation() == null ? "" : value.getProjectLocation())
+                        .append("\" class=\"text-overflow-dynamic-container\">")
                         .append("<span class=\"text-overflow-dynamic-ellipsis\">")
                         .append(StringUtils.emptyIfNull(value.getProjectName()))
                         .append("</span></div>");

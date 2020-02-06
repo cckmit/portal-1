@@ -125,8 +125,8 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.documentDocComment().setValue("");
         view.documentDocVisibility().setVisible(hasAccessToDocModification);
         view.approvalContainerVisibility().setVisible(document.getApproved());
-        view.setApprovedBy(!document.getApproved() || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView().getName());
-        view.setApprovalDate(!document.getApproved() || document.getApprovalDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(document.getApprovalDate()));
+        view.setApprovedBy(!document.getApproved() || document.getApprovedBy() == null ? "" : document.getApprovedBy().toShortNameShortView().getName());
+        view.setApprovalDate(!document.getApproved() || document.getApprovalDate() == null ? "" : DateTimeFormat.getFormat("dd.MM.yyyy").format(document.getApprovalDate()));
         view.documentDocUploadContainerLoading().setVisible(false);
         fillProject(document);
     }
