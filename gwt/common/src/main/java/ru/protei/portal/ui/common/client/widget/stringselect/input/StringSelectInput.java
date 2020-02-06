@@ -122,6 +122,10 @@ public class StringSelectInput
         addValue(input.getText());
     }
 
+    public void setEnsureDebugId(String debugId) {
+        input.ensureDebugId(debugId);
+    }
+
     private void addValue(String val) {
         add.setVisible(false);
         if (isEmpty(val)) {

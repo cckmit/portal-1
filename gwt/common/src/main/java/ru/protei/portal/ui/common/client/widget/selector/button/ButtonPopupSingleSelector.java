@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
@@ -91,9 +92,11 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setEnsureDebugIdLabel( String company ) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + company);
     }
 
     public void setEnsureDebugId( String companySelector ) {
+        button.ensureDebugId(companySelector);
     }
 
     @Override

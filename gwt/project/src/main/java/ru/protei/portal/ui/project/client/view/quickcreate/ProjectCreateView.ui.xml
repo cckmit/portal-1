@@ -12,26 +12,26 @@
     <g:HTMLPanel styleName="card-body">
         <div class="row">
             <div class="form-group col-md-12">
-                <label>
+                <label ui:field="nameLabel">
                     <ui:text from="{lang.projectName}"/>
                 </label>
                 <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
             </div>
             <div class="form-group col-md-12">
-                <label>
+                <label ui:field="descriptionLabel">
                     <ui:text from="{lang.projectDescription}"/>
                 </label>
                 <g:TextArea ui:field="description" styleName="form-control"/>
             </div>
             <div class="form-group col-md-3">
-                <label>
+                <label ui:field="regionLabel">
                     <ui:text from="{lang.projectRegion}"/>
                 </label>
                 <region:RegionButtonSelector ui:field="region" defaultValue="{lang.selectOfficialRegion}"
                                              validation="true" hideNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
-                <label>
+                <label ui:field="directionLabel">
                     <ui:text from="{lang.projectDirection}"/>
                 </label>
                 <productdirection:ProductDirectionButtonSelector ui:field="direction"
@@ -39,21 +39,21 @@
                                                                  validation="true" hideNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
-                <label>
+                <label ui:field="customerTypeLabel">
                     <ui:text from="{lang.projectCustomerType}"/>
                 </label>
                 <cutomertype:CustomerTypeSelector ui:field="customerType" defaultValue="{lang.selectCustomerType}"
                                                   validation="true" hideNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
-                <label>
+                <label ui:field="companyLabel">
                     <ui:text from="{lang.projectCustomerCompany}"/>
                 </label>
                 <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"
                                          validation="true" hasNullValue="false"/>
             </div>
             <div class="form-group col-md-12">
-                <label>
+                <label ui:field="productLabel">
                     <ui:text from="{lang.projectProducts}"/>
                 </label>
                 <productselector:devunit.DevUnitButtonSelector ui:field="product" defaultValue="{lang.selectProduct}"/>

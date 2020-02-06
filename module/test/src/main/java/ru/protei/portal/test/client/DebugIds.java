@@ -441,8 +441,196 @@ public class DebugIds {
         String LOCK_ICON = "product-item-lock-icon";
     }
 
-    public interface DOCUMENT_TABLE {
-        String LOCK_ICON = "document-table-lock-icon";
+    public interface DOCUMENT {
+        interface TABLE {
+            String LOCK_ICON = "document-table-lock-icon";
+        }
+
+        interface FILTER {
+            String SEARCH_INPUT = "document-filter-search-input";
+            String SORT_BY_LABEL = "document-filter-sort-by-label";
+            String SORT_BY_SELECTOR = "document-filter-sort-by-selector";
+            String SORT_BY_TOGGLE = "document-filter-sort-by-toggle";
+            String CREATION_DATE_LABEL = "document-filter-creation-date-label";
+            String CREATION_DATE_INPUT = "document-filter-creation-date-input";
+            String CREATION_DATE_BUTTON = "document-filter-creation-date-button";
+            String MANAGER_LABEL = "document-filter-manager-label";
+            String MANAGER_SELECTOR = "document-filter-manager-selector";
+            String PROJECT_LABEL = "document-filter-project-label";
+            String PROJECT_SELECTOR_ADD_BUTTON = "document-filter-project-selector-add-button";
+            String PROJECT_SELECTOR_CLEAR_BUTTON = "document-filter-project-selector-clear-button";
+            String PROJECT_SELECTOR_ITEM_CONTAINER = "document-filter-project-selector-item-container";
+            String ORGANIZATION_CODE_LABEL = "document-filter-organization-code-label";
+            String ORGANIZATION_CODE_PROTEI = "document-filter-organization-code-protei";
+            String ORGANIZATION_CODE_PROTEI_ST = "document-filter-organization-code-protei-st";
+            String DOCUMENT_TYPE_LABEL = "document-filter-document-type-label";
+            String DOCUMENT_TYPE_SELECTOR = "document-filter-document-type-selector";
+            String DOCUMENT_CATEGORY_LABEL = "document-filter-document-category-label";
+            String DOCUMENT_CATEGORY_SELECTOR = "document-filter-document-category-selector";
+            String APPROVED_LABEL = "document-filter-approved-label";
+            String APPROVED_YES = "document-filter-approved-yes";
+            String APPROVED_ANY = "document-filter-approved-any";
+            String APPROVED_NO = "document-filter-approved-no";
+            String DOCUMENT_TEXT_LABEL = "document-filter-document-text-label";
+            String DOCUMENT_TEXT_INPUT = "document-filter-document-text-input";
+            String KEY_WORD_LABEL = "document-filter-key-word-label";
+            String KEY_WORD_INPUT = "document-filter-key-word-input";
+            String SHOW_DEPRECATED_CHECKBOX = "document-filter-show-deprecated-checkbox";
+            String RESET_BUTTON = "document-filter-reset-button";
+        }
+
+        interface PREVIEW {
+            String DOWNLOAD_DOC_BUTTON = "document-preview-download-doc-button";
+            String DOWNLOAD_PDF_BUTTON = "document-preview-download-pdf-button";
+            String DOWNLOAD_APPROVAL_BUTTON = "document-preview-download-approval-button";
+            String DOC_COMMENT_INPUT = "document-preview-doc-comment-input";
+            String DOC_UPLOADER = "document-preview-doc-uploader";
+            String UPLOAD_DOC_FILE_BUTTON = "document-preview-upload-doc-file-button";
+            String BACK_BUTTON = "document-preview-back-button";
+            String HEADER_LABEL = "document-preview-header-label";
+            String CREATED_BY = "document-preview-created-by";
+            String ANNOTATION_LABEL = "document-preview-annotation-label";
+            String KEY_WORDS_LABEL = "document-preview-key-words-label";
+            String KEY_WORDS = "document-preview-key-words";
+            String COMMON_HEADER_LABEL = "document-preview-common-header-label";
+            String VERSION_LABEL = "document-preview-version-label";
+            String VERSION = "document-preview-version";
+            String TYPE_LABEL = "document-preview-type-label";
+            String TYPE = "document-preview-type";
+            String EXECUTION_TYPE_LABEL = "document-preview-execution-type-label";
+            String EXECUTION_TYPE = "document-preview-execution-type";
+            String PROJECT_LABEL = "document-preview-project-label";
+            String PROJECT = "document-preview-project";
+            String NUMBER_DECIMAL_LABEL = "document-preview-number-decimal-label";
+            String NUMBER_DECIMAL = "document-preview-number-decimal";
+            String NUMBER_INVENTORY_LABEL = "document-preview-number-inventory-label";
+            String NUMBER_INVENTORY = "document-preview-number-inventory";
+            String WORK_GROUP_HEADER_LABEL = "document-preview-work-group-header-label";
+            String MANAGER_LABEL = "document-preview-manager-label";
+            String MANAGER = "document-preview-manager";
+            String REGISTRAR_LABEL = "document-preview-registrar-label";
+            String REGISTRAR = "document-preview-registrar";
+            String CONTRACTOR_LABEL = "document-preview-contractor-label";
+            String CONTRACTOR = "document-preview-contractor";
+            String MEMBERS_LABEL = "document-preview-member-label";
+            String MEMBERS = "document-preview-member";
+            String UPLOAD_WORK_DOCUMENTATION_LABEL = "document-preview-upload-work-documentation-label";
+            String DOC_COMMENT_LABEL = "document-preview-doc-comment-label";
+            String DOC_UPLOAD_CONTAINER_LOADING = "document-preview-doc-upload-container-loading";
+        }
+
+        interface PROJECT_SET {
+            String BUTTON = "document-project-set-button";
+        }
+
+        interface CREATE {
+            String BUTTON = "document-create-button";
+            String NAME_LABEL = "document-create-name-label";
+            String NAME_INPUT = "document-create-name-input";
+            String VERSION_LABEL = "document-create-version-label";
+            String VERSION_INPUT = "document-create-version-input";
+            String INVENTORY_LABEL = "document-create-inventory-label";
+            String INVENTORY_INPUT = "document-create-inventory-input";
+            String DECIMAL_NUMBER_LABEL = "document-create-decimal-number-label";
+            String DECIMAL_NUMBER_INPUT = "document-create-decimal-number-input";
+            String ANNOTATION_LABEL = "document-create-annotation-label";
+            String ANNOTATION_INPUT = "document-create-annotation-input";
+            String KEY_WORD_LABEL = "document-create-key-word-label";
+            String KEY_WORD_INPUT = "document-create-key-word-input";
+            String APPROVED_CHECKBOX = "document-create-approved-checkbox";
+            String APPROVED_LABEL = "document-create-approved-label";
+            String APPROVED_SELECTOR = "document-create-approved-selector";
+            String REGISTRAR_LABEL = "document-create-registrar-label";
+            String REGISTRAR_SELECTOR = "document-create-registrar-selector";
+            String CONTRACTOR_LABEL = "document-create-contractor-label";
+            String CONTRACTOR_SELECTOR = "document-create-contractor-selector";
+            String PROJECT_LABEL = "document-create-project-label";
+            String PROJECT_SELECTOR = "document-create-project-selector";
+            String EQUIPMENT_LABEL = "document-create-equipment-label";
+            String EQUIPMENT_SELECTOR = "document-create-equipment-selector";
+            String EXECUTION_TYPE_LABEL = "document-create-execution-type-label";
+            String EXECUTION_TYPE_SELECTOR = "document-create-execution-type-selector";
+            String DOCUMENT_CATEGORY_LABEL = "document-create-document-category-label";
+            String DOCUMENT_CATEGORY_SELECTOR = "document-create-document-category-selector";
+            String DOCUMENT_TYPE_LABEL = "document-create-document-type-label";
+            String DOCUMENT_TYPE_SELECTOR = "document-create-document-type-selector";
+            String APPROVE_DATE_LABEL = "document-create-approve-date-label";
+            String APPROVE_DATE_INPUT = "document-create-approve-date-input";
+            String APPROVE_DATE_BUTTON = "document-create-approve-date-button";
+            String DOC_LABEL = "document-create-doc-label";
+            String DOC_BUTTON = "document-create-doc-button";
+            String DOC_DROP_ZONE = "document-create-doc-drop-zone";
+            String PDF_LABEL = "document-create-pdf-label";
+            String PDF_BUTTON = "document-create-pdf-button";
+            String PDF_DROP_ZONE = "document-create-pdf-drop-zone";
+            String PDF_APPROVED_LABEL = "document-create-pdf-approved-label";
+            String PDF_APPROVED_BUTTON = "document-create-pdf-approved-button";
+            String PDF_APPROVED_DROP_ZONE = "document-create-pdf-approved-drop-zone";
+            String EMPLOYEE_PERMISSION_LABEL = "document-create-employee-permission-label";
+            String EMPLOYEE_ADD_BUTTON = "document-create-employee-add-button";
+            String EMPLOYEE_CLEAR_BUTTON = "document-create-employee-clear-button";
+            String CUSTOMER_TYPE_LABEL = "document-create-customer-type-label";
+            String CUSTOMER_TYPE = "document-create-customer-type";
+            String DIRECTION_LABEL = "document-create-direction-label";
+            String DIRECTION = "document-create-direction";
+            String REGION_LABEL = "document-create-region-label";
+            String REGION = "document-create-region";
+            String PROJECT_INFO_LABEL = "document-create-project-info-label";
+            String EQUIPMENT_INFO_LABEL = "document-create-equipment-info-label";
+            String DOCUMENT_INFO_LABEL = "document-create-document-info-label";
+            String PREVIOUS_BUTTON = "document-create-previous-button";
+            String NEXT_BUTTON = "document-create-next-button";
+        }
+
+        interface PROJECT_SEARCH {
+            String BUTTON = "document-project-search-button";
+            String NAME_LABEL = "document-project-search-name-label";
+            String NAME_INPUT = "document-project-search-name-input";
+            String CREATION_DATE_LABEL = "document-project-search-creation-date-label";
+            String CREATION_DATE_INPUT = "document-project-search-creation-date-input";
+            String CREATION_DATE_BUTTON = "document-project-search-creation-date-button";
+            String CUSTOMER_TYPE_LABEL = "document-project-search-customer-type-label";
+            String CUSTOMER_TYPE_SELECTOR = "document-project-search-customer-type-selector";
+            String PRODUCT_LABEL = "document-project-search-product-label";
+            String PRODUCT_SELECTOR = "document-project-search-product-selector";
+            String FIND_BUTTON = "document-project-search-find-button";
+            String RESET_BUTTON = "document-project-search-reset-button";
+            String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
+        }
+
+        interface PROJECT_CREATE {
+            String BUTTON = "document-project-create-button";
+            String NAME_LABEL = "document-project-create-name-label";
+            String NAME_INPUT = "document-project-create-name-input";
+            String DESCRIPTION_LABEL = "document-project-create-description-label";
+            String DESCRIPTION_INPUT = "document-project-create-description-input";
+            String REGION_LABEL = "document-project-create-region-label";
+            String REGION_SELECTOR = "document-project-create-region-selector";
+            String DIRECTION_LABEL = "document-project-create-direction-label";
+            String DIRECTION_SELECTOR = "document-project-create-direction-selector";
+            String CUSTOMER_TYPE_LABEL = "document-project-create-customer-type-label";
+            String CUSTOMER_TYPE_SELECTOR = "document-project-create-customer-type-selector";
+            String COMPANY_LABEL = "document-project-create-company-label";
+            String COMPANY_SELECTOR = "document-project-create-company-selector";
+            String PRODUCT_LABEL = "document-project-create-product-label";
+            String PRODUCT_SELECTOR = "document-project-create-product-selector";
+            String SAVE_BUTTON = "document-project-create-save-button";
+            String RESET_BUTTON = "document-project-create-reset-button";
+        }
+    }
+
+    public interface PROJECT_LIST {
+        String ITEM = "project-list-item";
+    }
+
+    public interface STRING_SELECT_INPUT {
+        String ITEM = "string-select-input";
+        String REMOVE_BUTTON = "string-select-input-remove-button";
+    }
+
+    public interface STRING_TAG_INPUT_FORM {
+        String ITEM = "string-tag-input-form-item";
+        String REMOVE_BUTTON = "string-tag-input-form-remove-button";
     }
 
     public interface LOCALE_BUTTON {

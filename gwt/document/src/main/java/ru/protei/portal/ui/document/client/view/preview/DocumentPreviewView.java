@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.document.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
@@ -23,6 +21,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Inject
     public void onInit() {
         initWidget(uiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -176,6 +175,47 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         }
     }
 
+    private void ensureDebugIds() {
+        downloadDocButton.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.DOWNLOAD_DOC_BUTTON);
+        downloadPdfButton.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.DOWNLOAD_PDF_BUTTON);
+        downloadApprovalSheetButton.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.DOWNLOAD_APPROVAL_BUTTON);
+        documentDocComment.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.DOC_COMMENT_INPUT);
+        documentDocUploader.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.DOC_UPLOADER);
+        uploadDocFile.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.UPLOAD_DOC_FILE_BUTTON);
+        backButton.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.BACK_BUTTON);
+
+        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.HEADER_LABEL);
+        createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.CREATED_BY);
+        annotation.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.ANNOTATION_LABEL);
+        keyWordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.KEY_WORDS_LABEL);
+        keyWords.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.KEY_WORDS);
+        commonHeaderLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.COMMON_HEADER_LABEL);
+        versionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.VERSION_LABEL);
+        version.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.VERSION);
+        typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.TYPE_LABEL);
+        type.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.TYPE);
+        executionTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.EXECUTION_TYPE_LABEL);
+        executionType.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.EXECUTION_TYPE);
+        projectLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.PROJECT_LABEL);
+        project.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.PROJECT);
+        numberDecimalLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.NUMBER_DECIMAL_LABEL);
+        numberDecimal.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.NUMBER_DECIMAL);
+        numberInventoryLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.NUMBER_INVENTORY_LABEL);
+        numberInventory.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.NUMBER_INVENTORY);
+        workGroupHeaderLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.WORK_GROUP_HEADER_LABEL);
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.MANAGER_LABEL);
+        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.MANAGER);
+        registrarLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.REGISTRAR_LABEL);
+        registrar.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.REGISTRAR);
+        contractorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.CONTRACTOR_LABEL);
+        contractor.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.CONTRACTOR);
+        membersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.MEMBERS_LABEL);
+        members.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.MEMBERS);
+        memberUploadWorkDocumentationLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.UPLOAD_WORK_DOCUMENTATION_LABEL);
+        documentDocCommentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.DOC_COMMENT_LABEL);
+        documentDocUploadContainerLoading.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.DOC_UPLOAD_CONTAINER_LOADING);
+    }
+
     @UiField
     Anchor downloadPdfButton;
     @UiField
@@ -225,6 +265,36 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     TextBox documentDocComment;
     @UiField
     Button uploadDocFile;
+    @UiField
+    HeadingElement commonHeaderLabel;
+    @UiField
+    SpanElement keyWordsLabel;
+    @UiField
+    LabelElement versionLabel;
+    @UiField
+    LabelElement typeLabel;
+    @UiField
+    LabelElement executionTypeLabel;
+    @UiField
+    LabelElement projectLabel;
+    @UiField
+    LabelElement numberDecimalLabel;
+    @UiField
+    LabelElement numberInventoryLabel;
+    @UiField
+    HeadingElement workGroupHeaderLabel;
+    @UiField
+    LabelElement managerLabel;
+    @UiField
+    LabelElement registrarLabel;
+    @UiField
+    LabelElement contractorLabel;
+    @UiField
+    LabelElement membersLabel;
+    @UiField
+    HeadingElement memberUploadWorkDocumentationLabel;
+    @UiField
+    LabelElement documentDocCommentLabel;
 
     @Inject
     @UiField

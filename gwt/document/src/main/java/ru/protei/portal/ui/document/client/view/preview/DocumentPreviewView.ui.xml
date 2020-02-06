@@ -27,28 +27,28 @@
             <div ui:field="annotation" class="small hint-text pre-formatted-info"/>
 
             <div class="small">
-                <span><ui:text from="{lang.documentKeywords}: "/></span>
+                <span ui:field="keyWordsLabel"><ui:text from="{lang.documentKeywords}: "/></span>
                 <span ui:field="keyWords"/>
             </div>
 
-            <h6><ui:text from="{lang.documentCommonHeader}"/></h6>
+            <h6 ui:field="commonHeaderLabel"><ui:text from="{lang.documentCommonHeader}"/></h6>
             <div class="form-group-attached">
                 <div class="row clearfix">
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentVersion}"/></label>
+                            <label ui:field="versionLabel"><ui:text from="{lang.documentVersion}"/></label>
                             <span ui:field="version"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentType}"/></label>
+                            <label ui:field="typeLabel"><ui:text from="{lang.documentType}"/></label>
                             <span ui:field="type"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentExecutionType}"/></label>
+                            <label ui:field="executionTypeLabel"><ui:text from="{lang.documentExecutionType}"/></label>
                             <span ui:field="executionType"/>
                         </div>
                     </div>
@@ -56,43 +56,43 @@
                 <div class="row clearfix">
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentProject}"/></label>
+                            <label ui:field="projectLabel"><ui:text from="{lang.documentProject}"/></label>
                             <span ui:field="project"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentDecimalNumber}"/></label>
+                            <label ui:field="numberDecimalLabel"><ui:text from="{lang.documentDecimalNumber}"/></label>
                             <span ui:field="numberDecimal"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.inventoryNumber}"/></label>
+                            <label ui:field="numberInventoryLabel"><ui:text from="{lang.inventoryNumber}"/></label>
                             <span ui:field="numberInventory"/>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <h6><ui:text from="{lang.documentWorkGroupHeader}"/></h6>
+            <h6 ui:field="workGroupHeaderLabel"><ui:text from="{lang.documentWorkGroupHeader}"/></h6>
             <div class="form-group-attached">
                 <div class="row clearfix">
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentManager}"/></label>
+                            <label ui:field="managerLabel"><ui:text from="{lang.documentManager}"/></label>
                             <span ui:field="manager"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentRegistrar}"/></label>
+                            <label ui:field="registrarLabel"><ui:text from="{lang.documentRegistrar}"/></label>
                             <span ui:field="registrar"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentContractor}"/></label>
+                            <label ui:field="contractorLabel"><ui:text from="{lang.documentContractor}"/></label>
                             <span ui:field="contractor"/>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                 <div class="row clearfix">
                     <div class="col-md-12">
                         <div class="form-group form-group-default">
-                            <label><ui:text from="{lang.documentMembers}"/></label>
+                            <label ui:field="membersLabel"><ui:text from="{lang.documentMembers}"/></label>
                             <span ui:field="members"/>
                         </div>
                     </div>
@@ -108,11 +108,11 @@
             </div>
 
             <g:HTMLPanel ui:field="documentDocUploadContainer">
-                <h6><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></h6>
+                <h6 ui:field="memberUploadWorkDocumentationLabel"><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></h6>
                 <div class="card card-default m-t-10">
                     <div class="card-body no-scroll no-padding card-body-dropzone">
                         <div class="form-group form-group-default m-b-0 no-border required">
-                            <label><ui:text from="{lang.documentMemberWorkDocumentationComment}"/></label>
+                            <label ui:field="documentDocCommentLabel"><ui:text from="{lang.documentMemberWorkDocumentationComment}"/></label>
                             <g:TextBox ui:field="documentDocComment" styleName="form-control comment"/>
                         </div>
                         <fileuploader:DocumentUploader ui:field="documentDocUploader" format="DOC"/>

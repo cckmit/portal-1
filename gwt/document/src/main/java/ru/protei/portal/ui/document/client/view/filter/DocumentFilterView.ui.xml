@@ -20,7 +20,7 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.documentSearchNameOrDesignation}" styleName="form-group col-md-12"/>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.sortBy}"/></label>
+                    <label ui:field="sortByLabel"><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
                         <sortfield:SortFieldSelector ui:field="sortField" type="EQUIPMENT" hasNullValue="false"/>
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
@@ -28,51 +28,51 @@
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.created}"/></label>
+                    <label ui:field="dateRangeLabel"><ui:text from="{lang.created}"/></label>
                     <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label>
+                    <label ui:field="managerLabel">
                         <ui:text from="{lang.documentManager}"/>
                     </label>
                     <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.documentProject}"/></label>
+                    <label ui:field="projectsLabel"><ui:text from="{lang.documentProject}"/></label>
                     <projects:ProjectMultiSelector ui:field="projects"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.equipmentOrganization}"/></label>
+                    <label ui:field="organizationCodeLabel"><ui:text from="{lang.equipmentOrganization}"/></label>
                     <organization:OrganizationBtnGroupMulti ui:field="organizationCode" styleName="form-group btn-group btn-group-justified"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.documentCategory}"/></label>
+                    <label ui:field="documentCategoryLabel"><ui:text from="{lang.documentCategory}"/></label>
                     <doccategory:DocumentCategoryMultiSelector ui:field="documentCategory"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.documentType}"/></label>
+                    <label ui:field="documentTypeLabel"><ui:text from="{lang.documentType}"/></label>
                     <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectorAny}"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.documentApproved}"/></label>
+                    <label ui:field="approvedLabel"><ui:text from="{lang.documentApproved}"/></label>
                     <group:ThreeStateButton ui:field="approved"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label>
+                    <label ui:field="contentLabel">
                         <ui:text from="{lang.documentContent}"/>
                     </label>
                     <g:TextArea ui:field="content" styleName="form-control description"/>
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label>
+                    <label ui:field="keywordsLabel">
                         <ui:text from="{lang.documentKeywords}"/>
                     </label>
                     <keyword:StringSelectInput ui:field="keywords"/>
