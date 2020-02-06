@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.SelectorParamsUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -72,7 +71,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        Result<SelectorsParams> selectorsParams = getSelectorsParams(makeSelectorsParamsRequest(filter.getParams()));
+        Result<SelectorsParams> selectorsParams = getSelectorsParams(SelectorParamsUtils.makeRequest(filter.getParams()));
 
         if (selectorsParams.isError()) {
             return error( selectorsParams.getStatus() );
@@ -184,21 +183,5 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     private boolean isUniqueFilter( String name, Long loginId, En_CaseFilterType type, Long excludeId ) {
         CaseFilter caseFilter = caseFilterDAO.checkExistsByParams( name, loginId, type );
         return caseFilter == null || caseFilter.getId().equals( excludeId );
-    }
-
-    private SelectorsParamsRequest makeSelectorsParamsRequest(CaseQuery caseQuery) {
-        SelectorsParamsRequest request = new SelectorsParamsRequest();
-
-        request.setCompanyIds(emptyIfNull(caseQuery.getCompanyIds()).stream().filter(Objects::nonNull).collect(Collectors.toList()));
-
-        Set<Long> personsIds = new HashSet<>();
-        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
-        request.setPersonIds(personsIds.stream().filter(Objects::nonNull).collect(Collectors.toList()));
-
-        request.setProductIds(emptyIfNull(caseQuery.getProductIds()).stream().filter(Objects::nonNull).collect(Collectors.toList()));
-
-        return request;
     }
 }

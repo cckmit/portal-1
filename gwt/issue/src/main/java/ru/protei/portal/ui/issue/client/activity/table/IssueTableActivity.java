@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.SelectorParamsUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -396,7 +397,7 @@ public abstract class IssueTableActivity
 
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
         filterView.resetFilter();
-        filterService.getSelectorsParams( makeSelectorsParamsRequest(caseQuery), new RequestCallback<SelectorsParams>() {
+        filterService.getSelectorsParams( SelectorParamsUtils.makeRequest(caseQuery), new RequestCallback<SelectorsParams>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
@@ -408,22 +409,6 @@ public abstract class IssueTableActivity
                 onFilterChanged();
             }
         } );
-    }
-
-    private SelectorsParamsRequest makeSelectorsParamsRequest(CaseQuery caseQuery) {
-        SelectorsParamsRequest request = new SelectorsParamsRequest();
-
-        request.setCompanyIds(emptyIfNull(caseQuery.getCompanyIds()).stream().filter(Objects::nonNull).collect(Collectors.toList()));
-
-        Set<Long> personsIds = new HashSet<>();
-        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
-        request.setPersonIds(personsIds.stream().filter(Objects::nonNull).collect(Collectors.toList()));
-
-        request.setProductIds(emptyIfNull(caseQuery.getProductIds()).stream().filter(Objects::nonNull).collect(Collectors.toList()));
-
-        return request;
     }
 
     private void showPreview ( CaseShortView value ) {
