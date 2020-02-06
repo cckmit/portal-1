@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.DevUnitChildRef;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -25,7 +26,10 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -161,13 +165,14 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
-            return error(En_ResultStatus.ALREADY_EXIST);
-
         DevUnit oldProduct = devUnitDAO.get(product.getId());
 
         if (!Objects.equals(oldProduct.getType(), product.getType())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
         }
 
         Boolean result = devUnitDAO.merge(product);
@@ -224,7 +229,11 @@ public class ProductServiceImpl implements ProductService {
             return false;
         }
 
-        if (product.getProductDirection() != null && En_DevUnitType.COMPONENT.equals(product.getType())) {
+        if (product.getType() == null) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(product.getName())) {
             return false;
         }
 
