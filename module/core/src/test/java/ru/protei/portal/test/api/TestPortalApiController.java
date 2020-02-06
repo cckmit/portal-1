@@ -184,6 +184,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.data.historyVersion", is( product.getHistoryVersion() ) ) )
                 .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
                 .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
+                .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
         ;
     }
 
@@ -198,6 +199,7 @@ public class TestPortalApiController extends BaseServiceTest {
         product.setHistoryVersion( "Updated historyVersion" );
         product.setCdrDescription( "Updated cdrDescription" );
         product.setConfiguration( "Updated configuration" );
+        product.setDescription( "Updated description" );
 
         createPostResultAction( "/api/products/update", product )
                 .andExpect( status().isOk() )

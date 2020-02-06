@@ -14,6 +14,8 @@ public class DevUnitInfo extends AuditableObject {
 
     private String historyVersion;
 
+    private String description;
+
     @Override
     public String getAuditType() {
         return DEV_UNIT_INFO;
@@ -52,6 +54,14 @@ public class DevUnitInfo extends AuditableObject {
         this.configuration = configuration;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription( String description ) {
+        this.description = description;
+    }
+
     public static final String DEV_UNIT_INFO = "DevUnitInfo";
 
     @Override
@@ -71,6 +81,7 @@ public class DevUnitInfo extends AuditableObject {
     public String toString() {
         return "Product{" +
                 "id=" + id +
+                ", description='" + description + '\'' +
                 ", cdrDescription='" + cdrDescription + '\'' +
                 ", historyVersion='" + historyVersion + '\'' +
                 ", configuration='" + configuration + '\'' +

@@ -263,6 +263,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getConfiguration() != null) devUnit.setConfiguration( product.getConfiguration() );
         if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
         if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
+        if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
         return devUnit;
     }
 
@@ -272,6 +273,7 @@ public class ProductServiceImpl implements ProductService {
         info.setConfiguration( devUnit.getConfiguration() );
         info.setCdrDescription( devUnit.getCdrDescription() );
         info.setHistoryVersion( devUnit.getHistoryVersion() );
+        info.setDescription( devUnit.getInfo() );
         return info;
     }
 
