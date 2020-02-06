@@ -131,8 +131,9 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Result<DevUnit> createProduct( AuthToken token, DevUnit product) {
 
-        if (product == null)
+        if (!validateFields(product)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return error(En_ResultStatus.ALREADY_EXIST);
@@ -161,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Result<DevUnit> updateProduct( AuthToken token, DevUnit product ) {
 
-        if (!validateFields(product)) {
+        if (!validateFields(product) || product.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -222,10 +223,6 @@ public class ProductServiceImpl implements ProductService {
 
     private boolean validateFields(DevUnit product) {
         if (product == null) {
-            return false;
-        }
-
-        if (product.getId() == null) {
             return false;
         }
 
