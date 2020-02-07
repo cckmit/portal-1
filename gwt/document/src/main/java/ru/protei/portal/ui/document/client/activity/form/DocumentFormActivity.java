@@ -343,6 +343,7 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document, Consumer<Document> onSaved) {
         documentService.saveDocument(document, new FluentCallback<Document>()
+                .withError(throwable -> isDocumentCreationInProgress = false)
                 .withSuccess(onSaved));
     }
 
