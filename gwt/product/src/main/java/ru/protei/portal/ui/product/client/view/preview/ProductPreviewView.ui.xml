@@ -18,8 +18,17 @@
                     </div>
 
                     <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
-
                     <g:Label styleName="small hint-text pre-formatted-info" ui:field="direction"/>
+
+                    <g:HTMLPanel styleName="d-flex m-t-5 small hint-text pre-formatted-info" ui:field="parentsContainer">
+                        <g:Label styleName="m-r-5" text="{lang.belongsTo}:"/>
+                        <g:HTMLPanel ui:field="parents"/>
+                    </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="d-flex m-t-5 small hint-text pre-formatted-info" ui:field="childrenContainer">
+                        <g:Label styleName="d-flex m-r-5" text="Состоит из:"/>
+                        <g:HTMLPanel ui:field="children"/>
+                    </g:HTMLPanel>
 
                     <tab:TabWidget styleName="" ui:field="tabWidget">
                         <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">

@@ -4,6 +4,8 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.Map;
+
 /**
  * Абстракция вида карточки просмотра продукта
  */
@@ -18,6 +20,10 @@ public interface AbstractProductPreviewView extends IsWidget {
     void setDirection(String direction);
 
     void setWikiLink(String value);
+
+    void setParents(Map<String, String> nameToLink);
+
+    void setChildren(Map<String, String> nameToLink);
 
     void setConfiguration(String value);
 

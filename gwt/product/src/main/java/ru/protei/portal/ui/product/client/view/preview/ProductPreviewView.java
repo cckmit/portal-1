@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
@@ -14,6 +15,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
+
+import java.util.Map;
 
 /**
  * Вид карточки просмотра продукта
@@ -58,6 +61,16 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             href = "http://" + href;
         }
         wikiLink.setHref(href);
+    }
+
+    @Override
+    public void setParents(Map<String, String> nameToLink) {
+        addProductsToContainer(nameToLink, parents, parentsContainer);
+    }
+
+    @Override
+    public void setChildren(Map<String, String> nameToLink) {
+        addProductsToContainer(nameToLink, children, childrenContainer);
     }
 
     @Override
@@ -110,6 +123,26 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         }
     }
 
+    private void addProductsToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer, HTMLPanel container) {
+        linksContainer.getElement().removeAllChildren();
+
+        if (nameToLink.isEmpty()) {
+            container.addStyleName("hidden");
+            return;
+        }
+
+        container.removeStyleName("hidden");
+
+        for (Map.Entry<String, String> currEntry : nameToLink.entrySet()) {
+            AnchorElement parent = AnchorElement.as(DOM.createAnchor());
+            parent.setInnerText(currEntry.getKey());
+            parent.setHref(currEntry.getValue());
+            parent.setClassName("m-r-10");
+            parent.setAttribute("target", "_blank");
+            linksContainer.getElement().appendChild(parent);
+        }
+    }
+
     private void ensureDebugIds() {
         productName.ensureDebugId(DebugIds.PRODUCT_PREVIEW.NAME);
         wikiLink.setId(DebugIds.PRODUCT_PREVIEW.WIKI_LINK);
@@ -131,6 +164,14 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     Label info;
     @UiField
     Label direction;
+    @UiField
+    HTMLPanel parents;
+    @UiField
+    HTMLPanel children;
+    @UiField
+    HTMLPanel parentsContainer;
+    @UiField
+    HTMLPanel childrenContainer;
     @UiField
     ImageElement typeImage;
     @UiField
