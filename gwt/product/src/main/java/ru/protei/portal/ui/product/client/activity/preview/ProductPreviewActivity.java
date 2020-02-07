@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+
 /**
  * Активность карточки просмотра продукта
  */
@@ -83,8 +85,8 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         view.setDirection(product.getProductDirection() == null ? "" : product.getProductDirection().getName());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
-        view.setParents(product.getParents().stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
-        view.setChildren(product.getChildren().stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
+        view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
+        view.setChildren(emptyIfNull(product.getChildren()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
 
         view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(product.getType()));
 

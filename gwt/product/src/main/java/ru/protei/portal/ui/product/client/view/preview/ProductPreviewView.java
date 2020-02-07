@@ -71,12 +71,12 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setParents(Map<String, String> nameToLink) {
-        addProductsToContainer(nameToLink, parents);
+        addLinksToContainer(nameToLink, parents);
     }
 
     @Override
     public void setChildren(Map<String, String> nameToLink) {
-        addProductsToContainer(nameToLink, children);
+        addLinksToContainer(nameToLink, children);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         }
     }
 
-    private void addProductsToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
+    private void addLinksToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
         linksContainer.getElement().removeAllChildren();
 
         for (Map.Entry<String, String> currEntry : nameToLink.entrySet()) {
