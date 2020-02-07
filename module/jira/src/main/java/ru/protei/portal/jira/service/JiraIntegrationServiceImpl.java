@@ -140,7 +140,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             }
 
             AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, newCase, personMapper.toProteiPerson(event.getUser()));
-            caseEvent.setInitiator( personMapper.toProteiPerson(event.getUser()) );
             JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
             caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));

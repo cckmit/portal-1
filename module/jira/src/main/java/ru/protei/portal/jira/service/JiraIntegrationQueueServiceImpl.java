@@ -8,7 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
-import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.jira.dict.JiraHookEventType;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.winter.core.utils.Pair;
@@ -126,8 +126,8 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     }
 
     private void sendEvent(AssembledCaseEvent event) {
+        assemblerService.proceed(event);
         log.info("Send assembled event {}", event.getCaseObject().defGUID());
-        eventPublisherService.publishEvent(event);
     }
 
     public class JiraIntegrationQueueWorker implements Runnable {
@@ -189,7 +189,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     @Autowired
     ThreadPoolTaskScheduler scheduler;
     @Autowired
-    EventPublisherService eventPublisherService;
+    AssemblerService assemblerService;
     @Autowired
     JiraIntegrationService integrationService;
 
