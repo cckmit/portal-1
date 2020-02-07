@@ -166,6 +166,7 @@ public class IssueFilterUtils {
         if ( personSet == null || personSet.isEmpty() ) {
             return null;
         }
+
         return personSet
                 .stream()
                 .map( PersonShortView::getId )
@@ -176,12 +177,10 @@ public class IssueFilterUtils {
         if (CollectionUtils.isEmpty(personsIds)) {
             return null;
         }
+
         Set<PersonShortView> persons = new HashSet<>();
-        for (Long id : personsIds) {
-            PersonShortView person = new PersonShortView();
-            person.setId(id);
-            persons.add(person);
-        }
+        personsIds.forEach(id -> persons.add(new PersonShortView(null, id)));
+
         return persons;
     }
 

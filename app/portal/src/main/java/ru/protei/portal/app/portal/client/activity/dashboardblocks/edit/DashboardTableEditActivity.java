@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserDashboard;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -21,10 +22,7 @@ import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class DashboardTableEditActivity implements Activity, AbstractDashboardTableEditActivity, AbstractDialogDetailsActivity {
 
@@ -127,7 +125,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
-        query.setWithoutManager(true);
+        query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
 
