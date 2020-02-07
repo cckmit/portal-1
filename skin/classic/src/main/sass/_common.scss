@@ -4061,3 +4061,11 @@ table {
   visibility: hidden;
   width: 0;
 }
+
+.product-links-formatter {
+  display: flex;
+  flex-flow: row wrap;
+  a {
+    margin-right: 15px;
+  }
+}

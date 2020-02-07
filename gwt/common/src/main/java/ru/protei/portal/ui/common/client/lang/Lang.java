@@ -2006,5 +2006,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String productSelectDirection();
 
-    String productPreviewDirection(String direction);
+    String consistOf();
+
+    String productAdditionalInfoHeader();
 }

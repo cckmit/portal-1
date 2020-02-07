@@ -1,8 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.preview;
 
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.Map;
 
@@ -20,6 +18,8 @@ public interface AbstractProductPreviewView extends IsWidget {
     void setDirection(String direction);
 
     void setWikiLink(String value);
+
+    HasVisibility parentsContainerVisibility();
 
     void setParents(Map<String, String> nameToLink);
 

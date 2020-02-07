@@ -1,23 +1,19 @@
 package ru.protei.portal.ui.product.client.activity.preview;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
-import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -25,7 +21,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -90,6 +85,8 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
         view.setParents(product.getParents().stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
         view.setChildren(product.getChildren().stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
+
+        view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(product.getType()));
 
         List<String> list = new ArrayList<>();
         list.add(product.getConfiguration());

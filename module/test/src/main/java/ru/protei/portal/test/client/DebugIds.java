@@ -434,6 +434,8 @@ public class DebugIds {
         String CDR_DESCRIPTION = "product-preview-cdr-description";
         String BACK_BUTTON = "product-preview-back-button";
         String DIRECTION_LABEL = "product-preview-direction-label";
+        String PARENTS_CONTAINER = "product-preview-parents-container";
+        String CHILDREN_CONTAINER = "product-preview-children-container";
 
         interface TAB {
             String HISTORY_VERSION = "product-preview-tab-history-version";
