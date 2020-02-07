@@ -35,8 +35,6 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> managerIds;
 
-    private Boolean withoutManager;
-
     private En_CaseType type;
 
     private List<Integer> stateIds;
@@ -114,7 +112,6 @@ public class CaseQuery extends BaseQuery {
         setModifiedFrom(query.getModifiedFrom());
         setModifiedTo(query.getModifiedTo());
         setManagerIds(query.getManagerIds());
-        setWithoutManager(query.isWithoutManager());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
         setSearchStringAtComments(query.isSearchStringAtComments());
@@ -227,14 +224,6 @@ public class CaseQuery extends BaseQuery {
     public List<Long> getManagerIds() { return managerIds; }
 
     public void setManagerIds( List<Long> managerIds ) { this.managerIds = managerIds; }
-
-    public Boolean isWithoutManager() {
-        return withoutManager;
-    }
-
-    public void setWithoutManager(Boolean withoutManager) {
-        this.withoutManager = withoutManager;
-    }
 
     public boolean isAllowViewPrivate() {
         return allowViewPrivate;
@@ -364,8 +353,7 @@ public class CaseQuery extends BaseQuery {
                 local != null ||
                 contractIndependentProject != null ||
                 platformIndependentProject != null ||
-                productDirectionId != null ||
-                withoutManager != null;
+                productDirectionId != null;
     }
 
     @Override
@@ -377,7 +365,6 @@ public class CaseQuery extends BaseQuery {
                 ", locationIds=" + locationIds +
                 ", districtIds=" + districtIds +
                 ", managerIds=" + managerIds +
-                ", withoutManager=" + withoutManager +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
@@ -417,7 +404,6 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(locationIds, caseQuery.locationIds) &&
                 Objects.equals(districtIds, caseQuery.districtIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
-                Objects.equals(withoutManager, caseQuery.withoutManager) &&
                 type == caseQuery.type &&
                 Objects.equals(stateIds, caseQuery.stateIds) &&
                 Objects.equals(importanceIds, caseQuery.importanceIds) &&
@@ -438,6 +424,6 @@ public class CaseQuery extends BaseQuery {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds, withoutManager, type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom, modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds, customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject, productDirectionId);
+        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds, type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom, modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds, customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject, productDirectionId);
     }
 }
