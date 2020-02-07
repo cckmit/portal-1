@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -235,11 +236,21 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         companies().setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
         updateInitiators();
-        managers().setValue(applyManagers(caseQuery, filter));
+
+        Set<PersonShortView> personShortViews = applyPersons(filter, caseQuery.getManagerIds());
+        if (caseQuery.getManagerIds().contains(CrmConstants.Employee.UNDEFINED)) {
+            personShortViews.add(new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
+        }
+        managers().setValue(personShortViews);
+
         initiators().setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
         commentAuthors().setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
 
-        products().setValue(applyProducts(caseQuery, filter));
+        Set<ProductShortView> products = new HashSet<>(filter.getProductShortViews());
+        if (caseQuery.getProductIds().contains(CrmConstants.Product.UNDEFINED)) {
+            products.add(new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
+        }
+        products().setValue(products);
 
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
     }
@@ -405,32 +416,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         return emptyIfNull(filter.getPersonShortViews()).stream()
                 .filter(personShortView ->
                         emptyIfNull(initiatorIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<PersonShortView> applyManagers(CaseQuery caseQuery, SelectorsParams filter) {
-        return emptyIfNull(caseQuery.getManagerIds())
-                .stream()
-                .map(id -> CrmConstants.Employee.UNDEFINED.equals(id) ?
-                        new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED) :
-                        emptyIfNull(filter.getPersonShortViews())
-                                .stream()
-                                .filter(personShortView -> personShortView.getId().equals(id))
-                                .findFirst()
-                                .orElse(new PersonShortView(lang.errUndefinedObject(), id)))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<ProductShortView> applyProducts(CaseQuery caseQuery, SelectorsParams filter) {
-        return emptyIfNull(caseQuery.getProductIds())
-                .stream()
-                .map(id -> CrmConstants.Product.UNDEFINED.equals(id) ?
-                        new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0) :
-                        filter.getProductShortViews()
-                                .stream()
-                                .filter(productShortView -> productShortView.getId().equals(id))
-                                .findFirst()
-                                .orElse(new ProductShortView(id, lang.errUndefinedObject(), 0)))
                 .collect(Collectors.toSet());
     }
 

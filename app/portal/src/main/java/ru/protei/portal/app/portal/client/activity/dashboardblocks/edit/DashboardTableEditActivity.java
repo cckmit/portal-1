@@ -125,7 +125,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
-        query.setManagerIds(new ArrayList<>(Collections.singleton(CrmConstants.Employee.UNDEFINED)));
+        query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
 
