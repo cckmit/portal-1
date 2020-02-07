@@ -238,7 +238,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         updateInitiators();
 
         Set<PersonShortView> personShortViews = applyPersons(filter, caseQuery.getManagerIds());
-        if (caseQuery.getManagerIds().contains(CrmConstants.Employee.UNDEFINED)) {
+        if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
             personShortViews.add(new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
         managers().setValue(personShortViews);
@@ -247,7 +247,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         commentAuthors().setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
 
         Set<ProductShortView> products = new HashSet<>(filter.getProductShortViews());
-        if (caseQuery.getProductIds().contains(CrmConstants.Product.UNDEFINED)) {
+        if (emptyIfNull(caseQuery.getProductIds()).contains(CrmConstants.Product.UNDEFINED)) {
             products.add(new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
         }
         products().setValue(products);
