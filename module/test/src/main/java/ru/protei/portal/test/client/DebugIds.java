@@ -413,6 +413,8 @@ public class DebugIds {
         String CDR_DESCRIPTION = "product-cdr-description";
         String SAVE_BUTTON = "product-save-button";
         String CANCEL_BUTTON = "product-cancel-button";
+        String DIRECTION = "product-direction";
+        String DIRECTION_LABEL = "product-direction-label";
 
         interface TAB {
             String HISTORY_VERSION = "product-tab-history-version";
@@ -429,6 +431,7 @@ public class DebugIds {
         String CONFIGURATION = "product-preview-configuration";
         String CDR_DESCRIPTION = "product-preview-cdr-description";
         String BACK_BUTTON = "product-preview-back-button";
+        String DIRECTION_LABEL = "product-preview-direction-label";
 
         interface TAB {
             String HISTORY_VERSION = "product-preview-tab-history-version";

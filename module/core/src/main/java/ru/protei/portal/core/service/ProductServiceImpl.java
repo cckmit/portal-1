@@ -14,7 +14,9 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.DevUnitChildRef;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -24,7 +26,10 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -112,7 +117,9 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return error(En_ResultStatus.NOT_FOUND);
 
-        product = helper.fillAll( product );
+        product.setParents(devUnitDAO.getParents(id));
+        product.setChildren(devUnitDAO.getChildren(id));
+        product.setProductDirection(devUnitDAO.getProductDirection(id));
 
         return ok(product);
     }
@@ -121,8 +128,9 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Result<DevUnit> createProduct( AuthToken token, DevUnit product) {
 
-        if (product == null)
+        if (!validateFields(product)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return error(En_ResultStatus.ALREADY_EXIST);
@@ -139,8 +147,9 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductSubscriptions(product.getId(), product.getSubscriptions());
 
-        helper.persist(product, "parents");
-        helper.persist(product, "children");
+        saveProductDirection(product);
+        saveParents(product);
+        saveChildren(product);
 
         return ok(product);
 
@@ -150,30 +159,30 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Result<DevUnit> updateProduct( AuthToken token, DevUnit product ) {
 
-        if( product == null || product.getId() == null )
+        if (!validateFields(product) || product.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
-
-        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
-            return error(En_ResultStatus.ALREADY_EXIST);
+        }
 
         DevUnit oldProduct = devUnitDAO.get(product.getId());
 
+        if (!Objects.equals(oldProduct.getType(), product.getType())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         Boolean result = devUnitDAO.merge(product);
-        if ( !result )
+        if ( !result ) {
             return error(En_ResultStatus.NOT_UPDATED);
+        }
 
         updateProductSubscriptions( product.getId(), product.getSubscriptions() );
 
-        if (!Objects.equals(oldProduct.getType(), product.getType())) {
-            if (product.isProduct()) {
-                devUnitChildRefDAO.removeByChildId(product.getId());
-                product.setParents(null);
-            } else {
-                devUnitChildRefDAO.removeByParentId(product.getId());
-            }
-        }
-        helper.persist(product, "parents");
-        helper.persist(product, "children");
+        saveProductDirection(product);
+        saveParents(product);
+        saveChildren(product);
 
         return ok(product);
     }
@@ -207,6 +216,58 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         return ok(checkUniqueProduct(name, type, excludeId));
+    }
+
+    private boolean validateFields(DevUnit product) {
+        if (product == null) {
+            return false;
+        }
+
+        if (product.getType() == null) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(product.getName())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void saveProductDirection(DevUnit product) {
+        if (En_DevUnitType.COMPONENT.equals(product.getType())) {
+            return;
+        }
+
+        devUnitChildRefDAO.removeProductDirection(product.getId());
+
+        if (product.getProductDirection() == null) {
+            return;
+        }
+
+        devUnitChildRefDAO.persist(new DevUnitChildRef(product.getProductDirection().getId(), product.getId()));
+    }
+
+    private void saveParents(DevUnit product) {
+        devUnitChildRefDAO.removeParents(product.getId());
+
+        if (CollectionUtils.isEmpty(product.getParents())) {
+            return;
+        }
+
+        List<DevUnitChildRef> parents = product.getParents().stream().map(parent -> new DevUnitChildRef(parent.getId(), product.getId())).collect(Collectors.toList());
+        devUnitChildRefDAO.persistBatch(parents);
+    }
+
+    private void saveChildren(DevUnit product) {
+        devUnitChildRefDAO.removeChildren(product.getId());
+
+        if (CollectionUtils.isEmpty(product.getChildren())) {
+            return;
+        }
+
+        List<DevUnitChildRef> children = product.getChildren().stream().map(child -> new DevUnitChildRef(product.getId(), child.getId())).collect(Collectors.toList());
+        devUnitChildRefDAO.persistBatch(children);
     }
 
     private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {

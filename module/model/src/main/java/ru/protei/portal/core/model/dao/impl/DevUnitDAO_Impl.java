@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,27 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     @Override
     public boolean updateState(DevUnit newState) {
         return partialMerge(newState, "UNIT_STATE");
+    }
+
+    @Override
+    public List<DevUnit> getParents(Long productId) {
+        return getListByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
+                productId,
+                En_DevUnitType.DIRECTION.getId()
+        );
+    }
+
+    @Override
+    public List<DevUnit> getChildren(Long productId) {
+        return getListByCondition("ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)", productId);
+    }
+
+    @Override
+    public DevUnit getProductDirection(Long productId) {
+        return getByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
+                productId,
+                En_DevUnitType.DIRECTION.getId()
+        );
     }
 
     @Override

@@ -45,7 +45,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         event.parent.clear();
         event.parent.add(view.asWidget(event.isShouldWrap));
 
-        fillView(event.product);
+        loadDetails(event.productId);
         view.showFullScreen(false);
     }
 
@@ -59,11 +59,8 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget(true));
 
-        productService.getProduct(event.productId, new FluentCallback<DevUnit>()
-                .withSuccess(product -> {
-                    fillView(product);
-                    view.showFullScreen(true);
-                }));
+        loadDetails(event.productId);
+        view.showFullScreen(true);
     }
 
     @Override
@@ -76,11 +73,16 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         fireEvent(new ProductEvents.Show());
     }
 
+    private void loadDetails(Long productId) {
+        productService.getProduct(productId, new FluentCallback<DevUnit>().withSuccess(this::fillView));
+    }
+
     private void fillView(DevUnit product) {
         this.productId = product.getId();
         view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + product.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setInfo(product.getInfo());
+        view.setDirection(product.getProductDirection() == null ? "" : product.getProductDirection().getName());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
         List<String> list = new ArrayList<>();

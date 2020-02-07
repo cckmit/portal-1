@@ -163,12 +163,11 @@ public abstract class ProductTableActivity implements
     }
 
     private void showPreview (DevUnit value ) {
-
         if ( value == null ) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true ) );
+            fireEvent(new ProductEvents.ShowPreview(view.getPreviewContainer(), value.getId(), true));
         }
     }
 

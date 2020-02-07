@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -141,13 +140,19 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onTypeChanged(En_DevUnitType type) {
-        currType = type;
-        if (type.getId() != product.getTypeId()) {
-            view.parents().setValue(null);
-            view.children().setValue(null);
-            view.aliases().setValue(null);
-            view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
+        if (type.equals(currType)) {
+            return;
         }
+
+        currType = type;
+
+        view.parents().setValue(null);
+        view.children().setValue(null);
+        view.aliases().setValue(null);
+        view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
+        view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
+
+        view.setMutableState(type);
     }
 
     private boolean isNew(DevUnit product) {
@@ -172,36 +177,35 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void fillView(DevUnit devUnit) {
 
-        boolean isCreate = devUnit.getId() == null;
+        boolean isNew = isNew(devUnit);
 
-        view.setCurrentProduct(isCreate ? null : devUnit.toProductShortView());
+        view.setCurrentProduct(isNew ? null : devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
         view.info().setValue(devUnit.getInfo());
 
-        currType = isCreate ? En_DevUnitType.COMPLEX : devUnit.getType();
+        currType = isNew ? En_DevUnitType.COMPLEX : devUnit.getType();
         view.type().setValue(currType);
-        view.typeVisibility().setVisible(isCreate);
-        view.setTypeImage(isCreate || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
-        view.setTypeImageVisibility(!isCreate);
+        view.typeVisibility().setVisible(isNew);
+        view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
+        view.setTypeImageVisibility(!isNew);
         view.setMutableState(currType);
 
-        view.productSubscriptions().setValue(devUnit.getSubscriptions() != null ? devUnit.getSubscriptions().stream()
-                        .map( Subscription::fromProductSubscription )
-                        .collect(Collectors.toList())
-                        : null
+        view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
+                .map(Subscription::fromProductSubscription)
+                .collect(Collectors.toList())
         );
 
-        view.parents().setValue(devUnit.getParents() != null ? devUnit.getParents().stream()
+        view.parents().setValue(devUnit.getParents() == null ? null : devUnit.getParents().stream()
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
-                : null
         );
 
-        view.children().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
+        view.children().setValue(devUnit.getChildren() == null ? null : devUnit.getChildren().stream()
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
-                : null
         );
+
+        view.direction().setValue(devUnit.getProductDirection() == null ? null : devUnit.getProductDirection().toProductDirectionInfo());
 
         view.wikiLink().setValue(devUnit.getWikiLink());
 
@@ -247,6 +251,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .map(DevUnit::fromProductShortView)
                 .collect(Collectors.toList()) : null
         );
+
+        product.setProductDirection(DevUnit.fromProductDirectionInfo(view.direction().getValue()));
 
         product.setWikiLink(view.wikiLink().getValue());
         product.setCdrDescription(view.cdrDescription().getValue());

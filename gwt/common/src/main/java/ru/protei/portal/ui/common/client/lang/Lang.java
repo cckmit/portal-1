@@ -2021,4 +2021,8 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardTableFilterCreationNewIssues();
 
     String dashboardTableFilterCreationActiveIssues();
+
+    String productSelectDirection();
+
+    String productPreviewDirection(String direction);
 }
