@@ -43,11 +43,17 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setExecutionType(String executionType);
 
+    void setApprovedBy(String approvedBy);
+
+    void setApprovalDate(String approvalDate);
+
     AbstractDocumentUploader documentDocUploader();
 
     HasValue<String> documentDocComment();
 
     HasVisibility documentDocVisibility();
+
+    HasVisibility approvalContainerVisibility();
 
     HasVisibility documentDocUploadContainerLoading();
 

@@ -413,15 +413,12 @@ public abstract class DocumentFormActivity
         view.nameValidator().setValid(true);
         view.documentDocUploader().resetForm();
         view.documentPdfUploader().resetForm();
-        if (view.isApproved().getValue()) {
-            view.approvedBy().setValue(document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
-            view.approvalDate().setValue(document.getApprovalDate());
-            view.approvedByEnabled(true);
-            view.approvalDateEnabled(true);
-        } else {
-            view.approvedByEnabled(false);
-            view.approvalDateEnabled(false);
-        }
+
+        boolean isApproved = view.isApproved().getValue();
+        view.approvedBy().setValue(!isApproved || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
+        view.approvalDate().setValue(!isApproved ? null : document.getApprovalDate());
+        view.approvedByEnabled(isApproved);
+        view.approvalDateEnabled(isApproved);
 
         if (isNew) {
             Profile profile = policyService.getProfile();

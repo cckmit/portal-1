@@ -1318,6 +1318,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentApproved();
 
+    String documentiSApproved();
+
     String documentApprovedBy();
 
     String documentApprovalDate();

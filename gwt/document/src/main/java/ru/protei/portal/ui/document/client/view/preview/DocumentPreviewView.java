@@ -129,6 +129,16 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy.setInnerText(approvedBy);
+    }
+
+    @Override
+    public void setApprovalDate(String approvalDate) {
+        this.approvalDate.setInnerText(approvalDate);
+    }
+
+    @Override
     public AbstractDocumentUploader documentDocUploader() {
         return documentDocUploader;
     }
@@ -141,6 +151,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Override
     public HasVisibility documentDocVisibility() {
         return documentDocUploadContainer;
+    }
+
+    @Override
+    public HasVisibility approvalContainerVisibility() {
+        return approvalContainer;
     }
 
     @Override
@@ -251,11 +266,17 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     SpanElement executionType;
     @UiField
+    SpanElement approvedBy;
+    @UiField
+    SpanElement approvalDate;
+    @UiField
     HTMLPanel footerContainer;
     @UiField
     Button backButton;
     @UiField
     HTMLPanel documentDocUploadContainer;
+    @UiField
+    HTMLPanel approvalContainer;
     @UiField
     DivElement documentDocUploadContainerLoading;
     @Inject

@@ -107,6 +107,26 @@
                 </div>
             </div>
 
+            <g:HTMLPanel ui:field="approvalContainer">
+                <h6><ui:text from="{lang.documentiSApproved}"/></h6>
+                <div class="form-group-attached">
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group form-group-default">
+                                <label><ui:text from="{lang.documentApprovedBy}"/></label>
+                                <span ui:field="approvedBy"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-default">
+                                <label><ui:text from="{lang.documentApprovalDate}"/></label>
+                                <span ui:field="approvalDate"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:HTMLPanel>
+
             <g:HTMLPanel ui:field="documentDocUploadContainer">
                 <h6 ui:field="memberUploadWorkDocumentationLabel"><ui:text from="{lang.documentMemberUploadWorkDocumentation}"/></h6>
                 <div class="card card-default m-t-10">
