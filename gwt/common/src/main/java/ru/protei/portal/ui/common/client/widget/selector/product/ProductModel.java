@@ -57,6 +57,11 @@ public abstract class ProductModel implements Activity,
         query.setTypes( enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()) );
     }
 
+    public void setQuery(ProductQuery productQuery) {
+        cache.clearCache();
+        applyQuery(productQuery);
+    }
+
     private SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {
         return new SelectorDataCacheLoadHandler() {
             @Override
@@ -76,6 +81,12 @@ public abstract class ProductModel implements Activity,
                 } );
             }
         };
+    }
+
+    private void applyQuery(ProductQuery productQuery) {
+        query.setState(productQuery.getState());
+        query.setTypes(productQuery.getTypes());
+        query.setDirectionId(productQuery.getDirectionId());
     }
 
     private ProductQuery makeQuery() {

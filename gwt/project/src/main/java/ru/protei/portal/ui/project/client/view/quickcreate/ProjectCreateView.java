@@ -3,6 +3,7 @@ package ru.protei.portal.ui.project.client.view.quickcreate;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -11,11 +12,13 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
@@ -35,12 +38,16 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugId();
-        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Override
     public void setActivity(AbstractProjectCreateActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public void updateProductQuery(ProductQuery productQuery) {
+        product.updateQuery(productQuery);
     }
 
     @Override
@@ -117,6 +124,13 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     {
         if (activity != null) {
             activity.onResetClicked();
+        }
+    }
+
+    @UiHandler("direction")
+    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+        if (activity != null) {
+            activity.onDirectionChanged(event.getValue());
         }
     }
 

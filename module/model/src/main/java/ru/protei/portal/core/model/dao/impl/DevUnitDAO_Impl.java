@@ -93,6 +93,11 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
                 condition.append(" and UTYPE_ID <> ?");
                 args.add(En_DevUnitType.DIRECTION.getId());
             }
+
+            if (query.getDirectionId() != null) {
+                condition.append("and ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)");
+                args.add(query.getDirectionId());
+            }
         });
     }
 

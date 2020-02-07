@@ -14,6 +14,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -37,6 +39,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.inputProjectName());
+        products.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         customerType.setDefaultValue(lang.selectCustomerType());
     }

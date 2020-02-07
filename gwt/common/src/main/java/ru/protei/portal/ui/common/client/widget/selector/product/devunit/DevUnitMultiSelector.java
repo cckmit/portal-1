@@ -34,5 +34,12 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         }
     }
 
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        if (model != null) {
+            model.setUnitState(enDevUnitState);
+            model.setUnitTypes(enDevUnitTypes);
+        }
+    }
+
     private ProductModel model;
 }

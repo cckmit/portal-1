@@ -4,11 +4,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -18,6 +20,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -35,6 +38,9 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     public void onShow(ProjectEvents.QuickCreate event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+
+        this.productQuery = makeProductQuery();
+
         initialView(new Project());
     }
 
@@ -75,6 +81,13 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         initialView(new Project());
     }
 
+    @Override
+    public void onDirectionChanged(ProductDirectionInfo info) {
+        productQuery.setDirectionId(info == null ? null : info.id);
+        view.updateProductQuery(productQuery);
+        view.product().setValue(null);
+    }
+
     private void initialView(Project project) {
         this.project = project;
         view.name().setValue(project.getName());
@@ -84,6 +97,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.customerType().setValue(project.getCustomerType());
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
         view.product().setValue(project.getSingleProduct());
+        view.updateProductQuery(productQuery);
     }
 
     private void fillProject() {
@@ -105,6 +119,14 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
                 view.companyValidator().isValid();
     }
 
+    private ProductQuery makeProductQuery() {
+        ProductQuery productQuery = new ProductQuery();
+        productQuery.setState(En_DevUnitState.ACTIVE);
+        productQuery.setTypes(new HashSet<>(Arrays.asList(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT)));
+
+        return productQuery;
+    }
+
     @Inject
     AbstractProjectCreateView view;
     @Inject
@@ -114,4 +136,5 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     Lang lang;
 
     private Project project;
+    private ProductQuery productQuery;
 }
