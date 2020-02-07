@@ -3,10 +3,12 @@ package ru.protei.portal.ui.product.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
@@ -14,6 +16,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
+
+import java.util.Map;
 
 /**
  * Вид карточки просмотра продукта
@@ -41,12 +45,12 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setInfo( String value ) {
-        this.info.setText(value);
+        this.info.setInnerText(value);
     }
 
     @Override
     public void setDirection(String direction) {
-        this.direction.setText(lang.productPreviewDirection(direction));
+        this.direction.setInnerText(direction);
     }
 
     @Override
@@ -58,6 +62,21 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             href = "http://" + href;
         }
         wikiLink.setHref(href);
+    }
+
+    @Override
+    public HasVisibility parentsContainerVisibility() {
+        return parentsContainer;
+    }
+
+    @Override
+    public void setParents(Map<String, String> nameToLink) {
+        addLinksToContainer(nameToLink, parents);
+    }
+
+    @Override
+    public void setChildren(Map<String, String> nameToLink) {
+        addLinksToContainer(nameToLink, children);
     }
 
     @Override
@@ -110,17 +129,31 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         }
     }
 
+    private void addLinksToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
+        linksContainer.getElement().removeAllChildren();
+
+        for (Map.Entry<String, String> currEntry : nameToLink.entrySet()) {
+            AnchorElement parent = AnchorElement.as(DOM.createAnchor());
+            parent.setInnerText(currEntry.getKey());
+            parent.setHref(currEntry.getValue());
+            parent.setAttribute("target", "_blank");
+            linksContainer.getElement().appendChild(parent);
+        }
+    }
+
     private void ensureDebugIds() {
         productName.ensureDebugId(DebugIds.PRODUCT_PREVIEW.NAME);
         wikiLink.setId(DebugIds.PRODUCT_PREVIEW.WIKI_LINK);
-        info.ensureDebugId(DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
+        info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
         tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT_PREVIEW.TAB.HISTORY_VERSION);
         historyVersion.getElement().setId(DebugIds.PRODUCT_PREVIEW.HISTORY_VERSION);
         tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT_PREVIEW.TAB.CONFIGURATION);
         configuration.getElement().setId(DebugIds.PRODUCT_PREVIEW.CONFIGURATION);
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT_PREVIEW.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT_PREVIEW.CDR_DESCRIPTION);
-        direction.ensureDebugId(DebugIds.PRODUCT_PREVIEW.DIRECTION_LABEL);
+        direction.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DIRECTION_LABEL);
+        parents.ensureDebugId(DebugIds.PRODUCT_PREVIEW.PARENTS_CONTAINER);
+        children.ensureDebugId(DebugIds.PRODUCT_PREVIEW.CHILDREN_CONTAINER);
 
         backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
     }
@@ -128,9 +161,17 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     Lang lang;
     @UiField
-    Label info;
+    SpanElement info;
     @UiField
-    Label direction;
+    SpanElement direction;
+    @UiField
+    HTMLPanel parents;
+    @UiField
+    HTMLPanel children;
+    @UiField
+    HTMLPanel parentsContainer;
+    @UiField
+    HTMLPanel childrenContainer;
     @UiField
     ImageElement typeImage;
     @UiField
