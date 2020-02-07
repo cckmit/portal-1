@@ -41,6 +41,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -237,19 +238,21 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies().setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
         updateInitiators();
 
-        Set<PersonShortView> personShortViews = applyPersons(filter, caseQuery.getManagerIds());
-        if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
-            personShortViews.add(new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
-        }
-        managers().setValue(personShortViews);
-
         initiators().setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
         commentAuthors().setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
 
-        Set<ProductShortView> products = new HashSet<>(filter.getProductShortViews());
+        Set<PersonShortView> personShortViews = new LinkedHashSet<>();
+        if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
+            personShortViews.add(new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
+        }
+        personShortViews.addAll(applyPersons(filter, caseQuery.getManagerIds()));
+        managers().setValue(personShortViews);
+
+        Set<ProductShortView> products = new LinkedHashSet<>();
         if (emptyIfNull(caseQuery.getProductIds()).contains(CrmConstants.Product.UNDEFINED)) {
             products.add(new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
         }
+        products.addAll(emptyIfNull(filter.getProductShortViews()));
         products().setValue(products);
 
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
@@ -412,10 +415,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.stopWatchForScrollOf(widget);
     }
 
-    private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> initiatorIds) {
+    private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
         return emptyIfNull(filter.getPersonShortViews()).stream()
                 .filter(personShortView ->
-                        emptyIfNull(initiatorIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                        emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet());
     }
 
