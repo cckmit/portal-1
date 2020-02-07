@@ -19,10 +19,8 @@
             </div>
             <div class="row">
                 <div class="form-group col-md-12">
-                    <g:HTMLPanel ui:field="companyPanel" visible="false">
-                        <label ui:field="tagCompanyLabel"><ui:text from="{lang.tagCompany}"/></label>
-                        <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
-                    </g:HTMLPanel>
+                    <label ui:field="tagCompanyLabel"><ui:text from="{lang.tagCompany}"/></label>
+                    <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
                 </div>
             </div>
         </div>
