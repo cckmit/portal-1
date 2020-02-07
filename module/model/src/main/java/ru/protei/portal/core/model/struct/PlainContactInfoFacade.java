@@ -144,6 +144,14 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         contactInfo.findOrCreate(En_ContactItemType.EMAIL,En_ContactDataAccess.PRIVATE).modify(email_own);
     }
 
+    public String getInternalEmail() {
+        return findItemValue(En_ContactItemType.EMAIL, En_ContactDataAccess.INTERNAL);
+    }
+
+    public void setInternalEmail(String email) {
+        contactInfo.findOrCreate(En_ContactItemType.EMAIL, En_ContactDataAccess.INTERNAL).modify(email);
+    }
+
     public String getFax() {
         return findItemValue(En_ContactItemType.FAX, En_ContactDataAccess.PUBLIC);
     }
