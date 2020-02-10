@@ -1,5 +1,6 @@
 package ru.protei.portal.app.portal.client.activity.auth;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -16,6 +17,8 @@ import ru.protei.portal.ui.common.client.util.PasswordUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+
+import java.util.Date;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.REMEMBER_ME_PREFIX;
 
@@ -101,6 +104,8 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
         view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
         view.setLogoByLocale(currentLocale);
+
+        view.setYear(DateTimeFormat.getFormat("yyyy").format(new Date()));
 
         view.rememberMe().setValue(false);
     }

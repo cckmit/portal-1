@@ -40,17 +40,19 @@ public class NotifyAnimation {
         Timer opacityTimer = new Timer() {
             @Override
             public void run() {
-                currentOpacityMap.put(notify, currentOpacityMap.get(notify) - 1000.0 / (FRAMES_PER_SECOND * CLOSE_TIME) );
-                notify.asWidget().getElement().getStyle().setOpacity(currentOpacityMap.get(notify));
+                if (currentOpacityMap.containsKey(notify)) {
+                    currentOpacityMap.put(notify, currentOpacityMap.get(notify) - 1000.0 / (FRAMES_PER_SECOND * CLOSE_TIME));
+                    notify.asWidget().getElement().getStyle().setOpacity(currentOpacityMap.get(notify));
+                }
             }
         };
 
         Timer closeTimer = new Timer() {
             @Override
             public void run() {
-                notify.asWidget().removeFromParent();
                 opacityTimer.cancel();
                 currentOpacityMap.remove(notify);
+                notify.asWidget().removeFromParent();
             }
         };
 
