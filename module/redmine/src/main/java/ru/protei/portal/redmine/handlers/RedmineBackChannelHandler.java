@@ -91,10 +91,12 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
         logger.debug("Updating attachment");
         if (event.getAddedAttachments() != null) {
-            logger.debug("Updating attachment. size getAddedAttachments = {}", event.getAddedAttachments().size());
-            Collection<com.taskadapter.redmineapi.bean.Attachment> l = service.uploadAttachment(event.getAddedAttachments(), endpoint);
-            logger.debug("Updating attachment. size  l = {}", l.size());
-            l.forEach(issue::addAttachment);
+            List<com.taskadapter.redmineapi.bean.Attachment> attachmentList = service.uploadAttachment(event.getAddedAttachments(), endpoint);
+            if (attachmentList == null) {
+                logger.debug("Error at process attachments");
+                return;
+            }
+            attachmentList.forEach(issue::addAttachment);
         }
         logger.debug("Finished updating of attachment");
 

@@ -307,11 +307,9 @@ public final class RedmineServiceImpl implements RedmineService {
 
     @Override
     public List<com.taskadapter.redmineapi.bean.Attachment> uploadAttachment(Collection<Attachment> attachments, RedmineEndpoint endpoint) {
-        final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
-        final AttachmentManager attachmentManager = manager.getAttachmentManager();
+        final AttachmentManager attachmentManager = initManager(endpoint).getAttachmentManager();
         List<com.taskadapter.redmineapi.bean.Attachment> list = new ArrayList<>();
         for(Attachment attachment : attachments) {
-            logger.debug("process file with ExtLink {}", attachment.getExtLink());
             FileStorage.File file = fileStorage.getFile(attachment.getExtLink());
             try {
                 list.add(attachmentManager.uploadAttachment(attachment.getFileName(), file.getContentType(), file.getData()));
