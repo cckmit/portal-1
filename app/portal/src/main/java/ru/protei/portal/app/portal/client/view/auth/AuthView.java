@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -98,6 +99,11 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         logo.setSrc("./images/logo-blue-" + locale + ".svg");
     }
 
+    @Override
+    public void setYear(String year) {
+        footerText.setInnerText("© " + year + " НТЦ ПРОТЕЙ. All rights reserved");
+    }
+
     @UiHandler( "locale" )
     public void onLocaleClicked( ValueChangeEvent<LocaleImage> event ) {
         if ( activity != null ) {
@@ -137,6 +143,8 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     Lang lang;
     @UiField
     HTMLPanel loginContainer;
+    @UiField
+    ParagraphElement footerText;
     @UiField
     SpanElement errorText;
     @UiField
