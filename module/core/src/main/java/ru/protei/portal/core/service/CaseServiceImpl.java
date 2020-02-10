@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -601,7 +602,8 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setTimeElapsed(timeElapsed);
         stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
-
+        stateChangeMessage.setPrivateComment(true);
+        stateChangeMessage.setText(CrmConstants.Comment.TIME_ELAPSED_DEFAULT_COMMENT);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
