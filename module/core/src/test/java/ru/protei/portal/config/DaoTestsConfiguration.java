@@ -149,6 +149,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public UserCaseAssignmentDAO getUserCaseAssignmentDAO() {
+        return new UserCaseAssignmentDAO_Impl();
+    }
+
+    @Bean
     public UserDashboardDAO getUserDashboardDAO() {
         return new UserDashboardDAO_Impl();
     }

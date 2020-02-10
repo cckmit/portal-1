@@ -653,6 +653,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryIssue();
 
+    String privilegeCategoryIssueAssignment();
+
     String privilegeCategoryRegion();
 
     String privilegeCategoryProject();

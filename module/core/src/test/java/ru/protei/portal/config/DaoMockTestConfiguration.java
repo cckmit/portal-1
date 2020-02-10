@@ -139,6 +139,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public UserCaseAssignmentDAO getUserCaseAssignmentDAO() {
+        return  mock(UserCaseAssignmentDAO.class);
+    }
+
+    @Bean
     public UserLoginDAO getUserLoginDAO() {
         return  mock(UserLoginDAO.class);
     }
