@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
+import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
+import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
+import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -15,6 +18,7 @@ import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
+import java.util.Collection;
 import java.util.List;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
@@ -84,6 +88,15 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             updateComments(issue, event.getInitiator(), event.getAddedCaseComments());
         }
         logger.debug("Finished updating of comments");
+
+        logger.debug("Updating attachment");
+        if (event.getAddedAttachments() != null) {
+            logger.debug("Updating attachment. size getAddedAttachments = {}", event.getAddedAttachments().size());
+            Collection<com.taskadapter.redmineapi.bean.Attachment> l = service.uploadAttachment(event.getAddedAttachments(), endpoint);
+            logger.debug("Updating attachment. size  l = {}", l.size());
+            l.forEach(issue::addAttachment);
+        }
+        logger.debug("Finished updating of attachment");
 
         logger.debug("Copying case object changes to redmine issue");
         updateIssueProps(issue, event, endpoint);

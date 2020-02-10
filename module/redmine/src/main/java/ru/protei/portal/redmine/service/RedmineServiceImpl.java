@@ -6,11 +6,13 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
@@ -20,9 +22,8 @@ import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
 import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.redmine.utils.RedmineUtils.userInfo;
@@ -304,6 +305,25 @@ public final class RedmineServiceImpl implements RedmineService {
         handler.handle(user, issue, endpoint);
     }
 
+    @Override
+    public List<com.taskadapter.redmineapi.bean.Attachment> uploadAttachment(Collection<Attachment> attachments, RedmineEndpoint endpoint) {
+        final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
+        final AttachmentManager attachmentManager = manager.getAttachmentManager();
+        List<com.taskadapter.redmineapi.bean.Attachment> list = new ArrayList<>();
+        for(Attachment attachment : attachments) {
+            logger.debug("process file with ExtLink {}", attachment.getExtLink());
+            FileStorage.File file = fileStorage.getFile(attachment.getExtLink());
+            try {
+                list.add(attachmentManager.uploadAttachment(attachment.getFileName(), file.getContentType(), file.getData()));
+            } catch (IOException | RedmineException ex) {
+                logger.debug("Get exception while trying to process attach with ExtLink {}", attachment.getExtLink());
+                ex.printStackTrace();
+                return null;
+            }
+        }
+        return list;
+    }
+
     private Issue getIssueByIdWithAttachmentsOnly(int id, RedmineEndpoint endpoint) {
         try {
             final RedmineManager manager =
@@ -392,6 +412,9 @@ public final class RedmineServiceImpl implements RedmineService {
 
     @Autowired
     private RedmineBackChannelHandler redmineBackChannelHandler;
+
+    @Autowired
+    FileStorage fileStorage;
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RedmineServiceImpl.class);
 
