@@ -70,7 +70,7 @@ public abstract class ClickColumn<T> {
                 return;
             }
 
-            if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
+            if ( "a".equalsIgnoreCase( target.getNodeName() ) || "a".equalsIgnoreCase( target.getParentNode().getNodeName() )) {
                 if (actionClickHandler != null) {
                     event.preventDefault();
                     if ( columnProvider != null ) {
