@@ -5,21 +5,19 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class EquipmentFormSelector extends FormSelector<EquipmentShortView> implements SelectorWithModel<EquipmentShortView> {
+public class EquipmentFormSelector extends FormPopupSingleSelector<EquipmentShortView> {
 
     @Inject
-    public void init(Lang lang) {
-
+    public void init(EquipmentModel model, Lang lang) {
+        this.model = model;
+        setAsyncModel(model);
         setSearchAutoFocus(true);
-        setDisplayOptionCreator( value -> {
+        setItemRenderer( value -> {
             StringBuilder sb = new StringBuilder();
             if ( value == null ) {
                 sb.append( lang.equipmentPrimaryUseNotDefinied() );
@@ -33,25 +31,8 @@ public class EquipmentFormSelector extends FormSelector<EquipmentShortView> impl
                 }
             }
 
-            return new DisplayOption( sb.toString() );
+            return  sb.toString();
         } );
-    }
-
-    @Override
-    public void fillOptions( List< EquipmentShortView > options ) {
-        clearOptions();
-        if (hasNullValue) {
-            addOption(null);
-        }
-        options.forEach( this::addOption );
-    }
-
-    @Override
-    public void refreshValue() {}
-
-    public void setModel(EquipmentModel model) {
-        this.model = model;
-//        setSelectorModel(model);//TODO
     }
 
     public void setHasNullValue(boolean hasNullValue) {

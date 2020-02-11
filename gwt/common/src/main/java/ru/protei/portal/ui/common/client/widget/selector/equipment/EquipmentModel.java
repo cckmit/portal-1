@@ -65,10 +65,12 @@ public abstract class EquipmentModel implements Activity, AsyncSelectorModel<Equ
 
     public void setVisibleTypes(Set<En_EquipmentType> types) {
         query.setTypes( types );
+        cache.clearCache();
     }
 
     public void setProjectId(Long projectId) {
         query.setProjectId( projectId );
+        cache.clearCache();
     }
 
     @Inject
