@@ -29,7 +29,6 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
 
     public void setTypes(En_DevUnitType... enDevUnitTypes) {
         if (model != null) {
-            model.setUnitState( En_DevUnitState.ACTIVE );
             model.setUnitTypes( enDevUnitTypes);
         }
     }
