@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButt
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroupMulti;
@@ -117,6 +118,14 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
 
     @UiHandler( {"classifierCode", "regNum"} )
     public void onKeyUpSearch( KeyUpEvent event ) {
+        if (!classifierCode.isValid()) {
+            return;
+        }
+
+        if (!regNum.isValid()) {
+            return;
+        }
+
         fireChangeTimer();
     }
 
@@ -179,9 +188,9 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @UiField(provided = true)
     EquipmentTypeBtnGroupMulti types;
     @UiField
-    TextBox classifierCode;
+    ValidableTextBox classifierCode;
     @UiField
-    TextBox regNum;
+    ValidableTextBox regNum;
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;

@@ -74,15 +74,16 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
             }
 
             if ( !StringUtils.isEmpty( query.getClassifierCode() ) ) {
-                condition.append( " and DN.classifier_code like ? " );
-                String likeArg = HelperFunc.makeLikeArg(query.getClassifierCode(), true);
+                condition.append(" and DN.classifier_code like ? ");
+                String classifierCode = String.valueOf(Integer.parseInt(query.getClassifierCode()));
+                String likeArg = HelperFunc.makeLikeArg(classifierCode, true);
                 args.add(likeArg);
             }
 
             if ( !StringUtils.isEmpty( query.getRegisterNumber() ) ) {
                 condition.append( " and DN.reg_number like ? " );
-                Integer regNum = Integer.parseInt( query.getRegisterNumber() );
-                String likeArg = HelperFunc.makeLikeArg( regNum.toString(), true);
+                String regNum = String.valueOf(Integer.parseInt(query.getRegisterNumber()));
+                String likeArg = HelperFunc.makeLikeArg( regNum, true);
                 args.add(likeArg);
             }
 
