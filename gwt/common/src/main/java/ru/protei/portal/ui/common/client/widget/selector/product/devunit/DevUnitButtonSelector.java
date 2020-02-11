@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
@@ -38,15 +37,22 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
         return item;
     }
 
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
-        if (model != null) {
-            model.setUnitState(enDevUnitState);
-            model.setUnitTypes(enDevUnitTypes);
-        }
+    public void setState(En_DevUnitState enDevUnitState) {
+        runIfModelIsNotNull(() -> model.setUnitState(enDevUnitState));
     }
 
-    public void updateDirection(Long directionId) {
-        model.setDirectionId(directionId);
+    public void setTypes(En_DevUnitType... enDevUnitTypes) {
+        runIfModelIsNotNull(() -> model.setUnitTypes(enDevUnitTypes));
+    }
+
+    public void setDirectionId(Long directionId) {
+        runIfModelIsNotNull(() -> model.setDirectionId(directionId));
+    }
+
+    private void runIfModelIsNotNull(Runnable changeModel) {
+        if (model != null) {
+            changeModel.run();
+        }
     }
 
     protected ProductModel model;

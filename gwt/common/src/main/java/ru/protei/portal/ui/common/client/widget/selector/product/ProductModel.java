@@ -49,6 +49,7 @@ public abstract class ProductModel implements Activity,
     }
 
     public void setUnitState( En_DevUnitState devUnitState ) {
+        cache.clearCache();
         query.setState( devUnitState );
     }
 

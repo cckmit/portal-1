@@ -39,7 +39,8 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.inputProjectName());
-        products.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        products.setState(En_DevUnitState.ACTIVE);
+        products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         customerType.setDefaultValue(lang.selectCustomerType());
     }

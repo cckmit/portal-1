@@ -45,7 +45,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        product.setState(En_DevUnitState.ACTIVE);
+        product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
 
         product.setDefaultValue(lang.selectIssueProduct());
@@ -147,7 +148,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public void updateProductDirection(Long directionId) {
-        product.updateDirection(directionId);
+        product.setDirectionId(directionId);
     }
 
     @UiHandler("saveButton")

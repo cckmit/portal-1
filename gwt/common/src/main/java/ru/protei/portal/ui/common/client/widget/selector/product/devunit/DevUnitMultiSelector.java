@@ -22,22 +22,23 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         setAsyncModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
+        model.setUnitState( En_DevUnitState.ACTIVE );
 
         setItemRenderer(option -> (option.getName() + (HelperFunc.isEmpty(option.getAliases()) ? "" : " (" + option.getAliases() + ")")));
         setNullItem(() -> new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 ));
     }
 
     public void setTypes(En_DevUnitType... enDevUnitTypes) {
-        if (model != null) {
-            model.setUnitState( En_DevUnitState.ACTIVE );
-            model.setUnitTypes( enDevUnitTypes);
-        }
+        runIfModelIsNotNull(() -> model.setUnitTypes(enDevUnitTypes));
     }
 
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+    public void setState(En_DevUnitState enDevUnitState) {
+        runIfModelIsNotNull(() -> model.setUnitState(enDevUnitState));
+    }
+
+    private void runIfModelIsNotNull(Runnable changeModel) {
         if (model != null) {
-            model.setUnitState(enDevUnitState);
-            model.setUnitTypes(enDevUnitTypes);
+            changeModel.run();
         }
     }
 
