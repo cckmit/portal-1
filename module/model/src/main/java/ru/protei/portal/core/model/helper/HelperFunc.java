@@ -185,6 +185,14 @@ public class HelperFunc {
         return "(" + StringUtils.join(col, mapper, ",") + ")";
     }
 
+    public static String makeLpadFunc(String column, int maxDigits) {
+        return makeLpadFunc(column, maxDigits, 0);
+    }
+
+    public static String makeLpadFunc(String column, int maxDigits, int fillDigit) {
+        return "LPAD(" + column + ", " + maxDigits + ", " + fillDigit + ")";
+    }
+
     /**
      * nullGreater - если значение null то трактовать как большее
      */

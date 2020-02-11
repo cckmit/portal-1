@@ -69,4 +69,12 @@ public class CrmConstants {
     public interface Comment {
         String TIME_ELAPSED_DEFAULT_COMMENT = "затраченное время";
     }
+
+    public interface ClassifierCode {
+        int MAX_SIZE = 6;
+    }
+
+    public interface RegistrationNumber {
+        int MAX_SIZE = 3;
+    }
 }
