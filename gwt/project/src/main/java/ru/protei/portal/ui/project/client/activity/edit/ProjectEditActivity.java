@@ -122,8 +122,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onDirectionChanged() {
-        view.product().setValue(null);
         view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
+        view.product().setValue(null);
     }
 
     private boolean isNew(Project project) {
@@ -156,6 +156,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.team().setValue(null);
         view.product().setValue(null);
         view.setHideNullValue(true);
+        view.updateProductDirection(null);
 
         view.getDocumentsContainer().clear();
         view.getCommentsContainer().clear();
@@ -183,6 +184,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.description().setText(project.getDescription());
         view.product().setValue(project.getSingleProduct());
         view.customerType().setValue(project.getCustomerType());
+        view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
 
         view.numberVisibility().setVisible( true );
 
