@@ -17,9 +17,7 @@ import java.util.Set;
  */
 public interface AbstractProjectCreateView extends IsWidget {
     void setActivity(AbstractProjectCreateActivity activity);
-
-    void updateProductQuery(ProductQuery productQuery);
-
+    void updateProductDirection(Long directionId);
     HasValue<String> name();
     HasValue<String> description();
     HasValue<EntityOption> region();

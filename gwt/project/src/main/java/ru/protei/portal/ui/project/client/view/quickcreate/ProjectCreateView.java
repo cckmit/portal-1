@@ -38,6 +38,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugId();
+        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Override
@@ -46,8 +47,8 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public void updateProductQuery(ProductQuery productQuery) {
-        product.updateQuery(productQuery);
+    public void updateProductDirection(Long directionId) {
+        product.updateDirection(directionId);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @UiHandler("direction")
     public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
         if (activity != null) {
-            activity.onDirectionChanged(event.getValue());
+            activity.onDirectionChanged();
         }
     }
 

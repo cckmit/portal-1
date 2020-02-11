@@ -45,8 +45,8 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
         }
     }
 
-    public void updateQuery(ProductQuery productQuery) {
-        model.setQuery(productQuery);
+    public void updateDirection(Long directionId) {
+        model.setDirectionId(directionId);
     }
 
     protected ProductModel model;

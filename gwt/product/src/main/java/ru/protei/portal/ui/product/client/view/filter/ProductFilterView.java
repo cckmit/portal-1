@@ -132,7 +132,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
 
         showDeprecated.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.SHOW_DEPRECATED);
         types.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.TYPES);
-
+        direction.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.DIRECTION);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
     }
 

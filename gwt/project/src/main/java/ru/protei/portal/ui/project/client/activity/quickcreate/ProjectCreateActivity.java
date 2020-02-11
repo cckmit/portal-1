@@ -38,16 +38,8 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     public void onShow(ProjectEvents.QuickCreate event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-
-        this.productQuery = makeProductQuery();
-
         initialView(new Project());
     }
-
-//    @Event
-//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-//        view.refreshProducts();
-//    }
 
     @Event
     public void onSetProduct(ProductEvents.Set event) {
@@ -82,9 +74,8 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     }
 
     @Override
-    public void onDirectionChanged(ProductDirectionInfo info) {
-        productQuery.setDirectionId(info == null ? null : info.id);
-        view.updateProductQuery(productQuery);
+    public void onDirectionChanged() {
+        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
         view.product().setValue(null);
     }
 
@@ -97,7 +88,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.customerType().setValue(project.getCustomerType());
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
         view.product().setValue(project.getSingleProduct());
-        view.updateProductQuery(productQuery);
+        view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
     }
 
     private void fillProject() {
@@ -119,14 +110,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
                 view.companyValidator().isValid();
     }
 
-    private ProductQuery makeProductQuery() {
-        ProductQuery productQuery = new ProductQuery();
-        productQuery.setState(En_DevUnitState.ACTIVE);
-        productQuery.setTypes(new HashSet<>(Arrays.asList(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT)));
-
-        return productQuery;
-    }
-
     @Inject
     AbstractProjectCreateView view;
     @Inject
@@ -136,5 +119,4 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     Lang lang;
 
     private Project project;
-    private ProductQuery productQuery;
 }
