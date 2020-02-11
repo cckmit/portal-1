@@ -20,8 +20,6 @@ public interface AbstractProductFilterView extends IsWidget {
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
     HasValue<Set<En_DevUnitType>> types();
-
     HasValue<ProductDirectionInfo> direction();
-
     void resetFilter();
 }

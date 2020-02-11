@@ -50,6 +50,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasVisibility addLinkButtonVisibility();
 
+    void updateProductDirection(Long directionId);
+
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
 }

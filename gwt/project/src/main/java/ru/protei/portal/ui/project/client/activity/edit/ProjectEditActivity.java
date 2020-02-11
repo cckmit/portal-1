@@ -120,6 +120,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects(), false));
     }
 
+    @Override
+    public void onDirectionChanged() {
+        view.product().setValue(null);
+        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
+    }
+
     private boolean isNew(Project project) {
         return project.getId() == null;
     }
