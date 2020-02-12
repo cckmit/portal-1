@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
@@ -48,7 +47,13 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         AbstractPositionItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setDepartment( workerEntry.getDepartmentName() );
+        if (workerEntry.getDepartmentParentName() == null) {
+            itemView.setDepartmentParent(workerEntry.getDepartmentName());
+        } else {
+            itemView.setDepartmentParent(workerEntry.getDepartmentParentName());
+            itemView.setDepartment(workerEntry.getDepartmentName());
+        }
+
         itemView.setPosition( workerEntry.getPositionName() );
 
         return itemView;
@@ -59,7 +64,4 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     Provider< AbstractPositionItemView > factory;
-
-    @Inject
-    Lang lang;
 }

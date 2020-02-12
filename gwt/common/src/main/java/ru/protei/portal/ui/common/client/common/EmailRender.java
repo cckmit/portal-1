@@ -15,11 +15,11 @@ import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 public class EmailRender {
 
     public static Element renderToElement(String icon, Stream<ContactItem> stream, String className, boolean showComments) {
-        Element root = DOM.createDiv();
-        if (stream == null)
-            return root;
-
         Element div = DOM.createDiv();
+        if (stream == null) {
+            return div;
+        }
+
         div.addClassName(className);
 
         if (icon != null) {
@@ -32,8 +32,7 @@ public class EmailRender {
         Element span = DOM.createSpan();
         span.setInnerHTML(emailsHtml);
         div.appendChild(span);
-        root.appendChild(div);
-        return root;
+        return div;
     }
 
     public static String renderToHtml(Stream <ContactItem> stream){

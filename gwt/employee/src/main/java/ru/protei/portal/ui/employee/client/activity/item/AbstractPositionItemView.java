@@ -8,6 +8,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractPositionItemView extends IsWidget {
     void setActivity( AbstractPositionItemActivity activity );
     void setDepartment( String value );
-    void setPosition( String value );
-    void showMainInfo( boolean isMain );
+    void setDepartmentParent(String value);
+    void setPosition(String value );
 }
