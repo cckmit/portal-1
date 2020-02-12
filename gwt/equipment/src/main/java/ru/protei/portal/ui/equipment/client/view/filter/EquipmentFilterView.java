@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
@@ -115,20 +115,12 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @UiHandler( "name" )
-    public void onSearchChanged( ValueChangeEvent<String> event ) {
+    public void onSearchChanged( InputEvent event ) {
         fireChangeTimer();
     }
 
     @UiHandler( {"classifierCode", "regNum"} )
-    public void onKeyUpSearch( KeyUpEvent event ) {
-        if (!classifierCode.isValid()) {
-            return;
-        }
-
-        if (!regNum.isValid()) {
-            return;
-        }
-
+    public void onKeyUpSearch( InputEvent event ) {
         fireChangeTimer();
     }
 
@@ -171,6 +163,14 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         @Override
         public void run() {
             if ( activity != null ) {
+                if (!classifierCode.isValid()) {
+                    return;
+                }
+
+                if (!regNum.isValid()) {
+                    return;
+                }
+
                 activity.onFilterChanged();
             }
         }
