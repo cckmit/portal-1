@@ -158,6 +158,9 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
                 .flatMap(Collection::stream) // flatten
                 .distinct()
                 .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(stateIds) || CollectionUtils.isEmpty(managerIds)) {
+            return null;
+        }
         CaseQuery query = new CaseQuery();
         query.setStateIds(stateIds);
         query.setManagerIds(managerIds);

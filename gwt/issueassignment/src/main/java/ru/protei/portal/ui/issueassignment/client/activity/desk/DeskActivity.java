@@ -171,10 +171,12 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         HTMLPanel thead = new HTMLPanel("thead", "");
         HTMLPanel tbody = new HTMLPanel("tbody", "");
 
+        boolean isNoColumns = columns.isEmpty();
         int columnsSize = columns.size() + 1;
+        if (isNoColumns) columnsSize++;
         Map<UserCaseAssignment, Boolean> expandedState = new HashMap<>();
 
-        thead.add(buildHeaderRow(columns, issues));
+        thead.add(buildHeaderRow(columns, issues, isNoColumns));
         for (UserCaseAssignment row : rows) {
             expandedState.put(row, true);
             List<Long> people = row.getPersons();
@@ -204,7 +206,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         return table;
     }
 
-    private Widget buildHeaderRow(List<UserCaseAssignment> assignments, List<CaseShortView> issues) {
+    private Widget buildHeaderRow(List<UserCaseAssignment> assignments, List<CaseShortView> issues, boolean isNoColumns) {
         HTMLPanel row = new HTMLPanel("tr", "");
         row.addStyleName("table-desk-row-header");
         for (UserCaseAssignment assignment : assignments) {
@@ -213,6 +215,9 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
                     .collect(Collectors.toList());
             row.add(buildHeaderStateCell(assignment, columnIssues.size()));
+        }
+        if (isNoColumns) {
+            row.add(new HTMLPanel("th", ""));
         }
         row.add(buildHeaderAddCell(row));
         return row;
