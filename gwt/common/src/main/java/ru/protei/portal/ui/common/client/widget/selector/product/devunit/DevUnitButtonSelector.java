@@ -37,11 +37,16 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
         return item;
     }
 
-    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
-        if (model != null) {
-            model.setUnitState(enDevUnitState);
-            model.setUnitTypes(enDevUnitTypes);
-        }
+    public void setState(En_DevUnitState enDevUnitState) {
+        model.setUnitState(enDevUnitState);
+    }
+
+    public void setTypes(En_DevUnitType... enDevUnitTypes) {
+        model.setUnitTypes(enDevUnitTypes);
+    }
+
+    public void setDirectionId(Long directionId) {
+        model.setDirectionId(directionId);
     }
 
     protected ProductModel model;

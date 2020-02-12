@@ -394,6 +394,7 @@ public class DebugIds {
         interface FILTER {
             String SHOW_DEPRECATED = "product-filter-show-deprecated-button";
             String TYPES = "product-filter-types-selector";
+            String DIRECTION = "product-filter-direction";
         }
     }
 

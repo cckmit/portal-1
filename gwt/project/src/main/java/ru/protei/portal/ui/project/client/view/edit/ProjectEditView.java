@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -44,7 +45,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        product.setState(En_DevUnitState.ACTIVE);
+        product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
 
         product.setDefaultValue(lang.selectIssueProduct());
@@ -144,6 +146,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return addLinkButton;
     }
 
+    @Override
+    public void updateProductDirection(Long directionId) {
+        product.setDirectionId(directionId);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -184,6 +191,13 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onAddLinkButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onAddLinkClicked(addLinkButton);
+        }
+    }
+
+    @UiHandler("productDirection")
+    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+        if (activity != null) {
+            activity.onDirectionChanged();
         }
     }
 

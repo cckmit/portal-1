@@ -3,6 +3,7 @@ package ru.protei.portal.ui.project.client.view.quickcreate;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -35,12 +36,18 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugId();
-        product.updateQuery(En_DevUnitState.ACTIVE, En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        product.setState(En_DevUnitState.ACTIVE);
+        product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Override
     public void setActivity(AbstractProjectCreateActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public void updateProductDirection(Long directionId) {
+        product.setDirectionId(directionId);
     }
 
     @Override
@@ -117,6 +124,13 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     {
         if (activity != null) {
             activity.onResetClicked();
+        }
+    }
+
+    @UiHandler("direction")
+    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+        if (activity != null) {
+            activity.onDirectionChanged();
         }
     }
 

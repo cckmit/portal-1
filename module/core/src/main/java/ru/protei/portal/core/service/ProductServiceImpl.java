@@ -61,6 +61,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query) {
+        if ( query.getDirectionId() != null && !checkIfDirection(query.getDirectionId()) ) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         SearchResult<DevUnit> sr = devUnitDAO.getSearchResultByQuery(query);
 
@@ -69,6 +72,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query ) {
+        if ( query.getDirectionId() != null && !checkIfDirection(query.getDirectionId()) ) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return makeListProductShortView( devUnitDAO.listByQuery(query) );
     }
 
@@ -216,6 +223,16 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         return ok(checkUniqueProduct(name, type, excludeId));
+    }
+
+    private boolean checkIfDirection(Long directionId) {
+        DevUnit direction = devUnitDAO.get(directionId);
+
+        if (direction == null) {
+            return false;
+        }
+
+        return direction.isDirection();
     }
 
     private boolean validateFields(DevUnit product) {

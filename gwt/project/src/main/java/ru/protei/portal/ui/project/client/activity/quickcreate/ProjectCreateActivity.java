@@ -4,11 +4,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -18,6 +20,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -37,11 +40,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         event.parent.add(view.asWidget());
         initialView(new Project());
     }
-
-//    @Event
-//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-//        view.refreshProducts();
-//    }
 
     @Event
     public void onSetProduct(ProductEvents.Set event) {
@@ -75,6 +73,12 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         initialView(new Project());
     }
 
+    @Override
+    public void onDirectionChanged() {
+        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
+        view.product().setValue(null);
+    }
+
     private void initialView(Project project) {
         this.project = project;
         view.name().setValue(project.getName());
@@ -84,6 +88,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.customerType().setValue(project.getCustomerType());
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
         view.product().setValue(project.getSingleProduct());
+        view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
     }
 
     private void fillProject() {

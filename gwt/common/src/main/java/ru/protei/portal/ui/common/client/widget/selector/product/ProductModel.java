@@ -49,12 +49,18 @@ public abstract class ProductModel implements Activity,
     }
 
     public void setUnitState( En_DevUnitState devUnitState ) {
+        cache.clearCache();
         query.setState( devUnitState );
     }
 
     public void setUnitTypes( En_DevUnitType... enDevUnitTypes ) {
         cache.clearCache();
         query.setTypes( enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()) );
+    }
+
+    public void setDirectionId(Long directionId) {
+        cache.clearCache();
+        query.setDirectionId(directionId);
     }
 
     private SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {
