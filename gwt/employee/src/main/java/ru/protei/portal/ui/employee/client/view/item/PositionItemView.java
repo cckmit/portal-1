@@ -26,7 +26,13 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
 
     @Override
     public void setDepartment( String value ) {
+        departmentContainer.setVisible(true);
         this.department.setInnerText( value );
+    }
+
+    @Override
+    public void setDepartmentParent(String value) {
+        this.departmentParent.setInnerText(value);
     }
 
     @Override
@@ -40,13 +46,19 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     }
 
     @UiField
-    DivElement department;
+    SpanElement departmentParent;
+
+    @UiField
+    SpanElement department;
 
     @UiField
     SpanElement position;
 
     @UiField
     HTMLPanel mainInfoContainer;
+
+    @UiField
+    HTMLPanel departmentContainer;
 
     AbstractPositionItemActivity activity;
 

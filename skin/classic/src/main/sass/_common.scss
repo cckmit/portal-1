@@ -760,10 +760,7 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 35px;
           > div {
-            height: 35px;
-            max-height: 35px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;

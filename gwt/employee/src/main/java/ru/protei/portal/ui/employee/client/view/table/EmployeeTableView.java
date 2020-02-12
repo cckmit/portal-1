@@ -193,12 +193,19 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         employeeDepartment.addClassName("department");
         Element department = DOM.createDiv();
         Element departmentParent = DOM.createDiv();
+        Element position = DOM.createDiv();
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
 
         if (mainEntry != null) {
-            if (mainEntry.getDepartmentParentName() != null) {
+            if (mainEntry.getDepartmentParentName() == null) {
+                department.appendChild(LabelValuePairBuilder.make()
+                        .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts")
+                        .toElement());
+
+                employeeDepartment.appendChild(department);
+            } else {
                 departmentParent.appendChild(LabelValuePairBuilder.make()
                         .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts")
                         .toElement());
@@ -208,17 +215,16 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                         .toElement());
 
                 employeeDepartment.appendChild(departmentParent);
-            } else {
-                department.appendChild(LabelValuePairBuilder.make()
-                        .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts")
-                        .toElement());
+                employeeDepartment.appendChild(department);
             }
+
             if (mainEntry.getPositionName() != null){
-                department.appendChild(LabelValuePairBuilder.make()
+                position.appendChild(LabelValuePairBuilder.make()
                         .addIconValuePair("fa fa-street-view", mainEntry.getPositionName(), "contacts")
                         .toElement());
+
+                employeeDepartment.appendChild(position);
             }
-            employeeDepartment.appendChild(department);
         } else if (employee.isFired()) {
             department.appendChild(LabelValuePairBuilder.make()
                     .addIconValuePair("fa fa-info-circle", lang.employeeFired() + (employee.getFireDate() == null ? "" : " " + DateFormatter.formatDateOnly(employee.getFireDate())), "contacts")
