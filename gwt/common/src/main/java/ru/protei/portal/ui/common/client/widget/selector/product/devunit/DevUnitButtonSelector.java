@@ -38,21 +38,15 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
     }
 
     public void setState(En_DevUnitState enDevUnitState) {
-        runIfModelIsNotNull(() -> model.setUnitState(enDevUnitState));
+        model.setUnitState(enDevUnitState);
     }
 
     public void setTypes(En_DevUnitType... enDevUnitTypes) {
-        runIfModelIsNotNull(() -> model.setUnitTypes(enDevUnitTypes));
+        model.setUnitTypes(enDevUnitTypes);
     }
 
     public void setDirectionId(Long directionId) {
-        runIfModelIsNotNull(() -> model.setDirectionId(directionId));
-    }
-
-    private void runIfModelIsNotNull(Runnable changeModel) {
-        if (model != null) {
-            changeModel.run();
-        }
+        model.setDirectionId(directionId);
     }
 
     protected ProductModel model;

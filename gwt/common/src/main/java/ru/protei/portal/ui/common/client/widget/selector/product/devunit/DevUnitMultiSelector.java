@@ -29,17 +29,11 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
     }
 
     public void setTypes(En_DevUnitType... enDevUnitTypes) {
-        runIfModelIsNotNull(() -> model.setUnitTypes(enDevUnitTypes));
+        model.setUnitTypes(enDevUnitTypes);
     }
 
     public void setState(En_DevUnitState enDevUnitState) {
-        runIfModelIsNotNull(() -> model.setUnitState(enDevUnitState));
-    }
-
-    private void runIfModelIsNotNull(Runnable changeModel) {
-        if (model != null) {
-            changeModel.run();
-        }
+        model.setUnitState(enDevUnitState);
     }
 
     private ProductModel model;
