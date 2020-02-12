@@ -3,6 +3,20 @@
 
     <g:HTMLPanel styleName="p-3">
         <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar full-width justify-content-end">
+                    <div class="btn-group form-group">
+                        <g:Button ui:field="toggleTableButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                            <i class="fas fa-layer-group"/>
+                        </g:Button>
+                        <g:Button ui:field="reloadButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                            <i class="fas fa-redo-alt"/>
+                        </g:Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <g:HTMLPanel styleName="col-md-3" ui:field="table"/>
             <g:HTMLPanel styleName="col-md-9" ui:field="desk"/>
         </div>

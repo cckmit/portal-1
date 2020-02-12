@@ -1,0 +1,135 @@
+
+$desk_background: #f4f4f4;
+$desk_border: #dcdbdb;
+$desk_card_background: #ffffff;
+$desk_card_border: #dfe5eb;
+$desk_card_shadow: rgba(0, 0, 0, 0.1);
+
+.table-desk-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.table-desk {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background-color: $desk_background;
+  border: 1px solid $desk_border;
+
+  th, td {
+    padding: 8px;
+  }
+
+  th:not(.icon-cell) {
+    padding-left: 18px;
+  }
+
+  .icon-cell {
+    width: 38px;
+  }
+
+  tr.table-desk-row-header {
+
+    span {
+      font-weight: normal;
+    }
+
+    > th {
+      border-left: 1px solid $desk_border;
+      border-right: 1px solid $desk_border;
+    }
+  }
+
+  tr.table-desk-row-person {
+    border-top: 1px solid $desk_border;
+  }
+
+  tr.table-desk-row-new-row {
+    border-top: 1px solid $desk_border;
+  }
+
+  tr.table-desk-row-issues {
+    border-bottom: 1px solid $desk_border;
+
+    > td {
+      border-left: 1px solid $desk_border;
+      border-right: 1px solid $desk_border;
+      padding-top: 0;
+      vertical-align: top;
+
+      > * {
+        min-height: 60px;
+      }
+    }
+  }
+
+}
+
+.desk-issue-card {
+  position: relative;
+  padding: 8px 8px 4px;
+  font-size: 0.9em;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  display: inline-block;
+  cursor: default;
+  box-sizing: border-box;
+  box-shadow: 0 0 3px 0 $desk_card_shadow;
+  border: 1px solid $desk_card_border;
+  border-radius: 4px;
+  background-color: $desk_card_background;
+  margin: 0 0 6px 0;
+  word-break: break-word;
+
+  .desk-issue-header {
+    position: relative;
+    display: -webkit-flex;
+    flex-direction: row;
+
+    .desk-issue-content {
+      flex: 1;
+
+      > span {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .desk-issue-content {
+
+    .desk-issue-number {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .desk-issue-product {
+      font-weight: bold;
+    }
+
+    .desk-issue-time {
+      opacity: 0.8;
+      font-size: 0.9em;
+    }
+
+    .desk-issue-separator-h {
+      border-bottom: 1px solid #dcdbdb;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .desk-issue-separator-v {
+      border-left: 1px solid #dcdbdb;
+      margin-left: 4px;
+      margin-right: 6px;
+    }
+  }
+}
+
+.desk-issue-card:last-child {
+  margin: 0;
+}

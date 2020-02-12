@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.service.UserCaseAssignmentControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -192,17 +193,20 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         }
 
         HTMLPanel row = new HTMLPanel("tr", "");
+        row.addStyleName("table-desk-row-new-row");
         row.add(buildPersonAddCell(columnsSize));
         tbody.add(row);
 
         table.add(thead);
         table.add(tbody);
-        table.addStyleName("table");
+        table.addStyleName("table-desk");
+        table.getElement().getStyle().setPropertyPx("minWidth", (columnsSize - 1) * COLUMN_MIN_WIDTH_PX);
         return table;
     }
 
     private Widget buildHeaderRow(List<UserCaseAssignment> assignments, List<CaseShortView> issues) {
         HTMLPanel row = new HTMLPanel("tr", "");
+        row.addStyleName("table-desk-row-header");
         for (UserCaseAssignment assignment : assignments) {
             List<En_CaseState> states = assignment.getStates();
             List<CaseShortView> columnIssues =  CollectionUtils.stream(issues)
@@ -210,7 +214,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     .collect(Collectors.toList());
             row.add(buildHeaderStateCell(assignment, columnIssues.size()));
         }
-        row.add(buildHeaderAddCell());
+        row.add(buildHeaderAddCell(row));
         return row;
     }
 
@@ -232,20 +236,22 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         return cell;
     }
 
-    private Widget buildHeaderAddCell() {
+    private Widget buildHeaderAddCell(UIObject row) {
         AbstractDeskRowAddView rowAddView = rowAddViewProvider.get();
         rowAddView.setHandler(() -> {
             UserCaseAssignment assignment = new UserCaseAssignment();
             assignment.setTableEntity(En_TableEntity.COLUMN);
-            showStateMultiSelector(rowAddView.asWidget(), Collections.emptyList(), assignment);
+            showStateMultiSelector(row, Collections.emptyList(), assignment);
         });
         HTMLPanel cell = new HTMLPanel("th", "");
+        cell.addStyleName("icon-cell");
         cell.add(rowAddView.asWidget());
         return cell;
     }
 
     private Widget buildPersonRow(UserCaseAssignment assignment, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
         HTMLPanel row = new HTMLPanel("tr", "");
+        row.addStyleName("table-desk-row-person");
         row.add(buildPersonCell(assignment, columnsCount, issuesCount, onToggle));
         return row;
     }
@@ -289,6 +295,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildIssuesRow(List<UserCaseAssignment> columns, List<CaseShortView> rowIssues) {
         HTMLPanel row = new HTMLPanel("tr", "");
+        row.addStyleName("table-desk-row-issues");
         for (UserCaseAssignment column : columns) {
             List<En_CaseState> states = column.getStates();
             List<CaseShortView> cellIssues =  CollectionUtils.stream(rowIssues)
@@ -304,7 +311,14 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         AbstractDeskRowIssueView rowIssueView = rowIssueViewProvider.get();
         rowIssueView.setIssues(cellIssues);
         rowIssueView.setHandler(new AbstractDeskRowIssueView.Handler() {
+            @Override
+            public void onOpenIssue(CaseShortView issue) {
+                fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
+            }
+            @Override
+            public void onOpenOptions(CaseShortView issue) {
 
+            }
         });
         HTMLPanel cell = new HTMLPanel("td", "");
         cell.add(rowIssueView.asWidget());
@@ -329,4 +343,6 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
     Provider<DeskPersonMultiPopup> personPopupProvider;
     @Inject
     Provider<DeskStateMultiPopup> statePopupProvider;
+
+    private static final int COLUMN_MIN_WIDTH_PX = 200;
 }

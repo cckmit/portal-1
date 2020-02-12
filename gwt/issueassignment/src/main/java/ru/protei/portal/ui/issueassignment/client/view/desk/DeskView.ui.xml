@@ -5,11 +5,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <g:HTMLPanel ui:field="table"/>
-<!--        <g:HTMLPanel tag="table" ui:field="table">-->
-<!--            <g:HTMLPanel tag="thead" ui:field="thead"/>-->
-<!--            <g:HTMLPanel tag="tbody" ui:field="tbody"/>-->
-<!--        </g:HTMLPanel>-->
+        <g:HTMLPanel ui:field="table" styleName="table-desk-wrapper"/>
         <loading:IndeterminateCircleLoading ui:field="loadingView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
         <g:HTMLPanel ui:field="failedView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false">
             <div class="row">

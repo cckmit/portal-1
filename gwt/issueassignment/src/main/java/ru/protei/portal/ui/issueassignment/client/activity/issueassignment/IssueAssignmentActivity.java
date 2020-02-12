@@ -45,6 +45,17 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
         fireEvent(new IssueEvents.Create());
     }
 
+    @Override
+    public void onToggleTableClicked() {
+        isTableVisible = !isTableVisible;
+        drawTableVisibility(isTableVisible);
+    }
+
+    @Override
+    public void onReloadClicked() {
+        showComponents();
+    }
+
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -62,6 +73,16 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
         fireEvent(new IssueAssignmentEvents.ShowDesk(view.deskContainer()));
     }
 
+    private void drawTableVisibility(boolean isVisible) {
+        if (isVisible) {
+            view.table().setStyleName("col-md-3");
+            view.desk().setStyleName("col-md-9");
+        } else {
+            view.table().setStyleName("col-md-0");
+            view.desk().setStyleName("col-md-12");
+        }
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -69,5 +90,6 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
     @Inject
     PolicyService policyService;
 
+    private boolean isTableVisible = true;
     private AppEvents.InitDetails initDetails;
 }

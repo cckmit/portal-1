@@ -12,5 +12,7 @@ public interface AbstractDeskRowIssueView extends IsWidget {
     void setIssues(List<CaseShortView> caseShortViews);
 
     interface Handler {
+        void onOpenIssue(CaseShortView issue);
+        void onOpenOptions(CaseShortView issue);
     }
 }
