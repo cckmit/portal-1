@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,11 +39,6 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
         this.position.setInnerText( value );
     }
 
-    @Override
-    public void showMainInfo( boolean isMain ) {
-        mainInfoContainer.setVisible( isMain );
-    }
-
     @UiField
     SpanElement departmentParent;
 
@@ -53,9 +47,6 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
 
     @UiField
     SpanElement position;
-
-    @UiField
-    HTMLPanel mainInfoContainer;
 
     @UiField
     HTMLPanel departmentContainer;
