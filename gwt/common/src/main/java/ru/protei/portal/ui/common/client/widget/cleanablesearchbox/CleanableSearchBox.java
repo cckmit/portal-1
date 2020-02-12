@@ -14,10 +14,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.HasInputHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.events.InputHandler;
 
-public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled {
+public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled, HasInputHandlers {
 
     public CleanableSearchBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -78,12 +79,18 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         if (HelperFunc.isNotEmpty(getValue())) {
             setValue("");
             ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
+            InputEvent.fire(this);
         }
     }
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addInputHandler(InputHandler handler) {
+        return addDomHandler(handler, InputEvent.getType());
     }
 
     public HandlerRegistration addChangeHandler(ChangeHandler handler) {
@@ -132,10 +139,6 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         this.addonIcon.setClassName(icon);
         this.addon.removeClassName("hide");
         this.textBox.removeStyleName("rounded-left-3");
-    }
-
-    public HandlerRegistration ock(InputHandler handler) {
-        return addDomHandler(handler, InputEvent.getType());
     }
 
     private void ensureDebugIds() {
