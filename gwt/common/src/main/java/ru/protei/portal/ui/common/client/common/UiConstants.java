@@ -14,6 +14,7 @@ public class UiConstants {
         String CONTACT = "fa fa-address-book";
         String PRODUCT = "fa fa-cubes";
         String ISSUE = "fa fa-tasks";
+        String ISSUE_ASSIGNMENT = "fas fa-table";
         String DASHBOARD = "fa fa-tachometer-alt";
         String REGION = "fa fa-globe";
         String PROJECT = "fa fa-archive";
@@ -51,6 +52,7 @@ public class UiConstants {
         String PRODUCT_TYPE_VIEW = "productTypeView";
         String DASHBOARD_CREATE_TABLE = "dashboard_create_table";
         String DASHBOARD_CREATE_ISSUE = "dashboard_create_issue";
+        String ISSUE_ASSIGNMENT_CREATE_ISSUE = "issue_assignment_create_issue";
         String EQUIPMENT = "equipment";
         String PROJECT = "project";
         String ACCOUNT = "account";

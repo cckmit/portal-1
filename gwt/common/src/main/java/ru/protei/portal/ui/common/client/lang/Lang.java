@@ -2031,4 +2031,10 @@ public interface Lang extends Messages, ContactItemLang {
     String consistOf();
 
     String productAdditionalInfoHeader();
+
+    String issueAssignment();
+
+    String issueAssignmentEntryEdit();
+
+    String issueAssignmentEntryRemove();
 }

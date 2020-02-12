@@ -21,7 +21,7 @@
     </changeSet>
 
     <changeSet id="add-fk-on-user-case-assignment-table" author="buchmastov">
-        <addForeignKeyConstraint constraintName="fk_login_id_to_login"
+        <addForeignKeyConstraint constraintName="fk_user_case_assignment_login_id_to_user_login"
                                  baseTableName="user_case_assignment" baseColumnNames="login_id"
                                  referencedTableName="user_login" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>

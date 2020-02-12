@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserCaseAssignment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -112,6 +113,9 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
                 .distinct()
                 .map(Object::toString)
                 .collect(Collectors.joining(","));
+        if (StringUtils.isEmpty(query)) {
+            return;
+        }
         Map<Long, PersonShortView> personMap = CollectionUtils.stream(
                 personDAO.partialGetListByCondition(
                     "id IN (" + query + ")",
