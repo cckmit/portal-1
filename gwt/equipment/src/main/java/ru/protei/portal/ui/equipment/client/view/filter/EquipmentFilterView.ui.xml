@@ -44,14 +44,13 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.equipmentClassifierCode}"/></label>
-                    <vtb:ValidableTextBox ui:field="classifierCode" styleName="form-control dn-classifier-code" maxLength="6" regexp="^\d*$"/>
+                    <vtb:ValidableTextBox ui:field="classifierCode" styleName="form-control dn-classifier-code"/>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.equipmentRegisterNumber}"/></label>
-                    <vtb:ValidableTextBox ui:field="regNum" styleName="form-control dn-register-number" maxLength="3" regexp="^\d*$"/>
+                    <vtb:ValidableTextBox ui:field="regNum" styleName="form-control dn-register-number"/>
                 </div>
-
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.equipmentType}"/></label>

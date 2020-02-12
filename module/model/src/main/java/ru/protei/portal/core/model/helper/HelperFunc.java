@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
  */
 public class HelperFunc {
 
+    private static final Integer DEFAULT_LPAD_FILL_DIGIT = 0;
+
     public static Long toTime (Date t, Long v) {
         return t == null ? v : t.getTime();
     }
@@ -186,7 +188,7 @@ public class HelperFunc {
     }
 
     public static String makeLpadFunc(String column, int maxDigits) {
-        return makeLpadFunc(column, maxDigits, 0);
+        return makeLpadFunc(column, maxDigits, DEFAULT_LPAD_FILL_DIGIT);
     }
 
     public static String makeLpadFunc(String column, int maxDigits, int fillDigit) {

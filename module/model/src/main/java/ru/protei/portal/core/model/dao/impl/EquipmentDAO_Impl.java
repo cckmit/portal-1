@@ -81,7 +81,7 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
 
             if ( !StringUtils.isEmpty( query.getRegisterNumber() ) ) {
                 condition.append(" and (" + HelperFunc.makeLpadFunc("DN.reg_number", CrmConstants.RegistrationNumber.MAX_SIZE) + " like ?)");
-                String likeArg = HelperFunc.makeLikeArg(query.getClassifierCode(), true);
+                String likeArg = HelperFunc.makeLikeArg(query.getRegisterNumber(), true);
                 args.add(likeArg);
             }
 

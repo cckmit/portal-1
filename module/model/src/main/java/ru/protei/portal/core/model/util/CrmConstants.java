@@ -49,6 +49,7 @@ public class CrmConstants {
 
     public interface Masks {
         String EMAIL = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+$";
+        String ONLY_DIGITS = "^\\d*$";
     }
 
     public interface Time {

@@ -39,6 +39,8 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         initWidget( ourUiBinder.createAndBindUi( this ) );
         classifierCode.setMaxLength(CrmConstants.ClassifierCode.MAX_SIZE);
         regNum.setMaxLength(CrmConstants.RegistrationNumber.MAX_SIZE);
+        classifierCode.setRegexp(CrmConstants.Masks.ONLY_DIGITS);
+        regNum.setRegexp(CrmConstants.Masks.ONLY_DIGITS);
     }
 
     @Override
