@@ -1,10 +1,17 @@
 package ru.protei.portal.redmine.utils;
 
 import com.taskadapter.redmineapi.bean.User;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.RedmineEndpoint;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.function.Supplier;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public final class RedmineUtils {
     //Somewhy datetime in issues stored in GMT timezone, therefore we need -3 hours from our time
@@ -44,6 +51,25 @@ public final class RedmineUtils {
 
     public static Date maxDate(Date a, Date b) {
         return a == null ? b : b == null ? a : a.after(b) ? a : b;
+    }
+
+    public static  <T> Result<T> resultOfNullable(Supplier<T> supplier, Supplier<String> errorString) {
+        T t = supplier.get();
+        if (t != null) {
+            return ok(t);
+        } else {
+            return error(En_ResultStatus.NOT_FOUND, errorString.get());
+        }
+    }
+
+    public static class EndpointAndIssueId {
+        public RedmineEndpoint endpoint;
+        public Integer IssueId;
+
+        public EndpointAndIssueId(RedmineEndpoint endpoint, Integer issueId) {
+            this.endpoint = endpoint;
+            this.IssueId = issueId;
+        }
     }
 
     private static final String AFTER = ">=";
