@@ -2029,4 +2029,12 @@ public interface Lang extends Messages, ContactItemLang {
     String consistOf();
 
     String productAdditionalInfoHeader();
+
+    String dashboardActionOpen();
+
+    String dashboardActionReload();
+
+    String dashboardActionEdit();
+
+    String dashboardActionRemove();
 }

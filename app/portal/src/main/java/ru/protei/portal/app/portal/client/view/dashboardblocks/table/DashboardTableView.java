@@ -1,13 +1,12 @@
 package ru.protei.portal.app.portal.client.view.dashboardblocks.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -152,13 +151,13 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     SpanElement count;
     @UiField
-    Anchor open;
+    Button open;
     @UiField
-    Anchor edit;
+    Button edit;
     @UiField
-    Anchor remove;
+    Button remove;
     @UiField
-    Anchor reload;
+    Button reload;
     @UiField
     IndeterminateCircleLoading loading;
     @UiField

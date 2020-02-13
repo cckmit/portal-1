@@ -41,6 +41,21 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
         return filter;
     }
 
+    @Override
+    public HasVisibility filterCreateContainer() {
+        return filterCreateContainer;
+    }
+
+    @Override
+    public HasVisibility filterCreateNewIssues() {
+        return createFilterNewIssues;
+    }
+
+    @Override
+    public HasVisibility filterCreateActiveIssues() {
+        return createFilterActiveIssues;
+    }
+
     @UiHandler("filter")
     public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
@@ -67,6 +82,8 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     @Inject
     @UiField(provided = true)
     IssueFilterSelector filter;
+    @UiField
+    HTMLPanel filterCreateContainer;
     @UiField
     Button createFilterNewIssues;
     @UiField
