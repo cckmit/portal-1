@@ -41,6 +41,15 @@ $desk_card_shadow: rgba(0, 0, 0, 0.1);
     > th {
       border-left: 1px solid $desk_border;
       border-right: 1px solid $desk_border;
+
+      > div {
+        display: flex;
+        align-items: center;
+
+        > *:first-child {
+          flex: 1;
+        }
+      }
     }
   }
 
@@ -153,6 +162,7 @@ $desk_card_shadow: rgba(0, 0, 0, 0.1);
   border: 1px solid $desk_border;
   margin-right: -15px;
   padding-top: 10px;
+  margin-bottom: 10px;
 }
 
 .issue-assignment-table {
