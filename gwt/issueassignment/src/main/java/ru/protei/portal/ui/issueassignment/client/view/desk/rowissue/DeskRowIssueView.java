@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -68,9 +69,9 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
                 }
             }
             @Override
-            public void onOptions() {
+            public void onOptions(UIObject relative) {
                 if (handler != null) {
-                    handler.onOpenOptions(issue);
+                    handler.onOpenOptions(relative, issue);
                 }
             }
         });

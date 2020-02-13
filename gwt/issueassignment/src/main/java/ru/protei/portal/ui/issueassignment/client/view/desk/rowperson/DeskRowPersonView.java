@@ -84,7 +84,7 @@ public class DeskRowPersonView extends Composite implements AbstractDeskRowPerso
             return;
         }
         popup.setValues(actions);
-        popup.showUnderLeft(optionsButton, null);
+        popup.showUnderLeft(optionsButton, 120);
     }
 
     @Inject

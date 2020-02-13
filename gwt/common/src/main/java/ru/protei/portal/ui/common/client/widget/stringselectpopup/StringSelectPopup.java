@@ -41,15 +41,17 @@ public class StringSelectPopup extends BasePopupView implements HasValueChangeHa
     }
 
     private Widget makeItemView(String value) {
-        Anchor item = GWT.create(Anchor.class);
-        item.setStyleName("dropdown-item btn btn-default no-border bg-transparent");
-        item.setText(value);
-        item.addClickHandler(event -> {
+        HTMLPanel li = new HTMLPanel("li", "");
+        Anchor anchor = GWT.create(Anchor.class);
+        anchor.setStyleName("dropdown-item btn btn-default no-border bg-transparent");
+        anchor.setText(value);
+        anchor.addClickHandler(event -> {
             event.preventDefault();
             ValueChangeEvent.fire(this, value);
             hide();
         });
-        return item;
+        li.add(anchor);
+        return li;
     }
 
     @UiField

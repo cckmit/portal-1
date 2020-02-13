@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -14,19 +17,22 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupSingleSelector;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class TableActivity implements Activity, AbstractTableActivity {
 
@@ -41,6 +47,16 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         container.clear();
         container.add(view.asWidget());
         initFilter();
+    }
+
+    @Event
+    public void onReload(IssueAssignmentEvents.ReloadTable event) {
+        initFilter();
+    }
+
+    @Event
+    public void onDeskPeopleChanged(IssueAssignmentEvents.DeskPeopleChanged event) {
+        people = event.people;
     }
 
     private void initFilter() {
@@ -59,8 +75,23 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     }
 
     @Override
-    public void onItemActionAssign(CaseShortView value) {
-
+    public void onItemActionAssign(CaseShortView value, UIObject relative) {
+        showPersonSingleSelector(relative, person -> {
+            if (person == null) {
+                return;
+            }
+            if (Objects.equals(person.getName(), value.getManagerName())) {
+                return;
+            }
+            if (Objects.equals(person.getName(), value.getManagerShortName())) {
+                return;
+            }
+            issueController.updateManagerOfIssue(value.getId(), person.getId(), new FluentCallback<Void>()
+                    .withSuccess(v -> {
+                        fireEvent(new IssueAssignmentEvents.ReloadTable());
+                        fireEvent(new IssueAssignmentEvents.ReloadDesk());
+                    }));
+        });
     }
 
     @Override
@@ -134,6 +165,21 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         return Long.parseLong(value);
     }
 
+    private void showPersonSingleSelector(UIObject relative, Consumer<PersonShortView> onChanged) {
+        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<PersonShortView>() {};
+        popup.setModel(index -> index >= people.size() ? null : people.get(index));
+        popup.setItemRenderer(PersonShortView::getName);
+        popup.setEmptyListText(lang.emptySelectorList());
+        popup.setEmptySearchText(lang.searchNoMatchesFound());
+        popup.setRelative(relative);
+        popup.addValueChangeHandler(event -> {
+            onChanged.accept(popup.getValue());
+            popup.getPopup().hide();
+        });
+        popup.getPopup().getChildContainer().clear();
+        popup.fill();
+        popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+    }
 
     @Inject
     Lang lang;
@@ -147,6 +193,8 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     LocalStorageService localStorageService;
+
+    private List<PersonShortView> people = new ArrayList<>();
 
     private final static int TABLE_LIMIT = 100;
     private final static String TABLE_FILTER_ID_KEY = "issue_assignment_table_filter_id";

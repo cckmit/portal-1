@@ -69,6 +69,13 @@ public class SelectorPopupWithSearch extends BasePopupView
     }
 
     @Override
+    public void showNear(UIObject showNear, Position position, Integer width) {
+        if (position != null) super.setPosition(position);
+        super.show(showNear, width);
+        search.setFocus(isSearchAutoFocus);
+    }
+
+    @Override
     protected void onLoad() {
         scrolForPagingHandleRegistration = dropdown.addDomHandler( new ScrollHandler() {
             @Override

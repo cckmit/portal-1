@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issueassignment.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,11 +10,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -91,10 +94,15 @@ public class TableView extends Composite implements AbstractTableView {
         number.setHandler(value -> activity.onItemClicked(value));
         number.setColumnProvider(columnProvider);
 
-        ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-caret-square-right", null, null);
+        ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.issueAssignmentIssueAssignTo(), null);
         table.addColumn(assign.header, assign.values);
         assign.setHandler(value -> activity.onItemClicked(value));
-        assign.setActionHandler(value -> activity.onItemActionAssign(value));
+        assign.setActionHandler(new ClickColumn.Handler<CaseShortView>() {
+            public void onItemClicked(CaseShortView value) {}
+            public void onItemClicked(CaseShortView value, Element target) {
+                activity.onItemActionAssign(value, new CustomUIObject(target));
+            }
+        });
         assign.setColumnProvider(columnProvider);
     }
 
@@ -102,6 +110,12 @@ public class TableView extends Composite implements AbstractTableView {
     public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
             activity.onFilterChanged(event.getValue());
+        }
+    }
+
+    private static class CustomUIObject extends UIObject {
+        CustomUIObject(Element element) {
+            setElement(element);
         }
     }
 

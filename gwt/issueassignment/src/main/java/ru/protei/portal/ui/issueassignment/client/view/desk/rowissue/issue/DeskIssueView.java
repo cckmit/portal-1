@@ -13,15 +13,32 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.issue.AbstractDeskIssueView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeskIssueView extends Composite implements AbstractDeskIssueView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        actions.clear();
+        actions.add(lang.issueAssignmentIssueReassignTo());
+        popup.addValueChangeHandler(event -> {
+            if (handler == null) {
+                return;
+            }
+            if (lang.issueAssignmentIssueReassignTo().equals(event.getValue())) {
+                handler.onOptions(optionsButton);
+                return;
+            }
+        });
     }
 
     @Override
@@ -104,11 +121,19 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
 
     @UiHandler("optionsButton")
     public void optionsButtonClick(ClickEvent event) {
-        if (handler != null) {
-            handler.onOptions();
-        }
+        showOptionsPopup();
     }
 
+    private void showOptionsPopup() {
+        if (CollectionUtils.isEmpty(actions)) {
+            return;
+        }
+        popup.setValues(actions);
+        popup.showUnderRight(optionsButton, 200);
+    }
+
+    @Inject
+    Lang lang;
     @Inject
     En_CaseStateLang caseStateLang;
 
@@ -139,6 +164,8 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     @UiField
     SpanElement modified;
 
+    private List<String> actions = new ArrayList<>();
+    private StringSelectPopup popup = new StringSelectPopup();
     private Handler handler;
 
     interface DeskIssueViewBinder extends UiBinder<HTMLPanel, DeskIssueView> {}

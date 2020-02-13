@@ -2043,4 +2043,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentTableFilterDefault();
 
     String issueAssignmentTableOverflow(int records);
+
+    String issueAssignmentIssueAssignTo();
+
+    String issueAssignmentIssueReassignTo();
 }

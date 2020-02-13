@@ -68,7 +68,7 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
             return;
         }
         popup.setValues(actions);
-        popup.showUnderCenter(root, null);
+        popup.showUnderRight(optionsButton, 120);
     }
 
     @Inject
@@ -76,8 +76,6 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
     @Inject
     En_CaseStateLang caseStateLang;
 
-    @UiField
-    HTMLPanel root;
     @UiField
     SpanElement label;
     @UiField

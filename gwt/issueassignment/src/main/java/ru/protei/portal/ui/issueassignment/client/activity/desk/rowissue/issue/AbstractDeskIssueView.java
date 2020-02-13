@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.issue;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.UIObject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 
@@ -32,6 +33,6 @@ public interface AbstractDeskIssueView extends IsWidget {
 
     interface Handler {
         void onOpen();
-        void onOptions();
+        void onOptions(UIObject relative);
     }
 }

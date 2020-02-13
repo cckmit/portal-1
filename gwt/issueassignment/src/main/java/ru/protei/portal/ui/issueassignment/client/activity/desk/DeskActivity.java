@@ -21,6 +21,9 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.popup.BasePopupView;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserCaseAssignmentControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -28,10 +31,12 @@ import ru.protei.portal.ui.issueassignment.client.activity.desk.rowadd.AbstractD
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.AbstractDeskRowIssueView;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowperson.AbstractDeskRowPersonView;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowstate.AbstractDeskRowStateView;
-import ru.protei.portal.ui.issueassignment.client.widget.popupperson.DeskPersonMultiPopup;
-import ru.protei.portal.ui.issueassignment.client.widget.popupstate.DeskStateMultiPopup;
+import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupSingleSelector;
+import ru.protei.portal.ui.issueassignment.client.widget.popupselector.person.DeskPersonMultiPopup;
+import ru.protei.portal.ui.issueassignment.client.widget.popupselector.state.DeskStateMultiPopup;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -47,6 +52,11 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         HasWidgets container = event.parent;
         container.clear();
         container.add(view.asWidget());
+        loadDesk();
+    }
+
+    @Event
+    public void onReload(IssueAssignmentEvents.ReloadDesk event) {
         loadDesk();
     }
 
@@ -115,6 +125,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     hideLoader();
                     hideError();
                     showDesk(userCaseAssignmentTable);
+                    fireEvent(new IssueAssignmentEvents.DeskPeopleChanged(new ArrayList<>(people)));
                 });
     }
 
@@ -148,6 +159,22 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         });
     }
 
+    private void showPersonSingleSelector(UIObject relative, Consumer<PersonShortView> onChanged) {
+        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<PersonShortView>() {};
+        popup.setModel(index -> index >= people.size() ? null : people.get(index));
+        popup.setItemRenderer(PersonShortView::getName);
+        popup.setEmptyListText(lang.emptySelectorList());
+        popup.setEmptySearchText(lang.searchNoMatchesFound());
+        popup.setRelative(relative);
+        popup.addValueChangeHandler(event -> {
+            onChanged.accept(popup.getValue());
+            popup.getPopup().hide();
+        });
+        popup.getPopup().getChildContainer().clear();
+        popup.fill();
+        popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+    }
+
     private void showDesk(UserCaseAssignmentTable userCaseAssignmentTable) {
         List<UserCaseAssignment> assignments = CollectionUtils.emptyIfNull(userCaseAssignmentTable.getUserCaseAssignments());
         List<UserCaseAssignment> columns = assignments.stream()
@@ -159,6 +186,8 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 .filter(c -> CollectionUtils.isNotEmpty(c.getPersonShortViews()))
                 .collect(Collectors.toList());
         List<CaseShortView> issues = CollectionUtils.emptyIfNull(userCaseAssignmentTable.getCaseShortViews());
+
+        people = fetchAllPeople(rows);
 
         view.tableContainer().clear();
         view.tableContainer().add(buildTable(columns, rows, issues));
@@ -321,8 +350,23 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
             }
             @Override
-            public void onOpenOptions(CaseShortView issue) {
-
+            public void onOpenOptions(UIObject relative, CaseShortView issue) {
+                showPersonSingleSelector(relative, person -> {
+                    if (person == null) {
+                        return;
+                    }
+                    if (Objects.equals(person.getName(), issue.getManagerName())) {
+                        return;
+                    }
+                    if (Objects.equals(person.getName(), issue.getManagerShortName())) {
+                        return;
+                    }
+                    issueController.updateManagerOfIssue(issue.getId(), person.getId(), new FluentCallback<Void>()
+                            .withSuccess(v -> {
+                                fireEvent(new IssueAssignmentEvents.ReloadDesk());
+                                fireEvent(new IssueAssignmentEvents.ReloadTable());
+                            }));
+                });
             }
         });
         HTMLPanel cell = new HTMLPanel("td", "");
@@ -330,10 +374,22 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         return cell;
     }
 
+    private List<PersonShortView> fetchAllPeople(List<UserCaseAssignment> assignments) {
+        return assignments.stream()
+            .map(UserCaseAssignment::getPersonShortViews)
+            .flatMap(Collection::stream) // flatten
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+    @Inject
+    Lang lang;
     @Inject
     En_ResultStatusLang resultStatusLang;
     @Inject
     UserCaseAssignmentControllerAsync userCaseAssignmentController;
+    @Inject
+    IssueControllerAsync issueController;
     @Inject
     AbstractDeskView view;
     @Inject
@@ -348,6 +404,8 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
     Provider<DeskPersonMultiPopup> personPopupProvider;
     @Inject
     Provider<DeskStateMultiPopup> statePopupProvider;
+
+    private List<PersonShortView> people = new ArrayList<>();
 
     private static final int COLUMN_MIN_WIDTH_PX = 200;
 }
