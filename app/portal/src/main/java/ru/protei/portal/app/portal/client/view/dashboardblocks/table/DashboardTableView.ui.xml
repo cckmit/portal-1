@@ -14,10 +14,18 @@
                 </div>
                 <div class="card-controls">
                     <ul>
-                        <li><g:Anchor styleName="fas fa-trash-alt padding-0" ui:field="remove"/></li>
-                        <li><g:Anchor styleName="fas fa-pencil-alt padding-0" ui:field="edit"/></li>
-                        <li><g:Anchor styleName="fas fa-redo padding-0" ui:field="reload"/></li>
-                        <li><g:Anchor styleName="fas fa-external-link-alt padding-0" ui:field="open"/></li>
+                        <li><g:Button ui:field="remove" title="{lang.dashboardActionRemove}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                            <i class="fas fa-trash-alt"/>
+                        </g:Button></li>
+                        <li><g:Button ui:field="edit" title="{lang.dashboardActionEdit}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                            <i class="fas fa-pencil-alt"/>
+                        </g:Button></li>
+                        <li><g:Button ui:field="reload" title="{lang.dashboardActionReload}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                            <i class="fas fa-redo"/>
+                        </g:Button></li>
+                        <li><g:Button ui:field="open" title="{lang.dashboardActionOpen}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                            <i class="fas fa-external-link-alt"/>
+                        </g:Button></li>
                     </ul>
                 </div>
             </div>
