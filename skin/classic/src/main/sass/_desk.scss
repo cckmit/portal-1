@@ -134,6 +134,20 @@ $desk_card_shadow: rgba(0, 0, 0, 0.1);
   margin: 0;
 }
 
+.desk-issue-card.warning {
+  box-shadow: 0 0 4px 0 rgba(245, 87, 83, 0.8);
+  border: 1px solid #f55753;
+
+  .desk-issue-time {
+    color: #f55753;
+    font-weight: 900;
+  }
+
+  .desk-issue-separator-h, .desk-issue-separator-v {
+    border-color: #f55753;
+  }
+}
+
 .issue-assignment-wrapper {
   background-color: $desk_background;
   border: 1px solid $desk_border;

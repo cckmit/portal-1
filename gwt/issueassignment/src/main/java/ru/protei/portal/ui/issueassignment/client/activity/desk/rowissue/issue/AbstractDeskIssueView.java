@@ -8,6 +8,8 @@ public interface AbstractDeskIssueView extends IsWidget {
 
     void setHandler(Handler handler);
 
+    void setWarningHighlight();
+
     void setImportance(En_ImportanceLevel importance);
 
     void setState(En_CaseState state);

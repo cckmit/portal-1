@@ -15,6 +15,7 @@ import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.Abstrac
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.issue.AbstractDeskIssueView;
 
 import javax.inject.Provider;
+import java.util.Date;
 import java.util.List;
 
 public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueView {
@@ -56,6 +57,9 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
         view.setModified(issue.getModified() != null
                 ? DateFormatter.formatDateTime(issue.getModified())
                 : "");
+        if (isCardShouldBeHighlightedWarnLevel(issue)) {
+            view.setWarningHighlight();
+        }
         view.setHandler(new AbstractDeskIssueView.Handler() {
             @Override
             public void onOpen() {
@@ -73,6 +77,23 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
         return view;
     }
 
+    private boolean isCardShouldBeHighlightedWarnLevel(CaseShortView issue) {
+        Date modified = issue.getModified();
+        if (modified != null) {
+            Date threshold = makeDateWithWeekShift(-ISSUE_MODIFIED_VALUE_THRESHOLD_WEEKS);
+            if (modified.before(threshold)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Date makeDateWithWeekShift(int weeks) {
+        long now = System.currentTimeMillis();
+        long shift = now + weeks * WEEK_MILLIS;
+        return new Date(shift);
+    }
+
     @Inject
     Provider<AbstractDeskIssueView> issueViewProvider;
 
@@ -80,6 +101,8 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
     HTMLPanel root;
 
     private Handler handler;
+    private final static int ISSUE_MODIFIED_VALUE_THRESHOLD_WEEKS = 1;
+    private final static long WEEK_MILLIS = 7 * 24 * 60 * 60 * 1000;
 
     interface DeskRowIssueViewBinder extends UiBinder<HTMLPanel, DeskRowIssueView> {}
     private static DeskRowIssueViewBinder ourUiBinder = GWT.create(DeskRowIssueViewBinder.class);

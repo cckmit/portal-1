@@ -30,6 +30,11 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     }
 
     @Override
+    public void setWarningHighlight() {
+        root.addStyleName("warning");
+    }
+
+    @Override
     public void setImportance(En_ImportanceLevel importance) {
         if (importance == null) {
             this.importance.setClassName("hide");
@@ -107,6 +112,8 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     @Inject
     En_CaseStateLang caseStateLang;
 
+    @UiField
+    HTMLPanel root;
     @UiField
     Button openButton;
     @UiField

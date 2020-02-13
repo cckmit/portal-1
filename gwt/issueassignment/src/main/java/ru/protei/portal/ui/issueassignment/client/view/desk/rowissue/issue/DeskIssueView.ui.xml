@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="desk-issue-card">
+    <g:HTMLPanel styleName="desk-issue-card" ui:field="root">
         <div class="desk-issue-header">
             <div class="desk-issue-content">
                 <span ui:field="importance"/>
