@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,6 +33,7 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
         showActionBarActions();
         showView();
         showComponents();
+        drawTableVisibility(getTableVisibility());
     }
 
     @Event
@@ -47,7 +49,8 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
 
     @Override
     public void onToggleTableClicked() {
-        isTableVisible = !isTableVisible;
+        boolean isTableVisible = !getTableVisibility();
+        saveTableVisibility(isTableVisible);
         drawTableVisibility(isTableVisible);
     }
 
@@ -83,13 +86,23 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
         }
     }
 
+    private void saveTableVisibility(boolean isVisible) {
+        localStorageService.set(TABLE_VISIBILITY_KEY, String.valueOf(isVisible));
+    }
+
+    private boolean getTableVisibility() {
+        return Boolean.parseBoolean(localStorageService.getOrDefault(TABLE_VISIBILITY_KEY, "true"));
+    }
+
     @Inject
     Lang lang;
     @Inject
     AbstractIssueAssignmentView view;
     @Inject
     PolicyService policyService;
+    @Inject
+    LocalStorageService localStorageService;
 
-    private boolean isTableVisible = true;
     private AppEvents.InitDetails initDetails;
+    private final static String TABLE_VISIBILITY_KEY = "issue_assignment_table_visibility";
 }

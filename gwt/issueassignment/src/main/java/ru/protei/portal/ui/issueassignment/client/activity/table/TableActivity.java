@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -43,7 +44,12 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     }
 
     private void initFilter() {
-        view.filter().setValue(null, true);
+        CaseFilterShortView filter = null;
+        Long filterId = getTableFilterId();
+        if (filterId != null) {
+            filter = new CaseFilterShortView(filterId, null);
+        }
+        view.filter().setValue(filter, true);
         view.updateFilterSelector();
     }
 
@@ -60,16 +66,19 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     @Override
     public void onFilterChanged(CaseFilterShortView filter) {
         if (filter == null) {
+            saveTableFilterId(null);
             CaseQuery query = makeDefaultQuery();
             loadTable(query);
             return;
         }
         Long filterId = filter.getId();
+        saveTableFilterId(filterId);
         view.showLoader(true);
         issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilter>()
                 .withError(throwable -> {
                     view.showLoader(false);
                     defaultErrorHandler.accept(throwable);
+                    view.filter().setValue(null, true);
                 })
                 .withSuccess(caseFilter -> {
                     view.showLoader(false);
@@ -109,6 +118,23 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         return query;
     }
 
+    private void saveTableFilterId(Long filterId) {
+        if (filterId == null) {
+            localStorageService.remove(TABLE_FILTER_ID_KEY);
+        } else {
+            localStorageService.set(TABLE_FILTER_ID_KEY, String.valueOf(filterId));
+        }
+    }
+
+    private Long getTableFilterId() {
+        String value = localStorageService.getOrDefault(TABLE_FILTER_ID_KEY, null);
+        if (value == null) {
+            return null;
+        }
+        return Long.parseLong(value);
+    }
+
+
     @Inject
     Lang lang;
     @Inject
@@ -119,6 +145,9 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     IssueFilterControllerAsync issueFilterController;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    LocalStorageService localStorageService;
 
     private final static int TABLE_LIMIT = 100;
+    private final static String TABLE_FILTER_ID_KEY = "issue_assignment_table_filter_id";
 }
