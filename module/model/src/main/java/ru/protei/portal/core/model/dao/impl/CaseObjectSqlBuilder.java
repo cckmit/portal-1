@@ -7,6 +7,9 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 
 public class CaseObjectSqlBuilder {
@@ -95,14 +98,15 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                boolean isWithoutManager = query.getManagerIds().remove(CrmConstants.Employee.UNDEFINED);
+                List<Long> managerIds = new ArrayList<>(query.getManagerIds());
+                boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
 
                 if (!isWithoutManager) {
-                    condition.append(" and manager IN " + HelperFunc.makeInArg(query.getManagerIds(), false));
-                } else if (query.getManagerIds().isEmpty()) {
+                    condition.append(" and manager IN " + HelperFunc.makeInArg(managerIds, false));
+                } else if (managerIds.isEmpty()) {
                     condition.append(" and manager IS NULL");
                 } else {
-                    condition.append(" and (manager IN " + HelperFunc.makeInArg(query.getManagerIds(), false) + " OR manager IS NULL)");
+                    condition.append(" and (manager IN " + HelperFunc.makeInArg(managerIds, false) + " OR manager IS NULL)");
                 }
             }
 

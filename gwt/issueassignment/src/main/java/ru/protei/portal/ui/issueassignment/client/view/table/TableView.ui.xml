@@ -1,0 +1,27 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="issue-assignment-wrapper">
+        <div>
+            <div class="form-group col-md-12">
+                <label><ui:text from="{lang.issueAssignmentTableFilter}"/></label>
+                <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueAssignmentTableFilterDefault}"/>
+            </div>
+        </div>
+        <div class="auto-overflow">
+            <table:TableWidget ui:field="table" styleName="table table-hover issue-assignment-table"/>
+            <g:HTMLPanel ui:field="tableOverflow" styleName="padding-15 mt-auto" visible="false">
+                <p class="small no-margin">
+                    <i class="fas fa-info-circle"/>
+                    <span class="hint-text" ui:field="tableOverflowText"/>
+                </p>
+            </g:HTMLPanel>
+        </div>
+        <loading:IndeterminateCircleLoading ui:field="loading" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

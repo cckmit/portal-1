@@ -12,6 +12,8 @@ import ru.protei.portal.ui.issueassignment.client.activity.desk.rowstate.Abstrac
 import ru.protei.portal.ui.issueassignment.client.activity.issueassignment.AbstractIssueAssignmentView;
 import ru.protei.portal.ui.issueassignment.client.activity.issueassignment.IssueAssignmentActivity;
 import ru.protei.portal.ui.issueassignment.client.activity.page.IssueAssignmentPage;
+import ru.protei.portal.ui.issueassignment.client.activity.table.AbstractTableView;
+import ru.protei.portal.ui.issueassignment.client.activity.table.TableActivity;
 import ru.protei.portal.ui.issueassignment.client.view.desk.DeskView;
 import ru.protei.portal.ui.issueassignment.client.view.desk.rowadd.DeskRowAddView;
 import ru.protei.portal.ui.issueassignment.client.view.desk.rowissue.DeskRowIssueView;
@@ -19,6 +21,7 @@ import ru.protei.portal.ui.issueassignment.client.view.desk.rowissue.issue.DeskI
 import ru.protei.portal.ui.issueassignment.client.view.desk.rowperson.DeskRowPersonView;
 import ru.protei.portal.ui.issueassignment.client.view.desk.rowstate.DeskRowStateView;
 import ru.protei.portal.ui.issueassignment.client.view.issueassignment.IssueAssignmentView;
+import ru.protei.portal.ui.issueassignment.client.view.table.TableView;
 
 public class IssueAssignmentClientModule extends AbstractGinModule {
     @Override
@@ -28,6 +31,7 @@ public class IssueAssignmentClientModule extends AbstractGinModule {
 
         bind(IssueAssignmentActivity.class).asEagerSingleton();
         bind(AbstractIssueAssignmentView.class).to(IssueAssignmentView.class).in(Singleton.class);
+
         bind(DeskActivity.class).asEagerSingleton();
         bind(AbstractDeskView.class).to(DeskView.class).in(Singleton.class);
         bind(AbstractDeskRowStateView.class).to(DeskRowStateView.class);
@@ -35,5 +39,8 @@ public class IssueAssignmentClientModule extends AbstractGinModule {
         bind(AbstractDeskRowIssueView.class).to(DeskRowIssueView.class);
         bind(AbstractDeskIssueView.class).to(DeskIssueView.class);
         bind(AbstractDeskRowAddView.class).to(DeskRowAddView.class);
+
+        bind(TableActivity.class).asEagerSingleton();
+        bind(AbstractTableView.class).to(TableView.class).in(Singleton.class);
     }
 }

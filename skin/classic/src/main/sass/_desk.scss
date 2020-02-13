@@ -133,3 +133,22 @@ $desk_card_shadow: rgba(0, 0, 0, 0.1);
 .desk-issue-card:last-child {
   margin: 0;
 }
+
+.issue-assignment-wrapper {
+  background-color: $desk_background;
+  border: 1px solid $desk_border;
+  margin-right: -15px;
+  padding-top: 10px;
+}
+
+.issue-assignment-table {
+
+  thead {
+    display: none;
+  }
+
+  span {
+    vertical-align: middle !important;
+    margin-right: 0.3em;
+  }
+}

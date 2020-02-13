@@ -78,7 +78,7 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
             view.table().setStyleName("col-md-3");
             view.desk().setStyleName("col-md-9");
         } else {
-            view.table().setStyleName("col-md-0");
+            view.table().setStyleName("col-md-0 hide");
             view.desk().setStyleName("col-md-12");
         }
     }

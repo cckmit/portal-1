@@ -2037,4 +2037,10 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentEntryEdit();
 
     String issueAssignmentEntryRemove();
+
+    String issueAssignmentTableFilter();
+
+    String issueAssignmentTableFilterDefault();
+
+    String issueAssignmentTableOverflow(int records);
 }
