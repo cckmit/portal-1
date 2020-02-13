@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
 
@@ -34,4 +35,8 @@ public interface AbstractEquipmentFilterView extends IsWidget {
     HasValue<Boolean> sortDir();
 
     HasValue< EquipmentShortView > equipment();
+
+    HasValidable classifierCodeValidator();
+
+    HasValidable regNumValidator();
 }

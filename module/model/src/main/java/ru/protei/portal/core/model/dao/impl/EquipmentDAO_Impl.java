@@ -74,13 +74,13 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
             }
 
             if ( !StringUtils.isEmpty( query.getClassifierCode() ) ) {
-                condition.append(" and (" + HelperFunc.makeLpadFunc("DN.classifier_code", CrmConstants.ClassifierCode.MAX_SIZE) + " like ?)");
+                condition.append(" and (LPAD(DN.classifier_code, " + CrmConstants.ClassifierCode.MAX_SIZE + ", 0) like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getClassifierCode(), true);
                 args.add(likeArg);
             }
 
             if ( !StringUtils.isEmpty( query.getRegisterNumber() ) ) {
-                condition.append(" and (" + HelperFunc.makeLpadFunc("DN.reg_number", CrmConstants.RegistrationNumber.MAX_SIZE) + " like ?)");
+                condition.append(" and (LPAD(DN.reg_number, " + CrmConstants.RegistrationNumber.MAX_SIZE + ", 0) like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getRegisterNumber(), true);
                 args.add(likeArg);
             }

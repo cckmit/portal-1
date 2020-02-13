@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGrou
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
@@ -106,6 +107,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return equipment;
     }
 
+    @Override
+    public HasValidable classifierCodeValidator() {
+        return classifierCode;
+    }
+
+    @Override
+    public HasValidable regNumValidator() {
+        return regNum;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -163,14 +174,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         @Override
         public void run() {
             if ( activity != null ) {
-                if (!classifierCode.isValid()) {
-                    return;
-                }
-
-                if (!regNum.isValid()) {
-                    return;
-                }
-
                 activity.onFilterChanged();
             }
         }
