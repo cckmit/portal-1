@@ -158,7 +158,7 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     @UiField
     SpanElement person;
     @UiField
-    DivElement product;
+    SpanElement product;
     @UiField
     SpanElement created;
     @UiField

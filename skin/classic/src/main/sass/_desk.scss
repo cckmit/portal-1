@@ -109,7 +109,12 @@ $desk_card_shadow: rgba(0, 0, 0, 0.1);
     }
   }
 
-  .desk-issue-content {
+  .desk-issue-body {
+
+    .desk-issue-info > span, .desk-issue-meta > span {
+      vertical-align: middle;
+      margin-right: 0.3em;
+    }
 
     .desk-issue-number {
       font-size: 1.1em;

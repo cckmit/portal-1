@@ -17,17 +17,15 @@
                 </g:Button>
             </div>
         </div>
-        <div class="desk-issue-content">
+        <div class="desk-issue-body">
             <div class="desk-issue-info">
                 <span class="desk-issue-number" ui:field="number"/>
                 <span class="desk-issue-name" ui:field="name"/>
             </div>
             <div class="desk-issue-meta">
-                <div class="desk-issue-product" ui:field="product"/>
-                <div class="initiator">
-                    <span class="desk-issue-company" ui:field="company"/>
-                    <span class="desk-issue-person" ui:field="person"/>
-                </div>
+                <span class="desk-issue-product" ui:field="product"/>
+                <span class="desk-issue-company" ui:field="company"/>
+                <span class="desk-issue-person" ui:field="person"/>
             </div>
             <div class="desk-issue-separator-h"/>
             <div class="desk-issue-time">
