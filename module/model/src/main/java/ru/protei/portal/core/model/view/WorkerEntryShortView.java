@@ -31,6 +31,13 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_name")
     private String departmentName;
 
+    @JdbcJoinedColumn(mappedColumn = "displayname", joinPath = {
+            @JdbcJoinPath(localColumn = "WE.dep_id", table = "company_dep", remoteColumn = "CD.id", sqlTableAlias = "CD"),
+            @JdbcJoinPath(localColumn = "CD.head_id", table = "worker_entry", remoteColumn = "WE.id", sqlTableAlias = "WE"),
+            @JdbcJoinPath(localColumn = "worker_entry.personId", table = "person", remoteColumn = "person.id", sqlTableAlias = "p")
+    })
+    private String departmentHeadName;
+
     @JdbcJoinedColumn(localColumn = "positionId", table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
     private String positionName;
 
@@ -103,5 +110,28 @@ public class WorkerEntryShortView implements Serializable {
 
     public boolean isMain() {
         return activeFlag > 0;
+    }
+
+    public String getDepartmentHeadName() {
+        return departmentHeadName;
+    }
+
+    public void setDepartmentHeadName(String departmentHeadName) {
+        this.departmentHeadName = departmentHeadName;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkerEntryShortView{" +
+                "id=" + id +
+                ", personId=" + personId +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
+                ", departmentParentName='" + departmentParentName + '\'' +
+                ", departmentName='" + departmentName + '\'' +
+                ", departmentHeadName='" + departmentHeadName + '\'' +
+                ", positionName='" + positionName + '\'' +
+                ", activeFlag=" + activeFlag +
+                '}';
     }
 }

@@ -52,6 +52,12 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         } else {
             itemView.setDepartmentParent(workerEntry.getDepartmentParentName());
             itemView.setDepartment(workerEntry.getDepartmentName());
+            itemView.departmentContainerVisibility().setVisible(true);
+        }
+
+        if (workerEntry.getDepartmentHeadName() != null) {
+            itemView.setDepartmentHead(workerEntry.getDepartmentHeadName());
+            itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 
         itemView.setPosition( workerEntry.getPositionName() );
