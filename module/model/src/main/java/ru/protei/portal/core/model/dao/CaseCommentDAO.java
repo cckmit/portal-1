@@ -27,8 +27,6 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition( CaseCommentQuery query );
 
-    CaseComment getByRemoteId(String remoteId);
-
     List<CaseComment> listByRemoteIds(List<String> remoteIds);
 
     boolean checkExistsByRemoteIdAndRemoteLinkId(String remoteId, Long remoteLinkId);
@@ -37,7 +35,5 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
                                                                List<Long> companiesIds, Set<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
                                                                List<Long> tagsIds);
 
-    int removeByCaseIds(List<Long> ids);
-
-    Date getLastCommentDate( CaseCommentQuery query );
+    Date getLastCommentDateByCaseIdAndAuthorCreator( Long query, String authorCreator );
 }

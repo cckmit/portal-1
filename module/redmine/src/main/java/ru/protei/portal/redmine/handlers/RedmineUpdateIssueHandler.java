@@ -1,5 +1,6 @@
 package ru.protei.portal.redmine.handlers;
 
+import com.taskadapter.redmineapi.bean.Attachment;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.User;
@@ -10,8 +11,6 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
@@ -42,7 +41,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
     public void handleUpdateAttachmentsByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
         final CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
         final CaseObject object = caseObjectDAO.get(caseId);
-        commonService.processAttachments(issue, personMapper, object, endpoint);
+        commonService.processAttachments(issue.getAttachments(), personMapper, object, endpoint);
     }
 
     public void handleUpdateCaseObjectByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
@@ -67,24 +66,27 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
     }
 
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
-        final CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
-        //Synchronize comments
-        handleComments(issue, personMapper, object, endpoint);
+        CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
 
-        //Parameters synchronize by date from last update (endpoint)
-        final List<Journal> latestJournals = issue.getJournals()
-                .stream()
+        logger.debug("Trying to get latest synchronized comment");
+        Date dateComment = caseCommentDAO.getLastCommentDateByCaseIdAndAuthorCreator(object.getId(), "redmine");
+        Date latestCreated = (dateComment != null) ? dateComment : issue.getCreatedOn();
+        logger.debug("Last comment was synced on {}", latestCreated);
+
+        List<Journal> latestJournals = issue.getJournals().stream()
                 .filter(Objects::nonNull)
+                .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
                 .filter(x -> x.getCreatedOn() != null)
-                .filter(x -> x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
+                .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
+                .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .collect(Collectors.toList());
         logger.debug("Got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
 
+        //Synchronize comments
+        commonService.processComments(latestJournals, personMapper, object);
+
         //Synchronize status, priority, name, info
-        latestJournals
-                .stream()
-                .sorted(Comparator.comparing(Journal::getCreatedOn))
-                .forEach(journal -> journal.getDetails()
+        latestJournals.forEach(journal -> journal.getDetails()
                         .stream()
                         .filter(detail -> RedmineChangeType.findByName(detail.getName()).isPresent())
                         .forEach(detail -> {
@@ -94,39 +96,14 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
                         }));
 
         //Synchronize attachment
-        commonService.processAttachments(issue, personMapper, object, endpoint);
-    }
-
-    private void handleComments(Issue issue, CachedPersonMapper personMapper, CaseObject object, RedmineEndpoint endpoint) {
-        logger.debug("Processing comments ...");
-
-        //Comments synchronize by date from last created comment
-        logger.debug("Trying to get latest synchronized comment");
-        Date dateComment = caseCommentDAO.getLastCommentDate(new CaseCommentQuery(object.getId()));
-        final Date latestCreated = (dateComment != null) ? dateComment : issue.getCreatedOn();
-        logger.debug("Last comment was synced on {}", latestCreated);
-
-        logger.debug("Starting adding new comments");
-
-        logger.debug("Finding comments (journals where notes are not empty)");
-        final List<Journal> nonEmptyJournalsWithComments = issue.getJournals()
-                .stream()
+        List<Attachment> latestAttachment = issue.getAttachments().stream()
                 .filter(Objects::nonNull)
-                .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
-                .filter(journal -> journal.getCreatedOn() != null)
-                .filter(journal -> journal.getCreatedOn().compareTo(latestCreated) > 0)
-                .filter(journal -> StringUtils.isNotEmpty(journal.getNotes()))
+                .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
+                .filter(attachment -> attachment.getCreatedOn() != null)
+                .filter(attachment -> attachment.getCreatedOn().compareTo(latestCreated) > 0)
+                .sorted(Comparator.comparing(Attachment::getCreatedOn))
                 .collect(Collectors.toList());
-        logger.debug("Found {} comments after {}", nonEmptyJournalsWithComments.size(), latestCreated);
-        nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with journal-id {} has following text: {}", journal.getId(), journal.getNotes()));
-
-        final List<CaseComment> comments = nonEmptyJournalsWithComments
-                .stream()
-                .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
-                .map(journal -> commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser())))
-                .map(caseComment -> commonService.processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment))
-                .collect(Collectors.toList());
-        logger.debug("Added {} new case comments to case with id {}", comments.size(), object.getId());
+        commonService.processAttachments(latestAttachment, personMapper, object, endpoint);
     }
 
     @Autowired

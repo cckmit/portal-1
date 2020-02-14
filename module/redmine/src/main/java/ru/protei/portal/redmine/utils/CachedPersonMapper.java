@@ -40,7 +40,7 @@ public class CachedPersonMapper {
     public Person toProteiPerson(User user) {
         if (user == null) {
             if (defaultEntryPointUser == null) {
-                defaultEntryPointUser = personDAO.findContactByEmail(endpoint.getCompanyId(), "turik@protei.ru");
+                defaultEntryPointUser = personDAO.get(endpoint.getDefaultUserLocalId());
             }
             return defaultEntryPointUser;
         }

@@ -40,6 +40,9 @@ public final class RedmineEndpoint {
     @JdbcColumn(name = "DEFAULT_USER_ID")
     private Integer defaultUserId;
 
+    @JdbcColumn(name = "DEFAULT_USER_LOCAL_ID")
+    private Long defaultUserLocalId;
+
     public Long getId() {
         return id;
     }
@@ -118,5 +121,13 @@ public final class RedmineEndpoint {
 
     public void setDefaultUserId(Integer defaultUserId) {
         this.defaultUserId = defaultUserId;
+    }
+
+    public Long getDefaultUserLocalId() {
+        return defaultUserLocalId;
+    }
+
+    public void setDefaultUserLocalId(Long defaultUserLocalId) {
+        this.defaultUserLocalId = defaultUserLocalId;
     }
 }

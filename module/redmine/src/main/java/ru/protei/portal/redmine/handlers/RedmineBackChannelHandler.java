@@ -103,7 +103,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     private Result<Issue> uploadAttachment(Issue issue, AssembledCaseEvent event, RedmineEndpoint endpoint) {
         logger.debug("Updating attachment");
         if (event.getAddedAttachments() != null) {
-            Result<List<Attachment>> result = resultOfNullable(() -> service.uploadAttachment(event.getAddedAttachments(), endpoint), () -> "Error at process attachments");
+            Result<List<Attachment>> result = resultOfNullable(() ->
+                    service.uploadAttachment(event.getAddedAttachments(), endpoint), () -> "Error at process attachments");
             if (result.isOk()) {
                 result.getData().forEach(issue::addAttachment);
             } else {

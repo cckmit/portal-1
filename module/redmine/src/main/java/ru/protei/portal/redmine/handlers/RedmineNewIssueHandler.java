@@ -13,12 +13,9 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
-
-import java.util.Objects;
 
 public class RedmineNewIssueHandler implements RedmineEventHandler {
 
@@ -71,9 +68,8 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
-        commonService.processAttachments(issue, personMapper, obj, endpoint);
-
-        handleComments(issue, caseObjId, personMapper);
+        commonService.processComments(issue.getJournals(), personMapper, obj);
+        commonService.processAttachments(issue.getAttachments(), personMapper, obj, endpoint);
 
         return obj;
     }
@@ -113,17 +109,6 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         obj.setLocal(0);
         obj.setInitiatorCompanyId(companyId);
         return obj;
-    }
-
-    private void handleComments(Issue issue, long caseObjId, CachedPersonMapper personMapper) {
-        logger.debug("Processing comments ...");
-
-        issue.getJournals()
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(journal -> StringUtils.isNotEmpty(journal.getNotes()))
-                .map(journal -> commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser())))
-                .forEach(x -> commonService.processStoreComment(x.getAuthor().getId(), caseObjId, x));
     }
 
     @Autowired

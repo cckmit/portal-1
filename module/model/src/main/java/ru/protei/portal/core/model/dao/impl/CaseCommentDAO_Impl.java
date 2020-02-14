@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -44,11 +44,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     @SqlConditionBuilder
     public SqlCondition createSqlCondition( CaseCommentQuery query ) {
         return sqlBuilder.createSqlCondition( query );
-    }
-
-    @Override
-    public CaseComment getByRemoteId( String remoteId ) {
-        return getByCondition( " case_comment.remote_id=? ", remoteId );
     }
 
     @Override
@@ -160,14 +155,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     };
 
     @Override
-    public int removeByCaseIds(List<Long> ids) {
-        return removeByCondition("CASE_ID in " + HelperFunc.makeInArg(ids));
-    }
-
-    @Override
-    public Date getLastCommentDate(CaseCommentQuery query) {
-        SqlCondition sqlCondition = createSqlCondition(query);
-        return getMaxValue("created", Date.class, sqlCondition.condition, sqlCondition.args);
+    public Date getLastCommentDateByCaseIdAndAuthorCreator(Long caseId, String authorCreator) {
+        return getCaseComments(new CaseCommentQuery(caseId)).stream()
+                .filter(x -> x.getAuthor().getCreator().equals(authorCreator))
+                .max(Comparator.comparing(CaseComment::getCreated))
+                .map(CaseComment::getCreated)
+                .orElse(null);
     }
 
     private String makeAndPartFromListIds(final List<?> list, final String field){

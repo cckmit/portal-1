@@ -2,7 +2,6 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
-import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +11,15 @@ import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class CommonServiceImpl implements CommonService {
@@ -41,13 +34,12 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Issue issue, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint) {
+    public void processAttachments(Collection<com.taskadapter.redmineapi.bean.Attachment> attachments, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
-        if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
+        if (CollectionUtils.isNotEmpty(attachments)) {
             logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
-            issue.getAttachments()
-                    .stream()
+            attachments.stream()
                     .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
                     .filter(attachment -> !existingAttachmentsHashCodes.contains(toHashCode(attachment)))
                     .forEach(attachment -> {
@@ -73,6 +65,25 @@ public final class CommonServiceImpl implements CommonService {
                         }
                     });
         }
+    }
+
+    @Override
+    public void processComments(Collection<Journal> journals, CachedPersonMapper personMapper, CaseObject object) {
+        logger.debug("Processing comments ...");
+        logger.debug("Starting adding new comments");
+
+        logger.debug("Finding comments (journals where notes are not empty)");
+        final List<Journal> nonEmptyJournalsWithComments = journals.stream()
+                .filter(journal -> StringUtils.isNotEmpty(journal.getNotes()))
+                .collect(Collectors.toList());
+        logger.debug("Found {} comments", nonEmptyJournalsWithComments.size());
+        nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with journal-id {} has following text: {}", journal.getId(), journal.getNotes()));
+
+        final List<CaseComment> comments = nonEmptyJournalsWithComments.stream()
+                .map(journal -> parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser())))
+                .map(caseComment -> processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment))
+                .collect(Collectors.toList());
+        logger.debug("Added {} new case comments to case with id {}", comments.size(), object.getId());
     }
 
     @Override
@@ -120,75 +131,6 @@ public final class CommonServiceImpl implements CommonService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    @Override
-    public Person getAssignedPerson(Long companyId, User user) {
-        Person person = null;
-
-        if (HelperFunc.isNotEmpty(user.getMail())) {
-            // try find by e-mail
-            person = personDAO.findContactByEmail(companyId, user.getMail());
-        }
-
-        if (person == null && HelperFunc.isNotEmpty(user.getFullName())) {
-            // try find by name
-            person = personDAO.findContactByName(companyId, user.getFullName());
-        }
-
-        if (person != null) {
-            logger.debug("contact found: {} (id={})", person.getDisplayName(), person.getId());
-        } else {
-            logger.debug("unable to find contact person : email={}, company={}, create new one", user.getMail(), companyId);
-
-            person = new Person();
-            person.setCreated(new Date());
-            person.setCreator("redmine");
-            person.setCompanyId(companyId);
-            if (HelperFunc.isEmpty(user.getFirstName()) && HelperFunc.isEmpty(user.getLastName())) {
-                person.setFirstName(STUB_NAME);
-                person.setLastName(STUB_NAME);
-                person.setSecondName(STUB_NAME);
-                person.setDisplayName(STUB_NAME);
-                person.setDisplayShortName(STUB_NAME);
-            } else {
-                String[] np = user.getFullName().split("\\s+");
-                person.setLastName(np[0]);
-                person.setFirstName(np.length > 1 ? np[1] : STUB_NAME);
-                person.setSecondName(np.length > 2 ? np[2] : "");
-                person.setDisplayName(user.getFullName());
-                person.setDisplayShortName(getDisplayShortName(person));
-            }
-
-            PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade();
-
-            if (user.getMail() != null)
-                contactInfoFacade.setEmail(user.getMail());
-
-            person.setContactInfo(contactInfoFacade.editInfo());
-
-            person.setGender(En_Gender.UNDEFINED);
-            person.setDeleted(false);
-            person.setFired(false);
-            personDAO.persist(person);
-        }
-
-        return person;
-    }
-
-    private String getDisplayShortName(Person person) {
-        return person.getLastName() + " "
-               + getShortName(person.getFirstName())
-               + getShortName(person.getSecondName());
-    }
-    private String getShortName(String name) {
-        if (HelperFunc.isEmpty(name) || name.equals(STUB_NAME))
-            return "";
-        if (name.length() >= 1 ) {
-            return name.substring(0, 1) + ". ";
-        } else {
-            return name + " ";
-        }
-    }
-
     private Set<Integer> getExistingAttachmentsHashCodes(long caseObjId) {
         return attachmentDAO.getListByCaseId(caseObjId).stream()
                 .map(Attachment::toHashCodeForRedmineCheck)
@@ -204,9 +146,6 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private FileController fileController;
-
-    @Autowired
-    private PersonDAO personDAO;
 
     @Autowired
     private CaseService caseService;

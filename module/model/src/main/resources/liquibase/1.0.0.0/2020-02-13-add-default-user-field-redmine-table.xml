@@ -7,6 +7,7 @@
     <changeSet id="add-default-user-field-redmine-table" author="porubov">
         <addColumn tableName="redmine_endpoint">
             <column name="DEFAULT_USER_ID" type="BIGINT"/>
+            <column name="DEFAULT_USER_LOCAL_ID" type="BIGINT"/>
         </addColumn>
     </changeSet>
 
