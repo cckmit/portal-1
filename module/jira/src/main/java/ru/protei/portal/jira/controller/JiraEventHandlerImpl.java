@@ -65,7 +65,7 @@ public class JiraEventHandlerImpl {
     ) {
 
         logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
-        logger.debug("jiraWebhook(): data={}", jsonString);
+        logger.trace("jiraWebhook(): data={}", jsonString);
 
         if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
             logger.info("jiraWebhook(): companyId={} | jira integration is disabled, no actions taken", companyId);
@@ -133,7 +133,7 @@ public class JiraEventHandlerImpl {
 
         if (endpoint == null) return null;
 
-        CaseObject caseObject = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
+        CaseObject caseObject = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
         if (caseObject != null) return endpoint;
 
         Long endpointCompanyId = selectEndpointCompanyId(issue, originalCompanyId);
