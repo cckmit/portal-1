@@ -49,6 +49,7 @@ public class CrmConstants {
 
     public interface Masks {
         String EMAIL = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+$";
+        String ONLY_DIGITS = "^\\d*$";
     }
 
     public interface Time {
@@ -68,5 +69,13 @@ public class CrmConstants {
 
     public interface Comment {
         String TIME_ELAPSED_DEFAULT_COMMENT = "затраченное время";
+    }
+
+    public interface ClassifierCode {
+        int MAX_SIZE = 6;
+    }
+
+    public interface RegistrationNumber {
+        int MAX_SIZE = 3;
     }
 }

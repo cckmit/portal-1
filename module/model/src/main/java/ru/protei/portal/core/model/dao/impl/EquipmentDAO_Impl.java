@@ -8,12 +8,12 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -74,15 +74,14 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
             }
 
             if ( !StringUtils.isEmpty( query.getClassifierCode() ) ) {
-                condition.append( " and DN.classifier_code like ? " );
+                condition.append(" and (LPAD(DN.classifier_code, " + CrmConstants.ClassifierCode.MAX_SIZE + ", 0) like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getClassifierCode(), true);
                 args.add(likeArg);
             }
 
             if ( !StringUtils.isEmpty( query.getRegisterNumber() ) ) {
-                condition.append( " and DN.reg_number like ? " );
-                Integer regNum = Integer.parseInt( query.getRegisterNumber() );
-                String likeArg = HelperFunc.makeLikeArg( regNum.toString(), true);
+                condition.append(" and (LPAD(DN.reg_number, " + CrmConstants.RegistrationNumber.MAX_SIZE + ", 0) like ?)");
+                String likeArg = HelperFunc.makeLikeArg(query.getRegisterNumber(), true);
                 args.add(likeArg);
             }
 

@@ -109,6 +109,10 @@ public abstract class EquipmentTableActivity
 
     @Override
     public void onFilterChanged() {
+        if (!validateFields()) {
+            return;
+        }
+
         query = makeQuery();
         loadTable();
     }
@@ -188,6 +192,18 @@ public abstract class EquipmentTableActivity
             event.clearScroll = false;
             this.scrollTop = null;
         }
+    }
+
+    private boolean validateFields() {
+        if (!filterView.classifierCodeValidator().isValid()) {
+            return false;
+        }
+
+        if (!filterView.regNumValidator().isValid()) {
+            return false;
+        }
+
+        return true;
     }
 
     @Inject

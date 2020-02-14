@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -10,19 +9,21 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroupMulti;
@@ -37,6 +38,10 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        classifierCode.setMaxLength(CrmConstants.ClassifierCode.MAX_SIZE);
+        regNum.setMaxLength(CrmConstants.RegistrationNumber.MAX_SIZE);
+        classifierCode.setRegexp(CrmConstants.Masks.ONLY_DIGITS);
+        regNum.setRegexp(CrmConstants.Masks.ONLY_DIGITS);
     }
 
     @Override
@@ -102,6 +107,16 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         return equipment;
     }
 
+    @Override
+    public HasValidable classifierCodeValidator() {
+        return classifierCode;
+    }
+
+    @Override
+    public HasValidable regNumValidator() {
+        return regNum;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -111,12 +126,12 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @UiHandler( "name" )
-    public void onSearchChanged( ValueChangeEvent<String> event ) {
+    public void onSearchChanged( InputEvent event ) {
         fireChangeTimer();
     }
 
     @UiHandler( {"classifierCode", "regNum"} )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onKeyUpSearch( InputEvent event ) {
         fireChangeTimer();
     }
 
@@ -179,9 +194,9 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @UiField(provided = true)
     EquipmentTypeBtnGroupMulti types;
     @UiField
-    TextBox classifierCode;
+    ValidableTextBox classifierCode;
     @UiField
-    TextBox regNum;
+    ValidableTextBox regNum;
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
