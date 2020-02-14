@@ -37,6 +37,9 @@ public final class RedmineEndpoint {
     @JdbcColumn(name = "PRIORITY_MAP_ID")
     private long priorityMapId;
 
+    @JdbcColumn(name = "DEFAULT_USER_ID")
+    private Integer defaultUserId;
+
     public Long getId() {
         return id;
     }
@@ -107,5 +110,13 @@ public final class RedmineEndpoint {
 
     public void setPriorityMapId(long priorityMapId) {
         this.priorityMapId = priorityMapId;
+    }
+
+    public Integer getDefaultUserId() {
+        return defaultUserId;
+    }
+
+    public void setDefaultUserId(Integer defaultUserId) {
+        this.defaultUserId = defaultUserId;
     }
 }

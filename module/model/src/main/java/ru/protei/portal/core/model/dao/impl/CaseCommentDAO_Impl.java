@@ -164,6 +164,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         return removeByCondition("CASE_ID in " + HelperFunc.makeInArg(ids));
     }
 
+    @Override
+    public Date getLastCommentDate(CaseCommentQuery query) {
+        SqlCondition sqlCondition = createSqlCondition(query);
+        return getMaxValue("created", Date.class, sqlCondition.condition, sqlCondition.args);
+    }
+
     private String makeAndPartFromListIds(final List<?> list, final String field){
         return list == null ? "" : " and " + field + " in " + makeInArg(list);
     }

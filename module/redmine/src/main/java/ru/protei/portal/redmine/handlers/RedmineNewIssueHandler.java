@@ -121,7 +121,6 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
                 .filter(Objects::nonNull)
                 .filter(x -> StringUtils.isNotEmpty(x.getNotes()))
                 .map(x -> commonService.parseJournalToCaseComment(x, companyId))
-                .filter(Objects::nonNull)
                 .forEach(x -> commonService.processStoreComment(x.getAuthor().getId(), caseObjId, x));
     }
 

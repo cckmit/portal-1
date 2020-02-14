@@ -6,7 +6,6 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.*;
@@ -99,16 +98,9 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         logger.debug("Processing comments ...");
 
         //Comments synchronize by date from last created comment
-        final long companyId = endpoint.getCompanyId();
-
         logger.debug("Trying to get latest synchronized comment");
-        final CaseComment comment = caseCommentDAO.getCaseComments(new CaseCommentQuery(object.getId()))
-                .stream()
-                .filter(x -> x.getAuthor().getCreator().equals("redmine"))
-                .sorted(Comparator.comparing(CaseComment::getCreated))
-                .reduce((o1, o2) -> o2)
-                .orElse(null);
-        final Date latestCreated = (comment != null) ? comment.getCreated() : issue.getCreatedOn();
+        Date dateComment = caseCommentDAO.getLastCommentDate(new CaseCommentQuery(object.getId()));
+        final Date latestCreated = (dateComment != null) ? dateComment : issue.getCreatedOn();
         logger.debug("Last comment was synced on {}", latestCreated);
 
         logger.debug("Starting adding new comments");
@@ -117,17 +109,18 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         final List<Journal> nonEmptyJournalsWithComments = issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(x -> x.getCreatedOn() != null)
-                .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
-                .filter(x -> StringUtils.isNotEmpty(x.getNotes()))
+                .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
+                .filter(journal -> journal.getCreatedOn() != null)
+                .filter(journal -> journal.getCreatedOn().compareTo(latestCreated) > 0)
+                .filter(journal -> StringUtils.isNotEmpty(journal.getNotes()))
                 .collect(Collectors.toList());
         logger.debug("Found {} comments after {}", nonEmptyJournalsWithComments.size(), latestCreated);
         nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with journal-id {} has following text: {}", journal.getId(), journal.getNotes()));
 
         final List<CaseComment> comments = nonEmptyJournalsWithComments
                 .stream()
-                .map(journal -> commonService.parseJournalToCaseComment(journal, companyId))
-                .filter(Objects::nonNull)
+                .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
+                .map(journal -> commonService.parseJournalToCaseComment(journal, endpoint.getCompanyId()))
                 .map(caseComment -> commonService.processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment))
                 .collect(Collectors.toList());
         logger.debug("Added {} new case comments to case with id {}", comments.size(), object.getId());

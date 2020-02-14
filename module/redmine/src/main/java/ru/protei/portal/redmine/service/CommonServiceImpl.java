@@ -6,12 +6,13 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -20,18 +21,17 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.utils.HttpInputSource;
-import ru.protei.portal.redmine.utils.RedmineUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class CommonServiceImpl implements CommonService {
 
     @Override
     public CaseComment parseJournalToCaseComment(Journal journal, long companyId) {
-        if (journal.getNotes().startsWith(RedmineUtils.COMMENT_PROTEI_USER_PREFIX)) {
-            return null;
-        }
         final Person author = getAssignedPerson(companyId, journal.getUser());
         final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
@@ -48,7 +48,8 @@ public final class CommonServiceImpl implements CommonService {
             logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
             issue.getAttachments()
                     .stream()
-                    .filter(x -> !existingAttachmentsHashCodes.contains(toHashCode(x)))
+                    .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
+                    .filter(attachment -> !existingAttachmentsHashCodes.contains(toHashCode(attachment)))
                     .forEach(x -> {
                         final Person author = getAssignedPerson(endpoint.getCompanyId(), x.getAuthor());
                         Attachment a = new Attachment();
@@ -121,7 +122,6 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public Person getAssignedPerson(Long companyId, User user) {
-
         Person person = null;
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
