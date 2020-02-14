@@ -45,9 +45,9 @@ public class EquipmentFormSelector extends FormPopupSingleSelector<EquipmentShor
         }
     }
 
-    public void setProjectId(Long projectId) {
+    public void setProjectIds(Set<Long> projectIds) {
         if (model != null) {
-            model.setProjectId(projectId);
+            model.setProjectIds(projectIds);
         }
     }
 

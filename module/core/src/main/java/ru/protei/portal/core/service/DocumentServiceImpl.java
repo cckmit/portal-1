@@ -228,10 +228,6 @@ public class DocumentServiceImpl implements DocumentService {
         Long projectId = document.getProjectId();
         Long documentId = document.getId();
 
-        if (document.getApproved() && (withDoc || withPdf)) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-
         return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
 
             Document oldDocument = documentDAO.get(documentId);
@@ -245,10 +241,26 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(validationStatus);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = (withDoc || withPdf || withApprovalSheet) ? listDocumentFormatsAtSVN(documentId, projectId) : Collections.emptyList();
-            boolean withDocAtSvn = withDoc && formatsAtSvn.contains(docFormat);
-            boolean withPdfAtSvn = withPdf && formatsAtSvn.contains(pdfFormat);
-            boolean withApprovalSheetAtSvn = withApprovalSheet && formatsAtSvn.contains(ApprovalSheetFormat);
+            if (oldDocument.getApproved() && document.getApproved() && (withDoc || withPdf)) {
+                return error(En_ResultStatus.NOT_AVAILABLE);
+            }
+            //TODO: сделать проверку
+            List<En_DocumentFormat> listFormatsAtSvn;
+            try {
+                listFormatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            } catch (Exception e){
+                listFormatsAtSvn = Collections.emptyList();
+            }
+            List<En_DocumentFormat> currentFormatsAtSvn = (withDoc || withPdf || withApprovalSheet) ? listFormatsAtSvn : Collections.emptyList();
+            boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
+            boolean withDocAtSvn = withDoc && currentFormatsAtSvn.contains(docFormat);
+            boolean withPdfAtSvn = withPdf && currentFormatsAtSvn.contains(pdfFormat);
+
+            if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+            }
+
+            boolean withApprovalSheetAtSvn = withApprovalSheet && currentFormatsAtSvn.contains(ApprovalSheetFormat);
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
             byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
             byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, ApprovalSheetFormat) : null;
@@ -306,7 +318,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc) {
-                removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
+                removeDuplicatedDocFilesFromSvn(currentFormatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             }
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);

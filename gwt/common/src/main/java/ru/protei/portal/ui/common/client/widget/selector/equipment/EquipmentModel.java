@@ -68,9 +68,18 @@ public abstract class EquipmentModel implements Activity, AsyncSelectorModel<Equ
         cache.clearCache();
     }
 
-    public void setProjectId(Long projectId) {
-        query.setProjectId( projectId );
+    public void setProjectIds(Set<Long> projectIds) {
+        query.setProjectIds(projectIds);
         cache.clearCache();
+    }
+
+    public static Set<Long> makeProjectIds(Long projectId) {
+        if (projectId == null) {
+            return null;
+        }
+        Set<Long> projectIds = new HashSet<>();
+        projectIds.add(projectId);
+        return projectIds;
     }
 
     @Inject

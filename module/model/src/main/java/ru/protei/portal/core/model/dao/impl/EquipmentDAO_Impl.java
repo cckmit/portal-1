@@ -13,8 +13,9 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 /**
  * DAO оборудования
@@ -96,9 +97,8 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
                 args.add(query.getEquipmentId());
             }
 
-            if (query.getProjectId() != null) {
-                condition.append(" and project_id=?");
-                args.add(query.getProjectId());
+            if (query.getProjectIds() != null) {
+                condition.append(" and project_id in " + (query.getProjectIds().isEmpty() ? "('')" : makeInArg(query.getProjectIds(), false)));
             }
         });
     }

@@ -5,9 +5,6 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.EntityOption;
 
 public class DocumentEvents {
 
@@ -32,7 +29,7 @@ public class DocumentEvents {
         public HasWidgets parent;
     }
 
-    @Url(value = "doc_preview", primary = true)
+    @Url(value = "doc-preview", primary = true)
     public static class ShowPreviewFullScreen {
 
         public ShowPreviewFullScreen() {}
@@ -44,7 +41,7 @@ public class DocumentEvents {
         public Long documentId;
     }
 
-    @Url("doc")
+    @Url("doc-edit")
     public static class Edit {
 
         public Long id;
@@ -52,6 +49,22 @@ public class DocumentEvents {
         public Edit() {}
 
         public Edit(Long id) {
+            this.id = id;
+        }
+
+        public static Edit byId(Long id) {
+            return new Edit(id);
+        }
+    }
+
+    @Url("doc-edit-from-equipment")
+    public static class EditFromEquipment {
+
+        public Long id;
+
+        public EditFromEquipment() {}
+
+        public EditFromEquipment(Long id) {
             this.id = id;
         }
 
@@ -69,40 +82,37 @@ public class DocumentEvents {
     public static class ChangeModel {
     }
 
-    public static class Form {
+    public static class CreateFromWizard {
+        @Omit
+        public HasWidgets parent;
+        @Omit
+        public Document document;
 
-        public static class Show {
-            public HasWidgets parent;
-            public Document document;
-            public String tag;
-            public Show(HasWidgets parent, Document document, String tag) {
-                this.parent = parent;
-                this.document = document;
-                this.tag = tag;
-            }
+        public CreateFromWizard(){}
+
+        public CreateFromWizard(HasWidgets parent, Document document) {
+            this.parent = parent;
+            this.document = document;
+        }
+    }
+
+    public static class Save {
+        public Save() {
+        }
+    }
+
+    @Url(value = "doc-create-with-equipment")
+    public static class CreateWithEquipment {
+        public CreateWithEquipment() {}
+
+        public CreateWithEquipment(Long equipmentId, Long projectId, String projectName) {
+            this.projectId = projectId;
+            this.projectName = projectName;
+            this.equipmentId = equipmentId;
         }
 
-        public static class SetProject {
-            public String tag;
-            public EntityOption project;
-            public SetProject(EntityOption project, String tag) {
-                this.project = project;
-                this.tag = tag;
-            }
-        }
-
-        public static class Save {
-            public String tag;
-            public Save(String tag) {
-                this.tag = tag;
-            }
-        }
-
-        public static class Saved {
-            public String tag;
-            public Saved(String tag) {
-                this.tag = tag;
-            }
-        }
+        public Long equipmentId;
+        public Long projectId;
+        public String projectName;
     }
 }

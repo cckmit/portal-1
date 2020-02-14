@@ -2,12 +2,16 @@ package ru.protei.portal.ui.document.client.activity.form;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -17,18 +21,19 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -41,38 +46,97 @@ public abstract class DocumentFormActivity
     }
 
     @Event
-    public void onShow(DocumentEvents.Form.Show event) {
-        event.parent.clear();
-        event.parent.add(view.asWidget());
-        tag = event.tag;
+    public void onInitDetails(AppEvents.InitDetails initDetails) {
+        this.initDetails = initDetails;
+    }
+
+    @Event
+    public void onCreateFromWizard(DocumentEvents.CreateFromWizard event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+        setFieldsEnabled(true, true, true, true);
+        drawView(event.parent, true);
         fillView(event.document);
     }
 
-    @Event
-    public void onSave(DocumentEvents.Form.Save event) {
-        if (!Objects.equals(tag, event.tag)) {
+    @Event(Type.FILL_CONTENT)
+    public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
+        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_CREATE)){
+            fireEvent(new ForbiddenEvents.Show());
             return;
         }
-        if (!isDocumentCreationInProgress) {
-            isDocumentCreationInProgress = true;
-            saveDocument(fillDto(document));
+        if (event.projectId == null || event.equipmentId == null) {
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new Back());
+            return;
         }
+        setFieldsEnabled(false, false, false, false);
+
+        drawView(initDetails.parent, false);
+        Document document = prepareDocument(event);
+        requestEquipmentAndFillView(event.equipmentId, document);
+    }
+
+    @Event(Type.FILL_CONTENT)
+    public void onEdit(DocumentEvents.Edit event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+        setFieldsEnabled(true, true, true, false);
+
+        drawView(initDetails.parent, false);
+        requestDocumentAndFillView(event.id, this::fillView);
+    }
+
+    @Event(Type.FILL_CONTENT)
+    public void onEquipmentEdit(DocumentEvents.EditFromEquipment event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+        setFieldsEnabled(false, false, false, false);
+
+        drawView(initDetails.parent, false);
+        requestDocumentAndFillView(event.id, this::fillView);
+    }
+
+    private void setFieldsEnabled(boolean membersEnabled, boolean executionTypeEnabled, boolean equipmentEnabled, boolean projectEnabled) {
+        isMembersEnabled = membersEnabled;
+        isExecutionTypeEnabled = executionTypeEnabled;
+        isEquipmentEnabled = equipmentEnabled;
+        isProjectEnabled = projectEnabled;
+    }
+
+
+    private Document prepareDocument(DocumentEvents.CreateWithEquipment event) {
+        Document document = new Document();
+        document.setApproved(false);
+        document.setProjectId(event.projectId);
+        document.setProjectName(event.projectName);
+        return document;
+    }
+
+    private void drawView(HasWidgets container, boolean isFromWizard) {
+        container.clear();
+        container.add(view.asWidget());
+        isPartOfWizardWidget = isFromWizard;
+    }
+
+
+    @Event
+    public void onSave(DocumentEvents.Save event) {
+        onSaveClicked();
     }
 
     @Event
-    public void onSetProject(DocumentEvents.Form.SetProject event) {
-        if (!Objects.equals(tag, event.tag)) {
-            return;
-        }
-
+    public void onSetProject(ProjectEvents.Set event) {
         if (event.project != null) {
             view.project().setValue(event.project);
             onProjectChanged();
         }
-    }
-
-    @Override
-    public void onDecimalNumberChanged() {
     }
 
     @Override
@@ -100,7 +164,6 @@ public abstract class DocumentFormActivity
             onProjectChanged(projectInfo);
             if (projectInfo != null) {
                 view.equipment().setValue(null, true);
-                view.setEquipmentProjectId(projectInfo.getId());
             }
         });
     }
@@ -109,6 +172,7 @@ public abstract class DocumentFormActivity
         this.project = project;
         fillViewProjectInfo(project);
         renderViewState(project);
+        view.setEquipmentProjectIds(project == null || project.getId() == null ? Collections.emptySet() : EquipmentModel.makeProjectIds(project.getId()));
     }
 
     @Override
@@ -142,6 +206,19 @@ public abstract class DocumentFormActivity
         renderViewState(project);
     }
 
+    @Override
+    public void onCancelClicked() {
+       fireEvent(new Back());
+    }
+
+    @Override
+    public void onSaveClicked () {
+        if (!isDocumentCreationInProgress) {
+            isDocumentCreationInProgress = true;
+            saveDocument(fillDto(document));
+        }
+    }
+
     private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
         regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>()
                 .withSuccess(consumer));
@@ -159,31 +236,19 @@ public abstract class DocumentFormActivity
         setDocumentTypeEnabled(documentCategory != null);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
-        setUploaderEnabled(isNew || !view.isApproved().getValue());
+        setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
         view.decimalNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.decimalNumber().setValue(null);
-        }
     }
     private void setInventoryNumberEnabled(boolean isEnabled) {
         view.inventoryNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.inventoryNumber().setValue(null);
-        }
     }
     private void setEquipmentEnabled(boolean isEnabled) {
-        view.equipmentEnabled(isEnabled);
-        if (!isEnabled) {
-            view.equipment().setValue(null);
-        }
+        view.equipmentEnabled(isEnabled && isEquipmentEnabled);
     }
     private void setDocumentTypeEnabled(boolean isEnabled) {
         view.documentTypeEnabled(isEnabled);
-        if (!isEnabled) {
-            view.documentType().setValue(null);
-        }
     }
     private void setUploaderEnabled(boolean isEnabled) {
         view.uploaderEnabled(isEnabled);
@@ -217,9 +282,7 @@ public abstract class DocumentFormActivity
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD) {
             return false;
         }
-        En_CustomerType customerType = project.getCustomerType();
-        return customerType == En_CustomerType.MINISTRY_OF_DEFENCE ||
-                customerType == En_CustomerType.STATE_BUDGET;
+       return true;
     }
     private boolean isEquipmentVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null) {
@@ -285,7 +348,10 @@ public abstract class DocumentFormActivity
                         saveDocument(document, doc -> {
                             fillView(doc);
                             isDocumentCreationInProgress = false;
-                            fireEvent(new DocumentEvents.Form.Saved(tag));
+                            //fireEvent(new DocumentEvents.Form.Saved(tag));
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new DocumentEvents.ChangeModel());
+                            fireEvent(new Back());
                         }
         ))));
     }
@@ -343,7 +409,10 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document, Consumer<Document> onSaved) {
         documentService.saveDocument(document, new FluentCallback<Document>()
-                .withError(throwable -> isDocumentCreationInProgress = false)
+                .withError(throwable -> {
+                    isDocumentCreationInProgress = false;
+                    errorHandler.accept(throwable);
+                })
                 .withSuccess(onSaved));
     }
 
@@ -370,6 +439,48 @@ public abstract class DocumentFormActivity
             }
         }
         return null;
+    }
+
+    private void  requestDocumentAndFillView(Long documentId){
+        if (documentId == null) {
+            fireEvent(new Back());
+            return;
+        }
+
+        documentService.getDocument(documentId, new FluentCallback<Document>()
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    fireEvent(new Back());
+                })
+                .withSuccess(equipment -> {
+                    fillView(document);;
+                })
+        );
+    }
+
+    private void requestEquipmentAndFillView(Long equipmentId, Document document) {
+
+        if (equipmentId == null) {
+            fillView(document);
+            return;
+        }
+
+        equipmentController.getEquipment(equipmentId, new FluentCallback<Equipment>()
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    fillView(document);
+                })
+                .withSuccess(equipment -> {
+                    document.setEquipment(equipment);
+                    fillView(document);;
+                })
+        );
+    }
+
+    private void requestDocumentAndFillView(Long documentId, Consumer<Document> onSuccess) {
+        documentService.getDocument(documentId, new FluentCallback<Document>()
+                .withErrorMessage(lang.errGetObject())
+                .withSuccess(onSuccess));
     }
 
     private Document fillDto(Document d) {
@@ -401,6 +512,7 @@ public abstract class DocumentFormActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.executionType().setValue(document.getExecutionType());
+        view.setDocumentCategoryValue(availableDocumentCategories);
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
         view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromPerson).collect(Collectors.toSet()));
@@ -431,11 +543,22 @@ public abstract class DocumentFormActivity
         }
 
         view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
+
         if (document.getProjectId() == null) {
             onProjectChanged(null);
         } else {
             requestProject(document.getProjectId(), this::onProjectChanged);
         }
+
+        if (document.getEquipment() != null && document.getEquipment().getDecimalNumbers() != null) {
+            view.setDecimalNumberHints(document.getEquipment().getDecimalNumbers());
+        }
+
+        view.drawInWizardContainer(isPartOfWizardWidget);
+        view.membersEnabled(isMembersEnabled);
+        view.executionTypeEnabled(isExecutionTypeEnabled);
+        view.projectEnabled(isProjectEnabled);
+
     }
 
     private void fillViewProjectInfo(ProjectInfo project) {
@@ -465,10 +588,21 @@ public abstract class DocumentFormActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler errorHandler;
+    @Inject
+    EquipmentControllerAsync equipmentController;
 
-    private String tag;
     private Document document;
     private ProjectInfo project;
     private boolean isDocumentCreationInProgress = false;
+    private boolean isPartOfWizardWidget = false;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
+    private AppEvents.InitDetails initDetails;
+    private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));
+
+    private boolean isMembersEnabled = true;
+    private boolean isExecutionTypeEnabled = true;
+    private boolean isEquipmentEnabled = true;
+    private boolean isProjectEnabled = true;
 }

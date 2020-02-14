@@ -65,9 +65,17 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     void documentTypeEnabled(boolean isEnabled);
 
+    void drawInWizardContainer (boolean isPartOfWizardWidget);
+
     void inventoryNumberEnabled(boolean isEnabled);
 
     void uploaderEnabled(boolean isEnabled);
+
+    void projectEnabled(boolean isEnabled);
+
+    void membersEnabled(boolean isEnabled);
+
+    void executionTypeEnabled(boolean isEnabled);
 
     void approvedByEnabled(boolean isEnabled);
 
@@ -83,9 +91,11 @@ public interface AbstractDocumentFormView extends IsWidget {
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 
-    void setEquipmentProjectId(Long id);
+    void setEquipmentProjectIds(Set<Long> ids);
 
     void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter);
+
+    void setDocumentCategoryValue(List<En_DocumentCategory> documentCategories);
 
     void setProjectInfo(String customerType, String productDirection, String region);
 }

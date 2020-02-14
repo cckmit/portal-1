@@ -38,11 +38,7 @@ import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormAct
 import ru.protei.portal.ui.document.client.activity.form.AbstractDocumentFormView;
 import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeFormSelector;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DocumentFormView extends Composite implements AbstractDocumentFormView {
 
@@ -175,6 +171,21 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
+    public void projectEnabled(boolean isEnabled) {
+        project.setEnabled(isEnabled);
+    }
+
+    @Override
+    public void executionTypeEnabled(boolean isEnabled) {
+        executionType.setEnabled(isEnabled);
+    }
+
+    @Override
+    public void membersEnabled(boolean isEnabled) {
+        members.setEnabled(isEnabled);
+    }
+
+    @Override
     public void equipmentEnabled(boolean isEnabled) {
         equipment.setEnabled(isEnabled);
     }
@@ -182,6 +193,20 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Override
     public void documentTypeEnabled(boolean isEnabled) {
         documentType.setEnabled(isEnabled);
+    }
+
+    @Override
+    public void drawInWizardContainer (boolean isPartOfWizardWidget) {
+        if (isPartOfWizardWidget) {
+            footer.addClassName("hide");
+            card.setStyleName("");
+            cardBody.setStyleName("row");
+        }
+        else {
+            footer.removeClassName("hide");
+            card.setStyleName("card card-transparent no-margin card-with-fixable-footer");
+            cardBody.setStyleName("card-body row no-margin");
+        }
     }
 
     @Override
@@ -223,13 +248,19 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
-    public void setEquipmentProjectId(Long id) {
-        equipment.setProjectId(id);
+    public void setEquipmentProjectIds(Set<Long> ids) {
+        equipment.setProjectIds(ids);
     }
 
     @Override
     public void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter) {
         documentType.setFilter(filter);
+        documentType.refreshValue();
+    }
+
+    @Override
+    public void setDocumentCategoryValue(List<En_DocumentCategory> documentCategories) {
+        documentCategory.fillOptions(documentCategories);
         documentType.refreshValue();
     }
 
@@ -244,12 +275,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
         if (activity != null)
             activity.onEquipmentChanged();
-    }
-
-    @UiHandler("decimalNumber")
-    public void onDecimalNumberChanged(ValueChangeEvent<DecimalNumber> event) {
-        if (activity != null)
-            activity.onDecimalNumberChanged();
     }
 
     @UiHandler("documentCategory")
@@ -285,6 +310,20 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     public void onApprovedChanged(ValueChangeEvent<Boolean> event) {
         if (activity != null)
             activity.onApprovedChanged();
+    }
+
+    @UiHandler("cancelBtn")
+    public void onCancelClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
+    }
+
+    @UiHandler("saveBtn")
+    public void onSaveClicked (ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveClicked();
+        }
     }
 
     private void ensureDebugIds() {
@@ -451,6 +490,16 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     LabelElement documentSectionInfoLabel;
     @UiField
     LabelElement documentMembersLabel;
+    @UiField
+    DivElement footer;
+    @UiField
+    Button cancelBtn;
+    @UiField
+    Button saveBtn;
+    @UiField
+    HTMLPanel card;
+    @UiField
+    HTMLPanel cardBody;
 
     @Inject
     @UiField

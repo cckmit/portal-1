@@ -30,7 +30,7 @@ import java.util.List;
 
 public abstract class EquipmentDocumentEditActivity implements Activity, AbstractEquipmentDocumentEditActivity {
 
-    @PostConstruct
+   /* @PostConstruct
     public void onInit() {
         view.setActivity(this);
         view.documentUploader().setUploadHandler(new UploadHandler() {
@@ -85,7 +85,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
             decimalNumbers = event.decimalNumbers;
             fillView(document);
         }
-    }
+    }*/
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {

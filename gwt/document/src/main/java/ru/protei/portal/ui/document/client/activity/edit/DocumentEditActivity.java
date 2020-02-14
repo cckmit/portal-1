@@ -31,7 +31,7 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
         this.initDetails = initDetails;
     }
 
-    @Event
+   /* @Event
     public void onShow(DocumentEvents.Edit event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -43,18 +43,18 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
         requestDocument(event.id, document -> {
             fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), document, TAG));
         });
-    }
+    }*/
 
     @Override
     public void onCloseClicked() {
-        fireEvent(new Back());
+        //fireEvent(new Back());
     }
 
     @Override
     public void onSaveClicked() {
-        fireEvent(new DocumentEvents.Form.Save(TAG));
+        //fireEvent(new DocumentEvents.Form.Save(TAG));
     }
-
+/*
     @Event
     public void onSaved(DocumentEvents.Form.Saved event) {
         if (!Objects.equals(TAG, event.tag)) {
@@ -64,6 +64,7 @@ public abstract class DocumentEditActivity implements Activity, AbstractDocument
         fireEvent(new DocumentEvents.ChangeModel());
         fireEvent(new Back());
     }
+*/
 
     private void requestDocument(Long documentId, Consumer<Document> onSuccess) {
         documentService.getDocument(documentId, new FluentCallback<Document>()
