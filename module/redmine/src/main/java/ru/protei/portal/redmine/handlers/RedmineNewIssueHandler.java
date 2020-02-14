@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.service.CommonService;
+import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
 import java.util.Objects;
 
@@ -34,6 +35,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
     }
 
     private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
+        final CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
         logger.debug("Creating case object ...");
         final long companyId = endpoint.getCompanyId();
         final CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString() + "_" + companyId );
@@ -42,9 +44,9 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
             return testExists;
         }
 
-        Person contactPerson = commonService.getAssignedPerson(companyId, user);
+        Person contactPerson = personMapper.toProteiPerson(user);
         if (contactPerson == null) {
-            logger.debug("no assigned person for issue with id {} from project with id", issue.getId(), issue.getProjectId());
+            logger.debug("no assigned person for issue with id = {} from project with id = {}", issue.getId(), issue.getProjectId());
             return null;
         }
 
@@ -69,9 +71,9 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
-        commonService.processAttachments(issue, obj, endpoint);
+        commonService.processAttachments(issue, personMapper, obj, endpoint);
 
-        handleComments(issue, caseObjId, companyId);
+        handleComments(issue, caseObjId, personMapper);
 
         return obj;
     }
@@ -113,14 +115,14 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         return obj;
     }
 
-    private void handleComments(Issue issue, long caseObjId, long companyId) {
+    private void handleComments(Issue issue, long caseObjId, CachedPersonMapper personMapper) {
         logger.debug("Processing comments ...");
 
         issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(x -> StringUtils.isNotEmpty(x.getNotes()))
-                .map(x -> commonService.parseJournalToCaseComment(x, companyId))
+                .filter(journal -> StringUtils.isNotEmpty(journal.getNotes()))
+                .map(journal -> commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser())))
                 .forEach(x -> commonService.processStoreComment(x.getAuthor().getId(), caseObjId, x));
     }
 
@@ -129,6 +131,9 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    private PersonDAO personDAO;
 
     @Autowired
     private CommonService commonService;

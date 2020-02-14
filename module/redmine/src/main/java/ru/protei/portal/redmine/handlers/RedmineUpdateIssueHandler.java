@@ -8,12 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
+import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,8 +40,9 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
     }
 
     public void handleUpdateAttachmentsByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
+        final CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
         final CaseObject object = caseObjectDAO.get(caseId);
-        commonService.processAttachments(issue, object, endpoint);
+        commonService.processAttachments(issue, personMapper, object, endpoint);
     }
 
     public void handleUpdateCaseObjectByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
@@ -59,14 +62,14 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
                         .forEach(detail -> {
                             caseUpdaterFactory
                                     .getUpdater(RedmineChangeType.findByName(detail.getName()).get())
-                                    .apply(object, endpoint, journal, detail.getNewValue());
+                                    .apply(object, endpoint, journal, detail.getNewValue(), null);
                         }));
     }
 
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
-
+        final CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
         //Synchronize comments
-        handleComments(issue, object, endpoint);
+        handleComments(issue, personMapper, object, endpoint);
 
         //Parameters synchronize by date from last update (endpoint)
         final List<Journal> latestJournals = issue.getJournals()
@@ -87,14 +90,14 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
                         .forEach(detail -> {
                             caseUpdaterFactory
                                     .getUpdater(RedmineChangeType.findByName(detail.getName()).get())
-                                    .apply(object, endpoint, journal, detail.getNewValue());
+                                    .apply(object, endpoint, journal, detail.getNewValue(), personMapper);
                         }));
 
         //Synchronize attachment
-        commonService.processAttachments(issue, object, endpoint);
+        commonService.processAttachments(issue, personMapper, object, endpoint);
     }
 
-    private void handleComments(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+    private void handleComments(Issue issue, CachedPersonMapper personMapper, CaseObject object, RedmineEndpoint endpoint) {
         logger.debug("Processing comments ...");
 
         //Comments synchronize by date from last created comment
@@ -120,7 +123,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         final List<CaseComment> comments = nonEmptyJournalsWithComments
                 .stream()
                 .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
-                .map(journal -> commonService.parseJournalToCaseComment(journal, endpoint.getCompanyId()))
+                .map(journal -> commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser())))
                 .map(caseComment -> commonService.processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment))
                 .collect(Collectors.toList());
         logger.debug("Added {} new case comments to case with id {}", comments.size(), object.getId());
@@ -131,6 +134,9 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    private PersonDAO personDAO;
 
     @Autowired
     private CommonService commonService;

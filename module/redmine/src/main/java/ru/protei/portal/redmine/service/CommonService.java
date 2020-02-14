@@ -4,13 +4,14 @@ import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.User;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
 import java.util.Date;
 
 public interface CommonService {
-    CaseComment parseJournalToCaseComment(Journal journal, long companyId);
+    CaseComment parseJournalToCaseComment(Journal journal, Person person);
 
-    void processAttachments( Issue issue, CaseObject obj, RedmineEndpoint endpoint);
+    void processAttachments(Issue issue, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint);
 
     void processUpdateCreationDateAttachments(Issue issue, Long caseObjId);
 

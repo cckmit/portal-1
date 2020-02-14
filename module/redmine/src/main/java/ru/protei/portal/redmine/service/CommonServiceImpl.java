@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
 import java.util.Collections;
@@ -31,8 +32,7 @@ import java.util.stream.Collectors;
 public final class CommonServiceImpl implements CommonService {
 
     @Override
-    public CaseComment parseJournalToCaseComment(Journal journal, long companyId) {
-        final Person author = getAssignedPerson(companyId, journal.getUser());
+    public CaseComment parseJournalToCaseComment(Journal journal, Person author) {
         final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         comment.setAuthor(author);
@@ -41,7 +41,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Issue issue, CaseObject obj, RedmineEndpoint endpoint) {
+    public void processAttachments(Issue issue, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
         if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
@@ -50,25 +50,25 @@ public final class CommonServiceImpl implements CommonService {
                     .stream()
                     .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
                     .filter(attachment -> !existingAttachmentsHashCodes.contains(toHashCode(attachment)))
-                    .forEach(x -> {
-                        final Person author = getAssignedPerson(endpoint.getCompanyId(), x.getAuthor());
+                    .forEach(attachment -> {
+                        final Person author = personMapper.toProteiPerson(attachment.getAuthor());
                         Attachment a = new Attachment();
-                        a.setCreated(x.getCreatedOn());
+                        a.setCreated(attachment.getCreatedOn());
                         a.setCreatorId(author.getId());
-                        a.setDataSize(x.getFileSize());
-                        a.setFileName(x.getFileName());
-                        a.setMimeType(x.getContentType());
-                        a.setLabelText(x.getDescription());
+                        a.setDataSize(attachment.getFileSize());
+                        a.setFileName(attachment.getFileName());
+                        a.setMimeType(attachment.getContentType());
+                        a.setLabelText(attachment.getDescription());
                         try {
-                            logger.debug("Invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
+                            logger.debug("Invoke file controller to store attachment {} (size={})", attachment.getFileName(), attachment.getFileSize());
                             fileController.saveAttachment(a,
-                                    new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), x.getFileSize(), x.getContentType(), caseObjId);
+                                    new HttpInputSource(attachment.getContentURL(), endpoint.getApiKey()), attachment.getFileSize(), attachment.getContentType(), caseObjId);
 
                             publisherService.publishEvent(new CaseAttachmentEvent(this, ServiceModule.REDMINE, author.getId(), obj.getId(),
                                     Collections.singletonList(a), null));
 
                         } catch (Exception e) {
-                            logger.debug("Unable to process attachment {}", x.getFileName());
+                            logger.debug("Unable to process attachment {}", attachment.getFileName());
                             logger.debug("Trace", e);
                         }
                     });
