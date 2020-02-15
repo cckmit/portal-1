@@ -26,11 +26,10 @@ import java.util.function.Consumer;
 
 public class IssueInfoWidget extends Composite {
 
-    @Inject
-    public void init(TextRenderControllerAsync textRenderController) {
+    @PostConstruct
+    public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-        this.textRenderController = textRenderController;
     }
 
     public void setActivity( AbstractIssueEditActivity activity ) {
@@ -109,7 +108,9 @@ public class IssueInfoWidget extends Composite {
     @UiField
     DivElement descriptionRO;
 
-    private TextRenderControllerAsync textRenderController;
+    @Inject
+    TextRenderControllerAsync textRenderController;
+
     private AbstractIssueEditActivity activity;
 
     interface IssueInfoWidgetUiBinder extends UiBinder<HTMLPanel, IssueInfoWidget> {
