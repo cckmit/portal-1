@@ -5,7 +5,7 @@ public class CrmConstants {
     public static final int DEFAULT_SELECTOR_PAGE_SIZE = 20;
     public static final int DEFAULT_SELECTOR_CHUNK_SIZE = 100;
     public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
-    public static final int EMAIL_MAX_SIZE = 80;
+    public static final int EMAIL_MAX_SIZE = 254;
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
