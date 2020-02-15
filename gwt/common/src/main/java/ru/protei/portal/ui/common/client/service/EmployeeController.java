@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -23,6 +24,13 @@ public interface EmployeeController extends RemoteService {
      * @return список сотрудников
      */
     SearchResult< EmployeeShortView > getEmployees (EmployeeQuery query ) throws RequestFailedException;
+
+    /**
+     * Получение имени главы департамента
+     * @param departmentId айди департамента
+     * @return имя руководителя департамента
+     */
+    PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления сотрудника

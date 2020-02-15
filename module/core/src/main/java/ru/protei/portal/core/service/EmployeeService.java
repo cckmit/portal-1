@@ -31,4 +31,5 @@ public interface EmployeeService {
 
     Result<PersonShortView> getEmployeeById( AuthToken token, Long emploeeId );
 
+    Result<PersonShortView> getDepartmentHead(Long departmentId);
 }

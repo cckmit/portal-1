@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -38,6 +39,13 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.info( "getEmployees(): query={}", query );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
+    }
+
+    @Override
+    public PersonShortView getDepartmentHead(Long workerEntryId) throws RequestFailedException {
+        log.info( "getDepartmentHead(): workerEntryId={}", workerEntryId );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(workerEntryId));
     }
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {

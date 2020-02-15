@@ -7,8 +7,11 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
+import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
@@ -37,13 +40,15 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
-        entryFacade.getSortedEntries().forEach( workerEntry -> {
-            AbstractPositionItemView itemView = makeView( workerEntry );
-            view.getPositionsContainer().add( itemView.asWidget() );
-        } );
+        entryFacade.getSortedEntries().forEach( workerEntry -> employeeService.getDepartmentHead(workerEntry.getId(), new FluentCallback<PersonShortView>()
+                .withSuccess(head -> {
+                    AbstractPositionItemView itemView = makeView( workerEntry, head == null ? null : head.getName());
+                    view.getPositionsContainer().add( itemView.asWidget() );
+                })
+        ));
     }
 
-    private AbstractPositionItemView makeView( WorkerEntryShortView workerEntry ) {
+    private AbstractPositionItemView makeView( WorkerEntryShortView workerEntry, String headName ) {
         AbstractPositionItemView itemView = factory.get();
         itemView.setActivity( this );
 
@@ -55,8 +60,8 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             itemView.departmentContainerVisibility().setVisible(true);
         }
 
-        if (workerEntry.getDepartmentHeadName() != null) {
-            itemView.setDepartmentHead(workerEntry.getDepartmentHeadName());
+        if (headName != null) {
+            itemView.setDepartmentHead(headName);
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 
@@ -70,4 +75,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     Provider< AbstractPositionItemView > factory;
+
+    @Inject
+    EmployeeControllerAsync employeeService;
 }

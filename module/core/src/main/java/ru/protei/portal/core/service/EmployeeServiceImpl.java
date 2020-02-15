@@ -147,6 +147,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok(result);
     }
 
+    @Override
+    public Result<PersonShortView> getDepartmentHead(Long workerEntryId) {
+        if (workerEntryId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Person head = personDAO.getDepartmentHeadByWorkerEntryId(workerEntryId);
+
+        return ok(head == null ? null : head.toFullNameShortView());
+    }
+
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)
             return;
