@@ -6,21 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.EmployeeController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 /**
  * Реализация сервиса по работе с сотрудниками
@@ -45,7 +44,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     public PersonShortView getDepartmentHead(Long workerEntryId) throws RequestFailedException {
         log.info( "getDepartmentHead(): workerEntryId={}", workerEntryId );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(workerEntryId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, workerEntryId));
     }
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {

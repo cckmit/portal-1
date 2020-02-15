@@ -148,7 +148,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<PersonShortView> getDepartmentHead(Long workerEntryId) {
+    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long workerEntryId) {
         if (workerEntryId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
