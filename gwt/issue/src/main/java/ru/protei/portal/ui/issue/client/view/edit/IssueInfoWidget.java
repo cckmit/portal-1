@@ -83,7 +83,6 @@ public class IssueInfoWidget extends Composite {
         attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
 
-
     @UiField
     Lang lang;
 
