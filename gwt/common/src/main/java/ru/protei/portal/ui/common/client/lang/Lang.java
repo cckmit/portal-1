@@ -2037,4 +2037,8 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardActionEdit();
 
     String dashboardActionRemove();
+
+    String employeePreviewInfo();
+
+    String backToEmployees();
 }

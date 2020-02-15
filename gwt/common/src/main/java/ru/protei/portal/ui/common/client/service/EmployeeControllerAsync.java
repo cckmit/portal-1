@@ -28,4 +28,6 @@ public interface EmployeeControllerAsync {
     void getEmployeeById( Long emploeeId, AsyncCallback<PersonShortView> async );
 
     void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
+
+    void getEmployeeShortViewById(Long employeeId, AsyncCallback<EmployeeShortView> async);
 }

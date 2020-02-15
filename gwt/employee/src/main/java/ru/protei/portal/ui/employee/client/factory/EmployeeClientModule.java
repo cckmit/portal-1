@@ -4,6 +4,7 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractInfoItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 import ru.protei.portal.ui.employee.client.activity.list.*;
 import ru.protei.portal.ui.employee.client.activity.page.EmployeePage;
@@ -11,6 +12,7 @@ import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePrev
 import ru.protei.portal.ui.employee.client.activity.preview.EmployeePreviewActivity;
 import ru.protei.portal.ui.employee.client.view.filter.EmployeeFilterView;
 import ru.protei.portal.ui.employee.client.view.item.EmployeeItemView;
+import ru.protei.portal.ui.employee.client.view.item.InfoItemView;
 import ru.protei.portal.ui.employee.client.view.item.PositionItemView;
 import ru.protei.portal.ui.employee.client.view.list.EmployeeListView;
 import ru.protei.portal.ui.employee.client.view.preview.EmployeePreviewView;
@@ -37,5 +39,6 @@ public class EmployeeClientModule extends AbstractGinModule {
         bind( EmployeePreviewActivity.class ).asEagerSingleton();
         bind( AbstractEmployeePreviewView.class ).to( EmployeePreviewView.class ).in( Singleton.class );
         bind( AbstractPositionItemView.class ).to( PositionItemView.class );
+        bind(AbstractInfoItemView.class).to(InfoItemView.class);
     }
 }

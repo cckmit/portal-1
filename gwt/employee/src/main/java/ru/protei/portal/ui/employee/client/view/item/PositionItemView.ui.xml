@@ -18,7 +18,7 @@
         </div>
         <g:HTMLPanel ui:field="departmentHeadContainer" styleName="small" visible="false">
             <i class="fas fa-heading"/>
-            <span ui:field="departmentHead"/>
+            <a ui:field="departmentHead" target="_blank" href="#"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

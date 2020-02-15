@@ -16,6 +16,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -128,6 +129,23 @@ public class EmployeeServiceImpl implements EmployeeService {
              );
         }
         return ok(sr);
+    }
+
+    @Override
+    public Result<EmployeeShortView> getEmployeeShortViewById(AuthToken token, Long employeeId) {
+        EmployeeQuery employeeQuery = new EmployeeQuery();
+        employeeQuery.setId(employeeId);
+
+        SearchResult<EmployeeShortView> searchResult = employeeShortViewDAO.getSearchResult(employeeQuery);
+
+        if (searchResult.getTotalCount() == 0) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        EmployeeShortView employeeShortView = searchResult.iterator().next();
+        employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(Collections.singletonList(employeeId)));
+
+        return ok(employeeShortView);
     }
 
     @Override

@@ -11,6 +11,8 @@ import java.util.Set;
  */
 public class EmployeeQuery extends BaseQuery {
 
+    private Long id;
+
     private Boolean fired;
 
     private Boolean deleted;
@@ -127,10 +129,19 @@ public class EmployeeQuery extends BaseQuery {
         this.departmentParent = departmentParent;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
-                "fired=" + fired +
+                "id=" + id +
+                ", fired=" + fired +
                 ", deleted=" + deleted +
                 ", onlyPeople=" + onlyPeople +
                 ", homeCompanies=" + homeCompanies +
@@ -139,11 +150,6 @@ public class EmployeeQuery extends BaseQuery {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", email='" + email + '\'' +
                 ", departmentParent='" + departmentParent + '\'' +
-                ", searchString='" + searchString + '\'' +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
                 '}';
     }
 }
