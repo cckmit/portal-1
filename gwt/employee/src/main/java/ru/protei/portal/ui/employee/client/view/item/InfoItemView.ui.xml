@@ -3,11 +3,10 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="p-t-10 p-b-10">
-        <div class="small">
-            <i ui:field="nameIcon" class="fa fa-user-circle"/>
+    <g:HTMLPanel styleName="p-b-10">
+        <h4>
             <a ui:field="employeeName" target="_blank" href="#"/>
-        </div>
+        </h4>
 
         <g:HTMLPanel ui:field="birthdayContainer" styleName="small" visible="false">
             <i class="fa fa-birthday-cake"/>

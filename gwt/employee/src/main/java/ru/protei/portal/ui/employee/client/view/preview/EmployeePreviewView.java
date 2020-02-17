@@ -60,8 +60,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiHandler("backButton")
     public void onBackButtonClicked(ClickEvent event) {
-        event.preventDefault();
-
         if (activity != null) {
             activity.onBackButtonClicked();
         }

@@ -9,7 +9,6 @@
                 <g:Image ui:field="photo" styleName="employee-preview-image"/>
             </div>
 
-            <h5><ui:text from="{lang.employeePreviewInfo}"/></h5>
             <g:HTMLPanel ui:field="infoContainer"/>
 
             <h5><ui:text from="{lang.employeePositionsHeader}"/></h5>

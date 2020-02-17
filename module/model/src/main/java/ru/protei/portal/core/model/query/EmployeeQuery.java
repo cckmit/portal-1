@@ -150,6 +150,11 @@ public class EmployeeQuery extends BaseQuery {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", email='" + email + '\'' +
                 ", departmentParent='" + departmentParent + '\'' +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 }

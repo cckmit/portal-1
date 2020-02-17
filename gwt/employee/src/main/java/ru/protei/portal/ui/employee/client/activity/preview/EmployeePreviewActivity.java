@@ -133,10 +133,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         itemView.setName(employee.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, employeeId));
 
-        if (employee.isFired()) {
-            itemView.setNameIcon("fa fa-ban text-danger");
-        }
-
         if (employee.getBirthday() != null) {
             itemView.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday()));
             itemView.birthdayContainerVisibility().setVisible(true);

@@ -8,8 +8,6 @@ public interface AbstractInfoItemView extends IsWidget {
 
     void setName(String name, String link);
 
-    void setNameIcon(String icon);
-
     void setBirthday(String birthday);
 
     void setPhones(String phones);

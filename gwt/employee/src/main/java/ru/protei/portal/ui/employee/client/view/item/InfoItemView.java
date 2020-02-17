@@ -35,11 +35,6 @@ public class InfoItemView extends Composite implements AbstractInfoItemView {
     }
 
     @Override
-    public void setNameIcon(String icon) {
-        this.nameIcon.setClassName(icon);
-    }
-
-    @Override
     public void setBirthday(String birthday) {
         this.birthday.setInnerText(birthday);
     }
@@ -80,9 +75,6 @@ public class InfoItemView extends Composite implements AbstractInfoItemView {
 
     @UiField
     SpanElement email;
-
-    @UiField
-    Element nameIcon;
 
     @UiField
     HTMLPanel birthdayContainer;
