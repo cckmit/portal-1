@@ -4,26 +4,26 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.service.ProductService;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
-import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Активность карточки просмотра продукта
@@ -45,7 +45,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         event.parent.clear();
         event.parent.add(view.asWidget(event.isShouldWrap));
 
-        fillView(event.product);
+        loadDetails(event.productId);
         view.showFullScreen(false);
     }
 
@@ -59,11 +59,8 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget(true));
 
-        productService.getProduct(event.productId, new FluentCallback<DevUnit>()
-                .withSuccess(product -> {
-                    fillView(product);
-                    view.showFullScreen(true);
-                }));
+        loadDetails(event.productId);
+        view.showFullScreen(true);
     }
 
     @Override
@@ -76,12 +73,22 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         fireEvent(new ProductEvents.Show());
     }
 
+    private void loadDetails(Long productId) {
+        productService.getProduct(productId, new FluentCallback<DevUnit>().withSuccess(this::fillView));
+    }
+
     private void fillView(DevUnit product) {
         this.productId = product.getId();
         view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + product.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setInfo(product.getInfo());
+        view.setDirection(product.getProductDirection() == null ? "" : product.getProductDirection().getName());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
+
+        view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
+        view.setChildren(emptyIfNull(product.getChildren()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
+
+        view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(product.getType()));
 
         List<String> list = new ArrayList<>();
         list.add(product.getConfiguration());

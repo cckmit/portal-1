@@ -387,15 +387,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectCompanyGroup();
 
-    String activeRecords();
-
-    String newRecords();
-
-    String inactiveRecords();
-
     String dashboard();
-
-    String dashboardSelectCompany();
 
     String issueCommentChangeStatusTo();
 
@@ -812,6 +804,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseSubscription();
 
     String errSaveIssueNeedSelectManager();
+
+    String errSaveIssueNeedUnselectManager();
 
     String document();
 
@@ -1323,6 +1317,8 @@ public interface Lang extends Messages, ContactItemLang {
     String documentApproveType();
 
     String documentApproved();
+
+    String documentiSApproved();
 
     String documentApprovedBy();
 
@@ -2001,4 +1997,44 @@ public interface Lang extends Messages, ContactItemLang {
     String contactGeneratePassword();
 
     String passwordIsDisplay();
+
+    String issueCreate();
+
+    String dashboardAddTable();
+
+    String dashboardEmpty();
+
+    String dashboardTableOverflow(int records);
+
+    String dashboardTableName();
+
+    String dashboardTableFilter();
+
+    String dashboardTableCreate();
+
+    String dashboardTableEdit();
+
+    String dashboardTableConfirmRemove();
+
+    String dashboardTableRemoved();
+
+    String dashboardTableFilterCreation();
+
+    String dashboardTableFilterCreationNewIssues();
+
+    String dashboardTableFilterCreationActiveIssues();
+
+    String productSelectDirection();
+
+    String consistOf();
+
+    String productAdditionalInfoHeader();
+
+    String dashboardActionOpen();
+
+    String dashboardActionReload();
+
+    String dashboardActionEdit();
+
+    String dashboardActionRemove();
 }

@@ -25,6 +25,11 @@ public class DevUnitChildRef implements Serializable {
     public DevUnitChildRef() {
     }
 
+    public DevUnitChildRef(Long unitId, Long childId) {
+        this.unitId = unitId;
+        this.childId = childId;
+    }
+
     public Long getId() {
         return id;
     }

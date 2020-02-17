@@ -273,6 +273,11 @@ public class ServiceTestsConfiguration {
         return new SLAServiceImpl();
     }
 
+    @Bean
+    public UserDashboardService getUserDashboardService() {
+        return new UserDashboardServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {

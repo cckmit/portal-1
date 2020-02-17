@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -40,6 +41,8 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -234,20 +237,23 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         companies().setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
         updateInitiators();
-        managers().setValue( emptyIfNull(filter.getPersonShortViews()).stream()
-                .filter(personShortView ->
-                        emptyIfNull(caseQuery.getManagerIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
-                .collect(Collectors.toSet()));
-        initiators().setValue( emptyIfNull(filter.getPersonShortViews()).stream()
-                .filter(personShortView ->
-                        emptyIfNull(caseQuery.getInitiatorIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
-                .collect(Collectors.toSet()));
-        commentAuthors().setValue( emptyIfNull(filter.getPersonShortViews()).stream().
-                filter(personShortView ->
-                        emptyIfNull(caseQuery.getCommentAuthorIds()).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
-                .collect(Collectors.toSet()));
 
-        products().setValue(new HashSet<>(emptyIfNull(filter.getProductShortViews())));
+        initiators().setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
+        commentAuthors().setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
+
+        Set<PersonShortView> personShortViews = new LinkedHashSet<>();
+        if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
+            personShortViews.add(new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
+        }
+        personShortViews.addAll(applyPersons(filter, caseQuery.getManagerIds()));
+        managers().setValue(personShortViews);
+
+        Set<ProductShortView> products = new LinkedHashSet<>();
+        if (emptyIfNull(caseQuery.getProductIds()).contains(CrmConstants.Product.UNDEFINED)) {
+            products.add(new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
+        }
+        products.addAll(emptyIfNull(filter.getProductShortViews()));
+        products().setValue(products);
 
         tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
     }
@@ -407,6 +413,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         userFilter.stopWatchForScrollOf(widget);
         sortField.stopWatchForScrollOf(widget);
         tags.stopWatchForScrollOf(widget);
+    }
+
+    private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
+        return emptyIfNull(filter.getPersonShortViews()).stream()
+                .filter(personShortView ->
+                        emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet());
     }
 
     private void ensureDebugIds() {

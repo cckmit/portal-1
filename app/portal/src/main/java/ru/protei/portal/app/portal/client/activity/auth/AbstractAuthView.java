@@ -28,4 +28,6 @@ public interface AbstractAuthView extends IsWidget {
     HasValue<LocaleImage> locale();
 
     void setLogoByLocale(String locale);
+
+    void setYear(String year);
 }

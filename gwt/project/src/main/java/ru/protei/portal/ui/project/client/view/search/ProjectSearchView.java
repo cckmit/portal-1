@@ -3,6 +3,7 @@ package ru.protei.portal.ui.project.client.view.search;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -15,6 +16,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
@@ -33,6 +35,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.inputProjectName());
         dateCreatedRange.setPlaceholder(lang.selectDate());
         customerType.setDefaultValue(lang.selectCustomerType());
@@ -119,6 +122,22 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         }
     }
 
+    private void ensureDebugIds() {
+        name.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.NAME_INPUT);
+        dateCreatedRange.setEnsureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_INPUT);
+        dateCreatedRange.getRelative().ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_BUTTON);
+        customerType.setEnsureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CUSTOMER_TYPE_SELECTOR);
+        products.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCT_SELECTOR);
+        search.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.FIND_BUTTON);
+        reset.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.RESET_BUTTON);
+
+        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.NAME_LABEL);
+        dateCreatedRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_LABEL);
+        customerTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.CUSTOMER_TYPE_LABEL);
+        productsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCT_LABEL);
+        searchInfo.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.SHOW_FIRST_RECORDS_LABEL);
+    }
+
     @UiField
     TextBox name;
 
@@ -149,6 +168,18 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
 
     @UiField
     Element searchInfo;
+
+    @UiField
+    LabelElement nameLabel;
+
+    @UiField
+    LabelElement dateCreatedRangeLabel;
+
+    @UiField
+    LabelElement customerTypeLabel;
+
+    @UiField
+    LabelElement productsLabel;
 
     @Inject
     @UiField

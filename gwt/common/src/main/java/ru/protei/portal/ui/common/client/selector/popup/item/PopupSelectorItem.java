@@ -24,7 +24,6 @@ public class PopupSelectorItem<T>
 {
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SELECTOR.POPUP.ITEM);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class PopupSelectorItem<T>
     }
 
     @Override
-    public void addSelectorHandler(SelectorItemHandler selectorItemHandler) {
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
         this.selectorItemHandler = selectorItemHandler;
     }
 
@@ -96,7 +95,7 @@ public class PopupSelectorItem<T>
     @UiField
     Element icon;
 
-    private SelectorItemHandler selectorItemHandler;
+    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectorItem> {

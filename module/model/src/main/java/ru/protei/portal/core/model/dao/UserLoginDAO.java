@@ -32,7 +32,7 @@ public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition ( AccountQuery query );
 
-    default UserLogin createNewUserLogin(Person person) throws Exception {
+    default UserLogin createNewUserLogin(Person person) {
         UserLogin userLogin = new UserLogin();
         userLogin.setCreated(new Date());
         userLogin.setPersonId(person.getId());

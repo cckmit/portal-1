@@ -2,8 +2,6 @@ package ru.protei.portal.ui.document.client.activity.form;
 
 public interface AbstractDocumentFormActivity {
 
-    void onApprovedChanged();
-
     void onEquipmentChanged();
 
     void onDocumentCategoryChanged();
@@ -15,4 +13,6 @@ public interface AbstractDocumentFormActivity {
     void onDownloadPdf();
 
     void onDownloadDoc();
+
+    void onApprovedChanged();
 }

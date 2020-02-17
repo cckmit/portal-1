@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategoryMultiSelector;
@@ -41,6 +43,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
+        ensureDebugIds();
         dateRange.setPlaceholder(lang.selectDate());
         sortField.setType(ModuleType.DOCUMENT);
     }
@@ -206,6 +209,39 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         fireChangeTimer();
     }
 
+    private void ensureDebugIds() {
+        name.ensureDebugId(DebugIds.DOCUMENT.FILTER.SEARCH_INPUT);
+        sortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.SORT_BY_LABEL);
+        sortField.ensureDebugId(DebugIds.DOCUMENT.FILTER.SORT_BY_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.DOCUMENT.FILTER.SORT_BY_TOGGLE);
+        dateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.CREATION_DATE_LABEL);
+        dateRange.setEnsureDebugId(DebugIds.DOCUMENT.FILTER.CREATION_DATE_INPUT);
+        dateRange.getRelative().ensureDebugId(DebugIds.DOCUMENT.FILTER.CREATION_DATE_BUTTON);
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.MANAGER_LABEL);
+        manager.ensureDebugId(DebugIds.DOCUMENT.FILTER.MANAGER_SELECTOR);
+        projectsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.PROJECT_LABEL);
+        projects.setAddEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_ADD_BUTTON);
+        projects.setClearEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_CLEAR_BUTTON);
+        projects.setItemContainerEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_ITEM_CONTAINER);
+        organizationCodeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_LABEL);
+        organizationCode.setEnsureDebugId(En_OrganizationCode.PAMR, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI);
+        organizationCode.setEnsureDebugId(En_OrganizationCode.PDRA, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI_ST);
+        documentCategoryLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_CATEGORY_LABEL);
+        documentCategory.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_CATEGORY_SELECTOR);
+        documentTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_TYPE_LABEL);
+        documentType.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_TYPE_SELECTOR);
+        approvedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.APPROVED_LABEL);
+        approved.setYesEnsureDebugId(DebugIds.DOCUMENT.FILTER.APPROVED_YES);
+        approved.setNotDefinedEnsureDebugId(DebugIds.DOCUMENT.FILTER.APPROVED_ANY);
+        approved.setNoEnsureDebugId(DebugIds.DOCUMENT.FILTER.APPROVED_NO);
+        contentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_TEXT_LABEL);
+        content.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_TEXT_INPUT);
+        keywordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.KEY_WORD_LABEL);
+        keywords.setEnsureDebugId(DebugIds.DOCUMENT.FILTER.KEY_WORD_INPUT);
+        showDeprecated.ensureDebugId(DebugIds.DOCUMENT.FILTER.SHOW_DEPRECATED_CHECKBOX);
+        resetBtn.ensureDebugId(DebugIds.DOCUMENT.FILTER.RESET_BUTTON);
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule(300);
@@ -244,6 +280,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @UiField(provided = true)
     RangePicker dateRange;
 
+    @UiField
+    LabelElement dateRangeLabel;
+
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
@@ -253,7 +292,34 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     SortFieldSelector sortField;
 
     @UiField
+    LabelElement sortByLabel;
+
+    @UiField
     ToggleButton sortDir;
+
+    @UiField
+    LabelElement managerLabel;
+
+    @UiField
+    LabelElement projectsLabel;
+
+    @UiField
+    LabelElement organizationCodeLabel;
+
+    @UiField
+    LabelElement documentCategoryLabel;
+
+    @UiField
+    LabelElement documentTypeLabel;
+
+    @UiField
+    LabelElement approvedLabel;
+
+    @UiField
+    LabelElement contentLabel;
+
+    @UiField
+    LabelElement keywordsLabel;
 
     @Inject
     @UiField(provided = true)

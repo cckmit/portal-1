@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Cелектор c выпадающим списком, множественный выбор
@@ -119,6 +120,10 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire( this, value );
     }
 
+    protected void setNullItem(Supplier<T> selectorNullItem) {
+        getSelector().setNullItem(selectorNullItem);
+    }
+
     public boolean isEmpty() {
         return getSelector().getSelection().isEmpty();
     }
@@ -130,15 +135,15 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         clearButton.setVisible( !isEmpty() );
     }
 
-    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
-        PopupSelectableItem item = new PopupSelectableItem();
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
         return item;
     }
 
     @Override
-    protected AbstractPageableSelector getSelector() {
+    protected AbstractPageableSelector<T> getSelector() {
         return selector;
     }
 

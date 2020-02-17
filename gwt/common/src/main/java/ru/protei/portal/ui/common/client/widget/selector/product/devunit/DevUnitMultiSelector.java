@@ -7,9 +7,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
@@ -25,8 +23,8 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
 
-        setItemRenderer( option -> option == null ? lang.productWithout() :
-                (option.getName() + (HelperFunc.isEmpty( option.getAliases() ) ? "" : " (" + option.getAliases() + ")")) );
+        setItemRenderer(option -> (option.getName() + (HelperFunc.isEmpty(option.getAliases()) ? "" : " (" + option.getAliases() + ")")));
+        setNullItem(() -> new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 ));
     }
 
     public void setTypes(En_DevUnitType... enDevUnitTypes) {
@@ -36,20 +34,5 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         }
     }
 
-    @Override
-    protected SelectorItem makeSelectorItem( ProductShortView element, String elementHtml ) {
-        PopupSelectableItem item = new PopupSelectableItem();
-        item.setElementHtml( elementHtml );
-        if (hasNullValue() && element == null) {
-            element = new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 );
-        }
-        item.setSelected( isSelected( element ) );
-
-        return item;
-    }
-
-    @Inject
-    private Lang lang;
-
-    protected ProductModel model;
+    private ProductModel model;
 }

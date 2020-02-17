@@ -144,6 +144,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public UserDashboardDAO getUserDashboardDAO() {
+        return mock(UserDashboardDAO.class);
+    }
+
+    @Bean
     public CompanyDepartmentDAO getCompanyDepartmentDAO() {
         return  mock(CompanyDepartmentDAO.class);
     }

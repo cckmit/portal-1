@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ClickHTMLPanel;
 
 public class ProjectItem
@@ -17,6 +18,7 @@ public class ProjectItem
 
     public ProjectItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        root.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.PROJECT_LIST.ITEM);
     }
 
     @Override

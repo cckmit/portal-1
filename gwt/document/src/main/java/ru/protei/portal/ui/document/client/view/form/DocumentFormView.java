@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.view.form;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategoryFormSelector;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeFormSelector;
@@ -152,6 +154,11 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     }
 
     @Override
+    public HasValue<Set<PersonShortView>> members() {
+        return members;
+    }
+
+    @Override
     public HasValue<PersonShortView> approvedBy() {
         return approvedBy;
     }
@@ -159,11 +166,6 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     @Override
     public HasValue<Date> approvalDate() {
         return approvalDate;
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> members() {
-        return members;
     }
 
     @Override
@@ -285,7 +287,62 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
             activity.onApprovedChanged();
     }
 
-    private void ensureDebugIds() {}
+    private void ensureDebugIds() {
+        name.ensureDebugId(DebugIds.DOCUMENT.CREATE.NAME_INPUT);
+        version.ensureDebugId(DebugIds.DOCUMENT.CREATE.VERSION_INPUT);
+        inventoryNumber.ensureDebugId(DebugIds.DOCUMENT.CREATE.INVENTORY_INPUT);
+        decimalNumber.ensureDebugId(DebugIds.DOCUMENT.CREATE.DECIMAL_NUMBER_INPUT);
+        annotation.ensureDebugId(DebugIds.DOCUMENT.CREATE.ANNOTATION_INPUT);
+        keywords.ensureInputDebugId(DebugIds.DOCUMENT.CREATE.KEY_WORD_INPUT);
+        keywords.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.KEY_WORD_LABEL);
+        approved.ensureDebugId(DebugIds.DOCUMENT.CREATE.APPROVED_CHECKBOX);
+        approvedBy.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.APPROVED_LABEL);
+        approvedBy.ensureDebugId(DebugIds.DOCUMENT.CREATE.APPROVED_SELECTOR);
+        approvalDate.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.APPROVE_DATE_INPUT);
+        approvalDate.getRelative().ensureDebugId(DebugIds.DOCUMENT.CREATE.APPROVE_DATE_BUTTON);
+        downloadDoc.ensureDebugId(DebugIds.DOCUMENT.CREATE.DOC_BUTTON);
+        documentDocUploader.ensureDebugId(DebugIds.DOCUMENT.CREATE.DOC_DROP_ZONE);
+        downloadPdf.ensureDebugId(DebugIds.DOCUMENT.CREATE.PDF_BUTTON);
+        documentPdfUploader.ensureDebugId(DebugIds.DOCUMENT.CREATE.PDF_DROP_ZONE);
+        downloadApproved.ensureDebugId(DebugIds.DOCUMENT.CREATE.PDF_APPROVED_BUTTON);
+        documentApprovedUploader.ensureDebugId(DebugIds.DOCUMENT.CREATE.PDF_APPROVED_DROP_ZONE);
+        registrar.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.REGISTRAR_SELECTOR);
+        registrar.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.REGISTRAR_LABEL);
+        contractor.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.CONTRACTOR_SELECTOR);
+        contractor.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.CONTRACTOR_LABEL);
+        project.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.PROJECT_SELECTOR);
+        project.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.PROJECT_LABEL);
+        projectCustomerType.ensureDebugId(DebugIds.DOCUMENT.CREATE.CUSTOMER_TYPE);
+        projectProductDirection.ensureDebugId(DebugIds.DOCUMENT.CREATE.DIRECTION);
+        projectRegion.ensureDebugId(DebugIds.DOCUMENT.CREATE.REGION);
+        equipment.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.EQUIPMENT_SELECTOR);
+        equipment.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.EQUIPMENT_LABEL);
+        executionType.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.EXECUTION_TYPE_SELECTOR);
+        executionType.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.EXECUTION_TYPE_LABEL);
+        documentCategory.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.DOCUMENT_CATEGORY_SELECTOR);
+        documentCategory.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.DOCUMENT_CATEGORY_LABEL);
+        documentType.setEnsureDebugId(DebugIds.DOCUMENT.CREATE.DOCUMENT_TYPE_SELECTOR);
+        documentType.ensureLabelDebugId(DebugIds.DOCUMENT.CREATE.DOCUMENT_TYPE_LABEL);
+        members.setAddEnsureDebugId(DebugIds.DOCUMENT.CREATE.EMPLOYEE_ADD_BUTTON);
+        members.setClearEnsureDebugId(DebugIds.DOCUMENT.CREATE.EMPLOYEE_CLEAR_BUTTON);
+
+        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.NAME_LABEL);
+        versionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.VERSION_LABEL);
+        inventoryNumberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.INVENTORY_LABEL);
+        decimalNumberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.DECIMAL_NUMBER_LABEL);
+        annotationLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.ANNOTATION_LABEL);
+        approvalDateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.APPROVE_DATE_LABEL);
+        downloadDocLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.DOC_LABEL);
+        downloadPdfLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.PDF_LABEL);
+        downloadApprovedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.PDF_APPROVED_LABEL);
+        documentSectionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.PROJECT_INFO_LABEL);
+        projectCustomerTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.CUSTOMER_TYPE_LABEL);
+        projectProductDirectionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.DIRECTION_LABEL);
+        projectRegionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.REGION_LABEL);
+        documentSectionEquipmentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.EQUIPMENT_INFO_LABEL);
+        documentSectionInfoLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.DOCUMENT_INFO_LABEL);
+        documentMembersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.CREATE.EMPLOYEE_PERMISSION_LABEL);
+    }
 
     @UiField
     ValidableTextBox name;
@@ -362,6 +419,38 @@ public class DocumentFormView extends Composite implements AbstractDocumentFormV
     Anchor downloadPdf;
     @UiField
     Anchor downloadApproved;
+    @UiField
+    LabelElement nameLabel;
+    @UiField
+    LabelElement versionLabel;
+    @UiField
+    LabelElement inventoryNumberLabel;
+    @UiField
+    LabelElement decimalNumberLabel;
+    @UiField
+    LabelElement annotationLabel;
+    @UiField
+    LabelElement approvalDateLabel;
+    @UiField
+    DivElement downloadDocLabel;
+    @UiField
+    DivElement downloadPdfLabel;
+    @UiField
+    DivElement downloadApprovedLabel;
+    @UiField
+    LabelElement documentSectionLabel;
+    @UiField
+    LabelElement projectCustomerTypeLabel;
+    @UiField
+    LabelElement projectProductDirectionLabel;
+    @UiField
+    LabelElement projectRegionLabel;
+    @UiField
+    LabelElement documentSectionEquipmentLabel;
+    @UiField
+    LabelElement documentSectionInfoLabel;
+    @UiField
+    LabelElement documentMembersLabel;
 
     @Inject
     @UiField

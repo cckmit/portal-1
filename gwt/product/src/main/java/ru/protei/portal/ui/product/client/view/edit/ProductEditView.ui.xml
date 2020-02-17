@@ -8,6 +8,7 @@
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
              xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
+             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -52,6 +53,13 @@
 
                             <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                         </div>
+
+                        <g:HTMLPanel ui:field="directionContainer" styleName="row">
+                            <div class="form-group col-md-12">
+                                <label ui:field="directionLabel"><ui:text from="{lang.productDirection}"/></label>
+                                <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.productSelectDirection}"/>
+                            </div>
+                        </g:HTMLPanel>
 
                         <div class="row">
                             <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">

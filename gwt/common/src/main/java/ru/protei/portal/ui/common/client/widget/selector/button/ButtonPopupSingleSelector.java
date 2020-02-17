@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
@@ -91,9 +92,11 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setEnsureDebugIdLabel( String company ) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + company);
     }
 
     public void setEnsureDebugId( String companySelector ) {
+        button.ensureDebugId(companySelector);
     }
 
     @Override
@@ -151,15 +154,15 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(selector.makeElementName(value));
     }
 
-    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
-        PopupSelectorItem item = new PopupSelectorItem();
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         item.getElement().addClassName( UiConstants.Styles.TEXT_CENTER);
         return item;
     }
 
     @Override
-    protected AbstractPageableSelector getSelector() {
+    protected AbstractPageableSelector<T> getSelector() {
         return selector;
     }
 

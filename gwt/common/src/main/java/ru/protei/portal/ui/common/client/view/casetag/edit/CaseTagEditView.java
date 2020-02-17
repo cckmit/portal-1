@@ -83,9 +83,6 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     TextBox name;
 
     @UiField
-    HTMLPanel companyPanel;
-
-    @UiField
     HTMLPanel authorContainer;
 
     @UiField

@@ -53,7 +53,10 @@ public abstract class DocumentFormActivity
         if (!Objects.equals(tag, event.tag)) {
             return;
         }
-        save(fillDto(document));
+        if (!isDocumentCreationInProgress) {
+            isDocumentCreationInProgress = true;
+            saveDocument(fillDto(document));
+        }
     }
 
     @Event
@@ -109,14 +112,6 @@ public abstract class DocumentFormActivity
     }
 
     @Override
-    public void onApprovedChanged() {
-        setApprovedByEnable(view.isApproved().getValue());
-        setApprovalDateEnable(view.isApproved().getValue());
-        setUploaderApprovalSheetEnable(view.isApproved().getValue());
-        renderViewState(project);
-    }
-
-    @Override
     public void onEquipmentChanged() {
         view.decimalNumber().setValue(null, true);
         EquipmentShortView equipment = view.equipment().getValue();
@@ -137,6 +132,14 @@ public abstract class DocumentFormActivity
     public void onDownloadDoc() {
         if (document == null) return;
         Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/doc", document.getName(), "");
+    }
+
+    @Override
+    public void onApprovedChanged() {
+        setApprovedByEnable(view.isApproved().getValue());
+        setApprovalDateEnable(view.isApproved().getValue());
+        setUploaderApprovalSheetEnable(view.isApproved().getValue());
+        renderViewState(project);
     }
 
     private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
@@ -189,6 +192,7 @@ public abstract class DocumentFormActivity
             view.documentDocUploader().resetForm();
         }
     }
+
     private void setApprovedByEnable(boolean isEnabled) {
         view.approvedByEnabled(isEnabled);
         if (!isEnabled) {
@@ -263,8 +267,9 @@ public abstract class DocumentFormActivity
         return document.getApprovedBy() != null && document.getApprovalDate() != null;
     }
 
-    private void save(Document document) {
+    private void saveDocument(Document document) {
         if (!checkDocumentValid(document)) {
+            isDocumentCreationInProgress = false;
             return;
         }
         this.document = document;
@@ -276,11 +281,12 @@ public abstract class DocumentFormActivity
         }
         uploadPdf(() ->
             uploadDoc(() ->
-                uploadApprovalSheet(() ->
-                    saveDocument(document, doc -> {
-                        fillView(doc);
-                        fireEvent(new DocumentEvents.Form.Saved(tag));
-                    }
+                    uploadApprovalSheet(() ->
+                        saveDocument(document, doc -> {
+                            fillView(doc);
+                            isDocumentCreationInProgress = false;
+                            fireEvent(new DocumentEvents.Form.Saved(tag));
+                        }
         ))));
     }
 
@@ -337,6 +343,7 @@ public abstract class DocumentFormActivity
 
     private void saveDocument(Document document, Consumer<Document> onSaved) {
         documentService.saveDocument(document, new FluentCallback<Document>()
+                .withError(throwable -> isDocumentCreationInProgress = false)
                 .withSuccess(onSaved));
     }
 
@@ -406,15 +413,12 @@ public abstract class DocumentFormActivity
         view.nameValidator().setValid(true);
         view.documentDocUploader().resetForm();
         view.documentPdfUploader().resetForm();
-        if (view.isApproved().getValue()) {
-            view.approvedBy().setValue(document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
-            view.approvalDate().setValue(document.getApprovalDate());
-            view.approvedByEnabled(true);
-            view.approvalDateEnabled(true);
-        } else {
-            view.approvedByEnabled(false);
-            view.approvalDateEnabled(false);
-        }
+
+        boolean isApproved = view.isApproved().getValue();
+        view.approvedBy().setValue(!isApproved || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
+        view.approvalDate().setValue(!isApproved ? null : document.getApprovalDate());
+        view.approvedByEnabled(isApproved);
+        view.approvalDateEnabled(isApproved);
 
         if (isNew) {
             Profile profile = policyService.getProfile();
@@ -465,5 +469,6 @@ public abstract class DocumentFormActivity
     private String tag;
     private Document document;
     private ProjectInfo project;
+    private boolean isDocumentCreationInProgress = false;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
 }

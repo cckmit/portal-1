@@ -16,12 +16,14 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -122,6 +124,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
+    public HasVisibility directionVisibility() {
+        return directionContainer;
+    }
+
+    @Override
     public void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed ) {
         historyVersion.setDisplayPreview( isPreviewAllowed );
     }
@@ -139,6 +146,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setMutableState(En_DevUnitType type) {
         parentsContainerLabel.setInnerText(lang.belongsTo());
+        checkName();
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
@@ -232,6 +240,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         return type;
     }
 
+    @Override
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
+    }
+
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
     {
@@ -258,19 +271,12 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiHandler( "type" )
     public void onTypeChanged(ValueChangeEvent<En_DevUnitType> event) {
-        children.clearSelector();
-        parents.clearSelector();
-
         if (activity != null) {
             activity.onTypeChanged(event.getValue());
         }
-
-        setMutableState(event.getValue());
-        checkName();
     }
 
-    private void checkName ()
-    {
+    private void checkName () {
         setNameStatus(NameStatus.UNDEFINED);
 
         changeTimer.cancel();
@@ -292,6 +298,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         configuration.getElement().setId(DebugIds.PRODUCT.CONFIGURATION);
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT.CDR_DESCRIPTION);
+
+        direction.ensureDebugId(DebugIds.PRODUCT.DIRECTION);
+        directionLabel.setId(DEBUG_ID_PREFIX + DebugIds.PRODUCT.DIRECTION_LABEL);
 
         saveBtn.ensureDebugId(DebugIds.PRODUCT.SAVE_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
@@ -327,6 +336,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField(provided = true)
     DevUnitMultiSelector children;
+    @Inject
+    @UiField(provided = true)
+    ProductDirectionButtonSelector direction;
+    @UiField
+    HTMLPanel directionContainer;
+    @UiField
+    LabelElement directionLabel;
     @UiField
     Element verifiableIcon;
     @UiField

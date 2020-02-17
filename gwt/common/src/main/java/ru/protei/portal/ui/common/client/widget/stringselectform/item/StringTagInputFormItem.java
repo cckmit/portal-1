@@ -10,6 +10,7 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import ru.protei.portal.test.client.DebugIds;
 
 public class StringTagInputFormItem extends Composite implements TakesValue<String> {
 
@@ -20,6 +21,8 @@ public class StringTagInputFormItem extends Composite implements TakesValue<Stri
     public StringTagInputFormItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
         remove.getElement().setAttribute("data-role", "remove");
+        getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.STRING_TAG_INPUT_FORM.ITEM);
+        remove.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.STRING_TAG_INPUT_FORM.REMOVE_BUTTON);
     }
 
     @Override

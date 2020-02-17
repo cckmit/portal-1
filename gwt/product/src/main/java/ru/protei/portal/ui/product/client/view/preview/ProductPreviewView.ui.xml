@@ -13,11 +13,31 @@
                     </h4>
 
                     <img ui:field="typeImage" src="" class="preview-title-image-right"/>
-                    <div class="small hint-text no-margin">
+
+                    <div class="small">
                         <a ui:field="wikiLink" href="#" target="_blank"/>
                     </div>
 
-                    <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
+                    <div class="small">
+                        <span ui:field="info"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.devUnitDirection}:"/></b>
+                        <span ui:field="direction"/>
+                    </div>
+
+                    <h5><ui:text from="{lang.productAdditionalInfoHeader}"/></h5>
+
+                    <g:HTMLPanel styleName="small m-t-5" ui:field="parentsContainer">
+                        <b><ui:text from="{lang.belongsTo}:"/></b>
+                        <g:HTMLPanel styleName="product-links-formatter" ui:field="parents"/>
+                    </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="small m-t-5" ui:field="childrenContainer">
+                        <b><ui:text from="{lang.consistOf}:"/></b>
+                        <g:HTMLPanel styleName="product-links-formatter" ui:field="children"/>
+                    </g:HTMLPanel>
 
                     <tab:TabWidget styleName="" ui:field="tabWidget">
                         <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">

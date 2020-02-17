@@ -15,9 +15,7 @@
                     <br/>
                     <ui:text from="{lang.authTitle}"/>
                 </h2>
-                <p class="small">
-                    © 2019 НТЦ ПРОТЕЙ. All rights reserved
-                </p>
+                <p class="small" ui:field="footerText"/>
             </div>
 
         </div>

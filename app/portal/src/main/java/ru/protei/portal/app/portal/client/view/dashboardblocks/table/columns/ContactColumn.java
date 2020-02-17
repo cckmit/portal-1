@@ -7,9 +7,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-/**
- * Колонка "Клиент"
- */
 public class ContactColumn extends ClickColumn<CaseShortView> {
 
     @Inject

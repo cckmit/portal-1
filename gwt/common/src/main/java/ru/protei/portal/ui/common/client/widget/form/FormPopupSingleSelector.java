@@ -174,8 +174,8 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( T element, String elementHtml ) {
-        PopupSelectorItem item = new PopupSelectorItem();
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+        PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         return item;
     }
@@ -205,7 +205,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     Lang lang;
 
     @Override
-    protected AbstractPageableSelector getSelector() {
+    protected AbstractPageableSelector<T> getSelector() {
         return selector;
     }
     private SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<T>();
@@ -216,7 +216,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
-    SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
+    private SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
     interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
     private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
 

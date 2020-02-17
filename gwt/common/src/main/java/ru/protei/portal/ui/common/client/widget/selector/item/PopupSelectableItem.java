@@ -8,7 +8,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
@@ -64,7 +67,7 @@ public class PopupSelectableItem<T>
     }
 
     @Override
-    public void addSelectorHandler(SelectorItemHandler selectorItemHandler) {
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
         this.selectorItemHandler = selectorItemHandler;
     }
 
@@ -85,7 +88,7 @@ public class PopupSelectableItem<T>
     }
 
 
-    private SelectorItemHandler selectorItemHandler;
+    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     @UiField

@@ -17,11 +17,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
-import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
@@ -33,7 +32,9 @@ import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.util.*;
+import javax.annotation.PostConstruct;
+import java.util.Base64;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,40 +53,36 @@ public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private static final int COUNT_OF_ISSUES_WITH_MANAGER = 5;
-    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 5;
-    private static final int COUNT_OF_PRIVATE_ISSUES = 5;
-    private final List<Long> issuesIds = new ArrayList<>();
-    private final En_Privilege[] PRIVILEGES = new En_Privilege[]{En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE};
-    private final String QWERTY_PASSWORD = "qwerty_test_API_password";
-    private final String ISSUES_PREFIX = "Portal_API_issue_test_";
-    private final String PORTAL_API_TEST_ROLE_CODE = "portal_api_test_role";
-
     private Person person;
     private UserLogin userLogin;
     private Company company;
-    private UserRole mainRole;
     private MockMvc mockMvc;
     private AuthServiceMock authService;
 
-    @Before
-    public void init() throws Exception {
+    @PostConstruct
+    public void postConstruct(  ) {
         mockMvc = MockMvcBuilders.standaloneSetup(portalApiController).build();
 
-        company = new Company(1L);
-        person = createAndPersistPerson(company);
-        mainRole = createAndPersistUserRoles();
-        userLogin = createAndPersistUserLogin();
+        company = makeCustomerCompany();
+        person = makePerson(company);
+        userLogin = makeUserLogin(createUserLogin(person));
+    }
 
+    @Before
+    public void beforeEach() throws Exception {
         setThreadUserLogin(userLogin);
+    }
 
-        createAndPersistSomeIssues(person, company.getId());
+    @After
+    public void afterEach() {
+        authService.resetThreadAuthToken();
     }
 
     @Test
+    @Transactional
     public void createIssue() throws Exception {
         CaseObject caseObject = createNewCaseObject(person);
-        String issueName = ISSUES_PREFIX + "test_create";
+        String issueName = "Portal_API_issue_test_test_create";
         caseObject.setName(issueName);
         caseObject.setInitiator(person);
         caseObject.setInitiatorCompany( company );
@@ -95,20 +92,23 @@ public class TestPortalApiController extends BaseServiceTest {
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()))
                 .andExpect(jsonPath("$.data.initiatorId", is(person.getId().intValue())))
                 .andExpect(jsonPath("$.data.initiatorCompanyId", is(company.getId().intValue())));
 
-        CaseObject caseObjectFromDb = caseObjectDAO.getByCaseNameLike(ISSUES_PREFIX + "test_create");
+        CaseObject caseObjectFromDb = caseObjectDAO.getByCaseNameLike(issueName);
 
         Assert.assertNotNull("Expected 1 new created issue", caseObjectFromDb);
 
-        issuesIds.add(caseObjectFromDb.getId());
-        authService.resetThreadAuthToken();
+
     }
 
     @Test
+    @Transactional
     public void getCaseListByManager() throws Exception {
-        createAndPersistSomeIssuesWithManager(person, company.getId());
+        makeCaseObject( person );
+        makeCaseObject( person );
+        makeCaseObject( person );
 
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setManagerIds(Collections.singletonList(person.getId()));
@@ -122,8 +122,11 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
     public void getPublicCases() throws Exception {
-        createAndPersistSomePrivateIssues(person, company.getId());
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setPrivateCase(true);
+        makeCaseObject( caseObject );
 
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setAllowViewPrivate(false);
@@ -137,7 +140,13 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
     public void getThreeResults() throws Exception {
+        makeCaseObject( person );
+        makeCaseObject( person );
+        makeCaseObject( person );
+        makeCaseObject( person );
+
         final int LIMIT = 3;
 
         CaseApiQuery caseApiQuery = new CaseApiQuery();
@@ -175,6 +184,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.data.historyVersion", is( product.getHistoryVersion() ) ) )
                 .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
                 .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
+                .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
         ;
     }
 
@@ -189,6 +199,7 @@ public class TestPortalApiController extends BaseServiceTest {
         product.setHistoryVersion( "Updated historyVersion" );
         product.setCdrDescription( "Updated cdrDescription" );
         product.setConfiguration( "Updated configuration" );
+        product.setDescription( "Updated description" );
 
         createPostResultAction( "/api/products/update", product )
                 .andExpect( status().isOk() )
@@ -211,10 +222,10 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
     public void getCaseCommentsListByCaseNumber() throws Exception {
-        createAndPersistIssueForComments(person, company.getId());
-
-        CaseObject caseObject = caseObjectDAO.getByCaseNameLike(ISSUES_PREFIX + "testGetCaseCommentsListByCaseId");
+        CaseObject caseObject = makeCaseObject( person );
+        makeCaseComment( person,caseObject.getId(), "testGetCaseCommentsListByCaseId. text comment. private" );
 
         CaseCommentQuery query = new CaseCommentQuery();
         query.setCaseObjectIds(Collections.singletonList(caseObject.getId()));
@@ -232,11 +243,13 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
-    public void getCaseCommentsListByCaseNumberEmptyResult() throws Exception {
-        createAndPersistIssueForComments(person, company.getId());
+    @Transactional
+    public void getCaseCommentsListByCaseIdEmptyResult() throws Exception {
+        CaseObject caseObject = makeCaseObject( person );
+        makeCaseComment( person,caseObject.getId(), "testGetCaseCommentsListByCaseId. text comment. private" );
 
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
-        caseCommentApiQuery.setCaseNumber(caseObjectDAO.getMaxId() + 1);
+        caseCommentApiQuery.setCaseNumber(caseObject.getCaseNumber() + 1);
 
         ResultActions accept = createPostResultAction("/api/comments", caseCommentApiQuery);
 
@@ -248,7 +261,8 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     public void getCaseCommentsListByCaseNumberError() throws Exception {
-        createAndPersistIssueForComments(person, company.getId());
+        CaseObject caseObject = makeCaseObject( person );
+        makeCaseComment( person,caseObject.getId(), "testGetCaseCommentsListByCaseId. text comment. private" );
 
         CaseCommentApiQuery caseCommentApiQuery = new CaseCommentApiQuery();
         caseCommentApiQuery.setCaseNumber(null);
@@ -260,114 +274,6 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
-    @After
-    public void destroy() {
-        caseCommentDAO.removeByCaseIds(issuesIds);
-        caseObjectDAO.removeByNameLike(ISSUES_PREFIX);
-        userLoginDAO.removeByPersonId(person.getId());
-        userRoleDAO.removeByRoleCodeLike(PORTAL_API_TEST_ROLE_CODE);
-        personDAO.removeByKey(person.getId());
-    }
-
-    private Person createAndPersistPerson(Company company) {
-        Person p = createNewPerson( company );
-        String personFirstName = "Test" + new Date().getTime();
-
-        p.setFirstName(personFirstName);
-        p.setLastName("API");
-        p.setDisplayName("Test API");
-        p.setCreated(new Date());
-        p.setCreator("");
-        p.setGender(En_Gender.MALE);
-
-        p.getContactInfo().addItem(En_ContactItemType.EMAIL).modify("junit@test.org", "test-email");
-        p.getContactInfo().addItem(En_ContactItemType.FAX).modify("999-22-33-11", "work fax");
-        p.getContactInfo().addItem(En_ContactItemType.MOBILE_PHONE).modify("+7-921-555-44-33", "main phone");
-        p.getContactInfo().addItem(En_ContactItemType.GENERAL_PHONE).modify("8(812)-4494727", "protei");
-        p.getContactInfo().addItem(En_ContactItemType.ICQ).modify("00000000001");
-        p.getContactInfo().addItem(En_ContactItemType.JABBER).modify("dev@jabber.protei.ru");
-        p.getContactInfo().addItem(En_ContactItemType.WEB_SITE).modify("http://www.protei.ru");
-
-        personDAO.persist(p);
-
-       return personDAO
-                .getAll()
-                .stream()
-                .filter(currPerson -> currPerson.getFirstName() != null && currPerson.getFirstName().equals(personFirstName))
-                .findFirst().get();
-    }
-
-    private UserRole createAndPersistUserRoles() {
-        UserRole role = new UserRole();
-        role.setCode(PORTAL_API_TEST_ROLE_CODE);
-        role.setInfo(PORTAL_API_TEST_ROLE_CODE);
-        role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
-        role.setScope(En_Scope.SYSTEM);
-
-        role.setId(  userRoleDAO.persist(role)  );
-
-        return role;
-    }
-
-    private UserLogin createAndPersistUserLogin() throws Exception {
-        UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
-        userLogin.setUlogin(person.getFirstName());
-        userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
-        userLogin.setPersonId(person.getId());
-        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
-        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        userLogin.setRoles(Collections.singleton(mainRole));
-
-        userLogin.setId( userLoginDAO.persist( userLogin ) );
-        return userLogin;
-    }
-
-    private void createAndPersistSomeIssues(Person person, Long companyId) {
-        for (int i = 0; i < COUNT_OF_ISSUES_WITHOUT_MANAGER; i++) {
-            CaseObject caseObject = createNewCaseObject(person);
-            caseObject.setName(ISSUES_PREFIX + i);
-            caseObject.setInitiator(person);
-            caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
-        }
-    }
-
-    private void createAndPersistSomeIssuesWithManager(Person person, Long companyId) {
-        for (int i = 0; i < COUNT_OF_ISSUES_WITH_MANAGER; i++) {
-            CaseObject caseObject = createNewCaseObject(person);
-            caseObject.setName(ISSUES_PREFIX + i);
-            caseObject.setManager(person);
-            caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
-        }
-    }
-
-    private void createAndPersistIssueForComments(Person manager, Long companyId ) {
-        CaseObject caseObject = createNewCaseObject(manager);
-        caseObject.setName(ISSUES_PREFIX + "testGetCaseCommentsListByCaseId");
-        caseObject.setInitiator(manager);
-        caseObject.setInitiatorCompanyId(companyId);
-        issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
-
-        CaseComment caseComment = new CaseComment();
-        caseComment.setCaseId(caseObject.getId());
-        caseComment.setCreated(new Date((new Date()).getTime() + 1000));
-        caseComment.setAuthorId(manager.getId());
-        caseComment.setText("testGetCaseCommentsListByCaseId. text comment. private");
-        caseComment.setPrivateComment(true);
-        caseCommentDAO.persist(caseComment);
-    }
-
-    private void createAndPersistSomePrivateIssues(Person person, Long companyId) {
-        for (int i = 0; i < COUNT_OF_PRIVATE_ISSUES; i++) {
-            CaseObject caseObject = createNewCaseObject(person);
-            caseObject.setName(ISSUES_PREFIX + i);
-            caseObject.setInitiator(person);
-            caseObject.setPrivateCase(true);
-            caseObject.setInitiatorCompanyId(companyId);
-            issuesIds.add(caseService.createCaseObject(authService.getAuthToken(), new CaseObjectCreateRequest(caseObject)).getData().getId());
-        }
-    }
 
     private void setThreadUserLogin(UserLogin userLogin) {
         authService.makeThreadAuthToken(userLogin);
@@ -376,7 +282,7 @@ public class TestPortalApiController extends BaseServiceTest {
     private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {
         MockHttpServletRequestBuilder builder = post( url )
                 .header( "Accept", "application/json" )
-                .header( "authorization", "Basic " + Base64.getEncoder().encodeToString( (person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes() ) )
+                .header( "authorization", "Basic " + Base64.getEncoder().encodeToString( (person.getFirstName() + ":fakePassword").getBytes() ) )
                 .contentType( MediaType.APPLICATION_JSON );
 
         if(obj!=null){

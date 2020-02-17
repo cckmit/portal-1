@@ -29,14 +29,14 @@ public class ProductEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, DevUnit product, boolean isShouldWrap ) {
+        public ShowPreview( HasWidgets parent, Long productId, boolean isShouldWrap ) {
             this.parent = parent;
-            this.product = product;
+            this.productId = productId;
             this.isShouldWrap = isShouldWrap;
         }
 
         public HasWidgets parent;
-        public DevUnit product;
+        public Long productId;
         public boolean isShouldWrap;
     }
 
