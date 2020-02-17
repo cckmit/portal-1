@@ -29,7 +29,7 @@ public class DocumentEvents {
         public HasWidgets parent;
     }
 
-    @Url(value = "doc-preview", primary = true)
+    @Url(value = "doc_preview", primary = true)
     public static class ShowPreviewFullScreen {
 
         public ShowPreviewFullScreen() {}
@@ -41,7 +41,7 @@ public class DocumentEvents {
         public Long documentId;
     }
 
-    @Url("doc-edit")
+    @Url("doc")
     public static class Edit {
 
         public Long id;

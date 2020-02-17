@@ -506,6 +506,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     Lang lang;
     private AbstractDocumentEditActivity activity;
 
-    interface DocumentFormViewUiBinder extends UiBinder<HTMLPanel, DocumentEditView> {}
-    private static DocumentFormViewUiBinder ourUiBinder = GWT.create(DocumentFormViewUiBinder.class);
+    interface DocumentEditViewUiBinder extends UiBinder<HTMLPanel, DocumentEditView> {}
+    private static DocumentEditViewUiBinder ourUiBinder = GWT.create(DocumentEditViewUiBinder.class);
 }
