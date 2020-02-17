@@ -4,12 +4,15 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.List;
 import java.util.Set;
 
 /**
  * Фильтр по сотрудникам
  */
 public class EmployeeQuery extends BaseQuery {
+
+    private List<Long> ids;
 
     private Boolean fired;
 
@@ -31,6 +34,10 @@ public class EmployeeQuery extends BaseQuery {
 
     public EmployeeQuery() {
         fired = false;
+    }
+
+    public EmployeeQuery(List<Long> ids) {
+        this.ids = ids;
     }
 
     public EmployeeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
@@ -125,6 +132,14 @@ public class EmployeeQuery extends BaseQuery {
 
     public void setDepartmentParent(String departmentParent) {
         this.departmentParent = departmentParent;
+    }
+
+    public List<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
     }
 
     @Override

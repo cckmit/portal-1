@@ -65,6 +65,7 @@ public class UiConstants {
         String EMPLOYEE_REGISTRATION = "employee_registration";
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
+        String TOP_BRASS = "top_brass";
     }
 
     public interface Styles {

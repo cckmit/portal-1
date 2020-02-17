@@ -46,6 +46,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
         ));
 
+        fireEvent(new ActionBarEvents.Add("Руководство", null, UiConstants.ActionBarIdentity.TOP_BRASS));
+
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
@@ -59,6 +61,15 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         onShow(new EmployeeEvents.Show());
 
         localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
+    }
+
+    @Event
+    public void onTopBrassClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
+            return;
+        }
+
+        fireEvent(new EmployeeEvents.ShowTopBrass());
     }
 
     @Override

@@ -47,6 +47,11 @@ public class EmployeeEvents {
         public EmployeeQuery query;
     }
 
+    /**
+     * Показать руководство
+     */
+    public static class ShowTopBrass {}
+
     public static class UpdateData {
         public UpdateData ( ViewType type, EmployeeQuery query ) {
             this.viewType = type;
