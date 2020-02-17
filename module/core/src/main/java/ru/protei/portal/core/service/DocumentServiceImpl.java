@@ -244,23 +244,20 @@ public class DocumentServiceImpl implements DocumentService {
             if (oldDocument.getApproved() && document.getApproved() && (withDoc || withPdf)) {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
-            //TODO: сделать проверку
-            List<En_DocumentFormat> listFormatsAtSvn;
-            try {
-                listFormatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
-            } catch (Exception e){
-                listFormatsAtSvn = Collections.emptyList();
-            }
-            List<En_DocumentFormat> currentFormatsAtSvn = (withDoc || withPdf || withApprovalSheet) ? listFormatsAtSvn : Collections.emptyList();
-            boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
-            boolean withDocAtSvn = withDoc && currentFormatsAtSvn.contains(docFormat);
-            boolean withPdfAtSvn = withPdf && currentFormatsAtSvn.contains(pdfFormat);
 
+            List<En_DocumentFormat> listFormatsAtSvn = documentSvnApi.isProjectPathExist(projectId)
+                    ? listDocumentFormatsAtSVN(documentId, projectId)
+                    : Collections.emptyList();
+
+            boolean withDocAtSvn = withDoc && listFormatsAtSvn.contains(docFormat);
+            boolean withPdfAtSvn = withPdf && listFormatsAtSvn.contains(pdfFormat);
+            boolean withApprovalSheetAtSvn = withApprovalSheet && listFormatsAtSvn.contains(ApprovalSheetFormat);
+
+            boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
             if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
                 return error(En_ResultStatus.INCORRECT_PARAMS);
             }
 
-            boolean withApprovalSheetAtSvn = withApprovalSheet && currentFormatsAtSvn.contains(ApprovalSheetFormat);
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
             byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
             byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, ApprovalSheetFormat) : null;
@@ -318,7 +315,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc) {
-                removeDuplicatedDocFilesFromSvn(currentFormatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
+                removeDuplicatedDocFilesFromSvn(listFormatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             }
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
