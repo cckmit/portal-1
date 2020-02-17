@@ -5,6 +5,7 @@ public class CrmConstants {
     public static final int DEFAULT_SELECTOR_PAGE_SIZE = 20;
     public static final int DEFAULT_SELECTOR_CHUNK_SIZE = 100;
     public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
+    public static final int EMAIL_MAX_SIZE = 254;
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
@@ -48,7 +49,7 @@ public class CrmConstants {
     }
 
     public interface Masks {
-        String EMAIL = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,4})+$";
+        String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
     }
 
