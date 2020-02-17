@@ -53,10 +53,15 @@ public abstract class DocumentEditActivity
     @Event
     public void onCreateFromWizard(DocumentEvents.CreateFromWizard event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(event.parent));
             return;
         }
-        setFieldsEnabled(true, true, true, true);
+
+        isMembersEnabled = true;
+        isExecutionTypeEnabled = true;
+        isEquipmentEnabled = true;
+        isProjectEnabled = true;
+
         drawView(event.parent, true);
         fillView(event.document);
     }
@@ -64,7 +69,7 @@ public abstract class DocumentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_CREATE)){
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
         if (event.projectId == null || event.equipmentId == null) {
@@ -72,20 +77,28 @@ public abstract class DocumentEditActivity
             fireEvent(new Back());
             return;
         }
-        setFieldsEnabled(false, false, false, false);
+
+        isMembersEnabled = false;
+        isExecutionTypeEnabled = false;
+        isEquipmentEnabled = false;
+        isProjectEnabled = false;
 
         drawView(initDetails.parent, false);
-        Document document = prepareDocument(event);
+        Document document = makeDocumentFromEvent(event);
         requestEquipmentAndFillView(event.equipmentId, document);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
-        setFieldsEnabled(true, true, true, false);
+
+        isMembersEnabled = true;
+        isExecutionTypeEnabled = true;
+        isEquipmentEnabled = true;
+        isProjectEnabled = false;
 
         drawView(initDetails.parent, false);
         requestDocumentAndFillView(event.id, this::fillView);
@@ -94,24 +107,20 @@ public abstract class DocumentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onEquipmentEdit(DocumentEvents.EditFromEquipment event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
-        setFieldsEnabled(false, false, false, false);
+
+        isMembersEnabled = false;
+        isExecutionTypeEnabled = false;
+        isEquipmentEnabled = false;
+        isProjectEnabled = false;
 
         drawView(initDetails.parent, false);
         requestDocumentAndFillView(event.id, this::fillView);
     }
 
-    private void setFieldsEnabled(boolean membersEnabled, boolean executionTypeEnabled, boolean equipmentEnabled, boolean projectEnabled) {
-        isMembersEnabled = membersEnabled;
-        isExecutionTypeEnabled = executionTypeEnabled;
-        isEquipmentEnabled = equipmentEnabled;
-        isProjectEnabled = projectEnabled;
-    }
-
-
-    private Document prepareDocument(DocumentEvents.CreateWithEquipment event) {
+    private Document makeDocumentFromEvent(DocumentEvents.CreateWithEquipment event) {
         Document document = new Document();
         document.setApproved(false);
         document.setProjectId(event.projectId);
@@ -441,29 +450,7 @@ public abstract class DocumentEditActivity
         return null;
     }
 
-    private void  requestDocumentAndFillView(Long documentId){
-        if (documentId == null) {
-            fireEvent(new Back());
-            return;
-        }
-
-        documentService.getDocument(documentId, new FluentCallback<Document>()
-                .withError(throwable -> {
-                    errorHandler.accept(throwable);
-                    fireEvent(new Back());
-                })
-                .withSuccess(equipment -> {
-                    fillView(document);;
-                })
-        );
-    }
-
     private void requestEquipmentAndFillView(Long equipmentId, Document document) {
-
-        if (equipmentId == null) {
-            fillView(document);
-            return;
-        }
 
         equipmentController.getEquipment(equipmentId, new FluentCallback<Equipment>()
                 .withError(throwable -> {
@@ -479,7 +466,10 @@ public abstract class DocumentEditActivity
 
     private void requestDocumentAndFillView(Long documentId, Consumer<Document> onSuccess) {
         documentService.getDocument(documentId, new FluentCallback<Document>()
-                .withErrorMessage(lang.errGetObject())
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    fireEvent(new Back());
+                })
                 .withSuccess(onSuccess));
     }
 
