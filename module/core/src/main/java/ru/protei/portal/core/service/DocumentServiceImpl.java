@@ -353,7 +353,14 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            List<En_DocumentFormat> formatsAtSvn;
+
+            if(documentSvnApi.isProjectPathExist(projectId)){
+                formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            } else {
+                log.error("updateDocumentDocFile(" + documentId + "): failed to update doc file at the svn. The path of this project doesn't exists");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
             boolean withDocAtSvn = formatsAtSvn.contains(docFormat);
 
             String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, comment);
