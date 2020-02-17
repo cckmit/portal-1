@@ -130,17 +130,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public boolean updateNullCreatorByExtAppType(String extAppType) {
-        String sql = "UPDATE " + getTableName() + " SET creator = initiator WHERE creator IS NULL AND EXT_APP = ?";
-        return jdbcTemplate.update(sql, extAppType) > 0;
-    }
-
-    @Override
-    public int removeByNameLike(String name) {
-        return removeByCondition("CASE_NAME like ?", "%" + name + "%");
-    }
-
-    @Override
     public CaseObject getByCaseNameLike(String name) {
         return getByCondition("CASE_NAME like ?", "%" + name + "%");
     }
