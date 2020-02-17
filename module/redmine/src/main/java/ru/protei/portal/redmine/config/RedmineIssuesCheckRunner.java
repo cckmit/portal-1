@@ -35,7 +35,7 @@ public final class RedmineIssuesCheckRunner {
     private static final Logger logger = LoggerFactory.getLogger(RedmineIssuesCheckRunner.class);
 
     //5 minutes in MS
-    private static final long SCHEDULE_TIME = 5 * 60 * 1000L;
+    private static final long SCHEDULE_TIME = 1 * 60 * 1000L;
 
     @Autowired
     private RedmineService redmineService;

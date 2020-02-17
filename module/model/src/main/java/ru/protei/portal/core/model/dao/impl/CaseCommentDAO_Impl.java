@@ -154,15 +154,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         }
     };
 
-    @Override
-    public Date getLastCommentDateByCaseIdAndAuthorCreator(Long caseId, String authorCreator) {
-        return getCaseComments(new CaseCommentQuery(caseId)).stream()
-                .filter(x -> x.getAuthor().getCreator().equals(authorCreator))
-                .max(Comparator.comparing(CaseComment::getCreated))
-                .map(CaseComment::getCreated)
-                .orElse(null);
-    }
-
     private String makeAndPartFromListIds(final List<?> list, final String field){
         return list == null ? "" : " and " + field + " in " + makeInArg(list);
     }

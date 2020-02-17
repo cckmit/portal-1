@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
@@ -77,13 +78,11 @@ public final class CommonServiceImpl implements CommonService {
                 .filter(journal -> StringUtils.isNotEmpty(journal.getNotes()))
                 .collect(Collectors.toList());
         logger.debug("Found {} comments", nonEmptyJournalsWithComments.size());
-        nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with journal-id {} has following text: {}", journal.getId(), journal.getNotes()));
 
-        final List<CaseComment> comments = nonEmptyJournalsWithComments.stream()
-                .map(journal -> parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser())))
-                .map(caseComment -> processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment))
-                .collect(Collectors.toList());
-        logger.debug("Added {} new case comments to case with id {}", comments.size(), object.getId());
+        nonEmptyJournalsWithComments.forEach(journal -> logger.debug("Comment with journal-id {} has following text: {}", journal.getId(), journal.getNotes()));
+        nonEmptyJournalsWithComments.forEach(journal -> caseUpdaterFactory.getCommentsUpdater().apply(object, null, journal, null, personMapper));
+
+        logger.debug("End adding comments");
     }
 
     @Override
@@ -154,9 +153,10 @@ public final class CommonServiceImpl implements CommonService {
     private AttachmentDAO attachmentDAO;
 
     @Autowired
+    CaseUpdaterFactory caseUpdaterFactory;
+
+    @Autowired
     private EventPublisherService publisherService;
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
-
-    private final static String STUB_NAME = "?";
 }

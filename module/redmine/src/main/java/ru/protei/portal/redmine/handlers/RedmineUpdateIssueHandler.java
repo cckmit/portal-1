@@ -7,10 +7,16 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
@@ -69,41 +75,52 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
 
         logger.debug("Trying to get latest synchronized comment");
-        Date dateComment = caseCommentDAO.getLastCommentDateByCaseIdAndAuthorCreator(object.getId(), "redmine");
-        Date latestCreated = (dateComment != null) ? dateComment : issue.getCreatedOn();
+        Date latestCreated = caseCommentDAO.getCaseComments(new CaseCommentQuery(object.getId())).stream()
+                .filter(x -> x.getAuthor().getCreator().equals("redmine"))
+                .max(Comparator.comparing(CaseComment::getCreated))
+                .map(CaseComment::getCreated)
+                .orElse(issue.getCreatedOn());
         logger.debug("Last comment was synced on {}", latestCreated);
 
         List<Journal> latestJournals = issue.getJournals().stream()
                 .filter(Objects::nonNull)
                 .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
-                .filter(x -> x.getCreatedOn() != null)
-                .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
+                .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .collect(Collectors.toList());
         logger.debug("Got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
 
         //Synchronize comments
-        commonService.processComments(latestJournals, personMapper, object);
-
-        //Synchronize status, priority, name, info
-        latestJournals.forEach(journal -> journal.getDetails()
-                        .stream()
-                        .filter(detail -> RedmineChangeType.findByName(detail.getName()).isPresent())
-                        .forEach(detail -> {
-                            caseUpdaterFactory
-                                    .getUpdater(RedmineChangeType.findByName(detail.getName()).get())
-                                    .apply(object, endpoint, journal, detail.getNewValue(), personMapper);
-                        }));
+        latestJournals.forEach(journal -> {
+            if (journal.getNotes() != null) {
+                caseUpdaterFactory.getCommentsUpdater().apply(object, endpoint, journal, null, personMapper);
+            }
+            journal.getDetails().forEach(detail ->
+                    RedmineChangeType.findByName(detail.getName())
+                            .ifPresent(type -> caseUpdaterFactory.getUpdater(type).apply(object, endpoint, journal, detail.getNewValue(), personMapper)
+            ));
+        });
 
         //Synchronize attachment
-        List<Attachment> latestAttachment = issue.getAttachments().stream()
+        logger.debug("Trying to get latest synchronized attachment");
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setCompanyIds(new HashSet<>(Collections.singletonList(endpoint.getCompanyId())));
+        List<Long> redminePersons = personDAO.getPersons(personQuery).stream().map(Person::getId).collect(Collectors.toList());
+
+        Date latestCreatedAttach = attachmentDAO.getListByCaseId(object.getId()).stream()
+                .filter(attachment -> redminePersons.contains(attachment.getCreatorId()))
+                .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
+                .map(ru.protei.portal.core.model.ent.Attachment::getCreated)
+                .orElse(issue.getCreatedOn());
+        logger.debug("Last attachment was synced on {}", latestCreated);
+
+        List<Attachment> latestAttachments = issue.getAttachments().stream()
                 .filter(Objects::nonNull)
                 .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
-                .filter(attachment -> attachment.getCreatedOn() != null)
-                .filter(attachment -> attachment.getCreatedOn().compareTo(latestCreated) > 0)
+                .filter(attachment -> attachment.getCreatedOn() != null && attachment.getCreatedOn().compareTo(latestCreatedAttach) > 0)
                 .sorted(Comparator.comparing(Attachment::getCreatedOn))
                 .collect(Collectors.toList());
-        commonService.processAttachments(latestAttachment, personMapper, object, endpoint);
+        commonService.processAttachments(latestAttachments, personMapper, object, endpoint);
     }
 
     @Autowired
@@ -111,6 +128,9 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    private AttachmentDAO attachmentDAO;
 
     @Autowired
     private PersonDAO personDAO;

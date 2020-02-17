@@ -32,6 +32,10 @@ public class CaseUpdaterFactory {
         return funcs.get(type);
     }
 
+    public FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> getCommentsUpdater() {
+        return funcs.get(COMMENT);
+    }
+
     private class CaseStatusUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
         public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
@@ -146,12 +150,23 @@ public class CaseUpdaterFactory {
         }
     }
 
+    private class CaseCommentUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
+        @Override
+        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
+            CaseComment caseComment = commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser()));
+            commonService.processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment);
+
+            logger.debug("Added {} new case comments to case with id {}", caseComment.getId(), object.getId());
+        }
+    }
+
     private final ConcurrentMap<RedmineChangeType, FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> > funcs =
             new ConcurrentHashMap<RedmineChangeType, FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> >() {{
                 put(STATUS_CHANGE, new CaseStatusUpdater());
                 put(PRIORITY_CHANGE, new CasePriorityUpdater());
                 put(SUBJECT_CHANGE, new CaseSubjectUpdater());
                 put(DESCRIPTION_CHANGE, new CaseDescriptionUpdater());
+                put(COMMENT, new CaseCommentUpdater());
             }};
 
     private Integer parseToInteger(String value) {
