@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel styleName="form-group form-group-default" ui:field="root">
-        <label ui:field="label"/>
+        <label class="fade" ui:field="label"/>
         <g:HTMLPanel ui:field="items" styleName="bootstrap-tagsinput"/>
     </g:HTMLPanel>
 </ui:UiBinder>

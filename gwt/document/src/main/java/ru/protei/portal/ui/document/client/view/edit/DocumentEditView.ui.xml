@@ -24,7 +24,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group form-group-default">
-                                <label ui:field="nameLabel"><ui:text from="{lang.documentName}"/></label>
+                                <label class="fade" ui:field="nameLabel"><ui:text from="{lang.documentName}"/></label>
                                 <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                             </div>
                         </div>
@@ -33,19 +33,19 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group form-group-default">
-                                <label ui:field="versionLabel"><ui:text from="{lang.documentVersion}"/></label>
+                                <label class="fade" ui:field="versionLabel"><ui:text from="{lang.documentVersion}"/></label>
                                 <g:TextBox ui:field="version" styleName="form-control"/>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group form-group-default" ui:field="inventoryNumberContainer">
-                                <label ui:field="inventoryNumberLabel"><ui:text from="{lang.inventoryNumber}"/></label>
+                                <label class="fade" ui:field="inventoryNumberLabel"><ui:text from="{lang.inventoryNumber}"/></label>
                                 <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group form-group-default" ui:field="decimalNumberContainer">
-                                <label ui:field="decimalNumberLabel"><ui:text from="{lang.documentDecimalNumber}"/></label>
+                                <label class="fade" ui:field="decimalNumberLabel"><ui:text from="{lang.documentDecimalNumber}"/></label>
                                 <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="form-control"/>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group form-group-default">
-                                <label ui:field="annotationLabel"><ui:text from="{lang.annotation}"/></label>
+                                <label class="fade" ui:field="annotationLabel"><ui:text from="{lang.annotation}"/></label>
                                 <autoresizetextarea:AutoResizeTextArea ui:field="annotation" styleName="form-control comment"
                                                                        minRows="2" maxRows="10"/>
                             </div>
@@ -86,7 +86,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group form-group-default document-approval-date"  ui:field="approvalDateContainer">
-                                <label ui:field="approvalDateLabel"><ui:text from="{lang.documentApprovalDate}"/></label>
+                                <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.documentApprovalDate}"/></label>
                                 <datepicker:SinglePicker ui:field="approvalDate" type="DATE" formatValue="dd.MM.yyyy"
                                                          enabled="false"
                                 />
