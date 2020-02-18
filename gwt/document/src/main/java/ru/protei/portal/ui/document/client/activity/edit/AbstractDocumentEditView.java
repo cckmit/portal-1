@@ -103,5 +103,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setApprovalFieldsMandatory (boolean isMandatory);
 
+    void setButtonsEnabled (boolean isEnabled);
+
     void setDownloadCloudsVisible (boolean isVisible);
 }

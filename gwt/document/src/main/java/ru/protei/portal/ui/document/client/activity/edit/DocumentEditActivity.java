@@ -229,10 +229,8 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked () {
-        if (!isDocumentCreationInProgress) {
-            isDocumentCreationInProgress = true;
+            setButtonsEnabled(false);
             saveDocument(fillDto(document));
-        }
     }
 
     private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
@@ -369,7 +367,7 @@ public abstract class DocumentEditActivity
 
     private void saveDocument(Document document) {
         if (!checkDocumentValid(document)) {
-            isDocumentCreationInProgress = false;
+            setButtonsEnabled(true);
             return;
         }
         this.document = document;
@@ -384,7 +382,7 @@ public abstract class DocumentEditActivity
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
                             fillView(doc);
-                            isDocumentCreationInProgress = false;
+                            setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new DocumentEvents.ChangeModel());
                             fireEvent(new Back());
@@ -446,7 +444,7 @@ public abstract class DocumentEditActivity
     private void saveDocument(Document document, Consumer<Document> onSaved) {
         documentService.saveDocument(document, new FluentCallback<Document>()
                 .withError(throwable -> {
-                    isDocumentCreationInProgress = false;
+                    setButtonsEnabled(true);
                     errorHandler.accept(throwable);
                 })
                 .withSuccess(onSaved));
@@ -603,6 +601,11 @@ public abstract class DocumentEditActivity
         return option.getDisplayText();
     }
 
+    private void setButtonsEnabled (boolean isEnabled){
+        view.setButtonsEnabled(isEnabled);
+        fireEvent(new DocumentEvents.ChangeButtonsEnabled(isEnabled));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -622,7 +625,6 @@ public abstract class DocumentEditActivity
 
     private Document document;
     private ProjectInfo project;
-    private boolean isDocumentCreationInProgress = false;
     private boolean isPartOfWizardWidget = false;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;

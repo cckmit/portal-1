@@ -84,6 +84,11 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         btnNext.ensureDebugId(debugId);
     }
 
+    public void setButtonsEnabled(boolean isEnabled){
+        btnNext.setEnabled(isEnabled);
+        btnPrevious.setEnabled(isEnabled);
+    }
+
     private void addTab(WizardWidgetPane pane) {
 
         WizardWidgetNavItem navItem = makeNavItem(pane);

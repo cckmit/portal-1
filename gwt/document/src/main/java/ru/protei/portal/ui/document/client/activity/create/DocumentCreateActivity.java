@@ -44,6 +44,11 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         view.createEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE));
     }
 
+    @Event
+    public void onChangeButtonsEnabled(DocumentEvents.ChangeButtonsEnabled event) {
+        view.setWizardButtonsEnabled(event.isEnabled);
+    }
+
     @Override
     public void onClose() {
         fireEvent(new Back());

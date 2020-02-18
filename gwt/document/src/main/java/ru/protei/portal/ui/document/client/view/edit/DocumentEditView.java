@@ -291,6 +291,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public void setButtonsEnabled (boolean isEnabled){
+       cancelBtn.setEnabled(isEnabled);
+       saveBtn.setEnabled(isEnabled);
+    }
+
+    @Override
     public void setDownloadCloudsVisible (boolean isVisible){
         downloadDoc.setVisible(isVisible);
         downloadPdf.setVisible(isVisible);

@@ -12,6 +12,8 @@ public interface AbstractDocumentCreateView extends IsWidget {
 
     void setWizardActivity(WizardWidgetActivity activity);
 
+    void setWizardButtonsEnabled(boolean isEnabled);
+
     void resetWizard();
 
     // Wizard 1st tab

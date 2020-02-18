@@ -79,6 +79,17 @@ public class DocumentEvents {
         }
     }
 
+    public static class ChangeButtonsEnabled {
+
+        public boolean isEnabled = true;
+
+        @Deprecated
+        public ChangeButtonsEnabled() { }
+        public ChangeButtonsEnabled(boolean isEnabled) {
+            this.isEnabled = isEnabled;
+        }
+    }
+
     public static class ChangeModel {
     }
 
